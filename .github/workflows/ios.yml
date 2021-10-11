@@ -27,6 +27,9 @@ jobs:
         env:
           scheme: ${{ 'default' }}
           platform: ${{ 'iOS Simulator' }}
+          MOONPAY_PRODUCTION_SECRET: ${{ secrets.MOONPAY_PRODUCTION_SECRET }}
+          MOONPAY_TEST_SECRET: ${{ secrets.MOONPAY_TEST_SECRET }}
+          SUBSCAN_API_KEY: ${{ secrets.SUBSCAN_API_KEY }}
         run: |
           # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
           device=`xcrun xctrace list devices 2>&1 | grep -oE 'iPhone.*?[^\(]+' | head -1 | awk '{$1=$1;print}'`
