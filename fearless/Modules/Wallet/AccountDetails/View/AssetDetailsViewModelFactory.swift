@@ -79,8 +79,15 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let imageViewModel: WalletImageViewModelProtocol?
 
-        if let assetId = WalletAssetId(rawValue: asset.identifier), let icon = assetId.assetIcon {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
+        if
+            let chainAssetId = ChainAssetId(walletId: asset.identifier),
+            let chain = chains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) {
+            let iconUrl = asset.icon ?? chain.icon
+            imageViewModel = WalletRemoteImageViewModel(
+                url: iconUrl,
+                size: CGSize(width: 32, height: 32)
+            )
         } else {
             imageViewModel = nil
         }

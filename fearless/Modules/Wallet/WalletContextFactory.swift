@@ -187,6 +187,9 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 
+        let contactsConfigurator = ContactsConfigurator(metaAccount: metaAccount, chains: chainsById)
+        contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
+
         return try builder.build()
     }
     // swiftlint:enable function_body_length
