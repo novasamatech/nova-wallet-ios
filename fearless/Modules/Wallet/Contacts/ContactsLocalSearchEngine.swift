@@ -6,14 +6,20 @@ import RobinHood
 import SoraFoundation
 
 final class ContactsLocalSearchEngine: ContactsLocalSearchEngineProtocol {
+    let metaAccount: MetaAccountModel
+    let chains: [String: ChainModel]
     let contactViewModelFactory: ContactsFactoryWrapperProtocol
-    let networkType: SNAddressType
 
     private lazy var addressFactory = SS58AddressFactory()
 
-    init(networkType: SNAddressType, contactViewModelFactory: ContactsFactoryWrapperProtocol) {
+    init(
+        metaAccount: MetaAccountModel,
+        chains: [String: ChainModel],
+        contactViewModelFactory: ContactsFactoryWrapperProtocol
+    ) {
         self.contactViewModelFactory = contactViewModelFactory
-        self.networkType = networkType
+        self.metaAccount = metaAccount
+        self.chains = chains
     }
 
     func search(
@@ -24,10 +30,15 @@ final class ContactsLocalSearchEngine: ContactsLocalSearchEngineProtocol {
         commandFactory: WalletCommandFactoryProtocol
     ) -> [ContactViewModelProtocol]? {
         do {
-            let peerId = try addressFactory.accountId(fromAddress: query, type: networkType)
-            let accountIdData = try Data(hexString: parameters.accountId)
+            guard
+                let chainAssetId = ChainAssetId(walletId: parameters.assetId),
+                let chain = chains[chainAssetId.chainId] else {
+                return []
+            }
 
-            guard peerId != accountIdData else {
+            let peerId = try query.toAccountId(using: chain.chainFormat)
+
+            guard peerId != metaAccount.fetch(for: chain.accountRequest())?.accountId else {
                 return []
             }
 

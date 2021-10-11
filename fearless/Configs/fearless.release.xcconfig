@@ -2,4 +2,4 @@
 
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
 
-APP_NAME = Fearless
+APP_NAME = Nova
