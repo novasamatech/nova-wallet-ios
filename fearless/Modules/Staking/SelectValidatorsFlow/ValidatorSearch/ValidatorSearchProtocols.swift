@@ -36,14 +36,6 @@ protocol ValidatorSearchPresenterProtocol: Localizable {
     func applyChanges()
 }
 
-protocol ValidatorSearchViewFactoryProtocol {
-    static func createView(
-        with fullValidatorList: [SelectedValidatorInfo],
-        selectedValidatorList: [SelectedValidatorInfo],
-        delegate: ValidatorSearchDelegate?
-    ) -> ValidatorSearchViewProtocol?
-}
-
 protocol ValidatorSearchViewModelFactoryProtocol {
     func createViewModel(
         from displayValidatorList: [SelectedValidatorInfo],

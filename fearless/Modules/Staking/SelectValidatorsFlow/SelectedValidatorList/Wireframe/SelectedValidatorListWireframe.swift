@@ -1,8 +1,15 @@
 class SelectedValidatorListWireframe: SelectedValidatorListWireframeProtocol {
+    let stakingState: StakingSharedState
+
+    init(stakingState: StakingSharedState) {
+        self.stakingState = stakingState
+    }
+
     func present(_ validatorInfo: ValidatorInfoProtocol, from view: ControllerBackedProtocol?) {
-        guard
-            let validatorInfoView = ValidatorInfoViewFactory
-            .createView(with: validatorInfo) else {
+        guard let validatorInfoView = ValidatorInfoViewFactory.createView(
+            with: validatorInfo,
+            state: stakingState
+        ) else {
             return
         }
 

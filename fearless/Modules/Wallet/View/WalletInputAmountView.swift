@@ -4,7 +4,7 @@ import SoraUI
 import SoraFoundation
 
 final class WalletInputAmountView: WalletBaseAmountView {
-    var contentInsets = UIEdgeInsets(top: 4.0, left: 0.0, bottom: 14.0, right: 0.0) {
+    var contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0) {
         didSet {
             invalidateIntrinsicContentSize()
         }
@@ -23,30 +23,25 @@ final class WalletInputAmountView: WalletBaseAmountView {
     override var intrinsicContentSize: CGSize {
         CGSize(
             width: UIView.noIntrinsicMetric,
-            height: 72.0 + contentInsets.top + contentInsets.bottom
+            height: 52.0 + contentInsets.top + contentInsets.bottom
         )
     }
 
     var inputViewModel: AmountInputViewModelProtocol?
 
     override var isFirstResponder: Bool {
-        amountInputView.isFirstResponder
+        animatedTextField.isFirstResponder
     }
 
     override func resignFirstResponder() -> Bool {
-        amountInputView.resignFirstResponder()
+        animatedTextField.resignFirstResponder()
     }
 
     override func setupSubviews() {
         super.setupSubviews()
 
-        amountInputView.textField.delegate = self
-        amountInputView.textField.keyboardType = .decimalPad
-
-        amountInputView.textField.placeholder = "0"
-        amountInputView.textField.text = nil
-
-        applyLocalization()
+        animatedTextField.delegate = self
+        animatedTextField.textField.keyboardType = .decimalPad
     }
 }
 
@@ -58,80 +53,40 @@ extension WalletInputAmountView: AmountInputViewProtocol {
 
         self.inputViewModel?.observable.add(observer: self)
 
-        amountInputView.textField.text = inputViewModel.displayAmount == "0" ?
-            nil :
-            inputViewModel.displayAmount
+        animatedTextField.text = inputViewModel.displayAmount
 
         fieldBackgroundView.applyEnabledStyle()
-
-        if let viewModel = inputViewModel as? RichAmountInputViewModelProtocol {
-            amountInputView.assetIcon = viewModel.icon
-            amountInputView.symbol = viewModel.symbol
-        }
-
-        applyLocalization()
     }
 }
 
 extension WalletInputAmountView: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        amountInputView.textField.text = inputViewModel?.displayAmount
-
-        guard let model = inputViewModel as? RichAmountInputViewModelProtocol else {
-            amountInputView.priceText = nil
-            return
-        }
-
-        amountInputView.priceText = model.displayPrice.value(for: selectedLocale)
+        animatedTextField.text = inputViewModel?.displayAmount
     }
 }
 
-extension WalletInputAmountView: UITextFieldDelegate {
-    func textField(
-        _: UITextField,
+extension WalletInputAmountView: AnimatedTextFieldDelegate {
+    func animatedTextField(
+        _: AnimatedTextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        guard let model = inputViewModel as? RichAmountInputViewModel else {
+        guard let model = inputViewModel else {
             return false
         }
 
         return model.didReceiveReplacement(string, for: range)
     }
 
-    func textFieldShouldReturn(_: UITextField) -> Bool {
+    func animatedTextFieldShouldReturn(_: AnimatedTextField) -> Bool {
         true
     }
 }
 
 extension WalletInputAmountView: Localizable {
     func applyLocalization() {
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        let accessoryView = UIFactory().createAmountAccessoryView(
-            for: self,
-            locale: selectedLocale
-        )
-
-        amountInputView.textField.inputAccessoryView = accessoryView
-
-        guard let viewModel = inputViewModel as? RichAmountInputViewModelProtocol else { return }
-
-        amountInputView.balanceText = viewModel.displayBalance.value(for: selectedLocale)
-        amountInputView.priceText = viewModel.displayPrice.value(for: selectedLocale)
-    }
-}
-
-extension WalletInputAmountView: AmountInputAccessoryViewDelegate {
-    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
-        amountInputView.textField.resignFirstResponder()
-
-        guard let model = inputViewModel as? RichAmountInputViewModelProtocol else { return }
-        model.didSelectPercentage(percentage)
-    }
-
-    func didSelectDone(on _: AmountInputAccessoryView) {
-        amountInputView.textField.resignFirstResponder()
+        let locale = localizationManager?.selectedLocale
+        animatedTextField.title = R.string.localizable
+            .walletSendAmountTitle(preferredLanguages: locale?.rLanguages)
     }
 }

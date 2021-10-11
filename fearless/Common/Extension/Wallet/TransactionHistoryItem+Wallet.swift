@@ -8,25 +8,18 @@ extension TransactionHistoryItem {
     static func createFromTransferInfo(
         _ info: TransferInfo,
         transactionHash: Data,
-        networkType: SNAddressType,
-        addressFactory: SS58AddressFactoryProtocol
+        chainAssetInfo: ChainAssetDisplayInfo
     ) throws
         -> TransactionHistoryItem {
         let senderAccountId = try Data(hexString: info.source)
         let receiverAccountId = try Data(hexString: info.destination)
 
-        let sender = try addressFactory.address(
-            fromPublicKey: AccountIdWrapper(rawData: senderAccountId),
-            type: networkType
-        )
+        let sender = try senderAccountId.toAddress(using: chainAssetInfo.chain)
 
-        let receiver = try addressFactory.address(
-            fromPublicKey: AccountIdWrapper(rawData: receiverAccountId),
-            type: networkType
-        )
+        let receiver = try receiverAccountId.toAddress(using: chainAssetInfo.chain)
 
         guard let amount = info.amount.decimalValue
-            .toSubstrateAmount(precision: networkType.precision) else {
+            .toSubstrateAmount(precision: chainAssetInfo.asset.assetPrecision) else {
             throw AmountDecimalError.invalidStringValue
         }
 
@@ -41,7 +34,9 @@ extension TransactionHistoryItem {
 
         let totalFee = info.fees.reduce(Decimal(0)) { total, fee in total + fee.value.decimalValue }
 
-        guard let feeValue = totalFee.toSubstrateAmount(precision: networkType.precision) else {
+        guard let feeValue = totalFee.toSubstrateAmount(
+            precision: chainAssetInfo.asset.assetPrecision
+        ) else {
             throw AmountDecimalError.invalidStringValue
         }
 

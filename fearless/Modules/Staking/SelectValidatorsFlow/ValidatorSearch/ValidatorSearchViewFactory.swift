@@ -5,9 +5,14 @@ import FearlessUtils
 
 struct ValidatorSearchViewFactory {
     private static func createInteractor(
-        settings: SettingsManagerProtocol
+        state: StakingSharedState
     ) -> ValidatorSearchInteractor? {
-        guard let engine = WebSocketService.shared.connection else {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let chainAsset = state.settings.value,
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
 
@@ -16,15 +21,13 @@ struct ValidatorSearchViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let chain = settings.selectedConnection.type.chain
-
         let validatorOperationFactory = ValidatorOperationFactory(
-            chain: chain,
-            eraValidatorService: EraValidatorFacade.sharedService,
-            rewardService: RewardCalculatorFacade.sharedService,
+            chainInfo: chainAsset.chainAssetInfo,
+            eraValidatorService: state.eraValidatorService,
+            rewardService: state.rewardCalculationService,
             storageRequestFactory: storageRequestFactory,
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            engine: engine,
+            runtimeService: runtimeService,
+            engine: connection,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
         )
 
@@ -35,17 +38,18 @@ struct ValidatorSearchViewFactory {
     }
 }
 
-extension ValidatorSearchViewFactory: ValidatorSearchViewFactoryProtocol {
+extension ValidatorSearchViewFactory {
     static func createView(
-        with validatorList: [SelectedValidatorInfo],
+        for state: StakingSharedState,
+        validatorList: [SelectedValidatorInfo],
         selectedValidatorList: [SelectedValidatorInfo],
         delegate: ValidatorSearchDelegate?
     ) -> ValidatorSearchViewProtocol? {
-        guard let interactor = createInteractor(settings: SettingsManager.shared) else {
+        guard let interactor = createInteractor(state: state) else {
             return nil
         }
 
-        let wireframe = ValidatorSearchWireframe()
+        let wireframe = ValidatorSearchWireframe(state: state)
 
         let viewModelFactory = ValidatorSearchViewModelFactory()
 

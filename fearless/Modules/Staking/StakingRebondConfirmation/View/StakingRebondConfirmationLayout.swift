@@ -82,9 +82,11 @@ final class StakingRebondConfirmationLayout: UIView {
             amountView.balanceText = nil
         }
 
-        amountView.assetIcon = assetViewModel.icon
-
         amountView.symbol = assetViewModel.symbol.uppercased()
+
+        assetViewModel.iconViewModel?.cancel(on: amountView.iconView)
+        amountView.assetIcon = nil
+        assetViewModel.iconViewModel?.loadAmountInputIcon(on: amountView.iconView, animated: true)
 
         setNeedsLayout()
     }

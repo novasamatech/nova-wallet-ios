@@ -13,17 +13,11 @@ protocol StakingPayoutConfirmViewModelFactoryProtocol {
 }
 
 final class StakingPayoutConfirmViewModelFactory {
-    private let asset: WalletAsset
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
-    private lazy var amountFactory = AmountFormatterFactory()
 
-    init(
-        asset: WalletAsset,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    ) {
-        self.asset = asset
+    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
         self.balanceViewModelFactory = balanceViewModelFactory
     }
 

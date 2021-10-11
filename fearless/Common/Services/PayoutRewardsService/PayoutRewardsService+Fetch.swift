@@ -318,7 +318,7 @@ extension PayoutRewardsService {
             for: accountIdClosure,
             engine: engine,
             runtimeService: runtimeCodingService,
-            chain: chain
+            chainFormat: chainFormat
         )
     }
 

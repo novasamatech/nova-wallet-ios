@@ -4,27 +4,28 @@ import RobinHood
 import SoraFoundation
 import FearlessUtils
 
-final class WalletAssetViewModelFactory: BaseAssetViewModelFactory {
+final class WalletAssetViewModelFactory: AccountListViewModelFactoryProtocol {
+    let metaAccount: MetaAccountModel
+    let chains: [ChainModel.Id: ChainModel]
     let assetCellStyleFactory: AssetCellStyleFactoryProtocol
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let priceAsset: WalletAsset
     let accountCommandFactory: WalletSelectAccountCommandFactoryProtocol
 
     init(
-        address: String,
-        chain: Chain,
+        metaAccount: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
         assetCellStyleFactory: AssetCellStyleFactoryProtocol,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         priceAsset: WalletAsset,
-        accountCommandFactory: WalletSelectAccountCommandFactoryProtocol,
-        purchaseProvider: PurchaseProviderProtocol
+        accountCommandFactory: WalletSelectAccountCommandFactoryProtocol
     ) {
+        self.metaAccount = metaAccount
+        self.chains = chains
         self.assetCellStyleFactory = assetCellStyleFactory
         self.amountFormatterFactory = amountFormatterFactory
         self.priceAsset = priceAsset
         self.accountCommandFactory = accountCommandFactory
-
-        super.init(address: address, chain: chain, purchaseProvider: purchaseProvider)
     }
 
     private func creatRegularViewModel(
@@ -70,8 +71,15 @@ final class WalletAssetViewModelFactory: BaseAssetViewModelFactory {
 
         let imageViewModel: WalletImageViewModelProtocol?
 
-        if let assetId = WalletAssetId(rawValue: asset.identifier), let icon = assetId.assetIcon {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
+        if
+            let chainAssetId = ChainAssetId(walletId: asset.identifier),
+            let chain = chains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) {
+            let url = asset.icon ?? chain.icon
+            imageViewModel = WalletRemoteImageViewModel(
+                url: url,
+                size: CGSize(width: 48, height: 48)
+            )
         } else {
             imageViewModel = nil
         }
@@ -99,6 +107,12 @@ final class WalletAssetViewModelFactory: BaseAssetViewModelFactory {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> AssetViewModelProtocol? {
+        // TODO: fix address for icon
+        guard
+            let address = try? metaAccount.substrateAccountId.toAddress(using: .substrate(42)) else {
+            return nil
+        }
+
         let style = assetCellStyleFactory.createCellStyle(for: asset)
 
         let priceFormater = amountFormatterFactory.createTokenFormatter(for: priceAsset)
@@ -145,7 +159,7 @@ final class WalletAssetViewModelFactory: BaseAssetViewModelFactory {
         )
     }
 
-    override func createAssetViewModel(
+    func createAssetViewModel(
         for asset: WalletAsset,
         balance: BalanceData,
         commandFactory: WalletCommandFactoryProtocol,
@@ -166,5 +180,13 @@ final class WalletAssetViewModelFactory: BaseAssetViewModelFactory {
                 locale: locale
             )
         }
+    }
+
+    func createActionsViewModel(
+        for _: String?,
+        commandFactory _: WalletCommandFactoryProtocol,
+        locale _: Locale
+    ) -> WalletViewModelProtocol? {
+        WalletListActionsViewModel()
     }
 }

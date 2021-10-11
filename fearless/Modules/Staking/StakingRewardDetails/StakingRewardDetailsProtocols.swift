@@ -22,13 +22,9 @@ protocol StakingRewardDetailsWireframeProtocol: AnyObject, AddressOptionsPresent
     func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo)
 }
 
-protocol StakingRewardDetailsViewFactoryProtocol: AnyObject {
-    static func createView(input: StakingRewardDetailsInput) -> StakingRewardDetailsViewProtocol?
-}
-
 struct StakingRewardDetailsInput {
     let payoutInfo: PayoutInfo
-    let chain: Chain
     let activeEra: EraIndex
     let historyDepth: UInt32
+    let erasPerDay: UInt32
 }

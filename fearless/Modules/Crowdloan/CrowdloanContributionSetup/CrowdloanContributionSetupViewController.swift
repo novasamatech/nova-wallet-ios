@@ -151,8 +151,6 @@ extension CrowdloanContributionSetupViewController: UITextFieldDelegate {
 
 extension CrowdloanContributionSetupViewController: Localizable {
     func applyLocalization() {
-        if isViewLoaded {
-            setupLocalization()
-        }
+        if isSetup {}
     }
 }

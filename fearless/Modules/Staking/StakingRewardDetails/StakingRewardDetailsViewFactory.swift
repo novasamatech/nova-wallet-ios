@@ -3,20 +3,22 @@ import SoraFoundation
 import SoraKeystore
 import FearlessUtils
 
-final class StakingRewardDetailsViewFactory: StakingRewardDetailsViewFactoryProtocol {
-    static func createView(input: StakingRewardDetailsInput) -> StakingRewardDetailsViewProtocol? {
-        let settings = SettingsManager.shared
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
+final class StakingRewardDetailsViewFactory {
+    static func createView(
+        for state: StakingSharedState,
+        input: StakingRewardDetailsInput
+    ) -> StakingRewardDetailsViewProtocol? {
+        guard let chainAsset = state.settings.value else {
+            return nil
+        }
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: input.chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            iconGenerator: PolkadotIconGenerator()
+            iconGenerator: PolkadotIconGenerator(),
+            chainFormat: chainAsset.chain.chainFormat
         )
         let presenter = StakingRewardDetailsPresenter(
             input: input,
@@ -27,15 +29,12 @@ final class StakingRewardDetailsViewFactory: StakingRewardDetailsViewFactoryProt
             localizationManager: LocalizationManager.shared
         )
 
-        let asset = primitiveFactory.createAssetForAddressType(input.chain.addressType)
+        let interactor = StakingRewardDetailsInteractor(
+            asset: chainAsset.asset,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared
+        )
 
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            return nil
-        }
-        let providerFactory = SingleValueProviderFactory.shared
-        let priceProvider = providerFactory.getPriceProvider(for: assetId)
-        let interactor = StakingRewardDetailsInteractor(priceProvider: priceProvider)
-        let wireframe = StakingRewardDetailsWireframe()
+        let wireframe = StakingRewardDetailsWireframe(state: state)
 
         presenter.view = view
         presenter.interactor = interactor

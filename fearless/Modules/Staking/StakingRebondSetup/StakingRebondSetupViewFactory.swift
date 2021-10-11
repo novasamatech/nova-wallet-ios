@@ -3,30 +3,22 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 
-final class StakingRebondSetupViewFactory: StakingRebondSetupViewFactoryProtocol {
-    static func createView() -> StakingRebondSetupViewProtocol? {
-        // MARK: - Interactor
+final class StakingRebondSetupViewFactory {
+    static func createView(for state: StakingSharedState) -> StakingRebondSetupViewProtocol? {
+        // MARK: Interactor
 
-        let settings = SettingsManager.shared
-
-        guard let interactor = createInteractor(settings: settings) else {
+        guard let interactor = createInteractor(state: state) else {
             return nil
         }
 
         // MARK: - Router
 
-        let wireframe = StakingRebondSetupWireframe()
+        let wireframe = StakingRebondSetupWireframe(state: state)
 
         // MARK: - Presenter
 
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let chain = settings.selectedConnection.type.chain
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = state.settings.value.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -35,7 +27,7 @@ final class StakingRebondSetupViewFactory: StakingRebondSetupViewFactoryProtocol
             interactor: interactor,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            chain: chain
+            assetInfo: assetInfo
         )
 
         // MARK: - View
@@ -56,47 +48,42 @@ final class StakingRebondSetupViewFactory: StakingRebondSetupViewFactoryProtocol
     }
 
     private static func createInteractor(
-        settings: SettingsManagerProtocol
+        state: StakingSharedState
     ) -> StakingRebondSetupInteractor? {
-        guard let engine = WebSocketService.shared.connection else {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let chainAsset = state.settings.value,
+            let selectedAccount = SelectedWalletSettings.shared.value.fetch(
+                for: chainAsset.chain.accountRequest()
+            ),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
 
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let chain = settings.selectedConnection.type.chain
-        let networkType = chain.addressType
-
-        let asset = WalletPrimitiveFactory(settings: settings)
-            .createAssetForAddressType(networkType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            return nil
-        }
+        let operationManager = OperationManagerFacade.sharedManager
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: RuntimeRegistryFacade.sharedService,
-            engine: engine,
-            operationManager: OperationManagerFacade.sharedManager
+            runtimeRegistry: runtimeRegistry,
+            engine: connection,
+            operationManager: operationManager
         )
 
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        let feeProxy = ExtrinsicFeeProxy()
+
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
         return StakingRebondSetupInteractor(
-            settings: settings,
-            substrateProviderFactory: substrateProviderFactory,
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
-            runtimeCodingService: RuntimeRegistryFacade.sharedService,
-            operationManager: OperationManagerFacade.sharedManager,
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            feeProxy: ExtrinsicFeeProxy(),
-            chain: chain,
-            assetId: assetId
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            feeProxy: feeProxy,
+            operationManager: operationManager
         )
     }
 }

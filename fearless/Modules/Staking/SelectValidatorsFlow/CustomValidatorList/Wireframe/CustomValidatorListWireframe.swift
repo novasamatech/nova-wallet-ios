@@ -1,13 +1,20 @@
 import Foundation
 
 class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
+    let stakingState: StakingSharedState
+
+    init(stakingState: StakingSharedState) {
+        self.stakingState = stakingState
+    }
+
     func present(
         _ validatorInfo: ValidatorInfoProtocol,
         from view: ControllerBackedProtocol?
     ) {
-        guard
-            let validatorInfoView = ValidatorInfoViewFactory
-            .createView(with: validatorInfo) else {
+        guard let validatorInfoView = ValidatorInfoViewFactory.createView(
+            with: validatorInfo,
+            state: stakingState
+        ) else {
             return
         }
 
@@ -22,11 +29,11 @@ class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
         filter: CustomValidatorListFilter,
         delegate: ValidatorListFilterDelegate?
     ) {
-        guard let filterView = ValidatorListFilterViewFactory
-            .createView(
-                with: filter,
-                delegate: delegate
-            ) else { return }
+        guard let filterView = ValidatorListFilterViewFactory.createView(
+            for: stakingState,
+            filter: filter,
+            delegate: delegate
+        ) else { return }
 
         view?.controller.navigationController?.pushViewController(
             filterView.controller,
@@ -40,12 +47,12 @@ class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
         selectedValidatorList: [SelectedValidatorInfo],
         delegate: ValidatorSearchDelegate?
     ) {
-        guard let searchView = ValidatorSearchViewFactory
-            .createView(
-                with: fullValidatorList,
-                selectedValidatorList: selectedValidatorList,
-                delegate: delegate
-            ) else { return }
+        guard let searchView = ValidatorSearchViewFactory.createView(
+            for: stakingState,
+            validatorList: fullValidatorList,
+            selectedValidatorList: selectedValidatorList,
+            delegate: delegate
+        ) else { return }
 
         view?.controller.navigationController?.pushViewController(
             searchView.controller,

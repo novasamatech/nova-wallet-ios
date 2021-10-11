@@ -82,7 +82,6 @@ extension AnalyticsValidatorsViewController: AnalyticsValidatorsViewProtocol {
     }
 
     func reload(viewState: AnalyticsViewState<AnalyticsValidatorsViewModel>) {
-        guard state != viewState else { return }
         state = viewState
 
         switch viewState {

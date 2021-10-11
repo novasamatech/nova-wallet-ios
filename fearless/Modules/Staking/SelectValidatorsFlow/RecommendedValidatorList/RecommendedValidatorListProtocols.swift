@@ -22,23 +22,3 @@ protocol RecommendedValidatorListWireframeProtocol: AnyObject {
         maxTargets: Int
     )
 }
-
-protocol RecommendedValidatorListViewFactoryProtocol: AnyObject {
-    static func createInitiatedBondingView(
-        for validators: [SelectedValidatorInfo],
-        maxTargets: Int,
-        with state: InitiatedBonding
-    ) -> RecommendedValidatorListViewProtocol?
-
-    static func createChangeTargetsView(
-        for validators: [SelectedValidatorInfo],
-        maxTargets: Int,
-        with state: ExistingBonding
-    ) -> RecommendedValidatorListViewProtocol?
-
-    static func createChangeYourValidatorsView(
-        for validators: [SelectedValidatorInfo],
-        maxTargets: Int,
-        with state: ExistingBonding
-    ) -> RecommendedValidatorListViewProtocol?
-}

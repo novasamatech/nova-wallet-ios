@@ -2,15 +2,12 @@ final class AnyValidatorInfoInteractor: ValidatorInfoInteractorBase {
     private let validatorInfo: ValidatorInfoProtocol
 
     init(
-        validatorInfo: ValidatorInfoProtocol,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
-        walletAssetId: WalletAssetId
+        selectedAsset: AssetModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        validatorInfo: ValidatorInfoProtocol
     ) {
         self.validatorInfo = validatorInfo
-        super.init(
-            singleValueProviderFactory: singleValueProviderFactory,
-            walletAssetId: walletAssetId
-        )
+        super.init(selectedAsset: selectedAsset, priceLocalSubscriptionFactory: priceLocalSubscriptionFactory)
     }
 
     override func setup() {

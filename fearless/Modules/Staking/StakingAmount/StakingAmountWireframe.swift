@@ -2,6 +2,12 @@ import Foundation
 import SoraFoundation
 
 final class StakingAmountWireframe: StakingAmountWireframeProtocol {
+    let stakingState: StakingSharedState
+
+    init(stakingState: StakingSharedState) {
+        self.stakingState = stakingState
+    }
+
     func presentAccountSelection(
         _ accounts: [AccountItem],
         selectedAccountItem: AccountItem,
@@ -28,9 +34,10 @@ final class StakingAmountWireframe: StakingAmountWireframeProtocol {
     }
 
     func proceed(from view: StakingAmountViewProtocol?, state: InitiatedBonding) {
-        guard let validatorsView = SelectValidatorsStartViewFactory
-            .createInitiatedBondingView(with: state)
-        else {
+        guard let validatorsView = SelectValidatorsStartViewFactory.createInitiatedBondingView(
+            with: state,
+            stakingState: stakingState
+        ) else {
             return
         }
 

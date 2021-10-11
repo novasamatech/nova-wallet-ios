@@ -10,7 +10,7 @@ final class StakingUnbondConfirmPresenter {
     let confirmViewModelFactory: StakingUnbondConfirmViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     private var bonded: Decimal?
@@ -101,7 +101,7 @@ final class StakingUnbondConfirmPresenter {
         confirmViewModelFactory: StakingUnbondConfirmViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -110,7 +110,7 @@ final class StakingUnbondConfirmPresenter {
         self.confirmViewModelFactory = confirmViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 }
@@ -159,7 +159,14 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
         guard let view = view, let address = stashItem?.controller else { return }
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: locale
+        )
     }
 }
 
@@ -170,7 +177,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil
@@ -186,7 +193,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             if let stakingLedger = stakingLedger {
                 bonded = Decimal.fromSubstrateAmount(
                     stakingLedger.active,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 bonded = nil
@@ -216,7 +223,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             }
 
             provideFeeViewModel()
@@ -230,7 +237,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         case let .success(minimalBalance):
             self.minimalBalance = Decimal.fromSubstrateAmount(
                 minimalBalance,
-                precision: chain.addressType.precision
+                precision: assetInfo.assetPrecision
             )
 
             provideAssetViewModel()
@@ -282,7 +289,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             if let minNominatorBonded = minNominatorBonded {
                 self.minNominatorBonded = Decimal.fromSubstrateAmount(
                     minNominatorBonded,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 self.minNominatorBonded = nil

@@ -33,7 +33,13 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
     func transferMetadataOperation(
         _ info: TransferMetadataInfo
     ) -> CompoundOperationWrapper<TransferMetaData?> {
-        guard let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }) else {
+        guard
+            let chainAssetId = ChainAssetId(walletId: info.assetId),
+            let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
+            let chain = chains[chainAssetId.chainId],
+            let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let connection = chainRegistry.getConnection(for: chain.chainId) else {
             let error = WalletNetworkOperationFactoryError.invalidAsset
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -48,40 +54,34 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithError(error)
         }
 
-        let compoundReceiver = createAccountInfoFetchOperation(receiver)
+        let compoundReceiver = createAccountInfoFetchOperation(
+            receiver,
+            chainId: chainAssetId.chainId
+        )
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
             let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
             return try builder.adding(call: call)
         }
 
-        let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
+        let extrinsicFactory = ExtrinsicOperationFactory(
+            accountId: selectedAccount.accountId,
+            chainFormat: chain.chainFormat,
+            cryptoType: selectedAccount.cryptoType,
+            runtimeRegistry: runtimeService,
+            engine: connection
+        )
 
-        let priceOperation: CompoundOperationWrapper<PriceData?> = {
-            if let assetId = WalletAssetId(rawValue: asset.identifier) {
-                return CoingeckoPriceSource(assetId: assetId).fetchOperation()
-            } else {
-                return CompoundOperationWrapper.createWithResult(nil)
-            }
-        }()
+        let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
 
         let mapOperation: ClosureOperation<TransferMetaData?> = ClosureOperation {
             let paymentInfo = try infoWrapper.targetOperation.extractNoCancellableResultData()
-            let priceData = try priceOperation.targetOperation.extractNoCancellableResultData()
 
             guard let fee = BigUInt(paymentInfo.fee),
                   let decimalFee = Decimal.fromSubstrateAmount(fee, precision: asset.precision)
             else {
                 return nil
             }
-
-            let price: Decimal = {
-                if let priceData = priceData {
-                    return Decimal(string: priceData.price) ?? .zero
-                } else {
-                    return .zero
-                }
-            }()
 
             let amount = AmountDecimal(value: decimalFee)
 
@@ -96,8 +96,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled) {
                 let context = TransferMetadataContext(
                     data: receiverInfo.data,
-                    precision: asset.precision,
-                    price: price
+                    precision: asset.precision
                 ).toContext()
                 return TransferMetaData(feeDescriptions: [feeDescription], context: context)
             } else {
@@ -105,7 +104,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             }
         }
 
-        let dependencies = compoundReceiver.allOperations + infoWrapper.allOperations + priceOperation.allOperations
+        let dependencies = compoundReceiver.allOperations + infoWrapper.allOperations
 
         dependencies.forEach { mapOperation.addDependency($0) }
 
@@ -113,7 +112,13 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
     }
 
     func transferOperation(_ info: TransferInfo) -> CompoundOperationWrapper<Data> {
-        guard let asset = accountSettings.assets.first(where: { $0.identifier == info.asset }) else {
+        guard
+            let chainAssetId = ChainAssetId(walletId: info.asset),
+            let asset = accountSettings.assets.first(where: { $0.identifier == info.asset }),
+            let chain = chains[chainAssetId.chainId],
+            let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
+            let connection = chainRegistry.getConnection(for: chain.chainId) else {
             let error = WalletNetworkOperationFactoryError.invalidAsset
             return CompoundOperationWrapper.createWithError(error)
         }
@@ -133,7 +138,21 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return try builder.adding(call: call)
         }
 
-        let wrapper = extrinsicFactory.submit(builderClosure, signer: accountSigner)
+        let signer = SigningWrapper(
+            keystore: keystore,
+            metaId: metaAccount.metaId,
+            accountResponse: selectedAccount
+        )
+
+        let extrinsicFactory = ExtrinsicOperationFactory(
+            accountId: selectedAccount.accountId,
+            chainFormat: chain.chainFormat,
+            cryptoType: selectedAccount.cryptoType,
+            runtimeRegistry: runtimeService,
+            engine: connection
+        )
+
+        let wrapper = extrinsicFactory.submit(builderClosure, signer: signer)
 
         let mapOperation: ClosureOperation<Data> = ClosureOperation {
             let hashString = try wrapper.targetOperation.extractNoCancellableResultData()

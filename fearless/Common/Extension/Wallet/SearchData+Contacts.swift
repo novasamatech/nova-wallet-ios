@@ -22,23 +22,4 @@ extension SearchData {
             context: contactContext.toContext()
         )
     }
-
-    static func createFromAccountItem(
-        _ accountItem: ManagedAccountItem,
-        addressFactory: SS58AddressFactory
-    ) throws -> SearchData {
-        let accountId = try addressFactory.accountId(
-            fromAddress: accountItem.address,
-            type: accountItem.networkType
-        )
-
-        let contactContext = ContactContext(destination: .local)
-
-        return SearchData(
-            accountId: accountId.toHex(),
-            firstName: accountItem.address,
-            lastName: accountItem.username,
-            context: contactContext.toContext()
-        )
-    }
 }

@@ -2,38 +2,37 @@ import Foundation
 import SoraFoundation
 
 struct StakingBalanceViewModelFactory: StakingBalanceViewModelFactoryProtocol {
-    private let chain: Chain
+    private let assetInfo: AssetBalanceDisplayInfo
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let timeFormatter: TimeFormatterProtocol
 
     init(
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         timeFormatter: TimeFormatterProtocol
     ) {
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.balanceViewModelFactory = balanceViewModelFactory
         self.timeFormatter = timeFormatter
     }
 
     func createViewModel(from balanceData: StakingBalanceData) -> LocalizableResource<StakingBalanceViewModel> {
         LocalizableResource { locale in
-            let precision = chain.addressType.precision
             let redeemableDecimal = Decimal.fromSubstrateAmount(
                 balanceData.stakingLedger.redeemable(inEra: balanceData.activeEra),
-                precision: precision
+                precision: assetInfo.assetPrecision
             ) ?? 0.0
 
             let widgetViewModel = createWidgetViewModel(
                 from: balanceData,
-                precision: precision,
+                precision: assetInfo.assetPrecision,
                 redeemableDecimal: redeemableDecimal,
                 locale: locale
             )
 
             let unbondingViewModel = createUnbondingViewModel(
                 balanceData: balanceData,
-                precision: precision,
+                precision: assetInfo.assetPrecision,
                 locale: locale
             )
 

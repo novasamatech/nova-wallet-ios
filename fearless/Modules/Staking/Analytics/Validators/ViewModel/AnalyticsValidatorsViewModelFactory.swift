@@ -7,15 +7,15 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    private let chain: Chain
+    private let chainAssetInfo: ChainAssetDisplayInfo
     private let percentFormatter = NumberFormatter.percent
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        chain: Chain
+        chainAssetInfo: ChainAssetDisplayInfo
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.chain = chain
+        self.chainAssetInfo = chainAssetInfo
     }
 
     func createViewModel(
@@ -30,21 +30,11 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
     ) -> AnalyticsValidatorsViewModel {
         percentFormatter.locale = locale
 
-        let totalEras: Int = {
-            if eraRange.end + 1 >= eraRange.start {
-                // totalEras == 0 is unacceptable for later calculations and UX,
-                // so condider totalEras to be at least 1
-                return max(Int(eraRange.end + 1 - eraRange.start), 1)
-            } else {
-                return 1
-            }
-        }()
-
+        let totalEras = Int(eraRange.end - eraRange.start + 1)
         let erasWhenStaked = countErasWhenStaked(eraValidatorInfos: eraValidatorInfos)
         let totalRewards = totalRewardOfStash(address: stashAddress, rewards: rewards)
-        let addressFactory = SS58AddressFactory()
         let validatorsAddresses = nomination.targets.compactMap { accountId in
-            try? addressFactory.address(fromAccountId: accountId, type: UInt16(chain.addressType.rawValue))
+            try? accountId.toAddress(using: chainAssetInfo.chain)
         }
 
         let validatorsViewModel: [AnalyticsValidatorItemViewModel] = validatorsAddresses.map { address in
@@ -71,7 +61,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
                     let totalAmount = rewardsOfValidator.reduce(Decimal(0)) { amount, info in
                         let decimal = Decimal.fromSubstrateAmount(
                             info.amount,
-                            precision: chain.addressType.precision
+                            precision: chainAssetInfo.asset.assetPrecision
                         )
                         return amount + (decimal ?? 0.0)
                     }
@@ -205,7 +195,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = NSTextAlignment.center
 
-        let firstLineText = NSAttributedString(
+        let activeStakingText = NSAttributedString(
             string: firstLine,
             attributes: [
                 NSAttributedString.Key.foregroundColor: firstLineColor,
@@ -214,7 +204,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
             ]
         )
 
-        let secondLineText = NSAttributedString(
+        let percentsText = NSAttributedString(
             string: secondLine,
             attributes: [
                 NSAttributedString.Key.foregroundColor: R.color.colorWhite()!,
@@ -223,7 +213,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
             ]
         )
 
-        let thirdLineText = NSAttributedString(
+        let erasRangeText = NSAttributedString(
             string: thirdLine,
             attributes: [
                 NSAttributedString.Key.foregroundColor: R.color.colorLightGray()!,
@@ -232,11 +222,11 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
             ]
         )
 
-        let result = NSMutableAttributedString(attributedString: firstLineText)
+        let result = NSMutableAttributedString(attributedString: activeStakingText)
         result.append(.init(string: "\n"))
-        result.append(secondLineText)
+        result.append(percentsText)
         result.append(.init(string: "\n"))
-        result.append(thirdLineText)
+        result.append(erasRangeText)
         return result
     }
 
@@ -253,7 +243,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
         let totalAmount = rewardsOfStash.reduce(Decimal(0)) { amount, info in
             let decimal = Decimal.fromSubstrateAmount(
                 info.amount,
-                precision: self.chain.addressType.precision
+                precision: chainAssetInfo.asset.assetPrecision
             )
             return amount + (decimal ?? 0.0)
         }
@@ -293,7 +283,7 @@ final class AnalyticsValidatorsViewModelFactory: AnalyticsValidatorsViewModelFac
 
         return createChartCenterText(
             firstLine: R.string.localizable
-                .stakingAnalyticsStakingWasInactive(preferredLanguages: locale.rLanguages).uppercased(),
+                .stakingAnalyticsStakingWasInactive(preferredLanguages: locale.rLanguages),
             firstLineColor: R.color.colorGray()!,
             secondLine: percentageString,
             thirdLine: R.string.localizable.stakingAnalyticsValidatorsErasCounter(

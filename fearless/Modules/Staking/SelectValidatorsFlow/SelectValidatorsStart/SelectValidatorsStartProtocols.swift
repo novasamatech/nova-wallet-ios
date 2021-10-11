@@ -37,14 +37,3 @@ protocol SelectValidatorsStartWireframeProtocol: AlertPresentable, ErrorPresenta
         maxTargets: Int
     )
 }
-
-protocol SelectValidatorsStartViewFactoryProtocol: AnyObject {
-    static func createInitiatedBondingView(with state: InitiatedBonding)
-        -> SelectValidatorsStartViewProtocol?
-
-    static func createChangeTargetsView(with state: ExistingBonding)
-        -> SelectValidatorsStartViewProtocol?
-
-    static func createChangeYourValidatorsView(with state: ExistingBonding)
-        -> SelectValidatorsStartViewProtocol?
-}

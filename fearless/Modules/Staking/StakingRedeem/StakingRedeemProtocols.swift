@@ -37,7 +37,3 @@ protocol StakingRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     StakingErrorPresentable, AddressOptionsPresentable {
     func complete(from view: StakingRedeemViewProtocol?)
 }
-
-protocol StakingRedeemViewFactoryProtocol: AnyObject {
-    static func createView() -> StakingRedeemViewProtocol?
-}

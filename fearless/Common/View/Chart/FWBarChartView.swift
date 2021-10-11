@@ -1,13 +1,11 @@
 import UIKit
 import Charts
-import SnapKit
 
 final class FWBarChartView: BarChartView {
     weak var chartDelegate: FWChartViewDelegate?
 
     let xAxisEmptyFormatter = FWXAxisEmptyValueFormatter()
     let xAxisLegend = FWXAxisChartLegendView()
-    private var xAxisLegendLeadingInsetConstraint: Constraint!
     let yAxisFormatter = FWYAxisChartFormatter(hideMiddleLabels: true)
 
     private let averageAmountLabel: UILabel = {
@@ -43,8 +41,6 @@ final class FWBarChartView: BarChartView {
         drawValueAboveBarEnabled = false
         highlightFullBarEnabled = false
         pinchZoomEnabled = false
-        scaleXEnabled = false
-        scaleYEnabled = false
         dragYEnabled = false
 
         xAxis.drawGridLinesEnabled = false
@@ -70,8 +66,7 @@ final class FWBarChartView: BarChartView {
 
         addSubview(xAxisLegend)
         xAxisLegend.snp.makeConstraints { make in
-            xAxisLegendLeadingInsetConstraint = make.leading.equalToSuperview().constraint
-            xAxisLegendLeadingInsetConstraint.activate()
+            make.leading.equalToSuperview().inset(40)
             make.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
@@ -109,9 +104,6 @@ final class FWBarChartView: BarChartView {
         )
         averageAmountLabel.isHidden = false
 
-        let legendLeadingInset = bounds.width - viewPortHandler.contentWidth
-        xAxisLegendLeadingInsetConstraint.update(inset: legendLeadingInset)
-
         averageLineLayer.isHidden = false
         let path = CGMutablePath()
         path.move(to: CGPoint(x: averageAmountLabel.frame.maxX, y: yPosition))
@@ -134,19 +126,8 @@ extension FWBarChartView: FWChartViewProtocol {
                 return chartAmount.filled ? chartAmount.value : 0.0
             }
         }
-
-        if
-            let averageAmountValue = data.averageAmountValue,
-            let min = realAmounts.min(),
-            let max = realAmounts.max() {
-            if max == min {
-                averageLabelHeightPercent = 1.0
-            } else {
-                averageLabelHeightPercent = (averageAmountValue - min) / (max - min)
-            }
-        } else {
-            averageLabelHeightPercent = nil
-        }
+        let (min, max) = (realAmounts.min() ?? 0.0, realAmounts.max() ?? 0.0)
+        averageLabelHeightPercent = (data.averageAmountValue - min) / (max - min)
         averageAmountLabel.text = data.averageAmountText
         setNeedsLayout()
 

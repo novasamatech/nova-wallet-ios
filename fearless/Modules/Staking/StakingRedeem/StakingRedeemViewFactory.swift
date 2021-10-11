@@ -4,9 +4,11 @@ import SoraKeystore
 import RobinHood
 import FearlessUtils
 
-final class StakingRedeemViewFactory: StakingRedeemViewFactoryProtocol {
-    static func createView() -> StakingRedeemViewProtocol? {
-        guard let interactor = createInteractor() else {
+final class StakingRedeemViewFactory {
+    static func createView(for state: StakingSharedState) -> StakingRedeemViewProtocol? {
+        guard
+            let chainAsset = state.settings.value,
+            let interactor = createInteractor(state: state) else {
             return nil
         }
 
@@ -17,7 +19,8 @@ final class StakingRedeemViewFactory: StakingRedeemViewFactoryProtocol {
         let presenter = createPresenter(
             from: interactor,
             wireframe: wireframe,
-            dataValidatingFactory: dataValidatingFactory
+            dataValidatingFactory: dataValidatingFactory,
+            assetInfo: chainAsset.assetDisplayInfo
         )
 
         let view = StakingRedeemViewController(
@@ -35,21 +38,12 @@ final class StakingRedeemViewFactory: StakingRedeemViewFactoryProtocol {
     private static func createPresenter(
         from interactor: StakingRedeemInteractorInputProtocol,
         wireframe: StakingRedeemWireframeProtocol,
-        dataValidatingFactory: StakingDataValidatingFactoryProtocol
+        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        assetInfo: AssetBalanceDisplayInfo
     ) -> StakingRedeemPresenter {
-        let settings = SettingsManager.shared
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let chain = settings.selectedConnection.type.chain
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
-
-        let confirmationViewModelFactory = StakingRedeemViewModelFactory(asset: asset)
+        let confirmationViewModelFactory = StakingRedeemViewModelFactory(assetInfo: assetInfo)
 
         return StakingRedeemPresenter(
             interactor: interactor,
@@ -57,64 +51,56 @@ final class StakingRedeemViewFactory: StakingRedeemViewFactoryProtocol {
             confirmViewModelFactory: confirmationViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            chain: chain,
+            assetInfo: assetInfo,
             logger: Logger.shared
         )
     }
 
-    private static func createInteractor() -> StakingRedeemInteractor? {
-        let settings = SettingsManager.shared
+    private static func createInteractor(
+        state: StakingSharedState
+    ) -> StakingRedeemInteractor? {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        guard let engine = WebSocketService.shared.connection else {
+        guard
+            let chainAsset = state.settings.value,
+            let selectedAccount = SelectedWalletSettings.shared.value.fetch(
+                for: chainAsset.chain.accountRequest()
+            ),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
 
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let chain = settings.selectedConnection.type.chain
-        let networkType = chain.addressType
-
-        let asset = WalletPrimitiveFactory(settings: settings)
-            .createAssetForAddressType(networkType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            return nil
-        }
+        let operationManager = OperationManagerFacade.sharedManager
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: RuntimeRegistryFacade.sharedService,
-            engine: engine,
-            operationManager: OperationManagerFacade.sharedManager
+            runtimeRegistry: runtimeRegistry,
+            engine: connection,
+            operationManager: operationManager
         )
 
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        let feeProxy = ExtrinsicFeeProxy()
 
-        let storageOperationFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
-        )
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
-        let slashesOperationFactory = SlashesOperationFactory(
-            storageRequestFactory: storageOperationFactory
+        let keyFactory = StorageKeyFactory()
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: keyFactory,
+            operationManager: operationManager
         )
 
         return StakingRedeemInteractor(
-            assetId: assetId,
-            chain: chain,
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
+            accountRepositoryFactory: accountRepositoryFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
-            feeProxy: ExtrinsicFeeProxy(),
-            slashesOperationFactory: slashesOperationFactory,
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            settings: settings,
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            engine: engine,
-            operationManager: OperationManagerFacade.sharedManager
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            slashesOperationFactory: SlashesOperationFactory(storageRequestFactory: storageRequestFactory),
+            feeProxy: feeProxy,
+            operationManager: operationManager
         )
     }
 }

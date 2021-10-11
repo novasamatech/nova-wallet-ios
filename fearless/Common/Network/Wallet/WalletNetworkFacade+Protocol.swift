@@ -7,7 +7,7 @@ import BigInt
 extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
     func fetchBalanceOperation(_ assets: [String]) -> CompoundOperationWrapper<[BalanceData]?> {
         let userAssets: [WalletAsset] = assets.compactMap { identifier in
-            guard identifier != totalPriceAssetId.rawValue else {
+            guard ChainAssetId(walletId: identifier) != nil else {
                 return nil
             }
 
@@ -15,27 +15,21 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         }
 
         let balanceOperation = fetchBalanceInfoForAsset(userAssets)
-        let priceOperations: [CompoundOperationWrapper<Price?>] = userAssets.compactMap {
-            if let assetId = WalletAssetId(rawValue: $0.identifier) {
-                return fetchPriceOperation(assetId)
-            } else {
-                return nil
-            }
-        }
+        let priceWrapper: CompoundOperationWrapper<[String: Price]> = fetchPriceOperation(
+            assets: userAssets
+        )
 
-        let minimalBalanceOperation: CompoundOperationWrapper<BigUInt> = fetchMinimalBalanceOperation()
+        let minimalBalanceOperation: CompoundOperationWrapper<[String: BigUInt]> =
+            fetchMinimalBalanceOperation(for: userAssets)
 
-        let currentTotalPriceId = totalPriceAssetId.rawValue
+        let currentPriceId = totalPriceId
 
         let mergeOperation: BaseOperation<[BalanceData]?> = ClosureOperation {
             // extract prices
 
-            let prices = priceOperations.compactMap { operation in
-                try? operation.targetOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-            }
+            let prices = try priceWrapper.targetOperation.extractNoCancellableResultData()
 
-            let rawMinimalBalance = try minimalBalanceOperation.targetOperation
+            let minimalBalanceMapping = try minimalBalanceOperation.targetOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
             // match balance with price and form context
@@ -44,9 +38,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)?
                 .map { balanceData in
                     let minimalBalance: Decimal
-                    if let asset = userAssets.first(where: { $0.identifier == balanceData.identifier }) {
+                    if
+                        let asset = userAssets.first(
+                            where: { $0.identifier == balanceData.identifier }
+                        ),
+                        let minBalanceValue = minimalBalanceMapping[asset.identifier] {
                         minimalBalance = Decimal.fromSubstrateAmount(
-                            rawMinimalBalance,
+                            minBalanceValue,
                             precision: asset.precision
                         ) ?? .zero
                     } else {
@@ -57,9 +55,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                         .byChangingMinimalBalance(to: minimalBalance)
 
                     let contextWithPrice: BalanceContext = {
-                        guard
-                            let price = prices.first(where: { $0.assetId.rawValue == balanceData.identifier })
-                        else { return context }
+                        guard let price = prices[balanceData.identifier] else { return context }
                         return context.byChangingPrice(price.lastValue, newPriceChange: price.change)
                     }()
 
@@ -80,17 +76,14 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             // append separate record for total balance and return the list
 
             let totalPriceBalance = BalanceData(
-                identifier: currentTotalPriceId,
+                identifier: currentPriceId,
                 balance: AmountDecimal(value: totalPrice)
             )
 
             return [totalPriceBalance] + (balances ?? [])
         }
 
-        let flatenedPriceOperations: [Operation] = priceOperations
-            .reduce(into: []) { result, compoundOperation in
-                result.append(contentsOf: compoundOperation.allOperations)
-            }
+        let flatenedPriceOperations: [Operation] = priceWrapper.allOperations
 
         flatenedPriceOperations.forEach { priceOperation in
             balanceOperation.allOperations.forEach { balanceOperation in
@@ -121,8 +114,12 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         ).byApplying(filter: filter)
 
         guard !historyContext.isComplete,
-              let asset = accountSettings.assets.first(where: { $0.identifier != totalPriceAssetId.rawValue }),
-              let assetId = WalletAssetId(rawValue: asset.identifier)
+              let walletAssetId = request.assets?.first(where: { $0 != totalPriceId }),
+              let chainAssetId = ChainAssetId(walletId: walletAssetId),
+              let chain = chains[chainAssetId.chainId],
+              let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
+              let assetId = WalletAssetId(chainId: chainAssetId.chainId)
         else {
             let pageData = AssetTransactionPageData(
                 transactions: [],
@@ -171,7 +168,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         let mergeOperation = createHistoryMergeOperation(
             dependingOn: remoteHistoryWrapper.targetOperation,
             localOperation: localFetchOperation,
-            asset: asset,
+            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo,
+            assetId: walletAssetId,
             address: address
         )
 
@@ -211,18 +209,17 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
     func transferOperation(_ info: TransferInfo) -> CompoundOperationWrapper<Data> {
         do {
-            let currentNetworkType = networkType
+            guard
+                let chainAssetId = ChainAssetId(walletId: info.asset),
+                let chain = chains[chainAssetId.chainId],
+                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
+                throw BaseOperationError.parentOperationCancelled
+            }
 
             let transferWrapper = nodeOperationFactory.transferOperation(info)
 
-            let addressFactory = SS58AddressFactory()
-
             let destinationId = try Data(hexString: info.destination)
-            let destinationAddress = try addressFactory
-                .address(
-                    fromPublicKey: AccountIdWrapper(rawData: destinationId),
-                    type: currentNetworkType
-                )
+            let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
             let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
 
             let txSaveOperation = txStorage.saveOperation({
@@ -232,8 +229,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                         .createFromTransferInfo(
                             info,
                             transactionHash: txHash,
-                            networkType: currentNetworkType,
-                            addressFactory: addressFactory
+                            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo
                         )
                     return [item]
                 case let .failure(error):
@@ -300,51 +296,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
     }
 
     func contactsOperation() -> CompoundOperationWrapper<[SearchData]?> {
-        let currentNetworkType = networkType
-
-        let accountsOperation = accountsRepository.fetchAllOperation(with: RepositoryFetchOptions())
-        let contactsOperation = contactsOperationFactory.fetchContactsOperation()
-        let mapOperation: BaseOperation<[SearchData]?> = ClosureOperation {
-            let accounts = try accountsOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
-            let existingAddresses = Set<String>(
-                accounts.map(\.address)
-            )
-
-            let addressFactory = SS58AddressFactory()
-
-            let accountsResult = try accounts.map {
-                try SearchData.createFromAccountItem(
-                    $0,
-                    addressFactory: addressFactory
-                )
-            }
-
-            let contacts = try contactsOperation.targetOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                .filter { !existingAddresses.contains($0.peerAddress) }
-
-            let contactsResult = try contacts.map { contact in
-                try SearchData.createFromContactItem(
-                    contact,
-                    networkType: currentNetworkType,
-                    addressFactory: addressFactory
-                )
-            }
-
-            return accountsResult + contactsResult
-        }
-
-        mapOperation.addDependency(contactsOperation.targetOperation)
-        mapOperation.addDependency(accountsOperation)
-
-        let dependencies = contactsOperation.allOperations + [accountsOperation]
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: dependencies
-        )
+        CompoundOperationWrapper.createWithResult([])
     }
 
     func withdrawalMetadataOperation(

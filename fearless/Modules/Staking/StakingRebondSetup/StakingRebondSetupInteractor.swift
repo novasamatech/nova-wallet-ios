@@ -4,16 +4,15 @@ import SoraKeystore
 final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingRebondSetupInteractorOutputProtocol!
 
-    let settings: SettingsManagerProtocol
-    let substrateProviderFactory: SubstrateDataProviderFactoryProtocol
-    let singleValueProviderFactory: SingleValueProviderFactoryProtocol
+    let selectedAccount: ChainAccountResponse
+    let chainAsset: ChainAsset
+    let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
-    let runtimeService: RuntimeCodingServiceProtocol
-    let operationManager: OperationManagerProtocol
-    let accountRepository: AnyDataProviderRepository<AccountItem>
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let chain: Chain
-    let assetId: WalletAssetId
+    let operationManager: OperationManagerProtocol
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
@@ -25,31 +24,33 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     private lazy var callFactory = SubstrateCallFactory()
 
     init(
-        settings: SettingsManagerProtocol,
-        substrateProviderFactory: SubstrateDataProviderFactoryProtocol,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
+        selectedAccount: ChainAccountResponse,
+        chainAsset: ChainAsset,
+        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
-        runtimeCodingService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
-        accountRepository: AnyDataProviderRepository<AccountItem>,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        chain: Chain,
-        assetId: WalletAssetId
+        operationManager: OperationManagerProtocol
     ) {
-        self.settings = settings
-        self.substrateProviderFactory = substrateProviderFactory
-        self.singleValueProviderFactory = singleValueProviderFactory
+        self.selectedAccount = selectedAccount
+        self.chainAsset = chainAsset
+        self.accountRepositoryFactory = accountRepositoryFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
-        runtimeService = runtimeCodingService
-        self.operationManager = operationManager
-        self.accountRepository = accountRepository
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.feeProxy = feeProxy
-        self.chain = chain
-        self.assetId = assetId
+        self.operationManager = operationManager
     }
 
-    private func handleController(accountItem: AccountItem) {
-        extrinisicService = extrinsicServiceFactory.createService(accountItem: accountItem)
+    private func handleControllerMetaAccount(response: MetaChainAccountResponse) {
+        extrinisicService = extrinsicServiceFactory.createService(
+            accountId: response.chainAccount.accountId,
+            chainFormat: response.chainAccount.chainFormat,
+            cryptoType: response.chainAccount.cryptoType
+        )
 
         estimateFee()
     }
@@ -57,13 +58,19 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
 
 extension StakingRebondSetupInteractor: StakingRebondSetupInteractorInputProtocol {
     func setup() {
-        if let address = settings.selectedAccount?.address {
-            stashItemProvider = subscribeToStashItemProvider(for: address)
+        if let address = selectedAccount.toAddress() {
+            stashItemProvider = subscribeStashItemProvider(for: address)
+        } else {
+            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
-        priceProvider = subscribeToPriceProvider(for: assetId)
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId)
+        } else {
+            presenter.didReceivePriceData(result: .success(nil))
+        }
 
-        activeEraProvider = subscribeToActiveEraProvider(for: chain, runtimeService: runtimeService)
+        activeEraProvider = subscribeActiveEra(for: chainAsset.chain.chainId)
 
         feeProxy.delegate = self
     }
@@ -71,7 +78,7 @@ extension StakingRebondSetupInteractor: StakingRebondSetupInteractorInputProtoco
     func estimateFee() {
         guard let extrinsicService = extrinisicService,
               let amount = StakingConstants.maxAmount.toSubstrateAmount(
-                  precision: chain.addressType.precision
+                  precision: chainAsset.assetDisplayInfo.assetPrecision
               ) else {
             return
         }
@@ -84,44 +91,43 @@ extension StakingRebondSetupInteractor: StakingRebondSetupInteractorInputProtoco
     }
 }
 
-extension StakingRebondSetupInteractor: SubstrateProviderSubscriber,
-    SubstrateProviderSubscriptionHandler,
-    SingleValueProviderSubscriber,
-    SingleValueSubscriptionHandler,
-    AnyProviderAutoCleaning,
-    ExtrinsicFeeProxyDelegate {
-    // MARK: - SubstrateProviderSubscriptionHandler
-
-    func handleStashItem(result: Result<StashItem?, Error>) {
+extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
+    AnyProviderAutoCleaning {
+    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            let maybeStashItem = try result.get()
-
             clear(dataProvider: &accountInfoProvider)
             clear(dataProvider: &ledgerProvider)
 
+            let maybeStashItem = try result.get()
+            let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
+
             presenter.didReceiveStashItem(result: result)
 
-            if let stashItem = maybeStashItem {
-                ledgerProvider = subscribeToLedgerInfoProvider(
-                    for: stashItem.controller,
-                    runtimeService: runtimeService
-                )
+            if let controllerId = maybeControllerId {
+                ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
 
                 accountInfoProvider = subscribeToAccountInfoProvider(
-                    for: stashItem.controller,
-                    runtimeService: runtimeService
+                    for: controllerId,
+                    chainId: chainAsset.chain.chainId
                 )
 
-                fetchAccount(
-                    for: stashItem.controller,
-                    from: accountRepository,
+                fetchFirstMetaAccountResponse(
+                    for: controllerId,
+                    accountRequest: chainAsset.chain.accountRequest(),
+                    repositoryFactory: accountRepositoryFactory,
                     operationManager: operationManager
                 ) { [weak self] result in
-                    if case let .success(maybeController) = result, let controller = maybeController {
-                        self?.handleController(accountItem: controller)
-                    }
+                    switch result {
+                    case let .success(maybeResponse):
+                        if let response = maybeResponse {
+                            self?.handleControllerMetaAccount(response: response)
+                        }
 
-                    self?.presenter.didReceiveController(result: result)
+                        let accountItem = try? maybeResponse?.chainAccount.toAccountItem()
+                        self?.presenter.didReceiveController(result: .success(accountItem))
+                    case let .failure(error):
+                        self?.presenter.didReceiveController(result: .failure(error))
+                    }
                 }
 
             } else {
@@ -136,26 +142,36 @@ extension StakingRebondSetupInteractor: SubstrateProviderSubscriber,
         }
     }
 
-    // MARK: - SingleValueSubscriptionHandler
-
-    func handlePrice(result: Result<PriceData?, Error>, for _: WalletAssetId) {
-        presenter.didReceivePriceData(result: result)
-    }
-
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
-        presenter.didReceiveAccountInfo(result: result)
-    }
-
-    func handleLedgerInfo(result: Result<StakingLedger?, Error>, address _: AccountAddress) {
+    func handleLedgerInfo(
+        result: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
         presenter.didReceiveStakingLedger(result: result)
     }
 
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chain _: Chain) {
+    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveActiveEra(result: result)
     }
+}
 
-    // MARK: - ExtrinsicFeeProxyDelegate
+extension StakingRebondSetupInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAccountInfo(
+        result: Result<AccountInfo?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        presenter.didReceiveAccountInfo(result: result)
+    }
+}
 
+extension StakingRebondSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension StakingRebondSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter.didReceiveFee(result: result)
     }

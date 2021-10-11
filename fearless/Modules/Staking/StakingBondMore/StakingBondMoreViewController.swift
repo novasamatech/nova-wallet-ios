@@ -72,8 +72,14 @@ final class StakingBondMoreViewController: UIViewController, ViewHolder {
                     preferredLanguages: selectedLocale.rLanguages
                 )
             rootView.amountInputView.priceText = viewModel.price
-            rootView.amountInputView.assetIcon = viewModel.icon
             rootView.amountInputView.symbol = viewModel.symbol
+
+            viewModel.iconViewModel?.cancel(on: rootView.amountInputView.iconView)
+            rootView.amountInputView.assetIcon = nil
+
+            viewModel.iconViewModel.map {
+                $0.loadAmountInputIcon(on: rootView.amountInputView.iconView, animated: true)
+            }
         }
     }
 

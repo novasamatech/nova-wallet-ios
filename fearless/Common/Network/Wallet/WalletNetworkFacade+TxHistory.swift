@@ -7,22 +7,19 @@ extension WalletNetworkFacade {
     func createHistoryMergeOperation(
         dependingOn remoteOperation: BaseOperation<WalletRemoteHistoryData>?,
         localOperation: BaseOperation<[TransactionHistoryItem]>?,
-        asset: WalletAsset,
+        chainAssetInfo: ChainAssetDisplayInfo,
+        assetId: String,
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
-        let currentNetworkType = networkType
-        let addressFactory = SS58AddressFactory()
-
-        return ClosureOperation {
+        ClosureOperation {
             let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
 
             if let localTransactions = try localOperation?.extractNoCancellableResultData(),
                !localTransactions.isEmpty {
                 let manager = TransactionHistoryMergeManager(
                     address: address,
-                    networkType: currentNetworkType,
-                    asset: asset,
-                    addressFactory: addressFactory
+                    chainAssetInfo: chainAssetInfo,
+                    assetId: assetId
                 )
                 return manager.merge(
                     subscanItems: remoteTransactions,
@@ -32,9 +29,8 @@ extension WalletNetworkFacade {
                 let transactions: [AssetTransactionData] = remoteTransactions.map { item in
                     item.createTransactionForAddress(
                         address,
-                        networkType: currentNetworkType,
-                        asset: asset,
-                        addressFactory: addressFactory
+                        assetId: assetId,
+                        chainAssetInfo: chainAssetInfo
                     )
                 }
 

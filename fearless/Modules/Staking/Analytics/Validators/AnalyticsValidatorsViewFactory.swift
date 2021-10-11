@@ -5,15 +5,20 @@ import RobinHood
 import FearlessUtils
 
 struct AnalyticsValidatorsViewFactory {
-    static func createView() -> AnalyticsValidatorsViewProtocol? {
-        let settings = SettingsManager.shared
-        let chain = settings.selectedConnection.type.chain
-        guard let selectedAddress = settings.selectedAccount?.address else { return nil }
-        guard let engine = WebSocketService.shared.connection else { return nil }
+    static func createView(for state: StakingSharedState) -> AnalyticsValidatorsViewProtocol? {
+        guard
+            let chainAsset = state.settings.value,
+            let interactor = createInteractor(state: state) else {
+            return nil
+        }
 
-        let interactor = createInteractor(selectedAddress: selectedAddress, chain: chain, engine: engine)
-        let wireframe = AnalyticsValidatorsWireframe()
-        let presenter = createPresenter(interactor: interactor, wireframe: wireframe)
+        let wireframe = AnalyticsValidatorsWireframe(state: state)
+        let presenter = createPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainAssetInfo: chainAsset.chainAssetInfo
+        )
+
         let view = AnalyticsValidatorsViewController(presenter: presenter)
 
         presenter.view = view
@@ -23,10 +28,25 @@ struct AnalyticsValidatorsViewFactory {
     }
 
     private static func createInteractor(
-        selectedAddress: AccountAddress,
-        chain: Chain,
-        engine: JSONRPCEngine
-    ) -> AnalyticsValidatorsInteractor {
+        state: StakingSharedState
+    ) -> AnalyticsValidatorsInteractor? {
+        guard
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = state.settings.value,
+            let selectedAddress = metaAccount.fetch(
+                for: chainAsset.chain.accountRequest()
+            )?.toAddress() else {
+            return nil
+        }
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connetion = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
@@ -34,45 +54,34 @@ struct AnalyticsValidatorsViewFactory {
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
         )
+
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager,
-            logger: logger
-        )
 
         let interactor = AnalyticsValidatorsInteractor(
             selectedAddress: selectedAddress,
-            substrateProviderFactory: substrateProviderFactory,
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             identityOperationFactory: identityOperationFactory,
             operationManager: operationManager,
-            engine: engine,
-            runtimeService: RuntimeRegistryFacade.sharedService,
+            connection: connetion,
+            runtimeService: runtimeService,
             storageRequestFactory: requestFactory,
-            chain: chain,
-            logger: Logger.shared
+            logger: logger
         )
+
         return interactor
     }
 
     private static func createPresenter(
         interactor: AnalyticsValidatorsInteractor,
-        wireframe: AnalyticsValidatorsWireframe
+        wireframe: AnalyticsValidatorsWireframe,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AnalyticsValidatorsPresenter {
-        let settings = SettingsManager.shared
-        let selectedType = settings.selectedConnection.type
-        let chain = selectedType.chain
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAssetInfo.asset)
 
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: selectedType,
-            limit: StakingConstants.maxAmount
-        )
         let viewModelFactory = AnalyticsValidatorsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            chain: chain
+            chainAssetInfo: chainAssetInfo
         )
 
         let presenter = AnalyticsValidatorsPresenter(
@@ -82,6 +91,7 @@ struct AnalyticsValidatorsViewFactory {
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
+
         return presenter
     }
 }

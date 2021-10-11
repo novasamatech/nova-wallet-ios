@@ -3,46 +3,30 @@ import SoraKeystore
 import SoraFoundation
 
 struct AnalyticsStakeViewFactory {
-    static func createView() -> AnalyticsStakeViewProtocol? {
-        let settings = SettingsManager.shared
-        let operationManager = OperationManagerFacade.sharedManager
-
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-        let addressType = settings.selectedConnection.type
-        let chain = addressType.chain
+    static func createView(for state: StakingSharedState) -> AnalyticsStakeViewProtocol? {
         guard
-            let accountAddress = settings.selectedAccount?.address,
-            let assetId = WalletAssetId(rawValue: asset.identifier)
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = state.settings.value,
+            let selectedAddress = metaAccount.fetch(for: chainAsset.chain.accountRequest())?.toAddress()
         else {
             return nil
         }
 
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager
-        )
         let interactor = AnalyticsStakeInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
-            operationManager: operationManager,
-            selectedAccountAddress: accountAddress,
-            assetId: assetId,
-            chain: chain
+            selectedAccountAddress: selectedAddress,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            operationManager: OperationManagerFacade.sharedManager
         )
-        let wireframe = AnalyticsStakeWireframe()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let wireframe = AnalyticsStakeWireframe(state: state)
+
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
         let viewModelFactory = AnalyticsStakeViewModelFactory(
-            chain: chain,
+            assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,
-            amountFormatterFactory: AmountFormatterFactory(),
-            asset: asset,
             calendar: Calendar(identifier: .gregorian)
         )
         let presenter = AnalyticsStakePresenter(

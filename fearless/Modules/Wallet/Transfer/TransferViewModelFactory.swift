@@ -2,55 +2,44 @@ import Foundation
 import CommonWallet
 import IrohaCrypto
 import FearlessUtils
-import SoraFoundation
 
 final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     let assets: [WalletAsset]
     let amountFormatterFactory: NumberFormatterFactoryProtocol
-    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     init(
         assets: [WalletAsset],
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
+        amountFormatterFactory: NumberFormatterFactoryProtocol
     ) {
         self.assets = assets
         self.amountFormatterFactory = amountFormatterFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
-    }
-
-    private func getPriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
-        let priceContext = TransferMetadataContext(context: inputState.metadata?.context ?? [:])
-        let price = priceContext.price
-
-        guard price > 0.0 else { return nil }
-
-        return PriceData(price: price.stringWithPointSeparator, usdDayChange: nil)
     }
 
     func createFeeViewModel(
-        _ inputState: TransferInputState,
+        _: TransferInputState,
         fee: Fee,
         payload _: TransferPayload,
         locale: Locale
     ) throws -> FeeViewModelProtocol? {
-        let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
+        guard
+            let asset = assets
+            .first(where: { $0.identifier == fee.feeDescription.assetId })
+        else {
+            return nil
+        }
 
-        let feeAmount = fee.feeDescription.parameters.first?.decimalValue ?? 0
+        let title = R.string.localizable.walletSendFeeTitle(preferredLanguages: locale.rLanguages)
 
-        let priceData = getPriceDataFrom(inputState)
-        let balance = balanceViewModelFactory.balanceFromPrice(
-            feeAmount,
-            priceData: priceData
-        ).value(for: locale)
+        let formatter = amountFormatterFactory.createFeeTokenFormatter(for: asset).value(for: locale)
 
-        return FeePriceViewModel(
-            amount: balance.amount,
-            price: balance.price,
+        let amount = formatter
+            .stringFromDecimal(fee.feeDescription.parameters.first?.decimalValue ?? 0) ?? ""
+
+        return FeeViewModel(
             title: title,
-            details: balance.amount,
+            details: amount,
             isLoading: false,
             allowsEditing: false
         )
@@ -64,6 +53,68 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     ) throws
         -> WalletOverridingResult<DescriptionInputViewModelProtocol?>? {
         WalletOverridingResult(item: nil)
+    }
+
+    func createSelectedAssetViewModel(
+        _ inputState: TransferInputState,
+        selectedAssetState: SelectedAssetState,
+        payload: TransferPayload,
+        locale: Locale
+    ) throws -> AssetSelectionViewModelProtocol? {
+        guard
+            let asset = assets
+            .first(where: { $0.identifier == payload.receiveInfo.assetId }),
+            let assetId = WalletAssetId(rawValue: asset.identifier)
+        else {
+            return nil
+        }
+
+        let formatter = amountFormatterFactory.createTokenFormatter(for: asset).value(for: locale)
+
+        let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
+        let amount = formatter.stringFromDecimal(balanceContext.available) ?? ""
+
+        let subtitle = R.string.localizable
+            .walletSendAvailableBalance(preferredLanguages: locale.rLanguages)
+
+        let detailsCommand: WalletCommandProtocol?
+
+        if let context = inputState.balance?.context, let commandFactory = commandFactory {
+            let balanceContext = BalanceContext(context: context)
+            let transferring = inputState.amount ?? .zero
+            let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
+            let remaining = balanceContext.total - (transferring + fee)
+            let transferState = TransferExistentialState(
+                totalAmount: balanceContext.total,
+                availableAmount: balanceContext.available,
+                totalAfterTransfer: remaining,
+                existentialDeposit: balanceContext.minimalBalance
+            )
+
+            let amountFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
+
+            detailsCommand = ExistentialDepositInfoCommand(
+                transferState: transferState,
+                amountFormatter: amountFormatter,
+                commandFactory: commandFactory
+            )
+        } else {
+            detailsCommand = nil
+        }
+
+        let header = R.string.localizable.walletSendAssetTitle(preferredLanguages: locale.rLanguages)
+
+        let viewModel = WalletTokenViewModel(
+            header: header,
+            title: asset.name.value(for: locale),
+            subtitle: subtitle,
+            details: amount,
+            icon: assetId.icon,
+            state: selectedAssetState,
+            detailsCommand: detailsCommand
+        )
+
+        return viewModel
     }
 
     func createAssetSelectionTitle(
@@ -119,7 +170,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             mainIcon: icon,
             actionIcon: R.image.iconMore(),
             command: command,
-            enabled: true
+            enabled: false
         )
 
         return viewModel
@@ -132,44 +183,5 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     ) throws -> AccessoryViewModelProtocol? {
         let action = R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
         return AccessoryViewModel(title: "", action: action)
-    }
-
-    func createAmountViewModel(
-        _ inputState: TransferInputState,
-        payload: TransferPayload,
-        locale: Locale
-    ) throws -> AmountInputViewModelProtocol? {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId }),
-            let assetId = WalletAssetId(rawValue: asset.identifier)
-        else {
-            return nil
-        }
-
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset).value(for: locale)
-
-        let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
-        let balance = formatter.stringFromDecimal(balanceContext.available) ?? ""
-
-        let amountInputViewModel = balanceViewModelFactory.createBalanceInputViewModel(
-            inputState.amount
-        ).value(for: locale)
-
-        let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
-
-        let priceData = getPriceDataFrom(inputState)
-
-        return RichAmountInputViewModel(
-            amountInputViewModel: amountInputViewModel,
-            balanceViewModelFactory: balanceViewModelFactory,
-            symbol: asset.symbol,
-            icon: assetId.icon,
-            balance: balance,
-            priceData: priceData,
-            decimalBalance: balanceContext.available,
-            fee: fee,
-            limit: TransferConstants.maxAmount
-        )
     }
 }

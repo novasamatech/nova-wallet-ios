@@ -23,58 +23,55 @@ class SelectValidatorsConfirmTests: XCTestCase {
     func testSetupAndSendExtrinsic() throws {
         // given
 
-        let settings = InMemorySettingsManager()
-        let keychain = InMemoryKeychain()
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
 
-        let addressType = SNAddressType.genericSubstrate
-        try AccountCreationHelper.createAccountFromMnemonic(cryptoType: .sr25519,
-                                                            keychain: keychain,
-                                                            settings: settings)
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(addressType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            XCTFail("Invalid asset id")
-            return
-        }
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
 
         let view = MockSelectValidatorsConfirmViewProtocol()
         let wireframe = MockSelectValidatorsConfirmWireframeProtocol()
 
         let confirmViewModelFactory = SelectValidatorsConfirmViewModelFactory()
-        let balanceViewModelFactory = BalanceViewModelFactory(walletPrimitiveFactory: primitiveFactory,
-                                                              selectedAddressType: addressType,
-                                                              limit: StakingConstants.maxAmount)
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
             balanceFactory: balanceViewModelFactory
         )
 
-        let signer = try DummySigner(cryptoType: .sr25519)
+        let signer = try DummySigner(cryptoType: MultiassetCryptoType.sr25519)
 
         let extrinsicService = ExtrinsicServiceStub.dummy()
 
-        guard let selectedAccount = settings.selectedAccount else {
-            XCTFail("Invalid account address")
-            return
-        }
+        let selectedMetaAccount  = AccountGenerator.generateMetaAccount()
+        let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let singleValueProviderFactory = SingleValueProviderFactoryStub.westendNominatorStub()
-        let runtimeCodingService = try RuntimeCodingServiceStub.createWestendService()
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
+        let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId)!
 
-        let interactor =
-            InitiatedBondingConfirmInteractor(selectedAccount: selectedAccount,
-                                              selectedConnection: settings.selectedConnection,
-                                              singleValueProviderFactory: singleValueProviderFactory,
-                                              extrinsicService: extrinsicService,
-                                              runtimeService: runtimeCodingService,
-                                              durationOperationFactory: StakingDurationOperationFactory(),
-                                              operationManager: OperationManager(),
-                                              signer: signer,
-                                              assetId: assetId,
-                                              nomination: initiatedBoding)
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub()
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
+        let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+        )
+
+        let interactor = InitiatedBondingConfirmInteractor(
+            selectedAccount: try selectedAccount.toDisplayAddress(),
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            extrinsicService: extrinsicService,
+            runtimeService: runtimeService,
+            durationOperationFactory: StakingDurationOperationFactory(),
+            operationManager: OperationManager(),
+            signer: signer,
+            nomination: initiatedBoding
+        )
 
         let presenter = SelectValidatorsConfirmPresenter(
             interactor: interactor,
@@ -82,7 +79,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
             confirmationViewModelFactory: confirmViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            asset:asset
+            assetInfo: chainAsset.assetDisplayInfo
         )
 
         presenter.view = view
