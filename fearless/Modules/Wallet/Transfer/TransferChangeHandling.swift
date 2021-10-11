@@ -5,18 +5,27 @@ final class TransferChangeHandling: OperationDefinitionChangeHandling {
     func updateContentForChange(event: OperationDefinitionChangeEvent) -> [OperationDefinitionType] {
         switch event {
         case .asset:
-            return [.amount, .fee]
+            return [.asset, .amount, .fee]
         case .balance:
-            return [.amount]
+            return [.asset]
         case .amount:
-            return [.fee]
+            return [.fee, .asset]
         case .metadata:
-            return [.amount, .fee]
+            return [.fee, .asset]
         }
     }
 
-    func clearErrorForChange(event _: OperationDefinitionChangeEvent) -> [OperationDefinitionType] {
-        [.amount, .fee]
+    func clearErrorForChange(event: OperationDefinitionChangeEvent) -> [OperationDefinitionType] {
+        switch event {
+        case .asset:
+            return [.asset, .amount, .fee]
+        case .balance:
+            return [.asset, .amount, .fee]
+        case .amount:
+            return [.amount, .fee]
+        case .metadata:
+            return [.amount, .fee]
+        }
     }
 
     func shouldUpdateAccessoryForChange(event _: OperationDefinitionChangeEvent) -> Bool {

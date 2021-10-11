@@ -8,20 +8,23 @@ protocol StakingRewardDetailsViewModelFactoryProtocol {
         input: StakingRewardDetailsInput,
         priceData: PriceData?
     ) -> LocalizableResource<StakingRewardDetailsViewModel>
-    func validatorAddress(from data: Data, addressType: SNAddressType) -> AccountAddress?
+
+    func validatorAddress(from data: Data) -> AccountAddress?
 }
 
 final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelFactoryProtocol {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    private lazy var addressFactory = SS58AddressFactory()
     private let iconGenerator: IconGenerating
+    private let chainFormat: ChainFormat
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        iconGenerator: IconGenerating
+        iconGenerator: IconGenerating,
+        chainFormat: ChainFormat
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.iconGenerator = iconGenerator
+        self.chainFormat = chainFormat
     }
 
     func createViewModel(
@@ -32,22 +35,16 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
             let rows: [RewardDetailsRow] = [
                 .validatorInfo(.init(
                     title: R.string.localizable.stakingRewardDetailsValidator(preferredLanguages: locale.rLanguages),
-                    address: self.validatorAddress(
-                        from: input.payoutInfo.validator,
-                        addressType: input.chain.addressType
-                    ) ?? "",
-                    name: self.displayName(
-                        payoutInfo: input.payoutInfo,
-                        chain: input.chain
-                    ),
-                    icon: self.getValidatorIcon(validatorAccount: input.payoutInfo.validator, chain: input.chain)
+                    address: self.validatorAddress(from: input.payoutInfo.validator) ?? "",
+                    name: self.displayName(payoutInfo: input.payoutInfo),
+                    icon: self.getValidatorIcon(validatorAccount: input.payoutInfo.validator)
                 )),
                 .date(.init(
                     titleText: R.string.localizable.stakingRewardDetailsDate(preferredLanguages: locale.rLanguages),
                     valueText: self.formattedDateText(
                         activeEra: input.activeEra,
                         payoutEra: input.payoutInfo.era,
-                        chain: input.chain
+                        erasPerDay: input.erasPerDay
                     )
                 )),
                 .era(.init(
@@ -65,17 +62,16 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
         }
     }
 
-    func validatorAddress(from data: Data, addressType: SNAddressType) -> AccountAddress? {
-        try? addressFactory
-            .addressFromAccountId(data: data, type: addressType)
+    func validatorAddress(from data: Data) -> AccountAddress? {
+        try? data.toAddress(using: chainFormat)
     }
 
-    private func displayName(payoutInfo: PayoutInfo, chain: Chain) -> String {
+    private func displayName(payoutInfo: PayoutInfo) -> String {
         if let displayName = payoutInfo.identity?.displayName {
             return displayName
         }
 
-        if let address = validatorAddress(from: payoutInfo.validator, addressType: chain.addressType) {
+        if let address = validatorAddress(from: payoutInfo.validator) {
             return address
         }
         return ""
@@ -98,9 +94,9 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
     private func formattedDateText(
         activeEra: EraIndex,
         payoutEra: EraIndex,
-        chain: Chain
+        erasPerDay: UInt32
     ) -> String {
-        let pastDays = (activeEra - payoutEra) / UInt32(chain.erasPerDay)
+        let pastDays = erasPerDay > 0 ? (activeEra - payoutEra) / erasPerDay : 0
         guard let daysAgo = Calendar.current
             .date(byAdding: .day, value: -Int(pastDays), to: Date())
         else { return "" }
@@ -111,8 +107,8 @@ final class StakingRewardDetailsViewModelFactory: StakingRewardDetailsViewModelF
         return dateFormatter.string(from: daysAgo)
     }
 
-    private func getValidatorIcon(validatorAccount: Data, chain: Chain) -> UIImage? {
-        guard let address = validatorAddress(from: validatorAccount, addressType: chain.addressType)
+    private func getValidatorIcon(validatorAccount: Data) -> UIImage? {
+        guard let address = validatorAddress(from: validatorAccount)
         else { return nil }
         return try? iconGenerator.generateFromAddress(address)
             .imageWithFillColor(

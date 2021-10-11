@@ -15,12 +15,21 @@ class ControllerAccountTests: XCTestCase {
         let view = MockControllerAccountViewProtocol()
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+
         let presenter = ControllerAccountPresenter(
             wireframe: wireframe,
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             applicationConfig: ApplicationConfig.shared,
-            chain: .westend,
+            assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory
         )
         presenter.view = view

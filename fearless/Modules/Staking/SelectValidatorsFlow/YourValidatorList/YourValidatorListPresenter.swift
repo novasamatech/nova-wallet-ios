@@ -7,11 +7,11 @@ final class YourValidatorListPresenter {
     let interactor: YourValidatorListInteractorInputProtocol
 
     let viewModelFactory: YourValidatorListViewModelFactoryProtocol
-    let chain: Chain
+    let chainInfo: ChainAssetDisplayInfo
     let logger: LoggerProtocol?
 
     private var validatorsModel: YourValidatorsModel?
-    private var controllerAccount: AccountItem?
+    private var controllerAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var ledger: StakingLedger?
     private var rewardDestinationArg: RewardDestinationArg?
@@ -21,14 +21,14 @@ final class YourValidatorListPresenter {
         interactor: YourValidatorListInteractorInputProtocol,
         wireframe: YourValidatorListWireframeProtocol,
         viewModelFactory: YourValidatorListViewModelFactoryProtocol,
-        chain: Chain,
+        chainInfo: ChainAssetDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chain = chain
+        self.chainInfo = chainInfo
         self.logger = logger
 
         self.localizationManager = localizationManager
@@ -120,12 +120,12 @@ extension YourValidatorListPresenter: YourValidatorListPresenterProtocol {
         if
             let amount = Decimal.fromSubstrateAmount(
                 bondedAmount,
-                precision: chain.addressType.precision
+                precision: chainInfo.asset.assetPrecision
             ),
             let rewardDestination = try? RewardDestination(
                 payee: rewardDestination,
                 stashItem: stashItem,
-                chain: chain
+                chainFormat: chainInfo.chain
             ) {
             let selectedTargets = validatorsModel.map {
                 !$0.pendingValidators.isEmpty ? $0.pendingValidators : $0.currentValidators
@@ -154,7 +154,7 @@ extension YourValidatorListPresenter: YourValidatorListInteractorOutputProtocol 
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(item):
             controllerAccount = item

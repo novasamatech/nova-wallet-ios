@@ -5,6 +5,7 @@ import RobinHood
 import FearlessUtils
 import SoraKeystore
 import SoraFoundation
+import BigInt
 
 class StakingRewardDestConfirmTests: XCTestCase {
 
@@ -14,11 +15,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let view = MockStakingRewardDestConfirmViewProtocol()
         let wireframe = MockStakingRewardDestConfirmWireframeProtocol()
 
-        let newPayoutAccount = AccountItem(address: "5Gh52T8TzDekJsosRp22SQ4uyGi8MfuwL8qMBJ1ASF1P8r8i",
-                                           cryptoType: .sr25519,
-                                           username: "new payout",
-                                           publicKeyData: Data(repeating: 0, count: 32)
-        )
+        let newPayoutAccount = AccountGenerator.generateMetaAccount()
 
         // when
 
@@ -55,90 +52,100 @@ class StakingRewardDestConfirmTests: XCTestCase {
     private func setupPresenter(
         for view: MockStakingRewardDestConfirmViewProtocol,
         wireframe: MockStakingRewardDestConfirmWireframeProtocol,
-        newPayout: AccountItem?
+        newPayout: MetaAccountModel?
     ) throws -> StakingRewardDestConfirmPresenter {
         // given
 
-        let settings = InMemorySettingsManager()
-        let keychain = InMemoryKeychain()
-
-        let chain = Chain.westend
-        try AccountCreationHelper.createAccountFromMnemonic(cryptoType: .sr25519,
-                                                            networkType: chain,
-                                                            keychain: keychain,
-                                                            settings: settings)
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let assetId = WalletAssetId(
-            rawValue: primitiveFactory.createAssetForAddressType(chain.addressType).identifier
-        )!
-
-        let storageFacade = SubstrateStorageTestFacade()
-        let operationManager = OperationManager()
-
-        let nominatorAddress = settings.selectedAccount!.address
-        let cryptoType = settings.selectedAccount!.cryptoType
-
-        let singleValueProviderFactory = SingleValueProviderFactoryStub.westendNominatorStub()
-
-        // save stash item
-
-        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
-        let repository: CoreDataRepository<StashItem, CDStashItem> =
-            storageFacade.createRepository()
-
-        let operationQueue = OperationQueue()
-        let saveStashItemOperation = repository.saveOperation({ [stashItem] }, { [] })
-        operationQueue.addOperations([saveStashItemOperation], waitUntilFinished: true)
-
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: operationManager
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
         )
 
-        let runtimeCodingService = try RuntimeCodingServiceStub.createWestendService()
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+        let metaAccount = AccountGenerator.generateMetaAccount()
+        let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest())!
 
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageTestFacade().createRepository()
-        let anyAccountRepository = AnyDataProviderRepository(accountRepository)
+        let operationManager = OperationManager()
+
+        let accountRepositoryFactory = AccountRepositoryFactory(
+            storageFacade: UserDataStorageTestFacade()
+        )
+
+        let accountRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         // save controller and payout
-        let controllerItem = settings.selectedAccount!
-        let saveControllerOperation = anyAccountRepository
+        let saveControllerOperation = accountRepository
             .saveOperation({
                 if let payout = newPayout {
-                    return [controllerItem, payout]
+                    return [
+                        ManagedMetaAccountModel(info: metaAccount, isSelected: true, order: 0),
+                        ManagedMetaAccountModel(info: payout, isSelected: false, order: 1)
+                    ]
                 } else {
-                    return [controllerItem]
+                    return [
+                        ManagedMetaAccountModel(info: metaAccount, isSelected: true, order: 0)
+                    ]
                 }
             }, { [] })
-        operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
+        OperationQueue().addOperations([saveControllerOperation], waitUntilFinished: true)
+
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
+        let calculatorService = RewardCalculatorServiceStub(engine: WestendStub.rewardCalculator)
+
+        let address = selectedAccount.toAddress()!
+        let stashItem = StashItem(stash: address, controller: address)
+
+        let ledgerInfo = StakingLedger(
+            stash: selectedAccount.accountId,
+            total: BigUInt(2e+12),
+            active: BigUInt(2e+12),
+            unlocking: [],
+            claimedRewards: []
+        )
+
+        let payee = RewardDestinationArg.staked
+
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
+            ledgerInfo: ledgerInfo,
+            payee: payee,
+            stashItem: stashItem
+        )
+
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(balance: BigUInt(1e+14))
+
+        let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+        )
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
             extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: cryptoType)
+            signingWraper: try DummySigner(cryptoType: MultiassetCryptoType.sr25519)
         )
 
         let interactor = StakingRewardDestConfirmInteractor(
-            settings: settings,
-            singleValueProviderFactory: singleValueProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
-            substrateProviderFactory: substrateProviderFactory,
-            runtimeService: runtimeCodingService,
+            calculatorService: calculatorService,
+            runtimeService: chainRegistry.getRuntimeProvider(for: chain.chainId)!,
             operationManager: operationManager,
-            accountRepository: anyAccountRepository,
-            feeProxy: ExtrinsicFeeProxy(),
-            assetId: assetId,
-            chain: chain
+            accountRepositoryFactory: accountRepositoryFactory,
+            feeProxy: ExtrinsicFeeProxy()
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let rewardDestination = newPayout.map { RewardDestination.payout(account: $0) } ?? .restake
+        let newPayoutItem = try newPayout?.fetch(for: chain.accountRequest())?.toAccountItem()
+        let rewardDestination = newPayoutItem.map { RewardDestination.payout(account: $0) } ?? .restake
 
         let dataValidating = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -149,7 +156,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
             confirmModelFactory: StakingRewardDestConfirmVMFactory(),
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidating,
-            chain: chain
+            assetInfo: assetInfo
         )
 
         presenter.view = view

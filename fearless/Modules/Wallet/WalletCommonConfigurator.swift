@@ -5,19 +5,16 @@ import IrohaCrypto
 
 struct WalletCommonConfigurator {
     let localizationManager: LocalizationManagerProtocol
-    let networkType: SNAddressType
-    let account: AccountItem
+    let metaAccount: MetaAccountModel
     let assets: [WalletAsset]
 
     init(
         localizationManager: LocalizationManagerProtocol,
-        networkType: SNAddressType,
-        account: AccountItem,
+        metaAccount: MetaAccountModel,
         assets: [WalletAsset]
     ) {
         self.localizationManager = localizationManager
-        self.networkType = networkType
-        self.account = account
+        self.metaAccount = metaAccount
         self.assets = assets
     }
 
@@ -30,14 +27,15 @@ struct WalletCommonConfigurator {
             dataStorageFacade: SubstrateDataStorageFacade.shared
         )
 
+        // TODO: Fix when qr coding decoding fixed
         let qrCoderFactory = WalletQRCoderFactory(
-            networkType: networkType,
-            publicKey: account.publicKeyData,
-            username: account.username,
+            networkType: .genericSubstrate,
+            publicKey: metaAccount.substratePublicKey,
+            username: metaAccount.name,
             assets: assets
         )
 
-        let singleProviderIdFactory = WalletSingleProviderIdFactory(addressType: networkType)
+        let singleProviderIdFactory = WalletSingleProviderIdFactory()
         let transactionTypes = TransactionType.allCases.map { $0.toWalletType() }
 
         builder

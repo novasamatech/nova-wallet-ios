@@ -18,9 +18,8 @@ protocol WalletRemoteHistoryItemProtocol {
 
     func createTransactionForAddress(
         _ address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory: SS58AddressFactoryProtocol
+        assetId: String,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData
 }
 

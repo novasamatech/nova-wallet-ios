@@ -7,24 +7,37 @@ import SoraFoundation
 class StakingRewardPayoutsTests: XCTestCase {
 
     func testViewStateIsLoadingThenError() {
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+
         let payoutServiceThatReturnsError = PayoutRewardsServiceStub.error()
         let eraCountdownOperationFactory = EraCountdownOperationFactoryStub(eraCountdown: .testStub)
-        let runtimeService = try! RuntimeCodingServiceStub.createWestendService()
+
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
+
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub()
+        let priceLocalSubscriptionFactory = PriceProviderFactoryStub()
 
         let interactor = StakingRewardPayoutsInteractor(
-            singleValueProviderFactory: SingleValueProviderFactoryStub.westendNominatorStub(),
+            chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             payoutService: payoutServiceThatReturnsError,
-            assetId: WalletAssetId.westend,
-            chain: .westend,
             eraCountdownOperationFactory: eraCountdownOperationFactory,
-            operationManager: OperationManager(),
-            runtimeService: runtimeService
+            operationManager: OperationManager()
         )
+
         let view = MockStakingRewardPayoutsViewProtocol()
 
         let viewModelFactory = MockStakingPayoutViewModelFactoryProtocol()
         let presenter = StakingRewardPayoutsPresenter(
-            chain: .westend,
             viewModelFactory: viewModelFactory
         )
         presenter.interactor = interactor
@@ -78,7 +91,6 @@ class StakingRewardPayoutsTests: XCTestCase {
 
         let viewModelFactory = MockStakingPayoutViewModelFactoryProtocol()
         let presenter = StakingRewardPayoutsPresenter(
-            chain: .westend,
             viewModelFactory: viewModelFactory
         )
         presenter.wireframe = wireframe
@@ -90,6 +102,21 @@ class StakingRewardPayoutsTests: XCTestCase {
                 if case let Result.success(payoutsInfo) = PayoutRewardsServiceStub.dummy().result {
                     presenter.didReceive(result: .success(payoutsInfo))
                 }
+
+                let eraCountdown = EraCountdown(
+                    activeEra: 1,
+                    currentEra: 1,
+                    eraLength: 10,
+                    sessionLength: 1,
+                    activeEraStartSessionIndex: 1,
+                    currentSessionIndex: 1,
+                    currentSlot: 2,
+                    genesisSlot: 1,
+                    blockCreationTime: 6000,
+                    createdAtDate: Date()
+                )
+
+                presenter.didReceive(eraCountdownResult: .success(eraCountdown))
             }
         }
 
@@ -117,7 +144,7 @@ class StakingRewardPayoutsTests: XCTestCase {
         let showRewardDetailsExpectation = XCTestExpectation()
         stub(wireframe) { stub in
             when(stub)
-                .showRewardDetails(from: any(), payoutInfo: any(), activeEra: any(), historyDepth: any(), chain: any())
+                .showRewardDetails(from: any(), payoutInfo: any(), activeEra: any(), historyDepth: any(), erasPerDay: any())
                 .then { _ in
                     showRewardDetailsExpectation.fulfill()
                 }

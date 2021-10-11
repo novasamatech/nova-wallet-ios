@@ -3,35 +3,25 @@ import SoraKeystore
 import SoraFoundation
 
 struct AnalyticsRewardsViewFactory {
-    static func createView(accountIsNominator: Bool) -> AnalyticsRewardsViewProtocol? {
-        let settings = SettingsManager.shared
-
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-        let addressType = settings.selectedConnection.type
-        let chain = addressType.chain
+    static func createView(
+        for state: StakingSharedState,
+        accountIsNominator: Bool
+    ) -> AnalyticsRewardsViewProtocol? {
         guard
-            let accountAddress = settings.selectedAccount?.address,
-            let assetId = WalletAssetId(rawValue: asset.identifier)
+            let chainAsset = state.settings.value,
+            let interactor = createInteractor(state: state)
         else {
             return nil
         }
 
-        let interactor = createInteractor(accountAddress: accountAddress, chain: chain, assetId: assetId)
-        let wireframe = AnalyticsRewardsWireframe()
+        let wireframe = AnalyticsRewardsWireframe(state: state)
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let viewModelFactory = AnalyticsRewardsViewModelFactory(
-            chain: chain,
+            assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,
-            amountFormatterFactory: AmountFormatterFactory(),
-            asset: asset,
             calendar: Calendar(identifier: .gregorian)
         )
 
@@ -53,25 +43,25 @@ struct AnalyticsRewardsViewFactory {
     }
 
     private static func createInteractor(
-        accountAddress: AccountAddress,
-        chain: Chain,
-        assetId: WalletAssetId
-    ) -> AnalyticsRewardsInteractor {
-        let operationManager = OperationManagerFacade.sharedManager
-
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager
-        )
+        state: StakingSharedState
+    ) -> AnalyticsRewardsInteractor? {
+        guard
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = state.settings.value,
+            let selectedAddress = metaAccount.fetch(
+                for: chainAsset.chain.accountRequest()
+            )?.toAddress() else {
+            return nil
+        }
 
         let interactor = AnalyticsRewardsInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
-            operationManager: operationManager,
-            assetId: assetId,
-            chain: chain,
-            selectedAccountAddress: accountAddress
+            selectedAccountAddress: selectedAddress,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            operationManager: OperationManagerFacade.sharedManager
         )
+
         return interactor
     }
 }

@@ -12,15 +12,14 @@ class ValidatorListFilterTests: XCTestCase {
         let wireframe = MockValidatorListFilterWireframeProtocol()
         let viewModelFactory = ValidatorListFilterViewModelFactory()
 
-        let settings = InMemorySettingsManager()
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let addressType = settings.selectedConnection.type
-        let asset = primitiveFactory.createAssetForAddressType(addressType)
+        let assetInfo = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42
+        ).assets.first!.displayInfo
 
         let presenter = ValidatorListFilterPresenter(wireframe: wireframe,
                                                      viewModelFactory: viewModelFactory,
-                                                     asset: asset,
+                                                     assetInfo: assetInfo,
                                                      filter: CustomValidatorListFilter.recommendedFilter(),
                                                      localizationManager: LocalizationManager.shared)
 

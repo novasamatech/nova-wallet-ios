@@ -8,10 +8,9 @@ final class WalletAccountListConfigurator {
     let assetStyleFactory: AssetStyleFactory
 
     init(
-        address: String,
-        chain: Chain,
+        metaAccount: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
         priceAsset: WalletAsset,
-        purchaseProvider: PurchaseProviderProtocol,
         logger: LoggerProtocol
     ) {
         self.logger = logger
@@ -22,13 +21,12 @@ final class WalletAccountListConfigurator {
         let accountCommandFactory = WalletSelectAccountCommandFactory()
 
         viewModelFactory = WalletAssetViewModelFactory(
-            address: address,
-            chain: chain,
+            metaAccount: metaAccount,
+            chains: chains,
             assetCellStyleFactory: assetStyleFactory,
             amountFormatterFactory: amountFormatterFactory,
             priceAsset: priceAsset,
-            accountCommandFactory: accountCommandFactory,
-            purchaseProvider: purchaseProvider
+            accountCommandFactory: accountCommandFactory
         )
     }
 
@@ -53,6 +51,7 @@ final class WalletAccountListConfigurator {
                 .with(listViewModelFactory: viewModelFactory)
                 .with(assetCellStyleFactory: assetStyleFactory)
                 .with(viewStyle: viewStyle)
+                .with(minimumVisibleAssets: 1000)
         } catch {
             logger.error("Can't customize account list: \(error)")
         }

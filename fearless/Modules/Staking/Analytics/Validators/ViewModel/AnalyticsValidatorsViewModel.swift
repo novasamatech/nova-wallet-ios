@@ -1,6 +1,6 @@
 import Foundation
 
-struct AnalyticsValidatorsViewModel: Equatable {
+struct AnalyticsValidatorsViewModel {
     let pieChartSegmentValues: [Double]
     let pieChartInactiveSegment: InactiveSegment?
     let chartCenterText: NSAttributedString
@@ -10,7 +10,7 @@ struct AnalyticsValidatorsViewModel: Equatable {
 }
 
 extension AnalyticsValidatorsViewModel {
-    struct InactiveSegment: Equatable {
+    struct InactiveSegment {
         let percents: Double
         let eraCount: Int
     }

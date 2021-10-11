@@ -1,10 +1,12 @@
 import Foundation
 
 final class InitBondingSelectValidatorsStartWireframe: SelectValidatorsStartWireframe {
-    private let state: InitiatedBonding
+    let state: InitiatedBonding
+    let stakingState: StakingSharedState
 
-    init(state: InitiatedBonding) {
+    init(state: InitiatedBonding, stakingState: StakingSharedState) {
         self.state = state
+        self.stakingState = stakingState
     }
 
     override func proceedToCustomList(
@@ -14,14 +16,14 @@ final class InitBondingSelectValidatorsStartWireframe: SelectValidatorsStartWire
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         maxTargets: Int
     ) {
-        guard let nextView = CustomValidatorListViewFactory
-            .createInitiatedBondingView(
-                for: validatorList,
-                with: recommendedValidatorList,
-                selectedValidatorList: selectedValidatorList,
-                maxTargets: maxTargets,
-                with: state
-            ) else { return }
+        guard let nextView = CustomValidatorListViewFactory.createInitiatedBondingView(
+            for: stakingState,
+            validatorList: validatorList,
+            recommendedValidatorList: recommendedValidatorList,
+            selectedValidatorList: selectedValidatorList,
+            maxTargets: maxTargets,
+            state: state
+        ) else { return }
 
         view?.controller.navigationController?.pushViewController(
             nextView.controller,
@@ -35,9 +37,10 @@ final class InitBondingSelectValidatorsStartWireframe: SelectValidatorsStartWire
         maxTargets: Int
     ) {
         guard let nextView = RecommendedValidatorListViewFactory.createInitiatedBondingView(
-            for: validatorList,
+            stakingState: stakingState,
+            validators: validatorList,
             maxTargets: maxTargets,
-            with: state
+            state: state
         ) else {
             return
         }

@@ -39,14 +39,17 @@ extension StakingRewardDetailsPresenter: StakingRewardDetailsPresenterProtocol {
         guard
             let view = view,
             let address = viewModelFactory.validatorAddress(
-                from: input.payoutInfo.validator,
-                addressType: input.chain.addressType
+                from: input.payoutInfo.validator
             )
         else { return }
+
+        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+
+        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: input.chain,
+            chain: .westend,
             locale: locale
         )
     }

@@ -8,31 +8,32 @@ import SoraFoundation
 class CustomValidatorListTests: XCTestCase {
     func testSetup() {
         // given
-        let settings = InMemorySettingsManager()
-
-        let chain = Chain.westend
 
         let view = MockCustomValidatorListViewProtocol()
         let wireframe = MockCustomValidatorListWireframeProtocol()
 
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let assetId = WalletAssetId(
-            rawValue: primitiveFactory.createAssetForAddressType(chain.addressType).identifier
-        )!
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
+        let selectedChain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
         )
+
+        let chainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
+
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let viewModelFactory = CustomValidatorListViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory
         )
 
+        let priceProviderFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+        )
+
         let interactor = CustomValidatorListInteractor(
-            singleValueProviderFactory: SingleValueProviderFactoryStub.westendNominatorStub(),
-            assetId: assetId
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: priceProviderFactory
         )
 
         let generator = CustomValidatorListTestDataGenerator.self
@@ -55,6 +56,7 @@ class CustomValidatorListTests: XCTestCase {
         )
 
         presenter.view = view
+        interactor.presenter = presenter
 
         // when
 

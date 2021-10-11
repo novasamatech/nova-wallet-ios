@@ -8,15 +8,11 @@ class AnyProviderAutoClearTests: XCTestCase {
         // given
 
         let cleaner = AnyProviderAutoCleaner()
-        let singleValueProvider = SingleValueProviderFactoryStub.westendNominatorStub()
-
-        let runtimeService = try RuntimeCodingServiceStub.createWestendService()
+        let singleValueProvider = StakingLocalSubscriptionFactoryStub()
+        let chain = ChainModelGenerator.generate(count: 1).first!
 
         var provider: AnyDataProvider<DecodedBigUInt>? =
-            try singleValueProvider.getMinNominatorBondProvider(
-            chain: .westend,
-            runtimeService: runtimeService
-        )
+            try singleValueProvider.getMinNominatorBondProvider(for: chain.chainId)
 
         // when
 

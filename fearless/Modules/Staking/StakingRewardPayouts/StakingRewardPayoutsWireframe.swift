@@ -1,21 +1,27 @@
 import Foundation
 
 final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol {
+    let state: StakingSharedState
+
+    init(state: StakingSharedState) {
+        self.state = state
+    }
+
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
         payoutInfo: PayoutInfo,
         activeEra: EraIndex,
         historyDepth: UInt32,
-        chain: Chain
+        erasPerDay: UInt32
     ) {
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
-            chain: chain,
             activeEra: activeEra,
-            historyDepth: historyDepth
+            historyDepth: historyDepth,
+            erasPerDay: erasPerDay
         )
         guard
-            let rewardDetails = StakingRewardDetailsViewFactory.createView(input: input)
+            let rewardDetails = StakingRewardDetailsViewFactory.createView(for: state, input: input)
         else { return }
         view?.controller
             .navigationController?
@@ -24,7 +30,7 @@ final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol
 
     func showPayoutConfirmation(for payouts: [PayoutInfo], from view: ControllerBackedProtocol?) {
         guard let confirmationView = StakingPayoutConfirmationViewFactory
-            .createView(payouts: payouts) else { return }
+            .createView(for: state, payouts: payouts) else { return }
 
         view?.controller
             .navigationController?

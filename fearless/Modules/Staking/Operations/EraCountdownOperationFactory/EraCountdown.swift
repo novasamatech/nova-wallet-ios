@@ -16,6 +16,11 @@ struct EraCountdown {
         TimeInterval(blockCreationTime).seconds
     }
 
+    var eraTimeInterval: TimeInterval {
+        let eraLengthInSlots = sessionLength * eraLength
+        return TimeInterval(eraLengthInSlots) * blockTimeInSeconds
+    }
+
     func timeIntervalTillStart(targetEra: EraIndex) -> TimeInterval {
         guard targetEra > activeEra else { return 0 }
 

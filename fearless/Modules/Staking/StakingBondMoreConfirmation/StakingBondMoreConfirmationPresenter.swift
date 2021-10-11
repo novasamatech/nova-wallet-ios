@@ -10,7 +10,7 @@ final class StakingBondMoreConfirmationPresenter {
     let confirmViewModelFactory: StakingBondMoreConfirmViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     private var balance: Decimal?
@@ -26,7 +26,7 @@ final class StakingBondMoreConfirmationPresenter {
         confirmViewModelFactory: StakingBondMoreConfirmViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -35,7 +35,7 @@ final class StakingBondMoreConfirmationPresenter {
         self.confirmViewModelFactory = confirmViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -127,7 +127,14 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
         guard let view = view, let address = stashItem?.controller else { return }
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: locale
+        )
     }
 }
 
@@ -138,7 +145,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil
@@ -168,7 +175,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         switch result {
         case let .success(dispatchInfo):
             if let feeValue = BigUInt(dispatchInfo.fee) {
-                fee = Decimal.fromSubstrateAmount(feeValue, precision: chain.addressType.precision)
+                fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision)
             } else {
                 fee = nil
             }

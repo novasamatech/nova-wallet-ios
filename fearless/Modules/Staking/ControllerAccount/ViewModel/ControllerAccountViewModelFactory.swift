@@ -4,11 +4,10 @@ import FearlessUtils
 
 final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
-    let currentAccountItem: AccountItem
-    private lazy var addressFactory = SS58AddressFactory()
+    let selectedAddress: AccountAddress
 
-    init(currentAccountItem: AccountItem, iconGenerator: IconGenerating) {
-        self.currentAccountItem = currentAccountItem
+    init(selectedAddress: AccountAddress, iconGenerator: IconGenerating) {
+        self.selectedAddress = selectedAddress
         self.iconGenerator = iconGenerator
     }
 
@@ -53,10 +52,10 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
 
         let currentAccountIsController =
             (stashItem.stash != stashItem.controller) &&
-            stashItem.controller == currentAccountItem.address
+            stashItem.controller == selectedAddress
 
         let actionButtonIsEnabled: Bool = {
-            if stashAddress != self.currentAccountItem.address {
+            if stashAddress != selectedAddress {
                 return false
             }
             guard let chosenAccountItem = chosenAccountItem else {

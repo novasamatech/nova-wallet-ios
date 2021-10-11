@@ -7,7 +7,6 @@ final class ValidatorInfoPresenter {
     let wireframe: ValidatorInfoWireframeProtocol
 
     private let viewModelFactory: ValidatorInfoViewModelFactoryProtocol
-    private let chain: Chain
     private let logger: LoggerProtocol?
 
     private(set) var validatorInfoResult: Result<ValidatorInfoProtocol?, Error>?
@@ -17,14 +16,12 @@ final class ValidatorInfoPresenter {
         interactor: ValidatorInfoInteractorInputProtocol,
         wireframe: ValidatorInfoWireframeProtocol,
         viewModelFactory: ValidatorInfoViewModelFactoryProtocol,
-        chain: Chain,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chain = chain
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -100,10 +97,11 @@ extension ValidatorInfoPresenter: ValidatorInfoPresenterProtocol {
 
     func presentAccountOptions() {
         if let view = view, let validatorInfo = try? validatorInfoResult?.get() {
+            // TODO: fix url
             wireframe.presentAccountOptions(
                 from: view,
                 address: validatorInfo.address,
-                chain: chain,
+                chain: .westend,
                 locale: selectedLocale
             )
         }

@@ -1,6 +1,12 @@
 import Foundation
 
 class RecommendedValidatorListWireframe: RecommendedValidatorListWireframeProtocol {
+    let stakingState: StakingSharedState
+
+    init(stakingState: StakingSharedState) {
+        self.stakingState = stakingState
+    }
+
     func proceed(
         from _: RecommendedValidatorListViewProtocol?,
         targets _: [SelectedValidatorInfo],
@@ -11,7 +17,10 @@ class RecommendedValidatorListWireframe: RecommendedValidatorListWireframeProtoc
         _ validatorInfo: SelectedValidatorInfo,
         from view: RecommendedValidatorListViewProtocol?
     ) {
-        guard let validatorInfoView = ValidatorInfoViewFactory.createView(with: validatorInfo) else {
+        guard let validatorInfoView = ValidatorInfoViewFactory.createView(
+            with: validatorInfo,
+            state: stakingState
+        ) else {
             return
         }
 

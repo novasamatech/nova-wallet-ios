@@ -9,4 +9,7 @@ struct WalletAccountListConstants {
 
     static let actionsCellId: String = "fearlessActionsCellId"
     static let actionsCellHeight: CGFloat = 90
+
+    static let listActionsCellId: String = "fearlessListActionsCellId"
+    static let listActionsCellHeght: CGFloat = 0.0
 }

@@ -11,28 +11,28 @@ class ValidatorInfoTests: XCTestCase {
 
     func testSetup() {
         // given
-        let chain = Chain.westend
 
-        let settings = InMemorySettingsManager()
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
+        let selectedChain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
+        let chainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
 
         let view = MockValidatorInfoViewProtocol()
         let wireframe = MockValidatorInfoWireframeProtocol()
 
-        let addressType = settings.selectedConnection.type
-        let asset = primitiveFactory.createAssetForAddressType(addressType)
+        let priceProvider = PriceProviderFactoryStub(priceData: PriceData(price: "0.1", usdDayChange: 0.1))
 
         let interactor = AnyValidatorInfoInteractor(
-            validatorInfo: validator,
-            singleValueProviderFactory: SingleValueProviderFactoryStub.westendNominatorStub(),
-            walletAssetId: WalletAssetId(rawValue: asset.identifier)!
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: priceProvider,
+            validatorInfo: validator
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             iconGenerator: PolkadotIconGenerator(),
@@ -43,7 +43,6 @@ class ValidatorInfoTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
-            chain: chain,
             localizationManager: LocalizationManager.shared
         )
 
@@ -69,34 +68,33 @@ class ValidatorInfoTests: XCTestCase {
 
     func testYourValidatorSetup() {
         // given
-        let chain = Chain.westend
-
-        let settings = InMemorySettingsManager()
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
+        let selectedChain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
 
         let view = MockValidatorInfoViewProtocol()
         let wireframe = MockValidatorInfoWireframeProtocol()
 
-        let addressType = settings.selectedConnection.type
-        let asset = primitiveFactory.createAssetForAddressType(addressType)
+        let chainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
 
         let validatorOperationFactory = ValidatorOperationFactoryStub(
             electedValidatorList: WestendStub.allValidators
         )
 
+        let priceProvider = PriceProviderFactoryStub(priceData: PriceData(price: "0.1", usdDayChange: 0.1))
+
         let interactor = YourValidatorInfoInteractor(
             accountAddress: validator.address,
-            singleValueProviderFactory: SingleValueProviderFactoryStub.westendNominatorStub(),
-            walletAssetId: WalletAssetId(rawValue: asset.identifier)!,
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: priceProvider,
             validatorOperationFactory: validatorOperationFactory,
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             iconGenerator: PolkadotIconGenerator(),
@@ -107,7 +105,6 @@ class ValidatorInfoTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
-            chain: chain,
             localizationManager: LocalizationManager.shared
         )
 

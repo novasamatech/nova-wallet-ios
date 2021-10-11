@@ -21,7 +21,6 @@ final class AnalyticsValidatorsCell: UITableViewCell {
         let label = UILabel()
         label.font = .p1Paragraph
         label.textColor = R.color.colorWhite()
-        label.lineBreakMode = .byTruncatingMiddle
         return label
     }()
 

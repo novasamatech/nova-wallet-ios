@@ -4,30 +4,28 @@ import RobinHood
 import SoraFoundation
 import FearlessUtils
 
-final class StakingAmountViewFactory: StakingAmountViewFactoryProtocol {
-    static func createView(with amount: Decimal?) -> StakingAmountViewProtocol? {
-        let settings = SettingsManager.shared
-
-        guard let connection = WebSocketService.shared.connection else {
+final class StakingAmountViewFactory {
+    static func createView(
+        with amount: Decimal?,
+        stakingState: StakingSharedState
+    ) -> StakingAmountViewProtocol? {
+        guard let chainAsset = stakingState.settings.value else {
             return nil
         }
 
         let view = StakingAmountViewController(nib: R.nib.stakingAmountViewController)
-        let wireframe = StakingAmountWireframe()
+        let wireframe = StakingAmountWireframe(stakingState: stakingState)
 
         guard let presenter = createPresenter(
             view: view,
             wireframe: wireframe,
             amount: amount,
-            settings: settings
+            chainAsset: chainAsset
         ) else {
             return nil
         }
 
-        guard let interactor = createInteractor(
-            connection: connection,
-            settings: settings
-        ) else {
+        guard let interactor = createInteractor(state: stakingState) else {
             return nil
         }
 
@@ -45,34 +43,22 @@ final class StakingAmountViewFactory: StakingAmountViewFactoryProtocol {
         view: StakingAmountViewProtocol,
         wireframe: StakingAmountWireframeProtocol,
         amount: Decimal?,
-        settings: SettingsManagerProtocol
+        chainAsset: ChainAsset
     ) -> StakingAmountPresenter? {
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-
-        guard let selectedAccount = settings.selectedAccount else {
+        guard
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let accountItem = try? metaAccount.fetch(
+                for: chainAsset.chain.accountRequest()
+            )?.toAccountItem() else {
             return nil
         }
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: networkType,
-            limit: StakingConstants.maxAmount
-        )
-
-        let selectedConnectionType = settings.selectedConnection.type
-
-        let errorBalanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: networkType,
-            limit: StakingConstants.maxAmount,
-            formatterFactory: AmountFormatterFactory(assetPrecision: Int(selectedConnectionType.precision))
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
-            balanceFactory: errorBalanceViewModelFactory
+            balanceFactory: balanceViewModelFactory
         )
 
         let rewardDestViewModelFactory = RewardDestinationViewModelFactory(
@@ -81,8 +67,8 @@ final class StakingAmountViewFactory: StakingAmountViewFactoryProtocol {
 
         let presenter = StakingAmountPresenter(
             amount: amount,
-            asset: asset,
-            selectedAccount: selectedAccount,
+            selectedAccount: accountItem,
+            assetInfo: assetInfo,
             rewardDestViewModelFactory: rewardDestViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
@@ -98,33 +84,35 @@ final class StakingAmountViewFactory: StakingAmountViewFactoryProtocol {
     }
 
     private static func createInteractor(
-        connection: JSONRPCEngine,
-        settings: SettingsManagerProtocol
+        state: StakingSharedState
     ) -> StakingAmountInteractor? {
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-
-        guard let selectedAccount = settings.selectedAccount,
-              let assetId = WalletAssetId(rawValue: asset.identifier)
-        else {
+        guard
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
-        let runtimeService = RuntimeRegistryFacade.sharedService
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
         let operationManager = OperationManagerFacade.sharedManager
 
         let facade = UserDataStorageFacade.shared
 
-        let filter = NSPredicate.filterAccountBy(networkType: networkType)
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            facade.createRepository(
-                filter: filter,
-                sortDescriptors: [.accountsByOrder]
-            )
+        let accountRepository = AccountRepositoryFactory(storageFacade: facade).createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: [NSSortDescriptor.accountsByOrder]
+        )
 
         let extrinsicService = ExtrinsicService(
-            address: selectedAccount.address,
+            accountId: selectedAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
@@ -132,15 +120,16 @@ final class StakingAmountViewFactory: StakingAmountViewFactoryProtocol {
         )
 
         let interactor = StakingAmountInteractor(
-            accountAddress: selectedAccount.address,
-            repository: AnyDataProviderRepository(accountRepository),
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            repository: accountRepository,
             extrinsicService: extrinsicService,
-            rewardService: RewardCalculatorFacade.sharedService,
             runtimeService: runtimeService,
-            operationManager: operationManager,
-            chain: networkType.chain,
-            assetId: assetId
+            rewardService: state.rewardCalculationService,
+            operationManager: operationManager
         )
 
         return interactor
