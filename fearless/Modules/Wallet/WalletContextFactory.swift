@@ -72,7 +72,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let walletAssets: [WalletAsset] = chainAssets.compactMap { chainAsset in
             // TODO: Remove when runtime fixed
-            guard ![Chain.westend.genesisHash, Chain.kusama.genesisHash].contains(
+            guard ![Chain.polkadot.genesisHash, Chain.westend.genesisHash, Chain.kusama.genesisHash].contains(
                 chainAsset.chain.identifier
             ) else {
                 return nil
