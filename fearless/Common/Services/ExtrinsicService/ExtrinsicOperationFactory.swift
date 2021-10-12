@@ -205,17 +205,31 @@ final class ExtrinsicOperationFactory {
                 case .ethereum:
                     let account = currentAccountId.map { StringScaleMapper(value: $0) }
                     builder = try builder.with(address: account)
+
+                    builder = try customClosure(builder, index).signing(
+                        by: { data in
+                            let signature = try signingClosure(data)
+
+                            guard let ethereumSignature = EthereumSignature(rawValue: signature) else {
+                                throw BaseOperationError.unexpectedDependentResult
+                            }
+
+                            return try ethereumSignature.toScaleCompatibleJSON()
+                        },
+                        using: codingFactory.createEncoder(),
+                        metadata: codingFactory.metadata
+                    )
                 case .substrate:
                     let account = MultiAddress.accoundId(currentAccountId)
                     builder = try builder.with(address: account)
-                }
 
-                builder = try customClosure(builder, index).signing(
-                    by: signingClosure,
-                    of: currentCryptoType.utilsType,
-                    using: codingFactory.createEncoder(),
-                    metadata: codingFactory.metadata
-                )
+                    builder = try customClosure(builder, index).signing(
+                        by: signingClosure,
+                        of: currentCryptoType.utilsType,
+                        using: codingFactory.createEncoder(),
+                        metadata: codingFactory.metadata
+                    )
+                }
 
                 return try builder.build(
                     encodingBy: codingFactory.createEncoder(),
