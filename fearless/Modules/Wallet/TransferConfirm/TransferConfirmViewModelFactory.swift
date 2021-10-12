@@ -5,26 +5,21 @@ import FearlessUtils
 final class TransferConfirmViewModelFactory {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
-    let assets: [WalletAsset]
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
+    let chains: [String: ChainModel]
+    let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    init(assets: [WalletAsset], amountFormatterFactory: NumberFormatterFactoryProtocol) {
-        self.assets = assets
+    init(chains: [String: ChainModel], amountFormatterFactory: AssetBalanceFormatterFactoryProtocol) {
+        self.chains = chains
         self.amountFormatterFactory = amountFormatterFactory
     }
 
     func populateAsset(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
+        chainAsset: ChainAsset,
         locale: Locale
     ) {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == payload.transferInfo.asset }),
-            let assetId = WalletAssetId(rawValue: asset.identifier)
-        else {
-            return
-        }
+        let assetInfo = chainAsset.assetDisplayInfo
 
         let headerTitle = R.string.localizable.walletSendAssetTitle(preferredLanguages: locale.rLanguages)
 
@@ -33,7 +28,7 @@ final class TransferConfirmViewModelFactory {
 
         let context = BalanceContext(context: payload.transferInfo.context ?? [:])
 
-        let amountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
+        let amountFormatter = amountFormatterFactory.createTokenFormatter(for: assetInfo)
         let details = amountFormatter.value(for: locale).stringFromDecimal(context.available) ?? ""
 
         let detailsCommand: WalletCommandProtocol?
@@ -49,7 +44,7 @@ final class TransferConfirmViewModelFactory {
                 existentialDeposit: context.minimalBalance
             )
 
-            let amountFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
+            let amountFormatter = amountFormatterFactory.createDisplayFormatter(for: assetInfo)
 
             detailsCommand = ExistentialDepositInfoCommand(
                 transferState: transferState,
@@ -63,10 +58,10 @@ final class TransferConfirmViewModelFactory {
         let selectedState = SelectedAssetState(isSelecting: false, canSelect: false)
         let tokenViewModel = WalletTokenViewModel(
             header: headerTitle,
-            title: assetId.titleForLocale(locale),
+            title: chainAsset.asset.name ?? chainAsset.chain.name,
             subtitle: subtitle,
             details: details,
-            icon: assetId.icon,
+            icon: nil, // fix icon
             state: selectedState,
             detailsCommand: detailsCommand
         )
@@ -77,13 +72,12 @@ final class TransferConfirmViewModelFactory {
     func populateFee(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
+        chainAsset: ChainAsset,
         locale: Locale
     ) {
-        guard let asset = assets.first(where: { $0.identifier == payload.transferInfo.asset }) else {
-            return
-        }
+        let assetInfo = chainAsset.assetDisplayInfo
 
-        let formatter = amountFormatterFactory.createFeeTokenFormatter(for: asset)
+        let formatter = amountFormatterFactory.createFeeTokenFormatter(for: assetInfo)
 
         for fee in payload.transferInfo.fees {
             let decimalAmount = fee.value.decimalValue
@@ -106,13 +100,12 @@ final class TransferConfirmViewModelFactory {
     func populateSendingAmount(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
+        chainAsset: ChainAsset,
         locale: Locale
     ) {
-        guard let asset = assets.first(where: { $0.identifier == payload.transferInfo.asset }) else {
-            return
-        }
+        let assetInfo = chainAsset.assetDisplayInfo
 
-        let formatter = amountFormatterFactory.createInputFormatter(for: asset)
+        let formatter = amountFormatterFactory.createInputFormatter(for: assetInfo)
 
         let decimalAmount = payload.transferInfo.amount.decimalValue
 
@@ -128,7 +121,6 @@ final class TransferConfirmViewModelFactory {
     func populateReceiver(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
-        chain: Chain,
         locale: Locale
     ) {
         guard let commandFactory = commandFactory else {
@@ -146,9 +138,10 @@ final class TransferConfirmViewModelFactory {
                 contentScale: UIScreen.main.scale
             )
 
+        // TODO: Fix when subscan integrated
         let command = WalletAccountOpenCommand(
             address: payload.receiverName,
-            chain: chain,
+            chain: .westend,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -171,16 +164,22 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
         _ payload: ConfirmationPayload,
         locale: Locale
     ) -> [WalletFormViewBindingProtocol]? {
-        guard let chain = WalletAssetId(rawValue: payload.transferInfo.asset)?.chain else {
+        guard
+            let chainAssetId = ChainAssetId(walletId: payload.transferInfo.asset),
+            let chain = chains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
+        else {
             return nil
         }
 
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
         var viewModelList: [WalletFormViewBindingProtocol] = []
 
-        populateAsset(in: &viewModelList, payload: payload, locale: locale)
-        populateReceiver(in: &viewModelList, payload: payload, chain: chain, locale: locale)
-        populateSendingAmount(in: &viewModelList, payload: payload, locale: locale)
-        populateFee(in: &viewModelList, payload: payload, locale: locale)
+        populateAsset(in: &viewModelList, payload: payload, chainAsset: chainAsset, locale: locale)
+        populateReceiver(in: &viewModelList, payload: payload, locale: locale)
+        populateSendingAmount(in: &viewModelList, payload: payload, chainAsset: chainAsset, locale: locale)
+        populateFee(in: &viewModelList, payload: payload, chainAsset: chainAsset, locale: locale)
 
         return viewModelList
     }
@@ -189,7 +188,11 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
         _ payload: ConfirmationPayload,
         locale: Locale
     ) -> AccessoryViewModelProtocol? {
-        guard let asset = assets.first(where: { $0.identifier == payload.transferInfo.asset }) else {
+        guard
+            let chainAssetId = ChainAssetId(walletId: payload.transferInfo.asset),
+            let chain = chains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
+        else {
             return nil
         }
 
@@ -199,7 +202,7 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
             decimalAmount += fee.value.decimalValue
         }
 
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset)
+        let formatter = amountFormatterFactory.createTokenFormatter(for: asset.displayInfo)
 
         guard let amount = formatter.value(for: locale).stringFromDecimal(decimalAmount) else {
             return nil
