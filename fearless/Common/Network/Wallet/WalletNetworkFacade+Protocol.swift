@@ -212,7 +212,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             guard
                 let chainAssetId = ChainAssetId(walletId: info.asset),
                 let chain = chains[chainAssetId.chainId],
-                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
+                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+                let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
@@ -228,6 +229,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                     let item = try TransactionHistoryItem
                         .createFromTransferInfo(
                             info,
+                            senderAccount: accountResponse,
                             transactionHash: txHash,
                             chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo
                         )

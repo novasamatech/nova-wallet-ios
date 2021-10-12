@@ -56,12 +56,19 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let compoundReceiver = createAccountInfoFetchOperation(
             receiver,
-            chainId: chainAssetId.chainId
+            chainId: chainAssetId.chainId,
+            chainFormat: chain.chainFormat
         )
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
-            return try builder.adding(call: call)
+            switch chain.chainFormat {
+            case .substrate:
+                let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
+                return try builder.adding(call: call)
+            case .ethereum:
+                let call = SubstrateCallFactory().ethereumTransfer(to: receiver, amount: amount)
+                return try builder.adding(call: call)
+            }
         }
 
         let extrinsicFactory = ExtrinsicOperationFactory(
@@ -134,8 +141,14 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         }
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
-            return try builder.adding(call: call)
+            switch chain.chainFormat {
+            case .substrate:
+                let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
+                return try builder.adding(call: call)
+            case .ethereum:
+                let call = SubstrateCallFactory().ethereumTransfer(to: receiver, amount: amount)
+                return try builder.adding(call: call)
+            }
         }
 
         let signer = SigningWrapper(

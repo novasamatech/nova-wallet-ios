@@ -4,7 +4,15 @@ import IrohaCrypto
 import BigInt
 
 protocol SubstrateCallFactoryProtocol {
-    func transfer(to receiver: AccountId, amount: BigUInt) -> RuntimeCall<TransferCall>
+    func transfer(
+        to receiver: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<TransferCall>
+
+    func ethereumTransfer(
+        to receiver: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<EthereumTransferCall>
 
     func bond(
         amount: BigUInt,
@@ -98,8 +106,19 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: "Staking", callName: "payout_stakers", args: args)
     }
 
-    func transfer(to receiver: AccountId, amount: BigUInt) -> RuntimeCall<TransferCall> {
+    func transfer(
+        to receiver: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
+        return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
+    }
+
+    func ethereumTransfer(
+        to receiver: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<EthereumTransferCall> {
+        let args = EthereumTransferCall(dest: receiver, value: amount)
         return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
     }
 

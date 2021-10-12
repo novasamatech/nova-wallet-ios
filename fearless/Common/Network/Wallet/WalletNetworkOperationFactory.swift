@@ -35,7 +35,8 @@ final class WalletNetworkOperationFactory {
 
     func createAccountInfoFetchOperation(
         _ accountId: Data,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<AccountInfo?> {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
@@ -47,12 +48,24 @@ final class WalletNetworkOperationFactory {
 
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let wrapper: CompoundOperationWrapper<[StorageResponse<AccountInfo>]> = requestFactory.queryItems(
-            engine: connection,
-            keyParams: { [accountId] },
-            factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: StorageCodingPath.account
-        )
+        let wrapper: CompoundOperationWrapper<[StorageResponse<AccountInfo>]>
+
+        switch chainFormat {
+        case .substrate:
+            wrapper = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [accountId] },
+                factory: { try coderFactoryOperation.extractNoCancellableResultData() },
+                storagePath: StorageCodingPath.account
+            )
+        case .ethereum:
+            wrapper = requestFactory.queryItems(
+                engine: connection,
+                keyParams: { [accountId.map { StringScaleMapper(value: $0) }] },
+                factory: { try coderFactoryOperation.extractNoCancellableResultData() },
+                storagePath: StorageCodingPath.account
+            )
+        }
 
         let mapOperation = ClosureOperation<AccountInfo?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
