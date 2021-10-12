@@ -32,15 +32,29 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 chainId: chainId
             )
 
-            let request = MapSubscriptionRequest(storagePath: storagePath, localKey: localKey) { accountId }
+            if accountId.count == 32 {
+                let request = MapSubscriptionRequest(storagePath: storagePath, localKey: localKey) { accountId }
 
-            return attachToSubscription(
-                with: [request],
-                chainId: chainId,
-                cacheKey: localKey,
-                queue: queue,
-                closure: closure
-            )
+                return attachToSubscription(
+                    with: [request],
+                    chainId: chainId,
+                    cacheKey: localKey,
+                    queue: queue,
+                    closure: closure
+                )
+            } else {
+                let request = MapSubscriptionRequest(storagePath: storagePath, localKey: localKey) { accountId.map { StringScaleMapper(value: $0) }
+                }
+
+                return attachToSubscription(
+                    with: [request],
+                    chainId: chainId,
+                    cacheKey: localKey,
+                    queue: queue,
+                    closure: closure
+                )
+            }
+
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
             return nil

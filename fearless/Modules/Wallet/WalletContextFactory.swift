@@ -45,6 +45,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         logger.info("Start wallet for: \(metaAccount.metaId)")
 
+        if let ethereumAddress = metaAccount.ethereumAddress {
+            logger.info("Ethereum address: \(ethereumAddress.toHex(includePrefix: true))")
+        }
+
         let chains = try allChains()
         let chainAssets: [ChainAsset] = chains.compactMap { chain in
             guard
@@ -66,8 +70,15 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             modes: .view
         )
 
-        let walletAssets = chainAssets.map { chainAsset in
-            WalletAsset(
+        let walletAssets: [WalletAsset] = chainAssets.compactMap { chainAsset in
+            // TODO: Remove when runtime fixed
+            guard ![Chain.westend.genesisHash, Chain.kusama.genesisHash].contains(
+                chainAsset.chain.identifier
+            ) else {
+                return nil
+            }
+
+            return WalletAsset(
                 identifier: chainAsset.chainAssetId.walletId,
                 name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
                 platform: LocalizableResource { _ in chainAsset.chain.name },
@@ -181,6 +192,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
         let amountFormatterFactory = AmountFormatterFactory()
+        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
             amountFormatterFactory: amountFormatterFactory,
@@ -190,7 +202,27 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let contactsConfigurator = ContactsConfigurator(metaAccount: metaAccount, chains: chainsById)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
-        return try builder.build()
+        let transferConfigurator = TransferConfigurator(
+            assets: accountSettings.assets,
+            amountFormatterFactory: amountFormatterFactory,
+            localizationManager: localizationManager
+        )
+
+        transferConfigurator.configure(builder: builder.transferModuleBuilder)
+
+        let confirmConfigurator = TransferConfirmConfigurator(
+            chains: chainsById,
+            amountFormatterFactory: assetBalanceFormatterFactory
+        )
+
+        confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
+
+        let context = try builder.build()
+
+        transferConfigurator.commandFactory = context
+        confirmConfigurator.commandFactory = context
+
+        return context
     }
     // swiftlint:enable function_body_length
 }

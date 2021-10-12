@@ -63,8 +63,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     ) throws -> AssetSelectionViewModelProtocol? {
         guard
             let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId }),
-            let assetId = WalletAssetId(rawValue: asset.identifier)
+            .first(where: { $0.identifier == payload.receiveInfo.assetId })
         else {
             return nil
         }
@@ -109,7 +108,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             title: asset.name.value(for: locale),
             subtitle: subtitle,
             details: amount,
-            icon: assetId.icon,
+            icon: nil, // fix icon
             state: selectedAssetState,
             detailsCommand: detailsCommand
         )
@@ -140,7 +139,6 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         guard
             let asset = assets
             .first(where: { $0.identifier == payload.receiveInfo.assetId }),
-            let chain = WalletAssetId(rawValue: asset.identifier)?.chain,
             let commandFactory = commandFactory
         else {
             return nil
@@ -157,9 +155,10 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
                 contentScale: UIScreen.main.scale
             )
 
+        // TODO: Fix account viewer
         let command = WalletAccountOpenCommand(
             address: payload.receiverName,
-            chain: chain,
+            chain: .westend,
             commandFactory: commandFactory,
             locale: locale
         )

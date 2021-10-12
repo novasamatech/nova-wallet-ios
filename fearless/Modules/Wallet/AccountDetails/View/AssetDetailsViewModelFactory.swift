@@ -123,10 +123,8 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         guard
             let assetId = assetId,
             let chainAssetId = ChainAssetId(walletId: assetId),
-            let walletAssetId = WalletAssetId(chainId: chainAssetId.chainId),
             let chain = chains[chainAssetId.chainId],
-            let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
-            let walletChain = walletAssetId.chain else {
+            let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress() else {
             return nil
         }
 
@@ -147,15 +145,22 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             command: receiveCommand
         )
 
-        let actions = purchaseProvider.buildPurchaseActions(
-            for: walletChain,
-            assetId: walletAssetId,
-            address: address
-        )
-
+        // TODO: fix purchase
         let buyCommand: WalletCommandProtocol?
-        if !actions.isEmpty {
-            buyCommand = WalletSelectPurchaseProviderCommand(actions: actions, commandFactory: commandFactory)
+        if
+            let walletAssetId = WalletAssetId(chainId: chainAssetId.chainId),
+            let walletChain = walletAssetId.chain {
+            let actions = purchaseProvider.buildPurchaseActions(
+                for: walletChain,
+                assetId: walletAssetId,
+                address: address
+            )
+
+            buyCommand = actions.isEmpty ? nil :
+                WalletSelectPurchaseProviderCommand(
+                    actions: actions,
+                    commandFactory: commandFactory
+                )
         } else {
             buyCommand = nil
         }
