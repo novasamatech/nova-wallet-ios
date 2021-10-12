@@ -25,6 +25,7 @@ class EthereumBaseIntegrationTests: XCTestCase {
         guard let subscriptionId = walletService.attachToAccountInfo(
             of: accountId,
             chainId: chainId,
+            chainFormat: .ethereum,
             queue: nil,
             closure: nil
         ) else {

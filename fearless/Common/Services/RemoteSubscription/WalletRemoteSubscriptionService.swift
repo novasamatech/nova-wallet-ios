@@ -4,6 +4,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     func attachToAccountInfo(
         of accountId: AccountId,
         chainId: ChainModel.Id,
+        chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID?
@@ -21,6 +22,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     func attachToAccountInfo(
         of accountId: AccountId,
         chainId: ChainModel.Id,
+        chainFormat: ChainFormat,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
     ) -> UUID? {
@@ -32,8 +34,12 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 chainId: chainId
             )
 
-            if accountId.count == 32 {
-                let request = MapSubscriptionRequest(storagePath: storagePath, localKey: localKey) { accountId }
+            switch chainFormat {
+            case .substrate:
+                let request = MapSubscriptionRequest(
+                    storagePath: storagePath,
+                    localKey: localKey
+                ) { accountId }
 
                 return attachToSubscription(
                     with: [request],
@@ -42,9 +48,11 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                     queue: queue,
                     closure: closure
                 )
-            } else {
-                let request = MapSubscriptionRequest(storagePath: storagePath, localKey: localKey) { accountId.map { StringScaleMapper(value: $0) }
-                }
+            case .ethereum:
+                let request = MapSubscriptionRequest(
+                    storagePath: storagePath,
+                    localKey: localKey
+                ) { accountId.map { StringScaleMapper(value: $0) } }
 
                 return attachToSubscription(
                     with: [request],
@@ -54,7 +62,6 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                     closure: closure
                 )
             }
-
         } catch {
             callbackClosureIfProvided(closure, queue: queue, result: .failure(error))
             return nil
