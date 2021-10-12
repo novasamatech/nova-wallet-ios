@@ -29,23 +29,35 @@ PODS:
     - TweetNacl (~> 1.0.0)
     - xxHash-Swift (~> 1.0.0)
   - FireMock (3.1)
-  - IrohaCrypto/BIP39 (0.8.1):
+  - IrohaCrypto (0.8.2):
+    - IrohaCrypto/BIP39 (= 0.8.2)
+    - IrohaCrypto/blake2 (= 0.8.2)
+    - IrohaCrypto/Common (= 0.8.2)
+    - IrohaCrypto/ed25519 (= 0.8.2)
+    - IrohaCrypto/Iroha (= 0.8.2)
+    - IrohaCrypto/Scrypt (= 0.8.2)
+    - IrohaCrypto/secp256k1 (= 0.8.2)
+    - IrohaCrypto/sr25519 (= 0.8.2)
+    - IrohaCrypto/ss58 (= 0.8.2)
+  - IrohaCrypto/BIP39 (0.8.2):
     - IrohaCrypto/Common
-  - IrohaCrypto/blake2 (0.8.1)
-  - IrohaCrypto/Common (0.8.1)
-  - IrohaCrypto/ed25519 (0.8.1):
+  - IrohaCrypto/blake2 (0.8.2)
+  - IrohaCrypto/Common (0.8.2)
+  - IrohaCrypto/ed25519 (0.8.2):
     - IrohaCrypto/Common
-  - IrohaCrypto/Scrypt (0.8.1):
+  - IrohaCrypto/Iroha (0.8.2):
+    - IrohaCrypto/Common
+  - IrohaCrypto/Scrypt (0.8.2):
     - IrohaCrypto/Common
     - scrypt.c (~> 0.1)
-  - IrohaCrypto/secp256k1 (0.8.1):
+  - IrohaCrypto/secp256k1 (0.8.2):
     - IrohaCrypto/Common
     - secp256k1.c (~> 0.1)
-  - IrohaCrypto/sr25519 (0.8.1):
+  - IrohaCrypto/sr25519 (0.8.2):
     - IrohaCrypto/BIP39
     - IrohaCrypto/blake2
     - IrohaCrypto/Common
-  - IrohaCrypto/ss58 (0.8.1):
+  - IrohaCrypto/ss58 (0.8.2):
     - IrohaCrypto/blake2
     - IrohaCrypto/Common
   - keccak.c (0.1.3)
@@ -125,6 +137,7 @@ DEPENDENCIES:
   - Cuckoo
   - FearlessUtils (from `https://github.com/soramitsu/fearless-utils-iOS.git`, commit `66ea67f4dd3c25b28ebbf18913346b20b92b25d2`)
   - FireMock
+  - IrohaCrypto (from `https://github.com/ERussel/IrohaCrypto.git`, commit `b9df3717bee59169d1e8296f4e625c69c018cab7`)
   - keccak.c
   - Kingfisher
   - R.swift
@@ -148,7 +161,6 @@ SPEC REPOS:
     - CocoaLumberjack
     - Cuckoo
     - FireMock
-    - IrohaCrypto
     - keccak.c
     - Kingfisher
     - R.swift
@@ -175,6 +187,9 @@ EXTERNAL SOURCES:
   FearlessUtils:
     :commit: 66ea67f4dd3c25b28ebbf18913346b20b92b25d2
     :git: https://github.com/soramitsu/fearless-utils-iOS.git
+  IrohaCrypto:
+    :commit: b9df3717bee59169d1e8296f4e625c69c018cab7
+    :git: https://github.com/ERussel/IrohaCrypto.git
   Starscream:
     :branch: feature/without-origin
     :git: https://github.com/ERussel/Starscream.git
@@ -189,6 +204,9 @@ CHECKOUT OPTIONS:
   FearlessUtils:
     :commit: 66ea67f4dd3c25b28ebbf18913346b20b92b25d2
     :git: https://github.com/soramitsu/fearless-utils-iOS.git
+  IrohaCrypto:
+    :commit: b9df3717bee59169d1e8296f4e625c69c018cab7
+    :git: https://github.com/ERussel/IrohaCrypto.git
   Starscream:
     :commit: b9e69390d96e71427463469f47cdafb8c0db1b21
     :git: https://github.com/ERussel/Starscream.git
@@ -204,7 +222,7 @@ SPEC CHECKSUMS:
   Cuckoo: 09ff1b7c6613b9c27dafea90702ca32208fe59d3
   FearlessUtils: 0c5cd73cc768b8e66f1c5a726f87859247dc5e6c
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
-  IrohaCrypto: 2f3ced592d33186beeb8818c0cb7481ec1365819
+  IrohaCrypto: 2b7585e71eff4fbd7e7adc2d592ad5c22610524b
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
   Kingfisher: 6c3df386db71d82c0817a429d2c9421a77396529
   R.swift: c533450b0f7dc494e0993f5f1a1db925d84c3006
@@ -226,6 +244,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: ed2e4e52b452c1bcaac8e43782ab6a194e4254c4
+PODFILE CHECKSUM: 49e6d123dc8fd4633a3f971f1bd4ca958c15a3c3
 
 COCOAPODS: 1.10.2
