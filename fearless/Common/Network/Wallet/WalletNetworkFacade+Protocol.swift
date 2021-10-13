@@ -113,8 +113,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             defaultRow: pagination.count
         ).byApplying(filter: filter)
 
+        let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
+
+        // The history only works for asset detals now
         guard !historyContext.isComplete,
-              let walletAssetId = request.assets?.first(where: { $0 != totalPriceId }),
+              let userAssets = mayBeUserAssets,
+              userAssets.count == 1,
+              let walletAssetId = userAssets.first,
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
               let chain = chains[chainAssetId.chainId],
               let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),

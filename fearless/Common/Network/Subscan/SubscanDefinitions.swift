@@ -17,6 +17,10 @@ extension WalletAssetId {
             return URL(string: "https://kusama.api.subscan.io/")
         case .westend:
             return URL(string: "https://westend.api.subscan.io/")
+        case .moonriver:
+            return URL(string: "https://moonriver.api.subscan.io/")
+        case .monbaseAlpha:
+            return URL(string: "https://moonbase.api.subscan.io/")
         default:
             return nil
         }
