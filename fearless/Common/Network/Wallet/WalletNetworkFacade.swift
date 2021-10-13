@@ -16,7 +16,7 @@ final class WalletNetworkFacade {
     let totalPriceAssetInfo: AssetBalanceDisplayInfo
     let chainStorage: AnyDataProviderRepository<ChainStorageItem>
     let localStorageRequestFactory: LocalStorageRequestFactoryProtocol
-    let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let contactsOperationFactory: WalletContactOperationFactoryProtocol
     let accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
 
@@ -33,7 +33,7 @@ final class WalletNetworkFacade {
         totalPriceAssetInfo: AssetBalanceDisplayInfo,
         chainStorage: AnyDataProviderRepository<ChainStorageItem>,
         localStorageRequestFactory: LocalStorageRequestFactoryProtocol,
-        txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
         contactsOperationFactory: WalletContactOperationFactoryProtocol,
         accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
     ) {
@@ -49,7 +49,7 @@ final class WalletNetworkFacade {
         self.totalPriceId = totalPriceId
         self.totalPriceAssetInfo = totalPriceAssetInfo
         self.chainStorage = chainStorage
-        self.txStorage = txStorage
+        self.repositoryFactory = repositoryFactory
         self.contactsOperationFactory = contactsOperationFactory
         self.accountsRepository = accountsRepository
     }
