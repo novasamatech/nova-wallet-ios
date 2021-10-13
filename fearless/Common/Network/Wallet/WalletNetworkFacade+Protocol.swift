@@ -159,6 +159,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
 
+        let txStorage = repositoryFactory.createTxRepository(for: address)
+
         if pagination.context == nil {
             let operation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
             dependencies.append(operation)
@@ -218,7 +220,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                 let chainAssetId = ChainAssetId(walletId: info.asset),
                 let chain = chains[chainAssetId.chainId],
                 let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-                let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+                let accountResponse = metaAccount.fetch(for: chain.accountRequest()),
+                let address = accountResponse.toAddress() else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
@@ -228,6 +231,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
             let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
 
+            let txStorage = repositoryFactory.createTxRepository(for: address)
             let txSaveOperation = txStorage.saveOperation({
                 switch transferWrapper.targetOperation.result {
                 case let .success(txHash):

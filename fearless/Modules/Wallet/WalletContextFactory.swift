@@ -131,8 +131,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
 
-        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
-            SubstrateDataStorageFacade.shared.createRepository()
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateFacade)
 
         let contactOperationFactory = WalletContactOperationFactory(
             storageFacade: substrateFacade,
@@ -152,7 +151,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
             localStorageRequestFactory: localStorageRequestFactory,
-            txStorage: AnyDataProviderRepository(txStorage),
+            repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository
         )

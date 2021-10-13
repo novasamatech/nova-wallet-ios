@@ -6,6 +6,9 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
+    func createTxRepository(
+        for address: AccountAddress
+    ) -> AnyDataProviderRepository<TransactionHistoryItem>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -52,5 +55,14 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             )
 
         return AnyDataProviderRepository(repository)
+    }
+
+    func createTxRepository(
+        for address: AccountAddress
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let txFilter = NSPredicate.filterTransactionsBy(address: address)
+        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository(filter: txFilter)
+        return AnyDataProviderRepository(txStorage)
     }
 }

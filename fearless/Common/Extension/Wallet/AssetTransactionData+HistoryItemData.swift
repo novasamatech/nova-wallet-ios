@@ -21,7 +21,11 @@ extension AssetTransactionData {
             status = .pending
         }
 
-        let peerAddress = item.sender == address ? item.receiver : item.sender
+        let senderId = try? item.sender.toAccountId()
+        let receiverId = try? address.toAccountId()
+        let isSender = senderId == receiverId
+
+        let peerAddress = isSender ? item.receiver : item.sender
 
         let accountId = try? peerAddress.toAccountId(using: chainAssetInfo.chain)
 
@@ -41,7 +45,7 @@ extension AssetTransactionData {
             context: nil
         )
 
-        let type = item.sender == address ? TransactionType.outgoing :
+        let type = isSender ? TransactionType.outgoing :
             TransactionType.incoming
 
         return AssetTransactionData(
