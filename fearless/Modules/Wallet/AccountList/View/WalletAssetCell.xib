@@ -59,39 +59,39 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kusama" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gag-6u-iE8">
-                                <rect key="frame" x="72" y="6" width="55.5" height="18"/>
-                                <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
-                                <color key="textColor" name="colorWhite"/>
+                                <rect key="frame" x="72" y="8" width="41.5" height="13"/>
+                                <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="10"/>
+                                <color key="textColor" name="colorTransparentText"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="KSM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qvi-bz-Yi2">
-                                <rect key="frame" x="72" y="27" width="42.5" height="23"/>
+                                <rect key="frame" x="72" y="26" width="42.5" height="23"/>
                                 <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="18"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="0.5" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <color key="textColor" name="colorWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="44.0849" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="BRZ-kb-M9S">
-                                <rect key="frame" x="122.5" y="27" width="208.5" height="23"/>
+                                <rect key="frame" x="122.5" y="26" width="208.5" height="23"/>
                                 <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="18"/>
                                 <color key="textColor" name="colorWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$10.31" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YJu-Wm-1v9">
-                                <rect key="frame" x="72" y="58" width="44" height="18"/>
+                                <rect key="frame" x="72" y="52" width="44" height="18"/>
                                 <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
-                                <color key="textColor" name="colorWhite"/>
+                                <color key="textColor" name="colorTransparentText"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+25%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Js2-kv-WeL">
-                                <rect key="frame" x="120" y="58" width="38" height="18"/>
+                                <rect key="frame" x="120" y="52" width="38" height="18"/>
                                 <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                                 <color key="textColor" name="colorGreen"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" verticalCompressionResistancePriority="751" text="$1000.05" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tao-am-aq2">
-                                <rect key="frame" x="166" y="58" width="165" height="18"/>
+                                <rect key="frame" x="166" y="52" width="165" height="18"/>
                                 <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="0.5" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <color key="textColor" name="colorTransparentText"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -103,7 +103,7 @@
                             <constraint firstItem="gag-6u-iE8" firstAttribute="leading" secondItem="gQ9-WX-OdT" secondAttribute="trailing" constant="8" id="BqC-sz-ZaK"/>
                             <constraint firstItem="YJu-Wm-1v9" firstAttribute="leading" secondItem="gag-6u-iE8" secondAttribute="leading" id="Der-y3-vkK"/>
                             <constraint firstItem="qvi-bz-Yi2" firstAttribute="leading" secondItem="gag-6u-iE8" secondAttribute="leading" id="ElP-Jb-7z5"/>
-                            <constraint firstAttribute="bottom" secondItem="YJu-Wm-1v9" secondAttribute="bottom" constant="4" id="GzO-fY-jR3"/>
+                            <constraint firstAttribute="bottom" secondItem="YJu-Wm-1v9" secondAttribute="bottom" constant="10" id="GzO-fY-jR3"/>
                             <constraint firstItem="WkE-7P-L2I" firstAttribute="leading" secondItem="kV4-Z9-Bj8" secondAttribute="leading" constant="63" id="Kfg-IG-LLW"/>
                             <constraint firstAttribute="bottom" secondItem="WkE-7P-L2I" secondAttribute="bottom" constant="4" id="MsR-VF-l2M"/>
                             <constraint firstItem="WkE-7P-L2I" firstAttribute="top" secondItem="kV4-Z9-Bj8" secondAttribute="top" constant="8" id="NbU-eH-lgx"/>
@@ -114,12 +114,12 @@
                             <constraint firstItem="gQ9-WX-OdT" firstAttribute="top" secondItem="kV4-Z9-Bj8" secondAttribute="top" id="Yvt-MI-CGO"/>
                             <constraint firstItem="tao-am-aq2" firstAttribute="centerY" secondItem="YJu-Wm-1v9" secondAttribute="centerY" id="Z5q-8B-QGn"/>
                             <constraint firstItem="Js2-kv-WeL" firstAttribute="leading" secondItem="YJu-Wm-1v9" secondAttribute="trailing" constant="4" id="ZTg-Cz-xn2"/>
-                            <constraint firstItem="gag-6u-iE8" firstAttribute="top" secondItem="kV4-Z9-Bj8" secondAttribute="top" constant="6" id="cH7-tp-kkV"/>
+                            <constraint firstItem="gag-6u-iE8" firstAttribute="top" secondItem="kV4-Z9-Bj8" secondAttribute="top" constant="8" id="cH7-tp-kkV"/>
                             <constraint firstItem="zsr-9m-Xng" firstAttribute="leading" secondItem="kV4-Z9-Bj8" secondAttribute="leading" id="e9C-uv-p6S"/>
                             <constraint firstItem="BRZ-kb-M9S" firstAttribute="centerY" secondItem="qvi-bz-Yi2" secondAttribute="centerY" id="ov6-NT-6Vk"/>
                             <constraint firstItem="Js2-kv-WeL" firstAttribute="centerY" secondItem="YJu-Wm-1v9" secondAttribute="centerY" id="puB-AR-J0Q"/>
                             <constraint firstItem="tao-am-aq2" firstAttribute="trailing" secondItem="BRZ-kb-M9S" secondAttribute="trailing" id="qtR-ij-9dD"/>
-                            <constraint firstItem="qvi-bz-Yi2" firstAttribute="top" secondItem="gag-6u-iE8" secondAttribute="bottom" constant="3" id="rgZ-hn-OTM"/>
+                            <constraint firstItem="qvi-bz-Yi2" firstAttribute="top" secondItem="gag-6u-iE8" secondAttribute="bottom" constant="5" id="rgZ-hn-OTM"/>
                             <constraint firstAttribute="trailing" secondItem="BRZ-kb-M9S" secondAttribute="trailing" constant="12" id="sIn-eP-roS"/>
                         </constraints>
                     </view>
@@ -148,6 +148,9 @@
     <resources>
         <namedColor name="colorGreen">
             <color red="0.054901960784313725" green="0.82745098039215681" blue="0.23137254901960785" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="colorTransparentText">
+            <color red="1" green="1" blue="1" alpha="0.63999998569488525" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

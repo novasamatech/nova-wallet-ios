@@ -28,7 +28,7 @@ extension WalletAssetCell: WalletViewProtocol {
         if let assetViewModel = viewModel as? WalletAssetViewModel {
             self.viewModel = viewModel
 
-            platformLabel.text = assetViewModel.platform
+            platformLabel.text = assetViewModel.platform.uppercased()
             symbolLabel.text = assetViewModel.symbol
             balanceLabel.text = assetViewModel.amount
             priceLabel.text = assetViewModel.details
