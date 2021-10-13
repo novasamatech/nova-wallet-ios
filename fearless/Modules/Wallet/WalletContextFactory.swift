@@ -50,7 +50,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         }
 
         let chains = try allChains()
-        let chainAssets: [ChainAsset] = chains.compactMap { chain in
+        let chainAssets: [ChainAsset] = chains.reversed().compactMap { chain in
             guard
                 metaAccount.fetch(for: chain.accountRequest()) != nil,
                 let asset = chain.utilityAssets().first else {
