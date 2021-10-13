@@ -38,33 +38,9 @@ open class TriangularedView: ShadowShapeView {
     // MARK: Overriden methods
 
     override open var shapePath: UIBezierPath {
-        let bezierPath = UIBezierPath()
-
         let layerBounds: CGRect = bounds
 
-        if cornerCut.contains(.topLeft) {
-            bezierPath.move(to: CGPoint(x: layerBounds.minX + sideLength, y: layerBounds.minY))
-        } else {
-            bezierPath.move(to: CGPoint(x: layerBounds.minX, y: layerBounds.minY))
-        }
-
-        bezierPath.addLine(to: CGPoint(x: layerBounds.maxX, y: layerBounds.minY))
-
-        if cornerCut.contains(.bottomRight) {
-            bezierPath.addLine(to: CGPoint(x: layerBounds.maxX, y: layerBounds.maxY - sideLength))
-            bezierPath.addLine(to: CGPoint(x: layerBounds.maxX - sideLength, y: layerBounds.maxY))
-        } else {
-            bezierPath.addLine(to: CGPoint(x: layerBounds.maxX, y: layerBounds.maxY))
-        }
-
-        bezierPath.addLine(to: CGPoint(x: layerBounds.minX, y: layerBounds.maxY))
-
-        if cornerCut.contains(.topLeft) {
-            bezierPath.addLine(to: CGPoint(x: layerBounds.minX, y: layerBounds.minY + sideLength))
-            bezierPath.addLine(to: CGPoint(x: layerBounds.minX + sideLength, y: layerBounds.minY))
-        } else {
-            bezierPath.addLine(to: CGPoint(x: layerBounds.minX, y: layerBounds.minY))
-        }
+        let bezierPath = UIBezierPath(roundedRect: layerBounds, cornerRadius: sideLength)
 
         return bezierPath
     }
