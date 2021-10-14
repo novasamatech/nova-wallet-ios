@@ -6,7 +6,7 @@ final class StakingBalanceViewLayout: UIView {
 
     let navBarBlurView: UIView = {
         let blurView = TriangularedBlurView()
-        blurView.cornerCut = .none
+        blurView.cornerCut = []
         return blurView
     }()
 
