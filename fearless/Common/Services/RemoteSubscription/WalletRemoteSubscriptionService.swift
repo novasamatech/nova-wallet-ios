@@ -1,4 +1,5 @@
 import Foundation
+import FearlessUtils
 
 protocol WalletRemoteSubscriptionServiceProtocol {
     func attachToAccountInfo(

@@ -9,6 +9,7 @@ class EthereumBaseIntegrationTests: XCTestCase {
         let accountId = try Data(hexString: "0x2e042c2F97f0952E6fa3D68CD6D65F7201c2de84")
         let chainId = "91bc6e169807aaa54802737e1c504b2577d4fafedd5a02c10293b1cd60e39527"
 
+        let logger = Logger.shared
         let chainStorageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: chainStorageFacade)
         let repository = SubstrateRepositoryFactory(storageFacade: chainStorageFacade)
@@ -51,6 +52,8 @@ class EthereumBaseIntegrationTests: XCTestCase {
             guard let accountInfo = changes.reduceToLastChange()?.item else {
                 return
             }
+
+            logger.info("Available: \(accountInfo.data.available)")
 
             expectation.fulfill()
         }

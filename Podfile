@@ -3,7 +3,7 @@ platform :ios, '11.0'
 abstract_target 'fearlessAll' do
   use_frameworks!
 
-  pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '1525ca152c5bbf9b8c5edb054e68ed6808b49abb'
+  pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '66478734fef0b80d6419b19cf0af2000841a80a5'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -12,22 +12,19 @@ abstract_target 'fearlessAll' do
   pod 'CommonWallet/Core', :git => 'https://github.com/soramitsu/Capital-iOS.git', :commit => '4133ff9b81cda094dd8e2b7f32129172224b0227'
   pod 'SoraFoundation', '~> 1.0.0'
   pod 'SwiftyBeaver'
-  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :branch => 'feature/without-origin'
   pod 'ReachabilitySwift'
   pod 'SnapKit', '~> 5.0.0'
   pod 'SwiftFormat/CLI', '~> 0.47.13'
   pod 'Sourcery', '~> 1.4'
   pod 'Kingfisher', :inhibit_warnings => true
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
-  pod 'keccak.c'
-  pod 'IrohaCrypto', :git => 'https://github.com/ERussel/IrohaCrypto.git', :commit => 'b9df3717bee59169d1e8296f4e625c69c018cab7'
   pod 'Charts'
 
   target 'fearlessTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '1525ca152c5bbf9b8c5edb054e68ed6808b49abb'
+    pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '66478734fef0b80d6419b19cf0af2000841a80a5'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
@@ -35,8 +32,6 @@ abstract_target 'fearlessAll' do
     pod 'RobinHood', '~> 2.6.0'
     pod 'CommonWallet/Core', :git => 'https://github.com/soramitsu/Capital-iOS.git', :commit => '4133ff9b81cda094dd8e2b7f32129172224b0227'
     pod 'Sourcery', '~> 1.4'
-    pod 'IrohaCrypto', :git => 'https://github.com/ERussel/IrohaCrypto.git', :commit => 'b9df3717bee59169d1e8296f4e625c69c018cab7'
-    pod 'keccak.c'
 
   end
 
