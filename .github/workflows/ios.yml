@@ -48,3 +48,17 @@ jobs:
           if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
           file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
           xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
+
+      - name: Archive
+        run: xcodebuild archive -archivePath ../AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
+
+      - name: Export archive
+        run: xcodebuild -exportArchive -archivePath ../AdHoc.xcarchive -exportPath ../export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
+
+      # - name: Upload artifact to Firebase App Distribution
+      #     uses: wzieba/Firebase-Distribution-Github-Action@v1
+      #     with:
+      #       appId: ${{ secrets.ANDROID_DEV_FIREBASE_APP_ID }}
+      #       token: ${{ secrets.ANDROID_DEV_FIREBASE_TOKEN }}
+      #       groups: dev-team
+      #       file: app/build/outputs/apk/debug/app-debug.apk

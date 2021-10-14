@@ -9676,7 +9676,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -9698,7 +9698,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -9720,7 +9720,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -9857,8 +9857,9 @@
 			baseConfigurationReference = 849013FA24A92A05008F705E /* fearless.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = fearless/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -9869,8 +9870,9 @@
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearless;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -9881,9 +9883,9 @@
 			baseConfigurationReference = 849013F924A92A05008F705E /* fearless.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = fearless/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -9893,9 +9895,9 @@
 					"$(CONFIGURATION_BUILD_DIR)",
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearless;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -9909,7 +9911,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -9934,7 +9936,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -10016,9 +10018,9 @@
 			baseConfigurationReference = 849013F824A92A05008F705E /* fearless.dev.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = fearless/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -10029,9 +10031,9 @@
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearless;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "nova-wallet-dev";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -10045,7 +10047,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = YLWWUD25VZ;
+				DEVELOPMENT_TEAM = A8T3U2DXZX;
 				INFOPLIST_FILE = fearlessTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
