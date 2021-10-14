@@ -91,17 +91,11 @@ jobs:
       #     file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
       #     xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
 
-      # - name: Archive
-      #   run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
+      - name: Archive
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
 
-      # - name: Export archive
-      #   run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
-
-      - name: TMP
-        run: |
-          mkdir -p export
-          echo hello > export/fearless.ipa
-
+      - name: Export archive
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
