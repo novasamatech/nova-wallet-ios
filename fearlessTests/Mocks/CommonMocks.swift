@@ -5049,6 +5049,7 @@ import Cuckoo
 @testable import fearless
 @testable import SoraKeystore
 
+import FearlessUtils
 import Foundation
 
 
