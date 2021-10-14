@@ -14,9 +14,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install Dependencies
-        run: |
-          pod install --repo-update
+
+      - name: Cache Cocoapods
+        id: cache-cocoapods
+        uses: actions/cache@v2
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install Cocoapods
+        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+        run: pod install --repo-update
+
       - name: Set Default Scheme
         run: |
           scheme_list=$(xcodebuild -list -json | tr -d "\n")
@@ -81,16 +92,16 @@ jobs:
       #     xcodebuild test-without-building -scheme "$scheme" -"$filetype_parameter" "$file_to_build" -destination "platform=$platform,name=$device"
 
       - name: Archive
-        run: xcodebuild archive -archivePath ../AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ../AdHoc.xcarchive -exportPath ../export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: fearless.ipa
-          path: ../export
+          path: /export
 
   distribute-ios:
     needs: build
@@ -102,7 +113,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: fearless.ipa
-          path: ../export
+          path: /export
 
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
@@ -110,11 +121,4 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: dev-team
-          file: ../export/fearless.ipa
-      # - name: Upload artifact to Firebase App Distribution
-      #     uses: wzieba/Firebase-Distribution-Github-Action@v1
-      #     with:
-      #       appId: ${{ secrets.ANDROID_DEV_FIREBASE_APP_ID }}
-      #       token: ${{ secrets.ANDROID_DEV_FIREBASE_TOKEN }}
-      #       groups: dev-team
-      #       file: app/build/outputs/apk/debug/app-debug.apk
+          file: /export/fearless.ipa
