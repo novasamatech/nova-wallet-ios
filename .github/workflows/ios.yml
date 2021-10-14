@@ -1,11 +1,5 @@
 name: iOS starter workflow
 
-env:
-  BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-  P12_PASSWORD: ""
-  BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-  KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-
 on:
   push:
     branches: [ develop ]
@@ -31,6 +25,11 @@ jobs:
           echo Using default scheme: $default
 
       - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ""
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
@@ -87,7 +86,25 @@ jobs:
       - name: Export archive
         run: xcodebuild -exportArchive -archivePath ../AdHoc.xcarchive -exportPath ../export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
 
-      - name: upload artifact to Firebase App Distribution
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fearless.ipa
+          path: ../export
+
+  distribute-ios:
+    needs: build
+    name: Distribute archive to Firebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: fearless.ipa
+          path: ../export
+
+      - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_APP_ID }}
