@@ -88,3 +88,4 @@ jobs:
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: dev-team
           file: export/fearless.ipa
+          releaseNotes: ${{ github.event.head_commit.message }}
