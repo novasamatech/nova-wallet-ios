@@ -25,7 +25,7 @@ open class TriangularedBlurView: UIView {
         }
     }
 
-    var cornerCut: TriangularedCorners = [.topLeft, .bottomRight] {
+    var cornerCut: UIRectCorner = .allCorners {
         didSet {
             blurMaskView?.cornerCut = cornerCut
             overlayView.cornerCut = cornerCut
