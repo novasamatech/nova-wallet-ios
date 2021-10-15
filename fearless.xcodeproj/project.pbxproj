@@ -1594,6 +1594,10 @@
 		F4DCAE4F2620819000CCA6BF /* PayoutRewardsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DCAE4E2620819000CCA6BF /* PayoutRewardsService.swift */; };
 		F4E117B9264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */; };
 		F4E339632614A03F0028B6B1 /* ExtrinsicsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E339622614A03F0028B6B1 /* ExtrinsicsInfo.swift */; };
+		F4E7926627199840003B2FA8 /* NetworksSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926527199840003B2FA8 /* NetworksSection.swift */; };
+		F4E7926B27199A7D003B2FA8 /* NetworksSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926A27199A7D003B2FA8 /* NetworksSectionHeaderView.swift */; };
+		F4E7927027199C01003B2FA8 /* NetworksItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */; };
+		F4E792752719A032003B2FA8 /* NetworksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E792742719A032003B2FA8 /* NetworksViewModel.swift */; };
 		F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */; };
 		F4EF24C826BA713300F28B4E /* AnalyticsStakeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */; };
 		F4EF24D026BA7A4400F28B4E /* AnalyticsViewModelFactoryBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */; };
@@ -3250,6 +3254,10 @@
 		F4DCAE4E2620819000CCA6BF /* PayoutRewardsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutRewardsService.swift; sourceTree = "<group>"; };
 		F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationVM.swift; sourceTree = "<group>"; };
 		F4E339622614A03F0028B6B1 /* ExtrinsicsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicsInfo.swift; sourceTree = "<group>"; };
+		F4E7926527199840003B2FA8 /* NetworksSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksSection.swift; sourceTree = "<group>"; };
+		F4E7926A27199A7D003B2FA8 /* NetworksSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksSectionHeaderView.swift; sourceTree = "<group>"; };
+		F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksItemCell.swift; sourceTree = "<group>"; };
+		F4E792742719A032003B2FA8 /* NetworksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksViewModel.swift; sourceTree = "<group>"; };
 		F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStakeHeaderView.swift; sourceTree = "<group>"; };
 		F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModelFactoryBase.swift; sourceTree = "<group>"; };
@@ -5118,6 +5126,8 @@
 			isa = PBXGroup;
 			children = (
 				F4876D75271987CF005CBF38 /* NetworksViewLayout.swift */,
+				F4E7926A27199A7D003B2FA8 /* NetworksSectionHeaderView.swift */,
+				F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -5128,6 +5138,8 @@
 				84754C8D2511539E00854599 /* ManagedConnectionViewModel.swift */,
 				84754C972511FC1F00854599 /* ManagedConnectionViewModelFactory.swift */,
 				F4876D892719891F005CBF38 /* NetworksViewState.swift */,
+				F4E7926527199840003B2FA8 /* NetworksSection.swift */,
+				F4E792742719A032003B2FA8 /* NetworksViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -8699,6 +8711,7 @@
 				849ABE5126276C3400011A2A /* SubscanQueryParams.swift in Sources */,
 				8428765624ADDE0200D91AD8 /* ProfileOptionViewModel.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
+				F4E7926627199840003B2FA8 /* NetworksSection.swift in Sources */,
 				8423B0E4251A774700B8687C /* SNAddressType+Chain.swift in Sources */,
 				84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */,
 				84D97ECF2521CA2F00F07405 /* WalletBaseTokenView.swift in Sources */,
@@ -9380,6 +9393,7 @@
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
 				8475AE34258B934F00B058F3 /* TransferValidatingError.swift in Sources */,
 				8494D8552524633300614D8F /* WalletTransferTokenView.swift in Sources */,
+				F4E7926B27199A7D003B2FA8 /* NetworksSectionHeaderView.swift in Sources */,
 				AE2C84DF25EF98BA00986716 /* AnyValidatorInfoInteractor.swift in Sources */,
 				8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */,
 				84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */,
@@ -9680,6 +9694,7 @@
 				8460517225536E3F00A1F0B4 /* ExportGenericViewModelBinder.swift in Sources */,
 				84A15489262888CA0050D557 /* IdentityOperationFactory.swift in Sources */,
 				8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */,
+				F4E792752719A032003B2FA8 /* NetworksViewModel.swift in Sources */,
 				844CB57626FA064700396E13 /* ChainRegistryError.swift in Sources */,
 				EF707B3A929EFA51B874E43A /* AddConnectionPresenter.swift in Sources */,
 				84CA68CF26BD6872003B9453 /* RuntimeSyncService.swift in Sources */,
@@ -9776,6 +9791,7 @@
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
 				E5F3DF66415E54AE04D0C9A9 /* StakingMainViewController.swift in Sources */,
 				F44CCBEE26D38D1900A9E02E /* AnalyticsMagentaButton.swift in Sources */,
+				F4E7927027199C01003B2FA8 /* NetworksItemCell.swift in Sources */,
 				E2F9D7BDDE961B162EF100AB /* StakingMainViewFactory.swift in Sources */,
 				CD76A6513A708051857FD480 /* StakingAmountProtocols.swift in Sources */,
 				61B9688494251703A6373A1B /* StakingAmountWireframe.swift in Sources */,
