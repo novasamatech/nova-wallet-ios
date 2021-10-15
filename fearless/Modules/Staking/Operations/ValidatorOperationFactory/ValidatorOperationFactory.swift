@@ -354,9 +354,7 @@ final class ValidatorOperationFactory {
         slashesOperation: UnappliedSlashesOperation,
         identitiesOperation: BaseOperation<[String: AccountIdentity]>
     ) -> BaseOperation<[ElectedValidatorInfo]> {
-        let chainInfo = chainInfo
-
-        return ClosureOperation<[ElectedValidatorInfo]> {
+        ClosureOperation<[ElectedValidatorInfo]> {
             let electedInfo = try eraValidatorsOperation.extractNoCancellableResultData()
             let maxNominators = try maxNominatorsOperation.extractNoCancellableResultData()
             let slashings = try slashesOperation.extractNoCancellableResultData()
@@ -372,7 +370,7 @@ final class ValidatorOperationFactory {
             return try electedInfo.validators.map { validator in
                 let hasSlashes = slashed.contains(validator.accountId)
 
-                let address = try validator.accountId.toAddress(using: chainInfo.chain)
+                let address = try validator.accountId.toAddress(using: self.chainInfo.chain)
 
                 let validatorReturn = try calculator
                     .calculateValidatorReturn(
@@ -387,7 +385,7 @@ final class ValidatorOperationFactory {
                     stakeReturn: validatorReturn,
                     hasSlashes: hasSlashes,
                     maxNominatorsRewarded: maxNominators,
-                    chainInfo: chainInfo,
+                    chainInfo: self.chainInfo,
                     blocked: validator.prefs.blocked
                 )
             }
