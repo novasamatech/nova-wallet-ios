@@ -15,9 +15,9 @@ final class TransferConfirmConfigurator {
 
     let viewModelFactory: TransferConfirmViewModelFactory
 
-    init(assets: [WalletAsset], amountFormatterFactory: NumberFormatterFactoryProtocol) {
+    init(chains: [String: ChainModel], amountFormatterFactory: AssetBalanceFormatterFactoryProtocol) {
         viewModelFactory = TransferConfirmViewModelFactory(
-            assets: assets,
+            chains: chains,
             amountFormatterFactory: amountFormatterFactory
         )
     }

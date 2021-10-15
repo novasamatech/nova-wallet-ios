@@ -113,8 +113,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             defaultRow: pagination.count
         ).byApplying(filter: filter)
 
+        let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
+
+        // The history only works for asset detals now
         guard !historyContext.isComplete,
-              let walletAssetId = request.assets?.first(where: { $0 != totalPriceId }),
+              let userAssets = mayBeUserAssets,
+              userAssets.count == 1,
+              let walletAssetId = userAssets.first,
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
               let chain = chains[chainAssetId.chainId],
               let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
@@ -153,6 +158,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         var dependencies = remoteHistoryWrapper.allOperations
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
+
+        let txStorage = repositoryFactory.createTxRepository(for: address)
 
         if pagination.context == nil {
             let operation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
@@ -212,7 +219,9 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             guard
                 let chainAssetId = ChainAssetId(walletId: info.asset),
                 let chain = chains[chainAssetId.chainId],
-                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
+                let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+                let accountResponse = metaAccount.fetch(for: chain.accountRequest()),
+                let address = accountResponse.toAddress() else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
@@ -222,12 +231,14 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
             let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
 
+            let txStorage = repositoryFactory.createTxRepository(for: address)
             let txSaveOperation = txStorage.saveOperation({
                 switch transferWrapper.targetOperation.result {
                 case let .success(txHash):
                     let item = try TransactionHistoryItem
                         .createFromTransferInfo(
                             info,
+                            senderAccount: accountResponse,
                             transactionHash: txHash,
                             chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo
                         )

@@ -114,6 +114,12 @@ extension MetaAccountModel {
             MetaChainAccountResponse(metaId: metaId, chainAccount: $0)
         }
     }
+
+    func contains(accountId: AccountId) -> Bool {
+        substrateAccountId == accountId ||
+            ethereumAddress == accountId ||
+            chainAccounts.contains(where: { $0.accountId == accountId })
+    }
 }
 
 extension ChainModel {

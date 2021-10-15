@@ -300,13 +300,13 @@ extension TriangularedButton {
     }
 
     @IBInspectable
-    private var _cornerCut: UInt8 {
+    private var _cornerCut: UInt {
         get {
             triangularedView!.cornerCut.rawValue
         }
 
         set {
-            triangularedView!.cornerCut = TriangularedCorners(rawValue: newValue)
+            triangularedView!.cornerCut = UIRectCorner(rawValue: newValue)
         }
     }
 }

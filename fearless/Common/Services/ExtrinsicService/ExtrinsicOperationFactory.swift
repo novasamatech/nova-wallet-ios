@@ -191,32 +191,45 @@ final class ExtrinsicOperationFactory {
             let era = try eraWrapper.targetOperation.extractNoCancellableResultData().extrinsicEra
             let eraBlockHash = try eraBlockOperation.extractNoCancellableResultData()
 
-            let account: MultiAddress = {
-                switch currentChainFormat {
-                case .ethereum:
-                    return MultiAddress.address20(currentAccountId)
-                case .substrate:
-                    return MultiAddress.accoundId(currentAccountId)
-                }
-            }()
-
             let extrinsics: [Data] = try (0 ..< numberOfExtrinsics).map { index in
                 var builder: ExtrinsicBuilderProtocol =
-                    try ExtrinsicBuilder(
+                    ExtrinsicBuilder(
                         specVersion: codingFactory.specVersion,
                         transactionVersion: codingFactory.txVersion,
                         genesisHash: genesisHash
                     )
-                    .with(address: account)
                     .with(era: era, blockHash: eraBlockHash)
                     .with(nonce: nonce + UInt32(index))
 
-                builder = try customClosure(builder, index).signing(
-                    by: signingClosure,
-                    of: currentCryptoType.utilsType,
-                    using: codingFactory.createEncoder(),
-                    metadata: codingFactory.metadata
-                )
+                switch currentChainFormat {
+                case .ethereum:
+                    let account = currentAccountId.map { StringScaleMapper(value: $0) }
+                    builder = try builder.with(address: account)
+
+                    builder = try customClosure(builder, index).signing(
+                        by: { data in
+                            let signature = try signingClosure(data)
+
+                            guard let ethereumSignature = EthereumSignature(rawValue: signature) else {
+                                throw BaseOperationError.unexpectedDependentResult
+                            }
+
+                            return try ethereumSignature.toScaleCompatibleJSON()
+                        },
+                        using: codingFactory.createEncoder(),
+                        metadata: codingFactory.metadata
+                    )
+                case .substrate:
+                    let account = MultiAddress.accoundId(currentAccountId)
+                    builder = try builder.with(address: account)
+
+                    builder = try customClosure(builder, index).signing(
+                        by: signingClosure,
+                        of: currentCryptoType.utilsType,
+                        using: codingFactory.createEncoder(),
+                        metadata: codingFactory.metadata
+                    )
+                }
 
                 return try builder.build(
                     encodingBy: codingFactory.createEncoder(),
