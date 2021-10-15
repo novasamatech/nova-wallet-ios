@@ -36,8 +36,8 @@ final class RuntimeSnapshotFactory {
         )
 
         let snapshotOperation = ClosureOperation<RuntimeSnapshot?> {
-            let commonTypes = try baseTypesFetchOperation.targetOperation.extractNoCancellableResultData()
-            let chainTypes = try chainTypesFetchOperation.targetOperation.extractNoCancellableResultData()
+            let maybeCommonTypes = try baseTypesFetchOperation.targetOperation.extractNoCancellableResultData()
+            let maybeChainTypes = try chainTypesFetchOperation.targetOperation.extractNoCancellableResultData()
 
             guard let runtimeMetadataItem = try runtimeMetadataOperation
                 .extractNoCancellableResultData() else {
@@ -47,19 +47,19 @@ final class RuntimeSnapshotFactory {
             let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
             let runtimeMetadata = try RuntimeMetadata(scaleDecoder: decoder)
 
-            guard let commonTypes = commonTypes, let chainTypes = chainTypes else {
+            guard let commonTypess = maybeCommonTypes, let chainTypess = maybeChainTypes else {
                 return nil
             }
 
             let catalog = try TypeRegistryCatalog.createFromTypeDefinition(
-                commonTypes,
-                versioningData: chainTypes,
+                commonTypess,
+                versioningData: chainTypess,
                 runtimeMetadata: runtimeMetadata
             )
 
             return RuntimeSnapshot(
-                localCommonHash: try dataHasher.hash(data: commonTypes).toHex(),
-                localChainHash: try dataHasher.hash(data: chainTypes).toHex(),
+                localCommonHash: try dataHasher.hash(data: commonTypess).toHex(),
+                localChainHash: try dataHasher.hash(data: chainTypess).toHex(),
                 typeRegistryCatalog: catalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
@@ -86,7 +86,7 @@ final class RuntimeSnapshotFactory {
         )
 
         let snapshotOperation = ClosureOperation<RuntimeSnapshot?> {
-            let commonTypes = try commonTypesFetchOperation.targetOperation.extractNoCancellableResultData()
+            let maybeCommonTypes = try commonTypesFetchOperation.targetOperation.extractNoCancellableResultData()
 
             guard let runtimeMetadataItem = try runtimeMetadataOperation
                 .extractNoCancellableResultData() else {
@@ -96,7 +96,7 @@ final class RuntimeSnapshotFactory {
             let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
             let runtimeMetadata = try RuntimeMetadata(scaleDecoder: decoder)
 
-            guard let commonTypes = commonTypes else {
+            guard let commonTypes = maybeCommonTypes else {
                 return nil
             }
 
@@ -133,7 +133,7 @@ final class RuntimeSnapshotFactory {
         )
 
         let snapshotOperation = ClosureOperation<RuntimeSnapshot?> {
-            let ownTypes = try chainTypesFetchOperation.targetOperation.extractNoCancellableResultData()
+            let maybeOwnTypes = try chainTypesFetchOperation.targetOperation.extractNoCancellableResultData()
 
             guard let runtimeMetadataItem = try runtimeMetadataOperation
                 .extractNoCancellableResultData() else {
@@ -143,7 +143,7 @@ final class RuntimeSnapshotFactory {
             let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
             let runtimeMetadata = try RuntimeMetadata(scaleDecoder: decoder)
 
-            guard let ownTypes = ownTypes else {
+            guard let ownTypes = maybeOwnTypes else {
                 return nil
             }
 
