@@ -64,8 +64,8 @@ extension ProfilePresenter: ProfilePresenterProtocol {
         switch option {
         case .accountList:
             wireframe.showAccountSelection(from: view)
-        case .connectionList:
-            wireframe.showConnectionSelection(from: view)
+        case .networks:
+            wireframe.showNetworks(from: view)
         case .changePincode:
             wireframe.showPincodeChange(from: view)
         case .language:

@@ -72,7 +72,3 @@ protocol NetworkManagementWireframeProtocol: ErrorPresentable, AlertPresentable 
 
     func complete(from view: NetworkManagementViewProtocol?)
 }
-
-protocol NetworkManagementViewFactoryProtocol: AnyObject {
-    static func createView() -> NetworkManagementViewProtocol?
-}

@@ -21,12 +21,12 @@ protocol ProfileInteractorOutputProtocol: AnyObject {
 }
 
 protocol ProfileWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting {
-    func showAccountDetails(from view: ProfileViewProtocol?)
-    func showAccountSelection(from view: ProfileViewProtocol?)
-    func showConnectionSelection(from view: ProfileViewProtocol?)
-    func showLanguageSelection(from view: ProfileViewProtocol?)
-    func showPincodeChange(from view: ProfileViewProtocol?)
-    func showAbout(from view: ProfileViewProtocol?)
+    func showAccountDetails(from view: ControllerBackedProtocol?)
+    func showAccountSelection(from view: ControllerBackedProtocol?)
+    func showNetworks(from view: ControllerBackedProtocol?)
+    func showLanguageSelection(from view: ControllerBackedProtocol?)
+    func showPincodeChange(from view: ControllerBackedProtocol?)
+    func showAbout(from view: ControllerBackedProtocol?)
 }
 
 protocol ProfileViewFactoryProtocol: AnyObject {

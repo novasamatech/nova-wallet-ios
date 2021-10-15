@@ -3,7 +3,7 @@ import SoraFoundation
 import RobinHood
 import SoraKeystore
 
-final class NetworkManagementViewFactory: NetworkManagementViewFactoryProtocol {
+struct NetworksViewFactory {
     static func createView() -> NetworkManagementViewProtocol? {
         let view = NetworkManagementViewController(nib: R.nib.networkManagementViewController)
 

@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable {
-    func showAccountDetails(from view: ProfileViewProtocol?) {
+    func showAccountDetails(from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createViewForSettings() else {
             return
         }
@@ -15,7 +15,7 @@ final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable
         )
     }
 
-    func showPincodeChange(from view: ProfileViewProtocol?) {
+    func showPincodeChange(from view: ControllerBackedProtocol?) {
         authorize(animated: true, cancellable: true) { [weak self] completed in
             if completed {
                 self?.showPinSetup(from: view)
@@ -23,7 +23,7 @@ final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable
         }
     }
 
-    func showAccountSelection(from view: ProfileViewProtocol?) {
+    func showAccountSelection(from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createViewForSettings() else {
             return
         }
@@ -36,18 +36,18 @@ final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable
         )
     }
 
-    func showConnectionSelection(from view: ProfileViewProtocol?) {
-        guard let networkManagement = NetworkManagementViewFactory.createView() else {
+    func showNetworks(from view: ControllerBackedProtocol?) {
+        guard let networkList = NetworksViewFactory.createView() else {
             return
         }
 
         if let navigationController = view?.controller.navigationController {
-            networkManagement.controller.hidesBottomBarWhenPushed = true
-            navigationController.pushViewController(networkManagement.controller, animated: true)
+            networkList.controller.hidesBottomBarWhenPushed = true
+            navigationController.pushViewController(networkList.controller, animated: true)
         }
     }
 
-    func showLanguageSelection(from view: ProfileViewProtocol?) {
+    func showLanguageSelection(from view: ControllerBackedProtocol?) {
         guard let languageSelection = LanguageSelectionViewFactory.createView() else {
             return
         }
@@ -58,7 +58,7 @@ final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable
         }
     }
 
-    func showAbout(from view: ProfileViewProtocol?) {
+    func showAbout(from view: ControllerBackedProtocol?) {
         guard let aboutView = AboutViewFactory.createView() else {
             return
         }
@@ -71,7 +71,7 @@ final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable
 
     // MARK: Private
 
-    private func showPinSetup(from view: ProfileViewProtocol?) {
+    private func showPinSetup(from view: ControllerBackedProtocol?) {
         guard let pinSetup = PinViewFactory.createPinChangeView() else {
             return
         }
