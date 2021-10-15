@@ -15,11 +15,15 @@ extension WalletNetworkFacade {
                     let chainAssetId = ChainAssetId(walletId: asset.identifier),
                     let chain = chains[chainAssetId.chainId],
                     let selectedAccount = metaAccount.fetch(for: chain.accountRequest()) else {
-                    throw BaseOperationError.unexpectedDependentResult
+                    return CompoundOperationWrapper.createWithResult(
+                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
+                    )
                 }
 
                 guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-                    throw ChainRegistryError.runtimeMetadaUnavailable
+                    return CompoundOperationWrapper.createWithResult(
+                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
+                    )
                 }
 
                 let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()

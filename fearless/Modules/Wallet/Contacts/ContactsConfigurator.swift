@@ -68,10 +68,11 @@ final class ContactsConfigurator {
         )
     }()
 
-    init(networkType: SNAddressType) {
+    init(metaAccount: MetaAccountModel, chains: [String: ChainModel]) {
         let viewModelFactory = ContactsViewModelFactory(dataStorageFacade: SubstrateDataStorageFacade.shared)
         localSearchEngine = ContactsLocalSearchEngine(
-            networkType: networkType,
+            metaAccount: metaAccount,
+            chains: chains,
             contactViewModelFactory: viewModelFactory
         )
     }

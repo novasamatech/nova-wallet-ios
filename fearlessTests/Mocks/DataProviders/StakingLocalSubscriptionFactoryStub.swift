@@ -2,6 +2,7 @@ import Foundation
 @testable import fearless
 import RobinHood
 import BigInt
+import FearlessUtils
 
 final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactoryProtocol {
     let minNominatorBond: BigUInt?

@@ -24,7 +24,8 @@ final class ContactsViewModelFactory: ContactsFactoryWrapperProtocol {
                 return nil
             }
 
-            let icon = try iconGenerator.generateFromAddress(contact.firstName)
+            // TODO: Fix icon for Ethereum based network
+            let icon = try? iconGenerator.generateFromAddress(contact.firstName)
                 .imageWithFillColor(
                     .white,
                     size: CGSize(width: 24.0, height: 24.0),

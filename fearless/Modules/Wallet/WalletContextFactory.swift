@@ -45,8 +45,12 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         logger.info("Start wallet for: \(metaAccount.metaId)")
 
+        if let ethereumAddress = metaAccount.ethereumAddress {
+            logger.info("Ethereum address: \(ethereumAddress.toHex(includePrefix: true))")
+        }
+
         let chains = try allChains()
-        let chainAssets: [ChainAsset] = chains.compactMap { chain in
+        let chainAssets: [ChainAsset] = chains.reversed().compactMap { chain in
             guard
                 metaAccount.fetch(for: chain.accountRequest()) != nil,
                 let asset = chain.utilityAssets().first else {
@@ -66,8 +70,15 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             modes: .view
         )
 
-        let walletAssets = chainAssets.map { chainAsset in
-            WalletAsset(
+        let walletAssets: [WalletAsset] = chainAssets.compactMap { chainAsset in
+            // TODO: Remove when runtime fixed
+            guard ![Chain.polkadot.genesisHash, Chain.westend.genesisHash, Chain.kusama.genesisHash].contains(
+                chainAsset.chain.identifier
+            ) else {
+                return nil
+            }
+
+            return WalletAsset(
                 identifier: chainAsset.chainAssetId.walletId,
                 name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
                 platform: LocalizableResource { _ in chainAsset.chain.name },
@@ -120,8 +131,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             sortDescriptors: [NSSortDescriptor.accountsByOrder]
         )
 
-        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
-            SubstrateDataStorageFacade.shared.createRepository()
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: substrateFacade)
 
         let contactOperationFactory = WalletContactOperationFactory(
             storageFacade: substrateFacade,
@@ -141,7 +151,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
             localStorageRequestFactory: localStorageRequestFactory,
-            txStorage: AnyDataProviderRepository(txStorage),
+            repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository
         )
@@ -181,13 +191,37 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
         let amountFormatterFactory = AmountFormatterFactory()
+        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 
-        return try builder.build()
+        let contactsConfigurator = ContactsConfigurator(metaAccount: metaAccount, chains: chainsById)
+        contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
+
+        let transferConfigurator = TransferConfigurator(
+            assets: accountSettings.assets,
+            amountFormatterFactory: amountFormatterFactory,
+            localizationManager: localizationManager
+        )
+
+        transferConfigurator.configure(builder: builder.transferModuleBuilder)
+
+        let confirmConfigurator = TransferConfirmConfigurator(
+            chains: chainsById,
+            amountFormatterFactory: assetBalanceFormatterFactory
+        )
+
+        confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
+
+        let context = try builder.build()
+
+        transferConfigurator.commandFactory = context
+        confirmConfigurator.commandFactory = context
+
+        return context
     }
     // swiftlint:enable function_body_length
 }

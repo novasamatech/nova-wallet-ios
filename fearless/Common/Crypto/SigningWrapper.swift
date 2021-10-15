@@ -60,21 +60,13 @@ final class SigningWrapper: SigningWrapperProtocol {
 
         switch cryptoType {
         case .sr25519:
-            return try signSr25519(
-                originalData,
-                secretKeyData: secretKey,
-                publicKeyData: publicKeyData
-            )
+            return try signSr25519(originalData, secretKeyData: secretKey, publicKeyData: publicKeyData)
         case .ed25519:
-            return try signEd25519(
-                originalData,
-                secretKey: secretKey
-            )
-        case .substrateEcdsa, .ethereumEcdsa:
-            return try signEcdsa(
-                originalData,
-                secretKey: secretKey
-            )
+            return try signEd25519(originalData, secretKey: secretKey)
+        case .substrateEcdsa:
+            return try signEcdsa(originalData, secretKey: secretKey)
+        case .ethereumEcdsa:
+            return try signEthereum(originalData, secretKey: secretKey)
         }
     }
 }

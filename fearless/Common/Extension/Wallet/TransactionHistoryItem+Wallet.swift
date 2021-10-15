@@ -7,11 +7,12 @@ import FearlessUtils
 extension TransactionHistoryItem {
     static func createFromTransferInfo(
         _ info: TransferInfo,
+        senderAccount: ChainAccountResponse,
         transactionHash: Data,
         chainAssetInfo: ChainAssetDisplayInfo
     ) throws
         -> TransactionHistoryItem {
-        let senderAccountId = try Data(hexString: info.source)
+        let senderAccountId = senderAccount.accountId
         let receiverAccountId = try Data(hexString: info.destination)
 
         let sender = try senderAccountId.toAddress(using: chainAssetInfo.chain)
