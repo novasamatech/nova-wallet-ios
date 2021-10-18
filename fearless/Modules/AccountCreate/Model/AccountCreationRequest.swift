@@ -7,3 +7,9 @@ struct AccountCreationRequest {
     let derivationPath: String
     let cryptoType: CryptoType
 }
+
+struct MetaAccountCreationRequest {
+    let username: String
+    let derivationPath: String
+    let cryptoType: MultiassetCryptoType
+}
