@@ -1,5 +1,5 @@
 import Foundation
 
 struct NetworksViewModel {
-    let sections: [NetworksSection]
+    let sections: [(NetworksSection, [NetworksItemViewModel])]
 }

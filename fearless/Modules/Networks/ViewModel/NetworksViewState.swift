@@ -1,5 +1,5 @@
 enum NetworksViewState {
     case loading
-    case loaded
+    case loaded(NetworksViewModel)
     case error
 }

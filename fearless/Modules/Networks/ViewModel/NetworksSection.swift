@@ -7,8 +7,8 @@ struct NetworksItemViewModel {
 }
 
 enum NetworksSection {
-    case supported(NetworksItemViewModel)
-    case testnets(NetworksItemViewModel)
+    case supported
+    case testnets
 }
 
 extension NetworksSection {

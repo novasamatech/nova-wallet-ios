@@ -4,7 +4,6 @@ final class NetworksViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         return tableView
     }()
@@ -12,6 +11,7 @@ final class NetworksViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = .clear
         setupLayout()
     }
 

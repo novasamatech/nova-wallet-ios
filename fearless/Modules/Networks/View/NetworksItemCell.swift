@@ -17,10 +17,12 @@ final class NetworksItemCell: UITableViewCell {
         return label
     }()
 
-    private let arrowImageView = UIImageView(image: R.image.iconAboutArrow())
+    private let arrowImageView = UIImageView(image: R.image.iconSmallArrow())
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -28,13 +30,24 @@ final class NetworksItemCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        separatorInset = .init(
+            top: 0,
+            left: UIConstants.horizontalInset,
+            bottom: 0,
+            right: UIConstants.horizontalInset
+        )
+    }
+
     private func setupLayout() {
         let content: UIView = .hStack(
+            distribution: .fillProportionally,
             spacing: 12,
             [
                 networkImageView,
                 .vStack(
-                    alignment: .leading,
                     [networkNameLabel, nodeLabel]
                 ),
                 UIView(),

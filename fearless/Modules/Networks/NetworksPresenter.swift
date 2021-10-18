@@ -20,6 +20,19 @@ final class NetworksPresenter {
 extension NetworksPresenter: NetworksPresenterProtocol {
     func setup() {
         interactor.setup()
+        let viewModel = NetworksViewModel(
+            sections: [
+                (.supported, [
+                    .init(name: "Polkadot", icon: nil, nodeDescription: "Auto select nodes"),
+                    .init(name: "Kusama", icon: nil, nodeDescription: "Auto select nodes"),
+                ]),
+                (.testnets, [
+                    .init(name: "Westend", icon: nil, nodeDescription: "Auto")
+                ])
+            ]
+        )
+        let state = NetworksViewState.loaded(viewModel)
+        view?.reload(state: state)
     }
 }
 
