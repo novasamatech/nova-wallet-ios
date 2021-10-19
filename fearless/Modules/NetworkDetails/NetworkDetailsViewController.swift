@@ -4,6 +4,7 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = NetworkDetailsViewLayout
 
     let presenter: NetworkDetailsPresenterProtocol
+    private var viewModel: NetworkDetailsViewModel?
 
     init(presenter: NetworkDetailsPresenterProtocol) {
         self.presenter = presenter
@@ -26,4 +27,10 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension NetworkDetailsViewController: NetworkDetailsViewProtocol {}
+extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
+    func reload(viewModel: NetworkDetailsViewModel) {
+        self.viewModel = viewModel
+        title = viewModel.title
+        rootView.tableView.reloadData()
+    }
+}

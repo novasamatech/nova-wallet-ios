@@ -8,6 +8,7 @@ struct NetworkDetailsViewFactory {
         let presenter = NetworkDetailsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: NetworkDetailsViewModelFactory(),
             chainModel: chainModel
         )
 
