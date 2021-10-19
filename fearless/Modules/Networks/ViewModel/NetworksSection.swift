@@ -2,7 +2,7 @@ import Foundation
 
 struct NetworksItemViewModel {
     let name: String
-    let icon: URL?
+    let icon: ImageViewModelProtocol?
     let nodeDescription: String
 }
 

@@ -18,6 +18,7 @@ final class NetworksItemCell: UITableViewCell {
     }()
 
     private let arrowImageView = UIImageView(image: R.image.iconSmallArrow())
+    private var iconViewModel: ImageViewModelProtocol?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,8 +42,16 @@ final class NetworksItemCell: UITableViewCell {
         )
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        iconViewModel?.cancel(on: networkImageView)
+        iconViewModel = nil
+    }
+
     private func setupLayout() {
         let content: UIView = .hStack(
+            alignment: .center,
             distribution: .fillProportionally,
             spacing: 12,
             [
@@ -69,5 +78,13 @@ extension NetworksItemCell {
     func bind(viewModel: NetworksItemViewModel) {
         networkNameLabel.text = viewModel.name
         nodeLabel.text = viewModel.nodeDescription
+
+        iconViewModel = viewModel.icon
+        networkImageView.image = nil
+        iconViewModel?.loadImage(
+            on: networkImageView,
+            targetSize: CGSize(width: 32.0, height: 32.0),
+            animated: true
+        )
     }
 }
