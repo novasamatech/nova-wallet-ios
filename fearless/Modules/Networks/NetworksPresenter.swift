@@ -11,6 +11,7 @@ final class NetworksPresenter {
     let logger: LoggerProtocol?
 
     private var chains: [ChainModel]?
+    private var chainSettings = Set<ChainSettingsModel?>()
 
     init(
         interactor: NetworksInteractorInputProtocol,
@@ -50,6 +51,16 @@ extension NetworksPresenter: NetworksInteractorOutputProtocol {
         switch chainsResult {
         case let .success(chains):
             self.chains = chains
+            updateView()
+        case let .failure(error):
+            logger?.error(error.localizedDescription)
+        }
+    }
+
+    func didReceive(chainSettingsResult: Result<ChainSettingsModel?, Error>) {
+        switch chainSettingsResult {
+        case let .success(chainSettingsModel):
+            chainSettings.insert(chainSettingsModel)
             updateView()
         case let .failure(error):
             logger?.error(error.localizedDescription)
