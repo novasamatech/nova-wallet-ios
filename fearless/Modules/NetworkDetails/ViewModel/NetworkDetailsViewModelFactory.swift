@@ -2,6 +2,22 @@ import Foundation
 
 final class NetworkDetailsViewModelFactory: NetworkDetailsViewModelFactoryProtocol {
     func createViewModel(chainModel: ChainModel) -> NetworkDetailsViewModel {
-        NetworkDetailsViewModel(title: chainModel.name, autoSelectNodes: false)
+        let defaultNodesViewModel = chainModel.nodes.map { node in
+            ManagedNodeConnectionViewModel(
+                identifier: node.name,
+                name: node.name,
+                isSelected: false
+            )
+        }
+
+        let sections: [(NetworkDetailsSection, [ManagedNodeConnectionViewModel])] = [
+            (.defaultNodes, defaultNodesViewModel)
+        ]
+
+        return NetworkDetailsViewModel(
+            title: chainModel.name,
+            autoSelectNodes: false,
+            sections: sections
+        )
     }
 }

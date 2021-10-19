@@ -1583,6 +1583,9 @@
 		F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B06BF9264509E8003214D5 /* SetControllerCall.swift */; };
 		F4BCACB2271EC676009B8381 /* NetworkDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BCACB1271EC676009B8381 /* NetworkDetailsViewModel.swift */; };
 		F4BCACB7271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BCACB6271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift */; };
+		F4BCACBC271ECB5F009B8381 /* NodeConnectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BCACBB271ECB5F009B8381 /* NodeConnectionCell.swift */; };
+		F4BCACC1271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */; };
+		F4BCACC6271ECD4E009B8381 /* NetworkDetailsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BCACC5271ECD4E009B8381 /* NetworkDetailsSection.swift */; };
 		F4BDDCBE2657A57F005336BA /* TransferValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */; };
 		F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */; };
 		F4C086BD26D114F700716AEC /* SubqueryEraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */; };
@@ -3245,6 +3248,9 @@
 		F4B06BF9264509E8003214D5 /* SetControllerCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetControllerCall.swift; sourceTree = "<group>"; };
 		F4BCACB1271EC676009B8381 /* NetworkDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModel.swift; sourceTree = "<group>"; };
 		F4BCACB6271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsViewModelFactory.swift; sourceTree = "<group>"; };
+		F4BCACBB271ECB5F009B8381 /* NodeConnectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeConnectionCell.swift; sourceTree = "<group>"; };
+		F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedNodeConnectionViewModel.swift; sourceTree = "<group>"; };
+		F4BCACC5271ECD4E009B8381 /* NetworkDetailsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsSection.swift; sourceTree = "<group>"; };
 		F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferValidatorTests.swift; sourceTree = "<group>"; };
 		F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+ProgramaticallyBeginRefresh.swift"; sourceTree = "<group>"; };
 		F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -7923,6 +7929,7 @@
 			isa = PBXGroup;
 			children = (
 				BCD425037265D55C20BDD65D /* NetworkDetailsViewLayout.swift */,
+				F4BCACBB271ECB5F009B8381 /* NodeConnectionCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -7932,6 +7939,8 @@
 			children = (
 				F4BCACB1271EC676009B8381 /* NetworkDetailsViewModel.swift */,
 				F4BCACB6271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift */,
+				F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */,
+				F4BCACC5271ECD4E009B8381 /* NetworkDetailsSection.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -8759,6 +8768,7 @@
 				F47BBD8B263189DB0087DA11 /* StakingBalanceAction.swift in Sources */,
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
 				8490151F24ABC61F008F705E /* WalletAssetViewModelFactory.swift in Sources */,
+				F4BCACC6271ECD4E009B8381 /* NetworkDetailsSection.swift in Sources */,
 				842876A524AE049B00D91AD8 /* SelectableTitleListViewModel.swift in Sources */,
 				847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */,
 				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
@@ -9583,6 +9593,7 @@
 				F4617415260E23E900E8FA3D /* StakingRewardStatusViewModel.swift in Sources */,
 				4A520B7081BE2D7604B69354 /* AccountImportWireframe.swift in Sources */,
 				F4433D5F26C166470002A91E /* AnalyticsValidatorsView.swift in Sources */,
+				F4BCACC1271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift in Sources */,
 				846AF8422525BDBF00868F37 /* WalletNetworkFacade+Price.swift in Sources */,
 				7D281FEA78E2E5F44990C184 /* AccountImportPresenter.swift in Sources */,
 				6C56AB4AE63AB2DC73DE98E0 /* AccountImportInteractor.swift in Sources */,
@@ -9661,6 +9672,7 @@
 				84452A6025D037AE00F47EC5 /* ChainStorage+Decodable.swift in Sources */,
 				F4F65C3D26D8B9DD002EE838 /* FWYAxisChartFormatter.swift in Sources */,
 				847C963525534E41002D288F /* UIFactory.swift in Sources */,
+				F4BCACBC271ECB5F009B8381 /* NodeConnectionCell.swift in Sources */,
 				F40966D026B297D7008CD244 /* AnalyticsStakeInteractor.swift in Sources */,
 				84585A34251CE2E300390F7A /* ContactsLocalSearchEngine.swift in Sources */,
 				8416A2D8265A99DE0052EE89 /* CrowdloanViewConstants.swift in Sources */,
