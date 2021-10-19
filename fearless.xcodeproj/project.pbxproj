@@ -3585,12 +3585,13 @@
 		2739B8A244FE5CFF92AE6C83 /* NetworkDetails */ = {
 			isa = PBXGroup;
 			children = (
+				F44B64A7271EC35F0084A4ED /* View */,
+				F44B64A8271EC3630084A4ED /* ViewModel */,
 				A23541D5FFBABD25B16C0D7F /* NetworkDetailsProtocols.swift */,
 				101D3664B5FF93F4CF830AA6 /* NetworkDetailsWireframe.swift */,
 				EBF5D8B3FA9BE8FF64869148 /* NetworkDetailsPresenter.swift */,
 				C2142CEF8834854C9E130BA7 /* NetworkDetailsInteractor.swift */,
 				8E8535720576414612A82F42 /* NetworkDetailsViewController.swift */,
-				BCD425037265D55C20BDD65D /* NetworkDetailsViewLayout.swift */,
 				491D49C0D19B34A3157DB693 /* NetworkDetailsViewFactory.swift */,
 			);
 			path = NetworkDetails;
@@ -7910,6 +7911,21 @@
 				F4433D7926C16D070002A91E /* AnalyticsValidatorsViewModel.swift */,
 				F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */,
 				F471897526C297AA006487AD /* AnalyticsValidatorsPage.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		F44B64A7271EC35F0084A4ED /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BCD425037265D55C20BDD65D /* NetworkDetailsViewLayout.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		F44B64A8271EC3630084A4ED /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
 			);
 			path = ViewModel;
 			sourceTree = "<group>";

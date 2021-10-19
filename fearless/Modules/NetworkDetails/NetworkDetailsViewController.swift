@@ -1,6 +1,6 @@
 import UIKit
 
-final class NetworkDetailsViewController: UIViewController {
+final class NetworkDetailsViewController: UIViewController, ViewHolder {
     typealias RootViewType = NetworkDetailsViewLayout
 
     let presenter: NetworkDetailsPresenterProtocol

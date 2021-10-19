@@ -6,6 +6,7 @@ final class NetworksWireframe: NetworksWireframeProtocol {
         guard let networkDetails = NetworkDetailsViewFactory.createView(chainModel: chainModel) else {
             return
         }
-        view?.controller.present(networkDetails.controller, animated: true, completion: nil)
+        let navigationContoller = FearlessNavigationController(rootViewController: networkDetails.controller)
+        view?.controller.navigationController?.present(navigationContoller, animated: true, completion: nil)
     }
 }
