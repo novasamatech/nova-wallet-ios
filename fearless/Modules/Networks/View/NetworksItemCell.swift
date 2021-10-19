@@ -24,6 +24,9 @@ final class NetworksItemCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         setupLayout()
+
+        selectedBackgroundView = UIView()
+        selectedBackgroundView?.backgroundColor = R.color.colorCellSelection()!
     }
 
     @available(*, unavailable)
