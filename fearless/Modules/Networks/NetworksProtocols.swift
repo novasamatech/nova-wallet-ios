@@ -6,7 +6,11 @@ protocol NetworksViewProtocol: ControllerBackedProtocol {
 }
 
 protocol NetworksViewModelFactoryProtocol: AnyObject {
-    func createViewModel(chains: [ChainModel], locale: Locale) -> NetworksViewModel
+    func createViewModel(
+        chains: [ChainModel],
+        chainSettings: Set<ChainSettingsModel>,
+        locale: Locale
+    ) -> NetworksViewModel
 }
 
 protocol NetworksPresenterProtocol: AnyObject {

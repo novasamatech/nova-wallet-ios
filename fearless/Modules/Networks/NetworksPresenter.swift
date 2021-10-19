@@ -11,7 +11,7 @@ final class NetworksPresenter {
     let logger: LoggerProtocol?
 
     private var chains: [ChainModel]?
-    private var chainSettings = Set<ChainSettingsModel?>()
+    private var chainSettings = Set<ChainSettingsModel>()
 
     init(
         interactor: NetworksInteractorInputProtocol,
@@ -29,7 +29,11 @@ final class NetworksPresenter {
 
     private func updateView() {
         guard let chains = chains else { return }
-        let viewModel = viewModelFactory.createViewModel(chains: chains, locale: selectedLocale)
+        let viewModel = viewModelFactory.createViewModel(
+            chains: chains,
+            chainSettings: chainSettings,
+            locale: selectedLocale
+        )
         view?.reload(viewModel: viewModel)
     }
 }
@@ -60,6 +64,7 @@ extension NetworksPresenter: NetworksInteractorOutputProtocol {
     func didReceive(chainSettingsResult: Result<ChainSettingsModel?, Error>) {
         switch chainSettingsResult {
         case let .success(chainSettingsModel):
+            guard let chainSettingsModel = chainSettingsModel else { return }
             chainSettings.insert(chainSettingsModel)
             updateView()
         case let .failure(error):
