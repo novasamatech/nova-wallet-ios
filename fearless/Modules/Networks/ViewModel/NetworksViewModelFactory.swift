@@ -39,18 +39,18 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
     private func createItemViewModel(
         chain: ChainModel,
         chainSettings: ChainSettingsModel?,
-        locale _: Locale
+        locale: Locale
     ) -> NetworksItemViewModel {
         let nodeDescription: String = {
             if let chainSettings = chainSettings {
                 if chainSettings.autobalanced {
-                    return "Auto select nodes"
+                    return R.string.localizable.networksAutoSelectNodes(preferredLanguages: locale.rLanguages)
                 } else {
                     let nodeUrl = chain.nodes.first?.url // TODO:
                     return nodeUrl?.description ?? "" // TODO:
                 }
             } else {
-                return "Auto select nodes"
+                return R.string.localizable.networksAutoSelectNodes(preferredLanguages: locale.rLanguages)
             }
         }()
 
