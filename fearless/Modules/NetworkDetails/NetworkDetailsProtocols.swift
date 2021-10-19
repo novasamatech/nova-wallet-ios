@@ -1,4 +1,4 @@
-protocol NetworkDetailsViewProtocol: AnyObject {}
+protocol NetworkDetailsViewProtocol: ControllerBackedProtocol {}
 
 protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setup()

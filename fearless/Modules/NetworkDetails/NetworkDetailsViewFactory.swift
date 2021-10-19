@@ -1,11 +1,15 @@
 import Foundation
 
 struct NetworkDetailsViewFactory {
-    static func createView() -> NetworkDetailsViewProtocol? {
+    static func createView(chainModel: ChainModel) -> NetworkDetailsViewProtocol? {
         let interactor = NetworkDetailsInteractor()
         let wireframe = NetworkDetailsWireframe()
 
-        let presenter = NetworkDetailsPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = NetworkDetailsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainModel: chainModel
+        )
 
         let view = NetworkDetailsViewController(presenter: presenter)
 

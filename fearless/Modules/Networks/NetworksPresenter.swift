@@ -43,6 +43,11 @@ extension NetworksPresenter: NetworksPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func handleChainSelection(id: String) {
+        guard let chainModel = chains?.first(where: { $0.chainId == id }) else { return }
+        wireframe.showNetworkDetails(chainModel: chainModel, from: view)
+    }
 }
 
 extension NetworksPresenter: NetworksInteractorOutputProtocol {

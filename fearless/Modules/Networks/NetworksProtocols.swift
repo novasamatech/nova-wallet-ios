@@ -11,6 +11,7 @@ protocol NetworksViewModelFactoryProtocol: AnyObject {
 
 protocol NetworksPresenterProtocol: AnyObject {
     func setup()
+    func handleChainSelection(id: String)
 }
 
 protocol NetworksInteractorInputProtocol: AnyObject {
@@ -21,27 +22,6 @@ protocol NetworksInteractorOutputProtocol: AnyObject {
     func didReceive(chainsResult: Result<[ChainModel]?, Error>)
 }
 
-protocol NetworksWireframeProtocol: ErrorPresentable, AlertPresentable {
-//    func presentAccountSelection(
-//        _ accounts: [AccountItem],
-//        addressType: SNAddressType,
-//        delegate: ModalPickerViewControllerDelegate,
-//        from view: NetworkManagementViewProtocol?,
-//        context: AnyObject?
-//    )
-//
-//    func presentAccountCreation(
-//        for connection: ConnectionItem,
-//        from view: NetworkManagementViewProtocol?
-//    )
-//
-//    func presentConnectionInfo(
-//        _ connectionItem: ConnectionItem,
-//        mode: NetworkInfoMode,
-//        from view: NetworkManagementViewProtocol?
-//    )
-//
-//    func presentConnectionAdd(from view: NetworkManagementViewProtocol?)
-//
-//    func complete(from view: NetworkManagementViewProtocol?)
+protocol NetworksWireframeProtocol: AnyObject {
+    func showNetworkDetails(chainModel: ChainModel, from view: ControllerBackedProtocol?)
 }

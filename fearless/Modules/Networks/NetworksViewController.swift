@@ -98,5 +98,9 @@ extension NetworksViewController: UITableViewDataSource {
 extension NetworksViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
+        guard let viewModel = viewModel else { return }
+        let cellViewModel = viewModel.sections[indexPath.section].1[indexPath.row]
+        presenter.handleChainSelection(id: cellViewModel.chainId)
     }
 }

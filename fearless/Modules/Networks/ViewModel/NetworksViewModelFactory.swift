@@ -7,6 +7,7 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
             .sorted(by: { $0.name < $1.name })
             .map { chain in
                 NetworksItemViewModel(
+                    chainId: chain.chainId,
                     name: chain.name,
                     icon: RemoteImageViewModel(url: chain.icon),
                     nodeDescription: "Auto select nodes"
@@ -18,6 +19,7 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
             .sorted(by: { $0.name < $1.name })
             .map { chain in
                 NetworksItemViewModel(
+                    chainId: chain.chainId,
                     name: chain.name,
                     icon: RemoteImageViewModel(url: chain.icon),
                     nodeDescription: "Auto select nodes"

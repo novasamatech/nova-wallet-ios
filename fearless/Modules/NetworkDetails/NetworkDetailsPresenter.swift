@@ -4,13 +4,16 @@ final class NetworkDetailsPresenter {
     weak var view: NetworkDetailsViewProtocol?
     let wireframe: NetworkDetailsWireframeProtocol
     let interactor: NetworkDetailsInteractorInputProtocol
+    let chainModel: ChainModel
 
     init(
         interactor: NetworkDetailsInteractorInputProtocol,
-        wireframe: NetworkDetailsWireframeProtocol
+        wireframe: NetworkDetailsWireframeProtocol,
+        chainModel: ChainModel
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.chainModel = chainModel
     }
 }
 
