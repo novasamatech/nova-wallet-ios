@@ -7,33 +7,52 @@ final class NetworksPresenter {
     weak var view: NetworksViewProtocol?
     let wireframe: NetworksWireframeProtocol
     let interactor: NetworksInteractorInputProtocol
+    let viewModelFactory: NetworksViewModelFactoryProtocol
+    let logger: LoggerProtocol?
+
+    private var chains: [ChainModel]?
 
     init(
         interactor: NetworksInteractorInputProtocol,
-        wireframe: NetworksWireframeProtocol
+        wireframe: NetworksWireframeProtocol,
+        viewModelFactory: NetworksViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+        self.logger = logger
+        self.localizationManager = localizationManager
+    }
+
+    private func updateView() {
+        guard let chains = chains else { return }
+        let viewModel = viewModelFactory.createViewModel(chains: chains, locale: selectedLocale)
+        view?.reload(viewModel: viewModel)
+    }
+}
+
+extension NetworksPresenter: Localizable {
+    func applyLocalization() {
+        updateView()
     }
 }
 
 extension NetworksPresenter: NetworksPresenterProtocol {
     func setup() {
         interactor.setup()
-        let viewModel = NetworksViewModel(
-            sections: [
-                (.supported, [
-                    .init(name: "Polkadot", icon: nil, nodeDescription: "Auto select nodes"),
-                    .init(name: "Kusama", icon: nil, nodeDescription: "Auto select nodes"),
-                ]),
-                (.testnets, [
-                    .init(name: "Westend", icon: nil, nodeDescription: "Auto")
-                ])
-            ]
-        )
-        let state = NetworksViewState.loaded(viewModel)
-        view?.reload(state: state)
     }
 }
 
-extension NetworksPresenter: NetworksInteractorOutputProtocol {}
+extension NetworksPresenter: NetworksInteractorOutputProtocol {
+    func didReceive(chainsResult: Result<[ChainModel]?, Error>) {
+        switch chainsResult {
+        case let .success(chains):
+            self.chains = chains
+            updateView()
+        case let .failure(error):
+            logger?.error(error.localizedDescription)
+        }
+    }
+}

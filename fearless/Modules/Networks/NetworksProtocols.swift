@@ -2,7 +2,11 @@ import RobinHood
 import IrohaCrypto
 
 protocol NetworksViewProtocol: ControllerBackedProtocol {
-    func reload(state: NetworksViewState)
+    func reload(viewModel: NetworksViewModel)
+}
+
+protocol NetworksViewModelFactoryProtocol: AnyObject {
+    func createViewModel(chains: [ChainModel], locale: Locale) -> NetworksViewModel
 }
 
 protocol NetworksPresenterProtocol: AnyObject {
@@ -13,7 +17,9 @@ protocol NetworksInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol NetworksInteractorOutputProtocol: AnyObject {}
+protocol NetworksInteractorOutputProtocol: AnyObject {
+    func didReceive(chainsResult: Result<[ChainModel]?, Error>)
+}
 
 protocol NetworksWireframeProtocol: ErrorPresentable, AlertPresentable {
 //    func presentAccountSelection(
