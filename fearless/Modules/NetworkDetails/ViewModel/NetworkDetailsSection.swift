@@ -5,9 +5,3 @@ enum NetworkDetailsSection {
     case defaultNodes(NetworkDetailsSectionViewModel)
     case customNodes(NetworkDetailsSectionViewModel)
 }
-
-struct NetworkDetailsSectionViewModel {
-    let cellViewModels: [ManagedNodeConnectionViewModel]
-    let highlight: Bool
-    let title: String
-}

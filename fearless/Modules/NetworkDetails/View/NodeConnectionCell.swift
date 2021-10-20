@@ -49,6 +49,7 @@ final class NodeConnectionCell: UITableViewCell {
         super.prepareForReuse()
 
         showsReorderControl = false
+        delegate = nil
     }
 
     override func layoutSubviews() {

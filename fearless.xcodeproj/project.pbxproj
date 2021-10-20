@@ -1614,6 +1614,7 @@
 		F4E7927027199C01003B2FA8 /* NetworksItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */; };
 		F4E792752719A032003B2FA8 /* NetworksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E792742719A032003B2FA8 /* NetworksViewModel.swift */; };
 		F4E8084127206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */; };
+		F4E808462720726000ED6414 /* NetworkDetailsSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E808452720726000ED6414 /* NetworkDetailsSectionViewModel.swift */; };
 		F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */; };
 		F4EF24C826BA713300F28B4E /* AnalyticsStakeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */; };
 		F4EF24D026BA7A4400F28B4E /* AnalyticsViewModelFactoryBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */; };
@@ -3290,6 +3291,7 @@
 		F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksItemCell.swift; sourceTree = "<group>"; };
 		F4E792742719A032003B2FA8 /* NetworksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksViewModel.swift; sourceTree = "<group>"; };
 		F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsAutoSelectViewModel.swift; sourceTree = "<group>"; };
+		F4E808452720726000ED6414 /* NetworkDetailsSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsSectionViewModel.swift; sourceTree = "<group>"; };
 		F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStakeHeaderView.swift; sourceTree = "<group>"; };
 		F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModelFactoryBase.swift; sourceTree = "<group>"; };
@@ -7950,9 +7952,10 @@
 			children = (
 				F4BCACB1271EC676009B8381 /* NetworkDetailsViewModel.swift */,
 				F4BCACB6271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift */,
-				F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */,
 				F4BCACC5271ECD4E009B8381 /* NetworkDetailsSection.swift */,
+				F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */,
 				F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */,
+				F4E808452720726000ED6414 /* NetworkDetailsSectionViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -9703,6 +9706,7 @@
 				153B25C7D48B571CFF0FA62C /* AccountInfoWireframe.swift in Sources */,
 				AEA0C8B0267B82BA00F9666F /* SelectedValidatorListHeaderView.swift in Sources */,
 				AEA2C1BE2681E9DD0069492E /* ValidatorSearchViewController.swift in Sources */,
+				F4E808462720726000ED6414 /* NetworkDetailsSectionViewModel.swift in Sources */,
 				84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */,
 				8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */,
 				F47BBD562630B9EF0087DA11 /* StakingBalanceInteractor.swift in Sources */,

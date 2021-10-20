@@ -48,7 +48,6 @@ final class NetworkDetailsPresenter {
 
 extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
-        updateView()
         interactor.setup()
     }
 
