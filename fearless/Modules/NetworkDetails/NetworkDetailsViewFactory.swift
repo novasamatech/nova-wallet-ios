@@ -14,7 +14,10 @@ struct NetworkDetailsViewFactory {
             localizationManager: LocalizationManager.shared
         )
 
-        let view = NetworkDetailsViewController(presenter: presenter)
+        let view = NetworkDetailsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
