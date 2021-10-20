@@ -11,6 +11,7 @@ final class NetworkDetailsPresenter {
 
     private let defaultNodes: [ChainNodeModel]
     private var selectedConnection: ChainConnection?
+    private var autoSelectNodes: Bool?
 
     init(
         interactor: NetworkDetailsInteractorInputProtocol,
@@ -28,7 +29,19 @@ final class NetworkDetailsPresenter {
     }
 
     private func updateView() {
-        let viewModel = viewModelFactory.createViewModel(chainModel: chainModel, locale: selectedLocale)
+        guard
+            let selectedNode = chainModel.nodes.first, // TODO: selectedConnection.node
+            let autoSelectNodes = autoSelectNodes
+        else {
+            return
+        }
+
+        let viewModel = viewModelFactory.createViewModel(
+            chainModel: chainModel,
+            autoSelectNodes: autoSelectNodes,
+            selectedNode: selectedNode,
+            locale: selectedLocale
+        )
         view?.reload(viewModel: viewModel)
     }
 }
@@ -57,11 +70,16 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func handleSelectDefaultNode(at index: Int) {
         let node = defaultNodes[index]
 
-//        if selectedConnectionItem.node != node {
+        // TODO:
+//        if selectedConnection.node != node {
 //            pendingCompletion = true
 //
-//            interactor.select(connection: connection)
+//            interactor.connect(to: node)
 //        }
+    }
+
+    func handleAutoSelectNodesToggle(isOn: Bool) {
+        interactor.toggleAutoSelectNodes(isOn: isOn)
     }
 }
 
@@ -74,6 +92,11 @@ extension NetworkDetailsPresenter: Localizable {
 extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
     func didReceiveSelectedConnection(_ connection: ChainConnection?) {
         selectedConnection = connection
+        updateView()
+    }
+
+    func didReceiveAutoSelectNodes(_ auto: Bool) {
+        autoSelectNodes = auto
         updateView()
     }
 }

@@ -18,10 +18,21 @@ final class NetworkDetailsInteractor {
         let connection = chainRegistry.getConnection(for: chainModel.chainId)
         presenter.didReceiveSelectedConnection(connection)
     }
+
+    private func provideAutoSelectNodesState() {
+        // TODO:
+        presenter.didReceiveAutoSelectNodes(true)
+    }
 }
 
 extension NetworkDetailsInteractor: NetworkDetailsInteractorInputProtocol {
     func setup() {
+        provideAutoSelectNodesState()
         provideSelectedConnection()
+    }
+
+    func toggleAutoSelectNodes(isOn: Bool) {
+        // TODO:
+        presenter.didReceiveAutoSelectNodes(isOn)
     }
 }

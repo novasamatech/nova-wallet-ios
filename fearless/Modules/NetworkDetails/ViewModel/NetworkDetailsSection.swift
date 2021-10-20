@@ -2,8 +2,8 @@ import Foundation
 
 enum NetworkDetailsSection {
     case autoSelectNodes(Bool)
-    case defaultNodes([ManagedNodeConnectionViewModel])
-    case customNodes([ManagedNodeConnectionViewModel])
+    case defaultNodes([ManagedNodeConnectionViewModel], highlight: Bool)
+    case customNodes([ManagedNodeConnectionViewModel], highlight: Bool)
 }
 
 extension NetworkDetailsSection {

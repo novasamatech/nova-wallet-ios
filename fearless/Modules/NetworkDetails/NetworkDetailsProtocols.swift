@@ -9,18 +9,26 @@ protocol NetworkDetailsPresenterProtocol: AnyObject {
     func handleActionButton()
     func handleDefaultNodeInfo(at index: Int)
     func handleSelectDefaultNode(at index: Int)
+    func handleAutoSelectNodesToggle(isOn: Bool)
 }
 
 protocol NetworkDetailsViewModelFactoryProtocol {
-    func createViewModel(chainModel: ChainModel, locale: Locale) -> NetworkDetailsViewModel
+    func createViewModel(
+        chainModel: ChainModel,
+        autoSelectNodes: Bool,
+        selectedNode: ChainNodeModel,
+        locale: Locale
+    ) -> NetworkDetailsViewModel
 }
 
 protocol NetworkDetailsInteractorInputProtocol: AnyObject {
     func setup()
+    func toggleAutoSelectNodes(isOn: Bool)
 }
 
 protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveSelectedConnection(_ connection: ChainConnection?)
+    func didReceiveAutoSelectNodes(_ auto: Bool)
 }
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {

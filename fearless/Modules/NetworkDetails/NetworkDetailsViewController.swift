@@ -117,7 +117,7 @@ extension NetworkDetailsViewController: UITableViewDataSource {
         switch viewModel.sections[section] {
         case .autoSelectNodes:
             return 1
-        case let .customNodes(cellViewModels), let .defaultNodes(cellViewModels):
+        case let .customNodes(cellViewModels, _), let .defaultNodes(cellViewModels, _):
             return cellViewModels.count
         }
     }
@@ -129,11 +129,13 @@ extension NetworkDetailsViewController: UITableViewDataSource {
         case let .autoSelectNodes(select):
             let cell = tableView.dequeueReusableCellWithType(SwitchTableViewCell.self, forIndexPath: indexPath)
             cell.bind(title: "Auto", isOn: select)
+            cell.delegate = self
             return cell
-        case let .customNodes(cellViewModels), let .defaultNodes(cellViewModels):
+        case let .customNodes(cellViewModels, highlight), let .defaultNodes(cellViewModels, highlight):
             let cell = tableView.dequeueReusableCellWithType(NodeConnectionCell.self, forIndexPath: indexPath)
             let cellViewModel = cellViewModels[indexPath.row]
             cell.bind(viewModel: cellViewModel)
+            cell.highlightNodeName(highlight)
             cell.delegate = self
             return cell
         }
@@ -160,7 +162,7 @@ extension NetworkDetailsViewController: UITableViewDelegate {
             return .none
         }
 
-        if case let NetworkDetailsSection.customNodes(custom) = viewModel.sections[indexPath.section] {
+        if case let NetworkDetailsSection.customNodes(custom, _) = viewModel.sections[indexPath.section] {
             return custom[indexPath.row].isSelected ? .delete : .none
         }
         return .none
@@ -185,5 +187,12 @@ extension NetworkDetailsViewController: NodeConnectionCellDelegate {
 
         // TODO: handle custom nodes
         presenter.handleDefaultNodeInfo(at: indexPath.row)
+    }
+}
+
+extension NetworkDetailsViewController: SwitchTableViewCellDelegate {
+    func didToggle(cell: SwitchTableViewCell) {
+        let isOn = cell.switchView.isOn
+        presenter.handleAutoSelectNodesToggle(isOn: isOn)
     }
 }

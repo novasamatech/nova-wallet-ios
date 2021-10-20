@@ -88,6 +88,10 @@ final class NodeConnectionCell: UITableViewCell {
         selectionImageView.alpha = viewModel.isSelected ? 1.0 : 0.0
     }
 
+    func highlightNodeName(_ highlight: Bool) {
+        nodeNameLabel.textColor = highlight ? R.color.colorWhite() : R.color.colorStrokeGray()
+    }
+
     func setReordering(_ reordering: Bool, animated: Bool) {
         let closure = {
             self.infoButton.alpha = reordering ? 0.0 : 1.0
