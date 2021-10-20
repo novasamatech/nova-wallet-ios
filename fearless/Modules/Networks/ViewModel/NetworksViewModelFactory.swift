@@ -6,9 +6,10 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
         chainSettings: Set<ChainSettingsModel>,
         locale: Locale
     ) -> NetworksViewModel {
-        let supported = chains
+        let chainSortedByName = chains.sorted(by: { $0.name < $1.name })
+
+        let supported = chainSortedByName
             .filter { !$0.isTestnet }
-            .sorted(by: { $0.name < $1.name })
             .map { chain in
                 createItemViewModel(
                     chain: chain,
@@ -17,9 +18,8 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
                 )
             }
 
-        let testnets = chains
+        let testnets = chainSortedByName
             .filter { $0.isTestnet }
-            .sorted(by: { $0.name < $1.name })
             .map { chain in
                 createItemViewModel(
                     chain: chain,
@@ -28,12 +28,26 @@ final class NetworksViewModelFactory: NetworksViewModelFactoryProtocol {
                 )
             }
 
-        return NetworksViewModel(
-            sections: [
-                (.supported, supported),
-                (.testnets, testnets)
-            ]
-        )
+        let sections: [(NetworksSection, [NetworksItemViewModel])] = {
+            if !supported.isEmpty {
+                if !testnets.isEmpty {
+                    return [
+                        (.supported, supported),
+                        (.testnets, testnets)
+                    ]
+                } else {
+                    return [(.supported, supported)]
+                }
+            } else {
+                if !testnets.isEmpty {
+                    return [(.testnets, testnets)]
+                } else {
+                    return []
+                }
+            }
+        }()
+
+        return NetworksViewModel(sections: sections)
     }
 
     private func createItemViewModel(
