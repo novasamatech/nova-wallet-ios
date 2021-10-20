@@ -20,8 +20,7 @@ struct NetworksViewFactory {
             logger: logger
         )
         let interactor = NetworksInteractor(
-            repository: repository,
-            operationManager: operationManager,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             chainSettingsProviderFactory: chainSettingsProviderFactory
         )
 
