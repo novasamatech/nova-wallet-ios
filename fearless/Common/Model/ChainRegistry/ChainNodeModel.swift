@@ -10,3 +10,7 @@ struct ChainNodeModel: Equatable, Codable, Hashable {
     let name: String
     let apikey: ApiKey?
 }
+
+extension ChainNodeModel {
+    var displayTitle: String { (url.scheme ?? "") + "://" + (url.host ?? "") }
+}

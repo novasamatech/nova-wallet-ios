@@ -3,7 +3,10 @@ import SoraFoundation
 
 struct NetworkDetailsViewFactory {
     static func createView(chainModel: ChainModel) -> NetworkDetailsViewProtocol? {
-        let interactor = NetworkDetailsInteractor()
+        let interactor = NetworkDetailsInteractor(
+            chainModel: chainModel,
+            chainRegistry: ChainRegistryFacade.sharedRegistry
+        )
         let wireframe = NetworkDetailsWireframe()
 
         let presenter = NetworkDetailsPresenter(

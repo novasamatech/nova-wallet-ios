@@ -7,11 +7,6 @@ struct NetworksViewFactory {
     static func createView() -> NetworksViewProtocol? {
         let wireframe = NetworksWireframe()
 
-        let repository = ChainRepositoryFactory().createRepository(
-            for: nil,
-            sortDescriptors: [NSSortDescriptor.chainsByAddressPrefix]
-        )
-
         let logger = Logger.shared
         let operationManager = OperationManagerFacade.sharedManager
         let chainSettingsProviderFactory = ChainSettingsProviderFactory(

@@ -18,7 +18,7 @@ final class NodeConnectionCell: UITableViewCell {
     private let nodeUrlLabel: UILabel = {
         let label = UILabel()
         label.font = .p2Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorStrokeGray()
         return label
     }()
 

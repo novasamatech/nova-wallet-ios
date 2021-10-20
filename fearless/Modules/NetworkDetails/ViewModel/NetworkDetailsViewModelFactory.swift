@@ -4,7 +4,7 @@ final class NetworkDetailsViewModelFactory: NetworkDetailsViewModelFactoryProtoc
     func createViewModel(chainModel: ChainModel, locale: Locale) -> NetworkDetailsViewModel {
         let defaultNodesViewModel = chainModel.nodes.map { node in
             ManagedNodeConnectionViewModel(
-                identifier: node.name,
+                identifier: node.displayTitle,
                 name: node.name,
                 isSelected: false
             )

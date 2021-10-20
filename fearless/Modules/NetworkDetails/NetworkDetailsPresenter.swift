@@ -10,6 +10,7 @@ final class NetworkDetailsPresenter {
     let localizationManager: LocalizationManagerProtocol?
 
     private let defaultNodes: [ChainNodeModel]
+    private var selectedConnection: ChainConnection?
 
     init(
         interactor: NetworkDetailsInteractorInputProtocol,
@@ -35,6 +36,7 @@ final class NetworkDetailsPresenter {
 extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
         updateView()
+        interactor.setup()
     }
 
     func handleActionButton() {
@@ -51,6 +53,16 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
             from: view
         )
     }
+
+    func handleSelectDefaultNode(at index: Int) {
+        let node = defaultNodes[index]
+
+//        if selectedConnectionItem.node != node {
+//            pendingCompletion = true
+//
+//            interactor.select(connection: connection)
+//        }
+    }
 }
 
 extension NetworkDetailsPresenter: Localizable {
@@ -59,4 +71,9 @@ extension NetworkDetailsPresenter: Localizable {
     }
 }
 
-extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {}
+extension NetworkDetailsPresenter: NetworkDetailsInteractorOutputProtocol {
+    func didReceiveSelectedConnection(_ connection: ChainConnection?) {
+        selectedConnection = connection
+        updateView()
+    }
+}

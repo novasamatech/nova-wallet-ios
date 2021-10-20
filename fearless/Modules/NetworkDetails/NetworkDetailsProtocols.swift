@@ -8,15 +8,20 @@ protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setup()
     func handleActionButton()
     func handleDefaultNodeInfo(at index: Int)
+    func handleSelectDefaultNode(at index: Int)
 }
 
 protocol NetworkDetailsViewModelFactoryProtocol {
     func createViewModel(chainModel: ChainModel, locale: Locale) -> NetworkDetailsViewModel
 }
 
-protocol NetworkDetailsInteractorInputProtocol: AnyObject {}
+protocol NetworkDetailsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol NetworkDetailsInteractorOutputProtocol: AnyObject {}
+protocol NetworkDetailsInteractorOutputProtocol: AnyObject {
+    func didReceiveSelectedConnection(_ connection: ChainConnection?)
+}
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {
     func showAddConnection(from view: ControllerBackedProtocol?)
