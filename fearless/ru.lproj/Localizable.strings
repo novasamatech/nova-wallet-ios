@@ -499,3 +499,4 @@
 "common.choose.action" = "Выберите действие";
 "common.select.network" = "Выберите сеть";
 "common.select.asset" = "Выберите токен";
+"networks.auto.select.nodes" = "Автоматический выбор нод";

@@ -11,9 +11,17 @@ struct NetworksViewFactory {
             for: nil,
             sortDescriptors: [NSSortDescriptor.chainsByAddressPrefix]
         )
+
+        let logger = Logger.shared
+        let operationManager = OperationManagerFacade.sharedManager
+        let chainSettingsProviderFactory = ChainSettingsProviderFactory(
+            storageFacade: UserDataStorageFacade.shared,
+            operationManager: operationManager,
+            logger: logger
+        )
         let interactor = NetworksInteractor(
-            repository: repository,
-            operationManager: OperationManagerFacade.sharedManager
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            chainSettingsProviderFactory: chainSettingsProviderFactory
         )
 
         let localizationManager = LocalizationManager.shared
@@ -23,7 +31,7 @@ struct NetworksViewFactory {
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
             localizationManager: LocalizationManager.shared,
-            logger: Logger.shared
+            logger: logger
         )
         let view = NetworksViewController(presenter: presenter, localizationManager: localizationManager)
 

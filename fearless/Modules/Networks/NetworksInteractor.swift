@@ -5,37 +5,57 @@ import IrohaCrypto
 
 final class NetworksInteractor {
     weak var presenter: NetworksInteractorOutputProtocol!
-    let repository: AnyDataProviderRepository<ChainModel>
-    let operationManager: OperationManagerProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let chainSettingsProviderFactory: ChainSettingsProviderFactoryProtocol
+
+    private var chainSettingsProvider: StreamableProvider<ChainSettingsModel>?
 
     init(
-        repository: AnyDataProviderRepository<ChainModel>,
-        operationManager: OperationManagerProtocol
+        chainRegistry: ChainRegistryProtocol,
+        chainSettingsProviderFactory: ChainSettingsProviderFactoryProtocol
     ) {
-        self.repository = repository
-        self.operationManager = operationManager
+        self.chainRegistry = chainRegistry
+        self.chainSettingsProviderFactory = chainSettingsProviderFactory
     }
 
-    private func fetchChains() {
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        fetchOperation.completionBlock = { [weak self] in
+    private func subscribeToChains() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .global(qos: .userInitiated)
+        ) { [weak self] changes in
+            let chains = changes.compactMap(\.item)
             DispatchQueue.main.async {
-                do {
-                    let chains = try fetchOperation.extractNoCancellableResultData()
-                    self?.presenter.didReceive(chainsResult: .success(chains))
-                } catch {
-                    self?.presenter.didReceive(chainsResult: .failure(error))
-                }
+                self?.presenter.didReceive(chainsResult: .success(chains))
             }
         }
+    }
 
-        operationManager.enqueue(operations: [fetchOperation], in: .transient)
+    private func subscribeToChainSettings() {
+        chainSettingsProvider = chainSettingsProviderFactory.createStreambleProvider()
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<ChainSettingsModel>]) in
+            let settings = changes.reduceToLastChange()
+            self?.presenter.didReceive(chainSettingsResult: .success(settings))
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.presenter.didReceive(chainSettingsResult: .failure(error))
+            return
+        }
+
+        chainSettingsProvider?.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: StreamableProviderObserverOptions()
+        )
     }
 }
 
 extension NetworksInteractor: NetworksInteractorInputProtocol {
     func setup() {
-        fetchChains()
+        subscribeToChains()
+        subscribeToChainSettings()
     }
 }

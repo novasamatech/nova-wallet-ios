@@ -35,10 +35,8 @@ final class NetworksViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        let locale = localizationManager?.selectedLocale
-
         title = R.string.localizable
-            .connectionManagementTitle(preferredLanguages: locale?.rLanguages)
+            .connectionManagementTitle(preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupTable() {

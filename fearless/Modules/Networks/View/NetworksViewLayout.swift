@@ -11,7 +11,7 @@ final class NetworksViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.colorBlack()
         setupLayout()
     }
 
