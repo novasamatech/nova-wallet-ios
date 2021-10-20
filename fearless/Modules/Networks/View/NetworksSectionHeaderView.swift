@@ -4,6 +4,7 @@ final class NetworksSectionHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .capsTitle
+        label.textColor = R.color.colorLightGray()
         return label
     }()
 
@@ -27,5 +28,9 @@ final class NetworksSectionHeaderView: UITableViewHeaderFooterView {
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview().inset(3)
         }
+    }
+
+    func highlight(_ highlight: Bool) {
+        titleLabel.textColor = highlight ? R.color.colorLightGray() : R.color.colorStrokeGray()
     }
 }

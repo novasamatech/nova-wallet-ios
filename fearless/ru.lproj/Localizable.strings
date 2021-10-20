@@ -501,3 +501,5 @@
 "common.select.asset" = "Выберите токен";
 "networks.auto.select.nodes" = "Автоматический выбор нод";
 "network.add.node" = "Добавить ноду";
+"network.default.nodes" = "Ноды по умолчанию";
+"network.custom.nodes" = "Добавленные ноды";

@@ -29,7 +29,7 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupTable()
-        setupNavigationItem()
+        // setupNavigationItem() TODO Enable when will be done flow for Custom nodes
         rootView.actionButton.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
         applyLocalization()
         presenter.setup()
@@ -117,8 +117,8 @@ extension NetworkDetailsViewController: UITableViewDataSource {
         switch viewModel.sections[section] {
         case .autoSelectNodes:
             return 1
-        case let .customNodes(cellViewModels, _), let .defaultNodes(cellViewModels, _):
-            return cellViewModels.count
+        case let .customNodes(sectionViewModel), let .defaultNodes(sectionViewModel):
+            return sectionViewModel.cellViewModels.count
         }
     }
 
@@ -126,23 +126,46 @@ extension NetworkDetailsViewController: UITableViewDataSource {
         guard let viewModel = viewModel else { return UITableViewCell() }
 
         switch viewModel.sections[indexPath.section] {
-        case let .autoSelectNodes(select):
+        case let .autoSelectNodes(viewModel):
             let cell = tableView.dequeueReusableCellWithType(SwitchTableViewCell.self, forIndexPath: indexPath)
-            cell.bind(title: "Auto", isOn: select)
+            cell.bind(title: viewModel.title, isOn: viewModel.autoSelectNodes)
             cell.delegate = self
             return cell
-        case let .customNodes(cellViewModels, highlight), let .defaultNodes(cellViewModels, highlight):
+        case let .customNodes(sectionViewModel), let .defaultNodes(sectionViewModel):
             let cell = tableView.dequeueReusableCellWithType(NodeConnectionCell.self, forIndexPath: indexPath)
-            let cellViewModel = cellViewModels[indexPath.row]
+            let cellViewModel = sectionViewModel.cellViewModels[indexPath.row]
             cell.bind(viewModel: cellViewModel)
-            cell.highlightNodeName(highlight)
+            cell.highlightNodeName(sectionViewModel.highlight)
             cell.delegate = self
             return cell
         }
     }
 
-    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
-        UIView()
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let viewModel = viewModel else { return nil }
+
+        let section = viewModel.sections[section]
+        switch section {
+        case .autoSelectNodes:
+            return nil
+        case let .customNodes(sectionViewModel), let .defaultNodes(sectionViewModel):
+            let header: NetworksSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
+            header.titleLabel.text = sectionViewModel.title
+            header.highlight(sectionViewModel.highlight)
+            return header
+        }
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        guard let viewModel = viewModel else { return 0 }
+
+        let section = viewModel.sections[section]
+        switch section {
+        case .autoSelectNodes:
+            return 0
+        case .customNodes, .defaultNodes:
+            return UITableView.automaticDimension
+        }
     }
 }
 
@@ -162,8 +185,8 @@ extension NetworkDetailsViewController: UITableViewDelegate {
             return .none
         }
 
-        if case let NetworkDetailsSection.customNodes(custom, _) = viewModel.sections[indexPath.section] {
-            return custom[indexPath.row].isSelected ? .delete : .none
+        if case let NetworkDetailsSection.customNodes(sectionViewModel) = viewModel.sections[indexPath.section] {
+            return sectionViewModel.cellViewModels[indexPath.row].isSelected ? .delete : .none
         }
         return .none
     }

@@ -1613,6 +1613,7 @@
 		F4E7926B27199A7D003B2FA8 /* NetworksSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926A27199A7D003B2FA8 /* NetworksSectionHeaderView.swift */; };
 		F4E7927027199C01003B2FA8 /* NetworksItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */; };
 		F4E792752719A032003B2FA8 /* NetworksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E792742719A032003B2FA8 /* NetworksViewModel.swift */; };
+		F4E8084127206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */; };
 		F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */; };
 		F4EF24C826BA713300F28B4E /* AnalyticsStakeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */; };
 		F4EF24D026BA7A4400F28B4E /* AnalyticsViewModelFactoryBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */; };
@@ -3288,6 +3289,7 @@
 		F4E7926A27199A7D003B2FA8 /* NetworksSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksSectionHeaderView.swift; sourceTree = "<group>"; };
 		F4E7926F27199C01003B2FA8 /* NetworksItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksItemCell.swift; sourceTree = "<group>"; };
 		F4E792742719A032003B2FA8 /* NetworksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworksViewModel.swift; sourceTree = "<group>"; };
+		F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailsAutoSelectViewModel.swift; sourceTree = "<group>"; };
 		F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStakeHeaderView.swift; sourceTree = "<group>"; };
 		F4EF24CF26BA7A4300F28B4E /* AnalyticsViewModelFactoryBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsViewModelFactoryBase.swift; sourceTree = "<group>"; };
@@ -7950,6 +7952,7 @@
 				F4BCACB6271EC7DF009B8381 /* NetworkDetailsViewModelFactory.swift */,
 				F4BCACC0271ECC1D009B8381 /* ManagedNodeConnectionViewModel.swift */,
 				F4BCACC5271ECD4E009B8381 /* NetworkDetailsSection.swift */,
+				F4E8084027206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -9989,6 +9992,7 @@
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,
+				F4E8084127206AAE00ED6414 /* NetworkDetailsAutoSelectViewModel.swift in Sources */,
 				B7CF31A548C02AD7AAC16A8D /* StakingRedeemWireframe.swift in Sources */,
 				C0B0DDF638915E8259B1CD67 /* StakingRedeemPresenter.swift in Sources */,
 				C4A4D40A08DAB4A71C21C1A8 /* StakingRedeemInteractor.swift in Sources */,
