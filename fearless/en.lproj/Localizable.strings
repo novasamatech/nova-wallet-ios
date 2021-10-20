@@ -500,3 +500,4 @@ will appear here";
 "common.select.network" = "Select network";
 "common.select.asset" = "Select asset";
 "networks.auto.select.nodes" = "Auto select nodes";
+"network.add.node" = "Add node";

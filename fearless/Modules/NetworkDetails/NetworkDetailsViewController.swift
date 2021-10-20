@@ -41,6 +41,7 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
         self.viewModel = viewModel
         title = viewModel.title
         rootView.tableView.reloadData()
+        rootView.actionButton.imageWithTitleView?.title = viewModel.actionTitle
     }
 }
 

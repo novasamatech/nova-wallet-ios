@@ -1,7 +1,7 @@
 import Foundation
 
 final class NetworkDetailsViewModelFactory: NetworkDetailsViewModelFactoryProtocol {
-    func createViewModel(chainModel: ChainModel) -> NetworkDetailsViewModel {
+    func createViewModel(chainModel: ChainModel, locale: Locale) -> NetworkDetailsViewModel {
         let defaultNodesViewModel = chainModel.nodes.map { node in
             ManagedNodeConnectionViewModel(
                 identifier: node.name,
@@ -15,7 +15,8 @@ final class NetworkDetailsViewModelFactory: NetworkDetailsViewModelFactoryProtoc
             sections: [
                 .autoSelectNodes(true),
                 .defaultNodes(defaultNodesViewModel)
-            ]
+            ],
+            actionTitle: R.string.localizable.networkAddNode(preferredLanguages: locale.rLanguages)
         )
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class NetworkDetailsPresenter {
     weak var view: NetworkDetailsViewProtocol?
@@ -6,24 +7,37 @@ final class NetworkDetailsPresenter {
     let interactor: NetworkDetailsInteractorInputProtocol
     let viewModelFactory: NetworkDetailsViewModelFactoryProtocol
     let chainModel: ChainModel
+    let localizationManager: LocalizationManagerProtocol?
 
     init(
         interactor: NetworkDetailsInteractorInputProtocol,
         wireframe: NetworkDetailsWireframeProtocol,
         viewModelFactory: NetworkDetailsViewModelFactoryProtocol,
-        chainModel: ChainModel
+        chainModel: ChainModel,
+        localizationManager: LocalizationManagerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         self.chainModel = chainModel
+        self.localizationManager = localizationManager
+    }
+
+    private func updateView() {
+        let viewModel = viewModelFactory.createViewModel(chainModel: chainModel, locale: selectedLocale)
+        view?.reload(viewModel: viewModel)
     }
 }
 
 extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
-        let viewModel = viewModelFactory.createViewModel(chainModel: chainModel)
-        view?.reload(viewModel: viewModel)
+        updateView()
+    }
+}
+
+extension NetworkDetailsPresenter: Localizable {
+    func applyLocalization() {
+        updateView()
     }
 }
 

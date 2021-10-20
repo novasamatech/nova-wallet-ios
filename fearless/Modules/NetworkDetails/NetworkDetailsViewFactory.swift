@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct NetworkDetailsViewFactory {
     static func createView(chainModel: ChainModel) -> NetworkDetailsViewProtocol? {
@@ -9,7 +10,8 @@ struct NetworkDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: NetworkDetailsViewModelFactory(),
-            chainModel: chainModel
+            chainModel: chainModel,
+            localizationManager: LocalizationManager.shared
         )
 
         let view = NetworkDetailsViewController(presenter: presenter)

@@ -8,7 +8,7 @@ final class NetworkDetailsViewLayout: UIView {
         return tableView
     }()
 
-    let addNodeButton: TriangularedButton = {
+    let actionButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         return button
@@ -33,8 +33,8 @@ final class NetworkDetailsViewLayout: UIView {
             make.leading.bottom.trailing.equalToSuperview()
         }
 
-        addSubview(addNodeButton)
-        addNodeButton.snp.makeConstraints { make in
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
