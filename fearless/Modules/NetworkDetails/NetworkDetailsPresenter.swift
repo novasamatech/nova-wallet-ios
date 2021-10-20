@@ -33,6 +33,10 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
     func setup() {
         updateView()
     }
+
+    func handleActionButton() {
+        wireframe.showAddConnection(from: view)
+    }
 }
 
 extension NetworkDetailsPresenter: Localizable {

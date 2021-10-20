@@ -30,6 +30,7 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
 
         setupTable()
         setupNavigationItem()
+        rootView.actionButton.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
         applyLocalization()
         presenter.setup()
     }
@@ -84,6 +85,11 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
             navigationItem.rightBarButtonItem?.title = R.string.localizable
                 .commonEdit(preferredLanguages: selectedLocale.rLanguages)
         }
+    }
+
+    @objc
+    private func handleActionButton() {
+        presenter.handleActionButton()
     }
 }
 
