@@ -23,7 +23,16 @@ final class NetworkDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupTable()
         presenter.setup()
+    }
+
+    private func setupTable() {
+        rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+        rootView.tableView.registerClassForCell(SwitchTableViewCell.self)
+        rootView.tableView.registerClassForCell(NodeConnectionCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: NetworksSectionHeaderView.self)
     }
 }
 
@@ -32,5 +41,48 @@ extension NetworkDetailsViewController: NetworkDetailsViewProtocol {
         self.viewModel = viewModel
         title = viewModel.title
         rootView.tableView.reloadData()
+    }
+}
+
+extension NetworkDetailsViewController: UITableViewDataSource {
+    func numberOfSections(in _: UITableView) -> Int {
+        guard let viewModel = viewModel else { return 0 }
+        return viewModel.sections.count
+    }
+
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let viewModel = viewModel else { return 0 }
+        switch viewModel.sections[section] {
+        case .autoSelectNodes:
+            return 1
+        case let .customNodes(cellViewModels), let .defaultNodes(cellViewModels):
+            return cellViewModels.count
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let viewModel = viewModel else { return UITableViewCell() }
+
+        switch viewModel.sections[indexPath.section] {
+        case let .autoSelectNodes(select):
+            let cell = tableView.dequeueReusableCellWithType(SwitchTableViewCell.self, forIndexPath: indexPath)
+            cell.bind(title: "Auto", isOn: select)
+            return cell
+        case let .customNodes(cellViewModels), let .defaultNodes(cellViewModels):
+            let cell = tableView.dequeueReusableCellWithType(NodeConnectionCell.self, forIndexPath: indexPath)
+            let cellViewModel = cellViewModels[indexPath.row]
+            cell.bind(viewModel: cellViewModel)
+            return cell
+        }
+    }
+
+    func tableView(_: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        UIView()
+    }
+}
+
+extension NetworkDetailsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

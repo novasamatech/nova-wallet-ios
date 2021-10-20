@@ -10,14 +10,12 @@ final class NetworkDetailsViewModelFactory: NetworkDetailsViewModelFactoryProtoc
             )
         }
 
-        let sections: [(NetworkDetailsSection, [ManagedNodeConnectionViewModel])] = [
-            (.defaultNodes, defaultNodesViewModel)
-        ]
-
         return NetworkDetailsViewModel(
             title: chainModel.name,
-            autoSelectNodes: false,
-            sections: sections
+            sections: [
+                .autoSelectNodes(true),
+                .defaultNodes(defaultNodesViewModel)
+            ]
         )
     }
 }
