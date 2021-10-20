@@ -177,6 +177,13 @@ extension NetworkDetailsViewController: UITableViewDelegate {
 
 extension NetworkDetailsViewController: NodeConnectionCellDelegate {
     func didSelectInfo(_ cell: NodeConnectionCell) {
-        print(cell)
+        guard
+            let indexPath = rootView.tableView.indexPath(for: cell)
+        else {
+            return
+        }
+
+        // TODO: handle custom nodes
+        presenter.handleDefaultNodeInfo(at: indexPath.row)
     }
 }

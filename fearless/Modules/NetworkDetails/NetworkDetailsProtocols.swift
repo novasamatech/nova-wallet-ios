@@ -7,6 +7,7 @@ protocol NetworkDetailsViewProtocol: ControllerBackedProtocol {
 protocol NetworkDetailsPresenterProtocol: AnyObject {
     func setup()
     func handleActionButton()
+    func handleDefaultNodeInfo(at index: Int)
 }
 
 protocol NetworkDetailsViewModelFactoryProtocol {
@@ -19,4 +20,9 @@ protocol NetworkDetailsInteractorOutputProtocol: AnyObject {}
 
 protocol NetworkDetailsWireframeProtocol: AnyObject {
     func showAddConnection(from view: ControllerBackedProtocol?)
+    func showNodeInfo(
+        connectionItem: ConnectionItem,
+        mode: NetworkInfoMode,
+        from view: ControllerBackedProtocol?
+    )
 }

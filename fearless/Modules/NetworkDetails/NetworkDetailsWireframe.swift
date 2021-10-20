@@ -11,4 +11,20 @@ final class NetworkDetailsWireframe: NetworkDetailsWireframeProtocol {
             animated: true
         )
     }
+
+    func showNodeInfo(
+        connectionItem: ConnectionItem,
+        mode: NetworkInfoMode,
+        from view: ControllerBackedProtocol?
+    ) {
+        guard let networkInfoView = NetworkInfoViewFactory.createView(
+            with: connectionItem,
+            mode: mode
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: networkInfoView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }

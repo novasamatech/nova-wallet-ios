@@ -9,6 +9,8 @@ final class NetworkDetailsPresenter {
     let chainModel: ChainModel
     let localizationManager: LocalizationManagerProtocol?
 
+    private let defaultNodes: [ChainNodeModel]
+
     init(
         interactor: NetworkDetailsInteractorInputProtocol,
         wireframe: NetworkDetailsWireframeProtocol,
@@ -21,6 +23,7 @@ final class NetworkDetailsPresenter {
         self.viewModelFactory = viewModelFactory
         self.chainModel = chainModel
         self.localizationManager = localizationManager
+        defaultNodes = Array(chainModel.nodes)
     }
 
     private func updateView() {
@@ -36,6 +39,17 @@ extension NetworkDetailsPresenter: NetworkDetailsPresenterProtocol {
 
     func handleActionButton() {
         wireframe.showAddConnection(from: view)
+    }
+
+    func handleDefaultNodeInfo(at index: Int) {
+        let node = defaultNodes[index]
+        let connection = ConnectionItem(title: node.name, url: node.url, type: .genericSubstrate)
+
+        wireframe.showNodeInfo(
+            connectionItem: connection,
+            mode: .none,
+            from: view
+        )
     }
 }
 
