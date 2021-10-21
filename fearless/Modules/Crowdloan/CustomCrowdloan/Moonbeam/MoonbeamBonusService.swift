@@ -14,6 +14,9 @@ final class MoonbeamBonusService {
         "/check-remark/\(address)"
     }
 
+    static let agreeRemark = "/agree-remark"
+    static let legalText = "https://github.com/moonbeam-foundation/crowdloan-self-attestation/tree/main/moonbeam"
+
     let address: AccountAddress
     let operationManager: OperationManagerProtocol
     private let requestModifier = MoonbeamRequestModifier()
@@ -66,6 +69,42 @@ final class MoonbeamBonusService {
         operation.requestModifier = requestModifier
         return operation
     }
+
+    /// Generate the content needed for the remark extrinsic.
+    /// `signedMessage` needs to be a raw signed message
+    /// by the address’ private key of the SHA-256 hash of the attestation
+    func createAgreeRemarkOperation(signedMessage: String) -> BaseOperation<String> {
+        let url = Self.baseURL.appendingPathComponent(Self.agreeRemark)
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+            let remarkRequest = MoonbeamAgreeRemarkRequest(address: self.address, signedMessage: signedMessage)
+            let body = try JSONEncoder().encode(remarkRequest)
+            request.httpBody = body
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<String> { data in
+            let resultData = try JSONDecoder().decode(
+                MoonbeamAgreeRemarkResponse.self,
+                from: data
+            )
+            return resultData.remark
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
+    }
+
+//    async function sha256(message: string) {
+//        const msgBuffer = new TextEncoder().encode(message);
+//        const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
+//        const hashArray = Array.from(new Uint8Array(hashBuffer));
+//        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+//        return hashHex;
+//    }
 }
 
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
