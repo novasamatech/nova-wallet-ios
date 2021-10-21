@@ -9,14 +9,11 @@ final class MoonbeamBonusService {
         static let baseURL = URL(string: "https://wallet-test.api.purestake.xyz")!
     #endif
 
-    #if DEBUG
-        static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
-    #endif
-
     static let apiHealth = "/health"
 
     let address: AccountAddress
     let operationManager: OperationManagerProtocol
+    private let requestModifier = MoonbeamRequestModifier()
 
     init(
         address: AccountAddress,
@@ -32,13 +29,26 @@ final class MoonbeamBonusService {
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             request.httpMethod = HttpMethod.get.rawValue
-            request.addValue(Self.apiKey, forHTTPHeaderField: "x-api-key")
             return request
         }
 
         let resultFactory = AnyNetworkResultFactory<Void> { _ in
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
+    }
+}
+
+private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
+    #if DEBUG
+        static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
+    #endif
+
+    func modify(request: URLRequest) throws -> URLRequest {
+        var modifiedRequest = request
+        modifiedRequest.addValue(Self.apiKey, forHTTPHeaderField: "x-api-key")
+        return modifiedRequest
     }
 }
