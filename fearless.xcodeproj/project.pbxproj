@@ -1596,6 +1596,7 @@
 		F4E117B9264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */; };
 		F4E17FB827216C2F00FE36D3 /* MoonbeamBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */; };
 		F4E17FC02721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FBF2721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift */; };
+		F4E17FC52721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FC42721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift */; };
 		F4E339632614A03F0028B6B1 /* ExtrinsicsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E339622614A03F0028B6B1 /* ExtrinsicsInfo.swift */; };
 		F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */; };
 		F4EF24C826BA713300F28B4E /* AnalyticsStakeHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */; };
@@ -3255,6 +3256,7 @@
 		F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationVM.swift; sourceTree = "<group>"; };
 		F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamBonusService.swift; sourceTree = "<group>"; };
 		F4E17FBF2721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamCrowdloanIntegrationTests.swift; sourceTree = "<group>"; };
+		F4E17FC42721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamCheckRemarkResponse.swift; sourceTree = "<group>"; };
 		F4E339622614A03F0028B6B1 /* ExtrinsicsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicsInfo.swift; sourceTree = "<group>"; };
 		F4EAC7962642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		F4EF24C726BA713300F28B4E /* AnalyticsStakeHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsStakeHeaderView.swift; sourceTree = "<group>"; };
@@ -8105,6 +8107,7 @@
 			isa = PBXGroup;
 			children = (
 				F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */,
+				F4E17FC42721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift */,
 			);
 			path = Moonbeam;
 			sourceTree = "<group>";
@@ -9760,6 +9763,7 @@
 				845B821F26EF8E8900D25C72 /* ManagedMetaAccountModel.swift in Sources */,
 				8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */,
 				841E6AFE25EC12DE0007DDFE /* SelectedValidatorInfo.swift in Sources */,
+				F4E17FC52721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift in Sources */,
 				C89D156BA8B690E8E4DE19ED /* ExportSeedProtocols.swift in Sources */,
 				AEBE173B262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift in Sources */,
 				84B64E3F2704567700914E88 /* StakingLocalStorageSubscriber.swift in Sources */,
