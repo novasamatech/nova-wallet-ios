@@ -29,7 +29,7 @@ final class ExtrinsicProcessor {
     private func matchStatus(
         for index: UInt32,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadata
+        metadata: RuntimeMetadataProtocol
     ) -> Bool? {
         eventRecords.filter { record in
             guard record.extrinsicIndex == index,
@@ -44,7 +44,7 @@ final class ExtrinsicProcessor {
     private func findFee(
         for index: UInt32,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadata
+        metadata: RuntimeMetadataProtocol
     ) -> BigUInt {
         eventRecords.compactMap { record in
             guard record.extrinsicIndex == index,
@@ -70,7 +70,7 @@ final class ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadata
+        metadata: RuntimeMetadataProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
             let sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
@@ -114,7 +114,7 @@ final class ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadata
+        metadata: RuntimeMetadataProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
             let sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
