@@ -364,7 +364,7 @@
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
 "common.bonus" = "Бонус";
-"crowdloan.app.bonus.format" = "Бонус Fearless Wallet (%@)";
+"crowdloan.app.bonus.format" = "Бонус Nova Wallet (%@)";
 "common.referral.code.title" = "Реферальный код";
 "karura.referral.code.action" = "Введите реферальный код";
 "staking.add.controller" = "Чтобы выполнить это действие, добавьте контроллер аккаунт %@ в приложение";

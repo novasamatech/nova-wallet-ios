@@ -364,7 +364,7 @@ Derivation path: %@";
 "crowdloan.private.crowdloan.title" = "Private crowdloan";
 "crowdloan.private.crowdloan.message" = "Private crowdloans are not yet supported.";
 "common.bonus" = "Bonus";
-"crowdloan.app.bonus.format" = "Fearless Wallet bonus (%@)";
+"crowdloan.app.bonus.format" = "Nova Wallet bonus (%@)";
 "common.referral.code.title" = "Referral code";
 "karura.referral.code.action" = "Enter your referral code";
 "staking.add.controller" = "Add controller account %@ to the application to perform this action.";
