@@ -3,7 +3,7 @@ platform :ios, '11.0'
 abstract_target 'fearlessAll' do
   use_frameworks!
 
-  pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '9711c90d61ec4d1e4b42df5811a10e1e913d83af'
+  pod 'FearlessUtils', :git => 'bit-me:Emkil/substrate-ios-sdk.git', :commit => '39a91903658e14bbd2fb25aa47d8d8b309c40a61'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -24,7 +24,7 @@ abstract_target 'fearlessAll' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => '9711c90d61ec4d1e4b42df5811a10e1e913d83af'
+    pod 'FearlessUtils', :git => 'bit-me:Emkil/substrate-ios-sdk.git', :commit => '39a91903658e14bbd2fb25aa47d8d8b309c40a61'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true

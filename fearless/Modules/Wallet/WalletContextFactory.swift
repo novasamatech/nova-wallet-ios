@@ -71,14 +71,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         )
 
         let walletAssets: [WalletAsset] = chainAssets.compactMap { chainAsset in
-            // TODO: Remove when runtime fixed
-            guard ![Chain.polkadot.genesisHash, Chain.westend.genesisHash, Chain.kusama.genesisHash].contains(
-                chainAsset.chain.identifier
-            ) else {
-                return nil
-            }
-
-            return WalletAsset(
+            WalletAsset(
                 identifier: chainAsset.chainAssetId.walletId,
                 name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
                 platform: LocalizableResource { _ in chainAsset.chain.name },
