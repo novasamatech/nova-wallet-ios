@@ -15,7 +15,7 @@ final class AcalaBonusService {
 
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
-    static let apiVerify = "/verify"
+    static let apiContribute = "/contribute"
 
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/karura/terms")! }
@@ -59,11 +59,10 @@ final class AcalaBonusService {
         return operation
     }
 
-    func createVerifyOperation(
+    func createContributeOperation(
         dependingOn infoOperation: BaseOperation<KaruraVerifyInfo>
     ) -> BaseOperation<Void> {
-        let url = Self.baseURL
-            .appendingPathComponent(Self.apiVerify)
+        let url = Self.baseURL.appendingPathComponent(Self.apiContribute)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -173,7 +172,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
 
         infoOperation.addDependency(statementOperation)
 
-        let verifyOperation = createVerifyOperation(dependingOn: infoOperation)
+        let verifyOperation = createContributeOperation(dependingOn: infoOperation)
         verifyOperation.addDependency(infoOperation)
 
         verifyOperation.completionBlock = {
