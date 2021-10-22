@@ -37,7 +37,7 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
         }
 
         switch customFlow {
-        case .karura:
+        case .karura, .acala:
             showKaruraCustomFlow(
                 from: view,
                 for: displayInfo,
