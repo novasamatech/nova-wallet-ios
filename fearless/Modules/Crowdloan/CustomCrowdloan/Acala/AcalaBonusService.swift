@@ -172,13 +172,13 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
 
         infoOperation.addDependency(statementOperation)
 
-        let verifyOperation = createContributeOperation(dependingOn: infoOperation)
-        verifyOperation.addDependency(infoOperation)
+        let contributeOperation = createContributeOperation(dependingOn: infoOperation)
+        contributeOperation.addDependency(infoOperation)
 
-        verifyOperation.completionBlock = {
+        contributeOperation.completionBlock = {
             DispatchQueue.main.async {
                 do {
-                    _ = try verifyOperation.extractNoCancellableResultData()
+                    _ = try contributeOperation.extractNoCancellableResultData()
                     closure(.success(()))
                 } catch {
                     if let responseError = error as? NetworkResponseError, responseError == .invalidParameters {
@@ -190,7 +190,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
             }
         }
 
-        operationManager.enqueue(operations: [statementOperation, infoOperation, verifyOperation], in: .transient)
+        operationManager.enqueue(operations: [statementOperation, infoOperation, contributeOperation], in: .transient)
     }
 
     func applyOnchainBonusForContribution(
