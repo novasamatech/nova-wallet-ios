@@ -4,6 +4,7 @@ import RobinHood
 
 protocol AccountRepositoryFactoryProtocol {
     // TODO: remove
+    @available(*, deprecated, message: "Use createMetaAccountRepository(for filter:, sortDescriptors:) instead")
     func createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>
     func createRepository() -> AnyDataProviderRepository<AccountItem>
 
@@ -19,17 +20,6 @@ protocol AccountRepositoryFactoryProtocol {
         for filter: NSPredicate?,
         sortDescriptors: [NSSortDescriptor]
     ) -> AnyDataProviderRepository<ManagedMetaAccountModel>
-}
-
-extension AccountRepositoryFactoryProtocol {
-    func createAccountRepository(
-        for accountId: AccountId
-    ) -> AnyDataProviderRepository<MetaAccountModel> {
-        let filter = NSPredicate.filterMetaAccountByAccountId(accountId)
-        let sortition = NSSortDescriptor.accountsByOrder
-
-        return createMetaAccountRepository(for: filter, sortDescriptors: [sortition])
-    }
 }
 
 final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
