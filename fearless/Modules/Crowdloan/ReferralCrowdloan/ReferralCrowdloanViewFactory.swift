@@ -20,8 +20,8 @@ struct ReferralCrowdloanViewFactory {
             return nil
         }
 
-        let bonusService: CrowdloanBonusServiceProtocol = {
-            if let service = existingService as? KaruraBonusService {
+        let bonusService: AcalaBonusServiceProtocol = {
+            if let service = existingService as? AcalaBonusServiceProtocol {
                 return service
             } else {
                 let signingWrapper = SigningWrapper(
@@ -42,7 +42,7 @@ struct ReferralCrowdloanViewFactory {
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: KaruraBonusService.defaultReferralCode,
+            defaultReferralCode: bonusService.defaultReferralCode,
             state: state
         )
     }

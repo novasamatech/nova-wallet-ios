@@ -4,14 +4,23 @@ import BigInt
 import IrohaCrypto
 import FearlessUtils
 
-final class KaruraBonusService {
-    static let defaultReferralCode = "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
+protocol AcalaBonusServiceProtocol: CrowdloanBonusServiceProtocol {
+    var defaultReferralCode: String { get }
+    var baseURL: URL { get }
+}
 
-    #if F_RELEASE
-        static let baseURL = URL(string: "https://api.aca-staging.network")!
-    #else
-        static let baseURL = URL(string: "https://crowdloan-api.laminar.codes")!
-    #endif
+class KaruraBonusService: AcalaBonusServiceProtocol {
+    var defaultReferralCode: String {
+        "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
+    }
+
+    var baseURL: URL {
+        #if F_RELEASE
+            return URL(string: "https://api.aca-staging.network")!
+        #else
+            return URL(string: "https://crowdloan-api.laminar.codes")!
+        #endif
+    }
 
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
@@ -36,7 +45,7 @@ final class KaruraBonusService {
     }
 
     func createStatementFetchOperation() -> BaseOperation<String> {
-        let url = Self.baseURL.appendingPathComponent(Self.apiStatement)
+        let url = baseURL.appendingPathComponent(Self.apiStatement)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -59,8 +68,7 @@ final class KaruraBonusService {
     func createVerifyOperation(
         dependingOn infoOperation: BaseOperation<KaruraVerifyInfo>
     ) -> BaseOperation<Void> {
-        let url = Self.baseURL
-            .appendingPathComponent(Self.apiVerify)
+        let url = baseURL.appendingPathComponent(Self.apiVerify)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -89,7 +97,7 @@ final class KaruraBonusService {
 
 extension KaruraBonusService: CrowdloanBonusServiceProtocol {
     func save(referralCode: String, completion closure: @escaping (Result<Void, Error>) -> Void) {
-        let url = Self.baseURL
+        let url = baseURL
             .appendingPathComponent(Self.apiReferral)
             .appendingPathComponent(referralCode)
 
