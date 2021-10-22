@@ -4,29 +4,19 @@ import BigInt
 import IrohaCrypto
 import FearlessUtils
 
-protocol AcalaBonusServiceProtocol: CrowdloanBonusServiceProtocol {
-    var defaultReferralCode: String { get }
-    var baseURL: URL { get }
-}
+final class KaruraBonusService {
+    static let defaultReferralCode = "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
 
-class KaruraBonusService: AcalaBonusServiceProtocol {
-    var defaultReferralCode: String {
-        "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
-    }
-
-    var baseURL: URL {
-        #if F_RELEASE
-            return URL(string: "https://api.aca-staging.network")!
-        #else
-            return URL(string: "https://crowdloan-api.laminar.codes")!
-        #endif
-    }
+    #if F_RELEASE
+        static let baseURL = URL(string: "https://api.aca-staging.network")!
+    #else
+        static let baseURL = URL(string: "https://crowdloan-api.laminar.codes")!
+    #endif
 
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
     static let apiVerify = "/verify"
 
-    let requestModifier: NetworkRequestModifierProtocol?
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/karura/terms")! }
     private(set) var referralCode: String?
@@ -38,17 +28,15 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
     init(
         address: AccountAddress,
         signingWrapper: SigningWrapperProtocol,
-        operationManager: OperationManagerProtocol,
-        requestModifier: NetworkRequestModifierProtocol? = nil
+        operationManager: OperationManagerProtocol
     ) {
         self.address = address
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
-        self.requestModifier = requestModifier
     }
 
     func createStatementFetchOperation() -> BaseOperation<String> {
-        let url = baseURL.appendingPathComponent(Self.apiStatement)
+        let url = Self.baseURL.appendingPathComponent(Self.apiStatement)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -65,15 +53,14 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
             return resultData.statement
         }
 
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = requestModifier
-        return operation
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
     func createVerifyOperation(
         dependingOn infoOperation: BaseOperation<KaruraVerifyInfo>
     ) -> BaseOperation<Void> {
-        let url = baseURL.appendingPathComponent(Self.apiVerify)
+        let url = Self.baseURL
+            .appendingPathComponent(Self.apiVerify)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -96,15 +83,13 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
             }
         }
 
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = requestModifier
-        return operation
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 }
 
 extension KaruraBonusService: CrowdloanBonusServiceProtocol {
     func save(referralCode: String, completion closure: @escaping (Result<Void, Error>) -> Void) {
-        let url = baseURL
+        let url = Self.baseURL
             .appendingPathComponent(Self.apiReferral)
             .appendingPathComponent(referralCode)
 
@@ -124,7 +109,6 @@ extension KaruraBonusService: CrowdloanBonusServiceProtocol {
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = requestModifier
 
         operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

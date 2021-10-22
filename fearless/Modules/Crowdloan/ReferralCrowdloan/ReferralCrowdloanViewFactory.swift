@@ -20,8 +20,8 @@ struct ReferralCrowdloanViewFactory {
             return nil
         }
 
-        let bonusService: AcalaBonusServiceProtocol = {
-            if let service = existingService as? AcalaBonusServiceProtocol {
+        let bonusService: CrowdloanBonusServiceProtocol = {
+            if let service = existingService as? AcalaBonusService {
                 return service
             } else {
                 let signingWrapper = SigningWrapper(
@@ -32,8 +32,7 @@ struct ReferralCrowdloanViewFactory {
                 return AcalaBonusService(
                     address: selectedAddress,
                     signingWrapper: signingWrapper,
-                    operationManager: OperationManagerFacade.sharedManager,
-                    requestModifier: AcalaRequestModifier()
+                    operationManager: OperationManagerFacade.sharedManager
                 )
             }
         }()
@@ -43,7 +42,7 @@ struct ReferralCrowdloanViewFactory {
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: bonusService.defaultReferralCode,
+            defaultReferralCode: AcalaBonusService.defaultReferralCode,
             state: state
         )
     }
@@ -65,8 +64,8 @@ struct ReferralCrowdloanViewFactory {
             return nil
         }
 
-        let bonusService: AcalaBonusServiceProtocol = {
-            if let service = existingService as? AcalaBonusServiceProtocol {
+        let bonusService: CrowdloanBonusServiceProtocol = {
+            if let service = existingService as? KaruraBonusService {
                 return service
             } else {
                 let signingWrapper = SigningWrapper(
@@ -87,7 +86,7 @@ struct ReferralCrowdloanViewFactory {
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: bonusService.defaultReferralCode,
+            defaultReferralCode: KaruraBonusService.defaultReferralCode,
             state: state
         )
     }
