@@ -26,6 +26,7 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
     static let apiStatement = "/statement"
     static let apiVerify = "/verify"
 
+    let requestModifier: NetworkRequestModifierProtocol?
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/karura/terms")! }
     private(set) var referralCode: String?
@@ -37,11 +38,13 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
     init(
         address: AccountAddress,
         signingWrapper: SigningWrapperProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        requestModifier: NetworkRequestModifierProtocol? = nil
     ) {
         self.address = address
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
+        self.requestModifier = requestModifier
     }
 
     func createStatementFetchOperation() -> BaseOperation<String> {
@@ -62,7 +65,9 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
             return resultData.statement
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
     }
 
     func createVerifyOperation(
@@ -91,7 +96,9 @@ class KaruraBonusService: AcalaBonusServiceProtocol {
             }
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
     }
 }
 
@@ -117,6 +124,7 @@ extension KaruraBonusService: CrowdloanBonusServiceProtocol {
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
 
         operation.completionBlock = { [weak self] in
             DispatchQueue.main.async {

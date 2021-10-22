@@ -32,7 +32,8 @@ struct ReferralCrowdloanViewFactory {
                 return AcalaBonusService(
                     address: selectedAddress,
                     signingWrapper: signingWrapper,
-                    operationManager: OperationManagerFacade.sharedManager
+                    operationManager: OperationManagerFacade.sharedManager,
+                    requestModifier: AcalaRequestModifier()
                 )
             }
         }()
