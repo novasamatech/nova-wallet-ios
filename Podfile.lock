@@ -124,7 +124,7 @@ DEPENDENCIES:
   - Charts
   - CommonWallet/Core (from `https://github.com/soramitsu/Capital-iOS.git`, commit `4133ff9b81cda094dd8e2b7f32129172224b0227`)
   - Cuckoo
-  - "FearlessUtils (from `git@github.com:nova-wallet/substrate-sdk-ios.git`, commit `eae966b7dc88837dee70832509d6f557c6f980c1`)"
+  - "FearlessUtils (from `git@github.com:nova-wallet/substrate-sdk-ios.git`, commit `f02885dbcd43cbcaf3fe533e4db71eda179cb09c`)"
   - FireMock
   - Kingfisher
   - R.swift
@@ -173,7 +173,7 @@ EXTERNAL SOURCES:
     :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
     :git: https://github.com/soramitsu/Capital-iOS.git
   FearlessUtils:
-    :commit: eae966b7dc88837dee70832509d6f557c6f980c1
+    :commit: f02885dbcd43cbcaf3fe533e4db71eda179cb09c
     :git: "git@github.com:nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -184,7 +184,7 @@ CHECKOUT OPTIONS:
     :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
     :git: https://github.com/soramitsu/Capital-iOS.git
   FearlessUtils:
-    :commit: eae966b7dc88837dee70832509d6f557c6f980c1
+    :commit: f02885dbcd43cbcaf3fe533e4db71eda179cb09c
     :git: "git@github.com:nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -220,6 +220,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 182231e8686c34f2c5d079a2af3a53aeca44a725
+PODFILE CHECKSUM: 83e8d944f753b2075f88267159daa378aad5b382
 
 COCOAPODS: 1.11.2
