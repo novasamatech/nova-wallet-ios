@@ -22,6 +22,17 @@ protocol AccountRepositoryFactoryProtocol {
     ) -> AnyDataProviderRepository<ManagedMetaAccountModel>
 }
 
+extension AccountRepositoryFactoryProtocol {
+    func createAccountRepository(
+        for accountId: AccountId
+    ) -> AnyDataProviderRepository<MetaAccountModel> {
+        let filter = NSPredicate.filterMetaAccountByAccountId(accountId)
+        let sortition = NSSortDescriptor.accountsByOrder
+
+        return createMetaAccountRepository(for: filter, sortDescriptors: [sortition])
+    }
+}
+
 final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
     let storageFacade: StorageFacadeProtocol
 
