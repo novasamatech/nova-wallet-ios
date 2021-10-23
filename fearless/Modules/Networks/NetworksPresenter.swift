@@ -40,7 +40,9 @@ final class NetworksPresenter {
 
 extension NetworksPresenter: Localizable {
     func applyLocalization() {
-        updateView()
+        if let view = view, view.isSetup {
+            updateView()
+        }
     }
 }
 
