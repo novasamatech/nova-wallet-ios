@@ -21,18 +21,18 @@ extension RuntimeCodingServiceStub {
         specVersion: UInt32 = 48,
         txVersion: UInt32 = 4
     ) throws -> RuntimeCoderFactoryProtocol {
-        let runtimeMetadata = try RuntimeHelper.createRuntimeMetadata("westend-metadata")
+        let runtimeMetadataContainer = try RuntimeHelper.createRuntimeMetadata("westend-metadata")
         let typeCatalog = try RuntimeHelper.createTypeRegistryCatalog(
             from: "runtime-default",
             networkName: "runtime-westend",
-            runtimeMetadata: runtimeMetadata
+            runtimeMetadataContainer: runtimeMetadataContainer
         )
 
         return RuntimeCoderFactory(
             catalog: typeCatalog,
             specVersion: specVersion,
             txVersion: txVersion,
-            metadata: runtimeMetadata
+            metadata: runtimeMetadataContainer.metadata
         )
     }
 

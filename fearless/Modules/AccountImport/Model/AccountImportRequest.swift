@@ -44,7 +44,6 @@ struct MetaAccountImportKeystoreRequest {
 struct ChainAccountImportMnemonicRequest {
     let mnemonic: String
     let username: String
-    let networkType: Chain
     let derivationPath: String
     let cryptoType: MultiassetCryptoType
 }
@@ -52,7 +51,6 @@ struct ChainAccountImportMnemonicRequest {
 struct ChainAccountImportSeedRequest {
     let seed: String
     let username: String
-    let networkType: Chain
     let derivationPath: String
     let cryptoType: MultiassetCryptoType
 }
@@ -61,6 +59,5 @@ struct ChainAccountImportKeystoreRequest {
     let keystore: String
     let password: String
     let username: String
-    let networkType: Chain
     let cryptoType: MultiassetCryptoType
 }
