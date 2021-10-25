@@ -30,7 +30,7 @@ protocol AccountImportPresenterProtocol: AnyObject {
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
     func setup()
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)
+    func importAccountWithMnemonic(request: ChainAccountImportMnemonicRequest) // FIXME: Meta, Chain, or general request?
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
     func deriveMetadataFromKeystore(_ keystore: String)

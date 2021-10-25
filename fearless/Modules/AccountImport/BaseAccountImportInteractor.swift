@@ -78,7 +78,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         setupKeystoreImportObserver()
     }
 
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest) {
+    func importAccountWithMnemonic(request: ChainAccountImportMnemonicRequest) { // FIXME: Meta/Chain/General?
         guard let mnemonic = try? mnemonicCreator.mnemonic(fromList: request.mnemonic) else {
             presenter.didReceiveAccountImport(error: AccountCreateError.invalidMnemonicFormat)
             return

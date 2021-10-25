@@ -474,7 +474,7 @@ extension AccountImportPresenter: AccountImportPresenterProtocol {
             let mnemonic = sourceViewModel.inputHandler.normalizedValue
             let username = usernameViewModel.inputHandler.value
             let derivationPath = derivationPathViewModel?.inputHandler.value ?? ""
-            let request = MetaAccountImportMnemonicRequest(
+            let request = ChainAccountImportMnemonicRequest( // FIXME: Meta/Chain/General?
                 mnemonic: mnemonic,
                 username: username,
                 derivationPath: derivationPath,
