@@ -3,6 +3,66 @@ import SoraKeystore
 import SoraFoundation
 
 struct ReferralCrowdloanViewFactory {
+    static func createAcalaView(
+        for delegate: CustomCrowdloanDelegate,
+        displayInfo: CrowdloanDisplayInfo,
+        inputAmount: Decimal,
+        existingService: CrowdloanBonusServiceProtocol?,
+        state: CrowdloanSharedState
+    ) -> ReferralCrowdloanViewProtocol? {
+        guard
+            let selectedAccount = SelectedWalletSettings.shared.value,
+            let chain = state.settings.value,
+            let accountResponse = selectedAccount.fetch(for: chain.accountRequest()),
+            let selectedAddress = try? accountResponse.accountId.toAddress(
+                using: chain.chainFormat
+            ) else {
+            return nil
+        }
+
+        let accountAddressDependingOnChain: String? = {
+            switch chain.chainId {
+            case Chain.rococo.genesisHash:
+                // requires polkadot address even in rococo testnet
+                return try? accountResponse.accountId.toAddress(
+                    using: ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
+                )
+            default:
+                return selectedAddress
+            }
+        }()
+
+        guard let accountAddress = accountAddressDependingOnChain else {
+            return nil
+        }
+
+        let bonusService: CrowdloanBonusServiceProtocol = {
+            if let service = existingService as? AcalaBonusService {
+                return service
+            } else {
+                let signingWrapper = SigningWrapper(
+                    keystore: Keychain(),
+                    metaId: selectedAccount.metaId,
+                    accountResponse: accountResponse
+                )
+                return AcalaBonusService(
+                    address: accountAddress,
+                    signingWrapper: signingWrapper,
+                    operationManager: OperationManagerFacade.sharedManager
+                )
+            }
+        }()
+
+        return createView(
+            for: delegate,
+            displayInfo: displayInfo,
+            inputAmount: inputAmount,
+            bonusService: bonusService,
+            defaultReferralCode: AcalaBonusService.defaultReferralCode,
+            state: state
+        )
+    }
+
     static func createKaruraView(
         for delegate: CustomCrowdloanDelegate,
         displayInfo: CrowdloanDisplayInfo,
