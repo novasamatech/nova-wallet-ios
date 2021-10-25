@@ -9,8 +9,12 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         self.state = state
     }
 
-    func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
-        if paraId == .moonbeam {
+    func presentContributionSetup(
+        from view: CrowdloanListViewProtocol?,
+        paraId: ParaId,
+        displayInfo: CrowdloanDisplayInfo?
+    ) {
+        if displayInfo?.customFlow == .moonbeam {
             moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
                 previousView: view,
                 state: state

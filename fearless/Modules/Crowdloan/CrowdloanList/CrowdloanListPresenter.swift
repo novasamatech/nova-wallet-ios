@@ -183,7 +183,15 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>) {
-        wireframe.presentContributionSetup(from: view, paraId: viewModel.paraId)
+        let displayInfoDict = try? displayInfoResult?.get()
+        let paraId = viewModel.paraId
+        let displayInfo = displayInfoDict?[viewModel.paraId]
+
+        wireframe.presentContributionSetup(
+            from: view,
+            paraId: paraId,
+            displayInfo: displayInfo
+        )
     }
 
     func becomeOnline() {
