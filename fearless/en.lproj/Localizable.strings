@@ -361,6 +361,7 @@ Derivation path: %@";
 "staking.bonded.inactive" = "You are neither nominating nor validating";
 "crowdloan.terms.format" = "I have read and agree to %@";
 "crowdloan.terms.value" = "Terms and Conditions";
+"crowdloan.submit.agreement" = "Submit agreement";
 "crowdloan.private.crowdloan.title" = "Private crowdloan";
 "crowdloan.private.crowdloan.message" = "Private crowdloans are not yet supported.";
 "common.bonus" = "Bonus";

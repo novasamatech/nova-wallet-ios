@@ -17,6 +17,7 @@ final class MoonbeamTermsViewLayout: UIView {
 
     let termsSwitchView: UISwitch = {
         let switchView = UISwitch()
+        switchView.isOn = false
         switchView.onTintColor = R.color.colorAccent()
         return switchView
     }()
@@ -46,6 +47,7 @@ final class MoonbeamTermsViewLayout: UIView {
 
         backgroundColor = R.color.colorBlack()
         setupLayout()
+        applyLocalization()
     }
 
     @available(*, unavailable)
@@ -90,13 +92,22 @@ final class MoonbeamTermsViewLayout: UIView {
     }
 
     private func applyLocalization() {
-        networkFeeConfirmView.locale = locale
-        networkFeeConfirmView.actionButton.imageWithTitleView?.title = termsSwitchView.isOn ?
-            "Agree to Terms and Conditions"
-            : "Submit agreement"
+        updateActionButton()
     }
 
     func bind(feeViewModel: BalanceViewModelProtocol?) {
         networkFeeConfirmView.networkFeeView.bind(viewModel: feeViewModel)
+    }
+
+    func updateActionButton() {
+        if termsSwitchView.isOn {
+            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .crowdloanSubmitAgreement(preferredLanguages: locale.rLanguages)
+            networkFeeConfirmView.actionButton.applyEnabledStyle()
+        } else {
+            networkFeeConfirmView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .karuraTermsAction(preferredLanguages: locale.rLanguages)
+            networkFeeConfirmView.actionButton.applyDisabledStyle()
+        }
     }
 }

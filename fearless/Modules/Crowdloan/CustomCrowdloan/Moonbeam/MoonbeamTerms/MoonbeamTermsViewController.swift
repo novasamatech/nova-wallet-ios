@@ -26,7 +26,13 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
         rootView.descriptionLabel.text = "You need to submit agreement with Terms & Conditions on the blockchain to proceed"
         rootView.termsLabel.text = "I have read and agree to Terms & Conditions"
         title = "Terms & Conditions"
+        rootView.termsSwitchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
         presenter.setup()
+    }
+
+    @objc
+    private func handleSwitch() {
+        rootView.updateActionButton()
     }
 }
 
