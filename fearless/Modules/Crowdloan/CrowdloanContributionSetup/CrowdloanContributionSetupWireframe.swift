@@ -53,7 +53,7 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 delegate: delegate,
                 existingService: existingService
             )
-        case .bifrost:
+        case .bifrost, .moonbeam:
             showBifrostCustomFlow(
                 from: view,
                 for: displayInfo,
