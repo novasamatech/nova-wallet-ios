@@ -3,47 +3,65 @@ import FearlessUtils
 import SoraKeystore
 import SoraFoundation
 
-final class SelectValidatorsStartViewFactory: SelectValidatorsStartViewFactoryProtocol {
+final class SelectValidatorsStartViewFactory {
     static func createInitiatedBondingView(
-        with state: InitiatedBonding
+        with state: InitiatedBonding,
+        stakingState: StakingSharedState
     ) -> SelectValidatorsStartViewProtocol? {
-        let wireframe = InitBondingSelectValidatorsStartWireframe(state: state)
-        return createView(with: wireframe, existingStashAddress: nil, selectedValidators: nil)
+        let wireframe = InitBondingSelectValidatorsStartWireframe(state: state, stakingState: stakingState)
+        return createView(
+            with: wireframe,
+            existingStashAddress: nil,
+            selectedValidators: nil,
+            stakingState: stakingState
+        )
     }
 
     static func createChangeTargetsView(
-        with state: ExistingBonding
+        with state: ExistingBonding,
+        stakingState: StakingSharedState
     ) -> SelectValidatorsStartViewProtocol? {
-        let wireframe = ChangeTargetsSelectValidatorsStartWireframe(state: state)
+        let wireframe = ChangeTargetsSelectValidatorsStartWireframe(
+            state: state,
+            stakingState: stakingState
+        )
+
         return createView(
             with: wireframe,
             existingStashAddress: state.stashAddress,
-            selectedValidators: state.selectedTargets
+            selectedValidators: state.selectedTargets,
+            stakingState: stakingState
         )
     }
 
     static func createChangeYourValidatorsView(
-        with state: ExistingBonding
+        with state: ExistingBonding,
+        stakingState: StakingSharedState
     ) -> SelectValidatorsStartViewProtocol? {
-        let wireframe = YourValidatorList.SelectionStartWireframe(state: state)
+        let wireframe = YourValidatorList.SelectionStartWireframe(state: state, stakingState: stakingState)
         return createView(
             with: wireframe,
             existingStashAddress: state.stashAddress,
-            selectedValidators: state.selectedTargets
+            selectedValidators: state.selectedTargets,
+            stakingState: stakingState
         )
     }
 
     private static func createView(
         with wireframe: SelectValidatorsStartWireframeProtocol,
         existingStashAddress: AccountAddress?,
-        selectedValidators: [SelectedValidatorInfo]?
+        selectedValidators: [SelectedValidatorInfo]?,
+        stakingState: StakingSharedState
     ) -> SelectValidatorsStartViewProtocol? {
-        guard let engine = WebSocketService.shared.connection else {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let chainAsset = stakingState.settings.value,
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
             return nil
         }
 
-        let eraValidatorService = EraValidatorFacade.sharedService
-        let runtimeService = RuntimeRegistryFacade.sharedService
         let operationManager = OperationManagerFacade.sharedManager
         let storageOperationFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -51,16 +69,13 @@ final class SelectValidatorsStartViewFactory: SelectValidatorsStartViewFactoryPr
         )
         let identityOperationFactory = IdentityOperationFactory(requestFactory: storageOperationFactory)
 
-        let chain = SettingsManager.shared.selectedConnection.type.chain
-
-        let rewardService = RewardCalculatorFacade.sharedService
         let operationFactory = ValidatorOperationFactory(
-            chain: chain,
-            eraValidatorService: eraValidatorService,
-            rewardService: rewardService,
+            chainInfo: chainAsset.chainAssetInfo,
+            eraValidatorService: stakingState.eraValidatorService,
+            rewardService: stakingState.rewardCalculationService,
             storageRequestFactory: storageOperationFactory,
             runtimeService: runtimeService,
-            engine: engine,
+            engine: connection,
             identityOperationFactory: identityOperationFactory
         )
 

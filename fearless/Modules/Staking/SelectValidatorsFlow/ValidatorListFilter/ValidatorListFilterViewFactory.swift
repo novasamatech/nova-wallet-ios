@@ -1,24 +1,24 @@
 import SoraFoundation
 import SoraKeystore
 
-struct ValidatorListFilterViewFactory: ValidatorListFilterViewFactoryProtocol {
+struct ValidatorListFilterViewFactory {
     static func createView(
-        with filter: CustomValidatorListFilter,
+        for state: StakingSharedState,
+        filter: CustomValidatorListFilter,
         delegate: ValidatorListFilterDelegate?
     ) -> ValidatorListFilterViewProtocol? {
+        guard let assetInfo = state.settings.value?.assetDisplayInfo else {
+            return nil
+        }
+
         let wireframe = ValidatorListFilterWireframe()
 
         let viewModelFactory = ValidatorListFilterViewModelFactory()
 
-        let settings = SettingsManager.shared
-        let addressType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(addressType)
-
         let presenter = ValidatorListFilterPresenter(
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            asset: asset,
+            assetInfo: assetInfo,
             filter: filter,
             localizationManager: LocalizationManager.shared
         )
@@ -27,8 +27,6 @@ struct ValidatorListFilterViewFactory: ValidatorListFilterViewFactoryProtocol {
             presenter: presenter,
             localizationManager: LocalizationManager.shared
         )
-
-        presenter.view = view
 
         presenter.delegate = delegate
 

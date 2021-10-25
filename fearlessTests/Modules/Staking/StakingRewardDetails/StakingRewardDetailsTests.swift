@@ -8,14 +8,26 @@ import SoraKeystore
 class StakingRewardDetailsTests: XCTestCase {
 
     func testSetupAndHandlePayout() {
-        let chain = Chain.westend
-        let settings = InMemorySettingsManager()
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
 
         let view = MockStakingRewardDetailsViewProtocol()
         let wireframe = MockStakingRewardDetailsWireframeProtocol()
 
-        let priceProvider = SingleValueProviderFactoryStub.westendNominatorStub().price
-        let interactor = StakingRewardDetailsInteractor(priceProvider: priceProvider)
+        let priceProviderFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", usdDayChange: 0.1)
+        )
+
+        let interactor = StakingRewardDetailsInteractor(
+            asset: chainAsset.asset,
+            priceLocalSubscriptionFactory: priceProviderFactory
+        )
 
         let payoutInfo = PayoutInfo(
             era: 100,
@@ -25,19 +37,17 @@ class StakingRewardDetailsTests: XCTestCase {
         )
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
-            chain: chain,
             activeEra: 101,
-            historyDepth: 84
+            historyDepth: 84,
+            erasPerDay: 4
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: WalletPrimitiveFactory(settings: settings),
-            selectedAddressType: input.chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            iconGenerator: PolkadotIconGenerator()
+            iconGenerator: PolkadotIconGenerator(),
+            chainFormat: chain.chainFormat
         )
         let presenter = StakingRewardDetailsPresenter(
             input: input,
@@ -46,6 +56,7 @@ class StakingRewardDetailsTests: XCTestCase {
         presenter.wireframe = wireframe
         presenter.view = view
         presenter.interactor = interactor
+        interactor.presenter = presenter
 
         let rowsExpectation = XCTestExpectation(description: "rows count is equal to 4")
         stub(view) { stub in

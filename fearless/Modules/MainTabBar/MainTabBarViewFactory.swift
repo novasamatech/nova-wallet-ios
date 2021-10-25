@@ -21,13 +21,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         let interactor = MainTabBarInteractor(
             eventCenter: EventCenter.shared,
-            settings: SettingsManager.shared,
             serviceCoordinator: serviceCoordinator,
             keystoreImportService: keystoreImportService
         )
 
+        let chainsRepository = SubstrateRepositoryFactory().createChainRepository()
+
         guard
-            let walletContext = try? WalletContextFactory().createContext(),
+            let walletContext = try? WalletContextFactory(
+                chainRepository: chainsRepository,
+                operationQueue: OperationQueue()
+            ).createContext(),
             let walletController = createWalletController(
                 walletContext: walletContext,
                 localizationManager: localizationManager
@@ -40,7 +44,14 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        guard let crowdloanController = createCrowdloanController(for: localizationManager) else {
+        // TODO: Move setup to loading state
+        let crowdloanState = CrowdloanSharedState()
+        crowdloanState.settings.setup()
+
+        guard let crowdloanController = createCrowdloanController(
+            for: localizationManager,
+            state: crowdloanState
+        ) else {
             return nil
         }
 
@@ -75,8 +86,13 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     ) {
         let localizationManager = LocalizationManager.shared
 
+        let chainsRepository = SubstrateRepositoryFactory().createChainRepository()
+
         guard
-            let walletContext = try? WalletContextFactory().createContext(),
+            let walletContext = try? WalletContextFactory(
+                chainRepository: chainsRepository,
+                operationQueue: OperationQueue()
+            ).createContext(),
             let walletController = createWalletController(
                 walletContext: walletContext,
                 localizationManager: localizationManager
@@ -91,7 +107,15 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
     static func reloadCrowdloanView(on view: MainTabBarViewProtocol) {
         let localizationManager = LocalizationManager.shared
-        guard let crowdloanController = createCrowdloanController(for: localizationManager) else {
+
+        // TODO: Move setup to loading state
+        let crowdloanState = CrowdloanSharedState()
+        crowdloanState.settings.setup()
+
+        guard let crowdloanController = createCrowdloanController(
+            for: localizationManager,
+            state: crowdloanState
+        ) else {
             return
         }
 
@@ -137,9 +161,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        guard let viewController = StakingMainViewFactory.createView()?.controller else {
-            return nil
-        }
+        // TODO: Remove when staking is fixed
+        let viewController = StakingMainViewFactory.createView()?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarStakingTitle(preferredLanguages: locale.rLanguages)
@@ -170,11 +193,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        guard let settingsView = ProfileViewFactory.createView() else {
-            return nil
-        }
+        // TODO: Remove when settings fixed
+        let viewController = ProfileViewFactory.createView()?.controller ?? UIViewController()
 
-        let navigationController = FearlessNavigationController(rootViewController: settingsView.controller)
+        let navigationController = FearlessNavigationController(rootViewController: viewController)
 
         let localizableTitle = LocalizableResource { locale in
             R.string.localizable.tabbarSettingsTitle(preferredLanguages: locale.rLanguages)
@@ -201,9 +223,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createCrowdloanController(
-        for localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol,
+        state: CrowdloanSharedState
     ) -> UIViewController? {
-        guard let crowloanView = CrowdloanListViewFactory.createView() else {
+        guard let crowloanView = CrowdloanListViewFactory.createView(with: state) else {
             return nil
         }
 

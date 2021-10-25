@@ -39,18 +39,13 @@ protocol StakingRewardPayoutsWireframeProtocol: AnyObject {
         payoutInfo: PayoutInfo,
         activeEra: EraIndex,
         historyDepth: UInt32,
-        chain: Chain
+        erasPerDay: UInt32
     )
 
     func showPayoutConfirmation(
         for payouts: [PayoutInfo],
         from view: ControllerBackedProtocol?
     )
-}
-
-protocol StakingRewardPayoutsViewFactoryProtocol: AnyObject {
-    static func createViewForNominator(stashAddress: AccountAddress) -> StakingRewardPayoutsViewProtocol?
-    static func createViewForValidator(stashAddress: AccountAddress) -> StakingRewardPayoutsViewProtocol?
 }
 
 protocol StakingPayoutViewModelFactoryProtocol {

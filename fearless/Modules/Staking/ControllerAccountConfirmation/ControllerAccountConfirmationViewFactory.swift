@@ -6,39 +6,27 @@ import RobinHood
 
 struct ControllerAccountConfirmationViewFactory {
     static func createView(
+        for state: StakingSharedState,
         controllerAccountItem: AccountItem
     ) -> ControllerAccountConfirmationViewProtocol? {
-        let settings = SettingsManager.shared
-
-        guard let engine = WebSocketService.shared.connection else {
-            return nil
-        }
-
-        let chain = settings.selectedConnection.type.chain
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-
-        guard let interactor = createInteractor(
-            controllerAccountItem: controllerAccountItem,
-            primitiveFactory: primitiveFactory,
-            connection: engine,
-            chain: chain,
-            settings: settings
-        ) else {
+        guard
+            let chainAsset = state.settings.value,
+            let interactor = createInteractor(
+                for: state,
+                controllerAccountItem: controllerAccountItem
+            ) else {
             return nil
         }
 
         let wireframe = ControllerAccountConfirmationWireframe()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
         let presenter = ControllerAccountConfirmationPresenter(
             controllerAccountItem: controllerAccountItem,
-            chain: chain,
+            assetInfo: assetInfo,
             iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory
@@ -59,36 +47,27 @@ struct ControllerAccountConfirmationViewFactory {
     }
 
     private static func createInteractor(
-        controllerAccountItem: AccountItem,
-        primitiveFactory: WalletPrimitiveFactoryProtocol,
-        connection: JSONRPCEngine,
-        chain: Chain,
-        settings: SettingsManagerProtocol
+        for state: StakingSharedState,
+        controllerAccountItem: AccountItem
     ) -> ControllerAccountConfirmationInteractor? {
-        let operationManager = OperationManagerFacade.sharedManager
-        let runtimeService = RuntimeRegistryFacade.sharedService
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager
-        )
-
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-
         guard
-            let assetId = WalletAssetId(rawValue: asset.identifier),
-            let selectedAccount = settings.selectedAccount
-        else {
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = state.settings.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
         let facade = UserDataStorageFacade.shared
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationManager = OperationManagerFacade.sharedManager
 
-        let filter = NSPredicate.filterAccountBy(networkType: chain.addressType)
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            facade.createRepository(
-                filter: filter,
-                sortDescriptors: [.accountsByOrder]
-            )
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: facade)
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -101,22 +80,29 @@ struct ControllerAccountConfirmationViewFactory {
             operationManager: operationManager
         )
 
-        let interactor = ControllerAccountConfirmationInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
-            runtimeService: runtimeService,
-            extrinsicServiceFactory: extrinsicServiceFactory,
-            signingWrapper: SigningWrapper(keystore: Keychain(), settings: settings),
-            feeProxy: ExtrinsicFeeProxy(),
-            assetId: assetId,
-            controllerAccountItem: controllerAccountItem,
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            operationManager: operationManager,
-            storageRequestFactory: storageRequestFactory,
-            selectedAccountAddress: selectedAccount.address,
-            engine: connection,
-            chain: chain
+        let signingWrapper = SigningWrapper(
+            keystore: Keychain(),
+            metaId: metaAccount.metaId,
+            accountResponse: selectedAccount
         )
+
+        let interactor = ControllerAccountConfirmationInteractor(
+            selectedAccount: selectedAccount,
+            controllerAccountItem: controllerAccountItem,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            runtimeService: runtimeService,
+            connection: connection,
+            accountRepositoryFactory: accountRepositoryFactory,
+            feeProxy: ExtrinsicFeeProxy(),
+            extrinsicServiceFactory: extrinsicServiceFactory,
+            signingWrapper: signingWrapper,
+            storageRequestFactory: storageRequestFactory,
+            operationManager: operationManager
+        )
+
         return interactor
     }
 }

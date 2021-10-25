@@ -7,16 +7,16 @@ import FearlessUtils
 final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingUnbondConfirmInteractorOutputProtocol!
 
-    let singleValueProviderFactory: SingleValueProviderFactoryProtocol
-    let substrateProviderFactory: SubstrateDataProviderFactoryProtocol
-    let settings: SettingsManagerProtocol
-    let runtimeService: RuntimeCodingServiceProtocol
-    let operationManager: OperationManagerProtocol
+    let selectedAccount: ChainAccountResponse
+    let chainAsset: ChainAsset
+    let chainRegistry: ChainRegistryProtocol
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
+    let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
-    let accountRepository: AnyDataProviderRepository<AccountItem>
-    let chain: Chain
-    let assetId: WalletAssetId
+    let operationManager: OperationManagerProtocol
 
     private var stashItemProvider: StreamableProvider<StashItem>?
     private var minBondedProvider: AnyDataProvider<DecodedBigUInt>?
@@ -32,34 +32,39 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     private lazy var callFactory = SubstrateCallFactory()
 
     init(
-        assetId: WalletAssetId,
-        chain: Chain,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
-        substrateProviderFactory: SubstrateDataProviderFactoryProtocol,
+        selectedAccount: ChainAccountResponse,
+        chainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
+        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
-        accountRepository: AnyDataProviderRepository<AccountItem>,
-        settings: SettingsManagerProtocol,
-        runtimeService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol
     ) {
-        self.singleValueProviderFactory = singleValueProviderFactory
-        self.substrateProviderFactory = substrateProviderFactory
+        self.selectedAccount = selectedAccount
+        self.chainAsset = chainAsset
+        self.chainRegistry = chainRegistry
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
-        self.accountRepository = accountRepository
-        self.settings = settings
-        self.runtimeService = runtimeService
         self.operationManager = operationManager
-        self.assetId = assetId
-        self.chain = chain
     }
 
-    private func handleController(accountItem: AccountItem) {
-        extrinsicService = extrinsicServiceFactory.createService(accountItem: accountItem)
+    func handleControllerMetaAccount(response: MetaChainAccountResponse) {
+        extrinsicService = extrinsicServiceFactory.createService(
+            accountId: response.chainAccount.accountId,
+            chainFormat: response.chainAccount.chainFormat,
+            cryptoType: response.chainAccount.cryptoType
+        )
+
         signingWrapper = extrinsicServiceFactory.createSigningWrapper(
-            accountItem: accountItem,
-            connectionItem: settings.selectedConnection
+            metaId: response.metaId,
+            account: response.chainAccount
         )
     }
 
@@ -69,7 +74,9 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         resettingRewardDestination: Bool,
         chilling: Bool
     ) throws -> ExtrinsicBuilderProtocol {
-        guard let amountValue = amount.toSubstrateAmount(precision: chain.addressType.precision) else {
+        guard let amountValue = amount.toSubstrateAmount(
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) else {
             throw CommonError.undefined
         }
 
@@ -91,20 +98,32 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
 
 extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputProtocol {
     func setup() {
-        if let address = settings.selectedAccount?.address {
-            stashItemProvider = subscribeToStashItemProvider(for: address)
+        if let address = selectedAccount.toAddress() {
+            stashItemProvider = subscribeStashItemProvider(for: address)
+        } else {
+            presenter.didReceiveStashItem(result: .failure(ChainAccountFetchingError.accountNotExists))
         }
 
-        priceProvider = subscribeToPriceProvider(for: assetId)
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId)
+        } else {
+            presenter.didReceivePriceData(result: .success(nil))
+        }
 
-        minBondedProvider = subscribeToMinNominatorBondProvider(chain: chain, runtimeService: runtimeService)
+        minBondedProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
 
-        fetchConstant(
-            for: .existentialDeposit,
-            runtimeCodingService: runtimeService,
-            operationManager: operationManager
-        ) { [weak self] (result: Result<BigUInt, Error>) in
-            self?.presenter.didReceiveExistentialDeposit(result: result)
+        if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
+            fetchConstant(
+                for: .existentialDeposit,
+                runtimeCodingService: runtimeService,
+                operationManager: operationManager
+            ) { [weak self] (result: Result<BigUInt, Error>) in
+                self?.presenter.didReceiveExistentialDeposit(result: result)
+            }
+        } else {
+            presenter.didReceiveExistentialDeposit(
+                result: .failure(ChainRegistryError.runtimeMetadaUnavailable)
+            )
         }
 
         feeProxy.delegate = self
@@ -167,53 +186,52 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
     }
 }
 
-extension StakingUnbondConfirmInteractor: SingleValueProviderSubscriber, SingleValueSubscriptionHandler,
-    SubstrateProviderSubscriber, SubstrateProviderSubscriptionHandler,
+extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
     AnyProviderAutoCleaning {
-    func handleStashItem(result: Result<StashItem?, Error>) {
+    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         do {
-            let maybeStashItem = try result.get()
-
             clear(dataProvider: &accountInfoProvider)
             clear(dataProvider: &ledgerProvider)
             clear(dataProvider: &payeeProvider)
             clear(dataProvider: &nominationProvider)
 
+            let maybeStashItem = try result.get()
+            let maybeStashId = try maybeStashItem.map { try $0.stash.toAccountId() }
+            let maybeControllerId = try maybeStashItem.map { try $0.controller.toAccountId() }
+
             presenter.didReceiveStashItem(result: result)
 
-            if let stashItem = maybeStashItem {
-                ledgerProvider = subscribeToLedgerInfoProvider(
-                    for: stashItem.controller,
-                    runtimeService: runtimeService
-                )
+            if let stashId = maybeStashId, let controllerId = maybeControllerId {
+                ledgerProvider = subscribeLedgerInfo(for: controllerId, chainId: chainAsset.chain.chainId)
 
                 accountInfoProvider = subscribeToAccountInfoProvider(
-                    for: stashItem.controller,
-                    runtimeService: runtimeService
+                    for: controllerId,
+                    chainId: chainAsset.chain.chainId
                 )
 
-                payeeProvider = subscribeToPayeeProvider(
-                    for: stashItem.stash,
-                    runtimeService: runtimeService
-                )
+                payeeProvider = subscribePayee(for: stashId, chainId: chainAsset.chain.chainId)
 
-                nominationProvider = subscribeToNominationProvider(
-                    for: stashItem.stash,
-                    runtimeService: runtimeService
-                )
+                nominationProvider = subscribeNomination(for: stashId, chainId: chainAsset.chain.chainId)
 
-                fetchAccount(
-                    for: stashItem.controller,
-                    from: accountRepository,
+                fetchFirstMetaAccountResponse(
+                    for: controllerId,
+                    accountRequest: chainAsset.chain.accountRequest(),
+                    repositoryFactory: accountRepositoryFactory,
                     operationManager: operationManager
                 ) { [weak self] result in
-                    if case let .success(maybeController) = result, let controller = maybeController {
-                        self?.handleController(accountItem: controller)
+                    switch result {
+                    case let .success(response):
+                        if let response = response {
+                            self?.handleControllerMetaAccount(response: response)
+                        }
+
+                        if let accountItem = try? response?.chainAccount.toAccountItem() {
+                            self?.presenter.didReceiveController(result: .success(accountItem))
+                        }
+                    case let .failure(error):
+                        self?.presenter.didReceiveController(result: .failure(error))
                     }
-
-                    self?.presenter.didReceiveController(result: result)
                 }
-
             } else {
                 presenter.didReceiveStakingLedger(result: .success(nil))
                 presenter.didReceiveAccountInfo(result: .success(nil))
@@ -230,28 +248,48 @@ extension StakingUnbondConfirmInteractor: SingleValueProviderSubscriber, SingleV
         }
     }
 
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
-        presenter.didReceiveAccountInfo(result: result)
-    }
-
-    func handleLedgerInfo(result: Result<StakingLedger?, Error>, address _: AccountAddress) {
+    func handleLedgerInfo(
+        result: Result<StakingLedger?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
         presenter.didReceiveStakingLedger(result: result)
     }
 
-    func handlePayee(result: Result<RewardDestinationArg?, Error>, address _: AccountAddress) {
+    func handlePayee(
+        result: Result<RewardDestinationArg?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
         presenter.didReceivePayee(result: result)
     }
 
-    func handlePrice(result: Result<PriceData?, Error>, for _: WalletAssetId) {
-        presenter.didReceivePriceData(result: result)
-    }
-
-    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chain _: Chain) {
+    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveMinBonded(result: result)
     }
 
-    func handleNomination(result: Result<Nomination?, Error>, address _: AccountAddress) {
+    func handleNomination(
+        result: Result<Nomination?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
         presenter.didReceiveNomination(result: result)
+    }
+}
+
+extension StakingUnbondConfirmInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAccountInfo(
+        result: Result<AccountInfo?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        presenter.didReceiveAccountInfo(result: result)
+    }
+}
+
+extension StakingUnbondConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        presenter.didReceivePriceData(result: result)
     }
 }
 

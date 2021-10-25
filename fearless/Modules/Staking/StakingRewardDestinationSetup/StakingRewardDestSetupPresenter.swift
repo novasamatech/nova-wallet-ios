@@ -12,7 +12,7 @@ final class StakingRewardDestSetupPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     private var rewardDestination: RewardDestination<AccountItem>?
@@ -34,7 +34,7 @@ final class StakingRewardDestSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -43,7 +43,7 @@ final class StakingRewardDestSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.applicationConfig = applicationConfig
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -182,7 +182,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             }
 
             provideFeeViewModel()
@@ -222,7 +222,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         switch result {
         case let .success(stakingLedger):
             bonded = stakingLedger.map {
-                Decimal.fromSubstrateAmount($0.active, precision: chain.addressType.precision)
+                Decimal.fromSubstrateAmount($0.active, precision: assetInfo.assetPrecision)
             } ?? nil
 
             provideRewardDestination()
@@ -307,7 +307,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         switch result {
         case let .success(accountInfo):
             balance = accountInfo.map {
-                Decimal.fromSubstrateAmount($0.data.available, precision: chain.addressType.precision)
+                Decimal.fromSubstrateAmount($0.data.available, precision: assetInfo.assetPrecision)
             } ?? nil
         case let .failure(error):
             logger?.error("Account info error: \(error)")

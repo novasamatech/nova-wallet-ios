@@ -17,23 +17,20 @@ final class StakingPayoutConfirmationPresenter {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    private let chain: Chain
-    private let asset: WalletAsset
+    private let assetInfo: AssetBalanceDisplayInfo
     private let logger: LoggerProtocol?
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
-        asset: WalletAsset,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.payoutConfirmViewModelFactory = payoutConfirmViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
-        self.asset = asset
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -106,17 +103,19 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
     }
 
     func presentAccountOptions(for viewModel: AccountInfoViewModel) {
-        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
-
-        if let view = view,
-           let chain = WalletAssetId(rawValue: asset.identifier)?.chain {
-            wireframe.presentAccountOptions(
-                from: view,
-                address: viewModel.address,
-                chain: chain,
-                locale: locale
-            )
+        guard let view = view else {
+            return
         }
+
+        let locale = view.localizationManager?.selectedLocale ?? Locale.current
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: viewModel.address,
+            chain: .westend,
+            locale: locale
+        )
     }
 }
 
@@ -152,7 +151,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
             if let availableValue = accountInfo?.data.available {
                 balance = Decimal.fromSubstrateAmount(
                     availableValue,
-                    precision: asset.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = 0.0

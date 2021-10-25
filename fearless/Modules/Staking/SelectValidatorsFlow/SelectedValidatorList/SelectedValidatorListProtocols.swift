@@ -42,26 +42,3 @@ protocol SelectedValidatorListWireframeProtocol: AlertPresentable, ErrorPresenta
 
     func dismiss(_ view: ControllerBackedProtocol?)
 }
-
-protocol SelectedValidatorListViewFactoryProtocol {
-    static func createInitiatedBondingView(
-        for validatorList: [SelectedValidatorInfo],
-        maxTargets: Int,
-        delegate: SelectedValidatorListDelegate,
-        with state: InitiatedBonding
-    ) -> SelectedValidatorListViewProtocol?
-
-    static func createChangeTargetsView(
-        for validatorList: [SelectedValidatorInfo],
-        maxTargets: Int,
-        delegate: SelectedValidatorListDelegate,
-        with state: ExistingBonding
-    ) -> SelectedValidatorListViewProtocol?
-
-    static func createChangeYourValidatorsView(
-        for validatorList: [SelectedValidatorInfo],
-        maxTargets: Int,
-        delegate: SelectedValidatorListDelegate,
-        with state: ExistingBonding
-    ) -> SelectedValidatorListViewProtocol?
-}

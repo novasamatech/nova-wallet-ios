@@ -8,15 +8,16 @@ import FearlessUtils
 final class StakingAmountInteractor {
     weak var presenter: StakingAmountInteractorOutputProtocol!
 
-    let singleValueProviderFactory: SingleValueProviderFactoryProtocol
-    let repository: AnyDataProviderRepository<AccountItem>
+    let selectedAccount: ChainAccountResponse
+    let chainAsset: ChainAsset
+    let repository: AnyDataProviderRepository<MetaAccountModel>
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let rewardService: RewardCalculatorServiceProtocol
     let operationManager: OperationManagerProtocol
-    let assetId: WalletAssetId
-    let chain: Chain
-    let accountAddress: AccountAddress
 
     private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -25,25 +26,27 @@ final class StakingAmountInteractor {
     private var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
 
     init(
-        accountAddress: AccountAddress,
-        repository: AnyDataProviderRepository<AccountItem>,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
+        selectedAccount: ChainAccountResponse,
+        chainAsset: ChainAsset,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
         extrinsicService: ExtrinsicServiceProtocol,
-        rewardService: RewardCalculatorServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
-        operationManager: OperationManagerProtocol,
-        chain: Chain,
-        assetId: WalletAssetId
+        rewardService: RewardCalculatorServiceProtocol,
+        operationManager: OperationManagerProtocol
     ) {
+        self.selectedAccount = selectedAccount
+        self.chainAsset = chainAsset
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.repository = repository
-        self.singleValueProviderFactory = singleValueProviderFactory
         self.extrinsicService = extrinsicService
         self.rewardService = rewardService
         self.runtimeService = runtimeService
         self.operationManager = operationManager
-        self.chain = chain
-        self.assetId = assetId
-        self.accountAddress = accountAddress
     }
 
     private func provideRewardCalculator() {
@@ -70,19 +73,20 @@ final class StakingAmountInteractor {
 extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, RuntimeConstantFetching,
     AccountFetching {
     func setup() {
-        priceProvider = subscribeToPriceProvider(for: assetId)
-        balanceProvider = subscribeToAccountInfoProvider(for: accountAddress, runtimeService: runtimeService)
-        minBondProvider = subscribeToMinNominatorBondProvider(chain: chain, runtimeService: runtimeService)
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId)
+        } else {
+            presenter.didReceive(price: nil)
+        }
 
-        counterForNominatorsProvider = subscribeToCounterForNominatorsProvider(
-            chain: chain,
-            runtimeService: runtimeService
+        balanceProvider = subscribeToAccountInfoProvider(
+            for: selectedAccount.accountId,
+            chainId: chainAsset.chain.chainId
         )
 
-        maxNominatorsCountProvider = subscribeToMaxNominatorsCountProvider(
-            chain: chain,
-            runtimeService: runtimeService
-        )
+        minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
+        counterForNominatorsProvider = subscribeToCounterForNominators(for: chainAsset.chain.chainId)
+        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
 
         provideRewardCalculator()
 
@@ -101,10 +105,15 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
     }
 
     func fetchAccounts() {
-        fetchAllAccounts(from: repository, operationManager: operationManager) { [weak self] result in
+        fetchAllMetaAccountResponses(
+            for: chainAsset.chain.accountRequest(),
+            repository: repository,
+            operationManager: operationManager
+        ) { [weak self] result in
             switch result {
-            case let .success(accounts):
-                self?.presenter.didReceive(accounts: accounts)
+            case let .success(responses):
+                let accountItems = responses.compactMap { try? $0.chainAccount.toAccountItem() }
+                self?.presenter.didReceive(accounts: accountItems)
             case let .failure(error):
                 self?.presenter.didReceive(error: error)
             }
@@ -151,26 +160,8 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
     }
 }
 
-extension StakingAmountInteractor: SingleValueProviderSubscriber, SingleValueSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, for _: WalletAssetId) {
-        switch result {
-        case let .success(priceData):
-            presenter.didReceive(price: priceData)
-        case let .failure(error):
-            presenter.didReceive(error: error)
-        }
-    }
-
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
-        switch result {
-        case let .success(accountInfo):
-            presenter.didReceive(balance: accountInfo?.data)
-        case let .failure(error):
-            presenter.didReceive(error: error)
-        }
-    }
-
-    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chain _: Chain) {
+extension StakingAmountInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(value):
             presenter.didReceive(minBondAmount: value)
@@ -179,7 +170,7 @@ extension StakingAmountInteractor: SingleValueProviderSubscriber, SingleValueSub
         }
     }
 
-    func handleCounterForNominators(result: Result<UInt32?, Error>, chain _: Chain) {
+    func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(value):
             presenter.didReceive(counterForNominators: value)
@@ -188,10 +179,32 @@ extension StakingAmountInteractor: SingleValueProviderSubscriber, SingleValueSub
         }
     }
 
-    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chain _: Chain) {
+    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         switch result {
         case let .success(value):
             presenter.didReceive(maxNominatorsCount: value)
+        case let .failure(error):
+            presenter.didReceive(error: error)
+        }
+    }
+}
+
+extension StakingAmountInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        switch result {
+        case let .success(accountInfo):
+            presenter.didReceive(balance: accountInfo?.data)
+        case let .failure(error):
+            presenter.didReceive(error: error)
+        }
+    }
+}
+
+extension StakingAmountInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        switch result {
+        case let .success(priceData):
+            presenter.didReceive(price: priceData)
         case let .failure(error):
             presenter.didReceive(error: error)
         }

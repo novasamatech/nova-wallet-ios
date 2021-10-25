@@ -38,29 +38,33 @@ extension ElectedValidatorInfo {
         stakeReturn: Decimal,
         hasSlashes: Bool,
         maxNominatorsRewarded: UInt32,
-        addressType: SNAddressType,
+        chainInfo: ChainAssetDisplayInfo,
         blocked: Bool
     ) throws {
         self.hasSlashes = hasSlashes
         self.identity = identity
         self.stakeReturn = stakeReturn
 
-        let addressFactory = SS58AddressFactory()
-
-        address = try addressFactory.addressFromAccountId(data: validator.accountId, type: addressType)
+        address = try validator.accountId.toAddress(using: chainInfo.chain)
         nominators = try validator.exposure.others.map { nominator in
-            let nominatorAddress = try addressFactory.addressFromAccountId(
-                data: nominator.who,
-                type: addressType
-            )
-            let stake = Decimal.fromSubstrateAmount(nominator.value, precision: addressType.precision) ?? 0.0
+            let nominatorAddress = try nominator.who.toAddress(using: chainInfo.chain)
+            let stake = Decimal.fromSubstrateAmount(
+                nominator.value,
+                precision: chainInfo.asset.assetPrecision
+            ) ?? 0.0
             return NominatorInfo(address: nominatorAddress, stake: stake)
         }
 
         self.maxNominatorsRewarded = maxNominatorsRewarded
 
-        totalStake = Decimal.fromSubstrateAmount(validator.exposure.total, precision: addressType.precision) ?? 0.0
-        ownStake = Decimal.fromSubstrateAmount(validator.exposure.own, precision: addressType.precision) ?? 0.0
+        totalStake = Decimal.fromSubstrateAmount(
+            validator.exposure.total,
+            precision: chainInfo.asset.assetPrecision
+        ) ?? 0.0
+        ownStake = Decimal.fromSubstrateAmount(
+            validator.exposure.own,
+            precision: chainInfo.asset.assetPrecision
+        ) ?? 0.0
         comission = Decimal.fromSubstratePerbill(value: validator.prefs.commission) ?? 0.0
 
         self.blocked = blocked

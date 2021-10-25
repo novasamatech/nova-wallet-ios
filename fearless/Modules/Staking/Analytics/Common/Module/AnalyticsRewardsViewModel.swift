@@ -1,6 +1,6 @@
 import SoraFoundation
 
-struct AnalyticsRewardsViewModel: AnalyticsBaseViewModel, Equatable {
+struct AnalyticsRewardsViewModel: AnalyticsBaseViewModel {
     let chartData: ChartData
     let summaryViewModel: AnalyticsSummaryRewardViewModel
     let selectedPeriod: AnalyticsPeriod

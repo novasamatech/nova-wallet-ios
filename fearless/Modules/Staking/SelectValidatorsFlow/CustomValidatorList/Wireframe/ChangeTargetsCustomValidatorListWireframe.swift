@@ -1,8 +1,10 @@
 final class ChangeTargetsCustomValidatorListWireframe: CustomValidatorListWireframe {
     let state: ExistingBonding
 
-    init(state: ExistingBonding) {
+    init(state: ExistingBonding, stakingState: StakingSharedState) {
         self.state = state
+
+        super.init(stakingState: stakingState)
     }
 
     override func proceed(
@@ -11,13 +13,13 @@ final class ChangeTargetsCustomValidatorListWireframe: CustomValidatorListWirefr
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate
     ) {
-        guard let nextView = SelectedValidatorListViewFactory
-            .createChangeTargetsView(
-                for: validatorList,
-                maxTargets: maxTargets,
-                delegate: delegate,
-                with: state
-            ) else { return }
+        guard let nextView = SelectedValidatorListViewFactory.createChangeTargetsView(
+            stakingState: stakingState,
+            validatorList: validatorList,
+            maxTargets: maxTargets,
+            delegate: delegate,
+            state: state
+        ) else { return }
 
         view?.controller.navigationController?.pushViewController(
             nextView.controller,

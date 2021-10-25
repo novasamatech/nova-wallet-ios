@@ -1,8 +1,10 @@
 final class ChangeTargetsSelectedValidatorListWireframe: SelectedValidatorListWireframe {
     let state: ExistingBonding
 
-    init(state: ExistingBonding) {
+    init(state: ExistingBonding, stakingState: StakingSharedState) {
         self.state = state
+
+        super.init(stakingState: stakingState)
     }
 
     override func proceed(
@@ -16,8 +18,10 @@ final class ChangeTargetsSelectedValidatorListWireframe: SelectedValidatorListWi
             maxTargets: maxTargets
         )
 
-        guard let confirmView = SelectValidatorsConfirmViewFactory
-            .createChangeTargetsView(for: nomination) else {
+        guard let confirmView = SelectValidatorsConfirmViewFactory.createChangeTargetsView(
+            for: nomination,
+            stakingState: stakingState
+        ) else {
             return
         }
 

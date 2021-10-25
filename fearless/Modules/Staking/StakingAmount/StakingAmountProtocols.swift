@@ -64,7 +64,3 @@ protocol StakingAmountWireframeProtocol: AlertPresentable, ErrorPresentable, Web
 
     func close(view: StakingAmountViewProtocol?)
 }
-
-protocol StakingAmountViewFactoryProtocol: AnyObject {
-    static func createView(with amount: Decimal?) -> StakingAmountViewProtocol?
-}

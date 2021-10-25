@@ -1,13 +1,17 @@
 import Foundation
 
 final class YourValidatorListWireframe: YourValidatorListWireframeProtocol {
+    let state: StakingSharedState
+
+    init(state: StakingSharedState) {
+        self.state = state
+    }
+
     func present(
         _ validatorInfo: ValidatorInfoProtocol,
         from view: YourValidatorListViewProtocol?
     ) {
-        guard
-            let nextView = ValidatorInfoViewFactory
-            .createView(with: validatorInfo) else {
+        guard let nextView = ValidatorInfoViewFactory.createView(with: validatorInfo, state: state) else {
             return
         }
 
@@ -21,8 +25,10 @@ final class YourValidatorListWireframe: YourValidatorListWireframeProtocol {
         from view: YourValidatorListViewProtocol?,
         existingBonding: ExistingBonding
     ) {
-        guard let nextView = SelectValidatorsStartViewFactory
-            .createChangeYourValidatorsView(with: existingBonding) else {
+        guard let nextView = SelectValidatorsStartViewFactory.createChangeYourValidatorsView(
+            with: existingBonding,
+            stakingState: state
+        ) else {
             return
         }
 

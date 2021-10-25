@@ -21,7 +21,7 @@ final class SelectValidatorsConfirmPresenter {
     let confirmationViewModelFactory: SelectValidatorsConfirmViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let asset: WalletAsset
+    let assetInfo: AssetBalanceDisplayInfo
 
     init(
         interactor: SelectValidatorsConfirmInteractorInputProtocol,
@@ -29,7 +29,7 @@ final class SelectValidatorsConfirmPresenter {
         confirmationViewModelFactory: SelectValidatorsConfirmViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        asset: WalletAsset,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -38,7 +38,7 @@ final class SelectValidatorsConfirmPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
-        self.asset = asset
+        self.assetInfo = assetInfo
     }
 
     private func provideConfirmationState() {
@@ -47,7 +47,7 @@ final class SelectValidatorsConfirmPresenter {
         }
 
         do {
-            let viewModel = try confirmationViewModelFactory.createViewModel(from: state, asset: asset)
+            let viewModel = try confirmationViewModelFactory.createViewModel(from: state, assetInfo: assetInfo)
             view?.didReceive(confirmationViewModel: viewModel)
         } catch {
             logger?.error("Did receive error: \(error)")
@@ -120,20 +120,19 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
     }
 
     func selectWalletAccount() {
-        guard let state = state else {
+        guard let state = state, let view = view else {
             return
         }
 
-        if let view = view, let chain = WalletAssetId(rawValue: asset.identifier)?.chain {
-            let locale = view.localizationManager?.selectedLocale ?? Locale.current
+        let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-            wireframe.presentAccountOptions(
-                from: view,
-                address: state.wallet.address,
-                chain: chain,
-                locale: locale
-            )
-        }
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: state.wallet.address,
+            chain: .westend,
+            locale: locale
+        )
     }
 
     func selectPayoutAccount() {
@@ -141,15 +140,14 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
             return
         }
 
-        if case let .payout(account) = state.rewardDestination,
-           let view = view,
-           let chain = WalletAssetId(rawValue: asset.identifier)?.chain {
+        if case let .payout(account) = state.rewardDestination, let view = view {
             let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
+            // TODO: Fix when backend supports
             wireframe.presentAccountOptions(
                 from: view,
                 address: account.address,
-                chain: chain,
+                chain: .westend,
                 locale: locale
             )
         }
@@ -228,7 +226,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
             if let availableValue = accountInfo?.data.available {
                 balance = Decimal.fromSubstrateAmount(
                     availableValue,
-                    precision: asset.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = 0.0
@@ -244,7 +242,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         switch result {
         case let .success(minBond):
             minNominatorBond = minBond.map {
-                Decimal.fromSubstrateAmount($0, precision: asset.precision)
+                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
             } ?? nil
         case let .failure(error):
             handle(error: error)
@@ -299,7 +297,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
 
     func didReceive(paymentInfo: RuntimeDispatchInfo) {
         if let feeValue = BigUInt(paymentInfo.fee),
-           let fee = Decimal.fromSubstrateAmount(feeValue, precision: asset.precision) {
+           let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision) {
             self.fee = fee
         } else {
             fee = nil

@@ -188,13 +188,13 @@ extension TriangularedBlurButton {
     }
 
     @IBInspectable
-    private var _cornerCut: UInt8 {
+    private var _cornerCut: UInt {
         get {
             triangularedBlurView!.cornerCut.rawValue
         }
 
         set {
-            triangularedBlurView!.cornerCut = TriangularedCorners(rawValue: newValue)
+            triangularedBlurView!.cornerCut = UIRectCorner(rawValue: newValue)
         }
     }
 

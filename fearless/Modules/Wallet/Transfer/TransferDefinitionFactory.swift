@@ -10,22 +10,16 @@ final class TransferDefinitionFactory: OperationDefinitionViewFactoryOverriding 
     }
 
     func createAssetView() -> BaseSelectedAssetView? {
-        DummySelectedAssetView()
+        WalletTransferTokenView()
     }
 
     func createReceiverView() -> BaseReceiverView? {
-        let view = R.nib.walletCompoundDetailsView(owner: nil)
-        view?.contentInsets = UIEdgeInsets(top: 4.0, left: 0.0, bottom: 12.0, right: 0.0)
-        return view
+        R.nib.walletCompoundDetailsView(owner: nil)
     }
 
     func createAmountView() -> BaseAmountInputView? {
         let amountView = WalletInputAmountView()
         amountView.localizationManager = localizationManager
         return amountView
-    }
-
-    func createFeeView() -> BaseFeeView? {
-        UIFactory().createNetworkFeeView()
     }
 }

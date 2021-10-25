@@ -2,69 +2,88 @@ import Foundation
 import RobinHood
 import SoraKeystore
 
-final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBase {
+final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBase, AccountFetching {
     let nomination: PreparedNomination<ExistingBonding>
-    let repository: AnyDataProviderRepository<AccountItem>
+    let accountRepositoryFactory: AccountRepositoryFactoryProtocol
 
-    init(
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
+    init?(
+        chainAsset: ChainAsset,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
         signer: SigningWrapperProtocol,
-        chain: Chain,
-        assetId: WalletAssetId,
-        repository: AnyDataProviderRepository<AccountItem>,
+        accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         nomination: PreparedNomination<ExistingBonding>
     ) {
+        guard let balanceAccountAddress = nomination.bonding.controllerAccount.chainAccount.toAddress() else {
+            return nil
+        }
+
         self.nomination = nomination
-        self.repository = repository
+        self.accountRepositoryFactory = accountRepositoryFactory
 
         super.init(
-            balanceAccountAddress: nomination.bonding.controllerAccount.address,
-            singleValueProviderFactory: singleValueProviderFactory,
+            balanceAccountAddress: balanceAccountAddress,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: durationOperationFactory,
             operationManager: operationManager,
-            signer: signer,
-            chain: chain,
-            assetId: assetId
+            signer: signer
         )
     }
 
     private func createRewardDestinationOperation(
         for payoutAddress: String
     ) -> CompoundOperationWrapper<RewardDestination<DisplayAddress>> {
-        let accountFetchOperation = repository.fetchOperation(
-            by: payoutAddress,
-            options: RepositoryFetchOptions()
-        )
-        let mapOperation: BaseOperation<RewardDestination<DisplayAddress>> = ClosureOperation {
-            if let accountItem = try accountFetchOperation.extractNoCancellableResultData() {
-                let displayAddress = DisplayAddress(
-                    address: accountItem.address,
-                    username: accountItem.username
-                )
+        do {
+            let accountId = try payoutAddress.toAccountId()
+            let repository = accountRepositoryFactory.createMetaAccountRepository(
+                for: NSPredicate.filterMetaAccountByAccountId(accountId),
+                sortDescriptors: [NSSortDescriptor.accountsByOrder]
+            )
 
-                return RewardDestination.payout(account: displayAddress)
-            } else {
-                let displayAddress = DisplayAddress(
-                    address: payoutAddress,
-                    username: payoutAddress
-                )
+            let accountFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-                return RewardDestination.payout(account: displayAddress)
+            let accountRequest = chainAsset.chain.accountRequest()
+
+            let mapOperation: BaseOperation<RewardDestination<DisplayAddress>> = ClosureOperation {
+                let metaAccounts = try accountFetchOperation.extractNoCancellableResultData()
+
+                if
+                    let accountResponse = metaAccounts.first?.fetch(for: accountRequest) {
+                    let displayAddress = DisplayAddress(
+                        address: payoutAddress,
+                        username: accountResponse.name
+                    )
+
+                    return RewardDestination.payout(account: displayAddress)
+                } else {
+                    let displayAddress = DisplayAddress(
+                        address: payoutAddress,
+                        username: payoutAddress
+                    )
+
+                    return RewardDestination.payout(account: displayAddress)
+                }
             }
+
+            mapOperation.addDependency(accountFetchOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: mapOperation,
+                dependencies: [accountFetchOperation]
+            )
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
         }
-
-        mapOperation.addDependency(accountFetchOperation)
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: [accountFetchOperation]
-        )
     }
 
     private func provideConfirmationModel() {
@@ -78,14 +97,15 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
         }()
 
         let currentNomination = nomination
+        let controllerAddress = balanceAccountAddress
 
         let mapOperation: BaseOperation<SelectValidatorsConfirmationModel> = ClosureOperation {
             let controller = currentNomination.bonding.controllerAccount
             let rewardDestination = try rewardDestWrapper.targetOperation.extractNoCancellableResultData()
 
             let controllerDisplayAddress = DisplayAddress(
-                address: controller.address,
-                username: controller.username
+                address: controllerAddress,
+                username: controller.chainAccount.name
             )
 
             return SelectValidatorsConfirmationModel(

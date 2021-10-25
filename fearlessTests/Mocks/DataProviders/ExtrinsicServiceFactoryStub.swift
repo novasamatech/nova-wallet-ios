@@ -20,4 +20,16 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
     ) -> SigningWrapperProtocol {
         signingWraper
     }
+
+    func createSigningWrapper(metaId: String, account: ChainAccountResponse) -> SigningWrapperProtocol {
+        signingWraper
+    }
+
+    func createService(
+        accountId: AccountId,
+        chainFormat: ChainFormat,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicServiceProtocol {
+        extrinsicService
+    }
 }

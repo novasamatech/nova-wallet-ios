@@ -49,14 +49,12 @@ final class TransactionHistoryConfigurator {
 
     init(
         amountFormatterFactory: NumberFormatterFactoryProtocol,
-        assets: [WalletAsset],
-        chain: Chain
+        assets: [WalletAsset]
     ) {
         viewModelFactory = TransactionHistoryViewModelFactory(
             amountFormatterFactory: amountFormatterFactory,
             dateFormatter: DateFormatter.txHistory,
-            assets: assets,
-            chain: chain
+            assets: assets
         )
     }
 

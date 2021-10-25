@@ -5,22 +5,19 @@ import FearlessUtils
 import RobinHood
 
 struct ControllerAccountViewFactory {
-    static func createView() -> ControllerAccountViewProtocol? {
-        let settings = SettingsManager.shared
-        let chain = settings.selectedConnection.type.chain
-
+    static func createView(for state: StakingSharedState) -> ControllerAccountViewProtocol? {
         guard
-            let selectedAccount = settings.selectedAccount,
-            let connection = WebSocketService.shared.connection,
-            let interactor = createInteractor(connection: connection, chain: chain, settings: settings)
-        else {
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAddress = metaAccount.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
+            let interactor = createInteractor(state: state) else {
             return nil
         }
 
-        let wireframe = ControllerAccountWireframe()
+        let wireframe = ControllerAccountWireframe(state: state)
 
         let viewModelFactory = ControllerAccountViewModelFactory(
-            currentAccountItem: selectedAccount,
+            selectedAddress: selectedAddress,
             iconGenerator: PolkadotIconGenerator()
         )
 
@@ -30,7 +27,7 @@ struct ControllerAccountViewFactory {
             interactor: interactor,
             viewModelFactory: viewModelFactory,
             applicationConfig: ApplicationConfig.shared,
-            chain: chain,
+            assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
         )
@@ -47,28 +44,27 @@ struct ControllerAccountViewFactory {
     }
 
     private static func createInteractor(
-        connection: JSONRPCEngine,
-        chain: Chain,
-        settings: SettingsManagerProtocol
+        state: StakingSharedState
     ) -> ControllerAccountInteractor? {
-        let operationManager = OperationManagerFacade.sharedManager
-        let runtimeService = RuntimeRegistryFacade.sharedService
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager
-        )
+        guard
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = state.settings.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            return nil
+        }
 
-        let networkType = settings.selectedConnection.type
         let facade = UserDataStorageFacade.shared
+        let operationManager = OperationManagerFacade.sharedManager
 
-        let filter = NSPredicate.filterAccountBy(networkType: networkType)
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            facade.createRepository(
-                filter: filter,
-                sortDescriptors: [.accountsByOrder]
-            )
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: facade)
 
-        guard let selectedAccount = settings.selectedAccount else { return nil }
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
@@ -82,17 +78,18 @@ struct ControllerAccountViewFactory {
         )
 
         return ControllerAccountInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             runtimeService: runtimeService,
-            selectedAccountAddress: selectedAccount.address,
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            operationManager: operationManager,
+            connection: connection,
+            accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
             extrinsicServiceFactory: extrinsicServiceFactory,
             storageRequestFactory: storageRequestFactory,
-            engine: connection,
-            chain: chain
+            operationManager: operationManager
         )
     }
 }

@@ -11,20 +11,20 @@ protocol StakingRebondConfirmationViewModelFactoryProtocol {
 }
 
 final class StakingRebondConfirmationViewModelFactory: StakingRebondConfirmationViewModelFactoryProtocol {
-    let asset: WalletAsset
+    let assetInfo: AssetBalanceDisplayInfo
 
-    private lazy var formatterFactory = AmountFormatterFactory()
+    private lazy var formatterFactory = AssetBalanceFormatterFactory()
     private lazy var iconGenerator = PolkadotIconGenerator()
 
-    init(asset: WalletAsset) {
-        self.asset = asset
+    init(assetInfo: AssetBalanceDisplayInfo) {
+        self.assetInfo = assetInfo
     }
 
     func createViewModel(
         controllerItem: AccountItem,
         amount: Decimal
     ) throws -> StakingRebondConfirmationViewModel {
-        let formatter = formatterFactory.createInputFormatter(for: asset)
+        let formatter = formatterFactory.createInputFormatter(for: assetInfo)
 
         let amount = LocalizableResource { locale in
             formatter.value(for: locale).string(from: amount as NSNumber) ?? ""

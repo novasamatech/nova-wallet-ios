@@ -4,71 +4,73 @@ import SoraFoundation
 import FearlessUtils
 import IrohaCrypto
 
-final class StakingRewardPayoutsViewFactory: StakingRewardPayoutsViewFactoryProtocol {
+final class StakingRewardPayoutsViewFactory {
     static func createViewForNominator(
+        for state: StakingSharedState,
         stashAddress: AccountAddress
     ) -> StakingRewardPayoutsViewProtocol? {
-        let settings = SettingsManager.shared
-        let connection = settings.selectedConnection
-        let addressFactory = SS58AddressFactory()
-
-        let chain = connection.type.chain
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier),
-              let rewardsUrl = assetId.subqueryHistoryUrl else {
+        guard
+            let chainAsset = state.settings.value,
+            let rewardsUrl = chainAsset.chain.externalApi?.staking?.url else {
             return nil
         }
+
+        let addressFactory = SS58AddressFactory()
 
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
             url: rewardsUrl,
             addressFactory: addressFactory
         )
 
-        let payoutInfoFactory = NominatorPayoutInfoFactory(
-            addressType: chain.addressType,
-            addressFactory: addressFactory
-        )
+        let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         return createView(
-            for: stashAddress,
+            for: state,
+            stashAddress: stashAddress,
             validatorsResolutionFactory: validatorsResolutionFactory,
             payoutInfoFactory: payoutInfoFactory
         )
     }
 
-    static func createViewForValidator(stashAddress: AccountAddress) -> StakingRewardPayoutsViewProtocol? {
-        let connection = SettingsManager.shared.selectedConnection
-        let chain = connection.type.chain
+    static func createViewForValidator(
+        for state: StakingSharedState,
+        stashAddress: AccountAddress
+    ) -> StakingRewardPayoutsViewProtocol? {
+        guard let chainAsset = state.settings.value else {
+            return nil
+        }
 
         let validatorsResolutionFactory = PayoutValidatorsForValidatorFactory()
 
-        let payoutInfoFactory = ValidatorPayoutInfoFactory(
-            addressType: chain.addressType,
-            addressFactory: SS58AddressFactory()
-        )
+        let payoutInfoFactory = ValidatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)
 
         return createView(
-            for: stashAddress,
+            for: state,
+            stashAddress: stashAddress,
             validatorsResolutionFactory: validatorsResolutionFactory,
             payoutInfoFactory: payoutInfoFactory
         )
     }
 
     private static func createView(
-        for stashAddress: AccountAddress,
+        for state: StakingSharedState,
+        stashAddress: AccountAddress,
         validatorsResolutionFactory: PayoutValidatorsFactoryProtocol,
         payoutInfoFactory: PayoutInfoFactoryProtocol
     ) -> StakingRewardPayoutsViewProtocol? {
-        let settings = SettingsManager.shared
-        let connection = settings.selectedConnection
-        let operationManager = OperationManagerFacade.sharedManager
-        let chain = connection.type.chain
+        guard let chainAsset = state.settings.value else {
+            return nil
+        }
 
-        guard let engine = WebSocketService.shared.connection else { return nil }
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
+        let operationManager = OperationManagerFacade.sharedManager
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -79,58 +81,46 @@ final class StakingRewardPayoutsViewFactory: StakingRewardPayoutsViewFactoryProt
 
         let payoutService = PayoutRewardsService(
             selectedAccountAddress: stashAddress,
-            chain: chain,
+            chainFormat: chainAsset.chain.chainFormat,
             validatorsResolutionFactory: validatorsResolutionFactory,
-            runtimeCodingService: RuntimeRegistryFacade.sharedService,
+            runtimeCodingService: runtimeService,
             storageRequestFactory: storageRequestFactory,
-            engine: engine,
+            engine: connection,
             operationManager: operationManager,
             identityOperationFactory: identityOperationFactory,
             payoutInfoFactory: payoutInfoFactory,
             logger: Logger.shared
         )
 
-        return createView(for: payoutService)
+        return createView(for: payoutService, state: state)
     }
 
     private static func createView(
-        for payoutService: PayoutRewardsServiceProtocol
+        for payoutService: PayoutRewardsServiceProtocol,
+        state: StakingSharedState
     ) -> StakingRewardPayoutsViewProtocol? {
-        let settings = SettingsManager.shared
-        let connection = settings.selectedConnection
-        let operationManager = OperationManagerFacade.sharedManager
-
-        let chain = connection.type.chain
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
+        guard let chainAsset = state.settings.value else {
             return nil
         }
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: connection.type,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+
         let payoutsViewModelFactory = StakingPayoutViewModelFactory(
-            chain: chain,
+            chainFormat: chainAsset.chain.chainFormat,
             balanceViewModelFactory: balanceViewModelFactory,
             timeFormatter: TotalTimeFormatter()
         )
-        let presenter = StakingRewardPayoutsPresenter(
-            chain: chain,
-            viewModelFactory: payoutsViewModelFactory
-        )
+
+        let presenter = StakingRewardPayoutsPresenter(viewModelFactory: payoutsViewModelFactory)
         let view = StakingRewardPayoutsViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             countdownTimer: CountdownTimer()
         )
 
-        let runtimeService = RuntimeRegistryFacade.sharedService
+        let operationManager = OperationManagerFacade.sharedManager
+
         let keyFactory = StorageKeyFactory()
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: keyFactory,
@@ -138,22 +128,20 @@ final class StakingRewardPayoutsViewFactory: StakingRewardPayoutsViewFactoryProt
         )
 
         let eraCountdownOperationFactory = EraCountdownOperationFactory(
-            runtimeCodingService: runtimeService,
-            storageRequestFactory: storageRequestFactory,
-            webSocketService: WebSocketService.shared
+            storageRequestFactory: storageRequestFactory
         )
 
         let interactor = StakingRewardPayoutsInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            chainAsset: chainAsset,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             payoutService: payoutService,
-            assetId: assetId,
-            chain: chain,
             eraCountdownOperationFactory: eraCountdownOperationFactory,
-            operationManager: operationManager,
-            runtimeService: runtimeService,
-            logger: Logger.shared
+            operationManager: operationManager
         )
-        let wireframe = StakingRewardPayoutsWireframe()
+
+        let wireframe = StakingRewardPayoutsWireframe(state: state)
 
         presenter.view = view
         presenter.interactor = interactor

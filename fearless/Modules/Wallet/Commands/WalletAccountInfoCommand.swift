@@ -7,29 +7,21 @@ final class WalletAccountInfoCommand: WalletCommandProtocol {
 
     let balanceContext: BalanceContext
     let amountFormatter: LocalizableResource<LocalizableDecimalFormatting>
-    let priceFormatter: LocalizableResource<TokenFormatter>
-    let precision: Int16
 
     init(
         balanceContext: BalanceContext,
         amountFormatter: LocalizableResource<LocalizableDecimalFormatting>,
-        priceFormatter: LocalizableResource<TokenFormatter>,
-        commandFactory: WalletCommandFactoryProtocol,
-        precision: Int16
+        commandFactory: WalletCommandFactoryProtocol
     ) {
         self.balanceContext = balanceContext
-        self.amountFormatter = amountFormatter
-        self.priceFormatter = priceFormatter
         self.commandFactory = commandFactory
-        self.precision = precision
+        self.amountFormatter = amountFormatter
     }
 
     func execute() throws {
         let viewController = ModalInfoFactory.createFromBalanceContext(
             balanceContext,
-            amountFormatter: amountFormatter,
-            priceFormatter: priceFormatter,
-            precision: precision
+            amountFormatter: amountFormatter
         )
 
         let presentationCommand = commandFactory?.preparePresentationCommand(for: viewController)

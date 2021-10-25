@@ -10,7 +10,7 @@ final class ControllerAccountConfirmationPresenter {
 
     private let iconGenerator: IconGenerating
     private let controllerAccountItem: AccountItem
-    private let chain: Chain
+    private let assetInfo: AssetBalanceDisplayInfo
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let logger: LoggerProtocol?
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -23,14 +23,14 @@ final class ControllerAccountConfirmationPresenter {
 
     init(
         controllerAccountItem: AccountItem,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         iconGenerator: IconGenerating,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.controllerAccountItem = controllerAccountItem
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.iconGenerator = iconGenerator
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
@@ -117,7 +117,6 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
             ),
             dataValidatingFactory.ledgerNotExist(
                 stakingLedger: stakingLedger,
-                addressType: chain.addressType,
                 locale: locale
             )
         ]).runValidation { [weak self] in
@@ -131,10 +130,12 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
             let view = view,
             let address = address
         else { return }
+
+        // TODO: Fix when done
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: chain,
+            chain: .westend,
             locale: view.localizationManager?.selectedLocale ?? .current
         )
     }
@@ -168,7 +169,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         switch result {
         case let .success(dispatchInfo):
             if let feeValue = BigUInt(dispatchInfo.fee) {
-                fee = Decimal.fromSubstrateAmount(feeValue, precision: chain.addressType.precision)
+                fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision)
             } else {
                 fee = nil
             }
@@ -205,7 +206,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil

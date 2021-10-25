@@ -68,10 +68,11 @@ final class ContactsConfigurator {
         )
     }()
 
-    init(networkType: SNAddressType) {
+    init(metaAccount: MetaAccountModel, chains: [String: ChainModel]) {
         let viewModelFactory = ContactsViewModelFactory(dataStorageFacade: SubstrateDataStorageFacade.shared)
         localSearchEngine = ContactsLocalSearchEngine(
-            networkType: networkType,
+            metaAccount: metaAccount,
+            chains: chains,
             contactViewModelFactory: viewModelFactory
         )
     }
@@ -81,7 +82,7 @@ final class ContactsConfigurator {
 
         let searchPlaceholder = LocalizableResource { locale in
             R.string.localizable
-                .walletContactsSearchPlaceholder_v110(preferredLanguages: locale.rLanguages)
+                .walletContactsSearchPlaceholder(preferredLanguages: locale.rLanguages)
         }
 
         builder

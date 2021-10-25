@@ -4,41 +4,43 @@ import BigInt
 final class AnalyticsRewardsInteractor {
     weak var presenter: AnalyticsRewardsInteractorOutputProtocol!
 
-    let singleValueProviderFactory: SingleValueProviderFactoryProtocol
-    let substrateProviderFactory: SubstrateDataProviderFactoryProtocol
-
+    let selectedAccountAddress: AccountAddress
+    let chainAsset: ChainAsset
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationManager: OperationManagerProtocol
-    private let assetId: WalletAssetId
-    private let chain: Chain
-    private let selectedAccountAddress: AccountAddress
+
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var stashItemProvider: StreamableProvider<StashItem>?
 
     init(
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
-        substrateProviderFactory: SubstrateDataProviderFactoryProtocol,
-        operationManager: OperationManagerProtocol,
-        assetId: WalletAssetId,
-        chain: Chain,
-        selectedAccountAddress: AccountAddress
+        selectedAccountAddress: AccountAddress,
+        chainAsset: ChainAsset,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        operationManager: OperationManagerProtocol
     ) {
-        self.singleValueProviderFactory = singleValueProviderFactory
-        self.substrateProviderFactory = substrateProviderFactory
-        self.operationManager = operationManager
-        self.assetId = assetId
-        self.chain = chain
         self.selectedAccountAddress = selectedAccountAddress
+        self.chainAsset = chainAsset
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.operationManager = operationManager
     }
 }
 
 extension AnalyticsRewardsInteractor: AnalyticsRewardsInteractorInputProtocol {
     func setup() {
-        priceProvider = subscribeToPriceProvider(for: assetId)
-        stashItemProvider = subscribeToStashItemProvider(for: selectedAccountAddress)
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId)
+        } else {
+            presenter.didReceivePriceData(result: .success(nil))
+        }
+
+        stashItemProvider = subscribeStashItemProvider(for: selectedAccountAddress)
     }
 
     func fetchRewards(stashAddress: AccountAddress) {
-        guard let analyticsURL = chain.analyticsURL else { return }
+        guard let analyticsURL = chainAsset.chain.externalApi?.staking?.url else { return }
         let subqueryRewardsSource = SubqueryRewardsSource(address: stashAddress, url: analyticsURL)
         let fetchOperation = subqueryRewardsSource.fetchOperation()
 
@@ -56,14 +58,14 @@ extension AnalyticsRewardsInteractor: AnalyticsRewardsInteractorInputProtocol {
     }
 }
 
-extension AnalyticsRewardsInteractor: SingleValueProviderSubscriber, SingleValueSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, for _: WalletAssetId) {
-        presenter.didReceivePriceData(result: result)
+extension AnalyticsRewardsInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
+        presenter.didReceiveStashItem(result: result)
     }
 }
 
-extension AnalyticsRewardsInteractor: SubstrateProviderSubscriber, SubstrateProviderSubscriptionHandler {
-    func handleStashItem(result: Result<StashItem?, Error>) {
-        presenter.didReceiveStashItem(result: result)
+extension AnalyticsRewardsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        presenter.didReceivePriceData(result: result)
     }
 }

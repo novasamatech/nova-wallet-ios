@@ -25,11 +25,6 @@ protocol ValidatorInfoProtocol {
 
 // MARK: - View
 
-protocol ValidatorInfoViewFactoryProtocol: AnyObject {
-    static func createView(with validatorInfo: ValidatorInfoProtocol) -> ValidatorInfoViewProtocol?
-    static func createView(with validatorAccountAddress: AccountAddress) -> ValidatorInfoViewProtocol?
-}
-
 protocol ValidatorInfoViewProtocol: ControllerBackedProtocol, Localizable {
     func didRecieve(state: ValidatorInfoState)
 }

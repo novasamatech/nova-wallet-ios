@@ -4,28 +4,21 @@ import SoraKeystore
 import FearlessUtils
 import RobinHood
 
-final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewFactoryProtocol {
-    static func createView(payouts: [PayoutInfo]) -> StakingPayoutConfirmationViewProtocol? {
-        guard let connection = WebSocketService.shared.connection else {
+final class StakingPayoutConfirmationViewFactory {
+    static func createView(
+        for state: StakingSharedState,
+        payouts: [PayoutInfo]
+    ) -> StakingPayoutConfirmationViewProtocol? {
+        guard let chainAsset = state.settings.value else {
             return nil
         }
 
-        let settings = SettingsManager.shared
         let keystore = Keychain()
 
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(settings.selectedConnection.type)
-        let chain = settings.selectedConnection.type.chain
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: networkType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let payoutConfirmViewModelFactory = StakingPayoutConfirmViewModelFactory(
-            asset: asset,
             balanceViewModelFactory: balanceViewModelFactory
         )
 
@@ -40,8 +33,7 @@ final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewF
             balanceViewModelFactory: balanceViewModelFactory,
             payoutConfirmViewModelFactory: payoutConfirmViewModelFactory,
             dataValidatingFactory: dataValidationFactory,
-            chain: chain,
-            asset: asset,
+            assetInfo: assetInfo,
             logger: Logger.shared
         )
 
@@ -50,12 +42,7 @@ final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewF
             localizationManager: LocalizationManager.shared
         )
 
-        guard let interactor = createInteractor(
-            connection: connection,
-            settings: settings,
-            keystore: keystore,
-            payouts: payouts
-        ) else {
+        guard let interactor = createInteractor(state: state, keystore: keystore, payouts: payouts) else {
             return nil
         }
 
@@ -69,28 +56,29 @@ final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewF
     }
 
     private static func createInteractor(
-        connection: JSONRPCEngine,
-        settings: SettingsManagerProtocol,
+        state: StakingSharedState,
         keystore: KeystoreProtocol,
         payouts: [PayoutInfo]
     ) -> StakingPayoutConfirmationInteractor? {
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-
-        let runtimeService = RuntimeRegistryFacade.sharedService
-
-        let asset = primitiveFactory.createAssetForAddressType(settings.selectedConnection.type)
-
-        guard let selectedAccount = settings.selectedAccount,
-              let assetId = WalletAssetId(rawValue: asset.identifier),
-              let chain = assetId.chain
-        else {
+        guard
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
         let operationManager = OperationManagerFacade.sharedManager
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
 
         let extrinsicService = ExtrinsicService(
-            address: selectedAccount.address,
+            accountId: selectedAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
@@ -98,7 +86,8 @@ final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewF
         )
 
         let extrinsicOperationFactory = ExtrinsicOperationFactory(
-            address: selectedAccount.address,
+            accountId: selectedAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection
@@ -106,33 +95,25 @@ final class StakingPayoutConfirmationViewFactory: StakingPayoutConfirmationViewF
 
         let signer = SigningWrapper(
             keystore: keystore,
-            settings: settings
+            metaId: metaAccount.metaId,
+            accountResponse: selectedAccount
         )
 
-        let singleValueProviderFactory = SingleValueProviderFactory.shared
-
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
         return StakingPayoutConfirmationInteractor(
-            singleValueProviderFactory: singleValueProviderFactory,
-            substrateProviderFactory: substrateProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicOperationFactory: extrinsicOperationFactory,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             signer: signer,
-            accountRepository: AnyDataProviderRepository(accountRepository),
+            accountRepositoryFactory: accountRepositoryFactory,
             operationManager: operationManager,
-            logger: Logger.shared,
-            selectedAccount: selectedAccount,
-            payouts: payouts,
-            chain: chain,
-            assetId: assetId
+            payouts: payouts
         )
     }
 }

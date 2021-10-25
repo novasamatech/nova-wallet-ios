@@ -5,18 +5,10 @@ import SoraFoundation
 
 final class ValidatorInfoViewFactory {
     private static func createView(
-        with interactor: ValidatorInfoInteractorBase
+        with interactor: ValidatorInfoInteractorBase,
+        assetInfo: AssetBalanceDisplayInfo
     ) -> ValidatorInfoViewProtocol? {
-        let localizationManager = LocalizationManager.shared
-        let settings = SettingsManager.shared
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: settings.selectedConnection.type,
-            limit: StakingConstants.maxAmount
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
             iconGenerator: PolkadotIconGenerator(),
@@ -25,11 +17,12 @@ final class ValidatorInfoViewFactory {
 
         let wireframe = ValidatorInfoWireframe()
 
+        let localizationManager = LocalizationManager.shared
+
         let presenter = ValidatorInfoPresenter(
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
-            chain: settings.selectedConnection.type.chain,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
@@ -44,41 +37,35 @@ final class ValidatorInfoViewFactory {
 
         return view
     }
-
-    private static func createAssetId() -> WalletAssetId? {
-        let settings = SettingsManager.shared
-        let networkType = settings.selectedConnection.type
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-
-        return WalletAssetId(rawValue: asset.identifier)
-    }
 }
 
-extension ValidatorInfoViewFactory: ValidatorInfoViewFactoryProtocol {
-    static func createView(with validatorInfo: ValidatorInfoProtocol) -> ValidatorInfoViewProtocol? {
-        guard let assetId = createAssetId() else { return nil }
-
-        let providerFactory = SingleValueProviderFactory.shared
+extension ValidatorInfoViewFactory {
+    static func createView(
+        with validatorInfo: ValidatorInfoProtocol,
+        state: StakingSharedState
+    ) -> ValidatorInfoViewProtocol? {
+        guard let chainAsset = state.settings.value else { return nil }
 
         let interactor = AnyValidatorInfoInteractor(
-            validatorInfo: validatorInfo,
-            singleValueProviderFactory: providerFactory,
-            walletAssetId: assetId
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            validatorInfo: validatorInfo
         )
 
-        return createView(with: interactor)
+        return createView(with: interactor, assetInfo: chainAsset.assetDisplayInfo)
     }
 
-    static func createView(with accountAddress: AccountAddress) -> ValidatorInfoViewProtocol? {
-        guard let engine = WebSocketService.shared.connection,
-              let assetId = createAssetId()
+    static func createView(
+        with accountAddress: AccountAddress,
+        state: StakingSharedState
+    ) -> ValidatorInfoViewProtocol? {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let chainAsset = state.settings.value,
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
         else { return nil }
-
-        let settings = SettingsManager.shared
-
-        let chain = settings.selectedConnection.type.chain
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
@@ -86,25 +73,23 @@ extension ValidatorInfoViewFactory: ValidatorInfoViewFactoryProtocol {
         )
 
         let validatorOperationFactory = ValidatorOperationFactory(
-            chain: chain,
-            eraValidatorService: EraValidatorFacade.sharedService,
-            rewardService: RewardCalculatorFacade.sharedService,
+            chainInfo: chainAsset.chainAssetInfo,
+            eraValidatorService: state.eraValidatorService,
+            rewardService: state.rewardCalculationService,
             storageRequestFactory: storageRequestFactory,
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            engine: engine,
+            runtimeService: runtimeService,
+            engine: connection,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
         )
 
-        let providerFactory = SingleValueProviderFactory.shared
-
         let interactor = YourValidatorInfoInteractor(
             accountAddress: accountAddress,
-            singleValueProviderFactory: providerFactory,
-            walletAssetId: assetId,
+            selectedAsset: chainAsset.asset,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             validatorOperationFactory: validatorOperationFactory,
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        return createView(with: interactor)
+        return createView(with: interactor, assetInfo: chainAsset.assetDisplayInfo)
     }
 }

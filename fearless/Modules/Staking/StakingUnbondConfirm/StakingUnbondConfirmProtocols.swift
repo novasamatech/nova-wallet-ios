@@ -39,7 +39,3 @@ protocol StakingUnbondConfirmWireframeProtocol: AlertPresentable, ErrorPresentab
     StakingErrorPresentable, AddressOptionsPresentable {
     func complete(from view: StakingUnbondConfirmViewProtocol?)
 }
-
-protocol StakingUnbondConfirmViewFactoryProtocol {
-    static func createView(from amount: Decimal) -> StakingUnbondConfirmViewProtocol?
-}

@@ -4,113 +4,90 @@ import SoraFoundation
 import RobinHood
 import FearlessUtils
 
-final class SelectValidatorsConfirmViewFactory: SelectValidatorsConfirmViewFactoryProtocol {
+final class SelectValidatorsConfirmViewFactory {
     static func createInitiatedBondingView(
-        for state: PreparedNomination<InitiatedBonding>
+        for state: PreparedNomination<InitiatedBonding>,
+        stakingState: StakingSharedState
     ) -> SelectValidatorsConfirmViewProtocol? {
-        let settings = SettingsManager.shared
         let keystore = Keychain()
 
-        guard let connection = WebSocketService.shared.connection else {
+        guard
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAsset = stakingState.settings.value,
+            let metaAccountResponse = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
+            let interactor = createInitiatedBondingInteractor(
+                state,
+                selectedMetaAccount: metaAccountResponse,
+                stakingState: stakingState,
+                keystore: keystore
+            ) else {
             return nil
         }
 
-        guard let interactor = createInitiatedBondingInteractor(
+        let wireframe = SelectValidatorsConfirmWireframe()
+
+        return createView(
+            for: interactor,
+            wireframe: wireframe,
+            stakingState: stakingState
+        )
+    }
+
+    static func createChangeTargetsView(
+        for state: PreparedNomination<ExistingBonding>,
+        stakingState: StakingSharedState
+    ) -> SelectValidatorsConfirmViewProtocol? {
+        let wireframe = SelectValidatorsConfirmWireframe()
+        return createExistingBondingView(for: state, wireframe: wireframe, stakingState: stakingState)
+    }
+
+    static func createChangeYourValidatorsView(
+        for state: PreparedNomination<ExistingBonding>,
+        stakingState: StakingSharedState
+    ) -> SelectValidatorsConfirmViewProtocol? {
+        let wireframe = YourValidatorList.SelectValidatorsConfirmWireframe()
+        return createExistingBondingView(for: state, wireframe: wireframe, stakingState: stakingState)
+    }
+
+    private static func createExistingBondingView(
+        for state: PreparedNomination<ExistingBonding>,
+        wireframe: SelectValidatorsConfirmWireframeProtocol,
+        stakingState: StakingSharedState
+    ) -> SelectValidatorsConfirmViewProtocol? {
+        let keystore = Keychain()
+
+        guard let interactor = createChangeTargetsInteractor(
             state,
-            connection: connection,
-            settings: settings,
+            state: stakingState,
             keystore: keystore
         ) else {
             return nil
         }
 
-        let wireframe = SelectValidatorsConfirmWireframe()
-
         return createView(
             for: interactor,
             wireframe: wireframe,
-            settings: settings
-        )
-    }
-
-    static func createChangeTargetsView(
-        for state: PreparedNomination<ExistingBonding>
-    ) -> SelectValidatorsConfirmViewProtocol? {
-        let wireframe = SelectValidatorsConfirmWireframe()
-        return createExistingBondingView(for: state, wireframe: wireframe)
-    }
-
-    static func createChangeYourValidatorsView(
-        for state: PreparedNomination<ExistingBonding>
-    ) -> SelectValidatorsConfirmViewProtocol? {
-        let wireframe = YourValidatorList.SelectValidatorsConfirmWireframe()
-        return createExistingBondingView(for: state, wireframe: wireframe)
-    }
-
-    private static func createExistingBondingView(
-        for state: PreparedNomination<ExistingBonding>,
-        wireframe: SelectValidatorsConfirmWireframeProtocol
-    ) -> SelectValidatorsConfirmViewProtocol? {
-        let settings = SettingsManager.shared
-        let keystore = Keychain()
-
-        guard let connection = WebSocketService.shared.connection else {
-            return nil
-        }
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(settings.selectedConnection.type)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            return nil
-        }
-
-        let networkSettnigs = settings.selectedConnection
-
-        guard let interactor = createChangeTargetsInteractor(
-            state,
-            connection: connection,
-            keystore: keystore,
-            assetId: assetId,
-            networkSettings: networkSettnigs
-        ) else {
-            return nil
-        }
-
-        return createView(
-            for: interactor,
-            wireframe: wireframe,
-            settings: settings
+            stakingState: stakingState
         )
     }
 
     private static func createView(
         for interactor: SelectValidatorsConfirmInteractorBase,
         wireframe: SelectValidatorsConfirmWireframeProtocol,
-        settings: SettingsManagerProtocol
+        stakingState: StakingSharedState
     ) -> SelectValidatorsConfirmViewProtocol? {
-        let networkType = settings.selectedConnection.type
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(settings.selectedConnection.type)
+        guard let chainAsset = stakingState.settings.value else {
+            return nil
+        }
 
         let confirmViewModelFactory = SelectValidatorsConfirmViewModelFactory()
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: networkType,
-            limit: StakingConstants.maxAmount
-        )
-
-        let errorBalanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: networkType,
-            limit: StakingConstants.maxAmount,
-            formatterFactory: AmountFormatterFactory(assetPrecision: Int(networkType.precision))
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(
             presentable: wireframe,
-            balanceFactory: errorBalanceViewModelFactory
+            balanceFactory: balanceViewModelFactory
         )
 
         let presenter = SelectValidatorsConfirmPresenter(
@@ -119,7 +96,7 @@ final class SelectValidatorsConfirmViewFactory: SelectValidatorsConfirmViewFacto
             confirmationViewModelFactory: confirmViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            asset: asset,
+            assetInfo: assetInfo,
             logger: Logger.shared
         )
 
@@ -138,99 +115,98 @@ final class SelectValidatorsConfirmViewFactory: SelectValidatorsConfirmViewFacto
 
     private static func createInitiatedBondingInteractor(
         _ nomination: PreparedNomination<InitiatedBonding>,
-        connection: JSONRPCEngine,
-        settings: SettingsManagerProtocol,
+        selectedMetaAccount: MetaChainAccountResponse,
+        stakingState: StakingSharedState,
         keystore: KeystoreProtocol
     ) -> SelectValidatorsConfirmInteractorBase? {
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(settings.selectedConnection.type)
-
-        guard let selectedAccount = settings.selectedAccount,
-              let assetId = WalletAssetId(rawValue: asset.identifier)
-        else {
-            return nil
-        }
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let operationManager = OperationManagerFacade.sharedManager
 
-        let runtimeService = RuntimeRegistryFacade.sharedService
+        guard
+            let chainAsset = stakingState.settings.value,
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let displayAddress = try? selectedMetaAccount.chainAccount.toDisplayAddress() else {
+            return nil
+        }
 
         let extrinsicService = ExtrinsicService(
-            address: selectedAccount.address,
-            cryptoType: selectedAccount.cryptoType,
-            runtimeRegistry: RuntimeRegistryFacade.sharedService,
+            accountId: selectedMetaAccount.chainAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
+            cryptoType: selectedMetaAccount.chainAccount.cryptoType,
+            runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
         )
 
         let signer = SigningWrapper(
             keystore: keystore,
-            settings: settings
+            metaId: selectedMetaAccount.metaId,
+            accountResponse: selectedMetaAccount.chainAccount
         )
 
         return InitiatedBondingConfirmInteractor(
-            selectedAccount: selectedAccount,
-            selectedConnection: settings.selectedConnection,
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            selectedAccount: displayAddress,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingState.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: StakingDurationOperationFactory(),
             operationManager: operationManager,
             signer: signer,
-            assetId: assetId,
             nomination: nomination
         )
     }
 
     private static func createChangeTargetsInteractor(
         _ nomination: PreparedNomination<ExistingBonding>,
-        connection: JSONRPCEngine,
-        keystore: KeystoreProtocol,
-        assetId: WalletAssetId,
-        networkSettings: ConnectionItem
+        state: StakingSharedState,
+        keystore: KeystoreProtocol
     ) -> SelectValidatorsConfirmInteractorBase? {
-        let settings = SettingsManager.shared
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let networkType = settings.selectedConnection.type
-        let asset = primitiveFactory.createAssetForAddressType(networkType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
-            return nil
-        }
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         let operationManager = OperationManagerFacade.sharedManager
 
+        guard
+            let chainAsset = state.settings.value,
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            return nil
+        }
+
         let extrinsicSender = nomination.bonding.controllerAccount
 
-        let runtimeService = RuntimeRegistryFacade.sharedService
-
         let extrinsicService = ExtrinsicService(
-            address: extrinsicSender.address,
-            cryptoType: extrinsicSender.cryptoType,
+            accountId: extrinsicSender.chainAccount.accountId,
+            chainFormat: extrinsicSender.chainAccount.chainFormat,
+            cryptoType: extrinsicSender.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
         )
 
-        let controllerSettings = InMemorySettingsManager()
-        controllerSettings.selectedAccount = nomination.bonding.controllerAccount
-        controllerSettings.selectedConnection = networkSettings
+        let signer = SigningWrapper(
+            keystore: keystore,
+            metaId: extrinsicSender.metaId,
+            accountResponse: extrinsicSender.chainAccount
+        )
 
-        let signer = SigningWrapper(keystore: keystore, settings: controllerSettings)
-
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        let accountRepository = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
         return ChangeTargetsConfirmInteractor(
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
             durationOperationFactory: StakingDurationOperationFactory(),
             operationManager: operationManager,
             signer: signer,
-            chain: networkType.chain,
-            assetId: assetId,
-            repository: AnyDataProviderRepository(accountRepository),
+            accountRepositoryFactory: accountRepository,
             nomination: nomination
         )
     }
