@@ -20,6 +20,22 @@ struct ReferralCrowdloanViewFactory {
             return nil
         }
 
+        let accountAddressDependingOnChain: String? = {
+            switch chain.chainId {
+            case Chain.rococo.genesisHash:
+                // requires polkadot address even in rococo testnet
+                return try? accountResponse.accountId.toAddress(
+                    using: ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
+                )
+            default:
+                return selectedAddress
+            }
+        }()
+
+        guard let accountAddress = accountAddressDependingOnChain else {
+            return nil
+        }
+
         let bonusService: CrowdloanBonusServiceProtocol = {
             if let service = existingService as? AcalaBonusService {
                 return service
@@ -30,7 +46,7 @@ struct ReferralCrowdloanViewFactory {
                     accountResponse: accountResponse
                 )
                 return AcalaBonusService(
-                    address: selectedAddress,
+                    address: accountAddress,
                     signingWrapper: signingWrapper,
                     operationManager: OperationManagerFacade.sharedManager
                 )
