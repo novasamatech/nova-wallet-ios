@@ -44,11 +44,9 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
         interactor.setup()
     }
 
-    func submitAgreement() {
+    func handleAction() {
         view?.didStartLoading()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.view?.didStopLoading()
-        }
+        interactor.submitAgreement()
     }
 
     func handleLearnTerms() {
@@ -79,6 +77,17 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
             provideFeeViewModel()
         case let .failure(error):
             logger?.error("Did receive price error: \(error)")
+        }
+    }
+
+    func didReceiveRemark(result: Result<String, Error>) {
+        view?.didStopLoading()
+
+        switch result {
+        case let .success(remark):
+            print(remark)
+        case let .failure(error):
+            logger?.error("Did receive remark error: \(error)")
         }
     }
 }

@@ -85,7 +85,8 @@ struct MoonbeamTermsViewFactory {
             feeProxy: feeProxy,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             callFactory: SubstrateCallFactory(),
-            moonbeamService: moonbeamService
+            moonbeamService: moonbeamService,
+            operationManager: operationManager
         )
     }
 }

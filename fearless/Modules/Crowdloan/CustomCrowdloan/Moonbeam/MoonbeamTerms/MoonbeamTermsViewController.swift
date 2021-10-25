@@ -56,7 +56,7 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
 
     @objc
     private func handleAction() {
-        presenter.submitAgreement()
+        presenter.handleAction()
     }
 
     private func updateFee() {

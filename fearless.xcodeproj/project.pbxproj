@@ -1531,6 +1531,7 @@
 		F43F934B26D76E8E00A6B529 /* AnalyticsRewardsBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43F934A26D76E8E00A6B529 /* AnalyticsRewardsBaseView.swift */; };
 		F441BE0E263984DD0096B67B /* BondExtraCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = F441BE0D263984DD0096B67B /* BondExtraCall.swift */; };
 		F441BE13263986BE0096B67B /* ExtrinsicServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F441BE12263986BE0096B67B /* ExtrinsicServiceTests.swift */; };
+		F44225A12727466D00DF512E /* Data+Sha256.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44225A02727466D00DF512E /* Data+Sha256.swift */; };
 		F4433D5F26C166470002A91E /* AnalyticsValidatorsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4433D5E26C166470002A91E /* AnalyticsValidatorsView.swift */; };
 		F4433D6726C1668E0002A91E /* AnalyticsValidatorsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4433D6626C1668E0002A91E /* AnalyticsValidatorsHeaderView.swift */; };
 		F4433D6F26C1696A0002A91E /* AnalyticsValidatorsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4433D6E26C1696A0002A91E /* AnalyticsValidatorsCell.swift */; };
@@ -3194,6 +3195,7 @@
 		F43F934A26D76E8E00A6B529 /* AnalyticsRewardsBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardsBaseView.swift; sourceTree = "<group>"; };
 		F441BE0D263984DD0096B67B /* BondExtraCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BondExtraCall.swift; sourceTree = "<group>"; };
 		F441BE12263986BE0096B67B /* ExtrinsicServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicServiceTests.swift; sourceTree = "<group>"; };
+		F44225A02727466D00DF512E /* Data+Sha256.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Sha256.swift"; sourceTree = "<group>"; };
 		F4433D5E26C166470002A91E /* AnalyticsValidatorsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsView.swift; sourceTree = "<group>"; };
 		F4433D6626C1668E0002A91E /* AnalyticsValidatorsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsHeaderView.swift; sourceTree = "<group>"; };
 		F4433D6E26C1696A0002A91E /* AnalyticsValidatorsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsCell.swift; sourceTree = "<group>"; };
@@ -5724,6 +5726,7 @@
 				84F4A909254CC863000CF0A3 /* KeystoreExportWrapper.swift */,
 				AEF507AE262423FD0098574D /* HmacSigner.swift */,
 				84C515FA26D84F8C000DBA45 /* AccountImportWrapper.swift */,
+				F44225A02727466D00DF512E /* Data+Sha256.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -9569,6 +9572,7 @@
 				F78EA110179B6D75DDF53F8B /* AccountCreateWireframe.swift in Sources */,
 				84D97ECC2521C8A300F07405 /* TransferConfirmViewModelFactory.swift in Sources */,
 				84DEAA7B265DB987000DDADE /* CrowdloanContributeCall.swift in Sources */,
+				F44225A12727466D00DF512E /* Data+Sha256.swift in Sources */,
 				8467FD5124EFD11E005D486C /* UserDataModel.xcdatamodeld in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
 				849DEC5925ED756F00C64C19 /* SubstrateCallFactory.swift in Sources */,

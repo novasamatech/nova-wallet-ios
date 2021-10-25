@@ -8,6 +8,10 @@ protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
     var hasMoonbeamAccount: Bool { get }
     func createCheckHealthOperation() -> BaseOperation<Void>
     func createCheckTermsOperation() -> BaseOperation<Bool>
+    func createStatementFetchOperation() -> BaseOperation<Data>
+    func createAgreeRemarkOperation(
+        dependingOn statementOperation: BaseOperation<Data>
+    ) -> BaseOperation<String>
 }
 
 final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
@@ -89,7 +93,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         return operation
     }
 
-    private func createStatementFetchOperation() -> BaseOperation<Data> {
+    func createStatementFetchOperation() -> BaseOperation<Data> {
         let url = Self.statementURL
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
@@ -107,15 +111,19 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     /// Generate the content needed for the remark extrinsic.
     /// `signedMessage` needs to be a raw signed message
     /// by the address’ private key of the SHA-256 hash of the attestation
-    func createAgreeRemarkOperation(statementData: Data) -> BaseOperation<String> {
+    func createAgreeRemarkOperation(
+        dependingOn statementOperation: BaseOperation<Data>
+    ) -> BaseOperation<String> {
         let url = Self.baseURL.appendingPathComponent(Self.agreeRemark)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             request.httpMethod = HttpMethod.post.rawValue
 
+            let statementRawData = try statementOperation.extractNoCancellableResultData()
+            let statementData = statementRawData.sha256().toHex().data(using: .utf8)!
             let signedData = try self.signingWrapper.sign(statementData)
-            let signedMessage = signedData.rawData().toHex(includePrefix: true)
+            let signedMessage = signedData.rawData().toHex()
 
             let remarkRequest = MoonbeamAgreeRemarkRequest(address: self.address, signedMessage: signedMessage)
             let body = try JSONEncoder().encode(remarkRequest)

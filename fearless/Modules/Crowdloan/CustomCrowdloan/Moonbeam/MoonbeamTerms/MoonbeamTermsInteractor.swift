@@ -1,5 +1,6 @@
 import UIKit
 import BigInt
+import RobinHood
 
 final class MoonbeamTermsInteractor {
     weak var presenter: MoonbeamTermsInteractorOutputProtocol!
@@ -10,6 +11,7 @@ final class MoonbeamTermsInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let moonbeamService: MoonbeamBonusServiceProtocol
+    let operationManager: OperationManagerProtocol
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
 
@@ -20,7 +22,8 @@ final class MoonbeamTermsInteractor {
         feeProxy: ExtrinsicFeeProxyProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
-        moonbeamService: MoonbeamBonusServiceProtocol
+        moonbeamService: MoonbeamBonusServiceProtocol,
+        operationManager: OperationManagerProtocol
     ) {
         self.paraId = paraId
         self.asset = asset
@@ -29,6 +32,7 @@ final class MoonbeamTermsInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.callFactory = callFactory
         self.moonbeamService = moonbeamService
+        self.operationManager = operationManager
     }
 
     private func subscribeToPrice() {
@@ -49,6 +53,10 @@ final class MoonbeamTermsInteractor {
             try builder.adding(call: call)
         }
     }
+
+    private func submitRemarkToChain(_ remark: String) {
+        print(remark)
+    }
 }
 
 extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
@@ -60,6 +68,25 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
 
     var termsURL: URL {
         moonbeamService.termsURL
+    }
+
+    func submitAgreement() {
+        let statementOperation = moonbeamService.createStatementFetchOperation()
+        let submitOperation = moonbeamService.createAgreeRemarkOperation(dependingOn: statementOperation)
+
+        submitOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let remark = try submitOperation.extractNoCancellableResultData()
+                    self?.submitRemarkToChain(remark)
+                } catch {
+                    self?.presenter.didReceiveRemark(result: .failure(error))
+                }
+            }
+        }
+        submitOperation.addDependency(statementOperation)
+
+        operationManager.enqueue(operations: [statementOperation, submitOperation], in: .transient)
     }
 }
 
