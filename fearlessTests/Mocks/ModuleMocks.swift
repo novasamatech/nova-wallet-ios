@@ -17518,21 +17518,6 @@ import RobinHood
     
     
     
-     func presentAccountCreation(for connection: ConnectionItem, from view: NetworkManagementViewProtocol?)  {
-        
-    return cuckoo_manager.call("presentAccountCreation(for: ConnectionItem, from: NetworkManagementViewProtocol?)",
-            parameters: (connection, view),
-            escapingParameters: (connection, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.presentAccountCreation(for: connection, from: view))
-        
-    }
-    
-    
-    
      func presentConnectionInfo(_ connectionItem: ConnectionItem, mode: NetworkInfoMode, from view: NetworkManagementViewProtocol?)  {
         
     return cuckoo_manager.call("presentConnectionInfo(_: ConnectionItem, mode: NetworkInfoMode, from: NetworkManagementViewProtocol?)",
@@ -17620,11 +17605,6 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockNetworkManagementWireframeProtocol.self, method: "presentAccountSelection(_: [AccountItem], addressType: SNAddressType, delegate: ModalPickerViewControllerDelegate, from: NetworkManagementViewProtocol?, context: AnyObject?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentAccountCreation<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for connection: M1, from view: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionItem, NetworkManagementViewProtocol?)> where M1.MatchedType == ConnectionItem, M2.OptionalMatchedType == NetworkManagementViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionItem, NetworkManagementViewProtocol?)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: view) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockNetworkManagementWireframeProtocol.self, method: "presentAccountCreation(for: ConnectionItem, from: NetworkManagementViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
 	    func presentConnectionInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(_ connectionItem: M1, mode: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionItem, NetworkInfoMode, NetworkManagementViewProtocol?)> where M1.MatchedType == ConnectionItem, M2.MatchedType == NetworkInfoMode, M3.OptionalMatchedType == NetworkManagementViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionItem, NetworkInfoMode, NetworkManagementViewProtocol?)>] = [wrap(matchable: connectionItem) { $0.0 }, wrap(matchable: mode) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockNetworkManagementWireframeProtocol.self, method: "presentConnectionInfo(_: ConnectionItem, mode: NetworkInfoMode, from: NetworkManagementViewProtocol?)", parameterMatchers: matchers))
@@ -17673,12 +17653,6 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func presentAccountCreation<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for connection: M1, from view: M2) -> Cuckoo.__DoNotUse<(ConnectionItem, NetworkManagementViewProtocol?), Void> where M1.MatchedType == ConnectionItem, M2.OptionalMatchedType == NetworkManagementViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionItem, NetworkManagementViewProtocol?)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: view) { $0.1 }]
-	        return cuckoo_manager.verify("presentAccountCreation(for: ConnectionItem, from: NetworkManagementViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func presentConnectionInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(_ connectionItem: M1, mode: M2, from view: M3) -> Cuckoo.__DoNotUse<(ConnectionItem, NetworkInfoMode, NetworkManagementViewProtocol?), Void> where M1.MatchedType == ConnectionItem, M2.MatchedType == NetworkInfoMode, M3.OptionalMatchedType == NetworkManagementViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionItem, NetworkInfoMode, NetworkManagementViewProtocol?)>] = [wrap(matchable: connectionItem) { $0.0 }, wrap(matchable: mode) { $0.1 }, wrap(matchable: view) { $0.2 }]
 	        return cuckoo_manager.verify("presentConnectionInfo(_: ConnectionItem, mode: NetworkInfoMode, from: NetworkManagementViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -17718,10 +17692,6 @@ import RobinHood
 
     
      func presentAccountSelection(_ accounts: [AccountItem], addressType: SNAddressType, delegate: ModalPickerViewControllerDelegate, from view: NetworkManagementViewProtocol?, context: AnyObject?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func presentAccountCreation(for connection: ConnectionItem, from view: NetworkManagementViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
