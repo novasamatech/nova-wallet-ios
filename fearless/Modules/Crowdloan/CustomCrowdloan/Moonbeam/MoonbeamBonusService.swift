@@ -15,18 +15,22 @@ final class MoonbeamBonusService {
     }
 
     static let agreeRemark = "/agree-remark"
-    static let legalText = "https://github.com/moonbeam-foundation/crowdloan-self-attestation/tree/main/moonbeam"
+    static let legalTextURL
+        = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
     let address: AccountAddress
     let operationManager: OperationManagerProtocol
+    let signingWrapper: SigningWrapperProtocol
     private let requestModifier = MoonbeamRequestModifier()
 
     init(
         address: AccountAddress,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        signingWrapper: SigningWrapperProtocol
     ) {
         self.address = address
         self.operationManager = operationManager
+        self.signingWrapper = signingWrapper
     }
 
     /// Health check may be used to verify the geo-fencing for a given user. Users in a barred country will receive a 403 error
@@ -70,15 +74,35 @@ final class MoonbeamBonusService {
         return operation
     }
 
+    func createStatementFetchOperation() -> BaseOperation<Data> {
+        let url = Self.legalTextURL
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.get.rawValue
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<Data> { data in
+            data
+        }
+
+        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+    }
+
     /// Generate the content needed for the remark extrinsic.
     /// `signedMessage` needs to be a raw signed message
     /// by the address’ private key of the SHA-256 hash of the attestation
-    func createAgreeRemarkOperation(signedMessage: String) -> BaseOperation<String> {
+    func createAgreeRemarkOperation(statementData: Data) -> BaseOperation<String> {
         let url = Self.baseURL.appendingPathComponent(Self.agreeRemark)
 
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             request.httpMethod = HttpMethod.post.rawValue
+
+            let signedData = try self.signingWrapper.sign(statementData)
+            let signedMessage = signedData.rawData().toHex(includePrefix: true)
+
             let remarkRequest = MoonbeamAgreeRemarkRequest(address: self.address, signedMessage: signedMessage)
             let body = try JSONEncoder().encode(remarkRequest)
             request.httpBody = body
