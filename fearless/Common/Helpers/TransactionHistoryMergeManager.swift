@@ -59,25 +59,22 @@ enum TransactionHistoryMergeItem {
 
     func buildTransactionData(
         address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory: SS58AddressFactoryProtocol
+        assetId: String,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData {
         switch self {
         case let .local(item):
             return AssetTransactionData.createTransaction(
                 from: item,
                 address: address,
-                networkType: networkType,
-                asset: asset,
-                addressFactory: addressFactory
+                assetId: assetId,
+                chainAssetInfo: chainAssetInfo
             )
         case let .remote(item):
             return item.createTransactionForAddress(
                 address,
-                networkType: networkType,
-                asset: asset,
-                addressFactory: addressFactory
+                assetId: assetId,
+                chainAssetInfo: chainAssetInfo
             )
         }
     }
@@ -98,20 +95,17 @@ enum TransactionHistoryMergeItem {
 
 final class TransactionHistoryMergeManager {
     let address: String
-    let networkType: SNAddressType
-    let asset: WalletAsset
-    let addressFactory: SS58AddressFactoryProtocol
+    let chainAssetInfo: ChainAssetDisplayInfo
+    let assetId: String
 
     init(
         address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory: SS58AddressFactoryProtocol
+        chainAssetInfo: ChainAssetDisplayInfo,
+        assetId: String
     ) {
         self.address = address
-        self.networkType = networkType
-        self.asset = asset
-        self.addressFactory = addressFactory
+        self.chainAssetInfo = chainAssetInfo
+        self.assetId = assetId
     }
 
     func merge(
@@ -155,9 +149,8 @@ final class TransactionHistoryMergeManager {
             .map { item in
                 item.buildTransactionData(
                     address: address,
-                    networkType: networkType,
-                    asset: asset,
-                    addressFactory: addressFactory
+                    assetId: assetId,
+                    chainAssetInfo: chainAssetInfo
                 )
             }
 

@@ -12,20 +12,17 @@ final class TransactionHistoryViewModelFactory {
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
-    let chain: Chain
 
     let iconGenerator = PolkadotIconGenerator()
 
     init(
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
-        assets: [WalletAsset],
-        chain: Chain
+        assets: [WalletAsset]
     ) {
         self.amountFormatterFactory = amountFormatterFactory
         self.dateFormatter = dateFormatter
         self.assets = assets
-        self.chain = chain
     }
 
     private func createTransferItemFromData(
@@ -146,13 +143,8 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
-
-        if let icon = chain.extrinsicIcon {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
-        } else {
-            imageViewModel = nil
-        }
+        // TODO: Fix tx history icon
+        let imageViewModel: WalletImageViewModelProtocol? = nil
 
         let command = commandFactory.prepareTransactionDetailsCommand(with: data)
 

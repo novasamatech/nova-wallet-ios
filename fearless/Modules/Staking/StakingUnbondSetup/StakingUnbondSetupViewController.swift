@@ -101,8 +101,12 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
             amountView.balanceText = nil
         }
 
-        amountView.assetIcon = viewModel.icon
         amountView.symbol = viewModel.symbol.uppercased()
+
+        viewModel.iconViewModel?.cancel(on: amountView.iconView)
+        amountView.assetIcon = nil
+
+        viewModel.iconViewModel?.loadAmountInputIcon(on: amountView.iconView, animated: true)
     }
 
     private func applyFeeViewModel() {

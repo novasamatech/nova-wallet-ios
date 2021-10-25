@@ -37,7 +37,3 @@ protocol StakingPayoutConfirmationWireframeProtocol: AlertPresentable,
     AddressOptionsPresentable {
     func complete(from view: StakingPayoutConfirmationViewProtocol?)
 }
-
-protocol StakingPayoutConfirmationViewFactoryProtocol: AnyObject {
-    static func createView(payouts: [PayoutInfo]) -> StakingPayoutConfirmationViewProtocol?
-}

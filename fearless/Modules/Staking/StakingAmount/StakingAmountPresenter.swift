@@ -10,6 +10,7 @@ final class StakingAmountPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let rewardDestViewModelFactory: RewardDestinationViewModelFactoryProtocol
     let selectedAccount: AccountItem
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol
     let applicationConfig: ApplicationConfigProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -19,7 +20,6 @@ final class StakingAmountPresenter {
     private var balance: Decimal?
     private var fee: Decimal?
     private var loadingFee: Bool = false
-    private var asset: WalletAsset
     private var amount: Decimal?
     private var rewardDestination: RewardDestination<AccountItem> = .restake
     private var payoutAccount: AccountItem
@@ -31,8 +31,8 @@ final class StakingAmountPresenter {
 
     init(
         amount: Decimal?,
-        asset: WalletAsset,
         selectedAccount: AccountItem,
+        assetInfo: AssetBalanceDisplayInfo,
         rewardDestViewModelFactory: RewardDestinationViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
@@ -40,9 +40,9 @@ final class StakingAmountPresenter {
         logger: LoggerProtocol
     ) {
         self.amount = amount
-        self.asset = asset
         self.selectedAccount = selectedAccount
         payoutAccount = selectedAccount
+        self.assetInfo = assetInfo
         self.rewardDestViewModelFactory = rewardDestViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
@@ -120,7 +120,7 @@ final class StakingAmountPresenter {
     }
 
     private func estimateFee() {
-        if let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: asset.precision) {
+        if let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: assetInfo.assetPrecision) {
             loadingFee = true
             interactor.estimateFee(
                 for: selectedAccount.address,
@@ -278,10 +278,7 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 
     func didReceive(balance: AccountData?) {
         if let availableValue = balance?.available {
-            self.balance = Decimal.fromSubstrateAmount(
-                availableValue,
-                precision: asset.precision
-            )
+            self.balance = Decimal.fromSubstrateAmount(availableValue, precision: assetInfo.assetPrecision)
         } else {
             self.balance = 0.0
         }
@@ -297,7 +294,7 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
         loadingFee = false
 
         if let feeValue = BigUInt(paymentInfo.fee),
-           let fee = Decimal.fromSubstrateAmount(feeValue, precision: asset.precision) {
+           let fee = Decimal.fromSubstrateAmount(feeValue, precision: assetInfo.assetPrecision) {
             self.fee = fee
         } else {
             fee = nil
@@ -330,14 +327,17 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
     }
 
     func didReceive(minimalBalance: BigUInt) {
-        if let amount = Decimal.fromSubstrateAmount(minimalBalance, precision: asset.precision) {
+        if let amount = Decimal.fromSubstrateAmount(minimalBalance, precision: assetInfo.assetPrecision) {
             logger.debug("Did receive minimun bonding amount: \(amount)")
             self.minimalBalance = amount
         }
     }
 
     func didReceive(minBondAmount: BigUInt?) {
-        self.minBondAmount = minBondAmount.map { Decimal.fromSubstrateAmount($0, precision: asset.precision) } ?? nil
+        self.minBondAmount = minBondAmount.map { Decimal.fromSubstrateAmount(
+            $0,
+            precision: assetInfo.assetPrecision
+        ) } ?? nil
     }
 
     func didReceive(counterForNominators: UInt32?) {

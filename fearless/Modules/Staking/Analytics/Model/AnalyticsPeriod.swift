@@ -1,6 +1,6 @@
 import Foundation
 
-enum AnalyticsPeriod: CaseIterable, Equatable {
+enum AnalyticsPeriod: CaseIterable {
     case week
     case month
     case year

@@ -3,15 +3,23 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 
-struct StakingUnbondConfirmViewFactory: StakingUnbondConfirmViewFactoryProtocol {
-    static func createView(from amount: Decimal) -> StakingUnbondConfirmViewProtocol? {
-        guard let interactor = createInteractor() else {
+struct StakingUnbondConfirmViewFactory {
+    static func createView(
+        from amount: Decimal,
+        state: StakingSharedState
+    ) -> StakingUnbondConfirmViewProtocol? {
+        guard let interactor = createInteractor(state: state) else {
             return nil
         }
 
         let wireframe = StakingUnbondConfirmWireframe()
 
-        let presenter = createPresenter(from: interactor, wireframe: wireframe, amount: amount)
+        let presenter = createPresenter(
+            from: interactor,
+            wireframe: wireframe,
+            amount: amount,
+            assetInfo: state.settings.value.assetDisplayInfo
+        )
 
         let view = StakingUnbondConfirmViewController(
             presenter: presenter,
@@ -27,21 +35,12 @@ struct StakingUnbondConfirmViewFactory: StakingUnbondConfirmViewFactoryProtocol 
     private static func createPresenter(
         from interactor: StakingUnbondConfirmInteractorInputProtocol,
         wireframe: StakingUnbondConfirmWireframeProtocol,
-        amount: Decimal
+        amount: Decimal,
+        assetInfo: AssetBalanceDisplayInfo
     ) -> StakingUnbondConfirmPresenter {
-        let settings = SettingsManager.shared
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let chain = settings.selectedConnection.type.chain
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
-
-        let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory(asset: asset)
+        let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory(assetInfo: assetInfo)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -52,53 +51,49 @@ struct StakingUnbondConfirmViewFactory: StakingUnbondConfirmViewFactoryProtocol 
             confirmViewModelFactory: confirmationViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            chain: chain,
+            assetInfo: assetInfo,
             logger: Logger.shared
         )
     }
 
-    private static func createInteractor() -> StakingUnbondConfirmInteractor? {
-        let settings = SettingsManager.shared
-
-        guard let engine = WebSocketService.shared.connection else {
+    private static func createInteractor(state: StakingSharedState) -> StakingUnbondConfirmInteractor? {
+        guard
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationManager = OperationManagerFacade.sharedManager
 
-        let chain = settings.selectedConnection.type.chain
-        let networkType = chain.addressType
-
-        let asset = WalletPrimitiveFactory(settings: settings)
-            .createAssetForAddressType(networkType)
-
-        guard let assetId = WalletAssetId(rawValue: asset.identifier) else {
+        guard
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(
+                for: chainAsset.chain.chainId
+            ) else {
             return nil
         }
 
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
-            runtimeRegistry: RuntimeRegistryFacade.sharedService,
-            engine: engine,
-            operationManager: OperationManagerFacade.sharedManager
+            runtimeRegistry: runtimeService,
+            engine: connection,
+            operationManager: operationManager
         )
 
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
 
         return StakingUnbondConfirmInteractor(
-            assetId: assetId,
-            chain: chain,
-            singleValueProviderFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            settings: settings,
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: operationManager
         )
     }
 }

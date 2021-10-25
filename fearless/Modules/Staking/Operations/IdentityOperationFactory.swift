@@ -8,7 +8,7 @@ protocol IdentityOperationFactoryProtocol {
         for accountIdClosure: @escaping () throws -> [AccountId],
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        chain: Chain
+        chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]>
 }
 
@@ -43,37 +43,23 @@ final class IdentityOperationFactory {
     private func createIdentityMergeOperation(
         dependingOn superOperation: SuperIdentityOperation,
         identityOperation: IdentityOperation,
-        chain: Chain
+        chainFormat: ChainFormat
     ) -> BaseOperation<[AccountAddress: AccountIdentity]> {
         ClosureOperation<[AccountAddress: AccountIdentity]> {
-            let addressFactory = SS58AddressFactory()
-
             let superIdentities = try superOperation.extractNoCancellableResultData()
             let identities = try identityOperation.extractNoCancellableResultData()
                 .reduce(into: [AccountAddress: Identity]()) { result, item in
                     if let value = item.value {
-                        let address = try addressFactory
-                            .addressFromAccountId(
-                                data: item.key.getAccountIdFromKey(),
-                                type: chain.addressType
-                            )
+                        let address = try item.key.getAccountIdFromKey().toAddress(using: chainFormat)
                         result[address] = value
                     }
                 }
 
             return try superIdentities.reduce(into: [String: AccountIdentity]()) { result, item in
-                let address = try addressFactory
-                    .addressFromAccountId(
-                        data: item.key.getAccountIdFromKey(),
-                        type: chain.addressType
-                    )
+                let address = try item.key.getAccountIdFromKey().toAddress(using: chainFormat)
 
                 if let value = item.value {
-                    let parentAddress = try addressFactory
-                        .addressFromAccountId(
-                            data: value.parentAccountId,
-                            type: chain.addressType
-                        )
+                    let parentAddress = try value.parentAccountId.toAddress(using: chainFormat)
 
                     if let parentIdentity = identities[parentAddress] {
                         result[address] = AccountIdentity(
@@ -102,7 +88,7 @@ final class IdentityOperationFactory {
         dependingOn superIdentityOperation: SuperIdentityOperation,
         runtimeOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         engine: JSONRPCEngine,
-        chain: Chain
+        chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]> {
         let path = StorageCodingPath.identity
 
@@ -131,7 +117,7 @@ final class IdentityOperationFactory {
         let mergeOperation = createIdentityMergeOperation(
             dependingOn: superIdentityOperation,
             identityOperation: identityWrapper.targetOperation,
-            chain: chain
+            chainFormat: chainFormat
         )
 
         mergeOperation.addDependency(identityWrapper.targetOperation)
@@ -148,7 +134,7 @@ extension IdentityOperationFactory: IdentityOperationFactoryProtocol {
         for accountIdClosure: @escaping () throws -> [AccountId],
         engine: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        chain: Chain
+        chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -166,7 +152,7 @@ extension IdentityOperationFactory: IdentityOperationFactoryProtocol {
             dependingOn: superIdentityWrapper.targetOperation,
             runtimeOperation: coderFactoryOperation,
             engine: engine,
-            chain: chain
+            chainFormat: chainFormat
         )
 
         identityWrapper.allOperations.forEach {

@@ -5,22 +5,18 @@ import SoraKeystore
 import FearlessUtils
 
 struct YourValidatorListViewFactory {
-    static func createView() -> YourValidatorListViewProtocol? {
-        guard let interactor = createInteractor(settings: SettingsManager.shared) else {
+    static func createView(for state: StakingSharedState) -> YourValidatorListViewProtocol? {
+        guard
+            let chainAsset = state.settings.value,
+            let interactor = createInteractor(state: state) else {
             return nil
         }
 
-        let wireframe = YourValidatorListWireframe()
+        let wireframe = YourValidatorListWireframe(state: state)
 
-        let settings = SettingsManager.shared
-        let chain = settings.selectedConnection.type.chain
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
+        let chainInfo = chainAsset.chainAssetInfo
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainInfo.asset)
 
         let viewModelFactory = YourValidatorListViewModelFactory(
             balanceViewModeFactory: balanceViewModelFactory
@@ -30,7 +26,7 @@ struct YourValidatorListViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chain: chain,
+            chainInfo: chainInfo,
             localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
@@ -46,48 +42,51 @@ struct YourValidatorListViewFactory {
         return view
     }
 
-    private static func createInteractor(
-        settings: SettingsManagerProtocol
-    ) -> YourValidatorListInteractor? {
-        guard let engine = WebSocketService.shared.connection else {
+    private static func createInteractor(state: StakingSharedState) -> YourValidatorListInteractor? {
+        guard
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: SubstrateDataStorageFacade.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let operationManager = OperationManagerFacade.sharedManager
 
-        let repository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageFacade.shared.createRepository()
+        guard
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(
+                for: chainAsset.chain.chainId
+            ) else {
+            return nil
+        }
 
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+
+        let keyFactory = StorageKeyFactory()
         let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
+            remoteFactory: keyFactory,
+            operationManager: operationManager
         )
-
-        let chain = settings.selectedConnection.type.chain
 
         let validatorOperationFactory = ValidatorOperationFactory(
-            chain: chain,
-            eraValidatorService: EraValidatorFacade.sharedService,
-            rewardService: RewardCalculatorFacade.sharedService,
+            chainInfo: chainAsset.chainAssetInfo,
+            eraValidatorService: state.eraValidatorService,
+            rewardService: state.rewardCalculationService,
             storageRequestFactory: storageRequestFactory,
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            engine: engine,
+            runtimeService: runtimeService,
+            engine: connection,
             identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
         )
 
         return YourValidatorListInteractor(
-            chain: chain,
-            providerFactory: SingleValueProviderFactory.shared,
-            substrateProviderFactory: substrateProviderFactory,
-            settings: settings,
-            accountRepository: AnyDataProviderRepository(repository),
-            runtimeService: RuntimeRegistryFacade.sharedService,
-            eraValidatorService: EraValidatorFacade.sharedService,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            accountRepositoryFactory: accountRepositoryFactory,
+            eraValidatorService: state.eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: operationManager
         )
     }
 }

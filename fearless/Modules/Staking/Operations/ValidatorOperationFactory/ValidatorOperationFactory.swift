@@ -4,7 +4,7 @@ import IrohaCrypto
 import FearlessUtils
 
 final class ValidatorOperationFactory {
-    let chain: Chain
+    let chainInfo: ChainAssetDisplayInfo
     let eraValidatorService: EraValidatorServiceProtocol
     let rewardService: RewardCalculatorServiceProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
@@ -13,7 +13,7 @@ final class ValidatorOperationFactory {
     let engine: JSONRPCEngine
 
     init(
-        chain: Chain,
+        chainInfo: ChainAssetDisplayInfo,
         eraValidatorService: EraValidatorServiceProtocol,
         rewardService: RewardCalculatorServiceProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
@@ -21,7 +21,7 @@ final class ValidatorOperationFactory {
         engine: JSONRPCEngine,
         identityOperationFactory: IdentityOperationFactoryProtocol
     ) {
-        self.chain = chain
+        self.chainInfo = chainInfo
         self.eraValidatorService = eraValidatorService
         self.rewardService = rewardService
         self.storageRequestFactory = storageRequestFactory
@@ -126,7 +126,7 @@ final class ValidatorOperationFactory {
 
         maxNominatorsOperation.addDependency(runtimeOperation)
 
-        let addressType = chain.addressType
+        let assetInfo = chainInfo.asset
 
         let statusesOperation = ClosureOperation<[ValidatorMyNominationStatus]> {
             let allElectedValidators = try electedValidatorsOperation.extractNoCancellableResultData()
@@ -140,7 +140,7 @@ final class ValidatorOperationFactory {
                     if let index = nominators.firstIndex(where: { $0.who == nominatorId }),
                        let amountDecimal = Decimal.fromSubstrateAmount(
                            nominators[index].value,
-                           precision: addressType.precision
+                           precision: assetInfo.assetPrecision
                        ) {
                         let isRewarded = index < maxNominators
                         let allocation = ValidatorTokenAllocation(amount: amountDecimal, isRewarded: isRewarded)
@@ -164,7 +164,7 @@ final class ValidatorOperationFactory {
 
     func createValidatorPrefsWrapper(for accountIdList: [AccountId])
         -> CompoundOperationWrapper<[AccountAddress: ValidatorPrefs]> {
-        let addressType = chain.addressType
+        let chainFormat = chainInfo.chain
 
         let runtimeFetchOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -178,16 +178,11 @@ final class ValidatorOperationFactory {
 
         fetchOperation.allOperations.forEach { $0.addDependency(runtimeFetchOperation) }
 
-        let addressFactory = SS58AddressFactory()
-
         let mapOperation = ClosureOperation<[AccountAddress: ValidatorPrefs]> {
             try fetchOperation.targetOperation.extractNoCancellableResultData()
                 .enumerated()
                 .reduce(into: [AccountAddress: ValidatorPrefs]()) { result, indexedItem in
-                    let address = try addressFactory.addressFromAccountId(
-                        data: accountIdList[indexedItem.offset],
-                        type: addressType
-                    )
+                    let address = try accountIdList[indexedItem.offset].toAddress(using: chainFormat)
 
                     if indexedItem.element.data != nil {
                         result[address] = indexedItem.element.value
@@ -209,7 +204,8 @@ final class ValidatorOperationFactory {
         for validatorIds: [AccountId],
         electedValidatorsOperation: BaseOperation<EraStakersInfo>
     ) -> CompoundOperationWrapper<[ValidatorStakeInfo?]> {
-        let addressType = chain.addressType
+        let assetInfo = chainInfo.asset
+        let chainFormat = chainInfo.chain
 
         let runtimeOperation = runtimeService.fetchCoderFactoryOperation()
 
@@ -227,20 +223,16 @@ final class ValidatorOperationFactory {
             let returnCalculator = try rewardCalculatorOperation.extractNoCancellableResultData()
             let maxNominatorsRewarded =
                 try maxNominatorsOperation.extractNoCancellableResultData()
-            let addressFactory = SS58AddressFactory()
 
             return try validatorIds.map { validatorId in
                 if let electedValidator = electedStakers.validators
                     .first(where: { $0.accountId == validatorId }) {
                     let nominators: [NominatorInfo] = try electedValidator.exposure.others.map { individual in
-                        let nominatorAddress = try addressFactory.addressFromAccountId(
-                            data: individual.who,
-                            type: addressType
-                        )
+                        let nominatorAddress = try individual.who.toAddress(using: chainFormat)
 
                         let stake = Decimal.fromSubstrateAmount(
                             individual.value,
-                            precision: addressType.precision
+                            precision: assetInfo.assetPrecision
                         ) ?? 0.0
 
                         return NominatorInfo(address: nominatorAddress, stake: stake)
@@ -248,7 +240,7 @@ final class ValidatorOperationFactory {
 
                     let totalStake = Decimal.fromSubstrateAmount(
                         electedValidator.exposure.total,
-                        precision: addressType.precision
+                        precision: assetInfo.assetPrecision
                     ) ?? 0.0
 
                     let stakeReturn = try returnCalculator.calculateValidatorReturn(
@@ -282,7 +274,8 @@ final class ValidatorOperationFactory {
         for nominatorAddress: AccountAddress,
         electedValidatorsOperation: BaseOperation<EraStakersInfo>
     ) -> CompoundOperationWrapper<[AccountId: ValidatorStakeInfo]> {
-        let addressType = chain.addressType
+        let assetInfo = chainInfo.asset
+        let chainFormat = chainInfo.chain
 
         let rewardCalculatorOperation = rewardService.fetchCalculatorOperation()
 
@@ -298,8 +291,8 @@ final class ValidatorOperationFactory {
         let validatorsStakeInfoOperation = ClosureOperation<[AccountId: ValidatorStakeInfo]> {
             let electedStakers = try electedValidatorsOperation.extractNoCancellableResultData()
             let returnCalculator = try rewardCalculatorOperation.extractNoCancellableResultData()
-            let addressFactory = SS58AddressFactory()
-            let nominatorAccountId = try addressFactory.accountId(fromAddress: nominatorAddress, type: addressType)
+
+            let nominatorAccountId = try nominatorAddress.toAccountId(using: chainFormat)
             let maxNominatorsRewarded = try maxNominatorsOperation
                 .extractNoCancellableResultData()
 
@@ -313,14 +306,11 @@ final class ValidatorOperationFactory {
                     }
 
                     let nominators: [NominatorInfo] = try validator.exposure.others.map { individual in
-                        let nominatorAddress = try addressFactory.addressFromAccountId(
-                            data: individual.who,
-                            type: addressType
-                        )
+                        let nominatorAddress = try individual.who.toAddress(using: chainFormat)
 
                         let stake = Decimal.fromSubstrateAmount(
                             individual.value,
-                            precision: addressType.precision
+                            precision: assetInfo.assetPrecision
                         ) ?? 0.0
 
                         return NominatorInfo(address: nominatorAddress, stake: stake)
@@ -328,7 +318,7 @@ final class ValidatorOperationFactory {
 
                     let totalStake = Decimal.fromSubstrateAmount(
                         validator.exposure.total,
-                        precision: addressType.precision
+                        precision: assetInfo.assetPrecision
                     ) ?? 0.0
 
                     let stakeReturn = try returnCalculator.calculateValidatorReturn(
@@ -364,16 +354,12 @@ final class ValidatorOperationFactory {
         slashesOperation: UnappliedSlashesOperation,
         identitiesOperation: BaseOperation<[String: AccountIdentity]>
     ) -> BaseOperation<[ElectedValidatorInfo]> {
-        let addressType = chain.addressType
-
-        return ClosureOperation<[ElectedValidatorInfo]> {
+        ClosureOperation<[ElectedValidatorInfo]> {
             let electedInfo = try eraValidatorsOperation.extractNoCancellableResultData()
             let maxNominators = try maxNominatorsOperation.extractNoCancellableResultData()
             let slashings = try slashesOperation.extractNoCancellableResultData()
             let identities = try identitiesOperation.extractNoCancellableResultData()
             let calculator = try rewardOperation.extractNoCancellableResultData()
-
-            let addressFactory = SS58AddressFactory()
 
             let slashed: Set<Data> = slashings.reduce(into: Set<Data>()) { result, slashInEra in
                 slashInEra.value?.forEach { slash in
@@ -384,10 +370,7 @@ final class ValidatorOperationFactory {
             return try electedInfo.validators.map { validator in
                 let hasSlashes = slashed.contains(validator.accountId)
 
-                let address = try addressFactory.addressFromAccountId(
-                    data: validator.accountId,
-                    type: addressType
-                )
+                let address = try validator.accountId.toAddress(using: self.chainInfo.chain)
 
                 let validatorReturn = try calculator
                     .calculateValidatorReturn(
@@ -402,7 +385,7 @@ final class ValidatorOperationFactory {
                     stakeReturn: validatorReturn,
                     hasSlashes: hasSlashes,
                     maxNominatorsRewarded: maxNominators,
-                    addressType: addressType,
+                    chainInfo: self.chainInfo,
                     blocked: validator.prefs.blocked
                 )
             }

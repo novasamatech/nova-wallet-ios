@@ -2,31 +2,34 @@ import Foundation
 import SoraFoundation
 import FearlessUtils
 
-final class RecommendedValidatorListViewFactory: RecommendedValidatorListViewFactoryProtocol {
+final class RecommendedValidatorListViewFactory {
     static func createInitiatedBondingView(
-        for validators: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validators: [SelectedValidatorInfo],
         maxTargets: Int,
-        with state: InitiatedBonding
+        state: InitiatedBonding
     ) -> RecommendedValidatorListViewProtocol? {
-        let wireframe = InitiatedBondingRecommendationWireframe(state: state)
+        let wireframe = InitiatedBondingRecommendationWireframe(state: state, stakingState: stakingState)
         return createView(for: validators, maxTargets: maxTargets, with: wireframe)
     }
 
     static func createChangeTargetsView(
-        for validators: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validators: [SelectedValidatorInfo],
         maxTargets: Int,
-        with state: ExistingBonding
+        state: ExistingBonding
     ) -> RecommendedValidatorListViewProtocol? {
-        let wireframe = ChangeTargetsRecommendationWireframe(state: state)
+        let wireframe = ChangeTargetsRecommendationWireframe(state: state, stakingState: stakingState)
         return createView(for: validators, maxTargets: maxTargets, with: wireframe)
     }
 
     static func createChangeYourValidatorsView(
-        for validators: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validators: [SelectedValidatorInfo],
         maxTargets: Int,
-        with state: ExistingBonding
+        state: ExistingBonding
     ) -> RecommendedValidatorListViewProtocol? {
-        let wireframe = YourValidatorList.RecommendationWireframe(state: state)
+        let wireframe = YourValidatorList.RecommendationWireframe(state: state, stakingState: stakingState)
         return createView(for: validators, maxTargets: maxTargets, with: wireframe)
     }
 

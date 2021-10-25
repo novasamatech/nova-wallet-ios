@@ -1,7 +1,7 @@
 typealias AnalyticsRewardsItemView = StakingBalanceUnbondingItemView
 typealias AnalyticsRewardsItemViewModel = UnbondingItemViewModel
 
-struct AnalyticsRewardSection: Equatable {
+struct AnalyticsRewardSection {
     let title: String
     let items: [AnalyticsRewardsItem]
 }
@@ -9,10 +9,4 @@ struct AnalyticsRewardSection: Equatable {
 struct AnalyticsRewardsItem {
     let viewModel: AnalyticsRewardsItemViewModel
     let rawModel: AnalyticsRewardDetailsModel
-}
-
-extension AnalyticsRewardsItem: Equatable {
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.viewModel == rhs.viewModel
-    }
 }

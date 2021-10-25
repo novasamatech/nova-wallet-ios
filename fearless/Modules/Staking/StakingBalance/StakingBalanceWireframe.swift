@@ -1,12 +1,18 @@
 final class StakingBalanceWireframe: StakingBalanceWireframeProtocol {
+    let state: StakingSharedState
+
+    init(state: StakingSharedState) {
+        self.state = state
+    }
+
     func showBondMore(from view: ControllerBackedProtocol?) {
-        guard let bondMoreView = StakingBondMoreViewFactory.createView() else { return }
+        guard let bondMoreView = StakingBondMoreViewFactory.createView(from: state) else { return }
         let navigationController = ImportantFlowViewFactory.createNavigation(from: bondMoreView.controller)
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showUnbond(from view: ControllerBackedProtocol?) {
-        guard let unbondView = StakingUnbondSetupViewFactory.createView() else {
+        guard let unbondView = StakingUnbondSetupViewFactory.createView(for: state) else {
             return
         }
 
@@ -16,7 +22,7 @@ final class StakingBalanceWireframe: StakingBalanceWireframeProtocol {
     }
 
     func showRedeem(from view: ControllerBackedProtocol?) {
-        guard let redeemView = StakingRedeemViewFactory.createView() else {
+        guard let redeemView = StakingRedeemViewFactory.createView(for: state) else {
             return
         }
 
@@ -29,11 +35,11 @@ final class StakingBalanceWireframe: StakingBalanceWireframeProtocol {
         let rebondView: ControllerBackedProtocol? = {
             switch option {
             case .all:
-                return StakingRebondConfirmationViewFactory.createView(for: .all)
+                return StakingRebondConfirmationViewFactory.createView(for: .all, state: state)
             case .last:
-                return StakingRebondConfirmationViewFactory.createView(for: .last)
+                return StakingRebondConfirmationViewFactory.createView(for: .last, state: state)
             case .customAmount:
-                return StakingRebondSetupViewFactory.createView()
+                return StakingRebondSetupViewFactory.createView(for: state)
             }
         }()
 

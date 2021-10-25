@@ -7,14 +7,15 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     weak var presenter: SelectValidatorsConfirmInteractorOutputProtocol!
 
     let balanceAccountAddress: AccountAddress
-    let singleValueProviderFactory: SingleValueProviderFactoryProtocol
+    let chainAsset: ChainAsset
+    let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeService: RuntimeCodingServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
     let signer: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
-    let assetId: WalletAssetId
-    let chain: Chain
 
     private var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
@@ -24,45 +25,46 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
 
     init(
         balanceAccountAddress: AccountAddress,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
+        chainAsset: ChainAsset,
+        stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         runtimeService: RuntimeCodingServiceProtocol,
         durationOperationFactory: StakingDurationOperationFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        signer: SigningWrapperProtocol,
-        chain: Chain,
-        assetId: WalletAssetId
+        signer: SigningWrapperProtocol
     ) {
         self.balanceAccountAddress = balanceAccountAddress
-        self.singleValueProviderFactory = singleValueProviderFactory
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicService = extrinsicService
         self.runtimeService = runtimeService
         self.durationOperationFactory = durationOperationFactory
         self.operationManager = operationManager
         self.signer = signer
-        self.chain = chain
-        self.assetId = assetId
+        self.chainAsset = chainAsset
     }
 
     // MARK: - SelectValidatorsConfirmInteractorInputProtocol
 
     func setup() {
-        priceProvider = subscribeToPriceProvider(for: assetId)
-        balanceProvider = subscribeToAccountInfoProvider(
-            for: balanceAccountAddress,
-            runtimeService: runtimeService
-        )
-        minBondProvider = subscribeToMinNominatorBondProvider(chain: chain, runtimeService: runtimeService)
+        if let priceId = chainAsset.asset.priceId {
+            priceProvider = subscribeToPrice(for: priceId)
+        } else {
+            presenter.didReceivePrice(result: .success(nil))
+        }
 
-        counterForNominatorsProvider = subscribeToCounterForNominatorsProvider(
-            chain: chain,
-            runtimeService: runtimeService
-        )
+        if let accountId = try? balanceAccountAddress.toAccountId() {
+            balanceProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chainAsset.chain.chainId)
+        }
 
-        maxNominatorsCountProvider = subscribeToMaxNominatorsCountProvider(
-            chain: chain,
-            runtimeService: runtimeService
-        )
+        minBondProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
+
+        counterForNominatorsProvider = subscribeToCounterForNominators(for: chainAsset.chain.chainId)
+
+        maxNominatorsCountProvider = subscribeMaxNominatorsCount(for: chainAsset.chain.chainId)
 
         fetchStakingDuration(
             runtimeCodingService: runtimeService,
@@ -78,24 +80,28 @@ class SelectValidatorsConfirmInteractorBase: SelectValidatorsConfirmInteractorIn
     func estimateFee() {}
 }
 
-extension SelectValidatorsConfirmInteractorBase: SingleValueProviderSubscriber, SingleValueSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, for _: WalletAssetId) {
-        presenter.didReceivePrice(result: result)
-    }
-
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
-        presenter.didReceiveAccountInfo(result: result)
-    }
-
-    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chain _: Chain) {
+extension SelectValidatorsConfirmInteractorBase: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler {
+    func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveMinBond(result: result)
     }
 
-    func handleCounterForNominators(result: Result<UInt32?, Error>, chain _: Chain) {
+    func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveCounterForNominators(result: result)
     }
 
-    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chain _: Chain) {
+    func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
         presenter.didReceiveMaxNominatorsCount(result: result)
+    }
+}
+
+extension SelectValidatorsConfirmInteractorBase: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
+        presenter.didReceiveAccountInfo(result: result)
+    }
+}
+
+extension SelectValidatorsConfirmInteractorBase: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+    func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
+        presenter.didReceivePrice(result: result)
     }
 }

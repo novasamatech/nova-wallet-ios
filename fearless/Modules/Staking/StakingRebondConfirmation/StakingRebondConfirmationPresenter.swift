@@ -10,7 +10,7 @@ final class StakingRebondConfirmationPresenter {
     let confirmViewModelFactory: StakingRebondConfirmationViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     var inputAmount: Decimal? {
@@ -20,7 +20,7 @@ final class StakingRebondConfirmationPresenter {
                 let ledger = stakingLedger,
                 let era = activeEra {
                 let value = ledger.unbonding(inEra: era)
-                return Decimal.fromSubstrateAmount(value, precision: chain.addressType.precision)
+                return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
             }
@@ -29,7 +29,7 @@ final class StakingRebondConfirmationPresenter {
                 let ledger = stakingLedger,
                 let era = activeEra,
                 let chunk = ledger.unbondings(inEra: era).last {
-                return Decimal.fromSubstrateAmount(chunk.value, precision: chain.addressType.precision)
+                return Decimal.fromSubstrateAmount(chunk.value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
             }
@@ -40,7 +40,7 @@ final class StakingRebondConfirmationPresenter {
 
     var unbonding: Decimal? {
         if let activeEra = activeEra, let value = stakingLedger?.unbonding(inEra: activeEra) {
-            return Decimal.fromSubstrateAmount(value, precision: chain.addressType.precision)
+            return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
         } else {
             return nil
         }
@@ -61,7 +61,7 @@ final class StakingRebondConfirmationPresenter {
         confirmViewModelFactory: StakingRebondConfirmationViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.variant = variant
@@ -70,7 +70,7 @@ final class StakingRebondConfirmationPresenter {
         self.confirmViewModelFactory = confirmViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -166,7 +166,14 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationPresenter
         guard let view = view, let address = stashItem?.controller else { return }
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: locale
+        )
     }
 }
 
@@ -177,7 +184,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil
@@ -217,7 +224,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             } else {
                 fee = nil
             }

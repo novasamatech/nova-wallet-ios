@@ -19,13 +19,6 @@ protocol ValidatorListFilterPresenterProtocol: Localizable {
     func resetFilter()
 }
 
-protocol ValidatorListFilterViewFactoryProtocol {
-    static func createView(
-        with filter: CustomValidatorListFilter,
-        delegate: ValidatorListFilterDelegate?
-    ) -> ValidatorListFilterViewProtocol?
-}
-
 protocol ValidatorListFilterDelegate: AnyObject {
     func didUpdate(_ filter: CustomValidatorListFilter)
 }

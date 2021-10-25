@@ -2,8 +2,10 @@ extension YourValidatorList {
     final class SelectedListWireframe: SelectedValidatorListWireframe {
         private let state: ExistingBonding
 
-        init(state: ExistingBonding) {
+        init(state: ExistingBonding, stakingState: StakingSharedState) {
             self.state = state
+
+            super.init(stakingState: stakingState)
         }
 
         override func proceed(
@@ -17,8 +19,10 @@ extension YourValidatorList {
                 maxTargets: maxTargets
             )
 
-            guard let confirmView = SelectValidatorsConfirmViewFactory
-                .createChangeYourValidatorsView(for: nomination) else {
+            guard let confirmView = SelectValidatorsConfirmViewFactory.createChangeYourValidatorsView(
+                for: nomination,
+                stakingState: stakingState
+            ) else {
                 return
             }
 

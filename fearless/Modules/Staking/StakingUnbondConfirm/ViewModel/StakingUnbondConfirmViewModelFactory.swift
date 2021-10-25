@@ -12,13 +12,13 @@ protocol StakingUnbondConfirmViewModelFactoryProtocol {
 }
 
 final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelFactoryProtocol {
-    let asset: WalletAsset
+    let assetInfo: AssetBalanceDisplayInfo
 
-    private lazy var formatterFactory = AmountFormatterFactory()
+    private lazy var formatterFactory = AssetBalanceFormatterFactory()
     private lazy var iconGenerator = PolkadotIconGenerator()
 
-    init(asset: WalletAsset) {
-        self.asset = asset
+    init(assetInfo: AssetBalanceDisplayInfo) {
+        self.assetInfo = assetInfo
     }
 
     private func createHints(from shouldResetRewardDestination: Bool)
@@ -62,7 +62,7 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
         amount: Decimal,
         shouldResetRewardDestination: Bool
     ) throws -> StakingUnbondConfirmViewModel {
-        let formatter = formatterFactory.createInputFormatter(for: asset)
+        let formatter = formatterFactory.createInputFormatter(for: assetInfo)
 
         let amount = LocalizableResource { locale in
             formatter.value(for: locale).string(from: amount as NSNumber) ?? ""

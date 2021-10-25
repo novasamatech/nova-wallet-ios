@@ -11,15 +11,14 @@ extension SubscanRewardItemData: WalletRemoteHistoryItemProtocol {
 
     func createTransactionForAddress(
         _ address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory _: SS58AddressFactoryProtocol
+        assetId: String,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData {
         AssetTransactionData.createTransaction(
             from: self,
             address: address,
-            networkType: networkType,
-            asset: asset
+            assetId: assetId,
+            chainAssetInfo: chainAssetInfo
         )
     }
 }
@@ -33,16 +32,14 @@ extension SubscanTransferItemData: WalletRemoteHistoryItemProtocol {
 
     func createTransactionForAddress(
         _ address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory: SS58AddressFactoryProtocol
+        assetId: String,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData {
         AssetTransactionData.createTransaction(
             from: self,
             address: address,
-            networkType: networkType,
-            asset: asset,
-            addressFactory: addressFactory
+            assetId: assetId,
+            chainAssetInfo: chainAssetInfo
         )
     }
 }
@@ -56,16 +53,14 @@ extension SubscanConcreteExtrinsicsItemData: WalletRemoteHistoryItemProtocol {
 
     func createTransactionForAddress(
         _ address: String,
-        networkType: SNAddressType,
-        asset: WalletAsset,
-        addressFactory: SS58AddressFactoryProtocol
+        assetId: String,
+        chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData {
         AssetTransactionData.createTransaction(
             from: self,
             address: address,
-            networkType: networkType,
-            asset: asset,
-            addressFactory: addressFactory
+            assetId: assetId,
+            chainAssetInfo: chainAssetInfo
         )
     }
 }

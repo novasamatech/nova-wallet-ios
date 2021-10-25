@@ -1,4 +1,4 @@
-enum AnalyticsViewState<ViewModel: Equatable>: Equatable {
+enum AnalyticsViewState<ViewModel> {
     case loading
     case loaded(ViewModel)
     case error(String)

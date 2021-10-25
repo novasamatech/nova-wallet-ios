@@ -36,7 +36,3 @@ protocol StakingRebondSetupWireframeProtocol: AlertPresentable, ErrorPresentable
     func proceed(view _: StakingRebondSetupViewProtocol?, amount _: Decimal)
     func close(view: StakingRebondSetupViewProtocol?)
 }
-
-protocol StakingRebondSetupViewFactoryProtocol: AnyObject {
-    static func createView() -> StakingRebondSetupViewProtocol?
-}

@@ -8,46 +8,93 @@ extension WalletNetworkFacade {
         _ assets: [WalletAsset]
     ) -> CompoundOperationWrapper<[BalanceData]?> {
         do {
-            guard let asset = assets.first else {
-                throw BaseOperationError.unexpectedDependentResult
-            }
+            let localKeyFactory = LocalStorageKeyFactory()
 
-            let accountId = try Data(hexString: accountSettings.accountId)
+            let wrappers: [CompoundOperationWrapper<BalanceData>] = try assets.map { asset in
+                guard
+                    let chainAssetId = ChainAssetId(walletId: asset.identifier),
+                    let chain = chains[chainAssetId.chainId],
+                    let selectedAccount = metaAccount.fetch(for: chain.accountRequest()) else {
+                    return CompoundOperationWrapper.createWithResult(
+                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
+                    )
+                }
 
-            let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
+                guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+                    return CompoundOperationWrapper.createWithResult(
+                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
+                    )
+                }
 
-            let accountInfoWrapper: CompoundOperationWrapper<AccountInfo?> =
-                localStorageRequestFactory.queryItems(
-                    repository: chainStorage,
-                    keyParam: { accountId },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .account)
+                let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+                let accountKey = try localKeyFactory.createFromStoragePath(
+                    .account,
+                    accountId: selectedAccount.accountId,
+                    chainId: chain.chainId
                 )
 
-            let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> =
-                localStorageRequestFactory.queryItems(
-                    repository: chainStorage,
-                    keyParam: { accountId },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .balanceLocks)
+                let accountInfoWrapper: CompoundOperationWrapper<AccountInfo?> =
+                    localStorageRequestFactory.queryItems(
+                        repository: chainStorage,
+                        key: { accountKey },
+                        factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                        params: StorageRequestParams(path: .account)
+                    )
+
+                let stakingLedgerWrapper = try createStakingLedgerOperation(
+                    for: selectedAccount.accountId,
+                    chainId: chain.chainId,
+                    dependingOn: codingFactoryOperation
                 )
 
-            let mappingOperation = createBalanceMappingOperation(
-                asset: asset,
-                dependingOn: accountInfoWrapper,
-                balanceLocksWrapper: balanceLocksWrapper
-            )
+                let activeEraKey = try localKeyFactory.createFromStoragePath(
+                    .activeEra,
+                    chainId: chain.chainId
+                )
 
-            let storageOperations = accountInfoWrapper.allOperations + balanceLocksWrapper.allOperations
+                let activeEraWrapper: CompoundOperationWrapper<ActiveEraInfo?> =
+                    localStorageRequestFactory.queryItems(
+                        repository: chainStorage,
+                        key: { activeEraKey },
+                        factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                        params: StorageRequestParams(path: .activeEra)
+                    )
 
-            storageOperations.forEach { storageOperation in
-                storageOperation.addDependency(codingFactoryOperation)
-                mappingOperation.addDependency(storageOperation)
+                let mappingOperation = createBalanceMappingOperation(
+                    asset: asset,
+                    dependingOn: accountInfoWrapper,
+                    stakingLedgerWrapper: stakingLedgerWrapper,
+                    activeEraWrapper: activeEraWrapper
+                )
+
+                let storageOperations = accountInfoWrapper.allOperations +
+                    activeEraWrapper.allOperations + stakingLedgerWrapper.allOperations
+
+                storageOperations.forEach { storageOperation in
+                    storageOperation.addDependency(codingFactoryOperation)
+                    mappingOperation.addDependency(storageOperation)
+                }
+
+                return CompoundOperationWrapper(
+                    targetOperation: mappingOperation,
+                    dependencies: [codingFactoryOperation] + storageOperations
+                )
             }
+
+            let combiningOperation = ClosureOperation<[BalanceData]?> {
+                try wrappers.map { wrapper in
+                    try wrapper.targetOperation.extractNoCancellableResultData()
+                }
+            }
+
+            wrappers.forEach { combiningOperation.addDependency($0.targetOperation) }
+
+            let dependencies = wrappers.flatMap(\.allOperations)
 
             return CompoundOperationWrapper(
-                targetOperation: mappingOperation,
-                dependencies: [codingFactoryOperation] + storageOperations
+                targetOperation: combiningOperation,
+                dependencies: dependencies
             )
 
         } catch {
@@ -59,9 +106,10 @@ extension WalletNetworkFacade {
     private func createBalanceMappingOperation(
         asset: WalletAsset,
         dependingOn accountInfoWrapper: CompoundOperationWrapper<AccountInfo?>,
-        balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?>
-    ) -> BaseOperation<[BalanceData]?> {
-        ClosureOperation<[BalanceData]?> {
+        stakingLedgerWrapper: CompoundOperationWrapper<StakingLedger?>,
+        activeEraWrapper: CompoundOperationWrapper<ActiveEraInfo?>
+    ) -> BaseOperation<BalanceData> {
+        ClosureOperation<BalanceData> {
             let accountInfo = try accountInfoWrapper.targetOperation.extractNoCancellableResultData()
             var context = BalanceContext(context: [:])
 
@@ -71,8 +119,16 @@ extension WalletNetworkFacade {
                     precision: asset.precision
                 )
 
-                if let balanceLocks = try? balanceLocksWrapper.targetOperation.extractNoCancellableResultData() {
-                    context = context.byChangingBalanceLocks(balanceLocks)
+                if
+                    let activeEra = try? activeEraWrapper
+                    .targetOperation.extractNoCancellableResultData()?.index,
+                    let stakingLedger = try? stakingLedgerWrapper.targetOperation
+                    .extractNoCancellableResultData() {
+                    context = context.byChangingStakingInfo(
+                        stakingLedger,
+                        activeEra: activeEra,
+                        precision: asset.precision
+                    )
                 }
             }
 
@@ -82,7 +138,58 @@ extension WalletNetworkFacade {
                 context: context.toContext()
             )
 
-            return [balance]
+            return balance
         }
+    }
+
+    private func createStakingLedgerOperation(
+        for accountId: Data,
+        chainId: ChainModel.Id,
+        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) throws -> CompoundOperationWrapper<StakingLedger?> {
+        let localKeyFactory = LocalStorageKeyFactory()
+
+        let controllerLocalKey = try localKeyFactory.createFromStoragePath(
+            .controller,
+            accountId: accountId,
+            chainId: chainId
+        )
+
+        let controllerWrapper: CompoundOperationWrapper<Data?> =
+            localStorageRequestFactory.queryItems(
+                repository: chainStorage,
+                key: { controllerLocalKey },
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                params: StorageRequestParams(path: .controller)
+            )
+
+        let stakingLedgerKey: () throws -> String = {
+            if let controllerAccountId = try controllerWrapper.targetOperation.extractNoCancellableResultData() {
+                return try localKeyFactory.createFromStoragePath(
+                    .stakingLedger,
+                    accountId: controllerAccountId,
+                    chainId: chainId
+                )
+            } else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+        }
+
+        let controllerLedgerWrapper: CompoundOperationWrapper<StakingLedger?> =
+            localStorageRequestFactory.queryItems(
+                repository: chainStorage,
+                key: stakingLedgerKey,
+                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                params: StorageRequestParams(path: .stakingLedger)
+            )
+
+        controllerLedgerWrapper.allOperations.forEach { $0.addDependency(controllerWrapper.targetOperation) }
+
+        let dependencies = controllerWrapper.allOperations + controllerLedgerWrapper.dependencies
+
+        return CompoundOperationWrapper(
+            targetOperation: controllerLedgerWrapper.targetOperation,
+            dependencies: dependencies
+        )
     }
 }

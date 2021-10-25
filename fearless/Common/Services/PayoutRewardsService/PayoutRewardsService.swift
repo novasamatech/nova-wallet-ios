@@ -6,7 +6,7 @@ import IrohaCrypto
 
 final class PayoutRewardsService: PayoutRewardsServiceProtocol {
     let selectedAccountAddress: String
-    let chain: Chain
+    let chainFormat: ChainFormat
     let validatorsResolutionFactory: PayoutValidatorsFactoryProtocol
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
@@ -18,7 +18,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
 
     init(
         selectedAccountAddress: String,
-        chain: Chain,
+        chainFormat: ChainFormat,
         validatorsResolutionFactory: PayoutValidatorsFactoryProtocol,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
@@ -29,7 +29,7 @@ final class PayoutRewardsService: PayoutRewardsServiceProtocol {
         logger: LoggerProtocol? = nil
     ) {
         self.selectedAccountAddress = selectedAccountAddress
-        self.chain = chain
+        self.chainFormat = chainFormat
         self.validatorsResolutionFactory = validatorsResolutionFactory
         self.runtimeCodingService = runtimeCodingService
         self.storageRequestFactory = storageRequestFactory

@@ -3,13 +3,13 @@ import CommonWallet
 import SoraUI
 
 struct TransferSeparatorDistribution: OperationDefinitionSeparatorsDistributionProtocol {
-    var assetBorderType: BorderType { .none }
+    var assetBorderType: BorderType { .bottom }
 
-    var receiverBorderType: BorderType { .none }
+    var receiverBorderType: BorderType { .bottom }
 
     var amountWithFeeBorderType: BorderType { .none }
 
-    var amountWithoutFeeBorderType: BorderType { .none }
+    var amountWithoutFeeBorderType: BorderType { .bottom }
 
     var firstFeeBorderType: BorderType { .bottom }
 

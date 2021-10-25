@@ -1,57 +1,64 @@
 import Foundation
 import SoraFoundation
 
-struct SelectedValidatorListViewFactory: SelectedValidatorListViewFactoryProtocol {
+struct SelectedValidatorListViewFactory {
     static func createInitiatedBondingView(
-        for validatorList: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        with state: InitiatedBonding
+        state: InitiatedBonding
     ) -> SelectedValidatorListViewProtocol? {
-        let wireframe = InitiatedBondingSelectedValidatorListWireframe(state: state)
+        let wireframe = InitiatedBondingSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
+            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            with: wireframe
+            wireframe: wireframe
         )
     }
 
     static func createChangeTargetsView(
-        for validatorList: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        with state: ExistingBonding
+        state: ExistingBonding
     ) -> SelectedValidatorListViewProtocol? {
-        let wireframe = ChangeTargetsSelectedValidatorListWireframe(state: state)
+        let wireframe = ChangeTargetsSelectedValidatorListWireframe(state: state, stakingState: stakingState)
         return createView(
+            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            with: wireframe
+            wireframe: wireframe
         )
     }
 
     static func createChangeYourValidatorsView(
-        for validatorList: [SelectedValidatorInfo],
+        stakingState: StakingSharedState,
+        validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        with state: ExistingBonding
+        state: ExistingBonding
     ) -> SelectedValidatorListViewProtocol? {
-        let wireframe = YourValidatorList.SelectedListWireframe(state: state)
+        let wireframe = YourValidatorList.SelectedListWireframe(state: state, stakingState: stakingState)
         return createView(
+            stakingState: stakingState,
             validatorList: validatorList,
             maxTargets: maxTargets,
             delegate: delegate,
-            with: wireframe
+            wireframe: wireframe
         )
     }
 
     static func createView(
+        stakingState _: StakingSharedState,
         validatorList: [SelectedValidatorInfo],
         maxTargets: Int,
         delegate: SelectedValidatorListDelegate,
-        with wireframe: SelectedValidatorListWireframeProtocol
+        wireframe: SelectedValidatorListWireframeProtocol
     ) -> SelectedValidatorListViewProtocol? {
         let viewModelFactory = SelectedValidatorListViewModelFactory()
 

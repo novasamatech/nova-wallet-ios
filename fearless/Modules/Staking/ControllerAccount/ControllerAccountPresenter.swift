@@ -7,7 +7,7 @@ final class ControllerAccountPresenter {
     let interactor: ControllerAccountInteractorInputProtocol
     let viewModelFactory: ControllerAccountViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     weak var view: ControllerAccountViewProtocol?
 
@@ -27,7 +27,7 @@ final class ControllerAccountPresenter {
         interactor: ControllerAccountInteractorInputProtocol,
         viewModelFactory: ControllerAccountViewModelFactoryProtocol,
         applicationConfig: ApplicationConfigProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -35,7 +35,7 @@ final class ControllerAccountPresenter {
         self.interactor = interactor
         self.viewModelFactory = viewModelFactory
         self.applicationConfig = applicationConfig
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
     }
@@ -110,14 +110,13 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
     }
 
     private func presentAccountOptions(for address: AccountAddress?) {
-        guard
-            let view = view,
-            let address = address
-        else { return }
+        guard let view = view, let address = address else { return }
+
+        // TODO: Fix when supported
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: chain,
+            chain: .westend,
             locale: view.localizationManager?.selectedLocale ?? .current
         )
     }
@@ -145,7 +144,6 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
             dataValidatingFactory.controllerBalanceIsNotZero(controllerBalance, locale: locale),
             dataValidatingFactory.ledgerNotExist(
                 stakingLedger: stakingLedger,
-                addressType: chain.addressType,
                 locale: locale
             )
         ]).runValidation { [weak self] in
@@ -209,7 +207,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             }
         case let .failure(error):
             logger?.error("Did receive fee error: \(error)")
@@ -222,7 +220,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
             if let accountInfo = accountInfo {
                 let amount = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
                 switch address {
                 case chosenAccountItem?.address:

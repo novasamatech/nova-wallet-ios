@@ -6,12 +6,10 @@ final class YourValidatorInfoInteractor: ValidatorInfoInteractorBase {
     private let validatorOperationFactory: ValidatorOperationFactoryProtocol
     private let operationManager: OperationManagerProtocol
 
-    private lazy var addressFactory = SS58AddressFactory()
-
     init(
         accountAddress: AccountAddress,
-        singleValueProviderFactory: SingleValueProviderFactoryProtocol,
-        walletAssetId: WalletAssetId,
+        selectedAsset: AssetModel,
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         validatorOperationFactory: ValidatorOperationFactoryProtocol,
         operationManager: OperationManagerProtocol
     ) {
@@ -19,15 +17,12 @@ final class YourValidatorInfoInteractor: ValidatorInfoInteractorBase {
         self.validatorOperationFactory = validatorOperationFactory
         self.operationManager = operationManager
 
-        super.init(
-            singleValueProviderFactory: singleValueProviderFactory,
-            walletAssetId: walletAssetId
-        )
+        super.init(selectedAsset: selectedAsset, priceLocalSubscriptionFactory: priceLocalSubscriptionFactory)
     }
 
     private func fetchValidatorInfo() {
         do {
-            let accountId = try addressFactory.accountId(from: accountAddress)
+            let accountId = try accountAddress.toAccountId()
 
             presenter.didStartLoadingValidatorInfo()
 

@@ -12,12 +12,14 @@ class StakingBondMoreTests: XCTestCase {
         let wireframe = MockStakingBondMoreWireframeProtocol()
         let interactor = MockStakingBondMoreInteractorInputProtocol()
         let balanceViewModelFactory = StubBalanceViewModelFactory()
-        let stubAsset = WalletAsset(
-            identifier: "",
-            name: .init(closure: { _ in "" }),
-            symbol: "",
-            precision: 0
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
         )
+
+        let assetInfo = chain.assets.first!.displayInfo
 
         let dataValidator = StakingDataValidatingFactory(presentable: wireframe)
 
@@ -26,7 +28,7 @@ class StakingBondMoreTests: XCTestCase {
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidator,
-            asset: stubAsset
+            assetInfo: assetInfo
         )
 
         let view = MockStakingBondMoreViewProtocol()

@@ -3,6 +3,7 @@ import Foundation
 import BigInt
 import IrohaCrypto
 import CommonWallet
+import FearlessUtils
 
 struct WestendStub {
     static let address: String = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
@@ -154,8 +155,13 @@ struct WestendStub {
 
     static let rewardCalculator: RewardCalculatorEngineProtocol = {
         let total = eraValidators.reduce(BigUInt(0)) { $0 + $1.exposure.total }
-        return RewardCalculatorEngine(totalIssuance: total,
-                                      validators: eraValidators,
-                                      chain: .westend)
+
+        return RewardCalculatorEngine(
+            chainId: Chain.westend.genesisHash,
+            assetPrecision: Chain.westend.addressType.precision,
+            totalIssuance: total,
+            validators: eraValidators,
+            eraDurationInSeconds: 21600
+        )
     }()
 }

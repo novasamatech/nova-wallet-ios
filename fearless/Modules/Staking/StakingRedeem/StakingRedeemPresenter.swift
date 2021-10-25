@@ -9,7 +9,7 @@ final class StakingRedeemPresenter {
     let confirmViewModelFactory: StakingRedeemViewModelFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     private var stakingLedger: StakingLedger?
@@ -36,7 +36,7 @@ final class StakingRedeemPresenter {
             let redeemable = stakingLedger?.redeemable(inEra: era),
             let redeemableDecimal = Decimal.fromSubstrateAmount(
                 redeemable,
-                precision: chain.addressType.precision
+                precision: assetInfo.assetPrecision
             ) else {
             return
         }
@@ -56,7 +56,7 @@ final class StakingRedeemPresenter {
               let redeemable = stakingLedger?.redeemable(inEra: era),
               let redeemableDecimal = Decimal.fromSubstrateAmount(
                   redeemable,
-                  precision: chain.addressType.precision
+                  precision: assetInfo.assetPrecision
               ) else {
             return
         }
@@ -92,7 +92,7 @@ final class StakingRedeemPresenter {
         confirmViewModelFactory: StakingRedeemViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -100,7 +100,7 @@ final class StakingRedeemPresenter {
         self.confirmViewModelFactory = confirmViewModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 }
@@ -149,7 +149,14 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
         guard let view = view, let address = stashItem?.controller else { return }
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: locale
+        )
     }
 }
 
@@ -160,7 +167,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil
@@ -200,7 +207,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             }
 
             provideFeeViewModel()

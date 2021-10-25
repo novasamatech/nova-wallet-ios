@@ -9,7 +9,7 @@ final class StakingRewardDestConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
     private var controllerAccount: AccountItem?
@@ -25,7 +25,7 @@ final class StakingRewardDestConfirmPresenter {
         confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -34,7 +34,7 @@ final class StakingRewardDestConfirmPresenter {
         self.confirmModelFactory = confirmModelFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -110,7 +110,8 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             return
         }
 
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+        // TODO: Fix when implemented
+        wireframe.presentAccountOptions(from: view, address: address, chain: .westend, locale: locale)
     }
 
     func presentPayoutAccountOptions() {
@@ -121,7 +122,8 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             return
         }
 
-        wireframe.presentAccountOptions(from: view, address: address, chain: chain, locale: locale)
+        // TODO: Fix when implemented
+        wireframe.presentAccountOptions(from: view, address: address, chain: .westend, locale: locale)
     }
 }
 
@@ -130,7 +132,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         switch result {
         case let .success(dispatchInfo):
             fee = BigUInt(dispatchInfo.fee).map {
-                Decimal.fromSubstrateAmount($0, precision: chain.addressType.precision)
+                Decimal.fromSubstrateAmount($0, precision: assetInfo.assetPrecision)
             } ?? nil
 
             provideFeeViewModel()
@@ -178,7 +180,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         switch result {
         case let .success(accountInfo):
             balance = accountInfo.map {
-                Decimal.fromSubstrateAmount($0.data.available, precision: chain.addressType.precision)
+                Decimal.fromSubstrateAmount($0.data.available, precision: assetInfo.assetPrecision)
             } ?? nil
         case let .failure(error):
             logger?.error("Did receive balance error: \(error)")

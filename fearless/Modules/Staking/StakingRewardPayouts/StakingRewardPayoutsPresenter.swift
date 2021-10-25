@@ -10,14 +10,9 @@ final class StakingRewardPayoutsPresenter {
     private var payoutsInfo: PayoutsInfo?
     private var priceData: PriceData?
     private var eraCountdown: EraCountdown?
-    private let chain: Chain
     private let viewModelFactory: StakingPayoutViewModelFactoryProtocol
 
-    init(
-        chain: Chain,
-        viewModelFactory: StakingPayoutViewModelFactoryProtocol
-    ) {
-        self.chain = chain
+    init(viewModelFactory: StakingPayoutViewModelFactoryProtocol) {
         self.viewModelFactory = viewModelFactory
     }
 
@@ -55,6 +50,7 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsPresenterProtocol {
     func handleSelectedHistory(at index: Int) {
         guard
             let payoutsInfo = payoutsInfo,
+            let eraCountdown = eraCountdown,
             index >= 0,
             index < payoutsInfo.payouts.count
         else {
@@ -66,7 +62,7 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsPresenterProtocol {
             payoutInfo: payoutInfo,
             activeEra: payoutsInfo.activeEra,
             historyDepth: payoutsInfo.historyDepth,
-            chain: chain
+            erasPerDay: UInt32(eraCountdown.eraTimeInterval.intervalsInDay)
         )
     }
 

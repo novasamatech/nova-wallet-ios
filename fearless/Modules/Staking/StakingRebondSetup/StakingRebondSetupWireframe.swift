@@ -1,9 +1,17 @@
 import Foundation
 
 final class StakingRebondSetupWireframe: StakingRebondSetupWireframeProtocol {
+    let state: StakingSharedState
+
+    init(state: StakingSharedState) {
+        self.state = state
+    }
+
     func proceed(view: StakingRebondSetupViewProtocol?, amount: Decimal) {
-        guard let rebondView = StakingRebondConfirmationViewFactory
-            .createView(for: .custom(amount: amount)) else {
+        guard let rebondView = StakingRebondConfirmationViewFactory.createView(
+            for: .custom(amount: amount),
+            state: state
+        ) else {
             return
         }
 

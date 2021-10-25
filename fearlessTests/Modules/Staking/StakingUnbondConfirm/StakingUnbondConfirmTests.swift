@@ -5,6 +5,7 @@ import RobinHood
 import FearlessUtils
 import SoraKeystore
 import SoraFoundation
+import BigInt
 
 class StakingUnbondConfirmTests: XCTestCase {
 
@@ -54,80 +55,80 @@ class StakingUnbondConfirmTests: XCTestCase {
     ) throws -> StakingUnbondConfirmPresenterProtocol {
         // given
 
-        let settings = InMemorySettingsManager()
-        let keychain = InMemoryKeychain()
-
-        let chain = Chain.westend
-        try AccountCreationHelper.createAccountFromMnemonic(cryptoType: .sr25519,
-                                                            networkType: chain,
-                                                            keychain: keychain,
-                                                            settings: settings)
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let asset = primitiveFactory.createAssetForAddressType(chain.addressType)
-        let assetId = WalletAssetId(
-            rawValue: asset.identifier
-        )!
-
-        let storageFacade = SubstrateStorageTestFacade()
-        let operationManager = OperationManager()
-
-        let nominatorAddress = settings.selectedAccount!.address
-        let cryptoType = settings.selectedAccount!.cryptoType
-
-        let singleValueProviderFactory = SingleValueProviderFactoryStub.westendNominatorStub()
-
-        // save stash item
-
-        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
-        let repository: CoreDataRepository<StashItem, CDStashItem> =
-            storageFacade.createRepository()
-
-        let operationQueue = OperationQueue()
-        let saveStashItemOperation = repository.saveOperation({ [stashItem] }, { [] })
-        operationQueue.addOperations([saveStashItemOperation], waitUntilFinished: true)
-
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: operationManager
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
         )
 
-        let runtimeCodingService = try RuntimeCodingServiceStub.createWestendService()
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+        let selectedMetaAccount = AccountGenerator.generateMetaAccount()
+        let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
+        let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageTestFacade().createRepository()
-        let anyAccountRepository = AnyDataProviderRepository(accountRepository)
+        let operationManager = OperationManager()
+
+        let nominatorAddress = selectedAccount.toAddress()!
+
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
+
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
+        let accountRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
         // save controller
-        let controllerItem = settings.selectedAccount!
-        let saveControllerOperation = anyAccountRepository.saveOperation({ [controllerItem] }, { [] })
+        let operationQueue = OperationQueue()
+        let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
         operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
         let extrinsicServiceFactory = ExtrinsicServiceFactoryStub(
             extrinsicService: ExtrinsicServiceStub.dummy(),
-            signingWraper: try DummySigner(cryptoType: cryptoType)
+            signingWraper: try DummySigner(cryptoType: selectedAccount.cryptoType)
+        )
+
+        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
+        let stakingLedger = StakingLedger(
+            stash: selectedAccount.accountId,
+            total: BigUInt(1e+12),
+            active: BigUInt(1e+12),
+            unlocking: [],
+            claimedRewards: []
+        )
+
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
+            ledgerInfo: stakingLedger,
+            payee: RewardDestinationArg.staked,
+            stashItem: stashItem
+        )
+
+        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactoryStub(
+            balance: BigUInt(1e+12)
+        )
+
+        let priceLocalSubscriptionFactory = PriceProviderFactoryStub(
+            priceData: PriceData(price: "0.1", usdDayChange: nil)
         )
 
         let interactor = StakingUnbondConfirmInteractor(
-            assetId: assetId,
-            chain: chain,
-            singleValueProviderFactory: singleValueProviderFactory,
-            substrateProviderFactory: substrateProviderFactory,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            chainRegistry: chainRegistry,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
+            accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
-            accountRepository: anyAccountRepository,
-            settings: settings,
-            runtimeService: runtimeCodingService,
             operationManager: operationManager
         )
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let assetInfo = chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmViewModelFactory = StakingUnbondConfirmViewModelFactory(asset: asset)
+        let confirmViewModelFactory = StakingUnbondConfirmViewModelFactory(assetInfo: assetInfo)
 
         let presenter = StakingUnbondConfirmPresenter(
             interactor: interactor,
@@ -136,7 +137,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             confirmViewModelFactory: confirmViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
-            chain: chain
+            assetInfo: assetInfo
         )
 
         presenter.view = view

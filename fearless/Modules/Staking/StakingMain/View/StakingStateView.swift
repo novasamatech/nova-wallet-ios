@@ -85,13 +85,13 @@ class StakingStateView: UIView {
 
     let statusButton: TriangularedButton = {
         let button = createButton()
-        button.triangularedView?.cornerCut = .bottomRight
+        button.triangularedView?.cornerCut = [.bottomRight, .bottomLeft]
         return button
     }()
 
     let moreButton: TriangularedButton = {
         let button = createButton()
-        button.triangularedView?.cornerCut = .topLeft
+        button.triangularedView?.cornerCut = [.topLeft, .topRight]
         return button
     }()
 
@@ -351,7 +351,7 @@ extension StakingStateView {
 extension StakingStateView {
     private static func createButton() -> TriangularedButton {
         let button = TriangularedButton()
-        button.triangularedView?.cornerCut = .bottomRight
+        button.triangularedView?.cornerCut = [.bottomRight, .bottomLeft]
         button.triangularedView?.fillColor = .clear
         button.triangularedView?.highlightedFillColor = R.color.colorHighlightedPink()!
         button.triangularedView?.shadowOpacity = 0.0

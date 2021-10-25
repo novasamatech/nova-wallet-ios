@@ -3,24 +3,24 @@ import SoraFoundation
 import SoraKeystore
 
 struct AnalyticsRewardDetailsViewFactory {
-    static func createView(rewardModel: AnalyticsRewardDetailsModel) -> AnalyticsRewardDetailsViewProtocol? {
+    static func createView(
+        for state: StakingSharedState,
+        rewardModel: AnalyticsRewardDetailsModel
+    ) -> AnalyticsRewardDetailsViewProtocol? {
+        guard let chainAsset = state.settings.value else {
+            return nil
+        }
+
         let interactor = AnalyticsRewardDetailsInteractor()
         let wireframe = AnalyticsRewardDetailsWireframe()
 
-        let settings = SettingsManager.shared
-
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
-        let addressType = settings.selectedConnection.type
-        let chain = addressType.chain
-
+        let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: addressType,
-            limit: StakingConstants.maxAmount
+            targetAssetInfo: assetInfo
         )
 
         let viewModelFactory = AnalyticsRewardDetailsViewModelFactory(
-            chain: chain,
+            assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory
         )
         let presenter = AnalyticsRewardDetailsPresenter(
@@ -28,7 +28,7 @@ struct AnalyticsRewardDetailsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chain: chain
+            chain: chainAsset.chain
         )
 
         let view = AnalyticsRewardDetailsViewController(

@@ -11,7 +11,7 @@ final class StakingUnbondSetupPresenter {
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
 
     let logger: LoggerProtocol?
-    let chain: Chain
+    let assetInfo: AssetBalanceDisplayInfo
 
     private var bonded: Decimal?
     private var balance: Decimal?
@@ -22,20 +22,21 @@ final class StakingUnbondSetupPresenter {
     private var fee: Decimal?
     private var controller: AccountItem?
     private var stashItem: StashItem?
+    private var stakingDuration: StakingDuration?
 
     init(
         interactor: StakingUnbondSetupInteractorInputProtocol,
         wireframe: StakingUnbondSetupWireframeProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        chain: Chain,
+        assetInfo: AssetBalanceDisplayInfo,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
-        self.chain = chain
+        self.assetInfo = assetInfo
         self.logger = logger
     }
 
@@ -64,7 +65,11 @@ final class StakingUnbondSetupPresenter {
     }
 
     private func provideBondingDuration() {
-        let daysCount = bondingDuration.map { Int($0) / chain.erasPerDay }
+        guard let erasPerDay = stakingDuration?.era.intervalsInDay else {
+            return
+        }
+
+        let daysCount = bondingDuration.map { erasPerDay > 0 ? Int($0) / erasPerDay : 0 }
         let bondingDuration: LocalizableResource<String> = LocalizableResource { locale in
             guard let daysCount = daysCount else {
                 return ""
@@ -151,7 +156,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             if let accountInfo = accountInfo {
                 balance = Decimal.fromSubstrateAmount(
                     accountInfo.data.available,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 balance = nil
@@ -167,7 +172,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             if let stakingLedger = stakingLedger {
                 bonded = Decimal.fromSubstrateAmount(
                     stakingLedger.active,
-                    precision: chain.addressType.precision
+                    precision: assetInfo.assetPrecision
                 )
             } else {
                 bonded = nil
@@ -194,7 +199,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         switch result {
         case let .success(dispatchInfo):
             if let fee = BigUInt(dispatchInfo.fee) {
-                self.fee = Decimal.fromSubstrateAmount(fee, precision: chain.addressType.precision)
+                self.fee = Decimal.fromSubstrateAmount(fee, precision: assetInfo.assetPrecision)
             }
 
             provideFeeViewModel()
@@ -218,7 +223,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         case let .success(minimalBalance):
             self.minimalBalance = Decimal.fromSubstrateAmount(
                 minimalBalance,
-                precision: chain.addressType.precision
+                precision: assetInfo.assetPrecision
             )
         case let .failure(error):
             logger?.error("Minimal balance fetching error: \(error)")
@@ -240,6 +245,16 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         switch result {
         case let .success(stashItem):
             self.stashItem = stashItem
+        case let .failure(error):
+            logger?.error("Did receive stash item error: \(error)")
+        }
+    }
+
+    func didReceiveStakingDuration(result: Result<StakingDuration, Error>) {
+        switch result {
+        case let .success(duration):
+            stakingDuration = duration
+            provideBondingDuration()
         case let .failure(error):
             logger?.error("Did receive stash item error: \(error)")
         }

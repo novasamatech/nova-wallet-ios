@@ -1,10 +1,17 @@
 import SoraFoundation
 
 final class AnalyticsRewardsWireframe: AnalyticsRewardsWireframeProtocol {
+    let state: StakingSharedState
+
+    init(state: StakingSharedState) {
+        self.state = state
+    }
+
     func showRewardDetails(_ rewardModel: AnalyticsRewardDetailsModel, from view: ControllerBackedProtocol?) {
-        guard
-            let rewardDetailsView = AnalyticsRewardDetailsViewFactory.createView(rewardModel: rewardModel)
-        else { return }
+        guard let rewardDetailsView = AnalyticsRewardDetailsViewFactory.createView(
+            for: state,
+            rewardModel: rewardModel
+        ) else { return }
 
         let navigationController = FearlessNavigationController(rootViewController: rewardDetailsView.controller)
 
@@ -13,7 +20,7 @@ final class AnalyticsRewardsWireframe: AnalyticsRewardsWireframeProtocol {
 
     func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress) {
         guard let rewardPayoutsView = StakingRewardPayoutsViewFactory
-            .createViewForNominator(stashAddress: stashAddress) else { return }
+            .createViewForNominator(for: state, stashAddress: stashAddress) else { return }
 
         let navigationController = ImportantFlowViewFactory.createNavigation(
             from: rewardPayoutsView.controller
@@ -24,7 +31,7 @@ final class AnalyticsRewardsWireframe: AnalyticsRewardsWireframeProtocol {
 
     func showRewardPayoutsForValidator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress) {
         guard let rewardPayoutsView = StakingRewardPayoutsViewFactory
-            .createViewForValidator(stashAddress: stashAddress) else { return }
+            .createViewForValidator(for: state, stashAddress: stashAddress) else { return }
 
         let navigationController = ImportantFlowViewFactory.createNavigation(
             from: rewardPayoutsView.controller

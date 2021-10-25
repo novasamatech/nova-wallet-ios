@@ -12,7 +12,7 @@ extension WalletAssetId {
             return .westend
         case .roc:
             return .rococo
-        case .usd:
+        case .usd, .monbaseAlpha, .moonriver:
             return nil
         }
     }

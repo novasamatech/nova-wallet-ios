@@ -19,12 +19,19 @@ class AnalyticsRewardDetailsTests: XCTestCase {
             isReward: true
         )
 
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
+
         let presenter = AnalyticsRewardDetailsPresenter(
             rewardModel: rewardModel,
             interactor: MockAnalyticsRewardDetailsInteractorInputProtocol(),
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chain: .westend
+            chain: chain
         )
 
         let createViewModelExpectation = XCTestExpectation()

@@ -1,6 +1,12 @@
 import Foundation
 
 final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframeProtocol {
+    let state: CrowdloanSharedState
+
+    init(state: CrowdloanSharedState) {
+        self.state = state
+    }
+
     func showConfirmation(
         from view: CrowdloanContributionSetupViewProtocol?,
         paraId: ParaId,
@@ -10,7 +16,8 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
         guard let confirmationView = CrowdloanContributionConfirmViewFactory.createView(
             with: paraId,
             inputAmount: inputAmount,
-            bonusService: bonusService
+            bonusService: bonusService,
+            state: state
         ) else {
             return
         }
@@ -38,6 +45,14 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 delegate: delegate,
                 existingService: existingService
             )
+        case .acala:
+            showAcalaCustomFlow(
+                from: view,
+                for: displayInfo,
+                inputAmount: inputAmount,
+                delegate: delegate,
+                existingService: existingService
+            )
         case .bifrost:
             showBifrostCustomFlow(
                 from: view,
@@ -47,6 +62,30 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 existingService: existingService
             )
         }
+    }
+
+    private func showAcalaCustomFlow(
+        from view: CrowdloanContributionSetupViewProtocol?,
+        for displayInfo: CrowdloanDisplayInfo,
+        inputAmount: Decimal,
+        delegate: CustomCrowdloanDelegate,
+        existingService: CrowdloanBonusServiceProtocol?
+    ) {
+        guard let acalaView = ReferralCrowdloanViewFactory.createAcalaView(
+            for: delegate,
+            displayInfo: displayInfo,
+            inputAmount: inputAmount,
+            existingService: existingService,
+            state: state
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: acalaView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     private func showKaruraCustomFlow(
@@ -60,7 +99,8 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
             for: delegate,
             displayInfo: displayInfo,
             inputAmount: inputAmount,
-            existingService: existingService
+            existingService: existingService,
+            state: state
         ) else {
             return
         }
@@ -83,7 +123,8 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
             for: delegate,
             displayInfo: displayInfo,
             inputAmount: inputAmount,
-            existingService: existingService
+            existingService: existingService,
+            state: state
         ) else {
             return
         }

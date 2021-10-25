@@ -5,68 +5,87 @@ import RobinHood
 import Cuckoo
 import IrohaCrypto
 import SoraFoundation
+import BigInt
 
 class YourValidatorListTests: XCTestCase {
 
     func testSetupCompletesAndActiveValidatorReceived() throws {
         // given
 
-        let settings = InMemorySettingsManager()
-        let keychain = InMemoryKeychain()
+        let chain = ChainModelGenerator.generateChain(
+            generatingAssets: 2,
+            addressPrefix: 42,
+            assetPresicion: 12,
+            hasStaking: true
+        )
 
-        let chain = Chain.westend
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+        let selectedMetaAccount = AccountGenerator.generateMetaAccount()
+        let managedMetaAccount = ManagedMetaAccountModel(info: selectedMetaAccount)
+        let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
 
-        try AccountCreationHelper.createAccountFromMnemonic(cryptoType: .sr25519,
-                                                            networkType: chain,
-                                                            keychain: keychain,
-                                                            settings: settings)
-
-        let storageFacade = SubstrateStorageTestFacade()
         let operationManager = OperationManager()
 
-        let view = MockYourValidatorListViewProtocol()
-        let wireframe = MockYourValidatorListWireframeProtocol()
+        let nominatorAddress = selectedAccount.toAddress()!
 
-        // prepare nomination and corresponding validators
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageTestFacade())
+        let accountRepository = accountRepositoryFactory.createManagedMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
+        )
 
-        let nominatorAddress = settings.selectedAccount!.address
-        let activeValidators = WestendStub.activeValidators(for: nominatorAddress)
+        // save controller
+        let operationQueue = OperationQueue()
+        let saveControllerOperation = accountRepository.saveOperation({ [managedMetaAccount] }, { [] })
+        operationQueue.addOperations([saveControllerOperation], waitUntilFinished: true)
 
-        let addressFactory = SS58AddressFactory()
-        let targets = try activeValidators.map { validator in
-            try addressFactory.accountId(from: validator.address)
+        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
+        let stakingLedger = StakingLedger(
+            stash: selectedAccount.accountId,
+            total: BigUInt(16e+12),
+            active: BigUInt(16e+12),
+            unlocking: [],
+            claimedRewards: []
+        )
+
+        let electedValidators: [EraValidatorInfo] = (0..<16).map { _ in
+            let accountId = AccountGenerator.generateMetaAccount().substrateAccountId
+
+            let nominator = IndividualExposure(who: selectedAccount.accountId, value: BigUInt(1e+12))
+
+            let exposure = ValidatorExposure(
+                total: BigUInt(2e+12),
+                own: BigUInt(1e+12),
+                others: [nominator]
+            )
+
+            return EraValidatorInfo(
+                accountId: accountId,
+                exposure: exposure,
+                prefs: ValidatorPrefs(commission: BigUInt(1e+8), blocked: false)
+            )
         }
 
-        let nomination = Nomination(targets: targets,
-                                    submittedIn: WestendStub.activeEra.item!.index - 1
-        )
+        let activeValidators: [SelectedValidatorInfo] = try electedValidators.map { validator in
+            let address = try validator.accountId.toAddress(using: chain.chainFormat)
+            return SelectedValidatorInfo(address: address)
+        }
 
         let expectedValidatorAddresses = Set(activeValidators.map { $0.address })
 
-        let singleValueProviderFactory = SingleValueProviderFactoryStub
-            .westendNominatorStub()
-            .with(nomination: nomination, for: nominatorAddress)
+        let targets = electedValidators.map { $0.accountId }
 
-        // save stash item
-        
-        let stashItem = StashItem(stash: nominatorAddress, controller: nominatorAddress)
-        let repository: CoreDataRepository<StashItem, CDStashItem> =
-            storageFacade.createRepository()
-
-        let saveStashItemOperation = repository.saveOperation({ [stashItem] }, { [] })
-        OperationQueue().addOperations([saveStashItemOperation], waitUntilFinished: true)
-
-        let substrateProviderFactory = SubstrateDataProviderFactory(
-            facade: storageFacade,
-            operationManager: operationManager
+        let nomination = Nomination(
+            targets: targets,
+            submittedIn: 1
         )
 
-        let runtimeCodingService = try RuntimeCodingServiceStub.createWestendService()
-        let eraValidatorService = EraValidatorServiceStub.westendStub()
-
-        let accountRepository: CoreDataRepository<AccountItem, CDAccountItem> =
-            UserDataStorageTestFacade().createRepository()
-        let anyAccountRepository = AnyDataProviderRepository(accountRepository)
+        let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactoryStub(
+            nomination: nomination,
+            ledgerInfo: stakingLedger,
+            activeEra: ActiveEraInfo(index: 5),
+            stashItem: stashItem
+        )
 
         let validatorOperationFactory = MockValidatorOperationFactoryProtocol()
 
@@ -84,35 +103,36 @@ class YourValidatorListTests: XCTestCase {
             }
         }
 
+        let eraStakersInfo = EraStakersInfo(activeEra: 5, validators: electedValidators)
+        let eraValidatorService = EraValidatorServiceStub(info: eraStakersInfo)
+
         let interactor = YourValidatorListInteractor(
-            chain: chain,
-            providerFactory: singleValueProviderFactory,
-            substrateProviderFactory: substrateProviderFactory,
-            settings: settings,
-            accountRepository: anyAccountRepository,
-            runtimeService: runtimeCodingService,
+            selectedAccount: selectedAccount,
+            chainAsset: chainAsset,
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            accountRepositoryFactory: accountRepositoryFactory,
             eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
             operationManager: operationManager
         )
 
-        let primitiveFactory = WalletPrimitiveFactory(settings: settings)
+        let chainInfo = chainAsset.chainAssetInfo
 
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            walletPrimitiveFactory: primitiveFactory,
-            selectedAddressType: chain.addressType,
-            limit: StakingConstants.maxAmount
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainInfo.asset)
 
         let viewModelFactory = YourValidatorListViewModelFactory(
             balanceViewModeFactory: balanceViewModelFactory
         )
 
-        let presenter = YourValidatorListPresenter(interactor: interactor,
-                                                wireframe: wireframe,
-                                                viewModelFactory: viewModelFactory,
-                                                chain: chain,
-                                                localizationManager: LocalizationManager.shared
+        let view = MockYourValidatorListViewProtocol()
+        let wireframe = MockYourValidatorListWireframeProtocol()
+
+        let presenter = YourValidatorListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            chainInfo: chainInfo,
+            localizationManager: LocalizationManager.shared
         )
 
         interactor.presenter = presenter

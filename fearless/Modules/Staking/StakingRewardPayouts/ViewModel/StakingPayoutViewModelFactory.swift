@@ -4,17 +4,16 @@ import IrohaCrypto
 
 final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol {
     private let addressFactory = SS58AddressFactory()
-    private let chain: Chain
+    private let chainFormat: ChainFormat
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let timeFormatter: TimeFormatterProtocol
-    private lazy var formatterFactory = AmountFormatterFactory()
 
     init(
-        chain: Chain,
+        chainFormat: ChainFormat,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         timeFormatter: TimeFormatterProtocol
     ) {
-        self.chain = chain
+        self.chainFormat = chainFormat
         self.balanceViewModelFactory = balanceViewModelFactory
         self.timeFormatter = timeFormatter
     }
@@ -93,8 +92,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
             return displayName
         }
 
-        if let address = try? addressFactory
-            .addressFromAccountId(data: payout.validator, type: chain.addressType) {
+        if let address = try? payout.validator.toAddress(using: chainFormat) {
             return address
         }
 
@@ -142,7 +140,8 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
             }
         }()
 
-        let historyDepthDays = (historyDepth / 2) / UInt32(chain.erasPerDay)
+        let erasPerDay = eraCountdown.eraTimeInterval.intervalsInDay
+        let historyDepthDays = erasPerDay > 0 ? (historyDepth / 2) / UInt32(erasPerDay) : 0
         let textColor: UIColor = daysLeft < historyDepthDays ?
             R.color.colorRed()! : R.color.colorLightGray()!
 

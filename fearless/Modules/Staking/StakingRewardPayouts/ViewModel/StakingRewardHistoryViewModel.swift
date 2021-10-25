@@ -1,6 +1,6 @@
 import Foundation
 
-struct StakingRewardHistoryCellViewModel: Equatable {
+struct StakingRewardHistoryCellViewModel {
     let addressOrName: String
     let daysLeftText: NSAttributedString
     let tokenAmountText: String

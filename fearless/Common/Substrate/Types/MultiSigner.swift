@@ -1,4 +1,5 @@
 import Foundation
+import FearlessUtils
 
 enum MultiSigner: Equatable {
     static let ed25519Field = "Ed25519"

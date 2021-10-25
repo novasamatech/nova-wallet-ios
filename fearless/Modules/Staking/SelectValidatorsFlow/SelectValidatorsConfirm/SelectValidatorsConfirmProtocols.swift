@@ -43,14 +43,3 @@ protocol SelectValidatorsConfirmWireframeProtocol: AlertPresentable, ErrorPresen
     AddressOptionsPresentable, StakingErrorPresentable {
     func complete(from view: SelectValidatorsConfirmViewProtocol?)
 }
-
-protocol SelectValidatorsConfirmViewFactoryProtocol: AnyObject {
-    static func createInitiatedBondingView(for state: PreparedNomination<InitiatedBonding>)
-        -> SelectValidatorsConfirmViewProtocol?
-
-    static func createChangeTargetsView(for state: PreparedNomination<ExistingBonding>)
-        -> SelectValidatorsConfirmViewProtocol?
-
-    static func createChangeYourValidatorsView(for state: PreparedNomination<ExistingBonding>)
-        -> SelectValidatorsConfirmViewProtocol?
-}

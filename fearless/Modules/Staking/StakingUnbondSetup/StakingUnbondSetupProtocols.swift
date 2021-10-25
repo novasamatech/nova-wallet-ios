@@ -32,14 +32,11 @@ protocol StakingUnbondSetupInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveController(result: Result<AccountItem?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
+    func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 }
 
 protocol StakingUnbondSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     StakingErrorPresentable {
     func close(view: StakingUnbondSetupViewProtocol?)
     func proceed(view: StakingUnbondSetupViewProtocol?, amount: Decimal)
-}
-
-protocol StakingUnbondSetupViewFactoryProtocol {
-    static func createView() -> StakingUnbondSetupViewProtocol?
 }
