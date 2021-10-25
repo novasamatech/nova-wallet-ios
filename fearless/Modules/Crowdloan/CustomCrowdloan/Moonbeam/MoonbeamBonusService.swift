@@ -13,7 +13,9 @@ protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
 final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     var bonusRate: Decimal = 0
 
-    var termsURL = URL(string: "google.com")!
+    var termsURL: URL {
+        URL(string: "https://github.com/moonbeam-foundation/crowdloan-self-attestation/tree/main/moonbeam")!
+    }
 
     var referralCode: String? { nil }
 
@@ -27,8 +29,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     }
 
     static let agreeRemark = "/agree-remark"
-    static let legalTextURL
-        = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
+    static let statementURL = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
     let address: AccountAddress
     let signingWrapper: SigningWrapperProtocol
@@ -46,7 +47,8 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         self.signingWrapper = signingWrapper
     }
 
-    /// Health check may be used to verify the geo-fencing for a given user. Users in a barred country will receive a 403 error
+    /// Health check may be used to verify the geo-fencing for a given user.
+    /// Users in a barred country will receive a 403 error
     func createCheckHealthOperation() -> BaseOperation<Void> {
         let url = Self.baseURL.appendingPathComponent(Self.apiHealth)
 
@@ -87,9 +89,8 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         return operation
     }
 
-    func createStatementFetchOperation() -> BaseOperation<Data> {
-        let url = Self.legalTextURL
-
+    private func createStatementFetchOperation() -> BaseOperation<Data> {
+        let url = Self.statementURL
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
             request.httpMethod = HttpMethod.get.rawValue

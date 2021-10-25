@@ -73,7 +73,10 @@ final class MoonbeamFlowCoordinator: Coordinator {
     }
 
     func showTerms() {
-        guard let termsModule = MoonbeamTermsViewFactory.createView(state: state) else { return }
+        guard let termsModule = MoonbeamTermsViewFactory.createView(
+            state: state,
+            service: service
+        ) else { return }
         let controller = termsModule.controller
         controller.hidesBottomBarWhenPushed = true
 

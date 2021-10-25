@@ -29,14 +29,34 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.termsSwitchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
+        setupActions()
         applyLocalization()
         presenter.setup()
+    }
+
+    private func setupActions() {
+        rootView.termsSwitchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
+        rootView.learnMoreView.addTarget(self, action: #selector(handleLearnTerms), for: .touchUpInside)
+        rootView.networkFeeConfirmView.actionButton.addTarget(
+            self,
+            action: #selector(handleAction),
+            for: .touchUpInside
+        )
     }
 
     @objc
     private func handleSwitch() {
         rootView.updateActionButton()
+    }
+
+    @objc
+    private func handleLearnTerms() {
+        presenter.handleLearnTerms()
+    }
+
+    @objc
+    private func handleAction() {
+        presenter.submitAgreement()
     }
 
     private func updateFee() {

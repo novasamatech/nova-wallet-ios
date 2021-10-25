@@ -9,6 +9,7 @@ final class MoonbeamTermsInteractor {
     let feeProxy: ExtrinsicFeeProxyProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
+    let moonbeamService: MoonbeamBonusServiceProtocol
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
 
@@ -18,7 +19,8 @@ final class MoonbeamTermsInteractor {
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        callFactory: SubstrateCallFactoryProtocol
+        callFactory: SubstrateCallFactoryProtocol,
+        moonbeamService: MoonbeamBonusServiceProtocol
     ) {
         self.paraId = paraId
         self.asset = asset
@@ -26,6 +28,7 @@ final class MoonbeamTermsInteractor {
         self.feeProxy = feeProxy
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.callFactory = callFactory
+        self.moonbeamService = moonbeamService
     }
 
     private func subscribeToPrice() {
@@ -53,6 +56,10 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
         feeProxy.delegate = self
         estimateFeeForContribution()
         subscribeToPrice()
+    }
+
+    var termsURL: URL {
+        moonbeamService.termsURL
     }
 }
 

@@ -2,11 +2,19 @@ import Foundation
 import SoraFoundation
 
 struct MoonbeamTermsViewFactory {
-    static func createView(state: CrowdloanSharedState) -> MoonbeamTermsViewProtocol? {
+    static func createView(
+        state: CrowdloanSharedState,
+        service: MoonbeamBonusServiceProtocol
+    ) -> MoonbeamTermsViewProtocol? {
         guard
             let chain = state.settings.value,
             let asset = chain.utilityAssets().first,
-            let interactor = createInteractor(paraId: ParaId.moonbeam, chain: chain, asset: asset) else {
+            let interactor = createInteractor(
+                paraId: ParaId.moonbeam,
+                chain: chain,
+                asset: asset,
+                moonbeamService: service
+            ) else {
             return nil
         }
 
@@ -36,7 +44,8 @@ struct MoonbeamTermsViewFactory {
     private static func createInteractor(
         paraId: ParaId,
         chain: ChainModel,
-        asset: AssetModel
+        asset: AssetModel,
+        moonbeamService: MoonbeamBonusServiceProtocol
     ) -> MoonbeamTermsInteractor? {
         guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
             return nil
@@ -75,7 +84,8 @@ struct MoonbeamTermsViewFactory {
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            callFactory: SubstrateCallFactory()
+            callFactory: SubstrateCallFactory(),
+            moonbeamService: moonbeamService
         )
     }
 }

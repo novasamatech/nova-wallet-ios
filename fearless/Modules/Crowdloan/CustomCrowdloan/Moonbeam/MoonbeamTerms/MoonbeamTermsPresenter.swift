@@ -43,6 +43,18 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func submitAgreement() {
+        view?.didStartLoading()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.view?.didStopLoading()
+        }
+    }
+
+    func handleLearnTerms() {
+        guard let view = view else { return }
+        wireframe.showWeb(url: interactor.termsURL, from: view, style: .automatic)
+    }
 }
 
 extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
