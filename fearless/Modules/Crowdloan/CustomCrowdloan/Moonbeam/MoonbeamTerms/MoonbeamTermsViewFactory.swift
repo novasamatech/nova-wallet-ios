@@ -1,11 +1,25 @@
 import Foundation
 
 struct MoonbeamTermsViewFactory {
-    static func createView() -> MoonbeamTermsViewProtocol? {
-        let interactor = MoonbeamTermsInteractor()
+    static func createView(state: CrowdloanSharedState) -> MoonbeamTermsViewProtocol? {
+        guard
+            let chain = state.settings.value,
+            let asset = chain.utilityAssets().first,
+            let interactor = createInteractor(paraId: ParaId.moonbeam, chain: chain, asset: asset) else {
+            return nil
+        }
+
         let wireframe = MoonbeamTermsWireframe()
 
-        let presenter = MoonbeamTermsPresenter(interactor: interactor, wireframe: wireframe)
+        let assetInfo = asset.displayInfo(with: chain.icon)
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let presenter = MoonbeamTermsPresenter(
+            assetInfo: assetInfo,
+            balanceViewModelFactory: balanceViewModelFactory,
+            interactor: interactor,
+            wireframe: wireframe,
+            logger: Logger.shared
+        )
 
         let view = MoonbeamTermsViewController(presenter: presenter)
 
@@ -13,5 +27,51 @@ struct MoonbeamTermsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        paraId: ParaId,
+        chain: ChainModel,
+        asset: AssetModel
+    ) -> MoonbeamTermsInteractor? {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
+        let operationManager = OperationManagerFacade.sharedManager
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
+            return nil
+        }
+
+        let extrinsicService = ExtrinsicService(
+            accountId: accountResponse.accountId,
+            chainFormat: chain.chainFormat,
+            cryptoType: accountResponse.cryptoType,
+            runtimeRegistry: runtimeService,
+            engine: connection,
+            operationManager: operationManager
+        )
+        let feeProxy = ExtrinsicFeeProxy()
+
+        let priceLocalSubscriptionFactory = PriceProviderFactory(
+            storageFacade: SubstrateDataStorageFacade.shared
+        )
+
+        return MoonbeamTermsInteractor(
+            paraId: paraId,
+            asset: asset,
+            extrinsicService: extrinsicService,
+            feeProxy: feeProxy,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            callFactory: SubstrateCallFactory()
+        )
     }
 }

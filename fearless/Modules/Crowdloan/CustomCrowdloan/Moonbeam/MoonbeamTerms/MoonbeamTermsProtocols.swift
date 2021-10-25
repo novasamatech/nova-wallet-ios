@@ -1,13 +1,20 @@
 import SoraFoundation
 
-protocol MoonbeamTermsViewProtocol: ControllerBackedProtocol {}
+protocol MoonbeamTermsViewProtocol: ControllerBackedProtocol {
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+}
 
 protocol MoonbeamTermsPresenterProtocol: AnyObject {
     func setup()
 }
 
-protocol MoonbeamTermsInteractorInputProtocol: AnyObject {}
+protocol MoonbeamTermsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {}
+protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {
+    func didReceivePriceData(result: Result<PriceData?, Error>)
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
+}
 
 protocol MoonbeamTermsWireframeProtocol: AnyObject {}

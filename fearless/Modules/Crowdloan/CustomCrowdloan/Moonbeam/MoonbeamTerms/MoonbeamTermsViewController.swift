@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     typealias RootViewType = MoonbeamTermsViewLayout
@@ -29,4 +30,8 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     }
 }
 
-extension MoonbeamTermsViewController: MoonbeamTermsViewProtocol {}
+extension MoonbeamTermsViewController: MoonbeamTermsViewProtocol {
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.bind(feeViewModel: viewModel)
+    }
+}

@@ -4,12 +4,15 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let service: MoonbeamBonusServiceProtocol
     let operationManager: OperationManagerProtocol
     let previousView: (ControllerBackedProtocol & AlertPresentable)?
+    let state: CrowdloanSharedState
 
     init(
+        state: CrowdloanSharedState,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
         previousView: (ControllerBackedProtocol & AlertPresentable)?
     ) {
+        self.state = state
         self.service = service
         self.operationManager = operationManager
         self.previousView = previousView
@@ -70,7 +73,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     }
 
     func showTerms() {
-        guard let termsModule = MoonbeamTermsViewFactory.createView() else { return }
+        guard let termsModule = MoonbeamTermsViewFactory.createView(state: state) else { return }
         let controller = termsModule.controller
         controller.hidesBottomBarWhenPushed = true
 

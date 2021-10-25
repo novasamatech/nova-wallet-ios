@@ -27,6 +27,7 @@ struct MoonbeamFlowCoordinatorFactory {
         )
 
         return MoonbeamFlowCoordinator(
+            state: state,
             service: service,
             operationManager: OperationManagerFacade.sharedManager,
             previousView: previousView

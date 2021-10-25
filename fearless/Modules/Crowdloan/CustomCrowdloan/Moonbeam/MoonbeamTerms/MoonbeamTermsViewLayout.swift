@@ -31,6 +31,16 @@ final class MoonbeamTermsViewLayout: UIView {
 
     let learnMoreView = UIFactory.default.createLearnMoreView()
 
+    let networkFeeConfirmView: NetworkFeeConfirmView = UIFactory.default.createNetworkFeeConfirmView()
+
+    var locale = Locale.current {
+        didSet {
+            if locale != oldValue {
+                applyLocalization()
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -72,5 +82,21 @@ final class MoonbeamTermsViewLayout: UIView {
             make.leading.equalTo(termsSwitchView.snp.trailing).offset(16.0)
             make.trailing.centerY.equalToSuperview()
         }
+
+        addSubview(networkFeeConfirmView)
+        networkFeeConfirmView.snp.makeConstraints { make in
+            make.leading.bottom.trailing.equalToSuperview()
+        }
+    }
+
+    private func applyLocalization() {
+        networkFeeConfirmView.locale = locale
+        networkFeeConfirmView.actionButton.imageWithTitleView?.title = termsSwitchView.isOn ?
+            "Agree to Terms and Conditions"
+            : "Submit agreement"
+    }
+
+    func bind(feeViewModel: BalanceViewModelProtocol?) {
+        networkFeeConfirmView.networkFeeView.bind(viewModel: feeViewModel)
     }
 }
