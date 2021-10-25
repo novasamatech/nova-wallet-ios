@@ -24,7 +24,7 @@ abstract_target 'fearlessAll' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'FearlessUtils', :git => 'git@github.com:nova-wallet/substrate-sdk-ios.git', :commit => 'f02885dbcd43cbcaf3fe533e4db71eda179cb09c'
+    pod 'FearlessUtils', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'f02885dbcd43cbcaf3fe533e4db71eda179cb09c'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
