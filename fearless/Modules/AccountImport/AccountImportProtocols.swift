@@ -74,6 +74,5 @@ protocol AccountImportWireframeProtocol: AlertPresentable, ErrorPresentable {
 protocol AccountImportViewFactoryProtocol: AnyObject {
     static func createViewForOnboarding() -> AccountImportViewProtocol?
     static func createViewForAdding() -> AccountImportViewProtocol?
-    static func createViewForConnection(item: ConnectionItem) -> AccountImportViewProtocol?
     static func createViewForSwitch() -> AccountImportViewProtocol?
 }
