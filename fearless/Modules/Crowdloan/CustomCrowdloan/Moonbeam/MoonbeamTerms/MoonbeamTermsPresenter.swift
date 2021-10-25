@@ -35,7 +35,6 @@ final class MoonbeamTermsPresenter {
         guard let fee = fee else { return }
         let feeViewModel = balanceViewModelFactory
             .balanceFromPrice(fee, priceData: priceData)
-            .value(for: selectedLocale)
         view?.didReceiveFee(viewModel: feeViewModel)
     }
 }
@@ -43,14 +42,6 @@ final class MoonbeamTermsPresenter {
 extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
     func setup() {
         interactor.setup()
-    }
-}
-
-extension MoonbeamTermsPresenter: Localizable {
-    func applyLocalization() {
-        if let view = view, view.isSetup {
-            updateView()
-        }
     }
 }
 

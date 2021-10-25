@@ -1,17 +1,11 @@
 import UIKit
 
 final class MoonbeamTermsViewLayout: UIView {
-    let contentView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
-        return view
-    }()
-
-    let descriptionLabel: UILabel = {
+    private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
         label.numberOfLines = 0
+        label.textColor = R.color.colorTransparentText()
         return label
     }()
 
@@ -22,10 +16,11 @@ final class MoonbeamTermsViewLayout: UIView {
         return switchView
     }()
 
-    let termsLabel: UILabel = {
+    private let termsLabel: UILabel = {
         let label = UILabel()
         label.isUserInteractionEnabled = true
         label.font = .p1Paragraph
+        label.textColor = R.color.colorLightGray()
         label.numberOfLines = 2
         return label
     }()
@@ -56,33 +51,53 @@ final class MoonbeamTermsViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.leading.trailing.equalToSuperview()
-        }
-
-        contentView.stackView.addArrangedSubview(descriptionLabel)
-        descriptionLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
-        }
-
-        let privacyView = UIView()
-        contentView.stackView.addArrangedSubview(privacyView)
-        privacyView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
-            make.height.equalTo(32)
-        }
-
-        privacyView.addSubview(termsSwitchView)
+        let termsView = UIView()
+        termsView.addSubview(termsSwitchView)
         termsSwitchView.snp.makeConstraints { make in
             make.leading.centerY.equalToSuperview()
         }
 
-        privacyView.addSubview(termsLabel)
+        termsView.addSubview(termsLabel)
         termsLabel.snp.makeConstraints { make in
-            make.leading.equalTo(termsSwitchView.snp.trailing).offset(16.0)
+            make.leading.equalTo(termsSwitchView.snp.trailing).offset(16)
             make.trailing.centerY.equalToSuperview()
+        }
+
+        let separator = UIView.createSeparator(color: R.color.colorDarkGray())
+        let content = UIView.vStack(
+            [
+                descriptionLabel,
+                learnMoreView,
+                separator,
+                termsView
+            ]
+        )
+        termsView.snp.makeConstraints { $0.height.equalTo(32) }
+        learnMoreView.snp.makeConstraints { $0.height.equalTo(48) }
+        separator.snp.makeConstraints { $0.height.equalTo(UIConstants.separatorHeight) }
+
+        content.setCustomSpacing(14, after: descriptionLabel)
+        content.setCustomSpacing(23, after: separator)
+
+        let scrollView = UIScrollView()
+        addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.bottom.trailing.equalToSuperview()
+        }
+
+        let contentView = UIView()
+        scrollView.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalTo(self)
+        }
+
+        contentView.addSubview(content)
+        content.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(6)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
         }
 
         addSubview(networkFeeConfirmView)
@@ -92,6 +107,12 @@ final class MoonbeamTermsViewLayout: UIView {
     }
 
     private func applyLocalization() {
+        descriptionLabel.text = R.string.localizable
+            .crowdloanMoonbeamTermsDescription(preferredLanguages: locale.rLanguages)
+
+        let termsConditions = R.string.localizable.crowdloanTermsValue(preferredLanguages: locale.rLanguages)
+        termsLabel.text = R.string.localizable.crowdloanTermsFormat(termsConditions)
+        learnMoreView.titleLabel.text = termsConditions
         updateActionButton()
     }
 

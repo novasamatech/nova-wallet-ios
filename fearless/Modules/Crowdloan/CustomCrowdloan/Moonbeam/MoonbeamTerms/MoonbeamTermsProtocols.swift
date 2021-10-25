@@ -1,7 +1,7 @@
 import SoraFoundation
 
 protocol MoonbeamTermsViewProtocol: ControllerBackedProtocol {
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>)
 }
 
 protocol MoonbeamTermsPresenterProtocol: AnyObject {

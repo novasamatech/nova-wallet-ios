@@ -361,6 +361,7 @@
 "staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
 "crowdloan.submit.agreement" = "";
+"crowdloan.moonbeam.terms.description" = "";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";

@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct MoonbeamTermsViewFactory {
     static func createView(state: CrowdloanSharedState) -> MoonbeamTermsViewProtocol? {
@@ -21,7 +22,10 @@ struct MoonbeamTermsViewFactory {
             logger: Logger.shared
         )
 
-        let view = MoonbeamTermsViewController(presenter: presenter)
+        let view = MoonbeamTermsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

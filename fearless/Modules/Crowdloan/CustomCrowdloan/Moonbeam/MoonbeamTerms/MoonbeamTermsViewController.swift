@@ -6,9 +6,15 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
 
     let presenter: MoonbeamTermsPresenterProtocol
 
-    init(presenter: MoonbeamTermsPresenterProtocol) {
+    private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
+
+    init(
+        presenter: MoonbeamTermsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -23,10 +29,8 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.descriptionLabel.text = "You need to submit agreement with Terms & Conditions on the blockchain to proceed"
-        rootView.termsLabel.text = "I have read and agree to Terms & Conditions"
-        title = "Terms & Conditions"
         rootView.termsSwitchView.addTarget(self, action: #selector(handleSwitch), for: .valueChanged)
+        applyLocalization()
         presenter.setup()
     }
 
@@ -34,10 +38,28 @@ final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     private func handleSwitch() {
         rootView.updateActionButton()
     }
+
+    private func updateFee() {
+        guard let viewModel = feeViewModel?.value(for: selectedLocale) else {
+            return
+        }
+        rootView.bind(feeViewModel: viewModel)
+    }
+}
+
+extension MoonbeamTermsViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            rootView.locale = selectedLocale
+            title = R.string.localizable.crowdloanTermsValue(preferredLanguages: selectedLocale.rLanguages)
+            updateFee()
+        }
+    }
 }
 
 extension MoonbeamTermsViewController: MoonbeamTermsViewProtocol {
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.bind(feeViewModel: viewModel)
+    func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>) {
+        feeViewModel = viewModel
+        updateFee()
     }
 }
