@@ -22,14 +22,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      - name: Specs Repo
-        run: pod repo add SubstrateSDK https://${POD_TOKEN}@github.com/nova-wallet/substrate-sdk-ios.git
-        env:
-          POD_TOKEN: ${{ secrets.POD_TOKEN }}
-
       - name: Install Cocoapods
         if: steps.cache-cocoapods.outputs.cache-hit != 'true'
         run: pod install --repo-update
+        env:
+          POD_TOKEN: ${{ secrets.POD_TOKEN }}
 
       - name: Set Default Scheme
         run: |
