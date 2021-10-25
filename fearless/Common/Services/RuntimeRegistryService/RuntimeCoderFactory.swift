@@ -4,7 +4,7 @@ import FearlessUtils
 protocol RuntimeCoderFactoryProtocol {
     var specVersion: UInt32 { get }
     var txVersion: UInt32 { get }
-    var metadata: RuntimeMetadata { get }
+    var metadata: RuntimeMetadataProtocol { get }
 
     func createEncoder() -> DynamicScaleEncoding
     func createDecoder(from data: Data) throws -> DynamicScaleDecoding
@@ -14,13 +14,13 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
     let catalog: TypeRegistryCatalogProtocol
     let specVersion: UInt32
     let txVersion: UInt32
-    let metadata: RuntimeMetadata
+    let metadata: RuntimeMetadataProtocol
 
     init(
         catalog: TypeRegistryCatalogProtocol,
         specVersion: UInt32,
         txVersion: UInt32,
-        metadata: RuntimeMetadata
+        metadata: RuntimeMetadataProtocol
     ) {
         self.catalog = catalog
         self.specVersion = specVersion

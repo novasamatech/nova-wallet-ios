@@ -1,0 +1,96 @@
+name: Distribute to Firebase
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  build:
+    name: Archive, export and upload to Firebase
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache Cocoapods
+        id: cache-cocoapods
+        uses: actions/cache@v2
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Specs Repo
+        run: pod repo add SubstrateSDK https://${POD_TOKEN}@github.com/nova-wallet/substrate-sdk-ios.git
+        env:
+          POD_TOKEN: ${{ secrets.POD_TOKEN }}
+
+      - name: Install Cocoapods
+        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+        run: pod install --repo-update
+
+      # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
+      - name: Install the Apple certificate and provisioning profile
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ""
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # create variables
+          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+          # import certificate and provisioning profile from secrets
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+
+          # create temporary keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+          # import certificate to keychain
+          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Archive
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
+
+      - name: Export archive
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: fearless.ipa
+          path: export
+
+  # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
+  distribute-ios:
+    needs: build
+    name: Distribute archive to Firebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: fearless.ipa
+          path: export
+
+      - name: Upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: dev-team
+          file: export/fearless.ipa
+          releaseNotes: ${{ github.event.head_commit.message }}

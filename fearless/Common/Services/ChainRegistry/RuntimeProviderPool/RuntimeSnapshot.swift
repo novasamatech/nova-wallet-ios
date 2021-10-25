@@ -7,5 +7,5 @@ struct RuntimeSnapshot {
     let typeRegistryCatalog: TypeRegistryCatalogProtocol
     let specVersion: UInt32
     let txVersion: UInt32
-    let metadata: RuntimeMetadata
+    let metadata: RuntimeMetadataProtocol
 }
