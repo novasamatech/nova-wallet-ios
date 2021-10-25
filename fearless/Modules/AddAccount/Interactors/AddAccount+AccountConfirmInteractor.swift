@@ -3,9 +3,10 @@ import SoraKeystore
 import IrohaCrypto
 import RobinHood
 
+// TODO: Check how to convert this to chain account import
 extension AddAccount {
     final class AccountConfirmInteractor: BaseAccountConfirmInteractor {
-        private(set) var settings: SettingsManagerProtocol
+        private(set) var settings: SelectedWalletSettings
         let eventCenter: EventCenterProtocol
 
         private var currentOperation: Operation?
@@ -16,7 +17,7 @@ extension AddAccount {
             accountOperationFactory: MetaAccountOperationFactoryProtocol,
             accountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
-            settings: SettingsManagerProtocol,
+            settings: SelectedWalletSettings,
             eventCenter: EventCenterProtocol
         ) {
             self.settings = settings
@@ -31,47 +32,46 @@ extension AddAccount {
             )
         }
 
-        private func handleResult(_ result: Result<(MetaAccountModel, ConnectionItem), Error>?) {
-            switch result {
-            case .success(let (accountItem, connectionItem)):
-//                settings.selectedAccount = accountItem
-//
-//                if settings.selectedConnection != connectionItem {
-//                    settings.selectedConnection = connectionItem
-//
-//                    eventCenter.notify(with: SelectedConnectionChanged())
-//                }
-
-                eventCenter.notify(with: SelectedAccountChanged())
-
-                presenter?.didCompleteConfirmation()
-            case let .failure(error):
-                presenter?.didReceive(error: error)
-            case .none:
-                let error = BaseOperationError.parentOperationCancelled
-                presenter?.didReceive(error: error)
-            }
-        }
-
         override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
             guard currentOperation == nil else {
                 return
             }
 
-            let selectedConnection = settings.selectedConnection
-
-            let persistentOperation = accountRepository.saveOperation({
+            let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
                 let accountItem = try importOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                return [accountItem]
-            }, { [] })
+                self?.settings.save(value: accountItem)
 
-            persistentOperation.addDependency(importOperation)
+                return accountItem
+            }
+
+            saveOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    self?.currentOperation = nil
+
+                    switch saveOperation.result {
+                    case .success:
+                        self?.settings.setup()
+                        self?.eventCenter.notify(with: SelectedAccountChanged())
+                        self?.presenter?.didCompleteConfirmation()
+
+                    case let .failure(error):
+                        self?.presenter?.didReceive(error: error)
+
+                    case .none:
+                        let error = BaseOperationError.parentOperationCancelled
+                        self?.presenter?.didReceive(error: error)
+                    }
+                }
+            }
+
+            saveOperation.addDependency(importOperation)
 
             operationManager.enqueue(
-                operations: [importOperation, persistentOperation],
+                operations: [importOperation, saveOperation],
                 in: .transient
             )
+
         }
     }
 }
