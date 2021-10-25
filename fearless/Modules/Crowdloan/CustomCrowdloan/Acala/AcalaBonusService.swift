@@ -18,7 +18,7 @@ final class AcalaBonusService {
     static let apiContribute = "/contribute"
 
     var bonusRate: Decimal { 0.05 }
-    var termsURL: URL { URL(string: "https://acala.network/karura/terms")! }
+    var termsURL: URL { URL(string: "https://acala.network/acala/terms")! }
     private(set) var referralCode: String?
 
     let signingWrapper: SigningWrapperProtocol
