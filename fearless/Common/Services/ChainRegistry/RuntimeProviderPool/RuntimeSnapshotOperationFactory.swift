@@ -47,7 +47,7 @@ final class RuntimeSnapshotFactory {
             let decoder = try ScaleDecoder(data: runtimeMetadataItem.metadata)
             let runtimeMetadataContainer = try RuntimeMetadataContainer(scaleDecoder: decoder)
 
-            guard let commonTypess = maybeCommonTypes, let chainTypess = maybeChainTypes else {
+            guard let commonTypes = maybeCommonTypes, let chainTypes = maybeChainTypes else {
                 return nil
             }
 
@@ -57,23 +57,24 @@ final class RuntimeSnapshotFactory {
             switch runtimeMetadataContainer.runtimeMetadata {
             case let .v13(metadata):
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
-                    commonTypess,
-                    versioningData: chainTypess,
+                    commonTypes,
+                    versioningData: chainTypes,
                     runtimeMetadata: metadata
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
-                    versioningData: chainTypess,
+                    versioningData: chainTypes,
                     runtimeMetadata: metadata,
+                    customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
             }
 
             return RuntimeSnapshot(
-                localCommonHash: try dataHasher.hash(data: commonTypess).toHex(),
-                localChainHash: try dataHasher.hash(data: chainTypess).toHex(),
+                localCommonHash: try dataHasher.hash(data: commonTypes).toHex(),
+                localChainHash: try dataHasher.hash(data: chainTypes).toHex(),
                 typeRegistryCatalog: catalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
@@ -128,6 +129,7 @@ final class RuntimeSnapshotFactory {
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: commonTypes,
                     runtimeMetadata: metadata,
+                    customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata
@@ -189,6 +191,7 @@ final class RuntimeSnapshotFactory {
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: ownTypes,
                     runtimeMetadata: metadata,
+                    customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
                 runtimeMetadata = metadata

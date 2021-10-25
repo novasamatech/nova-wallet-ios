@@ -1,21 +1,33 @@
-name: Codecov Fearless
+name: Codecov report
 
 on:
-  pull_request:
-    branches:
-      - develop
+  push:
+    branches: [ develop ]
 
 jobs:
   build:
     runs-on: macOS-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       
-      - name: Install Dependencies & Test
-        run: |
-          pod install --repo-update
-          set -o pipefail && xcodebuild test -workspace fearless.xcworkspace -scheme fearless -destination 'platform=iOS Simulator,name=iPhone 8,OS=14.4' build test | xcpretty --test
+      - name: Cache Cocoapods
+        id: cache-cocoapods
+        uses: actions/cache@v2
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install Cocoapods
+        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+        run: pod install --repo-update
+
+      - name: Test
+        run: set -o pipefail && xcodebuild test -workspace fearless.xcworkspace -scheme fearless -destination 'platform=iOS Simulator,name=iPhone 8,OS=14.4' build test | xcpretty --test
 
       - name: Upload coverage to Codecov
-        run: bash <(curl -s https://codecov.io/bash) -J 'fearless'
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
