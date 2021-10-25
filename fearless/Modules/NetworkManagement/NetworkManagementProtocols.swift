@@ -57,11 +57,6 @@ protocol NetworkManagementWireframeProtocol: ErrorPresentable, AlertPresentable 
         context: AnyObject?
     )
 
-    func presentAccountCreation(
-        for connection: ConnectionItem,
-        from view: NetworkManagementViewProtocol?
-    )
-
     func presentConnectionInfo(
         _ connectionItem: ConnectionItem,
         mode: NetworkInfoMode,
