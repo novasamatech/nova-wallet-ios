@@ -7903,6 +7903,7 @@
 			isa = PBXGroup;
 			children = (
 				F436BB952726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift */,
+				F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */,
 			);
 			path = Coordinator;
 			sourceTree = "<group>";
@@ -8201,7 +8202,6 @@
 			children = (
 				F436BB942726FBAD004B1794 /* Coordinator */,
 				F436BB8B2726F259004B1794 /* Model */,
-				F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */,
 				4F2C58329980DEFF34CF1F8C /* MoonbeamTerms */,
 				F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */,
 				F4E17FC42721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift */,
