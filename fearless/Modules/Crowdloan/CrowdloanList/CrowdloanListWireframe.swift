@@ -3,11 +3,25 @@ import Foundation
 final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     let state: CrowdloanSharedState
 
+    private var moonbeamCoordinator: Coordinator?
+
     init(state: CrowdloanSharedState) {
         self.state = state
     }
 
     func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
+        if paraId == .moonbeam {
+            moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
+                previousView: view,
+                state: state
+            )
+            moonbeamCoordinator?.start()
+        } else {
+            showContributionSetup(from: view, paraId: paraId)
+        }
+    }
+
+    private func showContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,
             state: state

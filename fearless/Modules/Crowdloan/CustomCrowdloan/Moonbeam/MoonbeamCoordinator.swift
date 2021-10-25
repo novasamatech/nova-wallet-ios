@@ -1,0 +1,81 @@
+import RobinHood
+
+final class MoonbeamFlowCoordinator: Coordinator {
+    let service: MoonbeamBonusServiceProtocol
+    let operationManager: OperationManagerProtocol
+    let previousView: (ControllerBackedProtocol & AlertPresentable)?
+
+    init(
+        service: MoonbeamBonusServiceProtocol,
+        operationManager: OperationManagerProtocol,
+        previousView: (ControllerBackedProtocol & AlertPresentable)?
+    ) {
+        self.service = service
+        self.operationManager = operationManager
+        self.previousView = previousView
+    }
+
+    func start() {
+        if service.hasMoonbeamAccount {
+            checkHealth()
+        } else {
+            showMoonbeamAccountAlert()
+        }
+    }
+
+    func showMoonbeamAccountAlert() {
+        // TODO:
+    }
+
+    func checkHealth() {
+        let healthOperation = service.createCheckHealthOperation()
+
+        healthOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    _ = try healthOperation.extractNoCancellableResultData()
+                    self?.checkAgreement()
+                } catch {
+                    guard let controller = self?.previousView?.controller else { return }
+                    UIAlertController.present(
+                        message: "This crowdloan isn't available in your location.",
+                        title: "Your region is not supported",
+                        closeAction: "OK",
+                        with: controller
+                    )
+                }
+            }
+        }
+        operationManager.enqueue(operations: [healthOperation], in: .transient)
+    }
+
+    func checkAgreement() {
+        let termsOperation = service.createCheckTermsOperation()
+
+        termsOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let alreadyAgreed = try termsOperation.extractNoCancellableResultData()
+                    if alreadyAgreed {
+                        self?.showCrowdloanSetup()
+                    } else {
+                        self?.showTerms()
+                    }
+                } catch {
+                    print(error) // TODO: show error alert
+                }
+            }
+        }
+        operationManager.enqueue(operations: [termsOperation], in: .transient)
+    }
+
+    func showTerms() {
+        guard let termsModule = MoonbeamTermsViewFactory.createView() else { return }
+        let controller = termsModule.controller
+        controller.hidesBottomBarWhenPushed = true
+
+        previousView?.controller.navigationController?.pushViewController(controller, animated: true)
+    }
+
+    func showCrowdloanSetup() {}
+}

@@ -1,6 +1,6 @@
 import UIKit
 
-final class MoonbeamTermsViewController: UIViewController {
+final class MoonbeamTermsViewController: UIViewController, ViewHolder {
     typealias RootViewType = MoonbeamTermsViewLayout
 
     let presenter: MoonbeamTermsPresenterProtocol
@@ -22,6 +22,9 @@ final class MoonbeamTermsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        rootView.descriptionLabel.text = "You need to submit agreement with Terms & Conditions on the blockchain to proceed"
+        rootView.termsLabel.text = "I have read and agree to Terms & Conditions"
+        title = "Terms & Conditions"
         presenter.setup()
     }
 }

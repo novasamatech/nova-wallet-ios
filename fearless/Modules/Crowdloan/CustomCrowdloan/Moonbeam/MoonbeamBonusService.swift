@@ -4,7 +4,19 @@ import BigInt
 import IrohaCrypto
 import FearlessUtils
 
-final class MoonbeamBonusService {
+protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
+    var hasMoonbeamAccount: Bool { get }
+    func createCheckHealthOperation() -> BaseOperation<Void>
+    func createCheckTermsOperation() -> BaseOperation<Bool>
+}
+
+final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
+    var bonusRate: Decimal = 0
+
+    var termsURL = URL(string: "google.com")!
+
+    var referralCode: String? { nil }
+
     #if DEBUG
         static let baseURL = URL(string: "https://wallet-test.api.purestake.xyz")!
     #endif
@@ -19,17 +31,18 @@ final class MoonbeamBonusService {
         = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
     let address: AccountAddress
-    let operationManager: OperationManagerProtocol
     let signingWrapper: SigningWrapperProtocol
     private let requestModifier = MoonbeamRequestModifier()
 
+    var hasMoonbeamAccount: Bool {
+        true // TODO:
+    }
+
     init(
         address: AccountAddress,
-        operationManager: OperationManagerProtocol,
         signingWrapper: SigningWrapperProtocol
     ) {
         self.address = address
-        self.operationManager = operationManager
         self.signingWrapper = signingWrapper
     }
 
@@ -52,7 +65,7 @@ final class MoonbeamBonusService {
     }
 
     /// Ask PureStake if the address has submitted the attestation successfully.
-    func createCheckRemarkOperation() -> BaseOperation<Bool> {
+    func createCheckTermsOperation() -> BaseOperation<Bool> {
         let url = Self.baseURL.appendingPathComponent(Self.apiCheckRemark(address: address))
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -129,6 +142,24 @@ final class MoonbeamBonusService {
 //        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
 //        return hashHex;
 //    }
+
+    func save(referralCode _: String, completion _: @escaping (Result<Void, Error>) -> Void) {
+        print("save(referralCode")
+    }
+
+    func applyOffchainBonusForContribution(
+        amount _: BigUInt,
+        with _: @escaping (Result<Void, Error>) -> Void
+    ) {
+        print("applyOffchainBonusForContribution")
+    }
+
+    func applyOnchainBonusForContribution(
+        amount _: BigUInt,
+        using builder: ExtrinsicBuilderProtocol
+    ) throws -> ExtrinsicBuilderProtocol {
+        builder
+    }
 }
 
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
