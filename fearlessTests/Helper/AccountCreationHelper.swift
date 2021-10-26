@@ -90,7 +90,7 @@ final class AccountCreationHelper {
                                                  keychain: keychain,
                                                  settings: settings,
                                                  networkType: info.networkType ?? .westend,
-                                                 cryptoType: .sr25519)
+                                                 cryptoType: .sr25519) // FIXME: Pass actual crypto type here
     }
 
     @available(*, deprecated, message: "Use createMetaAccountFromKeystoreData(...) instead")
