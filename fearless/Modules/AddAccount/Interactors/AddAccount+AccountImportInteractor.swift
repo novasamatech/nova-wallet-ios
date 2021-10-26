@@ -31,23 +31,9 @@ extension AddAccount {
         }
 
         override func importAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-            //            let checkOperation = accountRepository.fetchOperation(
-            //                by: item.identifier, // FIXME: Account is not fetched, since identifier is UUID
-            //                options: RepositoryFetchOptions()
-            //            )
-
-            let fetchAccountsOperation = accountRepository.fetchAllOperation(with: RepositoryFetchOptions())
-
             let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
                 let accountItem = try importOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
-                if try fetchAccountsOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled).first(where: {
-                        $0.substrateAccountId == accountItem.substrateAccountId
-                    }) != nil {
-                    throw AccountCreateError.duplicated
-                }
 
                 self?.settings.save(value: accountItem)
 
@@ -73,10 +59,9 @@ extension AddAccount {
             }
 
             saveOperation.addDependency(importOperation)
-            saveOperation.addDependency(fetchAccountsOperation)
 
             operationManager.enqueue(
-                operations: [importOperation, fetchAccountsOperation, saveOperation],
+                operations: [importOperation, saveOperation],
                 in: .transient
             )
         }
