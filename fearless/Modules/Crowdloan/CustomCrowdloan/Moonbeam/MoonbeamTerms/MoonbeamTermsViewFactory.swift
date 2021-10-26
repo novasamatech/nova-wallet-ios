@@ -1,16 +1,18 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct MoonbeamTermsViewFactory {
     static func createView(
         state: CrowdloanSharedState,
+        paraId: ParaId,
         service: MoonbeamBonusServiceProtocol
     ) -> MoonbeamTermsViewProtocol? {
         guard
             let chain = state.settings.value,
             let asset = chain.utilityAssets().first,
             let interactor = createInteractor(
-                paraId: ParaId.moonbeam,
+                paraId: paraId,
                 chain: chain,
                 asset: asset,
                 moonbeamService: service
@@ -78,6 +80,12 @@ struct MoonbeamTermsViewFactory {
             storageFacade: SubstrateDataStorageFacade.shared
         )
 
+        let signingWrapper = SigningWrapper(
+            keystore: Keychain(),
+            metaId: selectedMetaAccount.metaId,
+            accountResponse: accountResponse
+        )
+
         return MoonbeamTermsInteractor(
             paraId: paraId,
             asset: asset,
@@ -86,7 +94,8 @@ struct MoonbeamTermsViewFactory {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             callFactory: SubstrateCallFactory(),
             moonbeamService: moonbeamService,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapper: signingWrapper
         )
     }
 }

@@ -3,7 +3,8 @@ import SoraKeystore
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
         previousView: (ControllerBackedProtocol & AlertPresentable)?,
-        state: CrowdloanSharedState
+        state: CrowdloanSharedState,
+        paraId: ParaId
     ) -> Coordinator? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -28,6 +29,7 @@ struct MoonbeamFlowCoordinatorFactory {
 
         return MoonbeamFlowCoordinator(
             state: state,
+            paraId: paraId,
             service: service,
             operationManager: OperationManagerFacade.sharedManager,
             previousView: previousView

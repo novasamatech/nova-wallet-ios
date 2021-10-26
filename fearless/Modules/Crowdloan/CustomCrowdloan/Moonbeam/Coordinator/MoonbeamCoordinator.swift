@@ -2,17 +2,20 @@ import RobinHood
 
 final class MoonbeamFlowCoordinator: Coordinator {
     let service: MoonbeamBonusServiceProtocol
+    let paraId: ParaId
     let operationManager: OperationManagerProtocol
     let previousView: (ControllerBackedProtocol & AlertPresentable)?
     let state: CrowdloanSharedState
 
     init(
         state: CrowdloanSharedState,
+        paraId: ParaId,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
         previousView: (ControllerBackedProtocol & AlertPresentable)?
     ) {
         self.state = state
+        self.paraId = paraId
         self.service = service
         self.operationManager = operationManager
         self.previousView = previousView
@@ -75,6 +78,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     func showTerms() {
         guard let termsModule = MoonbeamTermsViewFactory.createView(
             state: state,
+            paraId: paraId,
             service: service
         ) else { return }
         let controller = termsModule.controller

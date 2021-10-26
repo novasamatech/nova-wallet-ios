@@ -17,7 +17,8 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         if displayInfo?.customFlow == .moonbeam {
             moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
                 previousView: view,
-                state: state
+                state: state,
+                paraId: paraId
             )
             moonbeamCoordinator?.start()
         } else {

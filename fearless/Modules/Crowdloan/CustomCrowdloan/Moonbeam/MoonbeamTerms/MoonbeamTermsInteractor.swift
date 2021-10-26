@@ -71,7 +71,7 @@ final class MoonbeamTermsInteractor {
             runningIn: .main,
             completion: { [weak self] result in
                 print(result)
-                //self?.confirmPresenter?.didSubmitContribution(result: result)
+                // self?.confirmPresenter?.didSubmitContribution(result: result)
             }
         )
     }
