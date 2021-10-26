@@ -12,6 +12,7 @@ final class MoonbeamTermsInteractor {
     let callFactory: SubstrateCallFactoryProtocol
     let moonbeamService: MoonbeamBonusServiceProtocol
     let operationManager: OperationManagerProtocol
+    let signingWrapper: SigningWrapperProtocol
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
 
@@ -23,7 +24,8 @@ final class MoonbeamTermsInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
         moonbeamService: MoonbeamBonusServiceProtocol,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        signingWrapper: SigningWrapperProtocol
     ) {
         self.paraId = paraId
         self.asset = asset
@@ -33,6 +35,7 @@ final class MoonbeamTermsInteractor {
         self.callFactory = callFactory
         self.moonbeamService = moonbeamService
         self.operationManager = operationManager
+        self.signingWrapper = signingWrapper
     }
 
     private func subscribeToPrice() {
@@ -55,7 +58,22 @@ final class MoonbeamTermsInteractor {
     }
 
     private func submitRemarkToChain(_ remark: String) {
-        print(remark)
+        guard let data = remark.data(using: .utf8) else { return }
+
+        let builderClosure: ExtrinsicBuilderClosure = { builder in
+            let call = SubstrateCallFactory().remark(remark: data)
+            return try builder.adding(call: call)
+        }
+
+        extrinsicService.submit(
+            builderClosure,
+            signer: signingWrapper,
+            runningIn: .main,
+            completion: { [weak self] result in
+                print(result)
+                //self?.confirmPresenter?.didSubmitContribution(result: result)
+            }
+        )
     }
 }
 
