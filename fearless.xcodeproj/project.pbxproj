@@ -1588,6 +1588,7 @@
 		F4C086BD26D114F700716AEC /* SubqueryEraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */; };
 		F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */; };
 		F4C2009C2727ED1C00B0F3D0 /* SystemRemarkCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C2009B2727ED1C00B0F3D0 /* SystemRemarkCall.swift */; };
+		F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */; };
 		F4D551A12643DD240002363F /* AccountSelectionPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D551A02643DD240002363F /* AccountSelectionPresentable.swift */; };
 		F4D6FF0E26B3DD6E002313AF /* AnalyticsRewardsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D6FF0D26B3DD6E002313AF /* AnalyticsRewardsProtocols.swift */; };
 		F4D6FF1326B3DDDF002313AF /* AnalyticsRewardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D6FF1226B3DDDF002313AF /* AnalyticsRewardsViewController.swift */; };
@@ -3252,6 +3253,7 @@
 		F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraValidatorInfo.swift; sourceTree = "<group>"; };
 		F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraStakersInfoSource.swift; sourceTree = "<group>"; };
 		F4C2009B2727ED1C00B0F3D0 /* SystemRemarkCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemRemarkCall.swift; sourceTree = "<group>"; };
+		F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatus.swift; sourceTree = "<group>"; };
 		F4D551A02643DD240002363F /* AccountSelectionPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectionPresentable.swift; sourceTree = "<group>"; };
 		F4D6FF0D26B3DD6E002313AF /* AnalyticsRewardsProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardsProtocols.swift; sourceTree = "<group>"; };
 		F4D6FF1226B3DDDF002313AF /* AnalyticsRewardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardsViewController.swift; sourceTree = "<group>"; };
@@ -6287,6 +6289,7 @@
 				840689FB26321F2700A017B1 /* StorageQuery.swift */,
 				84300B2726C107AD00D64514 /* ConnectionAutobalancing.swift */,
 				84300B2B26C10C9B00D64514 /* ConnectionStateReporting.swift */,
+				F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */,
 			);
 			path = JSONRPC;
 			sourceTree = "<group>";
@@ -8828,6 +8831,7 @@
 				8401AEC42642A71D000B03E3 /* StakingRebondConfirmationWireframe.swift in Sources */,
 				F4A198FB2632A1C000CD6E61 /* StakingBalanceViewModelFactory.swift in Sources */,
 				F4F3C3CB265BB12200C58400 /* CustomValidatorListViewModelFactory.swift in Sources */,
+				F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */,
 				84B018B026E0450F00C75E28 /* ValidatorStateView.swift in Sources */,
 				84563CFF24EFE07E0055591D /* Storage+Identifiable.swift in Sources */,
 				843C49E124DFFC9500B71DDA /* AccountImportSource+ViewModel.swift in Sources */,

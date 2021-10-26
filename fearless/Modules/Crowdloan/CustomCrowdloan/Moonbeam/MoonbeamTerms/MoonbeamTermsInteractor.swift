@@ -93,11 +93,9 @@ final class MoonbeamTermsInteractor {
                 throw ChainRegistryError.connectionUnavailable
             }
 
-            let updateClosure: (String) -> Void = { [weak self] update in
-                DispatchQueue.main.async {
-                    print(update)
-                    self?.presenter?.didReceiveRemark(result: .success(update))
-                }
+            let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { [weak self] update in
+                let result = update.params.result
+                print(result)
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in

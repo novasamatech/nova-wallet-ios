@@ -10,14 +10,6 @@ typealias EstimateFeeIndexedClosure = ([FeeExtrinsicResult]) -> Void
 typealias SubmitExtrinsicResult = Result<String, Error>
 typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
 
-enum ExtrinsicStatus {
-    case ready
-    case broadcast
-    case inBlock
-    case finalized
-    case finalityTimeout
-}
-
 typealias ExtrinsicSubmitIndexedClosure = ([SubmitExtrinsicResult]) -> Void
 
 protocol ExtrinsicServiceProtocol {
