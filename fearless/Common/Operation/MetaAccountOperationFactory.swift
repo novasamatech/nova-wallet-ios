@@ -221,7 +221,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
                 cryptoType: request.cryptoType
             )
 
-            let ethereumDerivationPath = DerivationPathConstants.defaultEthereum
+            let ethereumDerivationPath = request.ethereumDerivationPath
 
             let ethereumJunctionResult = try getJunctionResult(
                 from: ethereumDerivationPath,
