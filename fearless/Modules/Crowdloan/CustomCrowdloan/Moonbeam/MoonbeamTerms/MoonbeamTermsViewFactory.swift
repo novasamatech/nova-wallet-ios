@@ -88,6 +88,7 @@ struct MoonbeamTermsViewFactory {
 
         return MoonbeamTermsInteractor(
             paraId: paraId,
+            chainId: chain.chainId,
             asset: asset,
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
@@ -95,7 +96,8 @@ struct MoonbeamTermsViewFactory {
             callFactory: SubstrateCallFactory(),
             moonbeamService: moonbeamService,
             operationManager: operationManager,
-            signingWrapper: signingWrapper
+            signingWrapper: signingWrapper,
+            chainRegistry: ChainRegistryFacade.sharedRegistry
         )
     }
 }

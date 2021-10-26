@@ -174,21 +174,38 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping ExtrinsicSubmitClosure
+        completion completionClosure: @escaping (Result<String, Error>) -> Void
     ) {
-        let wrapper = operationFactory.submitAndWatch(closure, signer: signer)
+        let extrinsicOperation = operationFactory.submitAndWatch(closure, signer: signer)
 
-        wrapper.targetOperation.completionBlock = {
+        extrinsicOperation.targetOperation.completionBlock = {
             queue.async {
-                if let result = wrapper.targetOperation.result {
-                    completionClosure(result)
+                if let result = extrinsicOperation.targetOperation.result, let params = try? result.get() {
+                    completionClosure(.success(params))
+                    // completionClosure(result)
+//                    let updateClosure: (String) -> Void = { [weak self] update in
+//                        print(update)
+//                        completionClosure(.success(update))
+//                    }
+//
+//                    let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
+//                        print("Unexpected failure after subscription: \(error) \(unsubscribed)")
+//                        completionClosure(.failure(error))
+//                    }
+//
+//                    _ = try? self.engine.subscribe(
+//                        RPCMethod.submitAndWatchExtrinsic,
+//                        params: [params],
+//                        updateClosure: updateClosure,
+//                        failureClosure: failureClosure
+//                    )
                 } else {
                     completionClosure(.failure(BaseOperationError.parentOperationCancelled))
                 }
             }
         }
 
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        operationManager.enqueue(operations: extrinsicOperation.allOperations, in: .transient)
     }
 
     func submit(
