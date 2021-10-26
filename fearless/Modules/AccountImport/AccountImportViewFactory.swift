@@ -62,17 +62,21 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
         }
 
         let keystore = Keychain()
-        let settings = SettingsManager.shared
-        let accountOperationFactory = AccountOperationFactory(keystore: keystore)
+        let settings = SelectedWalletSettings.shared
 
-        let accountRepository = AccountRepositoryFactory.createRepository()
+        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
+
+        let eventCenter = EventCenter.shared
 
         let interactor = AccountImportInteractor(
             accountOperationFactory: accountOperationFactory,
             accountRepository: accountRepository,
             operationManager: OperationManagerFacade.sharedManager,
             settings: settings,
-            keystoreImportService: keystoreImportService
+            keystoreImportService: keystoreImportService,
+            eventCenter: eventCenter
         )
 
         return interactor
@@ -87,18 +91,20 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
         }
 
         let keystore = Keychain()
-        let accountOperationFactory = AccountOperationFactory(keystore: keystore)
+        let accountOperationFactory = MetaAccountOperationFactory(keystore: keystore)
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
-        let accountRepository = AccountRepositoryFactory.createRepository()
+        let eventCenter = EventCenter.shared
 
         let interactor = AddAccount
             .AccountImportInteractor(
                 accountOperationFactory: accountOperationFactory,
                 accountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
-                settings: SettingsManager.shared,
+                settings: SelectedWalletSettings.shared,
                 keystoreImportService: keystoreImportService,
-                eventCenter: EventCenter.shared
+                eventCenter: eventCenter
             )
 
         return interactor
