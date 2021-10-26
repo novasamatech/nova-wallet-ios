@@ -18,6 +18,11 @@ protocol ExtrinsicOperationFactoryProtocol {
         signer: SigningWrapperProtocol,
         numberOfExtrinsics: Int
     ) -> CompoundOperationWrapper<[SubmitExtrinsicResult]>
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<String>
 }
 
 extension ExtrinsicOperationFactoryProtocol {
@@ -317,6 +322,20 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         signer: SigningWrapperProtocol,
         numberOfExtrinsics: Int
     ) -> CompoundOperationWrapper<[SubmitExtrinsicResult]> {
+        submitExtrinsic(
+            closure,
+            signer: signer,
+            numberOfExtrinsics: numberOfExtrinsics,
+            method: RPCMethod.submitExtrinsic
+        )
+    }
+
+    private func submitExtrinsic(
+        _ closure: @escaping ExtrinsicBuilderIndexedClosure,
+        signer: SigningWrapperProtocol,
+        numberOfExtrinsics: Int,
+        method: String
+    ) -> CompoundOperationWrapper<[SubmitExtrinsicResult]> {
         let signingClosure: (Data) throws -> Data = { data in
             try signer.sign(data).rawData()
         }
@@ -331,7 +350,7 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             (0 ..< numberOfExtrinsics).map { index in
                 let submitOperation = JSONRPCListOperation<String>(
                     engine: engine,
-                    method: RPCMethod.submitExtrinsic
+                    method: method
                 )
 
                 submitOperation.configurationBlock = {
@@ -367,6 +386,37 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         return CompoundOperationWrapper(
             targetOperation: wrapperOperation,
             dependencies: builderWrapper.allOperations + submitOperationList
+        )
+    }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<String> {
+        let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
+            try closure(builder)
+        }
+
+        let submitOperation = submitExtrinsic(
+            wrapperClosure,
+            signer: signer,
+            numberOfExtrinsics: 1,
+            method: RPCMethod.submitAndWatchExtrinsic
+        )
+
+        let resultMappingOperation = ClosureOperation<String> {
+            guard let result = try submitOperation.targetOperation.extractNoCancellableResultData().first else {
+                throw BaseOperationError.unexpectedDependentResult
+            }
+
+            return try result.get()
+        }
+
+        resultMappingOperation.addDependency(submitOperation.targetOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: resultMappingOperation,
+            dependencies: submitOperation.allOperations
         )
     }
 }

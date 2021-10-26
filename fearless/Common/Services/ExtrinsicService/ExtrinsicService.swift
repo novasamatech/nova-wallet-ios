@@ -9,6 +9,15 @@ typealias EstimateFeeIndexedClosure = ([FeeExtrinsicResult]) -> Void
 
 typealias SubmitExtrinsicResult = Result<String, Error>
 typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
+
+enum ExtrinsicStatus {
+    case ready
+    case broadcast
+    case inBlock
+    case finalized
+    case finalityTimeout
+}
+
 typealias ExtrinsicSubmitIndexedClosure = ([SubmitExtrinsicResult]) -> Void
 
 protocol ExtrinsicServiceProtocol {
@@ -26,6 +35,13 @@ protocol ExtrinsicServiceProtocol {
     )
 
     func submit(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    )
+
+    func submitAndWatch(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
@@ -140,6 +156,27 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         completion completionClosure: @escaping ExtrinsicSubmitClosure
     ) {
         let wrapper = operationFactory.submit(closure, signer: signer)
+
+        wrapper.targetOperation.completionBlock = {
+            queue.async {
+                if let result = wrapper.targetOperation.result {
+                    completionClosure(result)
+                } else {
+                    completionClosure(.failure(BaseOperationError.parentOperationCancelled))
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+    }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    ) {
+        let wrapper = operationFactory.submitAndWatch(closure, signer: signer)
 
         wrapper.targetOperation.completionBlock = {
             queue.async {

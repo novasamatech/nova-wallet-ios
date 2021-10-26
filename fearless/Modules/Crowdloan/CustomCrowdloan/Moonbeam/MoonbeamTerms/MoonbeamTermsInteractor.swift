@@ -65,13 +65,13 @@ final class MoonbeamTermsInteractor {
             return try builder.adding(call: call)
         }
 
-        extrinsicService.submit(
+        extrinsicService.submitAndWatch(
             builderClosure,
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] result in
                 print(result)
-                // self?.confirmPresenter?.didSubmitContribution(result: result)
+                self?.presenter.didReceiveRemark(result: result)
             }
         )
     }
