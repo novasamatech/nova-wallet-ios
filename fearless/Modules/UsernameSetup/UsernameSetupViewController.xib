@@ -115,7 +115,7 @@
                     <string key="text">Example: Savings, Investments, Crowdloans, Staking.
 This nickname will be displayed only for you and stored locally on your mobile device. </string>
                     <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
-                    <color key="textColor" name="colorWhite"/>
+                    <color key="textColor" name="colorLightGray"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="21e-dk-cnQ" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
