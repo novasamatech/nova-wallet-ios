@@ -157,7 +157,7 @@ final class AccountImportViewController: UIViewController {
         setupUsernamePlaceholder(for: locale)
 
         usernameFooterLabel.text = R.string.localizable
-            .usernameSetupHint(preferredLanguages: locale.rLanguages)
+            .walletUsernameSetupHint(preferredLanguages: locale.rLanguages)
 
         setupPasswordPlaceholder(for: locale)
 
