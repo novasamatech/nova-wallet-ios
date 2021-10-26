@@ -30,39 +30,41 @@ extension AddAccount {
             )
         }
 
-        private func importAccountItem(_ item: MetaAccountModel) {
-            let checkOperation = accountRepository.fetchOperation(
-                by: item.identifier,
-                options: RepositoryFetchOptions()
-            )
+        override func importAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
+            //            let checkOperation = accountRepository.fetchOperation(
+            //                by: item.identifier, // FIXME: Account is not fetched, since identifier is UUID
+            //                options: RepositoryFetchOptions()
+            //            )
+
+            let fetchAccountsOperation = accountRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
             let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
-                if try checkOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled) != nil {
+                let accountItem = try importOperation
+                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+                if try fetchAccountsOperation
+                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled).first(where: {
+                        $0.substrateAccountId == accountItem.substrateAccountId
+                    }) != nil {
                     throw AccountCreateError.duplicated
                 }
 
-                self?.settings.save(value: item)
+                self?.settings.save(value: accountItem)
 
-                return item
+                return accountItem
             }
 
-            saveOperation.addDependency(checkOperation)
-
-            operationManager.enqueue(
-                operations: [checkOperation, saveOperation],
-                in: .transient
-            )
-        }
-
-        override func importAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-            importOperation.completionBlock = { [weak self] in
+            saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
-                    switch importOperation.result {
-                    case let .success(accountItem):
-                        self?.importAccountItem(accountItem)
+                    switch saveOperation.result {
+                    case .success:
+                        self?.settings.setup()
+                        self?.eventCenter.notify(with: SelectedAccountChanged())
+                        self?.presenter?.didCompleteAccountImport()
+
                     case let .failure(error):
                         self?.presenter?.didReceiveAccountImport(error: error)
+
                     case .none:
                         let error = BaseOperationError.parentOperationCancelled
                         self?.presenter?.didReceiveAccountImport(error: error)
@@ -70,7 +72,13 @@ extension AddAccount {
                 }
             }
 
-            operationManager.enqueue(operations: [importOperation], in: .transient)
+            saveOperation.addDependency(importOperation)
+            saveOperation.addDependency(fetchAccountsOperation)
+
+            operationManager.enqueue(
+                operations: [importOperation, fetchAccountsOperation, saveOperation],
+                in: .transient
+            )
         }
     }
 }
