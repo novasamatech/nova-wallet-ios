@@ -63,7 +63,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 do {
                     let alreadyAgreed = try termsOperation.extractNoCancellableResultData()
                     if alreadyAgreed {
-                        self?.showCrowdloanSetup()
+                        self?.showContributionSetup()
                     } else {
                         self?.showTerms()
                     }
@@ -87,5 +87,16 @@ final class MoonbeamFlowCoordinator: Coordinator {
         previousView?.controller.navigationController?.pushViewController(controller, animated: true)
     }
 
-    func showCrowdloanSetup() {}
+    private func showContributionSetup() {
+        guard let setupView = CrowdloanContributionSetupViewFactory.createView(
+            for: paraId,
+            state: state
+        ) else {
+            return
+        }
+
+        let controller = setupView.controller
+        controller.hidesBottomBarWhenPushed = true
+        previousView?.controller.navigationController?.pushViewController(controller, animated: true)
+    }
 }
