@@ -17,6 +17,7 @@ final class CrowdloanListViewLayout: UIView {
         view.separatorColor = R.color.colorDarkGray()
         view.refreshControl = UIRefreshControl()
         view.tableFooterView = UIView()
+        view.separatorStyle = .none
         return view
     }()
 
@@ -31,10 +32,6 @@ final class CrowdloanListViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func setSeparators(enabled: Bool) {
-        tableView.separatorStyle = enabled ? .singleLine : .none
     }
 
     private func setup() {

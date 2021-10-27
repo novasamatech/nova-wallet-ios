@@ -8,7 +8,7 @@ protocol CrowdloanListViewProtocol: ControllerBackedProtocol {
 protocol CrowdloanListPresenterProtocol: AnyObject {
     func setup()
     func refresh(shouldReset: Bool)
-    func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>)
+    func selectViewModel(_ viewModel: CrowdloanSectionItem<CrowdloanCellViewModel>)
     func becomeOnline()
     func putOffline()
     func selectChain()

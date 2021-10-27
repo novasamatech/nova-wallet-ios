@@ -26,7 +26,7 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(24)
-            make.leading.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(8)
         }
 

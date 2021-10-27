@@ -182,7 +182,7 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         }
     }
 
-    func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>) {
+    func selectViewModel(_ viewModel: CrowdloanSectionItem<CrowdloanCellViewModel>) {
         wireframe.presentContributionSetup(from: view, paraId: viewModel.paraId)
     }
 

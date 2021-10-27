@@ -12,8 +12,8 @@ enum CrowdloanListState {
 struct CrowdloansViewModel {
     let tokenSymbol: String
     let contributionsCount: String?
-    let active: CrowdloansSectionViewModel<ActiveCrowdloanViewModel>?
-    let completed: CrowdloansSectionViewModel<CompletedCrowdloanViewModel>?
+    let active: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
+    let completed: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
 }
 
 struct CrowdloansSectionViewModel<T> {
@@ -26,25 +26,17 @@ struct CrowdloanSectionItem<T> {
     let content: T
 }
 
-typealias CrowdloanActiveSection = CrowdloanSectionItem<ActiveCrowdloanViewModel>
-typealias CrowdloanCompletedSection = CrowdloanSectionItem<CompletedCrowdloanViewModel>
+typealias CrowdloanActiveSection = CrowdloanSectionItem<CrowdloanCellViewModel>
+typealias CrowdloanCompletedSection = CrowdloanSectionItem<CrowdloanCellViewModel>
 
 enum CrowdloanDescViewModel {
     case address(_ address: String)
     case text(_ text: String)
 }
 
-struct ActiveCrowdloanViewModel {
+struct CrowdloanCellViewModel {
     let title: String
-    let timeleft: String
-    let description: CrowdloanDescViewModel
-    let progress: String
-    let iconViewModel: ImageViewModelProtocol
-    let contribution: String?
-}
-
-struct CompletedCrowdloanViewModel {
-    let title: String
+    let timeleft: String?
     let description: CrowdloanDescViewModel
     let progress: String
     let iconViewModel: ImageViewModelProtocol

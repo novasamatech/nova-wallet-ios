@@ -139,7 +139,7 @@ final class CrowdloansViewModelFactory {
         chainAsset: ChainAssetDisplayInfo,
         formatters: Formatters,
         locale: Locale
-    ) -> ActiveCrowdloanViewModel? {
+    ) -> CrowdloanCellViewModel? {
         guard let commonContent = createCommonContent(
             from: model,
             viewInfo: viewInfo,
@@ -170,7 +170,7 @@ final class CrowdloansViewModelFactory {
             }
         }()
 
-        return ActiveCrowdloanViewModel(
+        return CrowdloanCellViewModel(
             title: commonContent.title,
             timeleft: timeLeft,
             description: commonContent.details,
@@ -186,7 +186,7 @@ final class CrowdloansViewModelFactory {
         chainAsset: ChainAssetDisplayInfo,
         formatters: Formatters,
         locale: Locale
-    ) -> CompletedCrowdloanViewModel? {
+    ) -> CrowdloanCellViewModel? {
         guard let commonContent = createCommonContent(
             from: model,
             viewInfo: viewInfo,
@@ -197,8 +197,9 @@ final class CrowdloansViewModelFactory {
             return nil
         }
 
-        return CompletedCrowdloanViewModel(
+        return CrowdloanCellViewModel(
             title: commonContent.title,
+            timeleft: nil,
             description: commonContent.details,
             progress: commonContent.progress,
             iconViewModel: commonContent.imageViewModel,
@@ -325,7 +326,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             locale: locale
         )
 
-        let activeSection: CrowdloansSectionViewModel<ActiveCrowdloanViewModel>? = {
+        let activeSection: CrowdloansSectionViewModel<CrowdloanCellViewModel>? = {
             guard !active.isEmpty else {
                 return nil
             }
@@ -336,7 +337,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             return CrowdloansSectionViewModel(title: title, crowdloans: active)
         }()
 
-        let completedSection: CrowdloansSectionViewModel<CompletedCrowdloanViewModel>? = {
+        let completedSection: CrowdloansSectionViewModel<CrowdloanCellViewModel>? = {
             guard !completed.isEmpty else {
                 return nil
             }

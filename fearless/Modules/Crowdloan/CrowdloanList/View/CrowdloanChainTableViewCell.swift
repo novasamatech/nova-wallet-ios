@@ -26,7 +26,6 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
-        selectionStyle = .none
 
         setupLayout()
     }
