@@ -1512,7 +1512,6 @@
 		F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */; };
 		F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */; };
 		F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */; };
-		F436BB8D2726F26B004B1794 /* ParaId+Moonbeam.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB8C2726F26B004B1794 /* ParaId+Moonbeam.swift */; };
 		F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB952726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift */; };
 		F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB9D2726FBF7004B1794 /* Coordinator.swift */; };
 		F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43A596926D520E0005E973D /* EmptyStateViewCell.swift */; };
@@ -3170,7 +3169,6 @@
 		F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewModel.swift; sourceTree = "<group>"; };
 		F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsViewModelFactory.swift; sourceTree = "<group>"; };
 		F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamCoordinator.swift; sourceTree = "<group>"; };
-		F436BB8C2726F26B004B1794 /* ParaId+Moonbeam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaId+Moonbeam.swift"; sourceTree = "<group>"; };
 		F436BB952726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamFlowCoordinatorFactory.swift; sourceTree = "<group>"; };
 		F436BB9D2726FBF7004B1794 /* Coordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 		F43A596926D520E0005E973D /* EmptyStateViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateViewCell.swift; sourceTree = "<group>"; };
@@ -7852,14 +7850,6 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
-		F436BB8B2726F259004B1794 /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				F436BB8C2726F26B004B1794 /* ParaId+Moonbeam.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		F436BB942726FBAD004B1794 /* Coordinator */ = {
 			isa = PBXGroup;
 			children = (
@@ -8162,7 +8152,6 @@
 			isa = PBXGroup;
 			children = (
 				F436BB942726FBAD004B1794 /* Coordinator */,
-				F436BB8B2726F259004B1794 /* Model */,
 				4F2C58329980DEFF34CF1F8C /* MoonbeamTerms */,
 				F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */,
 				F4E17FC42721814D00FE36D3 /* MoonbeamCheckRemarkResponse.swift */,
@@ -9734,7 +9723,6 @@
 				84F30EA125FD3EE700039D09 /* ChildSubscriptionFactory.swift in Sources */,
 				8401AEC12642A71D000B03E3 /* StakingRebondConfirmationViewModel.swift in Sources */,
 				FF2BFCFD981582584A9DA42D /* NetworkInfoWireframe.swift in Sources */,
-				F436BB8D2726F26B004B1794 /* ParaId+Moonbeam.swift in Sources */,
 				84E1CD0C260DCD23001E81B5 /* SwitchAccount+AccountConfirmWireframe.swift in Sources */,
 				AE6F7FDF2685E812002BBC3E /* ValidatorListFilterPresenter.swift in Sources */,
 				8430AAF626023087005B1066 /* NominatorState.swift in Sources */,
