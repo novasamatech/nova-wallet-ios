@@ -57,7 +57,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Archive
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Debug
 
       - name: Export archive
         run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
