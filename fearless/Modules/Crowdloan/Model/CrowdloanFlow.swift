@@ -6,3 +6,14 @@ enum CrowdloanFlow: String, Codable {
     case acala = "Acala"
     case moonbeam = "Moonbeam"
 }
+
+extension CrowdloanFlow {
+    var supportsPrivateCrowdloans: Bool {
+        switch self {
+        case .moonbeam:
+            return true
+        case .karura, .bifrost, .acala:
+            return false
+        }
+    }
+}

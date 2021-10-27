@@ -177,7 +177,11 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
             (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.crowdloanIsNotPrivate(crowdloan: crowdloan, locale: selectedLocale),
+            dataValidatingFactory.crowdloanIsNotPrivate(
+                crowdloan: crowdloan,
+                displayInfo: displayInfo,
+                locale: selectedLocale
+            ),
 
             dataValidatingFactory.has(fee: fee, locale: selectedLocale, onError: { [weak self] in
                 self?.refreshFee()

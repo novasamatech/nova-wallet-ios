@@ -136,13 +136,18 @@ final class CrowdloanContributionSetupPresenter {
     private func provideBonusViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee) ?? 0
         let viewModel: String? = {
-            if let displayInfo = displayInfo, displayInfo.customFlow != nil {
-                return contributionViewModelFactory.createAdditionalBonusViewModel(
-                    inputAmount: inputAmount,
-                    displayInfo: displayInfo,
-                    bonusRate: bonusService?.bonusRate,
-                    locale: selectedLocale
-                )
+            if let displayInfo = displayInfo, let flow = displayInfo.customFlow {
+                switch flow {
+                case .moonbeam:
+                    return "MOONBEAM HERE"
+                default:
+                    return contributionViewModelFactory.createAdditionalBonusViewModel(
+                        inputAmount: inputAmount,
+                        displayInfo: displayInfo,
+                        bonusRate: bonusService?.bonusRate,
+                        locale: selectedLocale
+                    )
+                }
             } else {
                 return nil
             }
@@ -206,7 +211,11 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
             (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.crowdloanIsNotPrivate(crowdloan: crowdloan, locale: selectedLocale),
+            dataValidatingFactory.crowdloanIsNotPrivate(
+                crowdloan: crowdloan,
+                displayInfo: displayInfo,
+                locale: selectedLocale
+            ),
 
             dataValidatingFactory.has(fee: fee, locale: selectedLocale, onError: { [weak self] in
                 self?.refreshFee()

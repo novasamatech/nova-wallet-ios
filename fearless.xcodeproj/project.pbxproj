@@ -7623,13 +7623,13 @@
 		E01524612035A176DA0793E7 /* CrowdloanContributionSetup */ = {
 			isa = PBXGroup;
 			children = (
+				F4AF1D4627295AF700FEAD30 /* View */,
 				846802A1265DA5390034F9B5 /* ViewModel */,
 				7484BA696561262926D87FE5 /* CrowdloanContributionSetupProtocols.swift */,
 				3574BADE9CF77599048C7010 /* CrowdloanContributionSetupWireframe.swift */,
 				3F7068913923A6DEEE9D8EA0 /* CrowdloanContributionSetupPresenter.swift */,
 				F23E38DCBC74C528D7839B76 /* CrowdloanContributionSetupInteractor.swift */,
 				4C71DEF78B69F017DF460AB7 /* CrowdloanContributionSetupViewController.swift */,
-				23BC71941B91D3E372CDB11C /* CrowdloanContributionSetupViewLayout.swift */,
 				5C96E41F878ED0A0A6F469D3 /* CrowdloanContributionSetupViewFactory.swift */,
 			);
 			path = CrowdloanContributionSetup;
@@ -8093,6 +8093,14 @@
 				845E49822636C87B002F8C22 /* StakingManageViewModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		F4AF1D4627295AF700FEAD30 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				23BC71941B91D3E372CDB11C /* CrowdloanContributionSetupViewLayout.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		F4B06BFE26451AD2003214D5 /* View */ = {
