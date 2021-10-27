@@ -4,11 +4,19 @@ import SnapKit
 final class CrowdloanListViewLayout: UIView {
     private let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
 
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()
+        label.font = .h1Title
+        return label
+    }()
+
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
         view.separatorColor = R.color.colorDarkGray()
         view.refreshControl = UIRefreshControl()
+        view.tableFooterView = UIView()
         return view
     }()
 
@@ -29,21 +37,27 @@ final class CrowdloanListViewLayout: UIView {
         tableView.separatorStyle = enabled ? .singleLine : .none
     }
 
-    func setup() {
+    private func setup() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        addSubview(statusView)
-        statusView.snp.makeConstraints { make in
-            make.left.right.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide)
-            make.top.equalTo(safeAreaLayoutGuide).inset(64.0)
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide).inset(10)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
-        addSubview(tableView)
+//        addSubview(statusView)
+//        statusView.snp.makeConstraints { make in
+//            make.left.right.equalToSuperview()
+//            make.bottom.equalTo(safeAreaLayoutGuide)
+//            make.top.equalTo(safeAreaLayoutGuide).inset(64.0)
+//        }
 
+        addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(titleLabel.snp.bottom)
+            make.leading.bottom.trailing.equalToSuperview()
         }
     }
 }

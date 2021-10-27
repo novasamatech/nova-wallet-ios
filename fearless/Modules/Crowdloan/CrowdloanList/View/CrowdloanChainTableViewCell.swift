@@ -3,9 +3,6 @@ import UIKit
 final class CrowdloanChainTableViewCell: UITableViewCell {
     let chainSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
-        view.strokeColor = R.color.colorStrokeGray()!
-        view.highlightedStrokeColor = R.color.colorStrokeGray()!
-        view.borderWidth = 1.0
         return view
     }()
 
@@ -60,11 +57,15 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
 
     private func setupLayout() {
         contentView.addSubview(chainSelectionView)
-
         chainSelectionView.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview().inset(16.0)
+            make.leading.trailing.top.equalToSuperview().inset(16.0)
             make.height.equalTo(48.0)
         }
+
+        let blurView = TriangularedBlurView()
+        blurView.isUserInteractionEnabled = false
+        chainSelectionView.insertSubview(blurView, at: 0)
+        blurView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
         contentView.addSubview(descriptionLabel)
 
