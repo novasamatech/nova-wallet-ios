@@ -35,7 +35,20 @@ final class AccountCreatePresenter {
         view?.setSelectedCrypto(model: viewModel)
     }
 
-    private func applyDerivationPathViewModel() {
+    private func applyEthereumDerivationPathViewModel() {
+        let predicate = NSPredicate.deriviationPathHardSoftNumericPassword
+        let placeholder = DerivationPathConstants.hardSoftPasswordPlaceholder
+
+        let inputHandling = InputHandler(predicate: predicate)
+        let viewModel = InputViewModel(inputHandler: inputHandling, placeholder: placeholder)
+
+        ethereumDerivationPathViewModel = viewModel
+
+        view?.setEthereumDerivationPath(viewModel: viewModel)
+        view?.didValidateEthereumDerivationPath(.none)
+    }
+
+    private func applySubstrateDerivationPathViewModel() {
         guard let cryptoType = selectedCryptoType else {
             return
         }
@@ -56,30 +69,53 @@ final class AccountCreatePresenter {
 
         substrateDerivationPathViewModel = viewModel
 
-        view?.setDerivationPath(viewModel: viewModel)
-        view?.didValidateDerivationPath(.none)
+        view?.setSubstrateDerivationPath(viewModel: viewModel)
+        view?.didValidateSubstrateDerivationPath(.none)
     }
 
     private func presentDerivationPathError(_ cryptoType: MultiassetCryptoType) {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Check correctness
-        switch cryptoType.utilsType {
+        let error: AccountCreationError
+
+        switch cryptoType {
         case .sr25519:
-            _ = wireframe.present(
-                error: AccountCreationError.invalidDerivationHardSoftPassword,
-                from: view,
-                locale: locale
-            )
-        case .ed25519, .ecdsa:
-            _ = wireframe.present(
-                error: AccountCreationError.invalidDerivationHardPassword,
-                from: view,
-                locale: locale
-            )
+            error = .invalidDerivationHardSoftPassword
+        case .ed25519, .substrateEcdsa:
+            error = .invalidDerivationHardPassword
+        case .ethereumEcdsa:
+            error = .invalidDerivationHardSoftNumericPassword
+        }
+
+        _ = wireframe.present(error: error, from: view, locale: locale)
+    }
+
+    private func validateSubstrate() {
+        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = selectedCryptoType else {
+            return
+        }
+
+        if viewModel.inputHandler.completed {
+            view?.didValidateSubstrateDerivationPath(.valid)
+        } else {
+            view?.didValidateSubstrateDerivationPath(.invalid)
+            presentDerivationPathError(cryptoType)
+        }
+    }
+
+    private func validateEthereum() {
+        guard let viewModel = ethereumDerivationPathViewModel else { return }
+
+        if viewModel.inputHandler.completed {
+            view?.didValidateEthereumDerivationPath(.valid)
+        } else {
+            view?.didValidateEthereumDerivationPath(.invalid)
+            presentDerivationPathError(.ethereumEcdsa)
         }
     }
 }
+
+// MARK: - AccountCreatePresenterProtocol
 
 extension AccountCreatePresenter: AccountCreatePresenterProtocol {
     func setup() {
@@ -100,16 +136,8 @@ extension AccountCreatePresenter: AccountCreatePresenterProtocol {
     }
 
     func validate() {
-        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = selectedCryptoType else {
-            return
-        }
-
-        if viewModel.inputHandler.completed {
-            view?.didValidateDerivationPath(.valid)
-        } else {
-            view?.didValidateDerivationPath(.invalid)
-            presentDerivationPathError(cryptoType)
-        }
+        validateSubstrate()
+        validateEthereum()
     }
 
     func selectCryptoType() {
@@ -128,31 +156,39 @@ extension AccountCreatePresenter: AccountCreatePresenterProtocol {
     func proceed() {
         guard
             let cryptoType = selectedCryptoType,
-            let viewModel = substrateDerivationPathViewModel,
+            let substrateViewModel = substrateDerivationPathViewModel,
+            let ethereumViewModel = ethereumDerivationPathViewModel,
             let metadata = metadata
         else {
             return
         }
 
-        guard viewModel.inputHandler.completed else {
-            view?.didValidateDerivationPath(.invalid)
+        guard substrateViewModel.inputHandler.completed else {
+            view?.didValidateSubstrateDerivationPath(.invalid)
             presentDerivationPathError(cryptoType)
             return
         }
 
+        guard ethereumViewModel.inputHandler.completed else {
+            view?.didValidateEthereumDerivationPath(.invalid)
+            presentDerivationPathError(.ethereumEcdsa)
+            return
+        }
+
+        let ethereumDerivationPath = substrateViewModel.inputHandler.value.isEmpty ?
+            DerivationPathConstants.defaultEthereum : substrateViewModel.inputHandler.value
+
         let request = MetaAccountCreationRequest(
             username: usernameSetup.username,
-            derivationPath: viewModel.inputHandler.value,
+            derivationPath: ethereumDerivationPath,
             cryptoType: cryptoType
         )
 
-        wireframe.confirm(
-            from: view,
-            request: request,
-            metadata: metadata
-        )
+        wireframe.confirm(from: view, request: request, metadata: metadata)
     }
 }
+
+// MARK: - AccountCreateInteractorOutputProtocol
 
 extension AccountCreatePresenter: AccountCreateInteractorOutputProtocol {
     func didReceive(metadata: MetaAccountCreationMetadata) {
@@ -163,7 +199,8 @@ extension AccountCreatePresenter: AccountCreateInteractorOutputProtocol {
         view?.set(mnemonic: metadata.mnemonic)
 
         applyCryptoTypeViewModel()
-        applyDerivationPathViewModel()
+        applySubstrateDerivationPathViewModel()
+        applyEthereumDerivationPathViewModel()
     }
 
     func didReceiveMnemonicGeneration(error: Error) {
@@ -173,20 +210,18 @@ extension AccountCreatePresenter: AccountCreateInteractorOutputProtocol {
             return
         }
 
-        _ = wireframe.present(
-            error: CommonError.undefined,
-            from: view,
-            locale: locale
-        )
+        _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
     }
 }
+
+// MARK: - ModalPickerViewControllerDelegate
 
 extension AccountCreatePresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
         selectedCryptoType = metadata?.availableCryptoTypes[index]
 
         applyCryptoTypeViewModel()
-        applyDerivationPathViewModel()
+        applySubstrateDerivationPathViewModel()
 
         view?.didCompleteCryptoTypeSelection()
     }
@@ -195,6 +230,8 @@ extension AccountCreatePresenter: ModalPickerViewControllerDelegate {
         view?.didCompleteCryptoTypeSelection()
     }
 }
+
+// MARK: - Localizable
 
 extension AccountCreatePresenter: Localizable {
     func applyLocalization() {

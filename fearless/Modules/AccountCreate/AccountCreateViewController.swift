@@ -49,6 +49,8 @@ final class AccountCreateViewController: UIViewController {
 
     private var mnemonicView: MnemonicDisplayView?
 
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -72,6 +74,8 @@ final class AccountCreateViewController: UIViewController {
 
         clearKeyboardHandler()
     }
+
+    // MARK: - Configuration
 
     private func configure() {
         stackView.arrangedSubviews.forEach { $0.backgroundColor = R.color.colorBlack() }
@@ -147,10 +151,33 @@ final class AccountCreateViewController: UIViewController {
         nextButton.invalidateLayout()
     }
 
+    // MARK: - Derivation path processing
+
     private func updateDerivationPath(status: FieldStatus) {
         substrateDerivationPathImageView.image = status.icon
         ethereumDerivationPathImageView.image = status.icon // TODO: What is this?
     }
+
+    private func updateSubstrateDerivationPath(status: FieldStatus) {
+        substrateDerivationPathImageView.image = status.icon
+    }
+
+    private func updateEthereumDerivationPath(status: FieldStatus) {
+        ethereumDerivationPathImageView.image = status.icon
+    }
+
+    private func setDerivationPath(viewModel: InputViewModelProtocol, for textField: UITextField) {
+        textField.text = viewModel.inputHandler.value
+
+        let attributedPlaceholder = NSAttributedString(
+            string: viewModel.placeholder,
+            attributes: [.foregroundColor: R.color.colorGray()!]
+        )
+
+        textField.attributedPlaceholder = attributedPlaceholder
+    }
+
+    // MARK: - Actions
 
     @IBAction private func actionExpand() {
         stackView.sendSubviewToBack(advancedContainerView)
@@ -171,6 +198,7 @@ final class AccountCreateViewController: UIViewController {
         presenter.proceed()
     }
 
+    // FIXME: Pass sender
     @IBAction private func actionTextFieldEditingChanged() {
         if substrateDerivationPathModel?.inputHandler.value != substrateDerivationPathField.text {
             substrateDerivationPathField.text = substrateDerivationPathModel?.inputHandler.value
@@ -188,6 +216,8 @@ final class AccountCreateViewController: UIViewController {
     }
 }
 
+// MARK: - AccountCreateViewProtocol
+
 extension AccountCreateViewController: AccountCreateViewProtocol {
     func set(mnemonic: [String]) {
         setupMnemonicViewIfNeeded()
@@ -204,26 +234,30 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
         substrateCryptoTypeView.actionControl.invalidateLayout()
     }
 
-    func setDerivationPath(viewModel: InputViewModelProtocol) {
+    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol) {
         substrateDerivationPathModel = viewModel
+        setDerivationPath(viewModel: viewModel, for: substrateDerivationPathField)
+    }
 
-        substrateDerivationPathField.text = viewModel.inputHandler.value
-
-        let attributedPlaceholder = NSAttributedString(
-            string: viewModel.placeholder,
-            attributes: [.foregroundColor: R.color.colorGray()!]
-        )
-        substrateDerivationPathField.attributedPlaceholder = attributedPlaceholder
+    func setEthereumDerivationPath(viewModel: InputViewModelProtocol) {
+        ethereumDerivationPathModel = viewModel
+        setDerivationPath(viewModel: viewModel, for: ethereumDerivationPathField)
     }
 
     func didCompleteCryptoTypeSelection() {
         substrateCryptoTypeView.actionControl.deactivate(animated: true)
     }
 
-    func didValidateDerivationPath(_ status: FieldStatus) {
-        updateDerivationPath(status: status)
+    func didValidateSubstrateDerivationPath(_ status: FieldStatus) {
+        updateSubstrateDerivationPath(status: status)
+    }
+
+    func didValidateEthereumDerivationPath(_ status: FieldStatus) {
+        updateEthereumDerivationPath(status: status)
     }
 }
+
+// MARK: - UITextFieldDelegate
 
 extension AccountCreateViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -234,12 +268,16 @@ extension AccountCreateViewController: UITextFieldDelegate {
         return false
     }
 
+    // FIXME: check which text field generate the event and act accordingly
     func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        guard let viewModel = substrateDerivationPathModel else {
+        let viewModel = textField == substrateDerivationPathField ?
+            substrateDerivationPathModel : ethereumDerivationPathModel
+
+        guard let viewModel = viewModel else {
             return true
         }
 
@@ -252,6 +290,8 @@ extension AccountCreateViewController: UITextFieldDelegate {
         return shouldApply
     }
 }
+
+// MARK: - KeyboardAdoptable
 
 extension AccountCreateViewController: KeyboardAdoptable {
     func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
@@ -273,6 +313,8 @@ extension AccountCreateViewController: KeyboardAdoptable {
         }
     }
 }
+
+// MARK: - Localizable
 
 extension AccountCreateViewController: Localizable {
     func applyLocalization() {

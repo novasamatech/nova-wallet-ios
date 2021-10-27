@@ -4,10 +4,12 @@ import SoraFoundation
 protocol AccountCreateViewProtocol: ControllerBackedProtocol {
     func set(mnemonic: [String])
     func setSelectedCrypto(model: TitleWithSubtitleViewModel)
-    func setDerivationPath(viewModel: InputViewModelProtocol)
+    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol)
+    func setEthereumDerivationPath(viewModel: InputViewModelProtocol)
 
     func didCompleteCryptoTypeSelection()
-    func didValidateDerivationPath(_ status: FieldStatus)
+    func didValidateSubstrateDerivationPath(_ status: FieldStatus)
+    func didValidateEthereumDerivationPath(_ status: FieldStatus)
 }
 
 protocol AccountCreatePresenterProtocol: AnyObject {
