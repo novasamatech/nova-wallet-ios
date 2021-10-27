@@ -1,4 +1,5 @@
 import RobinHood
+import SoraFoundation
 
 final class MoonbeamFlowCoordinator: Coordinator {
     let service: MoonbeamBonusServiceProtocol
@@ -6,19 +7,22 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let operationManager: OperationManagerProtocol
     let previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
     let state: CrowdloanSharedState
+    let localizationManager: LocalizationManagerProtocol
 
     init(
         state: CrowdloanSharedState,
         paraId: ParaId,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
-        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
+        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.state = state
         self.paraId = paraId
         self.service = service
         self.operationManager = operationManager
         self.previousView = previousView
+        self.localizationManager = localizationManager
     }
 
     func start() {
@@ -30,16 +34,20 @@ final class MoonbeamFlowCoordinator: Coordinator {
     }
 
     func showMoonbeamAccountAlert() {
+        let locale = localizationManager.selectedLocale
+
         let viewModel = AlertPresentableViewModel(
-            title: "Moonbeam account is missing",
-            message: "You should add Moonbeam account to the wallet in order to participate in Moonbeam crowdloan",
+            title: R.string.localizable
+                .crowdloanMoonbeamMissingAccountTitle(preferredLanguages: locale.rLanguages),
+            message: R.string.localizable
+                .crowdloanMoonbeamMissingAccountMessage(preferredLanguages: locale.rLanguages),
             actions: [
                 .init(
-                    title: "Cancel",
+                    title: R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages),
                     style: .destructive
                 ),
                 .init(
-                    title: "Add",
+                    title: R.string.localizable.commonAdd(preferredLanguages: locale.rLanguages),
                     style: .normal,
                     handler: { [weak self] in
                         self?.showAddAccount()

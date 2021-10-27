@@ -1,4 +1,5 @@
 import SoraKeystore
+import SoraFoundation
 
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
@@ -51,7 +52,8 @@ struct MoonbeamFlowCoordinatorFactory {
             paraId: paraId,
             service: service,
             operationManager: operationManager,
-            previousView: previousView
+            previousView: previousView,
+            localizationManager: LocalizationManager.shared
         )
     }
 }
