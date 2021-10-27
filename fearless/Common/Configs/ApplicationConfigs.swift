@@ -59,7 +59,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     // swiftlint:enable force_cast
 
     var opensourceURL: URL {
-        URL(string: "https://github.com/nova-wallet/nova-wallet-ios")!
+        URL(string: "https://github.com/nova-wallet")!
     }
 
     // swiftlint:disable force_cast
