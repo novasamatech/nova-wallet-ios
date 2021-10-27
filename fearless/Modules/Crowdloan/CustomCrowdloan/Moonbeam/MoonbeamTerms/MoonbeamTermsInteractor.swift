@@ -15,11 +15,11 @@ final class MoonbeamTermsInteractor {
     let moonbeamService: MoonbeamBonusServiceProtocol
     let operationManager: OperationManagerProtocol
     let signingWrapper: SigningWrapperProtocol
-    let chainRegistry: ChainRegistryProtocol
+    let chainConnection: ChainConnection
+    let logger: LoggerProtocol?
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var subscriptionId: UInt16?
-    private var chainConnection: ChainConnection?
 
     init(
         paraId: ParaId,
@@ -32,7 +32,8 @@ final class MoonbeamTermsInteractor {
         moonbeamService: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
         signingWrapper: SigningWrapperProtocol,
-        chainRegistry: ChainRegistryProtocol
+        chainConnection: ChainConnection,
+        logger: LoggerProtocol? = nil
     ) {
         self.paraId = paraId
         self.chainId = chainId
@@ -44,7 +45,8 @@ final class MoonbeamTermsInteractor {
         self.moonbeamService = moonbeamService
         self.operationManager = operationManager
         self.signingWrapper = signingWrapper
-        self.chainRegistry = chainRegistry
+        self.chainConnection = chainConnection
+        self.logger = logger
     }
 
     private func subscribeToPrice() {
@@ -79,44 +81,65 @@ final class MoonbeamTermsInteractor {
             signer: signingWrapper,
             runningIn: .main,
             completion: { [weak self] extrinsicParamsResult in
-                print(extrinsicParamsResult)
-                if case let .success(ext) = extrinsicParamsResult {
-                    self?.subscribeToRemarkUpdates(extrinsic: ext)
+                switch extrinsicParamsResult {
+                case let .success(extrinsic):
+                    self?.subscribeToRemarkUpdates(extrinsic: extrinsic)
+                case let .failure(error):
+                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
                 }
             }
         )
     }
 
     private func subscribeToRemarkUpdates(extrinsic: String) {
-        do {
-            guard let connection = chainRegistry.getConnection(for: chainId) else {
-                throw ChainRegistryError.connectionUnavailable
-            }
+        guard
+            let extrinsicHash = try? Data(hexString: extrinsic),
+            let hash = try? StorageHasher.blake256.hash(data: extrinsicHash)
+        else { return }
+        let hashWithPrefix = hash.toHex(includePrefix: true)
 
+        do {
             let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { [weak self] update in
-                let result = update.params.result
-                self?.handleExtrinsicStatus(result, extrinsicHash: "")
+                let status = update.params.result
+                if case let .finalized(blockHash) = status {
+                    self?.verifyRemark(blockHash: blockHash, extrinsicHash: hashWithPrefix)
+                }
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
-                print("Unexpected failure after subscription: \(error) \(unsubscribed)")
-                self?.presenter?.didReceiveRemark(result: .failure(error))
+                self?.logger?.error("Unexpected failure after subscription: \(error) \(unsubscribed)")
+                self?.presenter.didReceiveVerifyRemark(result: .failure(error))
             }
-            chainConnection = connection
 
-            subscriptionId = try chainConnection!.subscribe(
+            subscriptionId = try chainConnection.subscribe(
                 RPCMethod.submitAndWatchExtrinsic,
                 params: [extrinsic],
                 updateClosure: updateClosure,
                 failureClosure: failureClosure
             )
         } catch {
-            print("Unexpected chain subscription failure: \(error)")
+            logger?.error("Unexpected chain subscription failure: \(error)")
         }
     }
 
-    private func handleExtrinsicStatus(_ status: ExtrinsicStatus, extrinsicHash _: String) {
-        if case let .finalized(blockHash) = status {}
+    private func verifyRemark(blockHash: String, extrinsicHash: String) {
+        let verifyOperation = moonbeamService.createVerifyRemarkOperation(
+            blockHash: blockHash,
+            extrinsicHash: extrinsicHash
+        )
+
+        verifyOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let verified = try verifyOperation.extractNoCancellableResultData()
+                    self?.presenter.didReceiveVerifyRemark(result: .success(verified))
+                } catch {
+                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [verifyOperation], in: .transient)
     }
 }
 
@@ -141,7 +164,7 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
                     let remark = try submitOperation.extractNoCancellableResultData()
                     self?.submitRemarkToChain(remark)
                 } catch {
-                    self?.presenter.didReceiveRemark(result: .failure(error))
+                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
                 }
             }
         }

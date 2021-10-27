@@ -174,23 +174,6 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
             queue.async {
                 if let result = extrinsicOperation.targetOperation.result, let params = try? result.get() {
                     completionClosure(.success(params))
-                    // completionClosure(result)
-//                    let updateClosure: (String) -> Void = { [weak self] update in
-//                        print(update)
-//                        completionClosure(.success(update))
-//                    }
-//
-//                    let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
-//                        print("Unexpected failure after subscription: \(error) \(unsubscribed)")
-//                        completionClosure(.failure(error))
-//                    }
-//
-//                    _ = try? self.engine.subscribe(
-//                        RPCMethod.submitAndWatchExtrinsic,
-//                        params: [params],
-//                        updateClosure: updateClosure,
-//                        failureClosure: failureClosure
-//                    )
                 } else {
                     completionClosure(.failure(BaseOperationError.parentOperationCancelled))
                 }

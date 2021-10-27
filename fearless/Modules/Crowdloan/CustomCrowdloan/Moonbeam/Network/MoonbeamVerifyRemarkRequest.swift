@@ -9,7 +9,7 @@ struct MoonbeamVerifyRemarkRequest {
 extension MoonbeamVerifyRemarkRequest: Encodable {
     enum CodingKeys: String, CodingKey {
         case address
-        case extrinsicHash = "extrinsic_hash"
-        case blockHash = "block_hash"
+        case extrinsicHash = "extrinsic-hash"
+        case blockHash = "block-hash"
     }
 }

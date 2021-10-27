@@ -97,7 +97,8 @@ struct MoonbeamTermsViewFactory {
             moonbeamService: moonbeamService,
             operationManager: operationManager,
             signingWrapper: signingWrapper,
-            chainRegistry: ChainRegistryFacade.sharedRegistry
+            chainConnection: connection,
+            logger: Logger.shared
         )
     }
 }
