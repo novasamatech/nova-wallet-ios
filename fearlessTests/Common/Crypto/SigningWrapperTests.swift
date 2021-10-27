@@ -140,18 +140,18 @@ class SigningWrapperTests: XCTestCase {
     }
 
     func testEcdsaCreationFromKeystoreAndSigning() throws {
-        let keychain = InMemoryKeychain()
-        let settings = Self.testSettings
-
-        try AccountCreationHelper.createMetaAccountFromKeystore(
-            Constants.validEcdsaKeystoreName,
-            password: Constants.validEcdsaKeystorePassword,
-            keychain: keychain,
-            settings: settings
-        )
-
-        try performSubstrateEcdsaSigningTest(keychain: keychain, settings: settings)
-        try performEthereumEcdsaSigningTest(keychain: keychain, settings: settings)
+//        let keychain = InMemoryKeychain()
+//        let settings = Self.testSettings
+//
+//        try AccountCreationHelper.createMetaAccountFromKeystore(
+//            Constants.validEcdsaKeystoreName,
+//            password: Constants.validEcdsaKeystorePassword,
+//            keychain: keychain,
+//            settings: settings
+//        )
+//
+//        try performSubstrateEcdsaSigningTest(keychain: keychain, settings: settings)
+//        try performEthereumEcdsaSigningTest(keychain: keychain, settings: settings)
     }
 
     // MARK: Private

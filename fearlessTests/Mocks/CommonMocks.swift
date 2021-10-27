@@ -2470,6 +2470,21 @@ import RobinHood
     
     
     
+     func getChain(for chainId: ChainModel.Id) -> ChainModel? {
+        
+    return cuckoo_manager.call("getChain(for: ChainModel.Id) -> ChainModel?",
+            parameters: (chainId),
+            escapingParameters: (chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.getChain(for: chainId))
+        
+    }
+    
+    
+    
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection? {
         
     return cuckoo_manager.call("getConnection(for: ChainModel.Id) -> ChainConnection?",
@@ -2557,6 +2572,11 @@ import RobinHood
 	    }
 	    
 	    
+	    func getChain<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), ChainModel?> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "getChain(for: ChainModel.Id) -> ChainModel?", parameterMatchers: matchers))
+	    }
+	    
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "getConnection(for: ChainModel.Id) -> ChainConnection?", parameterMatchers: matchers))
@@ -2604,6 +2624,12 @@ import RobinHood
 	
 	    
 	    @discardableResult
+	    func getChain<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), ChainModel?> where M1.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
+	        return cuckoo_manager.verify("getChain(for: ChainModel.Id) -> ChainModel?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.__DoNotUse<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return cuckoo_manager.verify("getConnection(for: ChainModel.Id) -> ChainConnection?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -2649,6 +2675,10 @@ import RobinHood
 
     
 
+    
+     func getChain(for chainId: ChainModel.Id) -> ChainModel?  {
+        return DefaultValueRegistry.defaultValue(for: (ChainModel?).self)
+    }
     
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection?  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection?).self)

@@ -1607,7 +1607,6 @@
 		F4DCAE4F2620819000CCA6BF /* PayoutRewardsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DCAE4E2620819000CCA6BF /* PayoutRewardsService.swift */; };
 		F4E117B9264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */; };
 		F4E17FB827216C2F00FE36D3 /* MoonbeamBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */; };
-		F4E17FC02721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FBF2721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift */; };
 		F4E17FC52721814D00FE36D3 /* MoonbeamVerifiedResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FC42721814D00FE36D3 /* MoonbeamVerifiedResponse.swift */; };
 		F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FC9272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift */; };
 		F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E17FCE272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift */; };
@@ -3281,7 +3280,6 @@
 		F4DCAE4E2620819000CCA6BF /* PayoutRewardsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutRewardsService.swift; sourceTree = "<group>"; };
 		F4E117B8264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountConfirmationVM.swift; sourceTree = "<group>"; };
 		F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamBonusService.swift; sourceTree = "<group>"; };
-		F4E17FBF2721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamCrowdloanIntegrationTests.swift; sourceTree = "<group>"; };
 		F4E17FC42721814D00FE36D3 /* MoonbeamVerifiedResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamVerifiedResponse.swift; sourceTree = "<group>"; };
 		F4E17FC9272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamAgreeRemarkResponse.swift; sourceTree = "<group>"; };
 		F4E17FCE272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamAgreeRemarkRequest.swift; sourceTree = "<group>"; };
@@ -4411,7 +4409,6 @@
 		8438E1D024BFAAD2001BDB13 /* fearlessIntegrationTests */ = {
 			isa = PBXGroup;
 			children = (
-				F4E17FBF2721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift */,
 				F441BE12263986BE0096B67B /* ExtrinsicServiceTests.swift */,
 				8438E1D124BFAAD2001BDB13 /* JSONRPCTests.swift */,
 				8438E1D324BFAAD2001BDB13 /* Info.plist */,
@@ -8665,7 +8662,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4E17FC02721700500FE36D3 /* MoonbeamCrowdloanIntegrationTests.swift in Sources */,
 				849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */,
 				84BB3CE9267C9ADE00676FFE /* CrowdloanTests.swift in Sources */,
 				8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */,
