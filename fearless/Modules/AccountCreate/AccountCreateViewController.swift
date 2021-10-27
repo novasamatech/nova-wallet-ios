@@ -287,9 +287,7 @@ extension AccountCreateViewController: UITextFieldDelegate {
         let viewModel = textField == substrateDerivationPathField ?
             substrateDerivationPathModel : ethereumDerivationPathModel
 
-        guard let viewModel = viewModel else {
-            return true
-        }
+        guard let viewModel = viewModel else { return true }
 
         let shouldApply = viewModel.inputHandler.didReceiveReplacement(string, for: range)
 

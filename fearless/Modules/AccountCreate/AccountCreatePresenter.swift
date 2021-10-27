@@ -175,12 +175,15 @@ extension AccountCreatePresenter: AccountCreatePresenterProtocol {
             return
         }
 
-        let ethereumDerivationPath = substrateViewModel.inputHandler.value.isEmpty ?
+        let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+
+        let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
             DerivationPathConstants.defaultEthereum : substrateViewModel.inputHandler.value
 
         let request = MetaAccountCreationRequest(
             username: usernameSetup.username,
-            derivationPath: ethereumDerivationPath,
+            derivationPath: substrateDerivationPath,
+            ethereumDerivationPath: ethereumDerivationPath,
             cryptoType: cryptoType
         )
 

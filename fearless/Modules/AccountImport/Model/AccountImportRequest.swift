@@ -27,6 +27,14 @@ struct AccountImportKeystoreRequest {
     let cryptoType: CryptoType
 }
 
+struct MetaAccountImportMnemonicRequest {
+    let mnemonic: String
+    let username: String
+    let derivationPath: String
+    let ethereumDerivationPath: String?
+    let cryptoType: MultiassetCryptoType
+}
+
 struct MetaAccountImportSeedRequest {
     let seed: String
     let username: String
@@ -45,6 +53,7 @@ struct ChainAccountImportMnemonicRequest {
     let mnemonic: String
     let username: String
     let derivationPath: String
+    let ethereumDerivationPath: String?
     let cryptoType: MultiassetCryptoType
 }
 

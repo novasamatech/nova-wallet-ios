@@ -9,7 +9,12 @@
 "operation.error.message" = "Пожалуйста, попробуйте позже";
 "connection.error.title" = "Ошибка соединения";
 "connection.error.message" = "Пожалуйста, проверьте подключение к Интернету и повторите попытку.";
-"onboarding.restore.account" = "Восстановить";
+"onboarding.create.wallet" = "Создать новый кошелёк";
+"onboarding.restore.wallet" = "У меня уже есть кошелёк";
+"onboarding.create.chain.account" = "Создать новый аккаунт";
+"onboarding.restore.chain.account" = "У меня уже есть аккаунт";
+"import.wallet.title" = "Импортировать кошелёк";
+"import.chain.account.title" = "Импортировать аккаунт";
 "onboarding.terms.and.conditions.1" = "Я подтверждаю, что прочитал и согласен с \
 Условиями использования и Политикой конфиденциальности";
 "onboarding.terms.and.conditions.2" = "Условиями использования";
@@ -42,7 +47,8 @@
 "no.email.bound.error.message" = "Пожалуйста, убедитесь, что на устройстве установлено почтовое приложение.";
 "connection.management.title" = "Сети";
 "onboarding.create.account" = "Создать аккаунт";
-"username.setup.choose.title" = "Имя";
+"wallet.username.setup.choose.title" = "Имя кошелька";
+"account.username.setup.choose.title" = "Имя";
 "username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "username.setup.title" = "Создать аккаунт";
 "common.no.screenshot.title" = "Не делайте скриншоты";

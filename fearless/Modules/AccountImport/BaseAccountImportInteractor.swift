@@ -62,7 +62,7 @@ class BaseAccountImportInteractor {
             defaultSource: .mnemonic,
             availableNetworks: supportedNetworks,
             defaultNetwork: defaultNetwork,
-            availableCryptoTypes: MultiassetCryptoType.allCases,
+            availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
             defaultCryptoType: .sr25519
         )
 
@@ -87,6 +87,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         let creationRequest = MetaAccountCreationRequest(
             username: request.username,
             derivationPath: request.derivationPath,
+            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
             cryptoType: request.cryptoType
         )
 
