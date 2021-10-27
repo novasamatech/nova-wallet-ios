@@ -46,6 +46,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     let paraId: ParaId
     let address: AccountAddress
+    let contrubution: CrowdloanContribution?
     let etheriumAddress: AccountAddress?
     let signingWrapper: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
@@ -58,12 +59,14 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     init(
         paraId: ParaId,
         address: AccountAddress,
+        contrubution: CrowdloanContribution?,
         etheriumAddress: AccountAddress?,
         signingWrapper: SigningWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.paraId = paraId
         self.address = address
+        self.contrubution = contrubution
         self.etheriumAddress = etheriumAddress
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
@@ -255,6 +258,12 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         newContribution: BigUInt,
         closure: @escaping (Result<MultiSignature?, Error>) -> Void
     ) {
+        let previousContribution: BigUInt = {
+            if let contribution = contrubution {
+                return contribution.balance
+            }
+            return BigUInt(0)
+        }()
         let signatureOperation = createMakeSignatureOperation(
             previousTotalContribution: previousContribution,
             contribution: newContribution

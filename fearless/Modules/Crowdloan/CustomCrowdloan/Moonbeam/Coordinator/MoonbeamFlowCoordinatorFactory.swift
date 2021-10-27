@@ -6,7 +6,8 @@ struct MoonbeamFlowCoordinatorFactory {
         previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         state: CrowdloanSharedState,
         paraId: ParaId,
-        displayInfo: CrowdloanDisplayInfo
+        displayInfo: CrowdloanDisplayInfo,
+        contrubution: CrowdloanContribution?
     ) -> Coordinator? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -42,6 +43,7 @@ struct MoonbeamFlowCoordinatorFactory {
         let service = MoonbeamBonusService(
             paraId: paraId,
             address: selectedAddress,
+            contrubution: contrubution,
             etheriumAddress: etheriumAddress,
             signingWrapper: signingWrapper,
             operationManager: operationManager

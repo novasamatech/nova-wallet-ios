@@ -38,7 +38,8 @@ protocol CrowdloanListWireframeProtocol: AnyObject {
     func presentContributionSetup(
         from view: CrowdloanListViewProtocol?,
         paraId: ParaId,
-        displayInfo: CrowdloanDisplayInfo?
+        displayInfo: CrowdloanDisplayInfo?,
+        contrubution: CrowdloanContribution? // TODO: remove parameter, obtain contrubution at Setup module
     )
     func selectChain(
         from view: CrowdloanListViewProtocol?,
