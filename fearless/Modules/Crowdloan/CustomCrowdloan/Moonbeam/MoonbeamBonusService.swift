@@ -12,6 +12,11 @@ protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
     func createAgreeRemarkOperation(
         dependingOn statementOperation: BaseOperation<Data>
     ) -> BaseOperation<String>
+
+    func createVerifyRemarkOperation(
+        blockHash: String,
+        extrinsicHash: String
+    ) -> BaseOperation<Bool>
 }
 
 final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
@@ -33,6 +38,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     }
 
     static let agreeRemark = "/agree-remark"
+    static let verifyRemark = "/verify-remark"
     static let statementURL = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
     let address: AccountAddress
@@ -137,6 +143,38 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
                 from: data
             )
             return resultData.remark
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
+    }
+
+    /// Submit proof of remark for a given address - block should be finalized before sending
+    func createVerifyRemarkOperation(
+        blockHash: String,
+        extrinsicHash: String
+    ) -> BaseOperation<Bool> {
+        let url = Self.baseURL.appendingPathComponent(Self.verifyRemark)
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+            let remarkRequest = MoonbeamVerifyRemarkRequest(
+                address: self.address,
+                extrinsicHash: extrinsicHash,
+                blockHash: blockHash
+            )
+            request.httpBody = try JSONEncoder().encode(remarkRequest)
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<Bool> { data in
+            let resultData = try JSONDecoder().decode(
+                MoonbeamVerifiedResponse.self,
+                from: data
+            )
+            return resultData.verified
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)

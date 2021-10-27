@@ -1510,6 +1510,7 @@
 		F418E891264D318C00699085 /* AlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E890264D318C00699085 /* AlertsView.swift */; };
 		F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */; };
 		F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */; };
+		F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */; };
 		F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */; };
 		F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */; };
 		F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F436BB952726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift */; };
@@ -3167,6 +3168,7 @@
 		F418E890264D318C00699085 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
 		F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewLayout.swift; sourceTree = "<group>"; };
 		F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewModel.swift; sourceTree = "<group>"; };
+		F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamVerifyRemarkRequest.swift; sourceTree = "<group>"; };
 		F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsViewModelFactory.swift; sourceTree = "<group>"; };
 		F436BB832726EA94004B1794 /* MoonbeamCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamCoordinator.swift; sourceTree = "<group>"; };
 		F436BB952726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamFlowCoordinatorFactory.swift; sourceTree = "<group>"; };
@@ -7856,6 +7858,7 @@
 				F4E17FC42721814D00FE36D3 /* MoonbeamVerifiedResponse.swift */,
 				F4E17FCE272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift */,
 				F4E17FC9272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift */,
+				F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -9237,6 +9240,7 @@
 				AE6F7FE62685F2C3002BBC3E /* ValidatorListFilterViewModel.swift in Sources */,
 				F40966F626B299FC008CD244 /* SubqueryStakeSource.swift in Sources */,
 				84FB1F652526879200E0242B /* WalletSingleProviderIdFactory.swift in Sources */,
+				F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */,
 				8436EDDC25893FA0004D9E97 /* WalletBuyCommand.swift in Sources */,
 				849014FC24AA9939008F705E /* Charset+Mnemonic.swift in Sources */,
 				8428769224AE046300D91AD8 /* AboutHeaderView.swift in Sources */,
