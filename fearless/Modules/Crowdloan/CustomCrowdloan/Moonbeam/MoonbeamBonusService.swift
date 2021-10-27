@@ -30,6 +30,8 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     #if DEBUG
         static let baseURL = URL(string: "https://wallet-test.api.purestake.xyz")!
+    #else
+        static let baseURL = URL(string: "https://yy9252r9jh.api.purestake.io")!
     #endif
 
     static let apiHealth = "/health"
@@ -275,6 +277,8 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
     #if DEBUG
         static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
+    #else
+        static let apiKey = "s2blK9qnbOaL17skehEEg3qvJ5pn0mnBvJAJGCA6"
     #endif
 
     func modify(request: URLRequest) throws -> URLRequest {
