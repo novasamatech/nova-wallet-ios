@@ -87,6 +87,9 @@ final class AccountCreateViewController: UIViewController {
             action: #selector(actionOpenCryptoType),
             for: .valueChanged
         )
+
+        ethereumCryptoTypeView.actionControl.showsImageIndicator = false
+        ethereumCryptoTypeView.applyDisabledStyle()
     }
 
     private func setupNavigationItem() {
@@ -153,11 +156,6 @@ final class AccountCreateViewController: UIViewController {
 
     // MARK: - Derivation path processing
 
-    private func updateDerivationPath(status: FieldStatus) {
-        substrateDerivationPathImageView.image = status.icon
-        ethereumDerivationPathImageView.image = status.icon // TODO: What is this?
-    }
-
     private func updateSubstrateDerivationPath(status: FieldStatus) {
         substrateDerivationPathImageView.image = status.icon
     }
@@ -175,6 +173,18 @@ final class AccountCreateViewController: UIViewController {
         )
 
         textField.attributedPlaceholder = attributedPlaceholder
+    }
+
+    private func updateSubstrateTextField() {
+        if substrateDerivationPathModel?.inputHandler.value != substrateDerivationPathField.text {
+            substrateDerivationPathField.text = substrateDerivationPathModel?.inputHandler.value
+        }
+    }
+
+    private func updateEthereumTextField() {
+        if ethereumDerivationPathModel?.inputHandler.value != ethereumDerivationPathField.text {
+            ethereumDerivationPathField.text = ethereumDerivationPathModel?.inputHandler.value
+        }
     }
 
     // MARK: - Actions
@@ -198,10 +208,11 @@ final class AccountCreateViewController: UIViewController {
         presenter.proceed()
     }
 
-    // FIXME: Pass sender
-    @IBAction private func actionTextFieldEditingChanged() {
-        if substrateDerivationPathModel?.inputHandler.value != substrateDerivationPathField.text {
-            substrateDerivationPathField.text = substrateDerivationPathModel?.inputHandler.value
+    @IBAction func actionTextFieldEditingChanged(_ sender: UITextField) {
+        if sender == substrateDerivationPathField {
+            updateSubstrateTextField()
+        } else {
+            updateEthereumTextField()
         }
     }
 
@@ -268,7 +279,6 @@ extension AccountCreateViewController: UITextFieldDelegate {
         return false
     }
 
-    // FIXME: check which text field generate the event and act accordingly
     func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
