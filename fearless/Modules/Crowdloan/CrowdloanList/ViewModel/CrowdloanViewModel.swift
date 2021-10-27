@@ -11,7 +11,7 @@ enum CrowdloanListState {
 
 struct CrowdloansViewModel {
     let tokenSymbol: String
-    let contributionsCount: String?
+    let contributions: [CrowdloanContrubutionItem]
     let active: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
     let completed: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
 }

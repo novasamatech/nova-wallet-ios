@@ -133,6 +133,59 @@ final class CrowdloansViewModelFactory {
         )
     }
 
+    private func crowdloanCotribution(
+        from model: Crowdloan,
+        viewInfo: CrowdloansViewInfo,
+        chainAsset: ChainAssetDisplayInfo,
+        formatters: Formatters,
+        locale: Locale
+    ) -> CrowdloanContrubutionItem? {
+        let displayInfo = viewInfo.displayInfo?[model.paraId]
+
+        guard let depositorAddress = try? model.fundInfo.depositor.toAddress(using: chainAsset.chain) else {
+            return nil
+        }
+
+        guard
+            let title = displayInfo?.name ?? formatters.quantity.string(from: NSNumber(value: model.paraId))
+        else { return nil }
+
+        let iconViewModel: ImageViewModelProtocol? = {
+            if let urlString = displayInfo?.icon, let url = URL(string: urlString) {
+                return RemoteImageViewModel(url: url)
+            } else {
+                guard let icon = try? iconGenerator.generateFromAddress(depositorAddress).imageWithFillColor(
+                    R.color.colorWhite()!,
+                    size: UIConstants.normalAddressIconSize,
+                    contentScale: UIScreen.main.scale
+                ) else {
+                    return nil
+                }
+
+                return WalletStaticImageViewModel(staticImage: icon)
+            }
+        }()
+
+        guard
+            let contributionInPlank = viewInfo.contributions[model.fundInfo.trieIndex]?.balance,
+            let contributionDecimal = Decimal.fromSubstrateAmount(
+                contributionInPlank,
+                precision: chainAsset.asset.assetPrecision
+            ),
+            let contributed = formatters.token.stringFromDecimal(contributionDecimal).map({ value in
+                R.string.localizable.crowdloanContributionFormat(value, preferredLanguages: locale.rLanguages)
+            })
+        else {
+            return nil
+        }
+
+        return CrowdloanContrubutionItem(
+            name: title,
+            iconViewModel: iconViewModel,
+            contributed: contributed
+        )
+    }
+
     private func createActiveCrowdloanViewModel(
         from model: Crowdloan,
         viewInfo: CrowdloansViewInfo,
@@ -348,9 +401,19 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             return CrowdloansSectionViewModel(title: title, crowdloans: completed)
         }()
 
+        let contributions = crowdloans.compactMap { crowdloan in
+            crowdloanCotribution(
+                from: crowdloan,
+                viewInfo: viewInfo,
+                chainAsset: chainAsset,
+                formatters: formatters,
+                locale: locale
+            )
+        }
+
         return CrowdloansViewModel(
             tokenSymbol: chainAsset.asset.symbol,
-            contributionsCount: nil,
+            contributions: contributions,
             active: activeSection,
             completed: completedSection
         )
