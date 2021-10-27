@@ -25,6 +25,9 @@ struct MoonbeamTermsViewFactory {
         let assetInfo = asset.displayInfo(with: chain.icon)
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
         let presenter = MoonbeamTermsPresenter(
+            paraId: paraId,
+            moonbeamService: service,
+            state: state,
             assetInfo: assetInfo,
             balanceViewModelFactory: balanceViewModelFactory,
             interactor: interactor,

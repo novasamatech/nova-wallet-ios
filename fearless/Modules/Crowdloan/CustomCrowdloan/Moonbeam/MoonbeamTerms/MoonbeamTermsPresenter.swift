@@ -8,18 +8,27 @@ final class MoonbeamTermsPresenter {
     let wireframe: MoonbeamTermsWireframeProtocol
     let interactor: MoonbeamTermsInteractorInputProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let paraId: ParaId
+    let moonbeamService: MoonbeamBonusServiceProtocol
+    let state: CrowdloanSharedState
     let logger: LoggerProtocol?
 
     private var priceData: PriceData?
     private var fee: Decimal?
 
     init(
+        paraId: ParaId,
+        moonbeamService: MoonbeamBonusServiceProtocol,
+        state: CrowdloanSharedState,
         assetInfo: AssetBalanceDisplayInfo,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         interactor: MoonbeamTermsInteractorInputProtocol,
         wireframe: MoonbeamTermsWireframeProtocol,
         logger: LoggerProtocol? = nil
     ) {
+        self.paraId = paraId
+        self.moonbeamService = moonbeamService
+        self.state = state
         self.assetInfo = assetInfo
         self.balanceViewModelFactory = balanceViewModelFactory
         self.interactor = interactor
@@ -86,7 +95,12 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
         switch result {
         case let .success(verified):
             if verified {
-                print(verified)
+                wireframe.showContributionSetup(
+                    paraId: paraId,
+                    moonbeamService: moonbeamService,
+                    state: state,
+                    from: view
+                )
             }
         case let .failure(error):
             logger?.error("Did receive verify remark error: \(error)")

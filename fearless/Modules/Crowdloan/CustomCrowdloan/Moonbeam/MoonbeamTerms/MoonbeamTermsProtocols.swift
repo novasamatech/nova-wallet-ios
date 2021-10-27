@@ -22,4 +22,11 @@ protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {
     func didReceiveVerifyRemark(result: Result<Bool, Error>)
 }
 
-protocol MoonbeamTermsWireframeProtocol: WebPresentable {}
+protocol MoonbeamTermsWireframeProtocol: WebPresentable {
+    func showContributionSetup(
+        paraId: ParaId,
+        moonbeamService: MoonbeamBonusServiceProtocol,
+        state: CrowdloanSharedState,
+        from view: ControllerBackedProtocol?
+    )
+}
