@@ -90,4 +90,13 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
             logger?.error("Did receive remark error: \(error)")
         }
     }
+
+    func didReceiveExtrinsicStatus(result: Result<ExtrinsicStatus, Error>) {
+        switch result {
+        case let .success(status):
+            if case let .finalized(blockHash) = status {}
+        case let .failure(error):
+            logger?.error("Did receive remark error: \(error)")
+        }
+    }
 }

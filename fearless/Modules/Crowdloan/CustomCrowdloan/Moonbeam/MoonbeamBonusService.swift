@@ -82,7 +82,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
         let resultFactory = AnyNetworkResultFactory<Bool> { data in
             let resultData = try JSONDecoder().decode(
-                MoonbeamCheckRemarkResponse.self,
+                MoonbeamVerifiedResponse.self,
                 from: data
             )
             return resultData.verified
@@ -143,14 +143,6 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         operation.requestModifier = requestModifier
         return operation
     }
-
-//    async function sha256(message: string) {
-//        const msgBuffer = new TextEncoder().encode(message);
-//        const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
-//        const hashArray = Array.from(new Uint8Array(hashBuffer));
-//        const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-//        return hashHex;
-//    }
 
     func save(referralCode _: String, completion _: @escaping (Result<Void, Error>) -> Void) {
         print("save(referralCode")

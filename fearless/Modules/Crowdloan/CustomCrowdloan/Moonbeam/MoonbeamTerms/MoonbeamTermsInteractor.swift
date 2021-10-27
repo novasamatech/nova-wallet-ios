@@ -95,7 +95,7 @@ final class MoonbeamTermsInteractor {
 
             let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { [weak self] update in
                 let result = update.params.result
-                print(result)
+                self?.handleExtrinsicStatus(result, extrinsicHash: "")
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
@@ -113,6 +113,10 @@ final class MoonbeamTermsInteractor {
         } catch {
             print("Unexpected chain subscription failure: \(error)")
         }
+    }
+
+    private func handleExtrinsicStatus(_ status: ExtrinsicStatus, extrinsicHash _: String) {
+        if case let .finalized(blockHash) = status {}
     }
 }
 

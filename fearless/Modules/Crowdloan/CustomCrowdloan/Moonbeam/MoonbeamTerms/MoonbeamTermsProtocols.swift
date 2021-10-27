@@ -20,6 +20,7 @@ protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveRemark(result: Result<String, Error>)
+    func didReceiveExtrinsicStatus(result: Result<ExtrinsicStatus, Error>)
 }
 
 protocol MoonbeamTermsWireframeProtocol: WebPresentable {}
