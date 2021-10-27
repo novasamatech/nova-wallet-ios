@@ -330,10 +330,8 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
                 return nil
             }
 
-            let countString = quantityFormatter.string(from: NSNumber(value: active.count)) ?? ""
-            let title = R.string.localizable.crowdloanActiveSectionFormat(
-                countString, preferredLanguages: locale.rLanguages
-            )
+            let title = R.string.localizable
+                .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
 
             return CrowdloansSectionViewModel(title: title, crowdloans: active)
         }()
@@ -343,11 +341,8 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
                 return nil
             }
 
-            let countString = quantityFormatter.string(from: NSNumber(value: completed.count)) ?? ""
-            let title = R.string.localizable.crowdloanCompletedSectionFormat(
-                countString,
-                preferredLanguages: locale.rLanguages
-            )
+            let title = R.string.localizable
+                .crowdloanCompletedSection(preferredLanguages: locale.rLanguages)
 
             return CrowdloansSectionViewModel(title: title, crowdloans: completed)
         }()

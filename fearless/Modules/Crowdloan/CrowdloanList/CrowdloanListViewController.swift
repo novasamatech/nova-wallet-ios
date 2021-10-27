@@ -229,16 +229,16 @@ extension CrowdloanListViewController: UITableViewDelegate {
         let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
 
         if section == 1, let active = viewModel.active {
-            headerView.bind(title: active.title, status: .active)
+            headerView.bind(title: active.title, count: active.crowdloans.count)
         } else if let completed = viewModel.completed {
-            headerView.bind(title: completed.title, status: .completed)
+            headerView.bind(title: completed.title, count: completed.crowdloans.count)
         }
 
         return headerView
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section > 0 ? 40.0 : 0.0
+        section > 0 ? UITableView.automaticDimension : 0.0
     }
 }
 

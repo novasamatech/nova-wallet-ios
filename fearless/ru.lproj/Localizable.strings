@@ -334,8 +334,8 @@
 "crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
 "crowdloan.you.contributions.title" = "Ваш вклад";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
-"crowdloan.active.section.format" = "Активные (%@)";
-"crowdloan.completed.section.format" = "Завершённые (%@)";
+"crowdloan.active.section" = "Активные";
+"crowdloan.completed.section" = "Завершённые";
 "crowdloan.empty.message" = "Информация о краудлоунах \n появится здесь.";
 "common.time.left.format" = "%@ осталось";
 "common.existential.warning.message" = "Операция удалит учетную запись из хранилища блоков, так как это сделает общий баланс ниже минимального.";
