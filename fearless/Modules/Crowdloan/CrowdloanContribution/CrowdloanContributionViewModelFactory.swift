@@ -208,15 +208,6 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
 
         let learnMoreViewModel = displayInfo.map { createLearnMore(from: $0, locale: locale) }
 
-        let rewardDestination: CrowdloanContributionRewardDestinationViewModel? = {
-            guard
-                let displayInfo = displayInfo,
-                let flow = displayInfo.customFlow,
-                flow == .moonbeam
-            else { return nil }
-            return .init(accountName: displayInfo.name, icon: nil, address: "stub address")
-        }()
-
         return CrowdloanContributionSetupViewModel(
             title: title,
             leasingPeriod: displayLeasingPeriod.leasingPeriod,
@@ -224,8 +215,7 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
             raisedProgress: displayProgress.absoluteProgress,
             raisedPercentage: displayProgress.percentageProgress,
             remainedTime: remainedTime,
-            learnMore: learnMoreViewModel,
-            rewardDestination: rewardDestination
+            learnMore: learnMoreViewModel
         )
     }
 

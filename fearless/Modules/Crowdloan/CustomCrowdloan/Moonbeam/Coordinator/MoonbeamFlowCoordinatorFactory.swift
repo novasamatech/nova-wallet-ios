@@ -28,7 +28,7 @@ struct MoonbeamFlowCoordinatorFactory {
         let operationManager = OperationManagerFacade.sharedManager
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
-        let etheriumAddress: String? = {
+        let ethereumAddress: String? = {
             if
                 let chainId = displayInfo.chainId,
                 let moonbeamChain = chainRegistry.getChain(for: chainId),
@@ -44,7 +44,7 @@ struct MoonbeamFlowCoordinatorFactory {
             paraId: paraId,
             address: selectedAddress,
             contrubution: contrubution,
-            etheriumAddress: etheriumAddress,
+            ethereumAddress: ethereumAddress,
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )

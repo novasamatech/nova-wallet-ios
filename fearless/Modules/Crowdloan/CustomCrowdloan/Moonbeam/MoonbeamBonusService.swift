@@ -47,27 +47,27 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     let paraId: ParaId
     let address: AccountAddress
     let contrubution: CrowdloanContribution?
-    let etheriumAddress: AccountAddress?
+    let ethereumAddress: AccountAddress?
     let signingWrapper: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
     private let requestModifier = MoonbeamRequestModifier()
 
     var hasMoonbeamAccount: Bool {
-        etheriumAddress != nil
+        ethereumAddress != nil
     }
 
     init(
         paraId: ParaId,
         address: AccountAddress,
         contrubution: CrowdloanContribution?,
-        etheriumAddress: AccountAddress?,
+        ethereumAddress: AccountAddress?,
         signingWrapper: SigningWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.paraId = paraId
         self.address = address
         self.contrubution = contrubution
-        self.etheriumAddress = etheriumAddress
+        self.ethereumAddress = ethereumAddress
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
     }
@@ -244,7 +244,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         amount _: BigUInt,
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        guard let address = etheriumAddress, let memo = try? Data(hexString: address), memo.count <= 32 else {
+        guard let address = ethereumAddress, let memo = try? Data(hexString: address), memo.count <= 32 else {
             throw CrowdloanBonusServiceError.invalidReferral
         }
 
