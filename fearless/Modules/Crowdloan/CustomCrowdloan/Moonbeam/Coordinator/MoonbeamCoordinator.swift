@@ -30,7 +30,34 @@ final class MoonbeamFlowCoordinator: Coordinator {
     }
 
     func showMoonbeamAccountAlert() {
-        // TODO:
+        let viewModel = AlertPresentableViewModel(
+            title: "Moonbeam account is missing",
+            message: "You should add Moonbeam account to the wallet in order to participate in Moonbeam crowdloan",
+            actions: [
+                .init(
+                    title: "Cancel",
+                    style: .destructive
+                ),
+                .init(
+                    title: "Add",
+                    style: .normal,
+                    handler: { [weak self] in
+                        self?.showAddAccount()
+                    }
+                )
+            ],
+            closeAction: nil
+        )
+        previousView?.present(viewModel: viewModel, style: .alert, from: previousView)
+    }
+
+    func showAddAccount() {
+        guard let onboarding = OnboardingMainViewFactory.createViewForAccountSwitch() else {
+            return
+        }
+        onboarding.controller.hidesBottomBarWhenPushed = true
+        previousView?.controller
+            .navigationController?.pushViewController(onboarding.controller, animated: true)
     }
 
     func checkAgreement() {
