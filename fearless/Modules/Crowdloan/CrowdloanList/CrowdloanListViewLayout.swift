@@ -2,6 +2,8 @@ import UIKit
 import SnapKit
 
 final class CrowdloanListViewLayout: UIView {
+    private let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
+
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = .clear
@@ -28,6 +30,9 @@ final class CrowdloanListViewLayout: UIView {
     }
 
     func setup() {
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
+
         addSubview(statusView)
         statusView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
