@@ -365,6 +365,8 @@ Derivation path: %@";
 "crowdloan.moonbeam.terms.description" = "You need to submit agreement with Terms & Conditions on the blockchain to proceed. This is required to be done only once for all following Moonbeam contributions";
 "crowdloan.moonbeam.missing.account.title" = "Moonbeam account is missing";
 "crowdloan.moonbeam.missing.account.message" = "You should add Moonbeam account to the wallet in order to participate in Moonbeam crowdloan";
+"crowdloan.moonbeam.region.restriction.title" = "Your region is not supported";
+"crowdloan.moonbeam.region.restriction.message" = "This crowdloan isn't available in your location.";
 "crowdloan.private.crowdloan.title" = "Private crowdloan";
 "crowdloan.private.crowdloan.message" = "Private crowdloans are not yet supported.";
 "common.bonus" = "Bonus";

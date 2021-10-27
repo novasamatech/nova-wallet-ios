@@ -364,6 +364,8 @@
 "crowdloan.moonbeam.terms.description" = "";
 "crowdloan.moonbeam.missing.account.title" = "Отсутствует аккаунт Moonbeam";
 "crowdloan.moonbeam.missing.account.message" = "Добавьте аккаунт Moonbeam в кошелек, чтобы участвовать в краудлоуне Moonbeam";
+"crowdloan.moonbeam.region.restriction.title" = "Ваш регион не поддерживается";
+"crowdloan.moonbeam.region.restriction.message" = "Этот краудлоун не поддерживается в вашем регионе";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";

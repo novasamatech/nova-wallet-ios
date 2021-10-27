@@ -70,6 +70,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     func checkAgreement() {
         let termsOperation = service.createCheckTermsOperation()
+        let locale = localizationManager.selectedLocale
 
         previousView?.didStartLoading()
         termsOperation.completionBlock = { [weak self] in
@@ -85,9 +86,11 @@ final class MoonbeamFlowCoordinator: Coordinator {
                 } catch {
                     guard let controller = self?.previousView?.controller else { return }
                     UIAlertController.present(
-                        message: "This crowdloan isn't available in your location.",
-                        title: "Your region is not supported",
-                        closeAction: "OK",
+                        message: R.string.localizable
+                            .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable
+                            .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
+                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
                         with: controller
                     )
                 }
