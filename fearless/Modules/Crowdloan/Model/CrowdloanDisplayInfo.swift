@@ -26,3 +26,9 @@ extension CrowdloanDisplayInfoList {
         }
     }
 }
+
+extension CrowdloanDisplayInfo {
+    var chainId: String? {
+        extras?["paraId"]
+    }
+}

@@ -4,7 +4,8 @@ struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
         previousView: (ControllerBackedProtocol & AlertPresentable)?,
         state: CrowdloanSharedState,
-        paraId: ParaId
+        paraId: ParaId,
+        displayInfo: CrowdloanDisplayInfo
     ) -> Coordinator? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -23,8 +24,24 @@ struct MoonbeamFlowCoordinatorFactory {
         )
 
         let operationManager = OperationManagerFacade.sharedManager
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        let etheriumAddress: String? = {
+            if
+                let chainId = displayInfo.chainId,
+                let moonbeamChain = chainRegistry.getChain(for: chainId),
+                let accountResponse = selectedAccount.fetch(for: moonbeamChain.accountRequest()),
+                let moonbeamAddress = try? accountResponse.accountId.toAddress(using: moonbeamChain.chainFormat) {
+                return moonbeamAddress
+            } else {
+                return nil
+            }
+        }()
+
         let service = MoonbeamBonusService(
+            paraId: paraId,
             address: selectedAddress,
+            addressInChain: etheriumAddress,
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )

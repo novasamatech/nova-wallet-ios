@@ -14,11 +14,12 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         paraId: ParaId,
         displayInfo: CrowdloanDisplayInfo?
     ) {
-        if displayInfo?.customFlow == .moonbeam {
+        if let info = displayInfo, info.customFlow == .moonbeam {
             moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
                 previousView: view,
                 state: state,
-                paraId: paraId
+                paraId: paraId,
+                displayInfo: info
             )
             moonbeamCoordinator?.start()
         } else {

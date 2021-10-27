@@ -42,21 +42,27 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     static let makeSignature = "/make-signature"
     static let statementURL = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
+    let paraId: ParaId
     let address: AccountAddress
+    let etheriumAddress: AccountAddress?
     let signingWrapper: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
     private let requestModifier = MoonbeamRequestModifier()
 
     var hasMoonbeamAccount: Bool {
-        true // TODO:
+        etheriumAddress != nil
     }
 
     init(
+        paraId: ParaId,
         address: AccountAddress,
+        addressInChain: AccountAddress?,
         signingWrapper: SigningWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
+        self.paraId = paraId
         self.address = address
+        self.etheriumAddress = addressInChain
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
     }
@@ -233,7 +239,13 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         amount _: BigUInt,
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        builder
+        guard let address = etheriumAddress, let memo = try? Data(hexString: address), memo.count <= 32 else {
+            throw CrowdloanBonusServiceError.invalidReferral
+        }
+
+        let addMemo = SubstrateCallFactory().addMemo(to: paraId, memo: memo)
+
+        return try builder.adding(call: addMemo)
     }
 
     func provideSignature(
