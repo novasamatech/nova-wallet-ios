@@ -90,7 +90,8 @@ final class MoonbeamFlowCoordinator: Coordinator {
     private func showContributionSetup() {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,
-            state: state
+            state: state,
+            bonusService: service
         ) else {
             return
         }

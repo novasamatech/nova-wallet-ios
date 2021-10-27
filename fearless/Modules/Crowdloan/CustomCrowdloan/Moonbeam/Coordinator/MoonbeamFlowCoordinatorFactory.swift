@@ -22,16 +22,18 @@ struct MoonbeamFlowCoordinatorFactory {
             accountResponse: accountResponse
         )
 
+        let operationManager = OperationManagerFacade.sharedManager
         let service = MoonbeamBonusService(
             address: selectedAddress,
-            signingWrapper: signingWrapper
+            signingWrapper: signingWrapper,
+            operationManager: operationManager
         )
 
         return MoonbeamFlowCoordinator(
             state: state,
             paraId: paraId,
             service: service,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationManager: operationManager,
             previousView: previousView
         )
     }

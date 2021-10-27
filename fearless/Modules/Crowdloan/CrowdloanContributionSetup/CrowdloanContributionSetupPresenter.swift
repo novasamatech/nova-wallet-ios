@@ -53,6 +53,7 @@ final class CrowdloanContributionSetupPresenter {
         dataValidatingFactory: CrowdloanDataValidatorFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
+        bonusService: CrowdloanBonusServiceProtocol?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -61,6 +62,7 @@ final class CrowdloanContributionSetupPresenter {
         self.contributionViewModelFactory = contributionViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.bonusService = bonusService
         self.logger = logger
         self.localizationManager = localizationManager
     }

@@ -17,11 +17,6 @@ protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
         blockHash: String,
         extrinsicHash: String
     ) -> BaseOperation<Bool>
-
-    func createMakeSignatureOperation(
-        previousTotalContribution: BigUInt,
-        contribution: BigUInt
-    ) -> BaseOperation<String>
 }
 
 final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
@@ -49,6 +44,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     let address: AccountAddress
     let signingWrapper: SigningWrapperProtocol
+    let operationManager: OperationManagerProtocol
     private let requestModifier = MoonbeamRequestModifier()
 
     var hasMoonbeamAccount: Bool {
@@ -57,10 +53,12 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     init(
         address: AccountAddress,
-        signingWrapper: SigningWrapperProtocol
+        signingWrapper: SigningWrapperProtocol,
+        operationManager: OperationManagerProtocol
     ) {
         self.address = address
         self.signingWrapper = signingWrapper
+        self.operationManager = operationManager
     }
 
     /// Health check may be used to verify the geo-fencing for a given user.
@@ -226,9 +224,9 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     func applyOffchainBonusForContribution(
         amount _: BigUInt,
-        with _: @escaping (Result<Void, Error>) -> Void
+        with closure: @escaping (Result<Void, Error>) -> Void
     ) {
-        print("applyOffchainBonusForContribution")
+        closure(.success(()))
     }
 
     func applyOnchainBonusForContribution(
@@ -236,6 +234,29 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         builder
+    }
+
+    func provideSignature(
+        previousContribution: BigUInt,
+        newContribution: BigUInt,
+        closure: @escaping (Result<MultiSignature?, Error>) -> Void
+    ) {
+        let signatureOperation = createMakeSignatureOperation(
+            previousTotalContribution: previousContribution,
+            contribution: newContribution
+        )
+
+        signatureOperation.completionBlock = {
+            do {
+                let signatureString = try signatureOperation.extractNoCancellableResultData()
+                let signatureData = try Data(hexString: signatureString)
+                closure(.success(MultiSignature.sr25519(data: signatureData)))
+            } catch {
+                closure(.failure(error))
+            }
+        }
+
+        operationManager.enqueue(operations: [signatureOperation], in: .transient)
     }
 }
 

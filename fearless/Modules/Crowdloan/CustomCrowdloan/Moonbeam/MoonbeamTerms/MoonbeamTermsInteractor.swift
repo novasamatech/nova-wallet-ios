@@ -59,7 +59,7 @@ final class MoonbeamTermsInteractor {
 
     private func estimateFeeForContribution() {
         let amount = BigUInt(0)
-        let call = callFactory.contribute(to: paraId, amount: amount)
+        let call = callFactory.contribute(to: paraId, amount: amount, signature: nil)
 
         let identifier = String(amount)
 
