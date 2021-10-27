@@ -7,22 +7,29 @@ final class AccountCreateViewController: UIViewController {
 
     @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var stackView: UIStackView!
-    @IBOutlet private var expadableControl: ExpandableActionControl!
+    @IBOutlet private var expandableControl: ExpandableActionControl!
     @IBOutlet private var detailsLabel: UILabel!
 
-    @IBOutlet var cryptoTypeView: BorderedSubtitleActionView!
+    @IBOutlet var substrateCryptoTypeView: BorderedSubtitleActionView!
+    @IBOutlet var ethereumCryptoTypeView: BorderedSubtitleActionView!
 
-    @IBOutlet var derivationPathView: UIView!
-    @IBOutlet var derivationPathLabel: UILabel!
-    @IBOutlet var derivationPathField: UITextField!
-    @IBOutlet var derivationPathImageView: UIImageView!
+    @IBOutlet var substrateDerivationPathView: UIView!
+    @IBOutlet var substrateDerivationPathLabel: UILabel!
+    @IBOutlet var substrateDerivationPathField: UITextField!
+    @IBOutlet var substrateDerivationPathImageView: UIImageView!
+
+    @IBOutlet var ethereumDerivationPathView: UIView!
+    @IBOutlet var ethereumDerivationPathLabel: UILabel!
+    @IBOutlet var ethereumDerivationPathField: UITextField!
+    @IBOutlet var ethereumDerivationPathImageView: UIImageView!
 
     @IBOutlet var advancedContainerView: UIView!
     @IBOutlet var advancedControl: ExpandableActionControl!
 
     @IBOutlet var nextButton: TriangularedButton!
 
-    private var derivationPathModel: InputViewModelProtocol?
+    private var substrateDerivationPathModel: InputViewModelProtocol?
+    private var ethereumDerivationPathModel: InputViewModelProtocol?
 
     var keyboardHandler: KeyboardHandler?
 
@@ -69,9 +76,9 @@ final class AccountCreateViewController: UIViewController {
     private func configure() {
         stackView.arrangedSubviews.forEach { $0.backgroundColor = R.color.colorBlack() }
 
-        advancedContainerView.isHidden = !expadableControl.isActivated
+        advancedContainerView.isHidden = !expandableControl.isActivated
 
-        cryptoTypeView.actionControl.addTarget(
+        substrateCryptoTypeView.actionControl.addTarget(
             self,
             action: #selector(actionOpenCryptoType),
             for: .valueChanged
@@ -122,12 +129,18 @@ final class AccountCreateViewController: UIViewController {
             .commonAdvanced(preferredLanguages: locale.rLanguages)
         advancedControl.invalidateLayout()
 
-        cryptoTypeView.actionControl.contentView.titleLabel.text = R.string.localizable
-            .commonCryptoType(preferredLanguages: locale.rLanguages)
-        cryptoTypeView.actionControl.invalidateLayout()
+        substrateCryptoTypeView.actionControl.contentView.titleLabel.text = R.string.localizable
+            .commonCryptoTypeSubstrate(preferredLanguages: locale.rLanguages)
+        substrateCryptoTypeView.actionControl.invalidateLayout()
 
-        derivationPathLabel.text = R.string.localizable
-            .commonSecretDerivationPath(preferredLanguages: locale.rLanguages)
+        ethereumCryptoTypeView.actionControl.contentView.titleLabel.text = R.string.localizable
+            .commonCryptoTypeEthereum(preferredLanguages: locale.rLanguages)
+        ethereumCryptoTypeView.actionControl.invalidateLayout()
+
+        substrateDerivationPathLabel.text = R.string.localizable
+            .commonSecretDerivationPathSubstrate(preferredLanguages: locale.rLanguages)
+        ethereumDerivationPathLabel.text = R.string.localizable
+            .commonSecretDerivationPathEthereum(preferredLanguages: locale.rLanguages)
 
         nextButton.imageWithTitleView?.title = R.string.localizable
             .commonNext(preferredLanguages: locale.rLanguages)
@@ -135,18 +148,20 @@ final class AccountCreateViewController: UIViewController {
     }
 
     private func updateDerivationPath(status: FieldStatus) {
-        derivationPathImageView.image = status.icon
+        substrateDerivationPathImageView.image = status.icon
+        ethereumDerivationPathImageView.image = status.icon // TODO: What is this?
     }
 
     @IBAction private func actionExpand() {
         stackView.sendSubviewToBack(advancedContainerView)
 
-        advancedContainerView.isHidden = !expadableControl.isActivated
+        advancedContainerView.isHidden = !expandableControl.isActivated
 
-        if expadableControl.isActivated {
+        if expandableControl.isActivated {
             advancedAppearanceAnimator.animate(view: advancedContainerView, completionBlock: nil)
         } else {
-            derivationPathField.resignFirstResponder()
+            substrateDerivationPathField.resignFirstResponder()
+            ethereumDerivationPathField.resignFirstResponder()
 
             advancedDismissalAnimator.animate(view: advancedContainerView, completionBlock: nil)
         }
@@ -157,13 +172,13 @@ final class AccountCreateViewController: UIViewController {
     }
 
     @IBAction private func actionTextFieldEditingChanged() {
-        if derivationPathModel?.inputHandler.value != derivationPathField.text {
-            derivationPathField.text = derivationPathModel?.inputHandler.value
+        if substrateDerivationPathModel?.inputHandler.value != substrateDerivationPathField.text {
+            substrateDerivationPathField.text = substrateDerivationPathModel?.inputHandler.value
         }
     }
 
     @objc private func actionOpenCryptoType() {
-        if cryptoTypeView.actionControl.isActivated {
+        if substrateCryptoTypeView.actionControl.isActivated {
             presenter.selectCryptoType()
         }
     }
@@ -183,26 +198,26 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
     func setSelectedCrypto(model: TitleWithSubtitleViewModel) {
         let title = "\(model.title) | \(model.subtitle)"
 
-        cryptoTypeView.actionControl.contentView.subtitleLabelView.text = title
+        substrateCryptoTypeView.actionControl.contentView.subtitleLabelView.text = title
 
-        cryptoTypeView.actionControl.contentView.invalidateLayout()
-        cryptoTypeView.actionControl.invalidateLayout()
+        substrateCryptoTypeView.actionControl.contentView.invalidateLayout()
+        substrateCryptoTypeView.actionControl.invalidateLayout()
     }
 
     func setDerivationPath(viewModel: InputViewModelProtocol) {
-        derivationPathModel = viewModel
+        substrateDerivationPathModel = viewModel
 
-        derivationPathField.text = viewModel.inputHandler.value
+        substrateDerivationPathField.text = viewModel.inputHandler.value
 
         let attributedPlaceholder = NSAttributedString(
             string: viewModel.placeholder,
             attributes: [.foregroundColor: R.color.colorGray()!]
         )
-        derivationPathField.attributedPlaceholder = attributedPlaceholder
+        substrateDerivationPathField.attributedPlaceholder = attributedPlaceholder
     }
 
     func didCompleteCryptoTypeSelection() {
-        cryptoTypeView.actionControl.deactivate(animated: true)
+        substrateCryptoTypeView.actionControl.deactivate(animated: true)
     }
 
     func didValidateDerivationPath(_ status: FieldStatus) {
@@ -224,7 +239,7 @@ extension AccountCreateViewController: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        guard let viewModel = derivationPathModel else {
+        guard let viewModel = substrateDerivationPathModel else {
             return true
         }
 
@@ -250,8 +265,8 @@ extension AccountCreateViewController: KeyboardAdoptable {
 
         if contentInsets.bottom > 0.0 {
             let fieldFrame = scrollView.convert(
-                cryptoTypeView.frame,
-                from: cryptoTypeView.superview
+                substrateCryptoTypeView.frame,
+                from: substrateCryptoTypeView.superview
             )
 
             scrollView.scrollRectToVisible(fieldFrame, animated: true)

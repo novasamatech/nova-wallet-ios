@@ -13,7 +13,8 @@ final class AccountCreatePresenter {
 
     private var selectedCryptoType: MultiassetCryptoType?
 
-    private var derivationPathViewModel: InputViewModelProtocol?
+    private var substrateDerivationPathViewModel: InputViewModelProtocol?
+    private var ethereumDerivationPathViewModel: InputViewModelProtocol?
 
     init(usernameSetup: UsernameSetupModel) {
         self.usernameSetup = usernameSetup
@@ -53,7 +54,7 @@ final class AccountCreatePresenter {
         let inputHandling = InputHandler(predicate: predicate)
         let viewModel = InputViewModel(inputHandler: inputHandling, placeholder: placeholder)
 
-        derivationPathViewModel = viewModel
+        substrateDerivationPathViewModel = viewModel
 
         view?.setDerivationPath(viewModel: viewModel)
         view?.didValidateDerivationPath(.none)
@@ -99,7 +100,7 @@ extension AccountCreatePresenter: AccountCreatePresenterProtocol {
     }
 
     func validate() {
-        guard let viewModel = derivationPathViewModel, let cryptoType = selectedCryptoType else {
+        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = selectedCryptoType else {
             return
         }
 
@@ -127,7 +128,7 @@ extension AccountCreatePresenter: AccountCreatePresenterProtocol {
     func proceed() {
         guard
             let cryptoType = selectedCryptoType,
-            let viewModel = derivationPathViewModel,
+            let viewModel = substrateDerivationPathViewModel,
             let metadata = metadata
         else {
             return

@@ -52,7 +52,11 @@
 "account.create.details" = "Используйте нецифровой носитель для сохранения, например, выпишите слова на бумагу.";
 "common.advanced" = "Продвинутый";
 "common.crypto.type" = "Тип ключевой пары";
-"common.secret.derivation.path" = "Последовательность для вывода секрета";
+"common.secret.derivation.path" = "Последовательность для вывода";
+"common.crypto.type.substrate" = "Тип ключевой пары Substrate";
+"common.crypto.type.ethereum" = "Тип ключевой пары Ethereum";
+"common.secret.derivation.path.substrate" = "Последовательность для вывода секрета Substrate";
+"common.secret.derivation.path.ethereum" = "Последовательность для вывода секрета Ethereum";
 "common.choose.network" = "Выберите сеть";
 "sr25519.selection.subtitle" = "sr25519 (рекомендованный)";
 "ed25519.selection.subtitle" = "ed25519 (альтернативный)";
