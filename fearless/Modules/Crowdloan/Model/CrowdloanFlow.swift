@@ -17,3 +17,14 @@ extension CrowdloanFlow {
         }
     }
 }
+
+extension CrowdloanFlow {
+    var supportsAdditionalBonus: Bool {
+        switch self {
+        case .moonbeam:
+            return false
+        case .karura, .bifrost, .acala:
+            return true
+        }
+    }
+}
