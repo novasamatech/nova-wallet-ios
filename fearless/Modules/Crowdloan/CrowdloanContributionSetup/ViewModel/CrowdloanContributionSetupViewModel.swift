@@ -8,4 +8,5 @@ struct CrowdloanContributionSetupViewModel {
     let raisedPercentage: String
     let remainedTime: String
     let learnMore: LearnMoreViewModel?
+    let rewardDestination: CrowdloanContributionRewardDestinationViewModel?
 }

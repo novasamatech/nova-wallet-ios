@@ -9,6 +9,7 @@ struct CrowdloanDisplayInfo: Codable, Equatable {
     let icon: String
     let rewardRate: Decimal?
     let customFlow: CrowdloanFlow?
+    let extras: [String: String]?
 }
 
 typealias CrowdloanDisplayInfoList = [CrowdloanDisplayInfo]

@@ -19,6 +19,15 @@ final class CrowdloanContributionSetupViewLayout: UIView {
 
     let hintView = UIFactory.default.createHintView()
 
+    let rewardDestinationTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()!
+        label.font = .h4Title
+        return label
+    }()
+
+    let rewardDestinationAccountView: DetailsTriangularedView = UIFactory.default.createAccountView()
+
     let networkFeeView = NetworkFeeView()
 
     private(set) var estimatedRewardView: TitleValueView?
