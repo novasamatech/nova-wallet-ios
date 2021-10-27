@@ -56,13 +56,13 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     init(
         paraId: ParaId,
         address: AccountAddress,
-        addressInChain: AccountAddress?,
+        etheriumAddress: AccountAddress?,
         signingWrapper: SigningWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
         self.paraId = paraId
         self.address = address
-        self.etheriumAddress = addressInChain
+        self.etheriumAddress = etheriumAddress
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
     }

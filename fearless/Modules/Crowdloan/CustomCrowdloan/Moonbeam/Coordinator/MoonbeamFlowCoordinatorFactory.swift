@@ -2,7 +2,7 @@ import SoraKeystore
 
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
-        previousView: (ControllerBackedProtocol & AlertPresentable)?,
+        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         state: CrowdloanSharedState,
         paraId: ParaId,
         displayInfo: CrowdloanDisplayInfo
@@ -41,7 +41,7 @@ struct MoonbeamFlowCoordinatorFactory {
         let service = MoonbeamBonusService(
             paraId: paraId,
             address: selectedAddress,
-            addressInChain: etheriumAddress,
+            etheriumAddress: etheriumAddress,
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )

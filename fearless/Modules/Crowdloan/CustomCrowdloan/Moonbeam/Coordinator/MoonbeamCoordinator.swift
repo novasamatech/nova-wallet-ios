@@ -4,7 +4,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let service: MoonbeamBonusServiceProtocol
     let paraId: ParaId
     let operationManager: OperationManagerProtocol
-    let previousView: (ControllerBackedProtocol & AlertPresentable)?
+    let previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
     let state: CrowdloanSharedState
 
     init(
@@ -12,7 +12,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         paraId: ParaId,
         service: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
-        previousView: (ControllerBackedProtocol & AlertPresentable)?
+        previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?
     ) {
         self.state = state
         self.paraId = paraId
@@ -23,7 +23,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     func start() {
         if service.hasMoonbeamAccount {
-            checkHealth()
+            checkAgreement()
         } else {
             showMoonbeamAccountAlert()
         }
@@ -33,33 +33,13 @@ final class MoonbeamFlowCoordinator: Coordinator {
         // TODO:
     }
 
-    func checkHealth() {
-        let healthOperation = service.createCheckHealthOperation()
-
-        healthOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    _ = try healthOperation.extractNoCancellableResultData()
-                    self?.checkAgreement()
-                } catch {
-                    guard let controller = self?.previousView?.controller else { return }
-                    UIAlertController.present(
-                        message: "This crowdloan isn't available in your location.",
-                        title: "Your region is not supported",
-                        closeAction: "OK",
-                        with: controller
-                    )
-                }
-            }
-        }
-        operationManager.enqueue(operations: [healthOperation], in: .transient)
-    }
-
     func checkAgreement() {
         let termsOperation = service.createCheckTermsOperation()
 
+        previousView?.didStartLoading()
         termsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                self?.previousView?.didStopLoading()
                 do {
                     let alreadyAgreed = try termsOperation.extractNoCancellableResultData()
                     if alreadyAgreed {
@@ -68,7 +48,13 @@ final class MoonbeamFlowCoordinator: Coordinator {
                         self?.showTerms()
                     }
                 } catch {
-                    print(error) // TODO: show error alert
+                    guard let controller = self?.previousView?.controller else { return }
+                    UIAlertController.present(
+                        message: "This crowdloan isn't available in your location.",
+                        title: "Your region is not supported",
+                        closeAction: "OK",
+                        with: controller
+                    )
                 }
             }
         }

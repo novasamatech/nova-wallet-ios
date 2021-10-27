@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable {
+protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable, LoadableViewProtocol {
     func didReceive(chainInfo: CrowdloansChainViewModel)
     func didReceive(listState: CrowdloanListState)
 }
