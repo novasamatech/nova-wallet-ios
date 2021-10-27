@@ -17,6 +17,11 @@ protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
         blockHash: String,
         extrinsicHash: String
     ) -> BaseOperation<Bool>
+
+    func createMakeSignatureOperation(
+        previousTotalContribution: BigUInt,
+        contribution: BigUInt
+    ) -> BaseOperation<String>
 }
 
 final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
@@ -39,6 +44,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     static let agreeRemark = "/agree-remark"
     static let verifyRemark = "/verify-remark"
+    static let makeSignature = "/make-signature"
     static let statementURL = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
     let address: AccountAddress
@@ -175,6 +181,38 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
                 from: data
             )
             return resultData.verified
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
+    }
+
+    func createMakeSignatureOperation(
+        previousTotalContribution: BigUInt,
+        contribution: BigUInt
+    ) -> BaseOperation<String> {
+        let url = Self.baseURL.appendingPathComponent(Self.makeSignature)
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+            let remarkRequest = MoonbeamMakeSignatureRequest(
+                address: self.address,
+                previousTotalContribution: String(previousTotalContribution),
+                contribution: String(contribution),
+                guid: UUID().uuidString
+            )
+            request.httpBody = try JSONEncoder().encode(remarkRequest)
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<String> { data in
+            let resultData = try JSONDecoder().decode(
+                MoonbeamMakeSignatureResponse.self,
+                from: data
+            )
+            return resultData.signature
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
