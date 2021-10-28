@@ -43,28 +43,38 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     )
-}
 
-protocol AccountCreateViewFactoryProtocol: AnyObject {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-}
-
-// TODO: Refactor out
-protocol ChainAccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
     func confirm(
         from view: AccountCreateViewProtocol?,
         request: ChainAccountImportMnemonicRequest,
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id
     )
+}
 
-    func presentCryptoTypeSelection(
-        from view: AccountCreateViewProtocol?,
-        availableTypes: [MultiassetCryptoType],
-        selectedType: MultiassetCryptoType,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    )
+extension AccountCreateWireframeProtocol {
+    func confirm(
+        from _: AccountCreateViewProtocol?,
+        request _: MetaAccountCreationRequest,
+        metadata _: MetaAccountCreationMetadata
+    ) {}
+
+    func confirm(
+        from _: AccountCreateViewProtocol?,
+        request _: ChainAccountImportMnemonicRequest,
+        metaAccountModel _: MetaAccountModel,
+        chainModelId _: ChainModel.Id
+    ) {}
+}
+
+protocol AccountCreateViewFactoryProtocol: AnyObject {
+    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+
+    static func createViewForReplaceChainAccount(
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id,
+        isEthereumBased: Bool
+    ) -> AccountCreateViewProtocol?
 }

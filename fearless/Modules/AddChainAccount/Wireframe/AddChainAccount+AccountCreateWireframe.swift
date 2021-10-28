@@ -2,7 +2,7 @@ import Foundation
 import IrohaCrypto
 
 extension AddChainAccount {
-    final class AccountCreateWireframe: ChainAccountCreateWireframeProtocol {
+    final class AccountCreateWireframe: AccountCreateWireframeProtocol {
         func confirm(
             from view: AccountCreateViewProtocol?,
             request: ChainAccountImportMnemonicRequest,

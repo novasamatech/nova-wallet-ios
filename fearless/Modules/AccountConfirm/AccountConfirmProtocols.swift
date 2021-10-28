@@ -40,4 +40,10 @@ protocol AccountConfirmViewFactoryProtocol: AnyObject {
         request: MetaAccountCreationRequest,
         metadata: MetaAccountCreationMetadata
     ) -> AccountConfirmViewProtocol?
+
+    static func createViewForReplace(
+        request: ChainAccountImportMnemonicRequest,
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id
+    ) -> AccountConfirmViewProtocol?
 }
