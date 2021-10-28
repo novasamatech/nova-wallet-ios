@@ -6,9 +6,9 @@ extension SwitchAccount {
             guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount) else {
                 return
             }
-            
+
             chainManagementView.controller.hidesBottomBarWhenPushed = true
-            
+
             view?.controller.navigationController?.pushViewController(
                 chainManagementView.controller,
                 animated: true
