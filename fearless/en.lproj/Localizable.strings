@@ -30,6 +30,7 @@ Terms and Conditions and Privacy Policy";
 "access.restore.words.error.message" = "Mnemonic must contain 24 words at max";
 "access.restore.phrase.error.message" = "Your mnemonic is invalid. Please, try another one.";
 "tabbar.wallet.title" = "Wallet";
+"wallet.chain.management.title" = "Wallet";
 "tabbar.staking.title" = "Staking";
 "tabbar.settings.title" = "Settings";
 "wallet.empty.description" = "Incoming and outgoing\

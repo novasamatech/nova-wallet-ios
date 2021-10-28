@@ -24,14 +24,14 @@ final class AccountManagementViewController: UIViewController {
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale
 
-        title = R.string.localizable.profileAccountsTitle(preferredLanguages: locale?.rLanguages)
+        title = R.string.localizable.walletChainManagementTitle(preferredLanguages: locale?.rLanguages)
     }
 
     private func setupTableView() {
 //        tableView.tableFooterView = UIView()
 
         tableView.register(R.nib.accountTableViewCell)
-//        tableView.rowHeight = Constants.cellHeight
+        tableView.rowHeight = Constants.cellHeight
     }
 }
 

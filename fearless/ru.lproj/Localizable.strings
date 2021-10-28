@@ -30,6 +30,7 @@
 "access.restore.words.error.message" = "Мнемоника должна содержать не более 24 слов";
 "access.restore.phrase.error.message" = "Ваша мнемоника недействительна. Пожалуйста, попробуйте другую";
 "tabbar.wallet.title" = "Кошелёк";
+"wallet.chain.management.title" = "Кошелёк";
 "tabbar.staking.title" = "Стейкинг";
 "tabbar.settings.title" = "Настройки";
 "wallet.empty.description" = "Входящие и исходящие \
