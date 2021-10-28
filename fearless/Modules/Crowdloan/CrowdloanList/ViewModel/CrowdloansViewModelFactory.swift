@@ -409,10 +409,16 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         }
 
         let chainViewModel = createChainViewModel(from: chain, asset: asset, balance: balance, locale: locale)
+        let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
         let sections: [CrowdloansSection] =
             [.chain(chainViewModel)]
+                + (!contributions.isEmpty ?
+                    [.yourContributions(contributionsTitle, contributions)]
+                    : [])
                 + crowdloansSections
-                + (!contributions.isEmpty ? [.yourContributions(contributions)] : [])
 
         return CrowdloansViewModel(sections: sections)
     }

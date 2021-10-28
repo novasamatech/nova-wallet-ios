@@ -125,14 +125,12 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[section]
             switch sectionModel {
-            case .chain:
+            case .chain, .yourContributions:
                 return 1
             case let .active(_, cellViewModels):
                 return cellViewModels.count
             case let .completed(_, cellViewModels):
                 return cellViewModels.count
-            case let .yourContributions(contrubutions):
-                return contrubutions.count
             }
         case .loading, .empty, .error:
             return 0
@@ -153,16 +151,14 @@ extension CrowdloanListViewController: UITableViewDataSource {
                     for: .touchUpInside
                 )
                 return cell
-
+            case let .yourContributions(title, contrubutions):
+                let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
+                cell.bind(title: title, count: contrubutions.count)
+                return cell
             case let .active(_, cellViewModels), let .completed(_, cellViewModels):
                 let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!
                 let cellViewModel = cellViewModels[indexPath.row]
                 cell.bind(viewModel: cellViewModel)
-                return cell
-            case let .yourContributions(contrubutions):
-                let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
-                let contrubution = contrubutions[indexPath.row]
-                cell.bind(details: contrubution.contributed, for: .current)
                 return cell
             }
         case .loading, .empty, .error:
