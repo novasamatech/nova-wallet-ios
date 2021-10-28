@@ -1,14 +1,13 @@
 import SoraFoundation
 
 protocol CrowdloanListViewProtocol: ControllerBackedProtocol {
-    func didReceive(chainInfo: CrowdloansChainViewModel)
     func didReceive(listState: CrowdloanListState)
 }
 
 protocol CrowdloanListPresenterProtocol: AnyObject {
     func setup()
     func refresh(shouldReset: Bool)
-    func selectViewModel(_ viewModel: CrowdloanSectionItem<CrowdloanCellViewModel>)
+    func selectViewModel(_ viewModel: CrowdloanCellViewModel)
     func becomeOnline()
     func putOffline()
     func selectChain()

@@ -10,24 +10,15 @@ enum CrowdloanListState {
 }
 
 struct CrowdloansViewModel {
-    let tokenSymbol: String
-    let contributions: [CrowdloanContrubutionItem]
-    let active: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
-    let completed: CrowdloansSectionViewModel<CrowdloanCellViewModel>?
+    let sections: [CrowdloansSection]
 }
 
-struct CrowdloansSectionViewModel<T> {
-    let title: String
-    let crowdloans: [CrowdloanSectionItem<T>]
+enum CrowdloansSection {
+    case chain(CrowdloansChainViewModel)
+    case yourContributions([CrowdloanContrubutionItem])
+    case active(String, [CrowdloanCellViewModel])
+    case completed(String, [CrowdloanCellViewModel])
 }
-
-struct CrowdloanSectionItem<T> {
-    let paraId: ParaId
-    let content: T
-}
-
-typealias CrowdloanActiveSection = CrowdloanSectionItem<CrowdloanCellViewModel>
-typealias CrowdloanCompletedSection = CrowdloanSectionItem<CrowdloanCellViewModel>
 
 enum CrowdloanDescViewModel {
     case address(_ address: String)
@@ -35,6 +26,7 @@ enum CrowdloanDescViewModel {
 }
 
 struct CrowdloanCellViewModel {
+    let paraId: ParaId
     let title: String
     let timeleft: String?
     let description: CrowdloanDescViewModel

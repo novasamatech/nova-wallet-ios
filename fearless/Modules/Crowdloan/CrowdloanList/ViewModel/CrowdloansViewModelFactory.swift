@@ -5,17 +5,13 @@ import FearlessUtils
 import BigInt
 
 protocol CrowdloansViewModelFactoryProtocol {
-    func createChainViewModel(
-        from chain: ChainModel,
-        asset: AssetModel,
-        balance: BigUInt?,
-        locale: Locale
-    ) -> CrowdloansChainViewModel
-
     func createViewModel(
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
+        chain: ChainModel,
+        asset: AssetModel,
+        balance: BigUInt?,
         locale: Locale
     ) -> CrowdloansViewModel
 }
@@ -224,6 +220,7 @@ final class CrowdloansViewModelFactory {
         }()
 
         return CrowdloanCellViewModel(
+            paraId: model.paraId,
             title: commonContent.title,
             timeleft: timeLeft,
             description: commonContent.details,
@@ -251,6 +248,7 @@ final class CrowdloansViewModelFactory {
         }
 
         return CrowdloanCellViewModel(
+            paraId: model.paraId,
             title: commonContent.title,
             timeleft: nil,
             description: commonContent.details,
@@ -266,13 +264,13 @@ final class CrowdloansViewModelFactory {
         chainAsset: ChainAssetDisplayInfo,
         formatters: Formatters,
         locale: Locale
-    ) -> ([CrowdloanActiveSection], [CrowdloanCompletedSection]) {
+    ) -> [CrowdloansSection] {
         let initial = (
-            [CrowdloanActiveSection](),
-            [CrowdloanCompletedSection]()
+            [CrowdloanCellViewModel](),
+            [CrowdloanCellViewModel]()
         )
 
-        return crowdloans.sorted { crowdloan1, crowdloan2 in
+        let cellsViewModel = crowdloans.sorted { crowdloan1, crowdloan2 in
             if crowdloan1.fundInfo.raised != crowdloan2.fundInfo.raised {
                 return crowdloan1.fundInfo.raised > crowdloan2.fundInfo.raised
             } else {
@@ -288,8 +286,7 @@ final class CrowdloansViewModelFactory {
                     formatters: formatters,
                     locale: locale
                 ) {
-                    let sectionItem = CrowdloanSectionItem(paraId: crowdloan.paraId, content: viewModel)
-                    result.1.append(sectionItem)
+                    result.1.append(viewModel)
                 }
             } else {
                 if let viewModel = createActiveCrowdloanViewModel(
@@ -299,9 +296,28 @@ final class CrowdloansViewModelFactory {
                     formatters: formatters,
                     locale: locale
                 ) {
-                    let sectionItem = CrowdloanSectionItem(paraId: crowdloan.paraId, content: viewModel)
-                    result.0.append(sectionItem)
+                    result.0.append(viewModel)
                 }
+            }
+        }
+
+        let (active, completed) = cellsViewModel
+        let activeTitle = R.string.localizable
+            .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
+        let completedTitle = R.string.localizable
+            .crowdloanCompletedSection(preferredLanguages: locale.rLanguages)
+
+        if !active.isEmpty {
+            if !completed.isEmpty {
+                return [.active(activeTitle, active), .completed(completedTitle, completed)]
+            } else {
+                return [.active(activeTitle, active)]
+            }
+        } else {
+            if !completed.isEmpty {
+                return [.completed(completedTitle, completed)]
+            } else {
+                return []
             }
         }
     }
@@ -352,6 +368,9 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
+        chain: ChainModel,
+        asset: AssetModel,
+        balance: BigUInt?,
         locale: Locale
     ) -> CrowdloansViewModel {
         let timeFormatter = TotalTimeFormatter()
@@ -371,35 +390,13 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             time: timeFormatter
         )
 
-        let (active, completed) = createSections(
+        let crowdloansSections = createSections(
             from: crowdloans,
             viewInfo: viewInfo,
             chainAsset: chainAsset,
             formatters: formatters,
             locale: locale
         )
-
-        let activeSection: CrowdloansSectionViewModel<CrowdloanCellViewModel>? = {
-            guard !active.isEmpty else {
-                return nil
-            }
-
-            let title = R.string.localizable
-                .crowdloanActiveSection(preferredLanguages: locale.rLanguages)
-
-            return CrowdloansSectionViewModel(title: title, crowdloans: active)
-        }()
-
-        let completedSection: CrowdloansSectionViewModel<CrowdloanCellViewModel>? = {
-            guard !completed.isEmpty else {
-                return nil
-            }
-
-            let title = R.string.localizable
-                .crowdloanCompletedSection(preferredLanguages: locale.rLanguages)
-
-            return CrowdloansSectionViewModel(title: title, crowdloans: completed)
-        }()
 
         let contributions = crowdloans.compactMap { crowdloan in
             crowdloanCotribution(
@@ -411,11 +408,12 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             )
         }
 
-        return CrowdloansViewModel(
-            tokenSymbol: chainAsset.asset.symbol,
-            contributions: contributions,
-            active: activeSection,
-            completed: completedSection
-        )
+        let chainViewModel = createChainViewModel(from: chain, asset: asset, balance: balance, locale: locale)
+        let sections: [CrowdloansSection] =
+            [.chain(chainViewModel)]
+                + crowdloansSections
+                + (!contributions.isEmpty ? [.yourContributions(contributions)] : [])
+
+        return CrowdloansViewModel(sections: sections)
     }
 }
