@@ -517,7 +517,7 @@ extension AccountImportPresenter: AccountImportPresenterProtocol {
         switch selectedSourceType {
         case .mnemonic:
             let mnemonic = sourceViewModel.inputHandler.normalizedValue
-            let request = ChainAccountImportMnemonicRequest( // FIXME: Meta/Chain/General?
+            let request = MetaAccountImportMnemonicRequest( // FIXME: Meta/Chain/General?
                 mnemonic: mnemonic,
                 username: username,
                 derivationPath: substrateDerivationPath,

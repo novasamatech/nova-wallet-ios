@@ -50,3 +50,21 @@ protocol AccountCreateViewFactoryProtocol: AnyObject {
     static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
     static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
 }
+
+// TODO: Refactor out
+protocol ChainAccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func confirm(
+        from view: AccountCreateViewProtocol?,
+        request: ChainAccountImportMnemonicRequest,
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id
+    )
+
+    func presentCryptoTypeSelection(
+        from view: AccountCreateViewProtocol?,
+        availableTypes: [MultiassetCryptoType],
+        selectedType: MultiassetCryptoType,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    )
+}

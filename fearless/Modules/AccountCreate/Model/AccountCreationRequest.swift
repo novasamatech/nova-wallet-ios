@@ -15,3 +15,8 @@ struct MetaAccountCreationRequest {
     let ethereumDerivationPath: String?
     let cryptoType: MultiassetCryptoType
 }
+
+struct ChainAccountCreationRequest {
+    let derivationPath: String
+    let cryptoType: MultiassetCryptoType
+}
