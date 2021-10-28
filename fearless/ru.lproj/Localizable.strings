@@ -333,6 +333,7 @@
 "tabbar.crowdloan.title" = "Краудлоуны";
 "crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
 "crowdloan.you.contributions.title" = "Ваш вклад";
+"crowdloan.about.crowdloans" = "О краудлоунах";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
 "crowdloan.active.section" = "Активные";
 "crowdloan.completed.section" = "Завершённые";

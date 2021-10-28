@@ -360,6 +360,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             networkName: chain.name,
             balance: amount,
             imageViewModel: imageViewModel,
+            title: R.string.localizable.crowdloanAboutCrowdloans(preferredLanguages: locale.rLanguages),
             description: description
         )
     }

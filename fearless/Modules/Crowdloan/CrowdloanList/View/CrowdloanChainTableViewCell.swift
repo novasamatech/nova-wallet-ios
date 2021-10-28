@@ -6,10 +6,17 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
         return view
     }()
 
-    let descriptionLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
         label.textColor = R.color.colorWhite()!
+        return label
+    }()
+
+    let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .p2Paragraph
+        label.textColor = R.color.colorTransparentText()
         label.numberOfLines = 0
         return label
     }()
@@ -51,26 +58,42 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
             animated: true
         )
 
+        titleLabel.text = viewModel.title
         descriptionLabel.text = viewModel.description
     }
 
     private func setupLayout() {
-        contentView.addSubview(chainSelectionView)
+        let chainBlur = TriangularedBlurView()
+        chainBlur.isUserInteractionEnabled = false
+        contentView.addSubview(chainBlur)
+        chainBlur.snp.makeConstraints { make in
+            make.leading.trailing.top.equalToSuperview().inset(16)
+        }
+
+        chainBlur.addSubview(chainSelectionView)
         chainSelectionView.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview().inset(16.0)
+            make.edges.equalToSuperview()
             make.height.equalTo(48.0)
         }
 
-        let blurView = TriangularedBlurView()
-        blurView.isUserInteractionEnabled = false
-        chainSelectionView.insertSubview(blurView, at: 0)
-        blurView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        let textBlur = TriangularedBlurView()
+        textBlur.isUserInteractionEnabled = false
+        contentView.addSubview(textBlur)
+        textBlur.snp.makeConstraints { make in
+            make.top.equalTo(chainBlur.snp.bottom).offset(8)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
+        }
 
-        contentView.addSubview(descriptionLabel)
+        let labelsContent = UIView.vStack(
+            alignment: .leading,
+            spacing: 12,
+            [titleLabel, descriptionLabel]
+        )
 
-        descriptionLabel.snp.makeConstraints { make in
-            make.top.equalTo(chainSelectionView.snp.bottom).offset(16.0)
-            make.left.right.bottom.equalToSuperview().inset(16.0)
+        textBlur.addSubview(labelsContent)
+        labelsContent.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(16)
         }
     }
 }
