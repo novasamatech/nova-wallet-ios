@@ -3,7 +3,8 @@ import FearlessUtils
 
 protocol ChainAccountViewModelFactoryProtocol {
     func createViewModelFromItem(_ item: ChainModel) -> ChainAccountViewModelItem
-    func createViewModel() -> ChainAccountViewModelItem
+    func createChainViewModel() -> ChainAccountViewModelItem
+    func createViewModel() -> ChainAccountListViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -27,7 +28,7 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
         )
     }
 
-    func createViewModel() -> ChainAccountViewModelItem {
+    func createChainViewModel() -> ChainAccountViewModelItem {
         let address = "" // FIXME: (try? item.info.substrateAccountId.toAddress(using: .substrate(42))) ??
         let icon = try? iconGenerator.generateFromAddress(address)
 
@@ -37,6 +38,22 @@ extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
             chainIcon: R.image.iconKsmAsset()!,
             accountIcon: icon
         )
+    }
+
+    func createViewModel() -> ChainAccountListViewModel {
+        [
+            ChainAccountListSectionViewModel(
+                section: .customSecret, chainAccounts: [createChainViewModel()]
+            ),
+            ChainAccountListSectionViewModel(
+                section: .sharedSecret, chainAccounts: [
+                    createChainViewModel(),
+                    createChainViewModel(),
+                    createChainViewModel(),
+                    createChainViewModel()
+                ]
+            )
+        ]
     }
 }
 

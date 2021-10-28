@@ -1266,7 +1266,8 @@
 		AE398390272AFB1D00BC8A85 /* WalletManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE39838F272AFB1D00BC8A85 /* WalletManagementViewController.swift */; };
 		AE398392272AFB2B00BC8A85 /* WalletManagementViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE398391272AFB2B00BC8A85 /* WalletManagementViewFactory.swift */; };
 		AE398394272AFB4B00BC8A85 /* WalletManagementViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AE398393272AFB4B00BC8A85 /* WalletManagementViewController.xib */; };
-		AE398396272B1B5800BC8A85 /* ChainAccountViewModelItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE398395272B1B5800BC8A85 /* ChainAccountViewModelItem.swift */; };
+		AE398396272B1B5800BC8A85 /* ChainAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE398395272B1B5800BC8A85 /* ChainAccountViewModel.swift */; };
+		AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE398397272B62C100BC8A85 /* ChainAccountListSectionView.swift */; };
 		AE4A71D42607B1440017C663 /* NetworkStakingInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4A71D32607B1440017C663 /* NetworkStakingInfoViewModel.swift */; };
 		AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4C53E4268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift */; };
 		AE4C53E8268CD61E00B03CE8 /* ValidatorListFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4C53E7268CD61E00B03CE8 /* ValidatorListFilterTests.swift */; };
@@ -2922,7 +2923,8 @@
 		AE39838F272AFB1D00BC8A85 /* WalletManagementViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManagementViewController.swift; sourceTree = "<group>"; };
 		AE398391272AFB2B00BC8A85 /* WalletManagementViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManagementViewFactory.swift; sourceTree = "<group>"; };
 		AE398393272AFB4B00BC8A85 /* WalletManagementViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WalletManagementViewController.xib; sourceTree = "<group>"; };
-		AE398395272B1B5800BC8A85 /* ChainAccountViewModelItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountViewModelItem.swift; sourceTree = "<group>"; };
+		AE398395272B1B5800BC8A85 /* ChainAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountViewModel.swift; sourceTree = "<group>"; };
+		AE398397272B62C100BC8A85 /* ChainAccountListSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountListSectionView.swift; sourceTree = "<group>"; };
 		AE4A71D32607B1440017C663 /* NetworkStakingInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStakingInfoViewModel.swift; sourceTree = "<group>"; };
 		AE4C53E4268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorListFilterSortCell.swift; sourceTree = "<group>"; };
 		AE4C53E7268CD61E00B03CE8 /* ValidatorListFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorListFilterTests.swift; sourceTree = "<group>"; };
@@ -6198,7 +6200,7 @@
 			children = (
 				84C1B98324F5245700FE5470 /* ManagedAccountViewModel.swift */,
 				84C1B98524F5424700FE5470 /* ChainAccountViewModelFactory.swift */,
-				AE398395272B1B5800BC8A85 /* ChainAccountViewModelItem.swift */,
+				AE398395272B1B5800BC8A85 /* ChainAccountViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -6208,6 +6210,7 @@
 			children = (
 				84C1B98A24F55E8200FE5470 /* AccountTableViewCell.swift */,
 				84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */,
+				AE398397272B62C100BC8A85 /* ChainAccountListSectionView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -8922,7 +8925,7 @@
 				F4871DEE26D63E3E00D27F23 /* AnalyticsRewardDetailsViewModel.swift in Sources */,
 				84563D0524F466470055591D /* ManagedAccountItem.swift in Sources */,
 				AEA0C8AA267B6B4300F9666F /* SelectedValidatorListViewController.swift in Sources */,
-				AE398396272B1B5800BC8A85 /* ChainAccountViewModelItem.swift in Sources */,
+				AE398396272B1B5800BC8A85 /* ChainAccountViewModel.swift in Sources */,
 				84364D55252FAD7100281F9A /* AssetDetailsConfigurator.swift in Sources */,
 				2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */,
 				AEA2C1C02681E9EC0069492E /* ValidatorSearchViewLayout.swift in Sources */,
@@ -9692,6 +9695,7 @@
 				844DB624262D9C710025A8F0 /* ErasRewardDistribution.swift in Sources */,
 				84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */,
 				06590486EED4050BADDD32C5 /* AccountManagementPresenter.swift in Sources */,
+				AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */,
 				84DED3EF26661CC600A153BB /* CrowdloanFlow.swift in Sources */,
 				21322B4A297840739C389F17 /* AccountManagementInteractor.swift in Sources */,
 				84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */,

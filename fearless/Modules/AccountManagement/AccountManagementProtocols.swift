@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 // FIXME: Remove commented functions
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
@@ -11,10 +12,11 @@ protocol AccountManagementViewProtocol: ControllerBackedProtocol {
 protocol AccountManagementPresenterProtocol: AnyObject {
     func setup()
 
-//    func numberOfItems() -> Int
-//
-    func item(at index: Int) -> ChainAccountViewModelItem
-//
+    func numberOfSections() -> Int
+    func numberOfItems(in section: Int) -> Int
+    func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
+    func titleForSection(_ section: Int) -> LocalizableResource<String>
+
 //    func activateDetails(at index: Int)
 //    func activateAddAccount()
 //
@@ -32,6 +34,7 @@ protocol AccountManagementInteractorInputProtocol: AnyObject {
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
+    func didReceiveChains()
 //    func didCompleteSelection(of metaAccount: MetaAccountModel)
 //    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>])
 //    func didReceive(error: Error)

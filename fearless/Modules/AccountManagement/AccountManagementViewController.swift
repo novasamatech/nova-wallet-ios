@@ -30,6 +30,10 @@ final class AccountManagementViewController: UIViewController {
     private func setupTableView() {
 //        tableView.tableFooterView = UIView()
 
+        tableView.registerHeaderFooterView(
+            withClass: ChainAccountListSectionView.self
+        )
+
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
     }
@@ -37,9 +41,12 @@ final class AccountManagementViewController: UIViewController {
 
 // swiftlint:disable force_cast
 extension AccountManagementViewController: UITableViewDataSource {
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-//        presenter.numberOfItems()
-        6
+    func numberOfSections(in _: UITableView) -> Int {
+        presenter.numberOfSections()
+    }
+
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        presenter.numberOfItems(in: section)
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -50,8 +57,8 @@ extension AccountManagementViewController: UITableViewDataSource {
 
         cell.delegate = self
 
-        let item = presenter.item(at: indexPath.row)
-//        cell.bind(viewModel: item)
+        let item = presenter.item(at: indexPath)
+        cell.bind(viewModel: item)
 
         return cell
     }
@@ -60,6 +67,14 @@ extension AccountManagementViewController: UITableViewDataSource {
 // swiftlint:enable force_cast
 
 extension AccountManagementViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView: ChainAccountListSectionView = tableView.dequeueReusableHeaderFooterView()
+        let title = presenter.titleForSection(section).value(for: selectedLocale)
+        headerView.bind(description: title.uppercased())
+
+        return headerView
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 

@@ -10,7 +10,7 @@ final class AccountManagementPresenter {
 
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
 
-    private var viewModels: [ChainAccountViewModelItem] = []
+    private var viewModel: ChainAccountListViewModel = []
 
     init(viewModelFactory: ChainAccountViewModelFactoryProtocol) {
         self.viewModelFactory = viewModelFactory
@@ -46,14 +46,23 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
 //    func activateAddAccount() {
 //        wireframe.showAddAccount(from: view)
 //    }
-//
-//    func numberOfItems() -> Int {
-//        viewModels.count
-//    }
-//
-    func item(at _: Int) -> ChainAccountViewModelItem {
-        viewModelFactory.createViewModel()
-//        viewModels[index]
+
+    func numberOfSections() -> Int {
+        viewModel.count
+    }
+
+    func numberOfItems(in section: Int) -> Int {
+        viewModel[section].chainAccounts.count
+    }
+
+    func item(at indexPath: IndexPath) -> ChainAccountViewModelItem {
+        let section = viewModel[indexPath.section]
+        let viewModels = section.chainAccounts
+        return viewModels[indexPath.row]
+    }
+
+    func titleForSection(_ section: Int) -> LocalizableResource<String> {
+        viewModel[section].section.title
     }
 //
 //    func selectItem(at index: Int) {
@@ -148,6 +157,11 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
 }
 
 extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol {
+    func didReceiveChains() {
+        viewModel = viewModelFactory.createViewModel()
+        view?.reload()
+    }
+
 //    func didCompleteSelection(of _: MetaAccountModel) {
 //        wireframe.complete(from: view)
 //    }

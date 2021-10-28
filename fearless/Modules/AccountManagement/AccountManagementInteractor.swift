@@ -49,6 +49,7 @@ final class AccountManagementInteractor {
 
 extension AccountManagementInteractor: AccountManagementInteractorInputProtocol {
     func setup() {
+        presenter?.didReceiveChains()
 //        repositoryObservable.start { [weak self] error in
 //            if let error = error {
 //                DispatchQueue.main.async {
