@@ -1,8 +1,17 @@
 import Foundation
 
 final class WalletManagementWireframe: WalletManagementWireframeProtocol {
-    func showWalletDetails(from _: WalletManagementViewProtocol?, metaAccount _: MetaAccountModel) {
-        // TODO: Implement with new onboarding story
+    func showWalletDetails(from view: WalletManagementViewProtocol?, metaAccount: MetaAccountModel) {
+        guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount) else {
+            return
+        }
+
+        chainManagementView.controller.hidesBottomBarWhenPushed = true
+
+        view?.controller.navigationController?.pushViewController(
+            chainManagementView.controller,
+            animated: true
+        )
     }
 
     func showAddWallet(from view: WalletManagementViewProtocol?) {
