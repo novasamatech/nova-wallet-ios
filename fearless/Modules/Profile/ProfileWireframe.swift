@@ -2,8 +2,8 @@ import Foundation
 import UIKit
 
 final class ProfileWireframe: ProfileWireframeProtocol, AuthorizationPresentable {
-    func showAccountDetails(from view: ProfileViewProtocol?) {
-        guard let accountManagement = WalletManagementViewFactory.createViewForSettings() else {
+    func showAccountDetails(for wallet: MetaAccountModel, from view: ProfileViewProtocol?) {
+        guard let accountManagement = AccountManagementViewFactory.createView(for: wallet) else {
             return
         }
 
