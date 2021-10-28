@@ -1,48 +1,50 @@
 import Foundation
 import RobinHood
 
+// FIXME: Remove commented functions
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
 
-    func didRemoveItem(at index: Int)
+//    func didRemoveItem(at index: Int)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
     func setup()
 
-    func numberOfItems() -> Int
-
-    func item(at index: Int) -> ManagedAccountViewModelItem
-
-    func activateDetails(at index: Int)
-    func activateAddAccount()
-
-    func selectItem(at index: Int)
-    func moveItem(at startIndex: Int, to finalIndex: Int)
-
-    func removeItem(at index: Int)
+//    func numberOfItems() -> Int
+//
+    func item(at index: Int) -> ChainAccountViewModelItem
+//
+//    func activateDetails(at index: Int)
+//    func activateAddAccount()
+//
+//    func selectItem(at index: Int)
+//    func moveItem(at startIndex: Int, to finalIndex: Int)
+//
+//    func removeItem(at index: Int)
 }
 
 protocol AccountManagementInteractorInputProtocol: AnyObject {
     func setup()
-    func select(item: ManagedMetaAccountModel)
-    func save(items: [ManagedMetaAccountModel])
-    func remove(item: ManagedMetaAccountModel)
+//    func select(item: ManagedMetaAccountModel)
+//    func save(items: [ManagedMetaAccountModel])
+//    func remove(item: ManagedMetaAccountModel)
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
-    func didCompleteSelection(of metaAccount: MetaAccountModel)
-    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>])
-    func didReceive(error: Error)
+//    func didCompleteSelection(of metaAccount: MetaAccountModel)
+//    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>])
+//    func didReceive(error: Error)
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
-    func showAddAccount(from view: AccountManagementViewProtocol?)
-    func complete(from view: AccountManagementViewProtocol?)
+//    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
+//    func showAddAccount(from view: AccountManagementViewProtocol?)
+//    func complete(from view: AccountManagementViewProtocol?)
 }
 
 protocol AccountManagementViewFactoryProtocol: AnyObject {
-    static func createViewForSettings() -> AccountManagementViewProtocol?
-    static func createViewForSwitch() -> AccountManagementViewProtocol?
+    static func createView(for metaAccountModel: MetaAccountModel) -> AccountManagementViewProtocol?
+//    static func createViewForSettings() -> AccountManagementViewProtocol?
+//    static func createViewForSwitch() -> AccountManagementViewProtocol?
 }

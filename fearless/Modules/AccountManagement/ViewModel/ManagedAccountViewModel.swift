@@ -1,6 +1,7 @@
 import UIKit
 import FearlessUtils
 
+@available(*, unavailable, message: "No more needed")
 struct ManagedAccountViewModelItem: Equatable {
     let identifier: String
     let name: String

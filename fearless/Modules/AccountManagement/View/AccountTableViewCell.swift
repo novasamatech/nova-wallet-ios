@@ -9,27 +9,11 @@ protocol AccountTableViewCellDelegate: AnyObject {
 final class AccountTableViewCell: UITableViewCell {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var detailsLabel: UILabel!
+    @IBOutlet private var mainImageView: UIImageView!
     @IBOutlet private var iconView: PolkadotIconView!
     @IBOutlet private var infoButton: RoundedButton!
-    @IBOutlet private var selectionImageView: UIImageView!
 
     weak var delegate: AccountTableViewCellDelegate?
-
-    func setReordering(_ reordering: Bool, animated: Bool) {
-        let closure = {
-            self.infoButton.alpha = reordering ? 0.0 : 1.0
-        }
-
-        if animated {
-            BlockViewAnimator().animate(block: closure, completionBlock: nil)
-        } else {
-            closure()
-        }
-
-        if reordering {
-            recolorReorderControl(R.color.colorWhite()!)
-        }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -37,19 +21,6 @@ final class AccountTableViewCell: UITableViewCell {
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = R.color.colorAccent()!.withAlphaComponent(0.3)
         self.selectedBackgroundView = selectedBackgroundView
-
-        showsReorderControl = false
-    }
-
-    func bind(viewModel: ManagedAccountViewModelItem) {
-        titleLabel.text = viewModel.name
-        detailsLabel.text = viewModel.address
-
-        if let icon = viewModel.icon {
-            iconView.bind(icon: icon)
-        }
-
-        selectionImageView.isHidden = !viewModel.isSelected
     }
 
     override func layoutSubviews() {
@@ -58,7 +29,17 @@ final class AccountTableViewCell: UITableViewCell {
         contentView.frame = CGRect(origin: .zero, size: bounds.size)
     }
 
-    // MARK: Private
+    func bind(viewModel: ChainAccountViewModelItem) {
+        titleLabel.text = viewModel.name
+        detailsLabel.text = viewModel.address
+        mainImageView.image = viewModel.chainIcon
+
+        if let icon = viewModel.accountIcon {
+            iconView.bind(icon: icon)
+        }
+    }
+
+    // MARK: - Actions
 
     @IBAction private func actionInfo() {
         delegate?.didSelectInfo(self)
