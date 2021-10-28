@@ -20,7 +20,9 @@ final class CrowdloansViewModelFactory {
     struct CommonContent {
         let title: String
         let details: CrowdloanDescViewModel
-        let progress: String
+        let progressText: String
+        let progressPercentsText: String
+        let progressValue: Double
         let imageViewModel: ImageViewModelProtocol
         let contribution: String?
     }
@@ -68,7 +70,7 @@ final class CrowdloansViewModelFactory {
             }
         }()
 
-        let progress: String = {
+        let (progressText, progressValue, percentsText): (String, Double, String) = {
             if
                 let raised = Decimal.fromSubstrateAmount(
                     model.fundInfo.raised,
@@ -80,13 +82,16 @@ final class CrowdloansViewModelFactory {
                 ),
                 let raisedString = formatters.display.stringFromDecimal(raised),
                 let totalString = formatters.token.stringFromDecimal(cap) {
-                return R.string.localizable.crowdloanProgressFormat(
+                let text = R.string.localizable.crowdloanProgressFormat(
                     raisedString,
                     totalString,
                     preferredLanguages: locale.rLanguages
                 )
+                let value = Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
+                let percents = String(format: "%.2f%%", value * 100.0)
+                return (text, value, percents)
             } else {
-                return ""
+                return ("", 0.0, "")
             }
         }()
 
@@ -123,7 +128,9 @@ final class CrowdloansViewModelFactory {
         return CommonContent(
             title: title ?? "",
             details: details,
-            progress: progress,
+            progressText: progressText,
+            progressPercentsText: percentsText,
+            progressValue: progressValue,
             imageViewModel: iconViewModel,
             contribution: contributionString
         )
@@ -224,8 +231,10 @@ final class CrowdloansViewModelFactory {
             title: commonContent.title,
             timeleft: timeLeft,
             description: commonContent.details,
-            progress: commonContent.progress,
+            progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
+            progressPercentsText: commonContent.progressPercentsText,
+            progressValue: commonContent.progressValue,
             contribution: commonContent.contribution
         )
     }
@@ -252,8 +261,10 @@ final class CrowdloansViewModelFactory {
             title: commonContent.title,
             timeleft: nil,
             description: commonContent.details,
-            progress: commonContent.progress,
+            progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
+            progressPercentsText: "100%",
+            progressValue: 1.0,
             contribution: commonContent.contribution
         )
     }

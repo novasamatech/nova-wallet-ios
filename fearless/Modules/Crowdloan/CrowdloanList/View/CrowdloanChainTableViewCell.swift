@@ -33,7 +33,7 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundColor = .clear
-
+        selectedBackgroundView = UIView()
         setupLayout()
     }
 
@@ -64,7 +64,6 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
 
     private func setupLayout() {
         let chainBlur = TriangularedBlurView()
-        chainBlur.isUserInteractionEnabled = false
         contentView.addSubview(chainBlur)
         chainBlur.snp.makeConstraints { make in
             make.leading.trailing.top.equalToSuperview().inset(16)
@@ -77,7 +76,6 @@ final class CrowdloanChainTableViewCell: UITableViewCell {
         }
 
         let textBlur = TriangularedBlurView()
-        textBlur.isUserInteractionEnabled = false
         contentView.addSubview(textBlur)
         textBlur.snp.makeConstraints { make in
             make.top.equalTo(chainBlur.snp.bottom).offset(8)

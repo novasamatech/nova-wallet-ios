@@ -28,7 +28,29 @@ final class CrowdloanTableViewCell: UITableViewCell {
         return label
     }()
 
-    let progressView = UIView()
+    let progressBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = R.color.colorBlurSeparator()
+        view.layer.cornerRadius = 2
+        return view
+    }()
+
+    let progressView: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = 2
+        return view
+    }()
+
+    private var progressValue: Double?
+
+    let gradientLayer: CAGradientLayer = {
+        let layer = CAGradientLayer()
+        layer.colors = [
+            UIColor(red: 0.77, green: 0.97, blue: 1.0, alpha: 1.0),
+            UIColor(red: 0.11, green: 0.89, blue: 1.0, alpha: 1.0)
+        ]
+        return layer
+    }()
 
     let percentsLabel: UILabel = {
         let label = UILabel()
@@ -74,8 +96,34 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
         viewModel?.iconViewModel.cancel(on: iconImageView)
         viewModel = nil
+        progressValue = nil
 
         iconImageView.image = nil
+        progressView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        guard let value = progressValue else {
+//            progressView.bounds = .zero
+//            gradientLayer.frame = .zero
+            return
+        }
+
+        progressView.bounds = .init(
+            origin: .zero,
+            size: CGSize(
+                width: progressBackgroundView.bounds.width * CGFloat(value),
+                height: progressBackgroundView.bounds.height
+            )
+        )
+        // gradientLayer.frame = progressView.bounds
+    }
+
+    override func layoutSublayers(of layer: CALayer) {
+        super.layoutSublayers(of: layer)
+        gradientLayer.frame = progressView.bounds
     }
 
     private func setupLayout() {
@@ -98,7 +146,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
                     ]
                 ),
                 .hStack([progressLabel, UIView()]),
-                progressView,
+                progressBackgroundView,
                 .hStack([percentsLabel, UIView(), timeLabel])
             ]
         )
@@ -107,7 +155,9 @@ final class CrowdloanTableViewCell: UITableViewCell {
         navigationImageView.snp.makeConstraints { make in
             make.size.equalTo(16)
         }
-        progressView.snp.makeConstraints { $0.height.equalTo(5) }
+        progressBackgroundView.addSubview(progressView)
+        progressView.layer.addSublayer(gradientLayer)
+        progressBackgroundView.snp.makeConstraints { $0.height.equalTo(5) }
 
         let background = TriangularedBlurView()
         background.isUserInteractionEnabled = false
@@ -144,13 +194,17 @@ final class CrowdloanTableViewCell: UITableViewCell {
         }
 
         progressLabel.text = viewModel.progress
-        percentsLabel.text = "88%" // TODO:
+        percentsLabel.text = viewModel.progressPercentsText
+        progressValue = viewModel.progressValue
+        setNeedsLayout()
 
         if let time = viewModel.timeleft {
             timeLabel.text = time
+            percentsLabel.textColor = R.color.colorCoral()
             navigationImageView.isHidden = false
         } else {
             timeLabel.text = nil
+            percentsLabel.textColor = R.color.colorTransparentText()
             navigationImageView.isHidden = true
         }
     }

@@ -32,5 +32,7 @@ struct CrowdloanCellViewModel {
     let description: CrowdloanDescViewModel
     let progress: String
     let iconViewModel: ImageViewModelProtocol
+    let progressPercentsText: String
+    let progressValue: Double
     let contribution: String?
 }
