@@ -94,6 +94,7 @@
 "account.confirmation.details" = "Выберите слова в правильном порядке";
 "pincode.create.top.title" = "Новый PIN-код";
 "profile.accounts.title" = "Аккаунты";
+"profile.wallets.title" = "Кошельки";
 "profile.network.title" = "Сеть";
 "profile.pincode.change.title" = "Изменить PIN-код";
 "common.invalid.hard.soft.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и //'soft' где 'hard' и 'soft' могут быть любой последовательностью символов, не включая /.";
@@ -103,6 +104,7 @@
 "common.edit" = "Редактировать";
 "common.done" = "Готово";
 "accounts.add.account" = "Добавить аккаунт";
+"wallet.add.button.title" = "Добавить кошелёк";
 "account.add.already.exists.message" = "Аккаунт уже существует. Пожалуйста, попробуйте другой.";
 "about.website" = "Официальный сайт";
 "about.github" = "Исходный код на Github";
@@ -117,7 +119,8 @@
 "connection.management.default.title" = "По умолчанию";
 "connection.management.custom.title" = "Добавленные";
 "account.delete.confirmation.title" = "Забыть аккаунт?";
-"account.delete.confirmation.description" = "Прежде чем продолжить, убедитесь, что вы создали резервную копию своей учетной записи.";
+"account.delete.confirmation.title" = "Забыть кошелёк?";
+"wallet.delete.confirmation.description" = "Перед продолжением убедитесь, что вы создали резервную копию своего кошелька.";
 "account.delete.confirm" = "Забыть";
 "account.needed.title" = "Необходим аккаунт";
 "account.needed.message" = "У вас нет учетной записи в этой сети, вы можете создать или импортировать учетную запись.";

@@ -122,7 +122,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
     }
 
     func showAccountsSelection(from view: StakingMainViewProtocol?) {
-        guard let accountsView = AccountManagementViewFactory.createViewForSwitch() else {
+        guard let accountsView = WalletManagementViewFactory.createViewForSwitch() else {
             return
         }
 

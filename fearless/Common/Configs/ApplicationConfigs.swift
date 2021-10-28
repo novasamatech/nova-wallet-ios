@@ -93,7 +93,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var chainListURL: URL {
-        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains_dev.json")!
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains.json")!
     }
 
     var commonTypesURL: URL {

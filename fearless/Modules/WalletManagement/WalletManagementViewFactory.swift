@@ -5,22 +5,20 @@ import FearlessUtils
 import IrohaCrypto
 import SoraKeystore
 
-final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
-    static func createViewForSettings() -> AccountManagementViewProtocol? {
-        let wireframe = AccountManagementWireframe()
+final class WalletManagementViewFactory: WalletManagementViewFactoryProtocol {
+    static func createViewForSettings() -> WalletManagementViewProtocol? {
+        let wireframe = WalletManagementWireframe()
         return createView(for: wireframe)
     }
 
-    static func createViewForSwitch() -> AccountManagementViewProtocol? {
-        guard let wireframe = SwitchAccount.WalletManagementWireframe()
-            as? AccountManagementWireframeProtocol else { return nil }
-
+    static func createViewForSwitch() -> WalletManagementViewProtocol? {
+        let wireframe = SwitchAccount.WalletManagementWireframe()
         return createView(for: wireframe)
     }
 
     private static func createView(
-        for wireframe: AccountManagementWireframeProtocol
-    ) -> AccountManagementViewProtocol? {
+        for wireframe: WalletManagementWireframeProtocol
+    ) -> WalletManagementViewProtocol? {
         let facade = UserDataStorageFacade.shared
         let mapper = ManagedMetaAccountMapper()
 
@@ -37,17 +35,17 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
                 sortDescriptors: [NSSortDescriptor.accountsByOrder]
             )
 
-        let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
+        let view = WalletManagementViewController(nib: R.nib.walletManagementViewController)
 
         let iconGenerator = PolkadotIconGenerator()
-        let viewModelFactory = ManagedAccountViewModelFactory(iconGenerator: iconGenerator)
+        let viewModelFactory = ManagedWalletViewModelFactory(iconGenerator: iconGenerator)
 
-        let presenter = AccountManagementPresenter(
+        let presenter = WalletManagementPresenter(
             viewModelFactory: viewModelFactory
         )
 
         let anyObserver = AnyDataProviderRepositoryObservable(observer)
-        let interactor = AccountManagementInteractor(
+        let interactor = WalletManagementInteractor(
             repository: AnyDataProviderRepository(repository),
             repositoryObservable: anyObserver,
             settings: SelectedWalletSettings.shared,
