@@ -5,13 +5,17 @@ import FearlessUtils
 import BigInt
 
 protocol CrowdloansViewModelFactoryProtocol {
+    func createChainViewModel(
+        from chain: ChainModel,
+        asset: AssetModel,
+        balance: BigUInt?,
+        locale: Locale
+    ) -> CrowdloansChainViewModel
+
     func createViewModel(
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        chain: ChainModel,
-        asset: AssetModel,
-        balance: BigUInt?,
         locale: Locale
     ) -> CrowdloansViewModel
 }
@@ -380,9 +384,6 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        chain: ChainModel,
-        asset: AssetModel,
-        balance: BigUInt?,
         locale: Locale
     ) -> CrowdloansViewModel {
         let timeFormatter = TotalTimeFormatter()
@@ -420,18 +421,18 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
             )
         }
 
-        let chainViewModel = createChainViewModel(from: chain, asset: asset, balance: balance, locale: locale)
         let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
             preferredLanguages: locale.rLanguages
         )
 
         let sections: [CrowdloansSection] =
-            [.chain(chainViewModel)]
-                + (!contributions.isEmpty ?
-                    [.yourContributions(contributionsTitle, contributions)]
-                    : [])
-                + crowdloansSections
+            (!contributions.isEmpty ?
+                [.yourContributions(contributionsTitle, contributions)]
+                : [])
+            + crowdloansSections
 
-        return CrowdloansViewModel(sections: sections)
+        return CrowdloansViewModel(
+            sections: sections
+        )
     }
 }

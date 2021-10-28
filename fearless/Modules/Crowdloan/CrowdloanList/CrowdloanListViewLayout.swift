@@ -4,12 +4,7 @@ import SnapKit
 final class CrowdloanListViewLayout: UIView {
     private let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
 
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .h1Title
-        return label
-    }()
+    let headerView = CrowdloanTableHeaderView()
 
     let tableView: UITableView = {
         let view = UITableView()
@@ -34,27 +29,36 @@ final class CrowdloanListViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        let height = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        var headerFrame = headerView.frame
+
+        // Comparison necessary to avoid infinite loop
+        if height != headerFrame.size.height {
+            headerFrame.size.height = height
+            headerView.frame = headerFrame
+            tableView.tableHeaderView = headerView
+        }
+    }
+
     private func setup() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide).inset(10)
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+        addSubview(statusView)
+        statusView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(safeAreaLayoutGuide).inset(253)
         }
-
-//        addSubview(statusView)
-//        statusView.snp.makeConstraints { make in
-//            make.left.right.equalToSuperview()
-//            make.bottom.equalTo(safeAreaLayoutGuide)
-//            make.top.equalTo(safeAreaLayoutGuide).inset(64.0)
-//        }
 
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
+            make.top.equalToSuperview()
             make.leading.bottom.trailing.equalToSuperview()
         }
+        tableView.tableHeaderView = headerView
     }
 }

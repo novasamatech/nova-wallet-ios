@@ -7,6 +7,7 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
 
     let presenter: CrowdloanListPresenterProtocol
 
+    private var chainInfo: CrowdloansChainViewModel?
     private var state: CrowdloanListState = .loading
 
     private var shouldUpdateOnAppearance: Bool = false
@@ -70,11 +71,16 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         if let refreshControl = rootView.tableView.refreshControl {
             refreshControl.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
         }
+        rootView.headerView.chainSelectionView.addTarget(
+            self,
+            action: #selector(actionSelectChain),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        rootView.titleLabel.text = R.string.localizable
+        rootView.headerView.titleLabel.text = R.string.localizable
             .tabbarCrowdloanTitle_v190(preferredLanguages: languages)
     }
 
@@ -97,7 +103,7 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         }
 
         rootView.tableView.reloadData()
-
+        rootView.headerView.setNeedsLayout()
         reloadEmptyState(animated: false)
     }
 
@@ -116,7 +122,7 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             return viewModel.sections.count
         case .loading, .empty, .error:
-            return 1
+            return 0
         }
     }
 
@@ -125,7 +131,7 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[section]
             switch sectionModel {
-            case .chain, .yourContributions:
+            case .yourContributions:
                 return 1
             case let .active(_, cellViewModels):
                 return cellViewModels.count
@@ -142,15 +148,6 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[indexPath.section]
             switch sectionModel {
-            case let .chain(viewModel):
-                let cell = tableView.dequeueReusableCellWithType(CrowdloanChainTableViewCell.self)!
-                cell.bind(viewModel: viewModel)
-                cell.chainSelectionView.addTarget(
-                    self,
-                    action: #selector(actionSelectChain),
-                    for: .touchUpInside
-                )
-                return cell
             case let .yourContributions(title, contrubutions):
                 let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
                 cell.bind(title: title, count: contrubutions.count)
@@ -217,6 +214,12 @@ extension CrowdloanListViewController: UITableViewDelegate {
 }
 
 extension CrowdloanListViewController: CrowdloanListViewProtocol {
+    func didReceive(chainInfo: CrowdloansChainViewModel) {
+        self.chainInfo = chainInfo
+
+        rootView.headerView.bind(viewModel: chainInfo)
+    }
+
     func didReceive(listState: CrowdloanListState) {
         state = listState
 
