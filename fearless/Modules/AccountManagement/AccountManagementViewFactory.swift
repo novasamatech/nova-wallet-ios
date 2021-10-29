@@ -6,51 +6,26 @@ import IrohaCrypto
 import SoraKeystore
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
-    static func createViewForSettings() -> AccountManagementViewProtocol? {
+    static func createView(for wallet: MetaAccountModel) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
-        return createView(for: wireframe)
-    }
-
-    static func createViewForSwitch() -> AccountManagementViewProtocol? {
-        let wireframe = SwitchAccount.AccountManagementWireframe()
-        return createView(for: wireframe)
-    }
-
-    private static func createView(
-        for wireframe: AccountManagementWireframeProtocol
-    ) -> AccountManagementViewProtocol? {
-        let facade = UserDataStorageFacade.shared
-        let mapper = ManagedMetaAccountMapper()
-
-        let observer: CoreDataContextObservable<ManagedMetaAccountModel, CDMetaAccount> =
-            CoreDataContextObservable(
-                service: facade.databaseService,
-                mapper: AnyCoreDataMapper(mapper),
-                predicate: { _ in true }
-            )
-
-        let repository = AccountRepositoryFactory(storageFacade: facade)
-            .createManagedMetaAccountRepository(
-                for: nil,
-                sortDescriptors: [NSSortDescriptor.accountsByOrder]
-            )
 
         let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
 
         let iconGenerator = PolkadotIconGenerator()
-        let viewModelFactory = ManagedAccountViewModelFactory(iconGenerator: iconGenerator)
+        let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = AccountManagementPresenter(
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            logger: Logger.shared
         )
 
-        let anyObserver = AnyDataProviderRepositoryObservable(observer)
+        let chainRepository = SubstrateRepositoryFactory().createChainRepository()
+
         let interactor = AccountManagementInteractor(
-            repository: AnyDataProviderRepository(repository),
-            repositoryObservable: anyObserver,
-            settings: SelectedWalletSettings.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            eventCenter: EventCenter.shared
+            chainRepository: chainRepository,
+            operationQueue: OperationQueue(),
+            wallet: wallet,
+            logger: Logger.shared
         )
 
         view.presenter = presenter

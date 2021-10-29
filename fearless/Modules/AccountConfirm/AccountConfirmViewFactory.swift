@@ -52,8 +52,49 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         return createView(for: interactor, wireframe: wireframe)
     }
 
+    static func createViewForReplace(
+        request: ChainAccountImportMnemonicRequest,
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id
+    ) -> AccountConfirmViewProtocol? {
+        guard let interactor = createAddChainAccountConfirmInteractor(
+            for: metaAccountModel,
+            request: request,
+            chainModelId: chainModelId
+        ) else {
+            return nil
+        }
+
+        let wireframe = AddChainAccount.AccountConfirmWireframe()
+        return createView(for: interactor, wireframe: wireframe)
+    }
+
     private static func createView(
         for interactor: BaseAccountConfirmInteractor,
+        wireframe: AccountConfirmWireframeProtocol
+    ) -> AccountConfirmViewProtocol? {
+        let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
+        view.skipButtonTitle = LocalizableResource { locale in
+            R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
+        }
+
+        let presenter = AccountConfirmPresenter()
+
+        view.presenter = presenter
+        presenter.view = view
+        presenter.interactor = interactor
+        presenter.wireframe = wireframe
+        interactor.presenter = presenter
+
+        let localizationManager = LocalizationManager.shared
+        view.localizationManager = localizationManager
+        presenter.localizationManager = localizationManager
+
+        return view
+    }
+
+    private static func createView(
+        for interactor: BaseChainAccountConfirmInteractor,
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
         let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
@@ -125,6 +166,39 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         let interactor = AddAccount
             .AccountConfirmInteractor(
                 request: request,
+                mnemonic: mnemonic,
+                accountOperationFactory: accountOperationFactory,
+                accountRepository: accountRepository,
+                operationManager: OperationManagerFacade.sharedManager,
+                settings: SelectedWalletSettings.shared,
+                eventCenter: EventCenter.shared
+            )
+
+        return interactor
+    }
+
+    private static func createAddChainAccountConfirmInteractor(
+        for metaAccountModel: MetaAccountModel,
+        request: ChainAccountImportMnemonicRequest,
+        chainModelId: ChainModel.Id
+    ) -> BaseChainAccountConfirmInteractor? {
+        guard let mnemonic = try? IRMnemonicCreator()
+            .mnemonic(fromList: request.mnemonic)
+        else {
+            return nil
+        }
+
+        let keychain = Keychain()
+
+        let accountOperationFactory = MetaAccountOperationFactory(keystore: keychain)
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
+        let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
+
+        let interactor = AddChainAccount
+            .AccountConfirmInteractor(
+                metaAccountModel: metaAccountModel,
+                request: request,
+                chainModelId: chainModelId,
                 mnemonic: mnemonic,
                 accountOperationFactory: accountOperationFactory,
                 accountRepository: accountRepository,

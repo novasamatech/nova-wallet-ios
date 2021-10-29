@@ -11,6 +11,7 @@ final class ProfilePresenter {
     private(set) var viewModelFactory: ProfileViewModelFactoryProtocol
 
     private(set) var userSettings: UserSettings?
+    private(set) var wallet: MetaAccountModel?
 
     init(viewModelFactory: ProfileViewModelFactoryProtocol) {
         self.viewModelFactory = viewModelFactory
@@ -53,7 +54,8 @@ extension ProfilePresenter: ProfilePresenterProtocol {
     }
 
     func activateAccountDetails() {
-        // TODO: Implement when new details are done
+        guard let wallet = self.wallet else { return }
+        wireframe.showAccountDetails(for: wallet, from: view)
     }
 
     func activateOption(at index: UInt) {
@@ -77,6 +79,10 @@ extension ProfilePresenter: ProfilePresenterProtocol {
 }
 
 extension ProfilePresenter: ProfileInteractorOutputProtocol {
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
+    }
+
     func didReceive(userSettings: UserSettings) {
         self.userSettings = userSettings
         updateAccountViewModel()

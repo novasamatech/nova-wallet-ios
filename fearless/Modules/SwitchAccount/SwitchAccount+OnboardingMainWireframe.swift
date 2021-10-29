@@ -1,5 +1,6 @@
 import Foundation
 
+// @available(iOS, obsoleted: 10, message: "Network selection functionality does not longer exist")
 extension SwitchAccount {
     final class OnboardingMainWireframe: OnboardingMainWireframeProtocol {
         func showSignup(from view: OnboardingMainViewProtocol?) {

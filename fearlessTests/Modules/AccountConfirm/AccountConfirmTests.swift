@@ -24,6 +24,7 @@ class AccountConfirmTests: XCTestCase {
         let newAccountRequest = MetaAccountCreationRequest(
             username: "myusername",
             derivationPath: "",
+            ethereumDerivationPath: nil,
             cryptoType: .sr25519
         )
 
