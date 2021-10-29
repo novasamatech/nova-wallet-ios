@@ -1,7 +1,7 @@
 name: Distribute to Firebase
 
 on:
-  push:
+  pull_request:
     branches: [ develop ]
 
 jobs:
@@ -13,14 +13,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache Cocoapods
-        id: cache-cocoapods
-        uses: actions/cache@v2
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - name: Cache Cocoapods
+      #   id: cache-cocoapods
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
 
       - name: Install Cocoapods
         if: steps.cache-cocoapods.outputs.cache-hit != 'true'

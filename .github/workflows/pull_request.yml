@@ -1,8 +1,8 @@
 name: Build and Test on PR
 
-on:
-  pull_request:
-    branches: [ develop ]
+on: [release]
+  # pull_request:
+    # branches: [ develop ]
 
 jobs:
   build:
