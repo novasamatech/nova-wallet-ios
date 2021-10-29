@@ -28,6 +28,7 @@ enum ChainAccountSectionType {
 }
 
 struct ChainAccountViewModelItem {
+    let chainId: String
     let name: String
     let address: String?
     let warning: String?

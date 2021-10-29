@@ -14,6 +14,8 @@ final class AccountManagementPresenter {
     private var wallet: MetaAccountModel?
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
+    private var polkascanExplorers: [String: String] = [:]
+    private var subscanExplorers: [String: String] = [:]
 
     init(
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
@@ -21,6 +23,16 @@ final class AccountManagementPresenter {
     ) {
         self.viewModelFactory = viewModelFactory
         self.logger = logger
+    }
+
+    private func polkascanURL(for chainName: String, address: String) -> URL? {
+        guard let urlString = polkascanExplorers[chainName] else { return nil }
+        return URL(string: "\(urlString)\(address)")
+    }
+
+    private func subscanURL(for chainName: String, address: String) -> URL? {
+        guard let urlString = subscanExplorers[chainName] else { return nil }
+        return URL(string: "\(urlString)\(address)")
     }
 
     private func copyAddress(_ address: String) {
@@ -37,10 +49,203 @@ final class AccountManagementPresenter {
         viewModel = viewModelFactory.createViewModel(from: wallet, chains: chains, for: selectedLocale)
         view?.reload()
     }
+
+    private func activateCreateAccount(for _: ChainModel.Id) {}
+
+    private func activateImportAccount(for _: ChainModel.Id) {}
+
+    private func displayNoAddressActions(for chain: ChainModel) {
+        let title = R.string.localizable.accountNotFoundActionsTitle(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        var actions: [AlertPresentableAction] = []
+
+        let createAccountTitle = R.string.localizable
+            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
+        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.copyAddress("adawdwd")
+        }
+
+        actions.append(createAccountAction)
+
+        let importAccountTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.copyAddress("adawdwd")
+        }
+
+        actions.append(importAccountAction)
+
+        let closeTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
+    }
+
+    private func displayEthereumAddressActions(
+        for _: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let address = viewModel.address else { return }
+        var title = address
+
+        let offset = title.count / 2
+        title.insert(
+            contentsOf: String.returnKey,
+            at: title.index(title.startIndex, offsetBy: offset)
+        )
+
+        var actions: [AlertPresentableAction] = []
+
+        let copyTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
+            self?.copyAddress(address)
+        }
+
+        actions.append(copyAction)
+
+        let closeTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
+    }
+
+    private func displaySubstrateAddressActions(
+        for chainModel: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let address = viewModel.address else { return }
+        var title = address
+
+        let offset = title.count / 2
+        title.insert(
+            contentsOf: String.returnKey,
+            at: title.index(title.startIndex, offsetBy: offset)
+        )
+
+        var actions: [AlertPresentableAction] = []
+
+        let copyTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
+            self?.copyAddress(address)
+        }
+
+        actions.append(copyAction)
+
+        if let url = polkascanURL(for: chainModel.name, address: address) {
+            let polkascanTitle = R.string.localizable
+                .transactionDetailsViewPolkascan(preferredLanguages: selectedLocale.rLanguages)
+
+            let polkascanAction = AlertPresentableAction(title: polkascanTitle) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+
+            actions.append(polkascanAction)
+        }
+
+        if let url = subscanURL(for: chainModel.name, address: address) {
+            let subscanTitle = R.string.localizable
+                .transactionDetailsViewSubscan(preferredLanguages: selectedLocale.rLanguages)
+            let subscanAction = AlertPresentableAction(title: subscanTitle) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+
+            actions.append(subscanAction)
+        }
+
+        let changeAccountTitle = R.string.localizable
+            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
+        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
+            print("Change account")
+            // TODO: display another actions view?
+        }
+
+        actions.append(changeAccountAction)
+
+        let exportAccountTitle = R.string.localizable
+            .commonExport(preferredLanguages: selectedLocale.rLanguages)
+        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+            print("Export account")
+            // TODO: display another actions view
+        }
+
+        actions.append(exportAction)
+
+        let closeTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
+    }
+
+    private func generateExplorers() {
+        let polkascanExplorers: [String: String] = [
+            "Polkadot": "https://polkascan.io/polkadot/account/",
+            "Kusama": "https://polkascan.io/kusama/account/"
+        ]
+
+        let subscanExplorers: [String: String] = [
+            "Polkadot": "https://polkadot.subscan.io/account/",
+            "Kusama": "https://kusama.subscan.io/account/",
+            "Westend": "https://westend.subscan.io/account/",
+            "Calamari": "https://calamari.subscan.io/account/",
+            "Moonriver": "https://moonriver.subscan.io/account/",
+            "Statemine": "https://statemine.subscan.io/account/",
+            "Shiden": "https://shiden.subscan.io/account/",
+            "Bifrost": "https://bifrost.subscan.io/account/",
+            "KILT Spiritnet": "https://spiritnet.subscan.io/account/",
+            "Karura": "https://karura.subscan.io/account/",
+            "Khala": "https://khala.subscan.io/account/"
+        ]
+
+        self.polkascanExplorers = polkascanExplorers
+        self.subscanExplorers = subscanExplorers
+    }
 }
 
 extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func setup() {
+        generateExplorers()
         interactor.setup()
     }
 
@@ -66,99 +271,18 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         let viewModel = viewModel[indexPath.section]
             .chainAccounts[indexPath.row]
 
-        // TODO: Add item analysis logic here
-        let address = viewModel.address ?? "" // TODO: Process non-existant accounts
+        guard let chainModel = chains[viewModel.chainId] else { return }
 
-        // Case 1: address not found
-        let locale = localizationManager?.selectedLocale
-
-        var title = address
-
-        let offset = title.count / 2
-        title.insert(
-            contentsOf: String.returnKey,
-            at: title.index(title.startIndex, offsetBy: offset)
-        )
-
-        var actions: [AlertPresentableAction] = []
-
-        // TODO: display account address
-//        let accountsTitle = R.string.localizable.profileAccountsTitle(preferredLanguages: locale?.rLanguages)
-//        let accountAction = AlertPresentableAction(title: accountsTitle) { [weak self] in
-//            self?.wireframe.showAccountDetails(from: self?.view)
-//        }
-//
-//        actions.append(accountAction)
-
-        let copyTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: locale?.rLanguages)
-        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
-            self?.copyAddress(address) // TODO: Pass real address here
+        if viewModel.address == nil {
+            // Case 1: address not found
+            displayNoAddressActions(for: chainModel)
+        } else if chainModel.isEthereumBased {
+            // Case 2: ethereum address found
+            displayEthereumAddressActions(for: chainModel, viewModel: viewModel)
+        } else {
+            // Case 3: substrate address found
+            displaySubstrateAddressActions(for: chainModel, viewModel: viewModel)
         }
-
-        actions.append(copyAction)
-
-        if
-            let url = Chain.kusama.polkascanAddressURL(address) {
-            let polkascanTitle = R.string.localizable
-                .transactionDetailsViewPolkascan(preferredLanguages: locale?.rLanguages)
-
-            let polkascanAction = AlertPresentableAction(title: polkascanTitle) { [weak self] in
-                if let view = self?.view {
-                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
-                }
-            }
-
-            actions.append(polkascanAction)
-        }
-
-        if
-            let url = Chain.kusama.subscanAddressURL(address) // userSettings?.connection.type.chain.subscanAddressURL(address)
-        {
-            let subscanTitle = R.string.localizable
-                .transactionDetailsViewSubscan(preferredLanguages: locale?.rLanguages)
-            let subscanAction = AlertPresentableAction(title: subscanTitle) { [weak self] in
-                if let view = self?.view {
-                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
-                }
-            }
-
-            actions.append(subscanAction)
-        }
-
-        let changeAccountTitle = R.string.localizable
-            .accountActionsChangeTitle(preferredLanguages: locale?.rLanguages)
-        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
-            print("Change account")
-            // TODO: display another actions view?
-        }
-
-        actions.append(changeAccountAction)
-
-        let exportAccountTitle = R.string.localizable
-            .commonExport(preferredLanguages: locale?.rLanguages)
-        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
-            print("Export account")
-            // TODO: display another actions view
-        }
-
-        actions.append(exportAction)
-
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
-
-        let actionsViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
-        )
-
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
-        )
     }
 }
 

@@ -517,3 +517,6 @@
 "chain.accounts.section.title.custom.secret" = "Аккаунты с кастомным секретом";
 "account.actions.change.title" = "Изменить аккаунт";
 "account.not.found.caption" = "Аккаунт не найден";
+"account.not.found.actions.title" = "Аккаунт %@";
+"account.create.title" = "Создать аккаунт";
+"account.import.title" = "Импортировать аккаунт";

@@ -44,6 +44,7 @@ final class ChainAccountViewModelFactory {
             )
 
             return ChainAccountViewModelItem(
+                chainId: chainAccount.chainId,
                 name: chainName,
                 address: accountAddress,
                 warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
@@ -87,6 +88,7 @@ final class ChainAccountViewModelFactory {
             }
 
             return ChainAccountViewModelItem(
+                chainId: chainId,
                 name: chainName,
                 address: accountAddress,
                 warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
