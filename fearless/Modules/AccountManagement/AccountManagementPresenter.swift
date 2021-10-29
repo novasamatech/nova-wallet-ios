@@ -69,6 +69,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         // TODO: Add item analysis logic here
         let address = viewModel.address ?? "" // TODO: Process non-existant accounts
 
+        // Case 1: address not found
         let locale = localizationManager?.selectedLocale
 
         var title = address

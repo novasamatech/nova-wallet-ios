@@ -39,7 +39,9 @@ final class ChainAccountViewModelFactory {
                 )
             }
 
-            let icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
+            let icon = try? iconGenerator.generateFromAddress(
+                wallet.substrateAccountId.toAddress(using: ChainFormat.substrate(42))
+            )
 
             return ChainAccountViewModelItem(
                 name: chainName,
@@ -64,16 +66,25 @@ final class ChainAccountViewModelFactory {
             let chainName = chainModel.name
 
             let accountAddress: String?
+            let icon: DrawableIcon?
 
             if chainModel.isEthereumBased {
-                accountAddress = wallet.ethereumAddress?.toHex(includePrefix: true)
+                if let ethereumAddress = wallet.ethereumAddress {
+                    accountAddress = ethereumAddress.toHex(includePrefix: true)
+                    icon = try? iconGenerator.generateFromAddress(
+                        wallet.substrateAccountId.toAddress(using: ChainFormat.substrate(42))
+                    )
+                } else {
+                    accountAddress = nil
+                    icon = nil
+                }
+
             } else {
                 accountAddress = try? wallet.substrateAccountId.toAddress(
                     using: ChainFormat.substrate(chainModel.addressPrefix)
                 )
+                icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
             }
-
-            let icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
 
             return ChainAccountViewModelItem(
                 name: chainName,
