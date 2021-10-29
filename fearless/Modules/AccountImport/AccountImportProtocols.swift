@@ -4,7 +4,7 @@ import SoraFoundation
 protocol AccountImportViewProtocol: ControllerBackedProtocol {
     func setSource(type: AccountImportSource)
     func setSource(viewModel: InputViewModelProtocol)
-    func setName(viewModel: InputViewModelProtocol)
+    func setName(viewModel: InputViewModelProtocol?)
     func setPassword(viewModel: InputViewModelProtocol)
     func setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)
     func setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)
@@ -22,6 +22,7 @@ protocol AccountImportViewProtocol: ControllerBackedProtocol {
 
 protocol AccountImportPresenterProtocol: AnyObject {
     func setup()
+    func provideVisibilitySettings() -> AccountImportVisibility
     func selectSourceType()
     func selectCryptoType()
     func selectNetworkType()

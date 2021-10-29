@@ -2,6 +2,7 @@ import UIKit
 import SoraKeystore
 import SoraFoundation
 import SoraUI
+import SwiftUI
 
 final class AccountImportViewController: UIViewController {
     private enum Constants {
@@ -338,6 +339,18 @@ final class AccountImportViewController: UIViewController {
     @IBAction private func actionNext() {
         presenter.proceed()
     }
+
+    private func updateVisibility(_ settings: AccountImportVisibility) {
+        sourceTypeView.isHidden = !settings.contains(.sourceType)
+        usernameView.isHidden = !settings.contains(.walletName)
+        uploadView.isHidden = !settings.contains(.restoreJSON)
+        textContainerView.isHidden = !(settings.contains(.mnemonicText) || settings.contains(.seedText))
+        passwordView.isHidden = !settings.contains(.password)
+        substrateCryptoTypeView.isHidden = !settings.contains(.substrateCryptoType)
+        substrateDerivationPathView.isHidden = !settings.contains(.substrateDerivationPath)
+        ethereumCryptoTypeView.isHidden = !settings.contains(.ethereumCryptoType)
+        ethereumDerivationPathView.isHidden = !settings.contains(.ethereumDerivationPath)
+    }
 }
 
 // MARK: - AccountImportViewProtocol
@@ -348,43 +361,19 @@ extension AccountImportViewController: AccountImportViewProtocol {
     }
 
     func setSource(type: AccountImportSource) {
+        let settings = presenter.provideVisibilitySettings()
+        updateVisibility(settings)
+
         switch type {
         case .mnemonic:
-            passwordView.isHidden = true
             passwordTextField.text = nil
             passwordViewModel = nil
-
-            substrateDerivationPathView.isHidden = false
-            ethereumCryptoTypeView.isHidden = false
-            ethereumDerivationPathView.isHidden = false
-
-            uploadView.isHidden = true
-
-            textContainerView.isHidden = false
 
         case .seed:
-            passwordView.isHidden = true
             passwordTextField.text = nil
             passwordViewModel = nil
 
-            substrateDerivationPathView.isHidden = false
-            ethereumCryptoTypeView.isHidden = true
-            ethereumDerivationPathView.isHidden = true
-
-            uploadView.isHidden = true
-
-            textContainerView.isHidden = false
-
         case .keystore:
-            passwordView.isHidden = false
-
-            substrateDerivationPathView.isHidden = true
-            ethereumCryptoTypeView.isHidden = true
-            ethereumDerivationPathView.isHidden = true
-
-            uploadView.isHidden = false
-
-            textContainerView.isHidden = true
             textView.text = nil
         }
 
@@ -415,19 +404,19 @@ extension AccountImportViewController: AccountImportViewProtocol {
         updateNextButton()
     }
 
-    func setName(viewModel: InputViewModelProtocol) {
+    func setName(viewModel: InputViewModelProtocol?) {
         usernameViewModel = viewModel
 
-        usernameTextField.text = viewModel.inputHandler.value
+        if let viewModel = viewModel {
+            usernameTextField.text = viewModel.inputHandler.value
+        }
 
         updateNextButton()
     }
 
     func setPassword(viewModel: InputViewModelProtocol) {
         passwordViewModel = viewModel
-
         passwordTextField.text = viewModel.inputHandler.value
-
         updateNextButton()
     }
 

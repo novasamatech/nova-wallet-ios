@@ -78,4 +78,19 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             interactor.importAccountWithKeystore(request: request)
         }
     }
+
+    override func getVisibilitySettings() -> AccountImportVisibility {
+        guard let sourceType = selectedSourceType else {
+            return .walletMnemonic
+        }
+
+        switch sourceType {
+        case .mnemonic:
+            return .walletMnemonic
+        case .seed:
+            return .walletSeed
+        case .keystore:
+            return .walletJSON
+        }
+    }
 }

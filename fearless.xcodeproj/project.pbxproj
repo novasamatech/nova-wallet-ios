@@ -1273,6 +1273,7 @@
 		AE3983A0272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE39839F272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift */; };
 		AE3983A2272C08AE00BC8A85 /* BaseAccountImportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3983A1272C08AD00BC8A85 /* BaseAccountImportPresenter.swift */; };
 		AE3983A5272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3983A4272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift */; };
+		AE3983A7272C5D1500BC8A85 /* AccountImportVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3983A6272C5D1500BC8A85 /* AccountImportVisibility.swift */; };
 		AE4A71D42607B1440017C663 /* NetworkStakingInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4A71D32607B1440017C663 /* NetworkStakingInfoViewModel.swift */; };
 		AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4C53E4268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift */; };
 		AE4C53E8268CD61E00B03CE8 /* ValidatorListFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE4C53E7268CD61E00B03CE8 /* ValidatorListFilterTests.swift */; };
@@ -2935,6 +2936,7 @@
 		AE39839F272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImportChainAccount+AccountImportInteractor.swift"; sourceTree = "<group>"; };
 		AE3983A1272C08AD00BC8A85 /* BaseAccountImportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseAccountImportPresenter.swift; sourceTree = "<group>"; };
 		AE3983A4272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImportChainAccount+AccountImportPresenter.swift"; sourceTree = "<group>"; };
+		AE3983A6272C5D1500BC8A85 /* AccountImportVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportVisibility.swift; sourceTree = "<group>"; };
 		AE4A71D32607B1440017C663 /* NetworkStakingInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStakingInfoViewModel.swift; sourceTree = "<group>"; };
 		AE4C53E4268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorListFilterSortCell.swift; sourceTree = "<group>"; };
 		AE4C53E7268CD61E00B03CE8 /* ValidatorListFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorListFilterTests.swift; sourceTree = "<group>"; };
@@ -4526,6 +4528,7 @@
 				84BEE058255F4D5700D05EB3 /* AccountImportPreferredInfo.swift */,
 				84BEE0EF2562897100D05EB3 /* AccountImportJsonFactory.swift */,
 				F4AE12A0268DD69B0097D1C7 /* MnemonicTextNormalizer.swift */,
+				AE3983A6272C5D1500BC8A85 /* AccountImportVisibility.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -9512,6 +9515,7 @@
 				84E1CCF5260DCB91001E81B5 /* SwitchAccount+AccountManagementWireframe.swift in Sources */,
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
 				849ABE6D2627949E00011A2A /* BatchMapper.swift in Sources */,
+				AE3983A7272C5D1500BC8A85 /* AccountImportVisibility.swift in Sources */,
 				F40966B826B297D6008CD244 /* AnalyticsContainerProtocols.swift in Sources */,
 				84452F5325D5BD2A00F47EC5 /* RuntimeRegistryService.swift in Sources */,
 				AEDD7C0F269C81F500A8405F /* BlockWeights.swift in Sources */,
