@@ -97,7 +97,6 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var commonTypesURL: URL {
-        // swiftlint:disable:next line_length
         URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/types/default.json")!
     }
 
