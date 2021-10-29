@@ -20,10 +20,7 @@ protocol AccountManagementPresenterProtocol: AnyObject {
 //    func activateDetails(at index: Int)
 //    func activateAddAccount()
 //
-//    func selectItem(at index: Int)
-//    func moveItem(at startIndex: Int, to finalIndex: Int)
-//
-//    func removeItem(at index: Int)
+    func selectItem(at indexPath: IndexPath)
 }
 
 protocol AccountManagementInteractorInputProtocol: AnyObject {
@@ -34,13 +31,10 @@ protocol AccountManagementInteractorInputProtocol: AnyObject {
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
-    func didReceiveChains()
-//    func didCompleteSelection(of metaAccount: MetaAccountModel)
-//    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>])
-//    func didReceive(error: Error)
+    func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)
 }
 
-protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
 //    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
 //    func showAddAccount(from view: AccountManagementViewProtocol?)
 //    func complete(from view: AccountManagementViewProtocol?)

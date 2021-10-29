@@ -9,39 +9,23 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
     static func createView(for _: MetaAccountModel) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
 
-//        let facade = UserDataStorageFacade.shared
-//        let mapper = ManagedMetaAccountMapper()
-//
-//        let observer: CoreDataContextObservable<ManagedMetaAccountModel, CDMetaAccount> =
-//            CoreDataContextObservable(
-//                service: facade.databaseService,
-//                mapper: AnyCoreDataMapper(mapper),
-//                predicate: { _ in true }
-//            )
-//
-//        let repository = AccountRepositoryFactory(storageFacade: facade)
-//            .createManagedMetaAccountRepository(
-//                for: nil,
-//                sortDescriptors: [NSSortDescriptor.accountsByOrder]
-//            )
-
         let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
 
         let iconGenerator = PolkadotIconGenerator()
         let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = AccountManagementPresenter(
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            logger: Logger.shared
         )
 
-//        let anyObserver = AnyDataProviderRepositoryObservable(observer)
-        let interactor = AccountManagementInteractor()
-//            repository: AnyDataProviderRepository(repository),
-//            repositoryObservable: anyObserver,
-//            settings: SelectedWalletSettings.shared,
-//            operationQueue: OperationManagerFacade.sharedDefaultQueue,
-//            eventCenter: EventCenter.shared
-//        )
+        let chainRepository = SubstrateRepositoryFactory().createChainRepository()
+
+        let interactor = AccountManagementInteractor(
+            chainRepository: chainRepository,
+            operationQueue: OperationQueue(),
+            logger: Logger.shared
+        )
 
         view.presenter = presenter
         presenter.view = view
@@ -53,16 +37,4 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
 
         return view
     }
-
-//    static func createViewForSettings() -> AccountManagementViewProtocol? {
-//        let wireframe = AccountManagementWireframe()
-//        return createView(for: wireframe)
-//    }
-//
-//    static func createViewForSwitch() -> AccountManagementViewProtocol? {
-//        guard let wireframe = SwitchAccount.WalletManagementWireframe()
-//            as? AccountManagementWireframeProtocol else { return nil }
-//
-//        return createView(for: wireframe)
-//    }
 }

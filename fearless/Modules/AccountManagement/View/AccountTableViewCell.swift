@@ -14,6 +14,7 @@ final class AccountTableViewCell: UITableViewCell {
     @IBOutlet private var infoButton: RoundedButton!
 
     weak var delegate: AccountTableViewCellDelegate?
+    private var viewModel: ChainAccountViewModelItem?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,10 +30,26 @@ final class AccountTableViewCell: UITableViewCell {
         contentView.frame = CGRect(origin: .zero, size: bounds.size)
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        viewModel?.chainIconViewModel?.cancel(on: mainImageView)
+    }
+
     func bind(viewModel: ChainAccountViewModelItem) {
+        self.viewModel?.chainIconViewModel?.cancel(on: mainImageView)
+        mainImageView.image = nil
+
+        self.viewModel = viewModel
+
         titleLabel.text = viewModel.name
         detailsLabel.text = viewModel.address
-        mainImageView.image = viewModel.chainIcon
+
+        viewModel.chainIconViewModel?.loadImage(
+            on: mainImageView,
+            targetSize: CGSize(width: 32.0, height: 32.0),
+            animated: true
+        )
 
         if let icon = viewModel.accountIcon {
             iconView.bind(icon: icon)

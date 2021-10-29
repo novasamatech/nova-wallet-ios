@@ -77,8 +77,7 @@ extension AccountManagementViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-
-//        presenter.selectItem(at: indexPath.row)
+        presenter.selectItem(at: indexPath)
     }
 }
 

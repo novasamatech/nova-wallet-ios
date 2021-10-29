@@ -1,10 +1,9 @@
 import Foundation
 import FearlessUtils
+import UIKit
 
 protocol ChainAccountViewModelFactoryProtocol {
-    func createViewModelFromItem(_ item: ChainModel) -> ChainAccountViewModelItem
-    func createChainViewModel() -> ChainAccountViewModelItem
-    func createViewModel() -> ChainAccountListViewModel
+    func createViewModel(from chains: [ChainModel.Id: ChainModel]) -> ChainAccountListViewModel
 }
 
 final class ChainAccountViewModelFactory {
@@ -16,70 +15,19 @@ final class ChainAccountViewModelFactory {
 }
 
 extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
-    func createViewModelFromItem(_: ChainModel) -> ChainAccountViewModelItem {
-        let address = "" // FIXME: (try? item.info.substrateAccountId.toAddress(using: .substrate(42))) ??
-        let icon = try? iconGenerator.generateFromAddress(address)
-
-        return ChainAccountViewModelItem(
-            name: "Kusamka",
-            address: "123ouh1ieyglafqliuheoq134",
-            chainIcon: R.image.iconKsmAsset()!,
-            accountIcon: icon
-        )
-    }
-
-    func createChainViewModel() -> ChainAccountViewModelItem {
-        let address = "" // FIXME: (try? item.info.substrateAccountId.toAddress(using: .substrate(42))) ??
-        let icon = try? iconGenerator.generateFromAddress(address)
-
-        return ChainAccountViewModelItem(
-            name: "Kusamka",
-            address: "123ouh1ieyglafqliuheoq134",
-            chainIcon: R.image.iconKsmAsset()!,
-            accountIcon: icon
-        )
-    }
-
-    func createViewModel() -> ChainAccountListViewModel {
-        [
-            ChainAccountListSectionViewModel(
-                section: .customSecret, chainAccounts: [createChainViewModel()]
-            ),
-            ChainAccountListSectionViewModel(
-                section: .sharedSecret, chainAccounts: [
-                    createChainViewModel(),
-                    createChainViewModel(),
-                    createChainViewModel(),
-                    createChainViewModel()
-                ]
+    func createViewModel(from chains: [ChainModel.Id: ChainModel]) -> ChainAccountListViewModel {
+        let chains = chains.map { (_: ChainModel.Id, chain: ChainModel) in
+            ChainAccountViewModelItem(
+                name: chain.name,
+                address: "123ouh1ieyglafqliuheoq134", // TODO: Generate icon
+                chainIconViewModel: RemoteImageViewModel(url: chain.icon),
+                accountIcon: nil // TODO: Generate icon
             )
-        ]
+        }
+
+        return [ChainAccountListSectionViewModel(
+            section: .sharedSecret,
+            chainAccounts: chains
+        )]
     }
 }
-
-// TODO: Remove comments
-
-// protocol ManagedAccountViewModelFactoryProtocol {
-//    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedAccountViewModelItem
-// }
-//
-// final class ManagedAccountViewModelFactory: ManagedAccountViewModelFactoryProtocol {
-//    let iconGenerator: IconGenerating
-//
-//    init(iconGenerator: IconGenerating) {
-//        self.iconGenerator = iconGenerator
-//    }
-//
-//    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedAccountViewModelItem {
-//        let address = (try? item.info.substrateAccountId.toAddress(using: .substrate(42))) ?? ""
-//        let icon = try? iconGenerator.generateFromAddress(address)
-//
-//        return ManagedAccountViewModelItem(
-//            identifier: item.identifier,
-//            name: item.info.name,
-//            address: address,
-//            icon: icon,
-//            isSelected: item.isSelected
-//        )
-//    }
-// }

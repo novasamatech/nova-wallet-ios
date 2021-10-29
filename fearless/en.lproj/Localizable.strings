@@ -520,3 +520,4 @@ will appear here";
 "common.invalid.hard.soft.numeric.password.message" = "Please, check that input is a mix of //'hard' and /'soft' where 'hard' and 'soft' can be any sequence of digits not including /. The path can end up with ///'password'. For example, //44/66//100///mypass.";
 "chain.accounts.section.title.shared.secret" = "Accounts with shared secret";
 "chain.accounts.section.title.custom.secret" = "Accounts with custom secret";
+"account.actions.change.title" = "Change account";

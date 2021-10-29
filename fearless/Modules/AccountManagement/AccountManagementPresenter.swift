@@ -9,43 +9,31 @@ final class AccountManagementPresenter {
     var interactor: AccountManagementInteractorInputProtocol!
 
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
+    let logger: LoggerProtocol?
 
     private var viewModel: ChainAccountListViewModel = []
 
-    init(viewModelFactory: ChainAccountViewModelFactoryProtocol) {
+    init(
+        viewModelFactory: ChainAccountViewModelFactoryProtocol,
+        logger: LoggerProtocol? = nil
+    ) {
         self.viewModelFactory = viewModelFactory
+        self.logger = logger
     }
 
-//    private func updateViewModels() {
-//        let viewModels = listCalculator.allItems.map { model in
-//            viewModelFactory.createViewModelFromItem(model)
-//        }
-//
-//        if viewModels != self.viewModels {
-//            self.viewModels = viewModels
-//            view?.reload()
-//        }
-//    }
+    private func copyAddress(_ address: String) {
+        UIPasteboard.general.string = address
+
+        let locale = localizationManager?.selectedLocale
+        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
+        wireframe.presentSuccessNotification(title, from: view)
+    }
 }
 
 extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func setup() {
         interactor.setup()
     }
-
-//    func activateDetails(at index: Int) {
-//        let viewModel = viewModels[index]
-//
-//        if let item = listCalculator.allItems.first(
-//            where: { $0.identifier == viewModel.identifier }
-//        ) {
-//            wireframe.showAccountDetails(from: view, metaAccount: item.info)
-//        }
-//    }
-//
-//    func activateAddAccount() {
-//        wireframe.showAddAccount(from: view)
-//    }
 
     func numberOfSections() -> Int {
         viewModel.count
@@ -64,122 +52,117 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func titleForSection(_ section: Int) -> LocalizableResource<String> {
         viewModel[section].section.title
     }
-//
-//    func selectItem(at index: Int) {
-//        let viewModel = viewModels[index]
-//
-//        if let item = listCalculator.allItems.first(where: { $0.identifier == viewModel.identifier }),
-//           !item.isSelected {
-//            interactor.select(item: item)
-//        }
-//    }
-//
-//    func moveItem(at startIndex: Int, to finalIndex: Int) {
-//        guard startIndex != finalIndex else {
-//            return
-//        }
-//
-//        var newItems = viewModels
-//
-//        var saveItems: [ManagedMetaAccountModel]
-//
-//        if startIndex > finalIndex {
-//            saveItems = newItems[finalIndex ... startIndex].map { viewModel in
-//                listCalculator.allItems.first { $0.identifier == viewModel.identifier }!
-//            }
-//        } else {
-//            saveItems = newItems[startIndex ... finalIndex].map { viewModel in
-//                listCalculator.allItems.first { $0.identifier == viewModel.identifier }!
-//            }.reversed()
+
+    func selectItem(at indexPath: IndexPath) {
+        let viewModel = viewModel[indexPath.section]
+            .chainAccounts[indexPath.row]
+
+        // TODO: Add item analysis logic here
+        let address = viewModel.address
+
+        let locale = localizationManager?.selectedLocale
+
+        var title = address
+
+        let offset = title.count / 2
+        title.insert(
+            contentsOf: String.returnKey,
+            at: title.index(title.startIndex, offsetBy: offset)
+        )
+
+        var actions: [AlertPresentableAction] = []
+
+        // TODO: display account address
+//        let accountsTitle = R.string.localizable.profileAccountsTitle(preferredLanguages: locale?.rLanguages)
+//        let accountAction = AlertPresentableAction(title: accountsTitle) { [weak self] in
+//            self?.wireframe.showAccountDetails(from: self?.view)
 //        }
 //
-//        let targetViewModel = newItems.remove(at: startIndex)
-//        newItems.insert(targetViewModel, at: finalIndex)
-//
-//        let initialOrder = saveItems[0].order
-//
-//        for index in 0 ..< saveItems.count - 1 {
-//            saveItems[index] = saveItems[index].replacingOrder(saveItems[index + 1].order)
-//        }
-//
-//        let lastIndex = saveItems.count - 1
-//        saveItems[lastIndex] = saveItems[lastIndex].replacingOrder(initialOrder)
-//
-//        interactor.save(items: saveItems)
-//    }
-//
-//    func removeItem(at index: Int) {
-//        askAndPerformRemoveItem(at: index) { [weak self] result in
-//            if result {
-//                self?.view?.didRemoveItem(at: index)
-//            }
-//        }
-//    }
-//
-//    private func askAndPerformRemoveItem(at index: Int, completion: @escaping (Bool) -> Void) {
-//        let locale = localizationManager?.selectedLocale
-//
-//        let removeTitle = R.string.localizable
-//            .accountDeleteConfirm(preferredLanguages: locale?.rLanguages)
-//
-//        let removeAction = AlertPresentableAction(title: removeTitle, style: .destructive) { [weak self] in
-//            self?.performRemoveItem(at: index)
-//
-//            completion(true)
-//        }
-//
-//        let cancelTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
-//        let cancelAction = AlertPresentableAction(title: cancelTitle, style: .cancel) {
-//            completion(false)
-//        }
-//
-//        let title = R.string.localizable
-//            .accountDeleteConfirmationTitle(preferredLanguages: locale?.rLanguages)
-//        let details = R.string.localizable
-//            .accountDeleteConfirmationDescription(preferredLanguages: locale?.rLanguages)
-//        let viewModel = AlertPresentableViewModel(
-//            title: title,
-//            message: details,
-//            actions: [cancelAction, removeAction],
-//            closeAction: nil
-//        )
-//
-//        wireframe.present(viewModel: viewModel, style: .alert, from: view)
-//    }
-//
-//    private func performRemoveItem(at index: Int) {
-//        let viewModel = viewModels.remove(at: index)
-//
-//        if let item = listCalculator.allItems.first(where: { $0.identifier == viewModel.identifier }) {
-//            interactor.remove(item: item)
-//        }
-//    }
+//        actions.append(accountAction)
+
+        let copyTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: locale?.rLanguages)
+        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
+            self?.copyAddress(address) // TODO: Pass real address here
+        }
+
+        actions.append(copyAction)
+
+        if
+            let url = Chain.kusama.polkascanAddressURL(address) {
+            let polkascanTitle = R.string.localizable
+                .transactionDetailsViewPolkascan(preferredLanguages: locale?.rLanguages)
+
+            let polkascanAction = AlertPresentableAction(title: polkascanTitle) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+
+            actions.append(polkascanAction)
+        }
+
+        if
+            let url = Chain.kusama.subscanAddressURL(address) // userSettings?.connection.type.chain.subscanAddressURL(address)
+        {
+            let subscanTitle = R.string.localizable
+                .transactionDetailsViewSubscan(preferredLanguages: locale?.rLanguages)
+            let subscanAction = AlertPresentableAction(title: subscanTitle) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
+            }
+
+            actions.append(subscanAction)
+        }
+
+        let changeAccountTitle = R.string.localizable
+            .accountActionsChangeTitle(preferredLanguages: locale?.rLanguages)
+        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
+            print("Change account")
+            // TODO: display another actions view?
+        }
+
+        actions.append(changeAccountAction)
+
+        let exportAccountTitle = R.string.localizable
+            .commonExport(preferredLanguages: locale?.rLanguages)
+        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+            print("Export account")
+            // TODO: display another actions view
+        }
+
+        actions.append(exportAction)
+
+        let closeTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
+    }
 }
 
 extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol {
-    func didReceiveChains() {
-        viewModel = viewModelFactory.createViewModel()
-        view?.reload()
-    }
+    func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>) {
+        switch result {
+        case let .success(chains):
+            viewModel = viewModelFactory.createViewModel(from: chains)
+            view?.reload()
 
-//    func didCompleteSelection(of _: MetaAccountModel) {
-//        wireframe.complete(from: view)
-//    }
-//
-//    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>]) {
-//        listCalculator.apply(changes: changes)
-//        updateViewModels()
-//    }
-//
-//    func didReceive(error: Error) {
-//        if !wireframe.present(error: error, from: view, locale: localizationManager?.selectedLocale) {
-//            _ = wireframe.present(
-//                error: CommonError.undefined,
-//                from: view,
-//                locale: localizationManager?.selectedLocale
-//            )
-//        }
-//    }
+        case let .failure(error):
+            logger?.error("Did receive chains fetch error: \(error)")
+        }
+    }
 }
 
 extension AccountManagementPresenter: Localizable {

@@ -515,3 +515,4 @@
 "common.select.asset" = "Выберите токен";
 "chain.accounts.section.title.shared.secret" = "Аккаунты с общим секретом";
 "chain.accounts.section.title.custom.secret" = "Аккаунты с кастомным секретом";
+"account.actions.change.title" = "Изменить аккаунт";
