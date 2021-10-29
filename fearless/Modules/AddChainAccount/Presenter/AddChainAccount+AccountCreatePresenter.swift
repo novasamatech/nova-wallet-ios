@@ -13,6 +13,11 @@ extension AddChainAccount {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
+
+            super.init()
+
+            displaySubstrate = !isEthereumBased
+            displayEthereum = isEthereumBased
         }
 
         private func prooceedWithSubstrate() {
