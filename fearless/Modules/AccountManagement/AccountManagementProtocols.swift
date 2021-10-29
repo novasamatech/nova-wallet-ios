@@ -31,6 +31,7 @@ protocol AccountManagementInteractorInputProtocol: AnyObject {
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
+    func didReceiveWallet(_ wallet: MetaAccountModel)
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)
 }
 

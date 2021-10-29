@@ -11,6 +11,8 @@ final class AccountManagementPresenter {
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
     let logger: LoggerProtocol?
 
+    private var wallet: MetaAccountModel?
+    private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
 
     init(
@@ -27,6 +29,13 @@ final class AccountManagementPresenter {
         let locale = localizationManager?.selectedLocale
         let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
         wireframe.presentSuccessNotification(title, from: view)
+    }
+
+    private func updateViewModels() {
+        guard let wallet = wallet else { return }
+
+        viewModel = viewModelFactory.createViewModel(from: wallet, chains: chains, for: selectedLocale)
+        view?.reload()
     }
 }
 
@@ -153,11 +162,16 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
 }
 
 extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol {
+    func didReceiveWallet(_ wallet: MetaAccountModel) {
+        self.wallet = wallet
+        updateViewModels()
+    }
+
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>) {
         switch result {
         case let .success(chains):
-            viewModel = viewModelFactory.createViewModel(from: chains, for: selectedLocale)
-            view?.reload()
+            self.chains = chains
+            updateViewModels()
 
         case let .failure(error):
             logger?.error("Did receive chains fetch error: \(error)")
@@ -168,7 +182,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
 extension AccountManagementPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-//            updateViewModels()
+            updateViewModels()
         }
     }
 }

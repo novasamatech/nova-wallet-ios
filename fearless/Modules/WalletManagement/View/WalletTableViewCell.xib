@@ -125,6 +125,11 @@
             <point key="canvasLocation" x="139" y="133"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="tC2-y9-sqp">
+            <size key="intrinsicContentSize" width="30" height="22"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconInfo" width="22" height="22"/>
         <image name="listCheckmarkIcon" width="25" height="25"/>

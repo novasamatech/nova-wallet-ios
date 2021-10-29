@@ -7,15 +7,18 @@ final class AccountManagementInteractor {
 
     let chainRepository: AnyDataProviderRepository<ChainModel>
     let operationQueue: OperationQueue
+    let wallet: MetaAccountModel
     let logger: LoggerProtocol
 
     init(
         chainRepository: AnyDataProviderRepository<ChainModel>,
         operationQueue: OperationQueue,
+        wallet: MetaAccountModel,
         logger: LoggerProtocol = Logger.shared
     ) {
         self.chainRepository = chainRepository
         self.operationQueue = operationQueue
+        self.wallet = wallet
         self.logger = logger
     }
 
@@ -36,6 +39,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
             }
 
             presenter?.didReceiveChains(.success(chainsById))
+            presenter?.didReceiveWallet(wallet)
         } catch {
             presenter?.didReceiveChains(.failure(error))
         }

@@ -4,7 +4,8 @@ import UIKit
 
 protocol ChainAccountViewModelFactoryProtocol {
     func createViewModel(
-        from chains: [ChainModel.Id: ChainModel],
+        from _: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel
 }
@@ -15,32 +16,101 @@ final class ChainAccountViewModelFactory {
     init(iconGenerator: IconGenerating) {
         self.iconGenerator = iconGenerator
     }
+
+    private func createCustomSecretAccountList(
+        from wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        for locale: Locale
+    ) -> [ChainAccountViewModelItem] {
+        wallet.chainAccounts.compactMap { chainAccount in
+            guard let chainModel = chains[chainAccount.chainId] else {
+                return nil
+            }
+
+            let chainName = chainModel.name
+
+            let accountAddress: String?
+
+            if chainModel.isEthereumBased {
+                accountAddress = try? chainAccount.accountId.toAddress(using: .ethereum)
+            } else {
+                accountAddress = try? wallet.substrateAccountId.toAddress(
+                    using: ChainFormat.substrate(chainModel.addressPrefix)
+                )
+            }
+
+            let icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
+
+            return ChainAccountViewModelItem(
+                name: chainName,
+                address: accountAddress,
+                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
+                accountIcon: icon
+            )
+        }
+    }
+
+    private func createSharedSecretAccountList(
+        from wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
+        for locale: Locale
+    ) -> [ChainAccountViewModelItem] {
+        chains.compactMap { (chainId: ChainModel.Id, chainModel: ChainModel) in
+            guard wallet.chainAccounts.first(where: { chainAccountModel in
+                chainAccountModel.chainId == chainId
+            }) == nil else { return nil }
+
+            let chainName = chainModel.name
+
+            let accountAddress: String?
+
+            if chainModel.isEthereumBased {
+                accountAddress = wallet.ethereumAddress?.toHex(includePrefix: true)
+            } else {
+                accountAddress = try? wallet.substrateAccountId.toAddress(
+                    using: ChainFormat.substrate(chainModel.addressPrefix)
+                )
+            }
+
+            let icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
+
+            return ChainAccountViewModelItem(
+                name: chainName,
+                address: accountAddress,
+                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
+                chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
+                accountIcon: icon
+            )
+        }
+    }
 }
 
 extension ChainAccountViewModelFactory: ChainAccountViewModelFactoryProtocol {
     func createViewModel(
-        from chains: [ChainModel.Id: ChainModel],
+        from wallet: MetaAccountModel,
+        chains: [ChainModel.Id: ChainModel],
         for locale: Locale
     ) -> ChainAccountListViewModel {
-        /*
-         let icon = try? iconGenerator.generateFromAddress(settings.details)
-         let genericAddress = try wallet.substrateAccountId.toAddress(
-             using: ChainFormat.substrate(42)
-         )
-         */
-        let chains = chains.map { (_: ChainModel.Id, chain: ChainModel) in
-            ChainAccountViewModelItem(
-                name: chain.name,
-                address: "123ouh1ieyglafqliuheoq134", // TODO: Generate icon
-                warning: R.string.localizable.accountNotFoundCaption(preferredLanguages: locale.rLanguages),
-                chainIconViewModel: RemoteImageViewModel(url: chain.icon),
-                accountIcon: nil // TODO: Generate icon
-            )
+        let customSecretAccountList = createCustomSecretAccountList(from: wallet, chains: chains, for: locale)
+        let sharedSecretAccountList = createSharedSecretAccountList(from: wallet, chains: chains, for: locale)
+
+        guard !customSecretAccountList.isEmpty else {
+            return [ChainAccountListSectionViewModel(
+                section: .sharedSecret,
+                chainAccounts: sharedSecretAccountList
+            )]
         }
 
-        return [ChainAccountListSectionViewModel(
-            section: .sharedSecret,
-            chainAccounts: chains
-        )]
+        return [
+            ChainAccountListSectionViewModel(
+                section: .customSecret,
+                chainAccounts: customSecretAccountList
+            ),
+            ChainAccountListSectionViewModel(
+                section: .sharedSecret,
+                chainAccounts: sharedSecretAccountList
+            )
+        ]
     }
 }

@@ -105,6 +105,11 @@
             <point key="canvasLocation" x="139" y="153"/>
         </view>
     </objects>
+    <designables>
+        <designable name="VhF-jR-ils">
+            <size key="intrinsicContentSize" width="74.333333333333329" height="15.666666666666666"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorAccent">
             <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
