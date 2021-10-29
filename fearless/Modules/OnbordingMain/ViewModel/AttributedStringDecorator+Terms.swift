@@ -11,7 +11,8 @@ extension CompoundAttributedStringDecorator {
         let rangeDecorator = RangeAttributedStringDecorator(attributes: attributes)
 
         let highlightAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorPink()!
+            .foregroundColor: R.color.colorWhite()!,
+            .font: UIFont.h5Title
         ]
 
         let termsConditions = R.string.localizable

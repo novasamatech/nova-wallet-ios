@@ -153,7 +153,11 @@ final class AccountCreationHelper {
             mnemonic = try IRMnemonicCreator().randomMnemonic(.entropy128)
         }
 
-        let request = MetaAccountCreationRequest(username: name, derivationPath: derivationPath, cryptoType: cryptoType)
+        let request = MetaAccountCreationRequest(
+            username: name,
+            derivationPath: derivationPath,
+            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
+            cryptoType: cryptoType)
 
         let operation = MetaAccountOperationFactory(keystore: keychain)
             .newMetaAccountOperation(request: request, mnemonic: mnemonic)

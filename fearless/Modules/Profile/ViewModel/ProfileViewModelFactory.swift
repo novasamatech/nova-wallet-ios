@@ -48,7 +48,7 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
             case .accountList:
                 return createAccountListViewModel(for: locale)
             case .connectionList:
-                return createConnectionListViewModel(for: locale)
+                return nil // TODO: Implement when new networks settings scene is done
             case .changePincode:
                 return createChangePincode(for: locale)
             case .language:

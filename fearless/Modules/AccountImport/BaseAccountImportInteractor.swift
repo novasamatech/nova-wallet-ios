@@ -62,7 +62,7 @@ class BaseAccountImportInteractor {
             defaultSource: .mnemonic,
             availableNetworks: supportedNetworks,
             defaultNetwork: defaultNetwork,
-            availableCryptoTypes: MultiassetCryptoType.allCases,
+            availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
             defaultCryptoType: .sr25519
         )
 
@@ -78,7 +78,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         setupKeystoreImportObserver()
     }
 
-    func importAccountWithMnemonic(request: ChainAccountImportMnemonicRequest) { // FIXME: Meta/Chain/General?
+    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest) {
         guard let mnemonic = try? mnemonicCreator.mnemonic(fromList: request.mnemonic) else {
             presenter.didReceiveAccountImport(error: AccountCreateError.invalidMnemonicFormat)
             return
@@ -87,6 +87,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         let creationRequest = MetaAccountCreationRequest(
             username: request.username,
             derivationPath: request.derivationPath,
+            ethereumDerivationPath: DerivationPathConstants.defaultEthereum,
             cryptoType: request.cryptoType
         )
 
@@ -105,6 +106,29 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
 
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest) {
         let operation = accountOperationFactory.newMetaAccountOperation(request: request)
+        importAccountUsingOperation(operation)
+    }
+
+    func importAccountWithMnemonic(chainId: ChainModel.Id, request: ChainAccountImportMnemonicRequest, into wallet: MetaAccountModel) {
+        guard let mnemonic = try? mnemonicCreator.mnemonic(fromList: request.mnemonic) else {
+            presenter.didReceiveAccountImport(error: AccountCreateError.invalidMnemonicFormat)
+            return
+        }
+
+        let operation = accountOperationFactory
+            .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
+        importAccountUsingOperation(operation)
+    }
+
+    func importAccountWithSeed(chainId: ChainModel.Id, request: ChainAccountImportSeedRequest, into wallet: MetaAccountModel) {
+        let operation = accountOperationFactory
+            .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
+        importAccountUsingOperation(operation)
+    }
+
+    func importAccountWithKeystore(chainId: ChainModel.Id, request: ChainAccountImportKeystoreRequest, into wallet: MetaAccountModel) {
+        let operation = accountOperationFactory
+            .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
 

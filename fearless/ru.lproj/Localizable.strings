@@ -9,7 +9,12 @@
 "operation.error.message" = "Пожалуйста, попробуйте позже";
 "connection.error.title" = "Ошибка соединения";
 "connection.error.message" = "Пожалуйста, проверьте подключение к Интернету и повторите попытку.";
-"onboarding.restore.account" = "Восстановить";
+"onboarding.create.wallet" = "Создать новый кошелёк";
+"onboarding.restore.wallet" = "У меня уже есть кошелёк";
+"onboarding.create.chain.account" = "Создать новый аккаунт";
+"onboarding.restore.chain.account" = "У меня уже есть аккаунт";
+"import.wallet.title" = "Импортировать кошелёк";
+"import.chain.account.title" = "Импортировать аккаунт";
 "onboarding.terms.and.conditions.1" = "Я подтверждаю, что прочитал и согласен с \
 Условиями использования и Политикой конфиденциальности";
 "onboarding.terms.and.conditions.2" = "Условиями использования";
@@ -25,6 +30,7 @@
 "access.restore.words.error.message" = "Мнемоника должна содержать не более 24 слов";
 "access.restore.phrase.error.message" = "Ваша мнемоника недействительна. Пожалуйста, попробуйте другую";
 "tabbar.wallet.title" = "Кошелёк";
+"wallet.chain.management.title" = "Кошелёк";
 "tabbar.staking.title" = "Стейкинг";
 "tabbar.settings.title" = "Настройки";
 "wallet.empty.description" = "Входящие и исходящие \
@@ -42,7 +48,8 @@
 "no.email.bound.error.message" = "Пожалуйста, убедитесь, что на устройстве установлено почтовое приложение.";
 "connection.management.title" = "Сети";
 "onboarding.create.account" = "Создать аккаунт";
-"username.setup.choose.title" = "Имя";
+"wallet.username.setup.choose.title" = "Имя кошелька";
+"account.username.setup.choose.title" = "Имя";
 "username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "username.setup.title" = "Создать аккаунт";
 "common.no.screenshot.title" = "Не делайте скриншоты";
@@ -52,7 +59,11 @@
 "account.create.details" = "Используйте нецифровой носитель для сохранения, например, выпишите слова на бумагу.";
 "common.advanced" = "Продвинутый";
 "common.crypto.type" = "Тип ключевой пары";
-"common.secret.derivation.path" = "Последовательность для вывода секрета";
+"common.secret.derivation.path" = "Последовательность для вывода";
+"common.crypto.type.substrate" = "Тип ключевой пары Substrate";
+"common.crypto.type.ethereum" = "Тип ключевой пары Ethereum";
+"common.secret.derivation.path.substrate" = "Последовательность для вывода секрета Substrate";
+"common.secret.derivation.path.ethereum" = "Последовательность для вывода секрета Ethereum";
 "common.choose.network" = "Выберите сеть";
 "sr25519.selection.subtitle" = "sr25519 (рекомендованный)";
 "ed25519.selection.subtitle" = "ed25519 (альтернативный)";
@@ -84,6 +95,7 @@
 "account.confirmation.details" = "Выберите слова в правильном порядке";
 "pincode.create.top.title" = "Новый PIN-код";
 "profile.accounts.title" = "Аккаунты";
+"profile.wallets.title" = "Кошельки";
 "profile.network.title" = "Сеть";
 "profile.pincode.change.title" = "Изменить PIN-код";
 "common.invalid.hard.soft.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и //'soft' где 'hard' и 'soft' могут быть любой последовательностью символов, не включая /.";
@@ -93,6 +105,7 @@
 "common.edit" = "Редактировать";
 "common.done" = "Готово";
 "accounts.add.account" = "Добавить аккаунт";
+"wallet.add.button.title" = "Добавить кошелёк";
 "account.add.already.exists.message" = "Аккаунт уже существует. Пожалуйста, попробуйте другой.";
 "about.website" = "Официальный сайт";
 "about.github" = "Исходный код на Github";
@@ -107,7 +120,8 @@
 "connection.management.default.title" = "По умолчанию";
 "connection.management.custom.title" = "Добавленные";
 "account.delete.confirmation.title" = "Забыть аккаунт?";
-"account.delete.confirmation.description" = "Прежде чем продолжить, убедитесь, что вы создали резервную копию своей учетной записи.";
+"account.delete.confirmation.title" = "Забыть кошелёк?";
+"wallet.delete.confirmation.description" = "Перед продолжением убедитесь, что вы создали резервную копию своего кошелька.";
 "account.delete.confirm" = "Забыть";
 "account.needed.title" = "Необходим аккаунт";
 "account.needed.message" = "У вас нет учетной записи в этой сети, вы можете создать или импортировать учетную запись.";
@@ -499,3 +513,10 @@
 "common.choose.action" = "Выберите действие";
 "common.select.network" = "Выберите сеть";
 "common.select.asset" = "Выберите токен";
+"chain.accounts.section.title.shared.secret" = "Аккаунты с общим секретом";
+"chain.accounts.section.title.custom.secret" = "Аккаунты с кастомным секретом";
+"account.actions.change.title" = "Изменить аккаунт";
+"account.not.found.caption" = "Аккаунт не найден";
+"account.not.found.actions.title" = "Аккаунт %@";
+"account.create.title" = "Создать аккаунт";
+"account.import.title" = "Импортировать аккаунт";

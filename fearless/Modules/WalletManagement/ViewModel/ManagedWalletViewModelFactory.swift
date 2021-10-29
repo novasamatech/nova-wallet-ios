@@ -1,25 +1,24 @@
 import Foundation
 import FearlessUtils
 
-protocol ManagedAccountViewModelFactoryProtocol {
-    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedAccountViewModelItem
+protocol ManagedWalletViewModelFactoryProtocol {
+    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedWalletViewModelItem
 }
 
-final class ManagedAccountViewModelFactory: ManagedAccountViewModelFactoryProtocol {
+final class ManagedWalletViewModelFactory: ManagedWalletViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
 
     init(iconGenerator: IconGenerating) {
         self.iconGenerator = iconGenerator
     }
 
-    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedAccountViewModelItem {
+    func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedWalletViewModelItem {
         let address = (try? item.info.substrateAccountId.toAddress(using: .substrate(42))) ?? ""
         let icon = try? iconGenerator.generateFromAddress(address)
 
-        return ManagedAccountViewModelItem(
+        return ManagedWalletViewModelItem(
             identifier: item.identifier,
             name: item.info.name,
-            address: address,
             icon: icon,
             isSelected: item.isSelected
         )

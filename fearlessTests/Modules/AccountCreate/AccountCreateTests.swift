@@ -16,7 +16,7 @@ class AccountCreateTests: XCTestCase {
         let mnemonicCreator = IRMnemonicCreator()
         let interactor = AccountCreateInteractor(mnemonicCreator: mnemonicCreator)
 
-        let usernameSetup = UsernameSetupModel(username: "myname", selectedNetwork: .westend)
+        let usernameSetup = UsernameSetupModel(username: "myname")
         let presenter = AccountCreatePresenter(usernameSetup: usernameSetup)
         presenter.view = view
         presenter.wireframe = wireframe
@@ -27,7 +27,8 @@ class AccountCreateTests: XCTestCase {
 
         stub(view) { stub in
             when(stub).didCompleteCryptoTypeSelection().thenDoNothing()
-            when(stub).didValidateDerivationPath(any()).thenDoNothing()
+            when(stub).didValidateSubstrateDerivationPath(any()).thenDoNothing()
+            when(stub).didValidateEthereumDerivationPath(any()).thenDoNothing()
             when(stub).isSetup.get.thenReturn(false, true)
 
             when(stub).set(mnemonic: any()).then { _ in
@@ -35,7 +36,8 @@ class AccountCreateTests: XCTestCase {
             }
 
             when(stub).setSelectedCrypto(model: any()).thenDoNothing()
-            when(stub).setDerivationPath(viewModel: any()).thenDoNothing()
+            when(stub).setSubstrateDerivationPath(viewModel: any()).thenDoNothing()
+            when(stub).setEthereumDerivationPath(viewModel: any()).thenDoNothing()
         }
 
         let expectation = XCTestExpectation()
