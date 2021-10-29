@@ -116,6 +116,9 @@ class CrowdloanContributionConfirmTests: XCTestCase {
             when(stub).complete(on: any()).then { _ in
                 completionExpectation.fulfill()
             }
+
+            // TODO: Check whether it has to be tested
+            when(stub).present(message: any(), title: any(), closeAction: any(), from: any()).thenDoNothing()
         }
 
         presenter.confirm()
