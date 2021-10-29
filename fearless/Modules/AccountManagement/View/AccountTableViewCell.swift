@@ -10,6 +10,7 @@ final class AccountTableViewCell: UITableViewCell {
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var detailsLabel: UILabel!
     @IBOutlet private var mainImageView: UIImageView!
+    @IBOutlet private var warningImageView: UIImageView!
     @IBOutlet private var iconView: PolkadotIconView!
     @IBOutlet private var infoButton: RoundedButton!
 
@@ -43,7 +44,7 @@ final class AccountTableViewCell: UITableViewCell {
         self.viewModel = viewModel
 
         titleLabel.text = viewModel.name
-        detailsLabel.text = viewModel.address
+        detailsLabel.text = viewModel.address ?? viewModel.warning ?? ""
 
         viewModel.chainIconViewModel?.loadImage(
             on: mainImageView,
@@ -53,6 +54,12 @@ final class AccountTableViewCell: UITableViewCell {
 
         if let icon = viewModel.accountIcon {
             iconView.bind(icon: icon)
+
+            iconView.isHidden = false
+            warningImageView.isHidden = true
+        } else {
+            iconView.isHidden = true
+            warningImageView.isHidden = false
         }
     }
 

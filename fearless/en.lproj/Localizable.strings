@@ -521,3 +521,4 @@ will appear here";
 "chain.accounts.section.title.shared.secret" = "Accounts with shared secret";
 "chain.accounts.section.title.custom.secret" = "Accounts with custom secret";
 "account.actions.change.title" = "Change account";
+"account.not.found.caption" = "Account is not found";

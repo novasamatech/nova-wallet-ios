@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -62,12 +63,33 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="6vO-rl-Ye6">
                                         <rect key="frame" x="0.0" y="19" width="286" height="16"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V4E-kb-Nab" customClass="PolkadotIconView" customModule="FearlessUtils">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="36x-qE-8Fp">
                                                 <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconWarning" translatesAutoresizingMaskIntoConstraints="NO" id="qRy-HP-tgL">
+                                                        <rect key="frame" x="0.0" y="-56.5" width="16" height="128"/>
+                                                    </imageView>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V4E-kb-Nab" customClass="PolkadotIconView" customModule="FearlessUtils">
+                                                        <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="16" id="AMy-aH-ykz"/>
+                                                            <constraint firstAttribute="height" constant="16" id="Sef-ho-LRE"/>
+                                                        </constraints>
+                                                    </view>
+                                                </subviews>
+                                                <viewLayoutGuide key="safeArea" id="JhI-3Z-NeC"/>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="16" id="AMy-aH-ykz"/>
-                                                    <constraint firstAttribute="height" constant="16" id="Sef-ho-LRE"/>
+                                                    <constraint firstAttribute="width" constant="16" id="5t4-Fk-GPO"/>
+                                                    <constraint firstItem="JhI-3Z-NeC" firstAttribute="top" secondItem="V4E-kb-Nab" secondAttribute="top" id="6p7-mS-qxZ"/>
+                                                    <constraint firstItem="qRy-HP-tgL" firstAttribute="centerX" secondItem="JhI-3Z-NeC" secondAttribute="centerX" id="S9T-g4-NPR"/>
+                                                    <constraint firstItem="JhI-3Z-NeC" firstAttribute="top" secondItem="qRy-HP-tgL" secondAttribute="top" constant="56.5" id="V3j-XO-HLC"/>
+                                                    <constraint firstItem="JhI-3Z-NeC" firstAttribute="bottom" secondItem="V4E-kb-Nab" secondAttribute="bottom" id="ZfL-xh-UhL"/>
+                                                    <constraint firstAttribute="height" constant="16" id="oRw-Ec-XPX"/>
+                                                    <constraint firstItem="qRy-HP-tgL" firstAttribute="bottom" secondItem="JhI-3Z-NeC" secondAttribute="bottom" constant="55.5" id="oWN-81-Cyz"/>
+                                                    <constraint firstItem="JhI-3Z-NeC" firstAttribute="trailing" secondItem="V4E-kb-Nab" secondAttribute="trailing" id="vAP-u8-HqU"/>
+                                                    <constraint firstItem="V4E-kb-Nab" firstAttribute="leading" secondItem="JhI-3Z-NeC" secondAttribute="leading" id="yVC-FT-BDB"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="GybH55zsi5nAGybH55zsi5nA" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="18j-pV-YOn">
@@ -137,6 +159,7 @@
                 <outlet property="infoButton" destination="tC2-y9-sqp" id="TzN-ai-te6"/>
                 <outlet property="mainImageView" destination="rXE-2x-dd9" id="RPx-I5-5BL"/>
                 <outlet property="titleLabel" destination="QPI-de-wQ6" id="9kw-IK-6lz"/>
+                <outlet property="warningImageView" destination="qRy-HP-tgL" id="cgJ-Kc-K1e"/>
             </connections>
             <point key="canvasLocation" x="139" y="133"/>
         </tableViewCell>
@@ -144,6 +167,7 @@
     <resources>
         <image name="iconHorMore" width="24" height="24"/>
         <image name="iconKsmAsset" width="48" height="48"/>
+        <image name="iconWarning" width="16" height="16"/>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

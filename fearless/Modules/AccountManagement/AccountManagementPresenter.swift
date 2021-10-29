@@ -58,7 +58,7 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             .chainAccounts[indexPath.row]
 
         // TODO: Add item analysis logic here
-        let address = viewModel.address
+        let address = viewModel.address ?? "" // TODO: Process non-existant accounts
 
         let locale = localizationManager?.selectedLocale
 
@@ -156,7 +156,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>) {
         switch result {
         case let .success(chains):
-            viewModel = viewModelFactory.createViewModel(from: chains)
+            viewModel = viewModelFactory.createViewModel(from: chains, for: selectedLocale)
             view?.reload()
 
         case let .failure(error):

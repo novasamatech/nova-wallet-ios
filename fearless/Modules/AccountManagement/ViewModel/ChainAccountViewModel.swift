@@ -29,7 +29,8 @@ enum ChainAccountSectionType {
 
 struct ChainAccountViewModelItem {
     let name: String
-    let address: String
+    let address: String?
+    let warning: String?
     let chainIconViewModel: ImageViewModelProtocol?
     let accountIcon: DrawableIcon?
 }
