@@ -50,9 +50,31 @@ final class AccountManagementPresenter {
         view?.reload()
     }
 
-    private func activateCreateAccount(for _: ChainModel.Id) {}
+    private func activateCreateAccount(for chainModel: ChainModel) {
+        guard let view = view,
+              let wallet = wallet
+        else { return }
 
-    private func activateImportAccount(for _: ChainModel.Id) {}
+        wireframe.showCreateAccount(
+            from: view,
+            wallet: wallet,
+            chainId: chainModel.chainId,
+            isEthereumBased: chainModel.isEthereumBased
+        )
+    }
+
+    private func activateImportAccount(for chainModel: ChainModel) {
+        guard let view = view,
+              let wallet = wallet
+        else { return }
+
+        wireframe.showImportAccount(
+            from: view,
+            wallet: wallet,
+            chainId: chainModel.chainId,
+            isEthereumBased: chainModel.isEthereumBased
+        )
+    }
 
     private func displayNoAddressActions(for chain: ChainModel) {
         let title = R.string.localizable.accountNotFoundActionsTitle(
@@ -65,15 +87,15 @@ final class AccountManagementPresenter {
         let createAccountTitle = R.string.localizable
             .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
         let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.copyAddress("adawdwd")
+            self?.activateCreateAccount(for: chain)
         }
 
         actions.append(createAccountAction)
 
         let importAccountTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
         let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.copyAddress("adawdwd")
+            self?.activateImportAccount(for: chain)
         }
 
         actions.append(importAccountAction)
@@ -96,7 +118,7 @@ final class AccountManagementPresenter {
     }
 
     private func displayEthereumAddressActions(
-        for _: ChainModel,
+        for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
         guard let address = viewModel.address else { return }
@@ -117,6 +139,22 @@ final class AccountManagementPresenter {
         }
 
         actions.append(copyAction)
+
+        let createAccountTitle = R.string.localizable
+            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
+        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateCreateAccount(for: chain)
+        }
+
+        actions.append(createAccountAction)
+
+        let importAccountTitle = R.string.localizable
+            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
+        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.activateImportAccount(for: chain)
+        }
+
+        actions.append(importAccountAction)
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
@@ -136,7 +174,7 @@ final class AccountManagementPresenter {
     }
 
     private func displaySubstrateAddressActions(
-        for chainModel: ChainModel,
+        for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
         guard let address = viewModel.address else { return }
@@ -158,7 +196,7 @@ final class AccountManagementPresenter {
 
         actions.append(copyAction)
 
-        if let url = polkascanURL(for: chainModel.name, address: address) {
+        if let url = polkascanURL(for: chain.name, address: address) {
             let polkascanTitle = R.string.localizable
                 .transactionDetailsViewPolkascan(preferredLanguages: selectedLocale.rLanguages)
 
@@ -171,7 +209,7 @@ final class AccountManagementPresenter {
             actions.append(polkascanAction)
         }
 
-        if let url = subscanURL(for: chainModel.name, address: address) {
+        if let url = subscanURL(for: chain.name, address: address) {
             let subscanTitle = R.string.localizable
                 .transactionDetailsViewSubscan(preferredLanguages: selectedLocale.rLanguages)
             let subscanAction = AlertPresentableAction(title: subscanTitle) { [weak self] in
@@ -183,23 +221,41 @@ final class AccountManagementPresenter {
             actions.append(subscanAction)
         }
 
-        let changeAccountTitle = R.string.localizable
-            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
-        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
-            print("Change account")
-            // TODO: display another actions view?
+        let createAccountTitle = R.string.localizable
+            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
+        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateCreateAccount(for: chain)
         }
 
-        actions.append(changeAccountAction)
+        actions.append(createAccountAction)
 
-        let exportAccountTitle = R.string.localizable
-            .commonExport(preferredLanguages: selectedLocale.rLanguages)
-        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
-            print("Export account")
-            // TODO: display another actions view
+        let importAccountTitle = R.string.localizable
+            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
+        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.activateImportAccount(for: chain)
         }
 
-        actions.append(exportAction)
+        actions.append(importAccountAction)
+
+        // FIXME: Pack change accounts item under one sheet
+//        let changeAccountTitle = R.string.localizable
+//            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
+//        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
+//            print("Change account")
+//            // TODO: display another actions view?
+//        }
+//
+//        actions.append(changeAccountAction)
+
+        // TODO: Turn on export
+        // TODO: display another actions view
+//        let exportAccountTitle = R.string.localizable
+//            .commonExport(preferredLanguages: selectedLocale.rLanguages)
+//        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+//            print("Export account")
+//        }
+
+//        actions.append(exportAction)
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)

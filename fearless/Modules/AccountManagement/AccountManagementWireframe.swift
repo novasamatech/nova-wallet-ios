@@ -1,28 +1,41 @@
 import Foundation
 
 final class AccountManagementWireframe: AccountManagementWireframeProtocol {
-//    func showAccountDetails(from _: AccountManagementViewProtocol?, metaAccount _: MetaAccountModel) {
-//        // TODO: Implement with new onboarding story
-//    }
-//
-//    func showAddAccount(from view: AccountManagementViewProtocol?) {
-//        guard let onboarding = OnboardingMainViewFactory.createViewForAdding() else {
-//            return
-//        }
-//
-//        if let navigationController = view?.controller.navigationController {
-//            navigationController.pushViewController(onboarding.controller, animated: true)
-//        }
-//    }
-//
-//    func complete(from view: AccountManagementViewProtocol?) {
-//        guard let navigationController = view?.controller.navigationController else {
-//            return
-//        }
-//
-//        MainTransitionHelper.transitToMainTabBarController(
-//            closing: navigationController,
-//            animated: true
-//        )
-//    }
+    func showCreateAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    ) {
+        guard let createAccountView = AccountCreateViewFactory.createViewForReplaceChainAccount(
+            metaAccountModel: wallet,
+            chainModelId: chainId,
+            isEthereumBased: isEthereumBased
+        ) else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(createAccountView.controller, animated: true)
+        }
+    }
+
+    func showImportAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    ) {
+        guard let importAccountView = AccountImportViewFactory.createViewForReplaceChainAccount(
+            modelId: chainId,
+            isEthereumBased: isEthereumBased,
+            in: wallet
+        ) else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(importAccountView.controller, animated: true)
+        }
+    }
 }

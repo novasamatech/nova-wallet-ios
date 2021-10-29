@@ -36,8 +36,22 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
-//    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
-//    func showAddAccount(from view: AccountManagementViewProtocol?)
+    func showCreateAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    )
+
+    func showImportAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    )
+
+    //    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
+    //    func showAddAccount(from view: AccountManagementViewProtocol?)
 //    func complete(from view: AccountManagementViewProtocol?)
 }
 

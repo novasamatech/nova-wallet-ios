@@ -32,9 +32,28 @@ protocol AccountImportPresenterProtocol: AnyObject {
 
 protocol AccountImportInteractorInputProtocol: AnyObject {
     func setup()
-    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest) // FIXME: Meta, Chain, or general request?
+    func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)
     func importAccountWithSeed(request: MetaAccountImportSeedRequest)
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)
+
+    func importAccountWithMnemonic(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportMnemonicRequest,
+        into wallet: MetaAccountModel
+    )
+
+    func importAccountWithSeed(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportSeedRequest,
+        into wallet: MetaAccountModel
+    )
+
+    func importAccountWithKeystore(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportKeystoreRequest,
+        into wallet: MetaAccountModel
+    )
+
     func deriveMetadataFromKeystore(_ keystore: String)
 }
 
@@ -77,4 +96,20 @@ protocol AccountImportViewFactoryProtocol: AnyObject {
     static func createViewForOnboarding() -> AccountImportViewProtocol?
     static func createViewForAdding() -> AccountImportViewProtocol?
     static func createViewForSwitch() -> AccountImportViewProtocol?
+
+    static func createViewForReplaceChainAccount(
+        modelId: ChainModel.Id,
+        isEthereumBased: Bool,
+        in wallet: MetaAccountModel
+    ) -> AccountImportViewProtocol?
+}
+
+extension AccountImportWireframeProtocol {
+    func presentNetworkTypeSelection(
+        from _: AccountImportViewProtocol?,
+        availableTypes _: [Chain],
+        selectedType _: Chain,
+        delegate _: ModalPickerViewControllerDelegate?,
+        context _: AnyObject?
+    ) {}
 }
