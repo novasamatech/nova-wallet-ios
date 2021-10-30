@@ -115,7 +115,7 @@ class BaseAccountImportPresenter {
         view?.setSource(viewModel: viewModel)
     }
 
-    private func applyUsernameViewModel(_ username: String = "") {
+    internal func applyUsernameViewModel(_ username: String = "") {
         let processor = ByteLengthProcessor.username
         let processedUsername = processor.process(text: username)
 
@@ -367,6 +367,10 @@ class BaseAccountImportPresenter {
         }
     }
 
+    internal func getVisibilitySettings() -> AccountImportVisibility {
+        fatalError("This function should be overriden")
+    }
+
     internal func processProceed() {
         fatalError("This function should be overriden")
     }
@@ -375,6 +379,10 @@ class BaseAccountImportPresenter {
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func provideVisibilitySettings() -> AccountImportVisibility {
+        getVisibilitySettings()
     }
 
     func selectSourceType() {

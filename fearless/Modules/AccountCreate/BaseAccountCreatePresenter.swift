@@ -14,6 +14,9 @@ class BaseAccountCreatePresenter {
     internal var substrateDerivationPathViewModel: InputViewModelProtocol?
     internal var ethereumDerivationPathViewModel: InputViewModelProtocol?
 
+    internal var displaySubstrate: Bool = true
+    internal var displayEthereum: Bool = true
+
     private func applyCryptoTypeViewModel() {
         guard let cryptoType = selectedCryptoType else {
             return
@@ -30,6 +33,11 @@ class BaseAccountCreatePresenter {
     }
 
     private func applyEthereumDerivationPathViewModel() {
+        guard displayEthereum == true else {
+            view?.setEthereumDerivationPath(viewModel: nil)
+            return
+        }
+
         let predicate = NSPredicate.deriviationPathHardSoftNumericPassword
         let placeholder = DerivationPathConstants.hardSoftPasswordPlaceholder
 
@@ -44,6 +52,11 @@ class BaseAccountCreatePresenter {
 
     private func applySubstrateDerivationPathViewModel() {
         guard let cryptoType = selectedCryptoType else {
+            return
+        }
+
+        guard displaySubstrate == true else {
+            view?.setSubstrateDerivationPath(viewModel: nil)
             return
         }
 

@@ -6,7 +6,7 @@ import IrohaCrypto
 import SoraKeystore
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
-    static func createView(for wallet: MetaAccountModel) -> AccountManagementViewProtocol? {
+    static func createView(for walletId: String) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
 
         let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
@@ -16,16 +16,26 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
 
         let presenter = AccountManagementPresenter(
             viewModelFactory: viewModelFactory,
+            walletId: walletId,
             logger: Logger.shared
+        )
+
+        let storageFacade = UserDataStorageFacade.shared
+
+        let mapper = ManagedMetaAccountMapper()
+
+        let walletRepository = storageFacade.createRepository(
+            mapper: AnyCoreDataMapper(mapper)
         )
 
         let chainRepository = SubstrateRepositoryFactory().createChainRepository()
 
         let interactor = AccountManagementInteractor(
+            walletRepository: AnyDataProviderRepository(walletRepository),
             chainRepository: chainRepository,
-            operationQueue: OperationQueue(),
-            wallet: wallet,
-            logger: Logger.shared
+            operationManager: OperationManagerFacade.sharedManager,
+            settings: SelectedWalletSettings.shared,
+            eventCenter: EventCenter.shared
         )
 
         view.presenter = presenter

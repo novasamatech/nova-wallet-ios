@@ -23,4 +23,8 @@ extension ManagedMetaAccountModel {
     func replacingOrder(_ newOrder: UInt32) -> ManagedMetaAccountModel {
         ManagedMetaAccountModel(info: info, isSelected: isSelected, order: newOrder)
     }
+
+    func replacingInfo(_ newInfo: MetaAccountModel) -> ManagedMetaAccountModel {
+        ManagedMetaAccountModel(info: newInfo, isSelected: isSelected, order: order)
+    }
 }
