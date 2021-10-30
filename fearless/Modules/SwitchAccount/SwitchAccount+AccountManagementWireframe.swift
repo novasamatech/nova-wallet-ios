@@ -3,7 +3,7 @@ import Foundation
 extension SwitchAccount {
     final class WalletManagementWireframe: WalletManagementWireframeProtocol {
         func showWalletDetails(from view: WalletManagementViewProtocol?, metaAccount: MetaAccountModel) {
-            guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount) else {
+            guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount.identifier) else {
                 return
             }
 

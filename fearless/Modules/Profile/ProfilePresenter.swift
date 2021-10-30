@@ -55,7 +55,7 @@ extension ProfilePresenter: ProfilePresenterProtocol {
 
     func activateAccountDetails() {
         guard let wallet = self.wallet else { return }
-        wireframe.showAccountDetails(for: wallet, from: view)
+        wireframe.showAccountDetails(for: wallet.identifier, from: view)
     }
 
     func activateOption(at index: UInt) {
