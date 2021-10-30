@@ -52,22 +52,22 @@
                                 </constraints>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="KTf-7m-rK8">
-                                <rect key="frame" x="44" y="7.5" width="286" height="33.5"/>
+                                <rect key="frame" x="44" y="6.5" width="286" height="35"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Russel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPI-de-wQ6">
-                                        <rect key="frame" x="0.0" y="0.0" width="286" height="16.5"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="286" height="18"/>
                                         <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                                         <color key="textColor" name="colorWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="6vO-rl-Ye6">
-                                        <rect key="frame" x="0.0" y="17.5" width="286" height="16"/>
+                                        <rect key="frame" x="0.0" y="19" width="286" height="16"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="36x-qE-8Fp">
                                                 <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconWarning" translatesAutoresizingMaskIntoConstraints="NO" id="qRy-HP-tgL">
-                                                        <rect key="frame" x="0.0" y="-57" width="16" height="128.5"/>
+                                                        <rect key="frame" x="0.0" y="-56.5" width="16" height="128"/>
                                                     </imageView>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="V4E-kb-Nab" customClass="PolkadotIconView" customModule="FearlessUtils">
                                                         <rect key="frame" x="0.0" y="0.0" width="16" height="16"/>
@@ -79,7 +79,7 @@
                                                     </view>
                                                 </subviews>
                                                 <viewLayoutGuide key="safeArea" id="JhI-3Z-NeC"/>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="16" id="5t4-Fk-GPO"/>
                                                     <constraint firstItem="JhI-3Z-NeC" firstAttribute="top" secondItem="V4E-kb-Nab" secondAttribute="top" id="6p7-mS-qxZ"/>
@@ -164,6 +164,11 @@
             <point key="canvasLocation" x="139" y="133"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="tC2-y9-sqp">
+            <size key="intrinsicContentSize" width="32" height="24"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconHorMore" width="24" height="24"/>
         <image name="iconKsmAsset" width="48" height="48"/>
