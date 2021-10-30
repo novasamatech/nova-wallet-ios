@@ -34,7 +34,7 @@ final class ChainAccountViewModelFactory {
             if chainModel.isEthereumBased {
                 accountAddress = try? chainAccount.accountId.toAddress(using: .ethereum)
             } else {
-                accountAddress = try? wallet.substrateAccountId.toAddress(
+                accountAddress = try? chainAccount.accountId.toAddress(
                     using: ChainFormat.substrate(chainModel.addressPrefix)
                 )
             }

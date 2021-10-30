@@ -9,6 +9,7 @@ final class AccountManagementPresenter {
     var interactor: AccountManagementInteractorInputProtocol!
 
     let viewModelFactory: ChainAccountViewModelFactoryProtocol
+    let walletId: String
     let logger: LoggerProtocol?
 
     private var wallet: MetaAccountModel?
@@ -19,36 +20,42 @@ final class AccountManagementPresenter {
 
     init(
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
+        walletId: String,
         logger: LoggerProtocol? = nil
     ) {
         self.viewModelFactory = viewModelFactory
+        self.walletId = walletId
         self.logger = logger
     }
 
-    private func polkascanURL(for chainName: String, address: String) -> URL? {
-        guard let urlString = polkascanExplorers[chainName] else { return nil }
-        return URL(string: "\(urlString)\(address)")
-    }
+    // MARK: - Updating functions
 
-    private func subscanURL(for chainName: String, address: String) -> URL? {
-        guard let urlString = subscanExplorers[chainName] else { return nil }
-        return URL(string: "\(urlString)\(address)")
-    }
-
-    private func copyAddress(_ address: String) {
-        UIPasteboard.general.string = address
-
-        let locale = localizationManager?.selectedLocale
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
-        wireframe.presentSuccessNotification(title, from: view)
-    }
-
-    private func updateViewModels() {
+    private func updateChainViewModels() {
         guard let wallet = wallet else { return }
 
         viewModel = viewModelFactory.createViewModel(from: wallet, chains: chains, for: selectedLocale)
         view?.reload()
     }
+
+    private func updateNameViewModel() {
+        guard let wallet = wallet else { return }
+
+        let processor = ByteLengthProcessor.username
+        let processedUsername = processor.process(text: wallet.name)
+
+        let inputHandling = InputHandler(
+            value: processedUsername,
+            predicate: NSPredicate.notEmpty,
+            processor: processor
+        )
+
+        let nameViewModel = InputViewModel(inputHandler: inputHandling)
+        nameViewModel.inputHandler.addObserver(self)
+
+        view?.set(nameViewModel: nameViewModel)
+    }
+
+    // MARK: - Actions
 
     private func activateCreateAccount(for chainModel: ChainModel) {
         guard let view = view,
@@ -238,24 +245,24 @@ final class AccountManagementPresenter {
         actions.append(importAccountAction)
 
         // FIXME: Pack change accounts item under one sheet
-//        let changeAccountTitle = R.string.localizable
-//            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
-//        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
-//            print("Change account")
-//            // TODO: display another actions view?
-//        }
-//
-//        actions.append(changeAccountAction)
+        //        let changeAccountTitle = R.string.localizable
+        //            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
+        //        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
+        //            print("Change account")
+        //            // TODO: display another actions view?
+        //        }
+        //
+        //        actions.append(changeAccountAction)
 
         // TODO: Turn on export
         // TODO: display another actions view
-//        let exportAccountTitle = R.string.localizable
-//            .commonExport(preferredLanguages: selectedLocale.rLanguages)
-//        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
-//            print("Export account")
-//        }
+        //        let exportAccountTitle = R.string.localizable
+        //            .commonExport(preferredLanguages: selectedLocale.rLanguages)
+        //        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+        //            print("Export account")
+        //        }
 
-//        actions.append(exportAction)
+        //        actions.append(exportAction)
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
@@ -272,6 +279,26 @@ final class AccountManagementPresenter {
             style: .actionSheet,
             from: view
         )
+    }
+
+    // MARK: - Utility functions
+
+    private func polkascanURL(for chainName: String, address: String) -> URL? {
+        guard let urlString = polkascanExplorers[chainName] else { return nil }
+        return URL(string: "\(urlString)\(address)")
+    }
+
+    private func subscanURL(for chainName: String, address: String) -> URL? {
+        guard let urlString = subscanExplorers[chainName] else { return nil }
+        return URL(string: "\(urlString)\(address)")
+    }
+
+    private func copyAddress(_ address: String) {
+        UIPasteboard.general.string = address
+
+        let locale = localizationManager?.selectedLocale
+        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
+        wireframe.presentSuccessNotification(title, from: view)
     }
 
     private func generateExplorers() {
@@ -302,7 +329,7 @@ final class AccountManagementPresenter {
 extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func setup() {
         generateExplorers()
-        interactor.setup()
+        interactor.setup(walletId: walletId)
     }
 
     func numberOfSections() -> Int {
@@ -323,6 +350,10 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         viewModel[section].section.title
     }
 
+    func activateDetails(at indexPath: IndexPath) {
+        selectItem(at: indexPath)
+    }
+
     func selectItem(at indexPath: IndexPath) {
         let viewModel = viewModel[indexPath.section]
             .chainAccounts[indexPath.row]
@@ -340,30 +371,79 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
             displaySubstrateAddressActions(for: chainModel, viewModel: viewModel)
         }
     }
+
+    func finalizeName() {
+        interactor.flushPendingName()
+    }
 }
 
+// MARK: - Interactor-to-Presenter functions
+
 extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol {
-    func didReceiveWallet(_ wallet: MetaAccountModel) {
-        self.wallet = wallet
-        updateViewModels()
+    func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>) {
+        switch result {
+        case let .success(wallet):
+            guard let wallet = wallet else {
+                logger?.error("Did find no wallets with Id: \(walletId)")
+                return
+            }
+
+            self.wallet = wallet
+            updateChainViewModels()
+            updateNameViewModel()
+
+        case let .failure(error):
+            logger?.error("Did receive wallet fetch error: \(error)")
+        }
     }
 
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>) {
         switch result {
         case let .success(chains):
             self.chains = chains
-            updateViewModels()
+            updateChainViewModels()
 
         case let .failure(error):
             logger?.error("Did receive chains fetch error: \(error)")
         }
     }
+
+    func didSaveWalletName(_ result: Result<String, Error>) {
+        switch result {
+        case let .success(walletName):
+            logger?.debug("Did save new wallet name: \(walletName)")
+
+        case let .failure(error):
+            logger?.error("Did receive wallet save error: \(error)")
+
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+                _ = wireframe.present(
+                    error: CommonError.undefined,
+                    from: view,
+                    locale: selectedLocale
+                )
+            }
+        }
+    }
 }
+
+// MARK: - InputHandlingObserver
+
+extension AccountManagementPresenter: InputHandlingObserver {
+    func didChangeInputValue(_ handler: InputHandling, from _: String) {
+        if handler.completed {
+            let newName = handler.normalizedValue
+            interactor.save(name: newName, walletId: walletId)
+        }
+    }
+}
+
+// MARK: - Localizable
 
 extension AccountManagementPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            updateViewModels()
+            updateChainViewModels()
         }
     }
 }

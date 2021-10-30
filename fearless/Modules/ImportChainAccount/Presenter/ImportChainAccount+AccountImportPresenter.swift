@@ -171,5 +171,24 @@ extension ImportChainAccount {
                 prooceedWithSubstrate()
             }
         }
+
+        override func getVisibilitySettings() -> AccountImportVisibility {
+            guard let sourceType = selectedSourceType else {
+                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
+            }
+
+            switch sourceType {
+            case .mnemonic:
+                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
+            case .seed:
+                return isEthereumBased ? .ethereumChainSeed : .substrateChainSeed
+            case .keystore:
+                return isEthereumBased ? .ethereumChainJSON : .substrateChainJSON
+            }
+        }
+
+        override func applyUsernameViewModel(_: String = "") {
+            view?.setName(viewModel: nil)
+        }
     }
 }

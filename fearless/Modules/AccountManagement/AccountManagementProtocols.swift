@@ -2,11 +2,9 @@ import Foundation
 import RobinHood
 import SoraFoundation
 
-// FIXME: Remove commented functions
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
-
-//    func didRemoveItem(at index: Int)
+    func set(nameViewModel: InputViewModelProtocol)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
@@ -16,23 +14,21 @@ protocol AccountManagementPresenterProtocol: AnyObject {
     func numberOfItems(in section: Int) -> Int
     func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
     func titleForSection(_ section: Int) -> LocalizableResource<String>
-
-//    func activateDetails(at index: Int)
-//    func activateAddAccount()
-//
+    func activateDetails(at indexPath: IndexPath)
     func selectItem(at indexPath: IndexPath)
+    func finalizeName()
 }
 
 protocol AccountManagementInteractorInputProtocol: AnyObject {
-    func setup()
-//    func select(item: ManagedMetaAccountModel)
-//    func save(items: [ManagedMetaAccountModel])
-//    func remove(item: ManagedMetaAccountModel)
+    func setup(walletId: String)
+    func save(name: String, walletId: String)
+    func flushPendingName()
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
-    func didReceiveWallet(_ wallet: MetaAccountModel)
+    func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>)
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)
+    func didSaveWalletName(_ result: Result<String, Error>)
 }
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
@@ -49,14 +45,8 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     )
-
-    //    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
-    //    func showAddAccount(from view: AccountManagementViewProtocol?)
-//    func complete(from view: AccountManagementViewProtocol?)
 }
 
 protocol AccountManagementViewFactoryProtocol: AnyObject {
-    static func createView(for metaAccountModel: MetaAccountModel) -> AccountManagementViewProtocol?
-//    static func createViewForSettings() -> AccountManagementViewProtocol?
-//    static func createViewForSwitch() -> AccountManagementViewProtocol?
+    static func createView(for walletId: String) -> AccountManagementViewProtocol?
 }

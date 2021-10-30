@@ -90,6 +90,11 @@ final class AccountCreateViewController: UIViewController {
 
         ethereumCryptoTypeView.actionControl.showsImageIndicator = false
         ethereumCryptoTypeView.applyDisabledStyle()
+
+        substrateCryptoTypeView.isHidden = false
+        ethereumCryptoTypeView.isHidden = false
+        substrateDerivationPathView.isHidden = false
+        ethereumDerivationPathView.isHidden = false
     }
 
     private func setupNavigationItem() {
@@ -245,12 +250,26 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
         substrateCryptoTypeView.actionControl.invalidateLayout()
     }
 
-    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol) {
+    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol?) {
+        guard let viewModel = viewModel else {
+            substrateCryptoTypeView.isHidden = true
+            substrateDerivationPathView.isHidden = true
+
+            return
+        }
+
         substrateDerivationPathModel = viewModel
         setDerivationPath(viewModel: viewModel, for: substrateDerivationPathField)
     }
 
-    func setEthereumDerivationPath(viewModel: InputViewModelProtocol) {
+    func setEthereumDerivationPath(viewModel: InputViewModelProtocol?) {
+        guard let viewModel = viewModel else {
+            ethereumCryptoTypeView.isHidden = true
+            ethereumDerivationPathView.isHidden = true
+
+            return
+        }
+
         ethereumDerivationPathModel = viewModel
         setDerivationPath(viewModel: viewModel, for: ethereumDerivationPathField)
     }
