@@ -3,7 +3,62 @@ import IrohaCrypto
 import SoraFoundation
 import SoraKeystore
 
-final class AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
+final class AccountCreateViewFactory {
+    private static func createViewForUsername(
+        model: UsernameSetupModel,
+        wireframe: AccountCreateWireframeProtocol
+    ) -> AccountCreateViewProtocol? {
+        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
+        let presenter = AccountCreatePresenter(usernameSetup: model)
+
+        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+
+        view.presenter = presenter
+        presenter.view = view
+        presenter.interactor = interactor
+        presenter.wireframe = wireframe
+        interactor.presenter = presenter
+
+        let localizationManager = LocalizationManager.shared
+        view.localizationManager = localizationManager
+        presenter.localizationManager = localizationManager
+
+        return view
+    }
+
+    private static func createViewForReplace(
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id,
+        isEthereumBased: Bool,
+        wireframe: AccountCreateWireframeProtocol
+    ) -> AccountCreateViewProtocol? {
+        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
+
+        let presenter = AddChainAccount.AccountCreatePresenter(
+            metaAccountModel: metaAccountModel,
+            chainModelId: chainModelId,
+            isEthereumBased: isEthereumBased
+        )
+
+        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+
+        view.presenter = presenter
+        presenter.view = view
+        presenter.interactor = interactor
+        presenter.wireframe = wireframe
+        interactor.presenter = presenter
+
+        let localizationManager = LocalizationManager.shared
+        view.localizationManager = localizationManager
+        presenter.localizationManager = localizationManager
+
+        return view
+    }
+}
+
+// MARK: - AccountCreateViewFactoryProtocol
+
+extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
     static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
         let wireframe = AccountCreateWireframe()
 
@@ -27,25 +82,18 @@ final class AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         return createViewForUsername(model: model, wireframe: wireframe)
     }
 
-    static func createViewForUsername(
-        model: UsernameSetupModel,
-        wireframe: AccountCreateWireframeProtocol
+    static func createViewForReplaceChainAccount(
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id,
+        isEthereumBased: Bool
     ) -> AccountCreateViewProtocol? {
-        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
-        let presenter = AccountCreatePresenter(usernameSetup: model)
+        let wireframe = AddChainAccount.AccountCreateWireframe()
 
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
-
-        view.presenter = presenter
-        presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
-        interactor.presenter = presenter
-
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
-
-        return view
+        return createViewForReplace(
+            metaAccountModel: metaAccountModel,
+            chainModelId: chainModelId,
+            isEthereumBased: isEthereumBased,
+            wireframe: wireframe
+        )
     }
 }

@@ -92,13 +92,12 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://polkadot.js.org/phishing/address.json")!
     }
 
-    var chainListURL: URL { // FIXME: change to Nova repo
-        URL(string: "https://raw.githubusercontent.com/fearlesswallet/fearless-utils/master/chains/chains_dev.json")!
+    var chainListURL: URL {
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains_dev.json")!
     }
 
     var commonTypesURL: URL {
-        // swiftlint:disable:next line_length
-        URL(string: "https://raw.githubusercontent.com/valentunn/py-scale-codec/fearless_stable/scalecodec/type_registry/default.json")!
+        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/types/default.json")!
     }
 
     var learnPayoutURL: URL {

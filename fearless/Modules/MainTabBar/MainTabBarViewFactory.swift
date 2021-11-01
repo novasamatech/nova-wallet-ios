@@ -91,7 +91,8 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         guard
             let walletContext = try? WalletContextFactory(
                 chainRepository: chainsRepository,
-                operationQueue: OperationQueue()
+                operationQueue: OperationQueue(),
+                logger: Logger.shared
             ).createContext(),
             let walletController = createWalletController(
                 walletContext: walletContext,

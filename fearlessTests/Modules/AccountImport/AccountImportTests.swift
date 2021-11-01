@@ -57,7 +57,8 @@ class AccountImportTests: XCTestCase {
             when(stub).didCompleteSourceTypeSelection().thenDoNothing()
             when(stub).didCompleteCryptoTypeSelection().thenDoNothing()
             when(stub).didCompleteAddressTypeSelection().thenDoNothing()
-            when(stub).didValidateDerivationPath(any()).thenDoNothing()
+            when(stub).didValidateSubstrateDerivationPath(any()).thenDoNothing()
+            when(stub).didValidateEthereumDerivationPath(any()).thenDoNothing()
             when(stub).isSetup.get.thenReturn(false, true)
 
             when(stub).setSource(viewModel: any()).then { viewModel in
@@ -75,7 +76,8 @@ class AccountImportTests: XCTestCase {
             when(stub).setSource(type: any()).thenDoNothing()
             when(stub).setSelectedCrypto(model: any()).thenDoNothing()
             when(stub).setSelectedNetwork(model: any()).thenDoNothing()
-            when(stub).setDerivationPath(viewModel: any()).thenDoNothing()
+            when(stub).setSubstrateDerivationPath(viewModel: any()).thenDoNothing()
+            when(stub).setEthereumDerivationPath(viewModel: any()).thenDoNothing()
         }
 
         let expectation = XCTestExpectation()

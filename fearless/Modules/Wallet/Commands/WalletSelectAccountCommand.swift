@@ -9,7 +9,7 @@ final class WalletSelectAccountCommand: WalletCommandProtocol {
     }
 
     func execute() throws {
-        guard let accountManagementView = AccountManagementViewFactory.createViewForSwitch() else {
+        guard let accountManagementView = WalletManagementViewFactory.createViewForSwitch() else {
             return
         }
 

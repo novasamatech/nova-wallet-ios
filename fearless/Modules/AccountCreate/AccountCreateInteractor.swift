@@ -21,7 +21,7 @@ extension AccountCreateInteractor: AccountCreateInteractorInputProtocol {
 
             let metadata = MetaAccountCreationMetadata(
                 mnemonic: mnemonic.allWords(),
-                availableCryptoTypes: MultiassetCryptoType.allCases,
+                availableCryptoTypes: [.sr25519, .ed25519, .substrateEcdsa],
                 defaultCryptoType: .sr25519
             )
 
