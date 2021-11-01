@@ -13,6 +13,7 @@ final class CrowdloanListViewLayout: UIView {
         view.refreshControl = UIRefreshControl()
         view.tableFooterView = UIView()
         view.separatorStyle = .none
+        view.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
         return view
     }()
 
