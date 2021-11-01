@@ -42,6 +42,11 @@ final class CrowdloanTableHeaderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        descriptionLabel.preferredMaxLayoutWidth = descriptionLabel.bounds.width
+    }
+
     func bind(viewModel: CrowdloansChainViewModel) {
         self.viewModel?.imageViewModel?.cancel(on: chainSelectionView.iconView)
         chainSelectionView.iconView.image = nil
@@ -60,7 +65,6 @@ final class CrowdloanTableHeaderView: UIView {
 
         aboutLabel.text = viewModel.title
         descriptionLabel.text = viewModel.description
-        setNeedsLayout()
     }
 
     private func setupLayout() {
@@ -93,7 +97,6 @@ final class CrowdloanTableHeaderView: UIView {
         }
 
         let labelsContent = UIView.vStack(
-            alignment: .leading,
             spacing: 12,
             [aboutLabel, descriptionLabel]
         )

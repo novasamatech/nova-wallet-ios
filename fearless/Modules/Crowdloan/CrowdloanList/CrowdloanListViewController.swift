@@ -103,7 +103,6 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         }
 
         rootView.tableView.reloadData()
-        rootView.headerView.setNeedsLayout()
         reloadEmptyState(animated: false)
     }
 
@@ -220,6 +219,8 @@ extension CrowdloanListViewController: CrowdloanListViewProtocol {
         self.chainInfo = chainInfo
 
         rootView.headerView.bind(viewModel: chainInfo)
+        rootView.headerView.setNeedsLayout()
+        rootView.headerView.layoutIfNeeded()
     }
 
     func didReceive(listState: CrowdloanListState) {
