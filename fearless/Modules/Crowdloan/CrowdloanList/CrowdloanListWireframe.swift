@@ -11,7 +11,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        from view: CrowdloanListViewProtocol?
+        from view: ControllerBackedProtocol?
     ) {
         let input = CrowdloanYourContributionsViewInput(
             crowdloans: crowdloans,
@@ -38,7 +38,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     }
 
     func selectChain(
-        from view: CrowdloanListViewProtocol?,
+        from view: ControllerBackedProtocol?,
         delegate: ChainSelectionDelegate,
         selectedChainId: ChainModel.Id?
     ) {

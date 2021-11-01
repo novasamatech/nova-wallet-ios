@@ -8,7 +8,7 @@ protocol CrowdloanListViewProtocol: ControllerBackedProtocol {
 protocol CrowdloanListPresenterProtocol: AnyObject {
     func setup()
     func refresh(shouldReset: Bool)
-    func selectViewModel(_ viewModel: CrowdloanCellViewModel)
+    func selectCrowdloan(_ paraId: ParaId)
     func becomeOnline()
     func putOffline()
     func selectChain()
@@ -40,12 +40,12 @@ protocol CrowdloanListWireframeProtocol: AnyObject {
         crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
-        from view: CrowdloanListViewProtocol?
+        from view: ControllerBackedProtocol?
     )
 
     func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId)
     func selectChain(
-        from view: CrowdloanListViewProtocol?,
+        from view: ControllerBackedProtocol?,
         delegate: ChainSelectionDelegate,
         selectedChainId: ChainModel.Id?
     )

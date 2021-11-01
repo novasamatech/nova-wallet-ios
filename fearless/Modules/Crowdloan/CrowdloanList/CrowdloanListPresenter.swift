@@ -182,8 +182,8 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         }
     }
 
-    func selectViewModel(_ viewModel: CrowdloanCellViewModel) {
-        wireframe.presentContributionSetup(from: view, paraId: viewModel.paraId)
+    func selectCrowdloan(_ paraId: ParaId) {
+        wireframe.presentContributionSetup(from: view, paraId: paraId)
     }
 
     func becomeOnline() {
