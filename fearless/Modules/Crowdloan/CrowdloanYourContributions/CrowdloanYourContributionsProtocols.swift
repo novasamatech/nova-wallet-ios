@@ -1,7 +1,7 @@
 import SoraFoundation
 
 protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol, Localizable {
-    func reload(contributions: [CrowdloanContributionItem])
+    func reload(contributions: [CrowdloanContributionViewModel])
 }
 
 protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {

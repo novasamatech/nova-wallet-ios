@@ -1,5 +1,5 @@
 import Foundation
 
 struct CrowdloanYourContributionsViewModel {
-    let contributions: [CrowdloanContributionItem]
+    let contributions: [CrowdloanContributionViewModel]
 }

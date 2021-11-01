@@ -35,7 +35,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
-    ) -> CrowdloanContributionItem? {
+    ) -> CrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let displayInfo = viewInfo.displayInfo?[model.paraId]
 
@@ -51,7 +51,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let iconViewModel = createIconViewModel(model: model, displayInfo: displayInfo, chainAsset: chainAsset)
 
-        return CrowdloanContributionItem(
+        return CrowdloanContributionViewModel(
             name: title,
             iconViewModel: iconViewModel,
             contributed: contributed

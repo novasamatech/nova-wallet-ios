@@ -148,9 +148,9 @@ extension CrowdloanListViewController: UITableViewDataSource {
         case let .loaded(viewModel):
             let sectionModel = viewModel.sections[indexPath.section]
             switch sectionModel {
-            case let .yourContributions(title, contrubutions):
+            case let .yourContributions(title, contrubutionsCount):
                 let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
-                cell.bind(title: title, count: contrubutions.count)
+                cell.bind(title: title, count: contrubutionsCount)
                 return cell
             case let .active(_, cellViewModels), let .completed(_, cellViewModels):
                 let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!

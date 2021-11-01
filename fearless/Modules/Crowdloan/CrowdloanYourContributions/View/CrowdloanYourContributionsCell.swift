@@ -58,7 +58,7 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
         }
     }
 
-    func bind(viewModel: CrowdloanContributionItem) {
+    func bind(viewModel: CrowdloanContributionViewModel) {
         nameLabel.text = viewModel.name
         contributedAmountLabel.text = viewModel.contributed
 

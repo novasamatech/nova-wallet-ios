@@ -1,6 +1,6 @@
 import Foundation
 
-struct CrowdloanContributionItem {
+struct CrowdloanContributionViewModel {
     let name: String
     let iconViewModel: ImageViewModelProtocol?
     let contributed: String

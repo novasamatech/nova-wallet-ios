@@ -6,7 +6,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
     let presenter: CrowdloanYourContributionsPresenterProtocol
 
-    private var contributions: [CrowdloanContributionItem]?
+    private var contributions: [CrowdloanContributionViewModel]?
 
     init(presenter: CrowdloanYourContributionsPresenterProtocol) {
         self.presenter = presenter
@@ -44,7 +44,7 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 }
 
 extension CrowdloanYourContributionsViewController: CrowdloanYourContributionsViewProtocol {
-    func reload(contributions: [CrowdloanContributionItem]) {
+    func reload(contributions: [CrowdloanContributionViewModel]) {
         self.contributions = contributions
         rootView.tableView.reloadData()
     }
