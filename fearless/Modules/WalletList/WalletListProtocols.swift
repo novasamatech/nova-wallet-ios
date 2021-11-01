@@ -14,7 +14,7 @@ protocol WalletListInteractorInputProtocol: AnyObject {
 protocol WalletListInteractorOutputProtocol: AnyObject {
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>])
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, chainId: ChainModel.Id)
-    func didReceivePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId)
+    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>)
 }
 
 protocol WalletListWireframeProtocol: AnyObject {}
