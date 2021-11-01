@@ -287,3 +287,5 @@ extension CrowdloanListViewController: ErrorStateViewDelegate {
         presenter.refresh(shouldReset: true)
     }
 }
+
+extension CrowdloanListViewController: HiddableBarWhenPushed {}
