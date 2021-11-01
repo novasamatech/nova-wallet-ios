@@ -222,7 +222,7 @@ final class CrowdloansViewModelFactory {
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
             progressPercentsText: "100%",
-            progressValue: 1.0,
+            progressValue: 0.0,
             contribution: commonContent.contribution
         )
     }

@@ -38,19 +38,11 @@ final class CrowdloanTableViewCell: UITableViewCell {
     let progressView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 2
+        view.backgroundColor = R.color.colorCoral()
         return view
     }()
 
     private var progressValue: Double?
-
-    let gradientLayer: CAGradientLayer = {
-        let layer = CAGradientLayer()
-        layer.colors = [
-            UIColor(red: 0.77, green: 0.97, blue: 1.0, alpha: 1.0),
-            UIColor(red: 0.11, green: 0.89, blue: 1.0, alpha: 1.0)
-        ]
-        return layer
-    }()
 
     let percentsLabel: UILabel = {
         let label = UILabel()
@@ -99,31 +91,24 @@ final class CrowdloanTableViewCell: UITableViewCell {
         progressValue = nil
 
         iconImageView.image = nil
-        progressView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        // progressView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
 
         guard let value = progressValue else {
-//            progressView.bounds = .zero
-//            gradientLayer.frame = .zero
+            progressView.frame = .zero
             return
         }
 
-        progressView.bounds = .init(
+        progressView.frame = .init(
             origin: .zero,
             size: CGSize(
                 width: progressBackgroundView.bounds.width * CGFloat(value),
                 height: progressBackgroundView.bounds.height
             )
         )
-        // gradientLayer.frame = progressView.bounds
-    }
-
-    override func layoutSublayers(of layer: CALayer) {
-        super.layoutSublayers(of: layer)
-        gradientLayer.frame = progressView.bounds
     }
 
     private func setupLayout() {
@@ -156,7 +141,6 @@ final class CrowdloanTableViewCell: UITableViewCell {
             make.size.equalTo(16)
         }
         progressBackgroundView.addSubview(progressView)
-        progressView.layer.addSublayer(gradientLayer)
         progressBackgroundView.snp.makeConstraints { $0.height.equalTo(5) }
 
         let background = TriangularedBlurView()
