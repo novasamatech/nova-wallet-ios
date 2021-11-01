@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct CrowdloanYourContributionsViewInput {
     let crowdloans: [Crowdloan]
@@ -23,7 +24,10 @@ enum CrowdloanYourContributionsViewFactory {
             wireframe: wireframe
         )
 
-        let view = CrowdloanYourContributionsViewController(presenter: presenter)
+        let view = CrowdloanYourContributionsViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter

@@ -8,9 +8,13 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
 
     private var contributions: [CrowdloanContributionViewModel]?
 
-    init(presenter: CrowdloanYourContributionsPresenterProtocol) {
+    init(
+        presenter: CrowdloanYourContributionsPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol?
+    ) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
