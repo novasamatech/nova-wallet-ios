@@ -6,11 +6,28 @@ protocol PriceLocalStorageSubscriber where Self: AnyObject {
 
     var priceLocalSubscriptionHandler: PriceLocalSubscriptionHandler { get }
 
-    func subscribeToPrice(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData>?
+    func subscribeToPrice(
+        for priceId: AssetModel.PriceId,
+        options: DataProviderObserverOptions
+    ) -> AnySingleValueProvider<PriceData>?
 }
 
 extension PriceLocalStorageSubscriber {
     func subscribeToPrice(for priceId: AssetModel.PriceId) -> AnySingleValueProvider<PriceData>? {
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        return subscribeToPrice(for: priceId, options: options)
+    }
+}
+
+extension PriceLocalStorageSubscriber {
+    func subscribeToPrice(
+        for priceId: AssetModel.PriceId,
+        options: DataProviderObserverOptions
+    ) -> AnySingleValueProvider<PriceData>? {
         let priceProvider = priceLocalSubscriptionFactory.getPriceProvider(for: priceId)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<PriceData>]) in
@@ -22,11 +39,6 @@ extension PriceLocalStorageSubscriber {
             self?.priceLocalSubscriptionHandler.handlePrice(result: .failure(error), priceId: priceId)
             return
         }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
-        )
 
         priceProvider.addObserver(
             self,

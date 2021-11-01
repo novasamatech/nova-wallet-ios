@@ -10,7 +10,8 @@ final class WalletListInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
     private var accountInfoSubscriptions: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
-    private var priceSubscriptions: [ChainModel.Id: AnySingleValueProvider<PriceData>] = [:]
+    private var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private var availableTokenPrice: [AssetModel.PriceId: ChainModel.Id] = [:]
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -25,9 +26,9 @@ final class WalletListInteractor {
     }
 
     private func updateAccountInfoSubscription(from changes: [DataProviderChange<ChainModel>]) {
-        accountInfoSubscriptions = changes.reduce(into: accountInfoSubscriptions) { (result, change) in
+        accountInfoSubscriptions = changes.reduce(into: accountInfoSubscriptions) { result, change in
             switch change {
-            case .insert(let chain), .update(let chain):
+            case let .insert(chain), let .update(chain):
                 guard
                     result[chain.chainId] == nil,
                     let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
@@ -38,25 +39,76 @@ final class WalletListInteractor {
                     for: accountId,
                     chainId: chain.chainId
                 )
-            case .delete(let deletedIdentifier):
+            case let .delete(deletedIdentifier):
                 result[deletedIdentifier] = nil
             }
         }
     }
 
     private func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
+        let prevPrices = availableTokenPrice
         for change in changes {
             switch change {
-            case .insert(let chain), .update(let chain):
+            case let .insert(chain), let .update(chain):
+                availableTokenPrice = availableTokenPrice.filter { $0.value != chain.chainId }
+
                 if let asset = chain.utilityAssets().first, let priceId = asset.priceId {
-                    priceSubscriptions[chain.chainId] = subscribeToPrice(for: priceId)
-                } else {
-                    priceSubscriptions[chain.chainId] = nil
+                    availableTokenPrice[priceId] = chain.chainId
                 }
-            case .delete(let deletedIdentifier):
-                priceSubscriptions[deletedIdentifier] = nil
+            case let .delete(deletedIdentifier):
+                availableTokenPrice = availableTokenPrice.filter { $0.value != deletedIdentifier }
             }
         }
+
+        if prevPrices != availableTokenPrice {
+            updatePriceProvider(for: Array(availableTokenPrice.keys))
+        }
+    }
+
+    private func updatePriceProvider(for priceIds: [AssetModel.PriceId]) {
+        priceSubscription = nil
+
+        guard !priceIds.isEmpty else {
+            return
+        }
+
+        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
+            let finalValue = changes.reduceToLastChange()
+
+            switch finalValue {
+            case let .some(prices):
+                let chainPrices = zip(priceIds, prices).reduce(
+                    into: [ChainModel.Id: PriceData]()
+                ) { result, item in
+                    guard let chainId = self?.availableTokenPrice[item.0] else {
+                        return
+                    }
+
+                    result[chainId] = item.1
+                }
+
+                self?.presenter.didReceivePrices(result: .success(chainPrices))
+            case .none:
+                self?.presenter.didReceivePrices(result: .success([:]))
+            }
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.presenter.didReceivePrices(result: .failure(error))
+            return
+        }
+
+        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true, waitsInProgressSyncOnAdd: true)
+
+        priceSubscription?.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
     }
 }
 
@@ -71,13 +123,7 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 }
 
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId: AccountId, chainId: ChainModel.Id) {
-
-    }
-}
-
-extension WalletListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
-    func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-
+    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId: ChainModel.Id) {
+        presenter.didReceiveAccountInfo(result: result, chainId: chainId)
     }
 }

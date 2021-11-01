@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 final class WalletListPresenter {
     weak var view: WalletListViewProtocol?
@@ -18,4 +19,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     func setup() {}
 }
 
-extension WalletListPresenter: WalletListInteractorOutputProtocol {}
+extension WalletListPresenter: WalletListInteractorOutputProtocol {
+    func didReceivePrices(result _: Result<[ChainModel.Id: PriceData], Error>) {}
+
+    func didReceiveChainModelChanges(_: [DataProviderChange<ChainModel>]) {}
+
+    func didReceiveAccountInfo(result _: Result<AccountInfo?, Error>, chainId _: ChainModel.Id) {}
+}
