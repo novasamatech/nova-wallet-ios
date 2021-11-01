@@ -15,7 +15,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.lineBreakMode = .byTruncatingMiddle
+        label.numberOfLines = 0
         label.textColor = R.color.colorTransparentText()
         label.font = .p2Paragraph
         return label
@@ -91,7 +91,6 @@ final class CrowdloanTableViewCell: UITableViewCell {
         progressValue = nil
 
         iconImageView.image = nil
-        // progressView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
     }
 
     override func layoutSubviews() {
