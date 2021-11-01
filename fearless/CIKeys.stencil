@@ -6,3 +6,7 @@ enum MoonPayCIKeys {
 enum SubscanCIKeys {
     static var apiKey: String = "{{ argument.subscanAPIKey }}"
 }
+
+enum AcalaCIKeys {
+    static var authToken: String = "{{ argument.acalaAuthToken }}"
+}

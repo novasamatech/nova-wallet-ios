@@ -6,50 +6,35 @@ import IrohaCrypto
 import SoraKeystore
 
 final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
-    static func createViewForSettings() -> AccountManagementViewProtocol? {
+    static func createView(for walletId: String) -> AccountManagementViewProtocol? {
         let wireframe = AccountManagementWireframe()
-        return createView(for: wireframe)
-    }
-
-    static func createViewForSwitch() -> AccountManagementViewProtocol? {
-        let wireframe = SwitchAccount.AccountManagementWireframe()
-        return createView(for: wireframe)
-    }
-
-    private static func createView(
-        for wireframe: AccountManagementWireframeProtocol
-    ) -> AccountManagementViewProtocol? {
-        let facade = UserDataStorageFacade.shared
-        let mapper = ManagedMetaAccountMapper()
-
-        let observer: CoreDataContextObservable<ManagedMetaAccountModel, CDMetaAccount> =
-            CoreDataContextObservable(
-                service: facade.databaseService,
-                mapper: AnyCoreDataMapper(mapper),
-                predicate: { _ in true }
-            )
-
-        let repository = AccountRepositoryFactory(storageFacade: facade)
-            .createManagedMetaAccountRepository(
-                for: nil,
-                sortDescriptors: [NSSortDescriptor.accountsByOrder]
-            )
 
         let view = AccountManagementViewController(nib: R.nib.accountManagementViewController)
 
         let iconGenerator = PolkadotIconGenerator()
-        let viewModelFactory = ManagedAccountViewModelFactory(iconGenerator: iconGenerator)
+        let viewModelFactory = ChainAccountViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = AccountManagementPresenter(
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            walletId: walletId,
+            logger: Logger.shared
         )
 
-        let anyObserver = AnyDataProviderRepositoryObservable(observer)
+        let storageFacade = UserDataStorageFacade.shared
+
+        let mapper = ManagedMetaAccountMapper()
+
+        let walletRepository = storageFacade.createRepository(
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let chainRepository = SubstrateRepositoryFactory().createChainRepository()
+
         let interactor = AccountManagementInteractor(
-            repository: AnyDataProviderRepository(repository),
-            repositoryObservable: anyObserver,
+            walletRepository: AnyDataProviderRepository(walletRepository),
+            chainRepository: chainRepository,
+            operationManager: OperationManagerFacade.sharedManager,
             settings: SelectedWalletSettings.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             eventCenter: EventCenter.shared
         )
 

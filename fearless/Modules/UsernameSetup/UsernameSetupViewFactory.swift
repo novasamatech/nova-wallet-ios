@@ -5,42 +5,20 @@ import SoraKeystore
 final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
     static func createViewForOnboarding() -> UsernameSetupViewProtocol? {
         let wireframe = UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor(
-            supportedNetworkTypes: Chain.allCases,
-            defaultNetwork: ConnectionItem.defaultConnection.type.chain
-        )
+        let interactor = UsernameSetupInteractor()
         return createView(for: wireframe, interactor: interactor)
     }
 
     static func createViewForAdding() -> UsernameSetupViewProtocol? {
-        let defaultChain = SettingsManager.shared.selectedConnection.type.chain
-
         let wireframe = AddAccount.UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor(
-            supportedNetworkTypes: Chain.allCases,
-            defaultNetwork: defaultChain
-        )
+        let interactor = UsernameSetupInteractor()
         return createView(for: wireframe, interactor: interactor)
     }
 
-    static func createViewForConnection(item: ConnectionItem) -> UsernameSetupViewProtocol? {
-        let wireframe = SelectConnection.UsernameSetupWireframe(connectionItem: item)
-        let interactor = UsernameSetupInteractor(
-            supportedNetworkTypes: [item.type.chain],
-            defaultNetwork: item.type.chain
-        )
-
-        return createView(for: wireframe, interactor: interactor)
-    }
-
+//    @available(iOS, obsoleted: 10, message: "Network selection functionality does not longer exist")
     static func createViewForSwitch() -> UsernameSetupViewProtocol? {
-        let defaultChain = SettingsManager.shared.selectedConnection.type.chain
-
         let wireframe = SwitchAccount.UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor(
-            supportedNetworkTypes: Chain.allCases,
-            defaultNetwork: defaultChain
-        )
+        let interactor = UsernameSetupInteractor()
 
         return createView(for: wireframe, interactor: interactor)
     }

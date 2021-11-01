@@ -80,6 +80,8 @@ extension ProfileViewController: UITableViewDataSource {
                 cell.bind(model: userViewModel, icon: userIcon)
             }
 
+            cell.detailsView.layout = .singleTitle
+
             return cell
         default:
             let cell = tableView.dequeueReusableCell(

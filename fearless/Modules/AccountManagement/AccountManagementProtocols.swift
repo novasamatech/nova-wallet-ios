@@ -1,48 +1,52 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
-
-    func didRemoveItem(at index: Int)
+    func set(nameViewModel: InputViewModelProtocol)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
     func setup()
 
-    func numberOfItems() -> Int
-
-    func item(at index: Int) -> ManagedAccountViewModelItem
-
-    func activateDetails(at index: Int)
-    func activateAddAccount()
-
-    func selectItem(at index: Int)
-    func moveItem(at startIndex: Int, to finalIndex: Int)
-
-    func removeItem(at index: Int)
+    func numberOfSections() -> Int
+    func numberOfItems(in section: Int) -> Int
+    func item(at indexPath: IndexPath) -> ChainAccountViewModelItem
+    func titleForSection(_ section: Int) -> LocalizableResource<String>
+    func activateDetails(at indexPath: IndexPath)
+    func selectItem(at indexPath: IndexPath)
+    func finalizeName()
 }
 
 protocol AccountManagementInteractorInputProtocol: AnyObject {
-    func setup()
-    func select(item: ManagedMetaAccountModel)
-    func save(items: [ManagedMetaAccountModel])
-    func remove(item: ManagedMetaAccountModel)
+    func setup(walletId: String)
+    func save(name: String, walletId: String)
+    func flushPendingName()
 }
 
 protocol AccountManagementInteractorOutputProtocol: AnyObject {
-    func didCompleteSelection(of metaAccount: MetaAccountModel)
-    func didReceive(changes: [DataProviderChange<ManagedMetaAccountModel>])
-    func didReceive(error: Error)
+    func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>)
+    func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)
+    func didSaveWalletName(_ result: Result<String, Error>)
 }
 
-protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showAccountDetails(from view: AccountManagementViewProtocol?, metaAccount: MetaAccountModel)
-    func showAddAccount(from view: AccountManagementViewProtocol?)
-    func complete(from view: AccountManagementViewProtocol?)
+protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
+    func showCreateAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    )
+
+    func showImportAccount(
+        from view: AccountManagementViewProtocol?,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    )
 }
 
 protocol AccountManagementViewFactoryProtocol: AnyObject {
-    static func createViewForSettings() -> AccountManagementViewProtocol?
-    static func createViewForSwitch() -> AccountManagementViewProtocol?
+    static func createView(for walletId: String) -> AccountManagementViewProtocol?
 }

@@ -261,35 +261,8 @@ extension NetworkManagementPresenter: NetworkManagementInteractorOutputProtocol 
         )
     }
 
-    func didFindNoAccounts(for connection: ConnectionItem) {
-        pendingCompletion = false
-
-        let title = R.string.localizable
-            .accountNeededTitle(preferredLanguages: localizationManager.selectedLocale.rLanguages)
-        let message = R.string.localizable
-            .accountNeededMessage(preferredLanguages: localizationManager.selectedLocale.rLanguages)
-
-        let proceedTitle = R.string.localizable
-            .commonProceed(preferredLanguages: localizationManager.selectedLocale.rLanguages)
-        let proceedAction = AlertPresentableAction(title: proceedTitle) { [weak self] in
-            self?.wireframe.presentAccountCreation(for: connection, from: self?.view)
-        }
-
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: localizationManager.selectedLocale.rLanguages)
-
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [proceedAction],
-            closeAction: closeTitle
-        )
-
-        wireframe.present(
-            viewModel: viewModel,
-            style: .alert,
-            from: view
-        )
+    func didFindNoAccounts(for _: ConnectionItem) {
+        // TODO: Get rid of this module in the future
     }
 
     func didReceiveConnection(selectionError: Error) {
@@ -321,14 +294,7 @@ extension NetworkManagementPresenter: ModalPickerViewControllerDelegate {
         interactor.select(connection: connection, account: accounts[index])
     }
 
-    func modalPickerDidSelectAction(context: AnyObject?) {
-        guard
-            let (_, connection) =
-            (context as? PrimitiveContextWrapper<([AccountItem], ConnectionItem)>)?.value
-        else {
-            return
-        }
-
-        wireframe.presentAccountCreation(for: connection, from: view)
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        // TODO: Get rid of the module
     }
 }

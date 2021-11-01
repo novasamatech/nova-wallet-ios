@@ -41,21 +41,35 @@ final class ProfileInteractor {
             presenter?.didReceiveUserDataProvider(error: error)
         }
     }
+
+    private func provideSelectedMetaAccount() {
+        do {
+            guard let wallet = selectedWalletSettings.value else {
+                throw ProfileInteractorError.noSelectedAccount
+            }
+            presenter?.didReceive(wallet: wallet)
+        } catch {
+            presenter?.didReceiveUserDataProvider(error: error)
+        }
+    }
 }
 
 extension ProfileInteractor: ProfileInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
         provideUserSettings()
+        provideSelectedMetaAccount()
     }
 }
 
 extension ProfileInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideUserSettings()
+        provideSelectedMetaAccount()
     }
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
         provideUserSettings()
+        provideSelectedMetaAccount()
     }
 }

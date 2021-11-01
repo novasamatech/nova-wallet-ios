@@ -45,6 +45,14 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 delegate: delegate,
                 existingService: existingService
             )
+        case .acala:
+            showAcalaCustomFlow(
+                from: view,
+                for: displayInfo,
+                inputAmount: inputAmount,
+                delegate: delegate,
+                existingService: existingService
+            )
         case .bifrost:
             showBifrostCustomFlow(
                 from: view,
@@ -54,6 +62,30 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 existingService: existingService
             )
         }
+    }
+
+    private func showAcalaCustomFlow(
+        from view: CrowdloanContributionSetupViewProtocol?,
+        for displayInfo: CrowdloanDisplayInfo,
+        inputAmount: Decimal,
+        delegate: CustomCrowdloanDelegate,
+        existingService: CrowdloanBonusServiceProtocol?
+    ) {
+        guard let acalaView = ReferralCrowdloanViewFactory.createAcalaView(
+            for: delegate,
+            displayInfo: displayInfo,
+            inputAmount: inputAmount,
+            existingService: existingService,
+            state: state
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: acalaView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     private func showKaruraCustomFlow(
