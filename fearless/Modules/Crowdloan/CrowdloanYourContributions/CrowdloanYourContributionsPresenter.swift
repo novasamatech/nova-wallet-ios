@@ -4,20 +4,29 @@ final class CrowdloanYourContributionsPresenter {
     weak var view: CrowdloanYourContributionsViewProtocol?
     let wireframe: CrowdloanYourContributionsWireframeProtocol
     let interactor: CrowdloanYourContributionsInteractorInputProtocol
-    let contributions: [CrowdloanContributionItem]
+    let input: CrowdloanYourContributionsViewInput
+    let viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol
 
     init(
-        contributions: [CrowdloanContributionItem],
+        input: CrowdloanYourContributionsViewInput,
+        viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol,
         interactor: CrowdloanYourContributionsInteractorInputProtocol,
         wireframe: CrowdloanYourContributionsWireframeProtocol
     ) {
-        self.contributions = contributions
+        self.input = input
+        self.viewModelFactory = viewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
     }
 
     private func updateView() {
-        view?.reload(contributions: contributions)
+        let viewModel = viewModelFactory.createViewModel(
+            for: input.crowdloans,
+            viewInfo: input.viewInfo,
+            chainAsset: input.chainAsset,
+            locale: view?.selectedLocale ?? .current
+        )
+        view?.reload(contributions: viewModel.contributions)
     }
 }
 

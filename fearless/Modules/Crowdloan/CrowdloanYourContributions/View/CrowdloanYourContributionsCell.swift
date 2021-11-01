@@ -12,14 +12,14 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
-        label.font = .p1Paragraph
+        label.font = .p0Paragraph
         return label
     }()
 
     private let contributedAmountLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
-        label.font = .p1Paragraph
+        label.font = .p0Paragraph
         return label
     }()
 

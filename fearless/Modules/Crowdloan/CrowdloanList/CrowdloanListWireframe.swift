@@ -8,11 +8,17 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     }
 
     func showYourContributions(
-        _ contributions: [CrowdloanContributionItem],
+        crowdloans: [Crowdloan],
+        viewInfo: CrowdloansViewInfo,
+        chainAsset: ChainAssetDisplayInfo,
         from view: CrowdloanListViewProtocol?
     ) {
-        guard let contibutions = CrowdloanYourContributionsViewFactory
-            .createView(contributions: contributions)
+        let input = CrowdloanYourContributionsViewInput(
+            crowdloans: crowdloans,
+            viewInfo: viewInfo,
+            chainAsset: chainAsset
+        )
+        guard let contibutions = CrowdloanYourContributionsViewFactory.createView(input: input)
         else { return }
 
         contibutions.controller.hidesBottomBarWhenPushed = true

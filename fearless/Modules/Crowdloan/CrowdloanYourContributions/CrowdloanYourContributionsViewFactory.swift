@@ -1,12 +1,24 @@
 import Foundation
 
-struct CrowdloanYourContributionsViewFactory {
-    static func createView(contributions: [CrowdloanContributionItem]) -> CrowdloanYourContributionsViewProtocol? {
+struct CrowdloanYourContributionsViewInput {
+    let crowdloans: [Crowdloan]
+    let viewInfo: CrowdloansViewInfo
+    let chainAsset: ChainAssetDisplayInfo
+}
+
+enum CrowdloanYourContributionsViewFactory {
+    static func createView(
+        input: CrowdloanYourContributionsViewInput
+    ) -> CrowdloanYourContributionsViewProtocol? {
         let interactor = CrowdloanYourContributionsInteractor()
         let wireframe = CrowdloanYourContributionsWireframe()
+        let viewModelFactory = CrowdloanYourContributionsVMFactory(
+            amountFormatterFactory: AssetBalanceFormatterFactory()
+        )
 
         let presenter = CrowdloanYourContributionsPresenter(
-            contributions: contributions,
+            input: input,
+            viewModelFactory: viewModelFactory,
             interactor: interactor,
             wireframe: wireframe
         )

@@ -12,7 +12,7 @@ protocol CrowdloanListPresenterProtocol: AnyObject {
     func becomeOnline()
     func putOffline()
     func selectChain()
-    func handleYourContributions(_ contributions: [CrowdloanContributionItem])
+    func handleYourContributions()
 }
 
 protocol CrowdloanListInteractorInputProtocol: AnyObject {
@@ -37,7 +37,9 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
 
 protocol CrowdloanListWireframeProtocol: AnyObject {
     func showYourContributions(
-        _ contributions: [CrowdloanContributionItem],
+        crowdloans: [Crowdloan],
+        viewInfo: CrowdloansViewInfo,
+        chainAsset: ChainAssetDisplayInfo,
         from view: CrowdloanListViewProtocol?
     )
 

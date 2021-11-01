@@ -204,8 +204,29 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         )
     }
 
-    func handleYourContributions(_ contributions: [CrowdloanContributionItem]) {
-        wireframe.showYourContributions(contributions, from: view)
+    func handleYourContributions() {
+        guard
+            let chainResult = selectedChainResult,
+            let crowdloansResult = crowdloansResult,
+            let viewInfoResult = createViewInfoResult(),
+            case let .success(chain) = chainResult,
+            let asset = chain.utilityAssets().first
+        else { return }
+
+        do {
+            let crowdloans = try crowdloansResult.get()
+            let viewInfo = try viewInfoResult.get()
+            let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
+
+            wireframe.showYourContributions(
+                crowdloans: crowdloans,
+                viewInfo: viewInfo,
+                chainAsset: chainAsset,
+                from: view
+            )
+        } catch {
+            logger?.error(error.localizedDescription)
+        }
     }
 }
 
