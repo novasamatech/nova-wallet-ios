@@ -43,7 +43,12 @@ extension AddChainAccount {
             let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
                 let accountItem = try importOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                self?.settings.save(value: accountItem)
+
+                if let selectedAccount = self?.settings.value,
+                   selectedAccount.metaId == accountItem.metaId {
+                    self?.settings.save(value: accountItem)
+                    self?.eventCenter.notify(with: SelectedAccountChanged())
+                }
 
                 return accountItem
             }
@@ -55,7 +60,6 @@ extension AddChainAccount {
                     switch saveOperation.result {
                     case .success:
                         self?.settings.setup()
-                        self?.eventCenter.notify(with: SelectedAccountChanged())
                         self?.presenter?.didCompleteConfirmation()
 
                     case let .failure(error):
