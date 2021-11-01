@@ -48,6 +48,38 @@
                BlueprintName = "fearlessTests"
                ReferencedContainer = "container:fearless.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AccountExportPasswordTests/testSuccessfullExport()">
+               </Test>
+               <Test
+                  Identifier = "AccountInfoExportTests">
+               </Test>
+               <Test
+                  Identifier = "AccountInfoExportTests/testExportAfterCreationWithMnemonic()">
+               </Test>
+               <Test
+                  Identifier = "AccountInfoTests">
+               </Test>
+               <Test
+                  Identifier = "AddConnectionTests">
+               </Test>
+               <Test
+                  Identifier = "ExportMnemonicTests">
+               </Test>
+               <Test
+                  Identifier = "NetworkConnectionsMigratorTests">
+               </Test>
+               <Test
+                  Identifier = "NetworkInfoTests">
+               </Test>
+               <Test
+                  Identifier = "NetworkManagementTests">
+               </Test>
+               <Test
+                  Identifier = "WalletPurchaseProvidersTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "YES">

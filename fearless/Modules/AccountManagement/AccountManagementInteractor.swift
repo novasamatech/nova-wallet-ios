@@ -5,91 +5,181 @@ import SoraKeystore
 final class AccountManagementInteractor {
     weak var presenter: AccountManagementInteractorOutputProtocol?
 
-    let repositoryObservable: AnyDataProviderRepositoryObservable<ManagedMetaAccountModel>
-    let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let chainRepository: AnyDataProviderRepository<ChainModel>
     let settings: SelectedWalletSettings
-    let operationQueue: OperationQueue
+    let operationManager: OperationManagerProtocol
     let eventCenter: EventCenterProtocol
 
+    private lazy var saveScheduler = Scheduler(with: self, callbackQueue: .main)
+    private var saveInterval: TimeInterval
+    private var pendingName: String?
+    private var pendingWalletId: String?
+
     init(
-        repository: AnyDataProviderRepository<ManagedMetaAccountModel>,
-        repositoryObservable: AnyDataProviderRepositoryObservable<ManagedMetaAccountModel>,
+        walletRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        chainRepository: AnyDataProviderRepository<ChainModel>,
+        operationManager: OperationManagerProtocol,
         settings: SelectedWalletSettings,
-        operationQueue: OperationQueue,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        saveInterval: TimeInterval = 2.0
     ) {
-        self.repository = repository
-        self.repositoryObservable = repositoryObservable
+        self.walletRepository = walletRepository
+        self.chainRepository = chainRepository
+        self.operationManager = operationManager
         self.settings = settings
-        self.operationQueue = operationQueue
         self.eventCenter = eventCenter
+        self.saveInterval = saveInterval
     }
 
-    private func provideInitialList() {
-        let options = RepositoryFetchOptions()
-        let operation = repository.fetchAllOperation(with: options)
+    // MARK: - Fetching functions
 
-        operation.completionBlock = { [weak self] in
+    private func fetchChains() {
+        let operation = chainRepository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        operation.completionBlock = {
             DispatchQueue.main.async {
                 do {
-                    let items = try operation
-                        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                    let changes = items.map { DataProviderChange.insert(newItem: $0) }
+                    let chains = try operation.extractNoCancellableResultData()
 
-                    self?.presenter?.didReceive(changes: changes)
+                    let chainsById: [ChainModel.Id: ChainModel] = chains.reduce(into: [:]) { result, chain in
+                        result[chain.chainId] = chain
+                    }
+
+                    self.presenter?.didReceiveChains(.success(chainsById))
                 } catch {
-                    self?.presenter?.didReceive(error: error)
+                    self.presenter?.didReceiveChains(.failure(error))
+                }
+            }
+        }
+        operationManager.enqueue(operations: [operation], in: .transient)
+    }
+
+    private func fetchWallet(with walletId: String) {
+        let operation = walletRepository.fetchOperation(
+            by: walletId,
+            options: RepositoryFetchOptions()
+        )
+
+        operation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let wallet = try operation.extractNoCancellableResultData()?.info
+                    self.presenter?.didReceiveWallet(.success(wallet))
+                } catch {
+                    self.presenter?.didReceiveWallet(.failure(error))
                 }
             }
         }
 
-        operationQueue.addOperation(operation)
-    }
-}
-
-extension AccountManagementInteractor: AccountManagementInteractorInputProtocol {
-    func setup() {
-        repositoryObservable.start { [weak self] error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    self?.presenter?.didReceive(error: error)
-                }
-            }
-        }
-
-        repositoryObservable.addObserver(self, deliverOn: .main) { [weak self] changes in
-            self?.presenter?.didReceive(changes: changes)
-        }
-
-        provideInitialList()
+        operationManager.enqueue(operations: [operation], in: .transient)
     }
 
-    func select(item: ManagedMetaAccountModel) {
-        let oldMetaAccount = settings.value
+    // MARK: - Result handling functions
 
-        guard item.info.identifier != oldMetaAccount?.identifier else {
+    private func handleSaveOperationResult(
+        result: Result<Void, Error>?,
+        newName: String,
+        walletId: String
+    ) {
+        guard let result = result else {
+            presenter?.didSaveWalletName(.failure(BaseOperationError.parentOperationCancelled))
             return
         }
 
-        settings.save(value: item.info, runningCompletionIn: .main) { [weak self] result in
-            switch result {
-            case .success:
-                self?.eventCenter.notify(with: SelectedAccountChanged())
-
-                self?.presenter?.didCompleteSelection(of: item.info)
-            case let .failure(error):
-                self?.presenter?.didReceive(error: error)
+        switch result {
+        case .success:
+            if let selectedWallet = settings.value,
+               selectedWallet.identifier == walletId {
+                settings.setup()
+                eventCenter.notify(with: SelectedUsernameChanged())
             }
+
+            presenter?.didSaveWalletName(.success(newName))
+
+        case let .failure(error):
+            presenter?.didSaveWalletName(.failure(error))
         }
     }
 
-    func save(items: [ManagedMetaAccountModel]) {
-        let operation = repository.saveOperation({ items }, { [] })
-        operationQueue.addOperation(operation)
+    // MARK: - Actions
+
+    private func performWalletNameSave(newName: String, for walletId: String) {
+        let fetchOperation = walletRepository.fetchOperation(
+            by: walletId, options: RepositoryFetchOptions()
+        )
+
+        let saveOperation = walletRepository.saveOperation({
+            guard let currentItem = try fetchOperation
+                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            else {
+                throw AccountInfoInteractorError.missingAccount
+            }
+
+            guard currentItem.info.name != newName else {
+                return []
+            }
+
+            let newInfo = currentItem.info.replacingName(with: newName)
+            let changedItem = currentItem.replacingInfo(newInfo)
+
+            return [changedItem]
+        }, { [] })
+
+        saveOperation.addDependency(fetchOperation)
+
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                self?.handleSaveOperationResult(
+                    result: saveOperation.result,
+                    newName: newName,
+                    walletId: walletId
+                )
+            }
+        }
+
+        operationManager.enqueue(operations: [fetchOperation, saveOperation], in: .transient)
     }
 
-    func remove(item: ManagedMetaAccountModel) {
-        let operation = repository.saveOperation({ [] }, { [item.identifier] })
-        operationQueue.addOperation(operation)
+    private func performChangeFinalizationIfNeeded() {
+        guard let name = pendingName,
+              let walletId = pendingWalletId else { return }
+
+        pendingName = nil
+        pendingWalletId = nil
+
+        performWalletNameSave(newName: name, for: walletId)
+    }
+}
+
+// MARK: - AccountManagementInteractorInputProtocol
+
+extension AccountManagementInteractor: AccountManagementInteractorInputProtocol {
+    func setup(walletId: String) {
+        fetchWallet(with: walletId)
+        fetchChains()
+    }
+
+    func save(name: String, walletId: String) {
+        let shouldScheduleSave = pendingName == nil
+
+        pendingName = name
+        pendingWalletId = walletId
+
+        if shouldScheduleSave {
+            saveScheduler.notifyAfter(saveInterval)
+        }
+    }
+
+    func flushPendingName() {
+        performChangeFinalizationIfNeeded()
+    }
+}
+
+// MARK: - SchedulerDelegate
+
+extension AccountManagementInteractor: SchedulerDelegate {
+    func didTrigger(scheduler _: SchedulerProtocol) {
+        performChangeFinalizationIfNeeded()
     }
 }

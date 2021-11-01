@@ -1,12 +1,21 @@
 import Foundation
 
 extension SwitchAccount {
-    final class AccountManagementWireframe: AccountManagementWireframeProtocol {
-        func showAccountDetails(from _: AccountManagementViewProtocol?, metaAccount _: MetaAccountModel) {
-            // TODO: Implement when new onboarding process done
+    final class WalletManagementWireframe: WalletManagementWireframeProtocol {
+        func showWalletDetails(from view: WalletManagementViewProtocol?, metaAccount: MetaAccountModel) {
+            guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount.identifier) else {
+                return
+            }
+
+            chainManagementView.controller.hidesBottomBarWhenPushed = true
+
+            view?.controller.navigationController?.pushViewController(
+                chainManagementView.controller,
+                animated: true
+            )
         }
 
-        func showAddAccount(from view: AccountManagementViewProtocol?) {
+        func showAddWallet(from view: WalletManagementViewProtocol?) {
             guard let onboarding = OnboardingMainViewFactory.createViewForAccountSwitch() else {
                 return
             }
@@ -16,7 +25,7 @@ extension SwitchAccount {
             }
         }
 
-        func complete(from view: AccountManagementViewProtocol?) {
+        func complete(from view: WalletManagementViewProtocol?) {
             guard let navigationController = view?.controller.navigationController else {
                 return
             }

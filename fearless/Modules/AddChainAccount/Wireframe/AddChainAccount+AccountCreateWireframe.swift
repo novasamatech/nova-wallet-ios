@@ -1,35 +1,32 @@
 import Foundation
 import IrohaCrypto
 
-extension SelectConnection {
+extension AddChainAccount {
     final class AccountCreateWireframe: AccountCreateWireframeProtocol {
-        let connectionItem: ConnectionItem
-
-        init(connectionItem: ConnectionItem) {
-            self.connectionItem = connectionItem
-        }
-
         func confirm(
             from view: AccountCreateViewProtocol?,
-            request: AccountCreationRequest,
-            metadata: AccountCreationMetadata
+            request: ChainAccountImportMnemonicRequest,
+            metaAccountModel: MetaAccountModel,
+            chainModelId: ChainModel.Id
         ) {
-            guard let accountConfirmation = AccountConfirmViewFactory
-                .createViewForConnection(item: connectionItem, request: request, metadata: metadata)?
-                .controller
+            guard let confirmationController = AccountConfirmViewFactory.createViewForReplace(
+                request: request,
+                metaAccountModel: metaAccountModel,
+                chainModelId: chainModelId
+            )?.controller
             else {
                 return
             }
 
             if let navigationController = view?.controller.navigationController {
-                navigationController.pushViewController(accountConfirmation, animated: true)
+                navigationController.pushViewController(confirmationController, animated: true)
             }
         }
 
         func presentCryptoTypeSelection(
             from view: AccountCreateViewProtocol?,
-            availableTypes: [CryptoType],
-            selectedType: CryptoType,
+            availableTypes: [MultiassetCryptoType],
+            selectedType: MultiassetCryptoType,
             delegate: ModalPickerViewControllerDelegate?,
             context: AnyObject?
         ) {

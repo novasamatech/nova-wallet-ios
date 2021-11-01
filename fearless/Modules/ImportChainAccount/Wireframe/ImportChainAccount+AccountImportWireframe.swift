@@ -1,14 +1,8 @@
 import Foundation
 import IrohaCrypto
 
-extension SelectConnection {
+extension ImportChainAccount {
     final class AccountImportWireframe: AccountImportWireframeProtocol {
-        let connection: ConnectionItem
-
-        init(connection: ConnectionItem) {
-            self.connection = connection
-        }
-
         func proceed(from view: AccountImportViewProtocol?) {
             guard let navigationController = view?.controller.navigationController else {
                 return
@@ -45,31 +39,8 @@ extension SelectConnection {
 
         func presentCryptoTypeSelection(
             from view: AccountImportViewProtocol?,
-            availableTypes: [CryptoType],
-            selectedType: CryptoType,
-            delegate: ModalPickerViewControllerDelegate?,
-            context: AnyObject?
-        ) {
-            guard let modalPicker = ModalPickerFactory.createPickerForList(
-                availableTypes,
-                selectedType: selectedType,
-                delegate: delegate,
-                context: context
-            ) else {
-                return
-            }
-
-            view?.controller.navigationController?.present(
-                modalPicker,
-                animated: true,
-                completion: nil
-            )
-        }
-
-        func presentNetworkTypeSelection(
-            from view: AccountImportViewProtocol?,
-            availableTypes: [Chain],
-            selectedType: Chain,
+            availableTypes: [MultiassetCryptoType],
+            selectedType: MultiassetCryptoType,
             delegate: ModalPickerViewControllerDelegate?,
             context: AnyObject?
         ) {

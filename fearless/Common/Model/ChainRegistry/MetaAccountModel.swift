@@ -15,3 +15,63 @@ struct MetaAccountModel: Equatable {
 extension MetaAccountModel: Identifiable {
     var identifier: String { metaId }
 }
+
+extension MetaAccountModel {
+    func replacingChainAccount(_ newChainAccount: ChainAccountModel) -> MetaAccountModel {
+        var newChainAccounts = chainAccounts.filter {
+            $0.chainId != newChainAccount.chainId
+        }
+
+        newChainAccounts.insert(newChainAccount)
+
+        return MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: newChainAccounts
+        )
+    }
+
+    func replacingEthereumAddress(_ newEthereumAddress: Data?) -> MetaAccountModel {
+        MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: newEthereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: chainAccounts
+        )
+    }
+
+    func replacingEthereumPublicKey(_ newEthereumPublicKey: Data?) -> MetaAccountModel {
+        MetaAccountModel(
+            metaId: metaId,
+            name: name,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: newEthereumPublicKey,
+            chainAccounts: chainAccounts
+        )
+    }
+
+    func replacingName(with newName: String) -> MetaAccountModel {
+        MetaAccountModel(
+            metaId: metaId,
+            name: newName,
+            substrateAccountId: substrateAccountId,
+            substrateCryptoType: substrateCryptoType,
+            substratePublicKey: substratePublicKey,
+            ethereumAddress: ethereumAddress,
+            ethereumPublicKey: ethereumPublicKey,
+            chainAccounts: chainAccounts
+        )
+    }
+}
