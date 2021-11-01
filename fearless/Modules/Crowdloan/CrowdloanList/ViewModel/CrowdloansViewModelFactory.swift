@@ -146,7 +146,7 @@ final class CrowdloansViewModelFactory {
         chainAsset: ChainAssetDisplayInfo,
         formatters: Formatters,
         locale: Locale
-    ) -> CrowdloanContrubutionItem? {
+    ) -> CrowdloanContributionItem? {
         let displayInfo = viewInfo.displayInfo?[model.paraId]
 
         guard let depositorAddress = try? model.fundInfo.depositor.toAddress(using: chainAsset.chain) else {
@@ -186,7 +186,7 @@ final class CrowdloansViewModelFactory {
             return nil
         }
 
-        return CrowdloanContrubutionItem(
+        return CrowdloanContributionItem(
             name: title,
             iconViewModel: iconViewModel,
             contributed: contributed

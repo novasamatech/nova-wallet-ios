@@ -7,6 +7,18 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         self.state = state
     }
 
+    func showYourContributions(
+        _ contributions: [CrowdloanContributionItem],
+        from view: CrowdloanListViewProtocol?
+    ) {
+        guard let contibutions = CrowdloanYourContributionsViewFactory
+            .createView(contributions: contributions)
+        else { return }
+
+        contibutions.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(contibutions.controller, animated: true)
+    }
+
     func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,

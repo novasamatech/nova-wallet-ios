@@ -203,6 +203,10 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
             selectedChainId: chainId
         )
     }
+
+    func handleYourContributions(_ contributions: [CrowdloanContributionItem]) {
+        wireframe.showYourContributions(contributions, from: view)
+    }
 }
 
 extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {

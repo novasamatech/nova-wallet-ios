@@ -177,6 +177,8 @@ extension CrowdloanListViewController: UITableViewDelegate {
         case let .active(_, cellViewModels):
             let viewModel = cellViewModels[indexPath.row]
             presenter.selectViewModel(viewModel)
+        case let .yourContributions(_, contributions):
+            presenter.handleYourContributions(contributions)
         default:
             return
         }

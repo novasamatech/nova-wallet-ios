@@ -14,7 +14,7 @@ struct CrowdloansViewModel {
 }
 
 enum CrowdloansSection {
-    case yourContributions(String, [CrowdloanContrubutionItem])
+    case yourContributions(String, [CrowdloanContributionItem])
     case active(String, [CrowdloanCellViewModel])
     case completed(String, [CrowdloanCellViewModel])
 }
