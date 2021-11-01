@@ -489,15 +489,15 @@ extension AccountImportViewController: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        var viewModel: InputViewModelProtocol?
+        var maybeViewModel: InputViewModelProtocol?
 
         if textField == substrateDerivationPathField {
-            viewModel = substrateDerivationPathModel
+            maybeViewModel = substrateDerivationPathModel
         } else if textField == ethereumDerivationPathField {
-            viewModel = ethereumDerivationPathModel
+            maybeViewModel = ethereumDerivationPathModel
         }
 
-        guard let viewModel = viewModel else { return true }
+        guard let viewModel = maybeViewModel else { return true }
 
         let shouldApply = viewModel.inputHandler.didReceiveReplacement(string, for: range)
 
