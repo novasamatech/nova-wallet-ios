@@ -518,5 +518,5 @@
 "account.actions.change.title" = "Изменить аккаунт";
 "account.not.found.caption" = "Аккаунт не найден";
 "account.not.found.actions.title" = "Аккаунт %@";
-"account.create.title" = "Создать аккаунт";
-"account.import.title" = "Импортировать аккаунт";
+"account.create.option.title" = "Создать аккаунт";
+"account.import.option.title" = "Импортировать аккаунт";

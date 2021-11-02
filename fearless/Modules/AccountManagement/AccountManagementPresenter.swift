@@ -92,7 +92,7 @@ final class AccountManagementPresenter {
         var actions: [AlertPresentableAction] = []
 
         let createAccountTitle = R.string.localizable
-            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
+            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
         let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
             self?.activateCreateAccount(for: chain)
         }
@@ -100,7 +100,7 @@ final class AccountManagementPresenter {
         actions.append(createAccountAction)
 
         let importAccountTitle = R.string.localizable
-            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
+            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
         let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
             self?.activateImportAccount(for: chain)
         }
@@ -124,11 +124,31 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func displayEthereumAddressActions(
-        for chain: ChainModel,
-        viewModel: ChainAccountViewModelItem
-    ) {
-        guard let address = viewModel.address else { return }
+    private func createCopyAction(for address: String) -> AlertPresentableAction {
+        let copyTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: copyTitle) { [weak self] in
+            self?.copyAddress(address)
+        }
+    }
+
+    private func createAccountCreateAction(for chain: ChainModel) -> AlertPresentableAction {
+        let createAccountTitle = R.string.localizable
+            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateCreateAccount(for: chain)
+        }
+    }
+
+    private func createAccountImportAction(for chain: ChainModel) -> AlertPresentableAction {
+        let importAccountTitle = R.string.localizable
+            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.activateImportAccount(for: chain)
+        }
+    }
+
+    private func createTitleFrom(_ address: String) -> String {
         var title = address
 
         let offset = title.count / 2
@@ -137,30 +157,26 @@ final class AccountManagementPresenter {
             at: title.index(title.startIndex, offsetBy: offset)
         )
 
+        return title
+    }
+
+    private func displayEthereumAddressActions(
+        for chain: ChainModel,
+        viewModel: ChainAccountViewModelItem
+    ) {
+        guard let address = viewModel.address else { return }
+
+        let title = createTitleFrom(address)
+
         var actions: [AlertPresentableAction] = []
 
-        let copyTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
-        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
-            self?.copyAddress(address)
-        }
-
+        let copyAction = createCopyAction(for: address)
         actions.append(copyAction)
 
-        let createAccountTitle = R.string.localizable
-            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
-        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
-        }
-
+        let createAccountAction = createAccountCreateAction(for: chain)
         actions.append(createAccountAction)
 
-        let importAccountTitle = R.string.localizable
-            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
-        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
-        }
-
+        let importAccountAction = createAccountImportAction(for: chain)
         actions.append(importAccountAction)
 
         let closeTitle = R.string.localizable
@@ -185,22 +201,11 @@ final class AccountManagementPresenter {
         viewModel: ChainAccountViewModelItem
     ) {
         guard let address = viewModel.address else { return }
-        var title = address
-
-        let offset = title.count / 2
-        title.insert(
-            contentsOf: String.returnKey,
-            at: title.index(title.startIndex, offsetBy: offset)
-        )
+        let title = createTitleFrom(address)
 
         var actions: [AlertPresentableAction] = []
 
-        let copyTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
-        let copyAction = AlertPresentableAction(title: copyTitle) { [weak self] in
-            self?.copyAddress(address)
-        }
-
+        let copyAction = createCopyAction(for: address)
         actions.append(copyAction)
 
         if let url = polkascanURL(for: chain.name, address: address) {
@@ -228,20 +233,10 @@ final class AccountManagementPresenter {
             actions.append(subscanAction)
         }
 
-        let createAccountTitle = R.string.localizable
-            .accountCreateTitle(preferredLanguages: selectedLocale.rLanguages)
-        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
-        }
-
+        let createAccountAction = createAccountCreateAction(for: chain)
         actions.append(createAccountAction)
 
-        let importAccountTitle = R.string.localizable
-            .accountImportTitle(preferredLanguages: selectedLocale.rLanguages)
-        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
-        }
-
+        let importAccountAction = createAccountImportAction(for: chain)
         actions.append(importAccountAction)
 
         // FIXME: Pack change accounts item under one sheet
