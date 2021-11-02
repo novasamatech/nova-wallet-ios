@@ -27,6 +27,25 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         }
     }
 
+    func showYourContributions(
+        crowdloans: [Crowdloan],
+        viewInfo: CrowdloansViewInfo,
+        chainAsset: ChainAssetDisplayInfo,
+        from view: ControllerBackedProtocol?
+    ) {
+        let input = CrowdloanYourContributionsViewInput(
+            crowdloans: crowdloans,
+            contributions: viewInfo.contributions,
+            displayInfo: viewInfo.displayInfo,
+            chainAsset: chainAsset
+        )
+        guard let contibutions = CrowdloanYourContributionsViewFactory.createView(input: input)
+        else { return }
+
+        contibutions.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(contibutions.controller, animated: true)
+    }
+
     private func showContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,
@@ -40,7 +59,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     }
 
     func selectChain(
-        from view: CrowdloanListViewProtocol?,
+        from view: ControllerBackedProtocol?,
         delegate: ChainSelectionDelegate,
         selectedChainId: ChainModel.Id?
     ) {
