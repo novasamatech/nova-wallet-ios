@@ -182,8 +182,8 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
         }
     }
 
-    func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>) {
-        wireframe.presentContributionSetup(from: view, paraId: viewModel.paraId)
+    func selectCrowdloan(_ paraId: ParaId) {
+        wireframe.presentContributionSetup(from: view, paraId: paraId)
     }
 
     func becomeOnline() {
@@ -202,6 +202,31 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
             delegate: self,
             selectedChainId: chainId
         )
+    }
+
+    func handleYourContributions() {
+        guard
+            let chainResult = selectedChainResult,
+            let crowdloansResult = crowdloansResult,
+            let viewInfoResult = createViewInfoResult(),
+            case let .success(chain) = chainResult,
+            let asset = chain.utilityAssets().first
+        else { return }
+
+        do {
+            let crowdloans = try crowdloansResult.get()
+            let viewInfo = try viewInfoResult.get()
+            let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
+
+            wireframe.showYourContributions(
+                crowdloans: crowdloans,
+                viewInfo: viewInfo,
+                chainAsset: chainAsset,
+                from: view
+            )
+        } catch {
+            logger?.error(error.localizedDescription)
+        }
     }
 }
 
