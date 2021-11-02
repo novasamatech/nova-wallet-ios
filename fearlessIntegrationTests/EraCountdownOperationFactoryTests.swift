@@ -1,6 +1,6 @@
 import XCTest
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 @testable import fearless
 
 class EraCountdownOperationFactoryTests: XCTestCase {

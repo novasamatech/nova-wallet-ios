@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 enum MultiassetCryptoType: UInt8, CaseIterable {
     case sr25519
@@ -13,7 +13,7 @@ extension MultiassetCryptoType {
         [.sr25519, .ed25519, .substrateEcdsa]
     }
 
-    var utilsType: FearlessUtils.CryptoType {
+    var utilsType: SubstrateSdk.CryptoType {
         switch self {
         case .sr25519:
             return .sr25519

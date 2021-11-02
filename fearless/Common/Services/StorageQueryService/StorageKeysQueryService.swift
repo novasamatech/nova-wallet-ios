@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class StorageKeysQueryService<T>: Longrunable {
     typealias ResultType = [T]

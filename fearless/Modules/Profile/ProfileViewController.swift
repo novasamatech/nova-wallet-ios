@@ -1,6 +1,6 @@
 import UIKit
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class ProfileViewController: UIViewController {
     private enum Constants {

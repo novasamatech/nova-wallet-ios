@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 typealias ChainConnection = JSONRPCEngine & ConnectionAutobalancing & ConnectionStateReporting
 

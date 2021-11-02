@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 protocol ConnectionPoolProtocol {
     func setupConnection(for chain: ChainModel) throws -> ChainConnection
@@ -52,4 +53,12 @@ extension ConnectionPool: ConnectionPoolProtocol {
 
         return connections[chainId]?.target as? ChainConnection
     }
+}
+
+extension ConnectionPool: WebSocketEngineDelegate {
+    func webSocketDidChangeState(
+        _: AnyObject,
+        from _: WebSocketEngine.State,
+        to _: WebSocketEngine.State
+    ) {}
 }

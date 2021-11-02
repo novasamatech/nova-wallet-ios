@@ -2,10 +2,12 @@ import Foundation
 
 struct WalletListViewFactory {
     static func createView() -> WalletListViewProtocol? {
-        
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+            return nil
+        }
 
         let interactor = WalletListInteractor(
-            selectedMetaAccount: <#T##MetaAccountModel#>,
+            selectedMetaAccount: selectedMetaAccount,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared

@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 
 struct AccountInfo: Codable, Equatable {

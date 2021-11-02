@@ -3,7 +3,7 @@ import Foundation
 import BigInt
 import IrohaCrypto
 import CommonWallet
-import FearlessUtils
+import SubstrateSdk
 
 struct WestendStub {
     static let address: String = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"

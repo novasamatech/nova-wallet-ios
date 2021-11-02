@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol ChainStorageIdFactoryProtocol {
     func createIdentifier(for key: Data) -> String

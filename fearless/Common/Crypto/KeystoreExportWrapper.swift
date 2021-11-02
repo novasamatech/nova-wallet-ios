@@ -1,6 +1,6 @@
 import Foundation
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 
 protocol KeystoreExportWrapperProtocol {

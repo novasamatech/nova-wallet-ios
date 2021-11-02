@@ -25,6 +25,17 @@ final class WalletListInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
     }
 
+    private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
+        for change in changes {
+            switch change {
+            case let .insert(chain), let .update(chain):
+                if let connection = chainRegistry.getConnection(for: chain.chainId) {}
+            case let .delete(identifier):
+                break
+            }
+        }
+    }
+
     private func updateAccountInfoSubscription(from changes: [DataProviderChange<ChainModel>]) {
         accountInfoSubscriptions = changes.reduce(into: accountInfoSubscriptions) { result, change in
             switch change {

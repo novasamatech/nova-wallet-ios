@@ -1,6 +1,6 @@
 import Foundation
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 
 final class ControllerAccountConfirmationPresenter {

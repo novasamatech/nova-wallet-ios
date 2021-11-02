@@ -1,7 +1,7 @@
 import Foundation
 import CommonWallet
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 extension WalletNetworkFacade {
     func fetchBalanceInfoForAsset(

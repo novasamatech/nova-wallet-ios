@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 
 final class StakingPayoutConfirmationViewFactory {

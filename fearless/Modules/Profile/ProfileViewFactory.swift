@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SoraKeystore
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 
 final class ProfileViewFactory: ProfileViewFactoryProtocol {
     static func createView() -> ProfileViewProtocol? {
