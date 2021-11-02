@@ -30,13 +30,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         guard
             let walletContext = try? WalletContextFactory(
                 chainRepository: chainsRepository,
-                operationQueue: OperationQueue()
+                operationQueue: OperationQueue(),
+                logger: Logger.shared
             ).createContext(),
-            let walletController = createWalletController(
-                walletContext: walletContext,
-                localizationManager: localizationManager
-            )
-        else {
+            let walletView = WalletListViewFactory.createView() else {
             return nil
         }
 
@@ -61,7 +58,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         let view = MainTabBarViewController()
         view.viewControllers = [
-            walletController,
+            walletView.controller,
             crowdloanController,
             stakingController,
             settingsController

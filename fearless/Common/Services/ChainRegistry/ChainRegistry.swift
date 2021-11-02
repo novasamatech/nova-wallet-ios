@@ -15,6 +15,9 @@ protocol ChainRegistryProtocol: AnyObject {
 
     func chainsUnsubscribe(_ target: AnyObject)
 
+    func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+    func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+
     func syncUp()
 }
 
@@ -203,6 +206,14 @@ extension ChainRegistry: ChainRegistryProtocol {
 
     func chainsUnsubscribe(_ target: AnyObject) {
         chainProvider.removeObserver(target)
+    }
+
+    func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
+        connectionPool.subscribe(subscriber, chainId: chainId)
+    }
+
+    func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
+        connectionPool.subscribe(subscriber, chainId: chainId)
     }
 
     func syncUp() {

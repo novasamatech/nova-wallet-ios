@@ -1,10 +1,19 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 final class WalletListPresenter {
     weak var view: WalletListViewProtocol?
     let wireframe: WalletListWireframeProtocol
     let interactor: WalletListInteractorInputProtocol
+
+    private var connectionListDifference: ListDifferenceCalculator<ChainModel> = ListDifferenceCalculator(
+        initialItems: [],
+        sortBlock: { $0.addressPrefix < $1.addressPrefix }
+    )
+    private var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
+    private var priceResult: Result<[ChainModel.Id: PriceData], Error>?
+    private var accountResults: [ChainModel.Id: Result<AccountInfo?, Error>] = [:]
 
     init(
         interactor: WalletListInteractorInputProtocol,
@@ -16,13 +25,25 @@ final class WalletListPresenter {
 }
 
 extension WalletListPresenter: WalletListPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {
-    func didReceivePrices(result _: Result<[ChainModel.Id: PriceData], Error>) {}
+    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
+        connectionStates[chainId] = state
+    }
 
-    func didReceiveChainModelChanges(_: [DataProviderChange<ChainModel>]) {}
+    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>) {
+        priceResult = result
+    }
 
-    func didReceiveAccountInfo(result _: Result<AccountInfo?, Error>, chainId _: ChainModel.Id) {}
+    func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        connectionListDifference.apply(changes: changes)
+    }
+
+    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, chainId: ChainModel.Id) {
+        accountResults[chainId] = result
+    }
 }
