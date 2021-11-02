@@ -8,14 +8,7 @@ final class YourCrowdloansTableViewCell: UITableViewCell {
         return label
     }()
 
-    let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = R.image.iconTabCrowloan()?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = R.color.colorWhite()
-        return imageView
-    }()
-
-    let detailsLabel: UILabel = {
+    let countLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .p1Paragraph
@@ -32,7 +25,8 @@ final class YourCrowdloansTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        configure()
+        backgroundColor = .clear
+        selectedBackgroundView = UIView()
         setupLayout()
     }
 
@@ -41,56 +35,34 @@ final class YourCrowdloansTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func configure() {
-        backgroundColor = .clear
-        separatorInset = UIEdgeInsets(
-            top: 0.0,
-            left: UIConstants.horizontalInset,
-            bottom: 0.0,
-            right: UIConstants.horizontalInset
-        )
-
-        selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorCellSelection()
-    }
-
     private func setupLayout() {
-        contentView.addSubview(iconImageView)
-
-        iconImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(16.0)
-            make.size.equalTo(24)
-            make.centerY.equalToSuperview()
+        let blurView = TriangularedBlurView()
+        blurView.isUserInteractionEnabled = false
+        contentView.addSubview(blurView)
+        blurView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(8)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
         }
 
-        contentView.addSubview(navigationImageView)
+        let content = UIView.hStack(
+            spacing: 10,
+            [
+                titleLabel, UIView(), countLabel, navigationImageView
+            ]
+        )
+        navigationImageView.snp.makeConstraints { $0.size.equalTo(16) }
 
-        navigationImageView.snp.makeConstraints { make in
-            make.right.equalToSuperview().inset(16.0)
-            make.size.equalTo(24)
-            make.centerY.equalToSuperview()
-        }
-
-        addSubview(titleLabel)
-        addSubview(detailsLabel)
-
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(iconImageView.snp.trailing).offset(16.0)
-            make.top.bottom.equalToSuperview().inset(16.0)
-        }
-
-        detailsLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(navigationImageView.snp.leading).offset(-8.0)
-            make.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+        blurView.addSubview(content)
+        content.snp.makeConstraints { make in
+            make.bottom.top.equalToSuperview().inset(20)
+            make.leading.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(20)
         }
     }
 
-    func bind(details: String, for locale: Locale) {
-        titleLabel.text = R.string.localizable.crowdloanYouContributionsTitle(
-            preferredLanguages: locale.rLanguages
-        )
-
-        detailsLabel.text = details
+    func bind(title: String, count: Int) {
+        titleLabel.text = title
+        countLabel.text = count.description
     }
 }

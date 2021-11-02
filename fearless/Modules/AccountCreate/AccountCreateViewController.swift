@@ -303,10 +303,10 @@ extension AccountCreateViewController: UITextFieldDelegate {
         shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
-        let viewModel = textField == substrateDerivationPathField ?
+        let maybeViewModel = textField == substrateDerivationPathField ?
             substrateDerivationPathModel : ethereumDerivationPathModel
 
-        guard let viewModel = viewModel else { return true }
+        guard let viewModel = maybeViewModel else { return true }
 
         let shouldApply = viewModel.inputHandler.didReceiveReplacement(string, for: range)
 
