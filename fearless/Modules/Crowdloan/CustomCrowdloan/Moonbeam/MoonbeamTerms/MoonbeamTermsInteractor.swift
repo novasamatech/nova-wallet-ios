@@ -58,10 +58,9 @@ final class MoonbeamTermsInteractor {
     }
 
     private func estimateFeeForContribution() {
-        let amount = BigUInt(0)
-        let call = callFactory.contribute(to: paraId, amount: amount, signature: nil)
-
-        let identifier = String(amount)
+        guard let dummyRemark = String(repeating: "0", count: 64).data(using: .utf8) else { return }
+        let call = callFactory.remark(remark: dummyRemark)
+        let identifier = dummyRemark.description
 
         feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
             try builder.adding(call: call)
@@ -70,10 +69,10 @@ final class MoonbeamTermsInteractor {
 
     private func submitRemarkToChain(_ remark: String) {
         guard let data = remark.data(using: .utf8) else { return }
+        let call = callFactory.remark(remark: data)
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = SubstrateCallFactory().remark(remark: data)
-            return try builder.adding(call: call)
+            try builder.adding(call: call)
         }
 
         extrinsicService.submitAndWatch(
@@ -102,13 +101,17 @@ final class MoonbeamTermsInteractor {
             let updateClosure: (ExtrinsicSubscriptionUpdate) -> Void = { [weak self] update in
                 let status = update.params.result
                 if case let .finalized(blockHash) = status {
-                    self?.verifyRemark(blockHash: blockHash, extrinsicHash: hashWithPrefix)
+                    DispatchQueue.main.async {
+                        self?.verifyRemark(blockHash: blockHash, extrinsicHash: hashWithPrefix)
+                    }
                 }
             }
 
             let failureClosure: (Error, Bool) -> Void = { [weak self] error, unsubscribed in
                 self?.logger?.error("Unexpected failure after subscription: \(error) \(unsubscribed)")
-                self?.presenter.didReceiveVerifyRemark(result: .failure(error))
+                DispatchQueue.main.async {
+                    self?.presenter.didReceiveVerifyRemark(result: .failure(error))
+                }
             }
 
             subscriptionId = try chainConnection.subscribe(

@@ -229,8 +229,8 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         return operation
     }
 
-    func save(referralCode _: String, completion _: @escaping (Result<Void, Error>) -> Void) {
-        print("save(referralCode")
+    func save(referralCode _: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        completion(.success(()))
     }
 
     func applyOffchainBonusForContribution(
@@ -245,7 +245,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
         guard let address = ethereumAddress, let memo = try? Data(hexString: address), memo.count <= 32 else {
-            throw CrowdloanBonusServiceError.invalidReferral
+            throw CrowdloanBonusServiceError.internalError
         }
 
         let addMemo = SubstrateCallFactory().addMemo(to: paraId, memo: memo)
