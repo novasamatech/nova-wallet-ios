@@ -58,6 +58,10 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         ethereumAddress != nil
     }
 
+    var rewardDestinationAddress: String? {
+        ethereumAddress
+    }
+
     init(
         crowdloan: Crowdloan,
         chainId: ChainModel.Id,

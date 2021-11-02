@@ -26,7 +26,7 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         return label
     }()
 
-    let rewardDestinationAccountView: DetailsTriangularedView = UIFactory.default.createAccountView()
+    private(set) var rewardDestinationAccountView: DetailsTriangularedView?
 
     let networkFeeView = NetworkFeeView()
 
@@ -104,6 +104,13 @@ final class CrowdloanContributionSetupViewLayout: UIView {
             symbol,
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    func bind(rewardDestination viewModel: AccountInfoViewModel) {
+        createRewardDestinationViewIfNeeded()
+        rewardDestinationAccountView?.title = viewModel.name
+        rewardDestinationAccountView?.subtitle = viewModel.address
+        rewardDestinationAccountView?.iconImage = viewModel.icon
     }
 
     func bind(feeViewModel: BalanceViewModelProtocol?) {
@@ -270,6 +277,26 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         }
 
         estimatedRewardView = view
+    }
+
+    private func createRewardDestinationViewIfNeeded() {
+        guard rewardDestinationAccountView == nil else {
+            return
+        }
+
+        guard
+            let hindIndex = contentView.stackView.arrangedSubviews.firstIndex(of: hintView) else {
+            return
+        }
+        let view = UIFactory.default.createAccountView()
+
+        contentView.stackView.insertArrangedSubview(view, at: hindIndex + 1)
+        view.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+            make.height.equalTo(52)
+        }
+
+        rewardDestinationAccountView = view
     }
 
     private func removeEstimatedRewardViewIfNeeded() {

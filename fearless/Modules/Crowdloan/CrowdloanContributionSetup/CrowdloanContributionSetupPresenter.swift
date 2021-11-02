@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import FearlessUtils
 
 final class CrowdloanContributionSetupPresenter {
     weak var view: CrowdloanContributionSetupViewProtocol?
@@ -153,6 +154,29 @@ final class CrowdloanContributionSetupPresenter {
         view?.didReceiveBonus(viewModel: viewModel)
     }
 
+    private func provideRewardDestinationViewModel() {
+        guard
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress,
+            let displayInfo = displayInfo
+        else { return }
+
+        let iconGenerator = PolkadotIconGenerator()
+        let icon = try? iconGenerator.generateFromAddress(address).imageWithFillColor(
+            R.color.colorWhite()!,
+            size: UIConstants.normalAddressIconSize,
+            contentScale: UIScreen.main.scale
+        )
+
+        let viewModel = AccountInfoViewModel(
+            title: displayInfo.name,
+            address: address,
+            name: displayInfo.name,
+            icon: icon
+        )
+        view?.didReceiveRewardDestination(viewModel: viewModel)
+    }
+
     private func provideViewModels() {
         provideAssetVewModel()
         provideFeeViewModel()
@@ -160,6 +184,7 @@ final class CrowdloanContributionSetupPresenter {
         provideCrowdloanContributionViewModel()
         provideEstimatedRewardViewModel()
         provideBonusViewModel()
+        provideRewardDestinationViewModel()
     }
 
     private func refreshFee() {
@@ -287,6 +312,24 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
             existingService: bonusService
         )
     }
+
+    func presentRewardDestination() {
+        guard
+            let view = view,
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress
+        else {
+            return
+        }
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInteractorOutputProtocol {
@@ -309,6 +352,7 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInterac
             provideCrowdloanContributionViewModel()
             provideEstimatedRewardViewModel()
             provideBonusViewModel()
+            provideRewardDestinationViewModel()
         case let .failure(error):
             logger?.error("Did receive display info error: \(error)")
         }

@@ -6,6 +6,7 @@ protocol CrowdloanBonusServiceProtocol: AnyObject {
     var bonusRate: Decimal { get }
     var termsURL: URL { get }
     var referralCode: String? { get }
+    var rewardDestinationAddress: String? { get }
 
     func save(referralCode: String, completion closure: @escaping (Result<Void, Error>) -> Void)
     func applyOffchainBonusForContribution(
@@ -31,4 +32,6 @@ extension CrowdloanBonusServiceProtocol {
     ) {
         closure(.success(nil))
     }
+
+    var rewardDestinationAddress: String? { nil }
 }
