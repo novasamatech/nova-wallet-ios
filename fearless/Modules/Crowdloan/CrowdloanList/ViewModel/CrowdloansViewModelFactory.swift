@@ -41,7 +41,7 @@ final class CrowdloansViewModelFactory {
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
     private lazy var iconGenerator = PolkadotIconGenerator()
-
+    private lazy var percentFormatter = NumberFormatter.percent
     private lazy var dateFormatter = {
         CompoundDateFormatterBuilder()
     }()
@@ -96,7 +96,7 @@ final class CrowdloansViewModelFactory {
                     return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
                 }()
 
-                let percents = String(format: "%.2f%%", value * 100.0)
+                let percents = percentFormatter.string(from: NSNumber(value: value * 100.00)) ?? ""
                 return (text, value, percents)
             } else {
                 return ("", 0.0, "")
