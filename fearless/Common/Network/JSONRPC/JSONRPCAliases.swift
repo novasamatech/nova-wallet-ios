@@ -4,6 +4,7 @@ import FearlessUtils
 
 typealias RuntimeVersionUpdate = JSONRPCSubscriptionUpdate<RuntimeVersion>
 typealias StorageSubscriptionUpdate = JSONRPCSubscriptionUpdate<StorageUpdate>
+typealias ExtrinsicSubscriptionUpdate = JSONRPCSubscriptionUpdate<ExtrinsicStatus>
 typealias JSONRPCQueryOperation = JSONRPCOperation<StorageQuery, [StorageUpdate]>
 typealias SuperIdentityOperation = BaseOperation<[StorageResponse<SuperIdentity>]>
 typealias SuperIdentityWrapper = CompoundOperationWrapper<[StorageResponse<SuperIdentity>]>

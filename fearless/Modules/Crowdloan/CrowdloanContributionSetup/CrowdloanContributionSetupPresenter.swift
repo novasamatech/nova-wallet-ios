@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import FearlessUtils
 
 final class CrowdloanContributionSetupPresenter {
     weak var view: CrowdloanContributionSetupViewProtocol?
@@ -53,6 +54,7 @@ final class CrowdloanContributionSetupPresenter {
         dataValidatingFactory: CrowdloanDataValidatorFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
+        bonusService: CrowdloanBonusServiceProtocol?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -61,6 +63,7 @@ final class CrowdloanContributionSetupPresenter {
         self.contributionViewModelFactory = contributionViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.bonusService = bonusService
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -136,7 +139,7 @@ final class CrowdloanContributionSetupPresenter {
     private func provideBonusViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee) ?? 0
         let viewModel: String? = {
-            if let displayInfo = displayInfo, displayInfo.customFlow != nil {
+            if let displayInfo = displayInfo, let flow = displayInfo.customFlow, flow.supportsAdditionalBonus {
                 return contributionViewModelFactory.createAdditionalBonusViewModel(
                     inputAmount: inputAmount,
                     displayInfo: displayInfo,
@@ -151,6 +154,22 @@ final class CrowdloanContributionSetupPresenter {
         view?.didReceiveBonus(viewModel: viewModel)
     }
 
+    private func provideRewardDestinationViewModel() {
+        guard
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress,
+            let displayInfo = displayInfo
+        else { return }
+
+        let viewModel = contributionViewModelFactory.createRewardDestinationViewModel(
+            from: displayInfo,
+            address: address,
+            locale: selectedLocale
+        )
+
+        view?.didReceiveRewardDestination(viewModel: viewModel)
+    }
+
     private func provideViewModels() {
         provideAssetVewModel()
         provideFeeViewModel()
@@ -158,6 +177,7 @@ final class CrowdloanContributionSetupPresenter {
         provideCrowdloanContributionViewModel()
         provideEstimatedRewardViewModel()
         provideBonusViewModel()
+        provideRewardDestinationViewModel()
     }
 
     private func refreshFee() {
@@ -206,7 +226,11 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
             (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
 
         DataValidationRunner(validators: [
-            dataValidatingFactory.crowdloanIsNotPrivate(crowdloan: crowdloan, locale: selectedLocale),
+            dataValidatingFactory.crowdloanIsNotPrivate(
+                crowdloan: crowdloan,
+                displayInfo: displayInfo,
+                locale: selectedLocale
+            ),
 
             dataValidatingFactory.has(fee: fee, locale: selectedLocale, onError: { [weak self] in
                 self?.refreshFee()
@@ -281,6 +305,24 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
             existingService: bonusService
         )
     }
+
+    func presentRewardDestination() {
+        guard
+            let view = view,
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress
+        else {
+            return
+        }
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInteractorOutputProtocol {
@@ -303,6 +345,7 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInterac
             provideCrowdloanContributionViewModel()
             provideEstimatedRewardViewModel()
             provideBonusViewModel()
+            provideRewardDestinationViewModel()
         case let .failure(error):
             logger?.error("Did receive display info error: \(error)")
         }

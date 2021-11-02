@@ -38,8 +38,13 @@ protocol SubstrateCallFactoryProtocol {
 
     func chill() -> RuntimeCall<NoRuntimeArgs>
 
-    func contribute(to paraId: ParaId, amount: BigUInt) -> RuntimeCall<CrowdloanContributeCall>
+    func contribute(
+        to paraId: ParaId,
+        amount: BigUInt,
+        signature: MultiSignature?
+    ) -> RuntimeCall<CrowdloanContributeCall>
     func addMemo(to paraId: ParaId, memo: Data) -> RuntimeCall<CrowdloanAddMemo>
+    func remark(remark: Data) -> RuntimeCall<SystemRemarkCall>
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
@@ -142,14 +147,23 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         RuntimeCall(moduleName: "Staking", callName: "chill")
     }
 
-    func contribute(to paraId: ParaId, amount: BigUInt) -> RuntimeCall<CrowdloanContributeCall> {
-        let args = CrowdloanContributeCall(index: paraId, value: amount, signature: nil)
+    func contribute(
+        to paraId: ParaId,
+        amount: BigUInt,
+        signature: MultiSignature?
+    ) -> RuntimeCall<CrowdloanContributeCall> {
+        let args = CrowdloanContributeCall(index: paraId, value: amount, signature: signature)
         return RuntimeCall(moduleName: "Crowdloan", callName: "contribute", args: args)
     }
 
     func addMemo(to paraId: ParaId, memo: Data) -> RuntimeCall<CrowdloanAddMemo> {
         let args = CrowdloanAddMemo(index: paraId, memo: memo)
         return RuntimeCall(moduleName: "Crowdloan", callName: "add_memo", args: args)
+    }
+
+    func remark(remark: Data) -> RuntimeCall<SystemRemarkCall> {
+        let args = SystemRemarkCall(remark: remark)
+        return RuntimeCall(moduleName: "System", callName: "remark", args: args)
     }
 }
 

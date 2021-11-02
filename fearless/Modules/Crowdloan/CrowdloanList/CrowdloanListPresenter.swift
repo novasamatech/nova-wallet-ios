@@ -183,7 +183,19 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func selectCrowdloan(_ paraId: ParaId) {
-        wireframe.presentContributionSetup(from: view, paraId: paraId)
+        let displayInfoDict = try? displayInfoResult?.get()
+        let displayInfo = displayInfoDict?[paraId]
+
+        guard
+            let crowdloans = try? crowdloansResult?.get(),
+            let selectedCrowdloan = crowdloans.first(where: { $0.paraId == paraId })
+        else { return }
+
+        wireframe.presentContributionSetup(
+            from: view,
+            crowdloan: selectedCrowdloan,
+            displayInfo: displayInfo
+        )
     }
 
     func becomeOnline() {

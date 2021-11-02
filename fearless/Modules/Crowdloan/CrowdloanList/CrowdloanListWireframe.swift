@@ -3,8 +3,28 @@ import Foundation
 final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     let state: CrowdloanSharedState
 
+    private var moonbeamCoordinator: Coordinator?
+
     init(state: CrowdloanSharedState) {
         self.state = state
+    }
+
+    func presentContributionSetup(
+        from view: CrowdloanListViewProtocol?,
+        crowdloan: Crowdloan,
+        displayInfo: CrowdloanDisplayInfo?
+    ) {
+        if let info = displayInfo, info.customFlow == .moonbeam {
+            moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
+                previousView: view,
+                state: state,
+                crowdloan: crowdloan,
+                displayInfo: info
+            )
+            moonbeamCoordinator?.start()
+        } else {
+            showContributionSetup(from: view, paraId: crowdloan.paraId)
+        }
     }
 
     func showYourContributions(
@@ -26,7 +46,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(contibutions.controller, animated: true)
     }
 
-    func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
+    private func showContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
             for: paraId,
             state: state

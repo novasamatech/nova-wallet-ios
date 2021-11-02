@@ -55,6 +55,10 @@ final class CrowdloanContributionConfirmVC: UIViewController, ViewHolder {
     @objc func actionAccountOptions() {
         presenter.presentAccountOptions()
     }
+
+    @objc func actionRewardDestination() {
+        presenter.presentRewardDestination()
+    }
 }
 
 extension CrowdloanContributionConfirmVC: CrowdloanContributionConfirmViewProtocol {
@@ -76,6 +80,13 @@ extension CrowdloanContributionConfirmVC: CrowdloanContributionConfirmViewProtoc
 
     func didReceiveBonus(viewModel: String?) {
         rootView.bind(bonus: viewModel)
+    }
+
+    func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM) {
+        rootView.bind(rewardDestination: viewModel)
+        if let view = rootView.rewardDestinationAccountView?.accountView {
+            view.addTarget(self, action: #selector(actionRewardDestination), for: .touchUpInside)
+        }
     }
 }
 
