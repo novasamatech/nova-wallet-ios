@@ -43,9 +43,25 @@ extension AddChainAccount {
                 return [metaAccountItem]
             }, { [] })
 
-            persistentOperation.completionBlock = { [weak self] in
+            persistentOperation.addDependency(importOperation)
+
+            let saveOperation: ClosureOperation<Void> = ClosureOperation {
+                let metaAccountItem = try importOperation
+                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+                if let savedAccountItem = self.settings.value,
+                   savedAccountItem.identifier == metaAccountItem.identifier {
+                    self.settings.save(value: metaAccountItem)
+                    self.eventCenter.notify(with: SelectedAccountChanged())
+                }
+            }
+
+            saveOperation.addDependency(importOperation)
+            saveOperation.addDependency(persistentOperation)
+
+            saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
-                    switch persistentOperation.result {
+                    switch saveOperation.result {
                     case .success:
                         self?.eventCenter.notify(with: ChainAccountChanged())
                         self?.presenter?.didCompleteConfirmation()
@@ -60,10 +76,8 @@ extension AddChainAccount {
                 }
             }
 
-            persistentOperation.addDependency(importOperation)
-
             operationManager.enqueue(
-                operations: [importOperation, persistentOperation],
+                operations: [importOperation, persistentOperation, saveOperation],
                 in: .transient
             )
         }

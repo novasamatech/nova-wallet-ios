@@ -200,8 +200,8 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
                 request: request,
                 chainModelId: chainModelId,
                 mnemonic: mnemonic,
-                accountOperationFactory: accountOperationFactory,
-                accountRepository: accountRepository,
+                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
                 eventCenter: EventCenter.shared
