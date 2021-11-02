@@ -95,7 +95,7 @@ final class CrowdloansViewModelFactory {
                     return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
                 }()
 
-                let percents = percentFormatter.string(from: NSNumber(value: value * 100.00)) ?? ""
+                let percents = percentFormatter.string(from: NSNumber(value: value)) ?? ""
                 return (text, value, percents)
             } else {
                 return ("", 0.0, "")
