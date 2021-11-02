@@ -91,7 +91,11 @@ final class CrowdloansViewModelFactory {
                     totalString,
                     preferredLanguages: locale.rLanguages
                 )
-                let value = Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
+                let value: Double = {
+                    guard cap != 0 else { return 0 }
+                    return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
+                }()
+
                 let percents = String(format: "%.2f%%", value * 100.0)
                 return (text, value, percents)
             } else {
