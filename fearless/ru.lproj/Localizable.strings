@@ -383,6 +383,7 @@
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
+"crowdloan.reward.destination.format" = "%@ назначение вознаграждений";
 "common.bonus" = "Бонус";
 "crowdloan.app.bonus.format" = "Бонус Nova Wallet (%@)";
 "common.referral.code.title" = "Реферальный код";

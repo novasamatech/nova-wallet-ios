@@ -386,6 +386,7 @@ Derivation path: %@";
 "crowdloan.moonbeam.region.restriction.message" = "This crowdloan isn't available in your location.";
 "crowdloan.private.crowdloan.title" = "Private crowdloan";
 "crowdloan.private.crowdloan.message" = "Private crowdloans are not yet supported.";
+"crowdloan.reward.destination.format" = "%@ reward destination";
 "common.bonus" = "Bonus";
 "crowdloan.app.bonus.format" = "Nova Wallet bonus (%@)";
 "common.referral.code.title" = "Referral code";

@@ -1535,6 +1535,8 @@
 		F418E887264D308700699085 /* StakingAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E886264D308700699085 /* StakingAlert.swift */; };
 		F418E891264D318C00699085 /* AlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E890264D318C00699085 /* AlertsView.swift */; };
 		F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */; };
+		F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEBE32731617A00C06154 /* CrowdloanRewardDestinationVM.swift */; };
+		F41CEBEA273161DE00C06154 /* CrowdloanRewardDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEBE9273161DE00C06154 /* CrowdloanRewardDestinationView.swift */; };
 		F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */; };
 		F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */; };
 		F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */; };
@@ -3220,6 +3222,8 @@
 		F418E886264D308700699085 /* StakingAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAlert.swift; sourceTree = "<group>"; };
 		F418E890264D318C00699085 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
 		F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewLayout.swift; sourceTree = "<group>"; };
+		F41CEBE32731617A00C06154 /* CrowdloanRewardDestinationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRewardDestinationVM.swift; sourceTree = "<group>"; };
+		F41CEBE9273161DE00C06154 /* CrowdloanRewardDestinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRewardDestinationView.swift; sourceTree = "<group>"; };
 		F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewModel.swift; sourceTree = "<group>"; };
 		F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamVerifyRemarkRequest.swift; sourceTree = "<group>"; };
 		F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsViewModelFactory.swift; sourceTree = "<group>"; };
@@ -4450,6 +4454,8 @@
 				84DBEA4C265ED53A00FDF73C /* Validation */,
 				8424308B265B17EC003E07EC /* Operation */,
 				843F65782658548A00829C14 /* Model */,
+				F41CEBE22731615D00C06154 /* ViewModel */,
+				F41CEBE8273161D000C06154 /* View */,
 				88B5D9DDFC571E12501230F1 /* CrowdloanList */,
 				844EFB58265FCD740090ACB1 /* CrowdloanContribution */,
 				E01524612035A176DA0793E7 /* CrowdloanContributionSetup */,
@@ -8009,6 +8015,22 @@
 			path = Migration;
 			sourceTree = "<group>";
 		};
+		F41CEBE22731615D00C06154 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				F41CEBE32731617A00C06154 /* CrowdloanRewardDestinationVM.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		F41CEBE8273161D000C06154 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				F41CEBE9273161DE00C06154 /* CrowdloanRewardDestinationView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		F429324D26280F5F00752C2C /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -8948,6 +8970,7 @@
 				AEF73FB525DBA24300407D41 /* PhishingCheckExecutor.swift in Sources */,
 				AEE5FB1826457AC1002B8FDC /* StakingRewardDestSetupViewController.swift in Sources */,
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
+				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
 				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
 				845CB6EF26276104005F798B /* SubscanQueryService.swift in Sources */,
@@ -9405,6 +9428,7 @@
 				84B677D626AED45500863DC6 /* SharedList.swift in Sources */,
 				8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */,
 				8460E121254215E900826F55 /* TransactionDetailsAccessoryViewModel.swift in Sources */,
+				F41CEBEA273161DE00C06154 /* CrowdloanRewardDestinationView.swift in Sources */,
 				84364D58252FAE0A00281F9A /* AssetDetailsView.swift in Sources */,
 				AE398384272AF97500BC8A85 /* WalletTableViewCell.swift in Sources */,
 				84DF21A125347031005454AE /* DetailsDisplayTableViewCell.swift in Sources */,

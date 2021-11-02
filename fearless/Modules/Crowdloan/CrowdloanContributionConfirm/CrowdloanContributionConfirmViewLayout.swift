@@ -16,7 +16,7 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         return view
     }()
 
-    private(set) var rewardDestinationAccountView: DetailsTriangularedView?
+    private(set) var rewardDestinationAccountView: CrowdloanRewardDestinationView?
 
     private(set) var estimatedRewardView: TitleValueView?
 
@@ -95,11 +95,9 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
         }
     }
 
-    func bind(rewardDestination viewModel: AccountInfoViewModel) {
+    func bind(rewardDestination viewModel: CrowdloanRewardDestinationVM) {
         createRewardDestinationViewIfNeeded()
-        rewardDestinationAccountView?.title = viewModel.name
-        rewardDestinationAccountView?.subtitle = viewModel.address
-        rewardDestinationAccountView?.iconImage = viewModel.icon
+        rewardDestinationAccountView?.bind(viewModel: viewModel)
     }
 
     func bind(confirmationViewModel: CrowdloanContributeConfirmViewModel) {
@@ -205,12 +203,11 @@ final class CrowdloanContributionConfirmViewLayout: UIView {
             let amountInputIndex = contentView.stackView.arrangedSubviews.firstIndex(of: amountInputView) else {
             return
         }
-        let view = UIFactory.default.createAccountView()
+        let view = CrowdloanRewardDestinationView()
 
         contentView.stackView.insertArrangedSubview(view, at: amountInputIndex + 1)
         view.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52)
         }
 
         rewardDestinationAccountView = view

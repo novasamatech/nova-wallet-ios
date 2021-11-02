@@ -119,9 +119,9 @@ extension CrowdloanContributionSetupViewController: CrowdloanContributionSetupVi
         }
     }
 
-    func didReceiveRewardDestination(viewModel: AccountInfoViewModel) {
+    func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM) {
         rootView.bind(rewardDestination: viewModel)
-        if let view = rootView.rewardDestinationAccountView {
+        if let view = rootView.rewardDestinationAccountView?.accountView {
             view.addTarget(self, action: #selector(actionRewardDestination), for: .touchUpInside)
         }
     }

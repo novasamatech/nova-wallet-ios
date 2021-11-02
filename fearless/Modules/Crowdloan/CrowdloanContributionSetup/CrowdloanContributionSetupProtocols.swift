@@ -10,7 +10,7 @@ protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Local
     func didReceiveCrowdloan(viewModel: CrowdloanContributionSetupViewModel)
     func didReceiveEstimatedReward(viewModel: String?)
     func didReceiveBonus(viewModel: String?)
-    func didReceiveRewardDestination(viewModel: AccountInfoViewModel)
+    func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)
 }
 
 protocol CrowdloanContributionSetupPresenterProtocol: AnyObject {

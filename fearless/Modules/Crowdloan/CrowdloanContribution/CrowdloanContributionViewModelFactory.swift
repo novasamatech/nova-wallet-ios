@@ -38,8 +38,9 @@ protocol CrowdloanContributionViewModelFactoryProtocol {
 
     func createRewardDestinationViewModel(
         from displayInfo: CrowdloanDisplayInfo,
-        address: AccountAddress
-    ) -> AccountInfoViewModel
+        address: AccountAddress,
+        locale: Locale
+    ) -> CrowdloanRewardDestinationVM
 }
 
 final class CrowdloanContributionViewModelFactory {
@@ -298,8 +299,9 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
 
     func createRewardDestinationViewModel(
         from displayInfo: CrowdloanDisplayInfo,
-        address: AccountAddress
-    ) -> AccountInfoViewModel {
+        address: AccountAddress,
+        locale: Locale
+    ) -> CrowdloanRewardDestinationVM {
         let icon: UIImage? = {
             guard let accountId = try? address.toAccountId() else { return nil }
             return try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
@@ -309,11 +311,13 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
             )
         }()
 
-        return AccountInfoViewModel(
-            title: displayInfo.name,
-            address: address,
-            name: displayInfo.name,
-            icon: icon
+        return CrowdloanRewardDestinationVM(
+            title: R.string.localizable
+                .crowdloanRewardDestinationFormat(displayInfo.token, preferredLanguages: locale.rLanguages),
+            accountName: displayInfo.name,
+            accountAddress: address,
+            crowdloanIcon: displayInfo.icon,
+            substrateIcon: icon
         )
     }
 }

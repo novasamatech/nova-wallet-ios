@@ -163,7 +163,8 @@ final class CrowdloanContributionSetupPresenter {
 
         let viewModel = contributionViewModelFactory.createRewardDestinationViewModel(
             from: displayInfo,
-            address: address
+            address: address,
+            locale: selectedLocale
         )
 
         view?.didReceiveRewardDestination(viewModel: viewModel)
