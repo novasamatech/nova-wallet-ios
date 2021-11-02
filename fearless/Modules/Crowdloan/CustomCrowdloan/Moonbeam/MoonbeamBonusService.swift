@@ -207,7 +207,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
         dependingOn previousContributionOperation: BaseOperation<CrowdloanContributionResponse>,
         contribution: BigUInt
     ) -> BaseOperation<String> {
-        do {
+        let requestFactory = BlockNetworkRequestFactory {
             let previousContributionResponse = try previousContributionOperation.extractNoCancellableResultData()
             let previousContribution: BigUInt = {
                 guard let contribution = previousContributionResponse.contribution else { return BigUInt(0) }
@@ -215,34 +215,29 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
             }()
 
             let url = Self.baseURL.appendingPathComponent(Self.makeSignature)
-
-            let requestFactory = BlockNetworkRequestFactory {
-                var request = URLRequest(url: url)
-                request.httpMethod = HttpMethod.post.rawValue
-                let remarkRequest = MoonbeamMakeSignatureRequest(
-                    address: self.address,
-                    previousTotalContribution: String(previousContribution),
-                    contribution: String(contribution),
-                    guid: UUID().uuidString
-                )
-                request.httpBody = try JSONEncoder().encode(remarkRequest)
-                return request
-            }
-
-            let resultFactory = AnyNetworkResultFactory<String> { data in
-                let resultData = try JSONDecoder().decode(
-                    MoonbeamMakeSignatureResponse.self,
-                    from: data
-                )
-                return resultData.signature
-            }
-
-            let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-            operation.requestModifier = requestModifier
-            return operation
-        } catch {
-            return BaseOperation.createWithError(error)
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+            let remarkRequest = MoonbeamMakeSignatureRequest(
+                address: self.address,
+                previousTotalContribution: String(previousContribution),
+                contribution: String(contribution),
+                guid: UUID().uuidString
+            )
+            request.httpBody = try JSONEncoder().encode(remarkRequest)
+            return request
         }
+
+        let resultFactory = AnyNetworkResultFactory<String> { data in
+            let resultData = try JSONDecoder().decode(
+                MoonbeamMakeSignatureResponse.self,
+                from: data
+            )
+            return resultData.signature
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
     }
 
     func save(referralCode _: String, completion: @escaping (Result<Void, Error>) -> Void) {
