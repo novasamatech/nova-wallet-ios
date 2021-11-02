@@ -17,11 +17,12 @@ protocol ProfileInteractorInputProtocol: AnyObject {
 
 protocol ProfileInteractorOutputProtocol: AnyObject {
     func didReceive(userSettings: UserSettings)
+    func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
 }
 
 protocol ProfileWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting {
-    func showAccountDetails(from view: ProfileViewProtocol?)
+    func showAccountDetails(for walletId: String, from view: ProfileViewProtocol?)
     func showAccountSelection(from view: ProfileViewProtocol?)
     func showConnectionSelection(from view: ProfileViewProtocol?)
     func showLanguageSelection(from view: ProfileViewProtocol?)

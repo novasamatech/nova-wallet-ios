@@ -139,7 +139,8 @@ class SigningWrapperTests: XCTestCase {
         try performEthereumEcdsaSigningTest(keychain: keychain, settings: settings)
     }
 
-    func testEcdsaCreationFromKeystoreAndSigning() throws {
+    // TODO: Fix AccountCreationHelper and fix test
+//    func testEcdsaCreationFromKeystoreAndSigning() throws {
 //        let keychain = InMemoryKeychain()
 //        let settings = Self.testSettings
 //
@@ -152,7 +153,7 @@ class SigningWrapperTests: XCTestCase {
 //
 //        try performSubstrateEcdsaSigningTest(keychain: keychain, settings: settings)
 //        try performEthereumEcdsaSigningTest(keychain: keychain, settings: settings)
-    }
+//    }
 
     // MARK: Private
 

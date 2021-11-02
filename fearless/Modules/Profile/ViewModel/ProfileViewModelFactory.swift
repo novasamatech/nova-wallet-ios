@@ -15,10 +15,10 @@ protocol ProfileViewModelFactoryProtocol: AnyObject {
 
 enum ProfileOption: UInt, CaseIterable {
     case accountList
-    case connectionList
     case language
     case changePincode
     case about
+    case connectionList
 }
 
 final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
@@ -48,7 +48,7 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
             case .accountList:
                 return createAccountListViewModel(for: locale)
             case .connectionList:
-                return createConnectionListViewModel(for: locale)
+                return nil // TODO: Implement when new networks settings scene is done
             case .changePincode:
                 return createChangePincode(for: locale)
             case .language:
@@ -63,7 +63,7 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
 
     private func createAccountListViewModel(for locale: Locale) -> ProfileOptionViewModel {
         let title = R.string.localizable
-            .profileAccountsTitle(preferredLanguages: locale.rLanguages)
+            .profileWalletsTitle(preferredLanguages: locale.rLanguages)
         let viewModel = ProfileOptionViewModel(
             title: title,
             icon: R.image.iconProfileAccounts()!,
