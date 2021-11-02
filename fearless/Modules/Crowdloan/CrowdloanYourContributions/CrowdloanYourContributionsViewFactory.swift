@@ -3,7 +3,8 @@ import SoraFoundation
 
 struct CrowdloanYourContributionsViewInput {
     let crowdloans: [Crowdloan]
-    let viewInfo: CrowdloansViewInfo
+    let contributions: CrowdloanContributionDict
+    let displayInfo: CrowdloanDisplayInfoDict?
     let chainAsset: ChainAssetDisplayInfo
 }
 

@@ -11,7 +11,8 @@ protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
 protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
         for crowdloans: [Crowdloan],
-        viewInfo: CrowdloansViewInfo,
+        contributions: CrowdloanContributionDict,
+        displayInfo: CrowdloanDisplayInfoDict?,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel

@@ -29,15 +29,9 @@ final class CrowdloanYourContributionsViewController: UIViewController, ViewHold
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationController?.navigationBar.prefersLargeTitles = true
         setupTable()
         applyLocalization()
         presenter.setup()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = false
     }
 
     private func setupTable() {

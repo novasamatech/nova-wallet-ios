@@ -15,7 +15,8 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
     ) {
         let input = CrowdloanYourContributionsViewInput(
             crowdloans: crowdloans,
-            viewInfo: viewInfo,
+            contributions: viewInfo.contributions,
+            displayInfo: viewInfo.displayInfo,
             chainAsset: chainAsset
         )
         guard let contibutions = CrowdloanYourContributionsViewFactory.createView(input: input)
