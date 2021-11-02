@@ -3111,6 +3111,21 @@ import SoraFoundation
     
     
     
+     func setTitle(_ newTitle: String)  {
+        
+    return cuckoo_manager.call("setTitle(_: String)",
+            parameters: (newTitle),
+            escapingParameters: (newTitle),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setTitle(newTitle))
+        
+    }
+    
+    
+    
      func setSource(type: AccountImportSource)  {
         
     return cuckoo_manager.call("setSource(type: AccountImportSource)",
@@ -3338,6 +3353,11 @@ import SoraFoundation
 	    }
 	    
 	    
+	    func setTitle<M1: Cuckoo.Matchable>(_ newTitle: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newTitle) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setTitle(_: String)", parameterMatchers: matchers))
+	    }
+	    
 	    func setSource<M1: Cuckoo.Matchable>(type: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportSource)> where M1.MatchedType == AccountImportSource {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportSource)>] = [wrap(matchable: type) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSource(type: AccountImportSource)", parameterMatchers: matchers))
@@ -3433,6 +3453,12 @@ import SoraFoundation
 	    }
 	    
 	
+	    
+	    @discardableResult
+	    func setTitle<M1: Cuckoo.Matchable>(_ newTitle: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newTitle) { $0 }]
+	        return cuckoo_manager.verify("setTitle(_: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
 	    
 	    @discardableResult
 	    func setSource<M1: Cuckoo.Matchable>(type: M1) -> Cuckoo.__DoNotUse<(AccountImportSource), Void> where M1.MatchedType == AccountImportSource {
@@ -3543,6 +3569,10 @@ import SoraFoundation
     
 
     
+     func setTitle(_ newTitle: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
      func setSource(type: AccountImportSource)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -3638,6 +3668,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func updateTitle()  {
+        
+    return cuckoo_manager.call("updateTitle()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateTitle())
         
     }
     
@@ -3760,6 +3805,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
+	    func updateTitle() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "updateTitle()", parameterMatchers: matchers))
+	    }
+	    
 	    func provideVisibilitySettings() -> Cuckoo.ProtocolStubFunction<(), AccountImportVisibility> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "provideVisibilitySettings() -> AccountImportVisibility", parameterMatchers: matchers))
@@ -3818,6 +3868,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func updateTitle() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("updateTitle()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func provideVisibilitySettings() -> Cuckoo.__DoNotUse<(), AccountImportVisibility> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("provideVisibilitySettings() -> AccountImportVisibility", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3869,6 +3925,10 @@ import SoraFoundation
 
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func updateTitle()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

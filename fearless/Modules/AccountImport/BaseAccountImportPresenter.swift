@@ -374,11 +374,20 @@ class BaseAccountImportPresenter {
     internal func processProceed() {
         fatalError("This function should be overriden")
     }
+
+    internal func setViewTitle() {
+        fatalError("This function should be overriden")
+    }
 }
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
+        setViewTitle()
         interactor.setup()
+    }
+
+    func updateTitle() {
+        setViewTitle()
     }
 
     func provideVisibilitySettings() -> AccountImportVisibility {
