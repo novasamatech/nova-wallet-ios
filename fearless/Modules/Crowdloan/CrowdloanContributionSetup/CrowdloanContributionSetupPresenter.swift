@@ -161,19 +161,11 @@ final class CrowdloanContributionSetupPresenter {
             let displayInfo = displayInfo
         else { return }
 
-        let iconGenerator = PolkadotIconGenerator()
-        let icon = try? iconGenerator.generateFromAddress(address).imageWithFillColor(
-            R.color.colorWhite()!,
-            size: UIConstants.normalAddressIconSize,
-            contentScale: UIScreen.main.scale
+        let viewModel = contributionViewModelFactory.createRewardDestinationViewModel(
+            from: displayInfo,
+            address: address
         )
 
-        let viewModel = AccountInfoViewModel(
-            title: displayInfo.name,
-            address: address,
-            name: displayInfo.name,
-            icon: icon
-        )
         view?.didReceiveRewardDestination(viewModel: viewModel)
     }
 

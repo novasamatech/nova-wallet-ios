@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import FearlessUtils
 
 final class CrowdloanContributionConfirmPresenter {
     weak var view: CrowdloanContributionConfirmViewProtocol?
@@ -153,12 +154,11 @@ final class CrowdloanContributionConfirmPresenter {
             let displayInfo = displayInfo
         else { return }
 
-        let viewModel = AccountInfoViewModel(
-            title: displayInfo.name,
-            address: address,
-            name: displayInfo.name,
-            icon: nil
+        let viewModel = contributionViewModelFactory.createRewardDestinationViewModel(
+            from: displayInfo,
+            address: address
         )
+
         view?.didReceiveRewardDestination(viewModel: viewModel)
     }
 

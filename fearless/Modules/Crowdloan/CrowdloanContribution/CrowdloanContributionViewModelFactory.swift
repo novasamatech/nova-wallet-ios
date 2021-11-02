@@ -35,6 +35,11 @@ protocol CrowdloanContributionViewModelFactoryProtocol {
         from displayInfo: CrowdloanDisplayInfo,
         locale: Locale
     ) -> LearnMoreViewModel
+
+    func createRewardDestinationViewModel(
+        from displayInfo: CrowdloanDisplayInfo,
+        address: AccountAddress
+    ) -> AccountInfoViewModel
 }
 
 final class CrowdloanContributionViewModelFactory {
@@ -289,5 +294,26 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         locale: Locale
     ) -> LearnMoreViewModel {
         createLearnMore(from: displayInfo, locale: locale)
+    }
+
+    func createRewardDestinationViewModel(
+        from displayInfo: CrowdloanDisplayInfo,
+        address: AccountAddress
+    ) -> AccountInfoViewModel {
+        let icon: UIImage? = {
+            guard let accountId = try? address.toAccountId() else { return nil }
+            return try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
+                R.color.colorWhite()!,
+                size: UIConstants.normalAddressIconSize,
+                contentScale: UIScreen.main.scale
+            )
+        }()
+
+        return AccountInfoViewModel(
+            title: displayInfo.name,
+            address: address,
+            name: displayInfo.name,
+            icon: icon
+        )
     }
 }
