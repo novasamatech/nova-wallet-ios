@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 final class ControllerMapper: Mapping {
     typealias InputType = JSON

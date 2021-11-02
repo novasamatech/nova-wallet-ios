@@ -1,7 +1,7 @@
 import Foundation
 import CommonWallet
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 enum TransactionHistoryViewModelFactoryError: Error {
     case missingAsset

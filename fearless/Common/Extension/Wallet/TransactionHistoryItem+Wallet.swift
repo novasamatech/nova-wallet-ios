@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 import IrohaCrypto
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 
 extension TransactionHistoryItem {
     static func createFromTransferInfo(

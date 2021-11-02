@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol WebSocketEngineFactoryProtocol {
     func createEngine(for url: URL, autoconnect: Bool) -> WebSocketEngine

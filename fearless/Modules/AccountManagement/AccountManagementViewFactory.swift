@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 import SoraKeystore
 

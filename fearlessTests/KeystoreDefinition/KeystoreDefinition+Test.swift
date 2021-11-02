@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension KeystoreDefinition {
     static var validURL: URL {

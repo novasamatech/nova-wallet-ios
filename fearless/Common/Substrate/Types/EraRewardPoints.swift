@@ -1,4 +1,4 @@
-import FearlessUtils
+import SubstrateSdk
 
 typealias RewardPoint = UInt32
 

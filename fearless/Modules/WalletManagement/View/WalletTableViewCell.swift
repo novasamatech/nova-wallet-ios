@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 import SoraUI
 
 protocol WalletTableViewCellDelegate: AnyObject {

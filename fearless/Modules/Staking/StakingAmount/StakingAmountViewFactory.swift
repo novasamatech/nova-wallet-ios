@@ -2,7 +2,7 @@ import Foundation
 import SoraKeystore
 import RobinHood
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class StakingAmountViewFactory {
     static func createView(

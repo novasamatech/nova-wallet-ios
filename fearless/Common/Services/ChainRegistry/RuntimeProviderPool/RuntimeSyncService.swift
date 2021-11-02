@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 protocol RuntimeSyncServiceProtocol {
     func register(chain: ChainModel, with connection: ChainConnection)

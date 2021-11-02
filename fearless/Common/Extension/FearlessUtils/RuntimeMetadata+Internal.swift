@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension RuntimeMetadataProtocol {
     func getStorageMetadata(for codingPath: StorageCodingPath) -> StorageEntryMetadata? {

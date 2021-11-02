@@ -3,7 +3,7 @@ import CommonWallet
 import RobinHood
 import IrohaCrypto
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 import SoraKeystore
 
 final class WalletNetworkOperationFactory {

@@ -2,7 +2,7 @@ import Foundation
 import SoraKeystore
 import SoraFoundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class SelectValidatorsConfirmViewFactory {
     static func createInitiatedBondingView(

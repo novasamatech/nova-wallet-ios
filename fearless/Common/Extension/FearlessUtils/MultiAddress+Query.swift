@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension MultiAddress {
     var accountId: Data? {
