@@ -124,7 +124,9 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
                 )
             }
         case let .failure(error):
-            logger?.error("Did receive verify remark error: \(error)")
+            if !wireframe.present(error: error, from: view, locale: view?.selectedLocale) {
+                logger?.error("Did receive verify remark error: \(error)")
+            }
         }
     }
 
