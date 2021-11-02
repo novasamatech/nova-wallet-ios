@@ -53,6 +53,7 @@
 		2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */; };
 		2AC7BC822731A1A1001D99B0 /* BalanceLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */; };
 		2AC7BC842731A214001D99B0 /* BalanceLocks+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */; };
+		2AC7BC862731A2AF001D99B0 /* BalanceLockSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */; };
 		2AD0A16A25D3854700312428 /* TransferConfirmCommandProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */; };
 		2AD0A19025D3D1E100312428 /* GitHubPhishingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */; };
 		2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */; };
@@ -1705,6 +1706,7 @@
 		2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockType.swift; sourceTree = "<group>"; };
 		2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLock.swift; sourceTree = "<group>"; };
 		2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalanceLocks+Sort.swift"; sourceTree = "<group>"; };
+		2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockSubscription.swift; sourceTree = "<group>"; };
 		2ACA4A5B186EE6D40BFE9D66 /* ExportMnemonicWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicWireframe.swift; sourceTree = "<group>"; };
 		2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConfirmCommandProxy.swift; sourceTree = "<group>"; };
 		2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingServiceFactory.swift; sourceTree = "<group>"; };
@@ -5050,16 +5052,17 @@
 			isa = PBXGroup;
 			children = (
 				8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */,
+				2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */,
 				843910C0253F36F300E3C217 /* BaseStorageChildSubscription.swift */,
+				84F30EA025FD3EE700039D09 /* ChildSubscriptionFactory.swift */,
+				84F30E9B25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift */,
+				84F30E9625FD3C5300039D09 /* EventEmittingStorageSubscription.swift */,
+				8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */,
 				84452F9725D6728B00F47EC5 /* RuntimeVersionSubscription.swift */,
 				8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */,
 				8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */,
 				8470D6D3253E35F0009E9A5D /* StorageUpdate.swift */,
 				84FD3DB62540EF0700A234E3 /* TransactionSubscription.swift */,
-				84F30E9625FD3C5300039D09 /* EventEmittingStorageSubscription.swift */,
-				84F30E9B25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift */,
-				84F30EA025FD3EE700039D09 /* ChildSubscriptionFactory.swift */,
-				8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -8888,6 +8891,7 @@
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				8493D3E62705994200157009 /* StakingSharedState.swift in Sources */,
+				2AC7BC862731A2AF001D99B0 /* BalanceLockSubscription.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
 				84038FEE26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift in Sources */,
 				84293E5D261BB7B3008E5EDD /* TransactionType+Wallet.swift in Sources */,
