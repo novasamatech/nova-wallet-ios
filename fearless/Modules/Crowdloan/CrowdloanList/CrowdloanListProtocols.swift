@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol CrowdloanListViewProtocol: ControllerBackedProtocol {
+protocol CrowdloanListViewProtocol: ControllerBackedProtocol, AlertPresentable, LoadableViewProtocol {
     func didReceive(chainInfo: CrowdloansChainViewModel)
     func didReceive(listState: CrowdloanListState)
 }
@@ -36,6 +36,12 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
 }
 
 protocol CrowdloanListWireframeProtocol: AnyObject {
+    func presentContributionSetup(
+        from view: CrowdloanListViewProtocol?,
+        crowdloan: Crowdloan,
+        displayInfo: CrowdloanDisplayInfo?
+    )
+
     func showYourContributions(
         crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
@@ -43,7 +49,6 @@ protocol CrowdloanListWireframeProtocol: AnyObject {
         from view: ControllerBackedProtocol?
     )
 
-    func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId)
     func selectChain(
         from view: ControllerBackedProtocol?,
         delegate: ChainSelectionDelegate,
