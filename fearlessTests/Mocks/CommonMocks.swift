@@ -2530,6 +2530,36 @@ import RobinHood
     
     
     
+     func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("subscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)",
+            parameters: (subscriber, chainId),
+            escapingParameters: (subscriber, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.subscribeChainState(subscriber, chainId: chainId))
+        
+    }
+    
+    
+    
+     func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("unsubscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)",
+            parameters: (subscriber, chainId),
+            escapingParameters: (subscriber, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.unsubscribeChainState(subscriber, chainId: chainId))
+        
+    }
+    
+    
+    
      func syncUp()  {
         
     return cuckoo_manager.call("syncUp()",
@@ -2575,6 +2605,16 @@ import RobinHood
 	    func chainsUnsubscribe<M1: Cuckoo.Matchable>(_ target: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AnyObject)> where M1.MatchedType == AnyObject {
 	        let matchers: [Cuckoo.ParameterMatcher<(AnyObject)>] = [wrap(matchable: target) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "chainsUnsubscribe(_: AnyObject)", parameterMatchers: matchers))
+	    }
+	    
+	    func subscribeChainState<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionStateSubscription, ChainModel.Id)> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "subscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
+	    func unsubscribeChainState<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionStateSubscription, ChainModel.Id)> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockChainRegistryProtocol.self, method: "unsubscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	    func syncUp() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -2628,6 +2668,18 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
+	    func subscribeChainState<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.__DoNotUse<(ConnectionStateSubscription, ChainModel.Id), Void> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return cuckoo_manager.verify("subscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func unsubscribeChainState<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.__DoNotUse<(ConnectionStateSubscription, ChainModel.Id), Void> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return cuckoo_manager.verify("unsubscribeChainState(_: ConnectionStateSubscription, chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func syncUp() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("syncUp()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -2663,6 +2715,14 @@ import RobinHood
     }
     
      func chainsUnsubscribe(_ target: AnyObject)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -2706,16 +2766,16 @@ import SubstrateSdk
     
     
     
-     func createConnection(for chain: ChainModel) throws -> ChainConnection {
+     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
         
-    return try cuckoo_manager.callThrows("createConnection(for: ChainModel) throws -> ChainConnection",
-            parameters: (chain),
-            escapingParameters: (chain),
+    return try cuckoo_manager.callThrows("createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection",
+            parameters: (chain, delegate),
+            escapingParameters: (chain, delegate),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createConnection(for: chain))
+            defaultCall: __defaultImplStub!.createConnection(for: chain, delegate: delegate))
         
     }
     
@@ -2728,9 +2788,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func createConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel), ChainConnection> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createConnection(for: ChainModel) throws -> ChainConnection", parameterMatchers: matchers))
+	    func createConnection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for chain: M1, delegate: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel, WebSocketEngineDelegate?), ChainConnection> where M1.MatchedType == ChainModel, M2.OptionalMatchedType == WebSocketEngineDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel, WebSocketEngineDelegate?)>] = [wrap(matchable: chain) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -2750,9 +2810,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func createConnection<M1: Cuckoo.Matchable>(for chain: M1) -> Cuckoo.__DoNotUse<(ChainModel), ChainConnection> where M1.MatchedType == ChainModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel)>] = [wrap(matchable: chain) { $0 }]
-	        return cuckoo_manager.verify("createConnection(for: ChainModel) throws -> ChainConnection", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createConnection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for chain: M1, delegate: M2) -> Cuckoo.__DoNotUse<(ChainModel, WebSocketEngineDelegate?), ChainConnection> where M1.MatchedType == ChainModel, M2.OptionalMatchedType == WebSocketEngineDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel, WebSocketEngineDelegate?)>] = [wrap(matchable: chain) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return cuckoo_manager.verify("createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -2764,7 +2824,7 @@ import SubstrateSdk
     
 
     
-     func createConnection(for chain: ChainModel) throws -> ChainConnection  {
+     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection).self)
     }
     
@@ -2832,6 +2892,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("subscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)",
+            parameters: (subscriber, chainId),
+            escapingParameters: (subscriber, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.subscribe(subscriber, chainId: chainId))
+        
+    }
+    
+    
+    
+     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("unsubscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)",
+            parameters: (subscriber, chainId),
+            escapingParameters: (subscriber, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.unsubscribe(subscriber, chainId: chainId))
+        
+    }
+    
 
 	 struct __StubbingProxy_ConnectionPoolProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -2849,6 +2939,16 @@ import SubstrateSdk
 	    func getConnection<M1: Cuckoo.Matchable>(for chainId: M1) -> Cuckoo.ProtocolStubFunction<(ChainModel.Id), ChainConnection?> where M1.MatchedType == ChainModel.Id {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id)>] = [wrap(matchable: chainId) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "getConnection(for: ChainModel.Id) -> ChainConnection?", parameterMatchers: matchers))
+	    }
+	    
+	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionStateSubscription, ChainModel.Id)> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "subscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
+	    func unsubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ConnectionStateSubscription, ChainModel.Id)> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionPoolProtocol.self, method: "unsubscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -2879,6 +2979,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("getConnection(for: ChainModel.Id) -> ChainConnection?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func subscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.__DoNotUse<(ConnectionStateSubscription, ChainModel.Id), Void> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return cuckoo_manager.verify("subscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func unsubscribe<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ subscriber: M1, chainId: M2) -> Cuckoo.__DoNotUse<(ConnectionStateSubscription, ChainModel.Id), Void> where M1.MatchedType == ConnectionStateSubscription, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ConnectionStateSubscription, ChainModel.Id)>] = [wrap(matchable: subscriber) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return cuckoo_manager.verify("unsubscribe(_: ConnectionStateSubscription, chainId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -2894,6 +3006,105 @@ import SubstrateSdk
     
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection?  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection?).self)
+    }
+    
+     func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockConnectionStateSubscription: ConnectionStateSubscription, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = ConnectionStateSubscription
+    
+     typealias Stubbing = __StubbingProxy_ConnectionStateSubscription
+     typealias Verification = __VerificationProxy_ConnectionStateSubscription
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: ConnectionStateSubscription?
+
+     func enableDefaultImplementation(_ stub: ConnectionStateSubscription) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("didReceive(state: WebSocketEngine.State, for: ChainModel.Id)",
+            parameters: (state, chainId),
+            escapingParameters: (state, chainId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(state: state, for: chainId))
+        
+    }
+    
+
+	 struct __StubbingProxy_ConnectionStateSubscription: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(state: M1, for chainId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(WebSocketEngine.State, ChainModel.Id)> where M1.MatchedType == WebSocketEngine.State, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(WebSocketEngine.State, ChainModel.Id)>] = [wrap(matchable: state) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionStateSubscription.self, method: "didReceive(state: WebSocketEngine.State, for: ChainModel.Id)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_ConnectionStateSubscription: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(state: M1, for chainId: M2) -> Cuckoo.__DoNotUse<(WebSocketEngine.State, ChainModel.Id), Void> where M1.MatchedType == WebSocketEngine.State, M2.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(WebSocketEngine.State, ChainModel.Id)>] = [wrap(matchable: state) { $0.0 }, wrap(matchable: chainId) { $0.1 }]
+	        return cuckoo_manager.verify("didReceive(state: WebSocketEngine.State, for: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class ConnectionStateSubscriptionStub: ConnectionStateSubscription {
+    
+
+    
+
+    
+     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
 }
@@ -2933,6 +3144,20 @@ import SubstrateSdk
         
     }
     
+    
+    
+     override var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] {
+        get {
+            return cuckoo_manager.getter("stateSubscriptions",
+                superclassCall:
+                    
+                    super.stateSubscriptions
+                    ,
+                defaultCall: __defaultImplStub!.stateSubscriptions)
+        }
+        
+    }
+    
 
     
 
@@ -2948,6 +3173,11 @@ import SubstrateSdk
 	    
 	    var connections: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: WeakWrapper]> {
 	        return .init(manager: cuckoo_manager, name: "connections")
+	    }
+	    
+	    
+	    var stateSubscriptions: Cuckoo.ClassToBeStubbedReadOnlyProperty<MockConnectionPool, [ChainModel.Id: [WeakWrapper]]> {
+	        return .init(manager: cuckoo_manager, name: "stateSubscriptions")
 	    }
 	    
 	    
@@ -2970,6 +3200,11 @@ import SubstrateSdk
 	        return .init(manager: cuckoo_manager, name: "connections", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
+	    
+	    var stateSubscriptions: Cuckoo.VerifyReadOnlyProperty<[ChainModel.Id: [WeakWrapper]]> {
+	        return .init(manager: cuckoo_manager, name: "stateSubscriptions", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	}
@@ -2981,6 +3216,14 @@ import SubstrateSdk
      override var connections: [ChainModel.Id: WeakWrapper] {
         get {
             return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: WeakWrapper]).self)
+        }
+        
+    }
+    
+    
+     override var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] {
+        get {
+            return DefaultValueRegistry.defaultValue(for: ([ChainModel.Id: [WeakWrapper]]).self)
         }
         
     }

@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 final class WalletListInteractor {
     weak var presenter: WalletListInteractorOutputProtocol!
@@ -29,9 +30,9 @@ final class WalletListInteractor {
         for change in changes {
             switch change {
             case let .insert(chain), let .update(chain):
-                if let connection = chainRegistry.getConnection(for: chain.chainId) {}
+                chainRegistry.subscribeChainState(self, chainId: chain.chainId)
             case let .delete(identifier):
-                break
+                chainRegistry.unsubscribeChainState(self, chainId: identifier)
             }
         }
     }
@@ -127,6 +128,7 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
     func setup() {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.presenter.didReceiveChainModelChanges(changes)
+            self?.updateConnectionStatus(from: changes)
             self?.updateAccountInfoSubscription(from: changes)
             self?.updatePriceSubscription(from: changes)
         }
@@ -136,5 +138,11 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId: ChainModel.Id) {
         presenter.didReceiveAccountInfo(result: result, chainId: chainId)
+    }
+}
+
+extension WalletListInteractor: ConnectionStateSubscription {
+    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
+        presenter.didReceive(state: state, for: chainId)
     }
 }
