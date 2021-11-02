@@ -1,6 +1,13 @@
 import UIKit
 
 final class MoonbeamTermsViewLayout: UIView {
+    private let contentView: ScrollableContainerView = {
+        let view = ScrollableContainerView()
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(top: 24.0, left: 0.0, bottom: 0.0, right: 0.0)
+        return view
+    }()
+
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
@@ -51,6 +58,24 @@ final class MoonbeamTermsViewLayout: UIView {
     }
 
     private func setupLayout() {
+        addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.leading.trailing.equalToSuperview()
+        }
+
+        contentView.stackView.addArrangedSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+        }
+
+        contentView.stackView.addArrangedSubview(learnMoreView)
+        contentView.stackView.setCustomSpacing(16, after: descriptionLabel)
+        learnMoreView.snp.makeConstraints { make in
+            make.width.equalTo(self)
+            make.height.equalTo(48)
+        }
+
         let termsView = UIView()
         termsView.addSubview(termsSwitchView)
         termsSwitchView.snp.makeConstraints { make in
@@ -63,47 +88,17 @@ final class MoonbeamTermsViewLayout: UIView {
             make.trailing.centerY.equalToSuperview()
         }
 
-        let separator = UIView.createSeparator(color: R.color.colorDarkGray())
-        let content = UIView.vStack(
-            [
-                descriptionLabel,
-                learnMoreView,
-                separator,
-                termsView
-            ]
-        )
-        termsView.snp.makeConstraints { $0.height.equalTo(32) }
-        learnMoreView.snp.makeConstraints { $0.height.equalTo(48) }
-        separator.snp.makeConstraints { $0.height.equalTo(UIConstants.separatorHeight) }
-
-        content.setCustomSpacing(14, after: descriptionLabel)
-        content.setCustomSpacing(23, after: separator)
-
-        let scrollView = UIScrollView()
-        addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.bottom.trailing.equalToSuperview()
-        }
-
-        let contentView = UIView()
-        scrollView.addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(self)
-        }
-
-        contentView.addSubview(content)
-        content.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(6)
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview()
+        contentView.stackView.addArrangedSubview(termsView)
+        termsView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+            make.height.equalTo(48)
         }
 
         addSubview(networkFeeConfirmView)
         networkFeeConfirmView.snp.makeConstraints { make in
             make.leading.bottom.trailing.equalToSuperview()
         }
+        contentView.scrollBottomOffset = 170
     }
 
     private func applyLocalization() {
