@@ -49,6 +49,7 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
     override func setup() {
         super.setup()
 
+        provideRewardDestination()
         do {
             if let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) {
                 let displayAddress = try accountResponse.toDisplayAddress()
@@ -99,6 +100,14 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
         } else {
             submitExtrinsicWithSignature(for: contribution, signature: nil)
         }
+    }
+
+    private func provideRewardDestination() {
+        guard
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress
+        else { return }
+        confirmPresenter?.didReceiveRewardDestinationAddress(address)
     }
 }
 

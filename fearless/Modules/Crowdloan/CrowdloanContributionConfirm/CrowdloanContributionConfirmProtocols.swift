@@ -7,12 +7,14 @@ protocol CrowdloanContributionConfirmViewProtocol: ControllerBackedProtocol, Loc
     func didReceiveCrowdloan(viewModel: CrowdloanContributeConfirmViewModel)
     func didReceiveEstimatedReward(viewModel: String?)
     func didReceiveBonus(viewModel: String?)
+    func didReceiveRewardDestination(viewModel: AccountInfoViewModel)
 }
 
 protocol CrowdloanContributionConfirmPresenterProtocol: AnyObject {
     func setup()
     func confirm()
     func presentAccountOptions()
+    func presentRewardDestination()
 }
 
 protocol CrowdloanContributionConfirmInteractorInputProtocol: CrowdloanContributionInteractorInputProtocol {
@@ -23,6 +25,7 @@ protocol CrowdloanContributionConfirmInteractorInputProtocol: CrowdloanContribut
 protocol CrowdloanContributionConfirmInteractorOutputProtocol: CrowdloanContributionInteractorOutputProtocol {
     func didSubmitContribution(result: Result<String, Error>)
     func didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)
+    func didReceiveRewardDestinationAddress(_ address: AccountAddress)
 }
 
 protocol CrowdloanContributionConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,

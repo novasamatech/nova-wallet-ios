@@ -26,6 +26,7 @@ final class CrowdloanContributionConfirmPresenter {
     private var leasingPeriod: LeasingPeriod?
     private var minimumBalance: BigUInt?
     private var minimumContribution: BigUInt?
+    private var rewardDestinationAddress: AccountAddress?
 
     private var crowdloanMetadata: CrowdloanMetadata? {
         if
@@ -146,6 +147,21 @@ final class CrowdloanContributionConfirmPresenter {
         view?.didReceiveBonus(viewModel: viewModel)
     }
 
+    private func provideRewardDestinationViewModel() {
+        guard
+            let address = rewardDestinationAddress,
+            let displayInfo = displayInfo
+        else { return }
+
+        let viewModel = AccountInfoViewModel(
+            title: displayInfo.name,
+            address: address,
+            name: displayInfo.name,
+            icon: nil
+        )
+        view?.didReceiveRewardDestination(viewModel: viewModel)
+    }
+
     private func provideViewModels() {
         provideAssetVewModel()
         provideFeeViewModel()
@@ -242,6 +258,23 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
             locale: selectedLocale
         )
     }
+
+    func presentRewardDestination() {
+        guard
+            let view = view,
+            let address = rewardDestinationAddress
+        else {
+            return
+        }
+
+        // TODO: Fix when backend supports
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            chain: .westend,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInteractorOutputProtocol {
@@ -291,6 +324,7 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
 
             provideEstimatedRewardViewModel()
             provideBonusViewModel()
+            provideRewardDestinationViewModel()
         case let .failure(error):
             logger?.error("Did receive display info error: \(error)")
         }
@@ -389,6 +423,11 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
         case let .failure(error):
             logger?.error("Did receive minimum contribution error: \(error)")
         }
+    }
+
+    func didReceiveRewardDestinationAddress(_ address: AccountAddress) {
+        rewardDestinationAddress = address
+        provideRewardDestinationViewModel()
     }
 }
 
