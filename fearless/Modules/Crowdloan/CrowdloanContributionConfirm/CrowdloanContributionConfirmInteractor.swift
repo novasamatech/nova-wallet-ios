@@ -87,8 +87,7 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
     private func submitExtrinsic(for contribution: BigUInt) {
         if let bonusService = bonusService {
             bonusService.provideSignature(
-                previousContribution: BigUInt(0), // TODO: obtain prev contribution
-                newContribution: contribution
+                contribution: contribution
             ) { [weak self] signatureResult in
                 switch signatureResult {
                 case let .success(signature):

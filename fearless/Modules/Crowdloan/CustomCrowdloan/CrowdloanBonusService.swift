@@ -19,16 +19,14 @@ protocol CrowdloanBonusServiceProtocol: AnyObject {
     ) throws -> ExtrinsicBuilderProtocol
 
     func provideSignature(
-        previousContribution: BigUInt,
-        newContribution: BigUInt,
+        contribution: BigUInt,
         closure: @escaping (Result<MultiSignature?, Error>) -> Void
     )
 }
 
 extension CrowdloanBonusServiceProtocol {
     func provideSignature(
-        previousContribution _: BigUInt,
-        newContribution _: BigUInt,
+        contribution _: BigUInt,
         closure: @escaping (Result<MultiSignature?, Error>) -> Void
     ) {
         closure(.success(nil))

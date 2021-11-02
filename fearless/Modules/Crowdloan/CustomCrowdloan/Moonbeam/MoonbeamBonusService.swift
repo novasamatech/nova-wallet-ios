@@ -44,9 +44,11 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     static let makeSignature = "/make-signature"
     static let statementURL = URL(string: "https://raw.githubusercontent.com/moonbeam-foundation/crowdloan-self-attestation/main/moonbeam/README.md")!
 
-    let paraId: ParaId
+    let crowdloan: Crowdloan
+    let chainId: ChainModel.Id
     let address: AccountAddress
-    let contrubution: CrowdloanContribution?
+    let operationFactory: CrowdloanOperationFactoryProtocol
+    let chainRegistry: ChainRegistryProtocol
     let ethereumAddress: AccountAddress?
     let signingWrapper: SigningWrapperProtocol
     let operationManager: OperationManagerProtocol
@@ -57,16 +59,20 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     }
 
     init(
-        paraId: ParaId,
+        crowdloan: Crowdloan,
+        chainId: ChainModel.Id,
         address: AccountAddress,
-        contrubution: CrowdloanContribution?,
+        operationFactory: CrowdloanOperationFactoryProtocol,
+        chainRegistry: ChainRegistryProtocol,
         ethereumAddress: AccountAddress?,
         signingWrapper: SigningWrapperProtocol,
         operationManager: OperationManagerProtocol
     ) {
-        self.paraId = paraId
+        self.crowdloan = crowdloan
+        self.chainId = chainId
         self.address = address
-        self.contrubution = contrubution
+        self.operationFactory = operationFactory
+        self.chainRegistry = chainRegistry
         self.ethereumAddress = ethereumAddress
         self.signingWrapper = signingWrapper
         self.operationManager = operationManager
@@ -198,35 +204,45 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     }
 
     func createMakeSignatureOperation(
-        previousTotalContribution: BigUInt,
+        dependingOn previousContributionOperation: BaseOperation<CrowdloanContributionResponse>,
         contribution: BigUInt
     ) -> BaseOperation<String> {
-        let url = Self.baseURL.appendingPathComponent(Self.makeSignature)
+        do {
+            let previousContributionResponse = try previousContributionOperation.extractNoCancellableResultData()
+            let previousContribution: BigUInt = {
+                guard let contribution = previousContributionResponse.contribution else { return BigUInt(0) }
+                return contribution.balance
+            }()
 
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: url)
-            request.httpMethod = HttpMethod.post.rawValue
-            let remarkRequest = MoonbeamMakeSignatureRequest(
-                address: self.address,
-                previousTotalContribution: String(previousTotalContribution),
-                contribution: String(contribution),
-                guid: UUID().uuidString
-            )
-            request.httpBody = try JSONEncoder().encode(remarkRequest)
-            return request
+            let url = Self.baseURL.appendingPathComponent(Self.makeSignature)
+
+            let requestFactory = BlockNetworkRequestFactory {
+                var request = URLRequest(url: url)
+                request.httpMethod = HttpMethod.post.rawValue
+                let remarkRequest = MoonbeamMakeSignatureRequest(
+                    address: self.address,
+                    previousTotalContribution: String(previousContribution),
+                    contribution: String(contribution),
+                    guid: UUID().uuidString
+                )
+                request.httpBody = try JSONEncoder().encode(remarkRequest)
+                return request
+            }
+
+            let resultFactory = AnyNetworkResultFactory<String> { data in
+                let resultData = try JSONDecoder().decode(
+                    MoonbeamMakeSignatureResponse.self,
+                    from: data
+                )
+                return resultData.signature
+            }
+
+            let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+            operation.requestModifier = requestModifier
+            return operation
+        } catch {
+            return BaseOperation.createWithError(error)
         }
-
-        let resultFactory = AnyNetworkResultFactory<String> { data in
-            let resultData = try JSONDecoder().decode(
-                MoonbeamMakeSignatureResponse.self,
-                from: data
-            )
-            return resultData.signature
-        }
-
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = requestModifier
-        return operation
     }
 
     func save(referralCode _: String, completion: @escaping (Result<Void, Error>) -> Void) {
@@ -248,26 +264,44 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
             throw CrowdloanBonusServiceError.internalError
         }
 
-        let addMemo = SubstrateCallFactory().addMemo(to: paraId, memo: memo)
+        let addMemo = SubstrateCallFactory().addMemo(to: crowdloan.paraId, memo: memo)
 
         return try builder.adding(call: addMemo)
     }
 
     func provideSignature(
-        previousContribution: BigUInt,
-        newContribution: BigUInt,
+        contribution: BigUInt,
         closure: @escaping (Result<MultiSignature?, Error>) -> Void
     ) {
-        let previousContribution: BigUInt = {
-            if let contribution = contrubution {
-                return contribution.balance
-            }
-            return BigUInt(0)
-        }()
-        let signatureOperation = createMakeSignatureOperation(
-            previousTotalContribution: previousContribution,
-            contribution: newContribution
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            closure(.failure(ChainRegistryError.connectionUnavailable))
+            return
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            closure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
+        guard let accountId = try? address.toAccountId() else {
+            closure(.failure(SS58AddressFactoryError.unexpectedAddress))
+            return
+        }
+
+        let previousContributionOperation = operationFactory.fetchContributionOperation(
+            connection: connection,
+            runtimeService: runtimeService,
+            accountId: accountId,
+            trieIndex: crowdloan.fundInfo.trieIndex
         )
+
+        let signatureOperation = createMakeSignatureOperation(
+            dependingOn: previousContributionOperation.targetOperation,
+            contribution: contribution
+        )
+        previousContributionOperation.allOperations.forEach {
+            signatureOperation.addDependency($0)
+        }
 
         signatureOperation.completionBlock = {
             do {
@@ -279,7 +313,10 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
             }
         }
 
-        operationManager.enqueue(operations: [signatureOperation], in: .transient)
+        operationManager.enqueue(
+            operations: previousContributionOperation.allOperations + [signatureOperation],
+            in: .transient
+        )
     }
 }
 

@@ -1,13 +1,13 @@
 import SoraKeystore
 import SoraFoundation
+import FearlessUtils
 
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
         previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         state: CrowdloanSharedState,
-        paraId: ParaId,
-        displayInfo: CrowdloanDisplayInfo,
-        contrubution: CrowdloanContribution?
+        crowdloan: Crowdloan,
+        displayInfo: CrowdloanDisplayInfo
     ) -> Coordinator? {
         guard
             let selectedAccount = SelectedWalletSettings.shared.value,
@@ -40,10 +40,22 @@ struct MoonbeamFlowCoordinatorFactory {
             }
         }()
 
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let crowdloanOperationFactory = CrowdloanOperationFactory(
+            requestOperationFactory: storageRequestFactory,
+            operationManager: operationManager
+        )
+
         let service = MoonbeamBonusService(
-            paraId: paraId,
+            crowdloan: crowdloan,
+            chainId: chain.chainId,
             address: selectedAddress,
-            contrubution: contrubution,
+            operationFactory: crowdloanOperationFactory,
+            chainRegistry: chainRegistry,
             ethereumAddress: ethereumAddress,
             signingWrapper: signingWrapper,
             operationManager: operationManager
@@ -51,7 +63,7 @@ struct MoonbeamFlowCoordinatorFactory {
 
         return MoonbeamFlowCoordinator(
             state: state,
-            paraId: paraId,
+            paraId: crowdloan.paraId,
             service: service,
             operationManager: operationManager,
             previousView: previousView,

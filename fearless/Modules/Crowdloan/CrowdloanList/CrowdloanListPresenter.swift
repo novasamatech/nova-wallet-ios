@@ -184,27 +184,17 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
 
     func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>) {
         let displayInfoDict = try? displayInfoResult?.get()
-        let paraId = viewModel.paraId
         let displayInfo = displayInfoDict?[viewModel.paraId]
 
-        // TODO: delete hack
-        let contrubution: CrowdloanContribution? = {
-            if
-                let crowdloans = try? crowdloansResult?.get(),
-                let selectedCrowdloan = crowdloans.first(where: { $0.paraId == viewModel.paraId }),
-                let contrubutionDict = try? contributionsResult?.get(),
-                let contrubution = contrubutionDict[selectedCrowdloan.fundInfo.trieIndex] {
-                return contrubution
-            } else {
-                return nil
-            }
-        }()
+        guard
+            let crowdloans = try? crowdloansResult?.get(),
+            let selectedCrowdloan = crowdloans.first(where: { $0.paraId == viewModel.paraId })
+        else { return }
 
         wireframe.presentContributionSetup(
             from: view,
-            paraId: paraId,
-            displayInfo: displayInfo,
-            contrubution: contrubution
+            crowdloan: selectedCrowdloan,
+            displayInfo: displayInfo
         )
     }
 

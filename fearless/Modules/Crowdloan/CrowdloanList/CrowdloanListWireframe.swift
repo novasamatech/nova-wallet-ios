@@ -11,21 +11,19 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
 
     func presentContributionSetup(
         from view: CrowdloanListViewProtocol?,
-        paraId: ParaId,
-        displayInfo: CrowdloanDisplayInfo?,
-        contrubution: CrowdloanContribution?
+        crowdloan: Crowdloan,
+        displayInfo: CrowdloanDisplayInfo?
     ) {
         if let info = displayInfo, info.customFlow == .moonbeam {
             moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
                 previousView: view,
                 state: state,
-                paraId: paraId,
-                displayInfo: info,
-                contrubution: contrubution
+                crowdloan: crowdloan,
+                displayInfo: info
             )
             moonbeamCoordinator?.start()
         } else {
-            showContributionSetup(from: view, paraId: paraId)
+            showContributionSetup(from: view, paraId: crowdloan.paraId)
         }
     }
 
