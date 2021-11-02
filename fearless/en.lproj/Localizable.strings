@@ -525,3 +525,6 @@ will appear here";
 "account.not.found.actions.title" = "%@ account";
 "account.create.title" = "Create account";
 "account.import.title" = "Import account";
+"wallet.account.locks.vesting" = "Vesting";
+"wallet.account.locks.democracy" = "Democracy";
+"wallet.account.locks.elections" = "Elections";

@@ -520,3 +520,6 @@
 "account.not.found.actions.title" = "Аккаунт %@";
 "account.create.title" = "Создать аккаунт";
 "account.import.title" = "Импортировать аккаунт";
+"wallet.account.locks.vesting" = "Вестинг";
+"wallet.account.locks.democracy" = "Демократия";
+"wallet.account.locks.elections" = "Выборы";
