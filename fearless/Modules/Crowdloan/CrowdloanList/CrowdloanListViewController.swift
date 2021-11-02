@@ -61,7 +61,6 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
     }
 
     func configure() {
-        rootView.tableView.registerClassForCell(CrowdloanChainTableViewCell.self)
         rootView.tableView.registerClassForCell(YourCrowdloansTableViewCell.self)
         rootView.tableView.registerClassForCell(CrowdloanTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
@@ -220,7 +219,6 @@ extension CrowdloanListViewController: CrowdloanListViewProtocol {
 
         rootView.headerView.bind(viewModel: chainInfo)
         rootView.headerView.setNeedsLayout()
-        rootView.headerView.layoutIfNeeded()
     }
 
     func didReceive(listState: CrowdloanListState) {
