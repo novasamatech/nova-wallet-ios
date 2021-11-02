@@ -1,6 +1,7 @@
 import Foundation
 
 protocol EventVisitorProtocol: AnyObject {
+    func processChainAccountChanged(event: ChainAccountChanged)
     func processSelectedAccountChanged(event: SelectedAccountChanged)
     func processSelectedMetaAccountChanged(event: SelectedMetaAccountChanged)
     func processSelectedUsernameChanged(event: SelectedUsernameChanged)
@@ -25,6 +26,7 @@ protocol EventVisitorProtocol: AnyObject {
 }
 
 extension EventVisitorProtocol {
+    func processChainAccountChanged(event _: ChainAccountChanged) {}
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {}
     func processSelectedMetaAccountChanged(event _: SelectedMetaAccountChanged) {}
     func processSelectedConnectionChanged(event _: SelectedConnectionChanged) {}
