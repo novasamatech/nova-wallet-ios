@@ -12,9 +12,11 @@ final class MoonbeamTermsPresenter {
     let moonbeamService: MoonbeamBonusServiceProtocol
     let state: CrowdloanSharedState
     let logger: LoggerProtocol?
+    let dataValidatingFactory: BaseDataValidatingFactoryProtocol
 
     private var priceData: PriceData?
     private var fee: Decimal?
+    private var balance: Decimal?
 
     init(
         paraId: ParaId,
@@ -24,6 +26,7 @@ final class MoonbeamTermsPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         interactor: MoonbeamTermsInteractorInputProtocol,
         wireframe: MoonbeamTermsWireframeProtocol,
+        dataValidatingFactory: BaseDataValidatingFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.paraId = paraId
@@ -33,11 +36,17 @@ final class MoonbeamTermsPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.interactor = interactor
         self.wireframe = wireframe
+        self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
     }
 
     private func updateView() {
         provideFeeViewModel()
+    }
+
+    private func refreshFeeIfNeeded() {
+        guard fee == nil else { return }
+        interactor.estimateFee()
     }
 
     private func provideFeeViewModel() {
@@ -54,8 +63,20 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
     }
 
     func handleAction() {
-        view?.didStartLoading()
-        interactor.submitAgreement()
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
+                self?.refreshFeeIfNeeded()
+            }),
+            dataValidatingFactory.canPayFee(
+                balance: balance,
+                fee: fee,
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            self?.view?.didStartLoading()
+            self?.interactor.submitAgreement()
+        }
     }
 
     func handleLearnTerms() {
@@ -104,6 +125,22 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
             }
         case let .failure(error):
             logger?.error("Did receive verify remark error: \(error)")
+        }
+    }
+
+    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
+        switch result {
+        case let .success(accountInfo):
+            if let accountInfo = accountInfo {
+                balance = Decimal.fromSubstrateAmount(
+                    accountInfo.data.available,
+                    precision: assetInfo.assetPrecision
+                )
+            } else {
+                balance = nil
+            }
+        case let .failure(error):
+            logger?.error("Account Info subscription error: \(error)")
         }
     }
 }

@@ -5,12 +5,14 @@ import FearlessUtils
 
 final class MoonbeamTermsInteractor {
     weak var presenter: MoonbeamTermsInteractorOutputProtocol!
+    let accountId: AccountId
     let chainId: ChainModel.Id
     let paraId: ParaId
     let asset: AssetModel
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let callFactory: SubstrateCallFactoryProtocol
     let moonbeamService: MoonbeamBonusServiceProtocol
     let operationManager: OperationManagerProtocol
@@ -19,15 +21,18 @@ final class MoonbeamTermsInteractor {
     let logger: LoggerProtocol?
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
     private var subscriptionId: UInt16?
 
     init(
+        accountId: AccountId,
         paraId: ParaId,
         chainId: ChainModel.Id,
         asset: AssetModel,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         callFactory: SubstrateCallFactoryProtocol,
         moonbeamService: MoonbeamBonusServiceProtocol,
         operationManager: OperationManagerProtocol,
@@ -35,12 +40,14 @@ final class MoonbeamTermsInteractor {
         chainConnection: ChainConnection,
         logger: LoggerProtocol? = nil
     ) {
+        self.accountId = accountId
         self.paraId = paraId
         self.chainId = chainId
         self.asset = asset
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.callFactory = callFactory
         self.moonbeamService = moonbeamService
         self.operationManager = operationManager
@@ -54,16 +61,6 @@ final class MoonbeamTermsInteractor {
             priceProvider = subscribeToPrice(for: priceId)
         } else {
             presenter.didReceivePriceData(result: .success(nil))
-        }
-    }
-
-    private func estimateFeeForContribution() {
-        guard let dummyRemark = String(repeating: "0", count: 64).data(using: .utf8) else { return }
-        let call = callFactory.remark(remark: dummyRemark)
-        let identifier = dummyRemark.description
-
-        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-            try builder.adding(call: call)
         }
     }
 
@@ -149,12 +146,23 @@ final class MoonbeamTermsInteractor {
 extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
     func setup() {
         feeProxy.delegate = self
-        estimateFeeForContribution()
+        estimateFee()
         subscribeToPrice()
+        accountInfoProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chainId)
     }
 
     var termsURL: URL {
         moonbeamService.termsURL
+    }
+
+    func estimateFee() {
+        guard let dummyRemark = String(repeating: "0", count: 64).data(using: .utf8) else { return }
+        let call = callFactory.remark(remark: dummyRemark)
+        let identifier = dummyRemark.description
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            try builder.adding(call: call)
+        }
     }
 
     func submitAgreement() {
@@ -186,5 +194,15 @@ extension MoonbeamTermsInteractor: ExtrinsicFeeProxyDelegate {
 extension MoonbeamTermsInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId _: AssetModel.PriceId) {
         presenter.didReceivePriceData(result: result)
+    }
+}
+
+extension MoonbeamTermsInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+    func handleAccountInfo(
+        result: Result<AccountInfo?, Error>,
+        accountId _: AccountId,
+        chainId _: ChainModel.Id
+    ) {
+        presenter.didReceiveAccountInfo(result: result)
     }
 }

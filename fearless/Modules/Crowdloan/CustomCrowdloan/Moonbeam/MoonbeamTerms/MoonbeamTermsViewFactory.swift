@@ -24,6 +24,8 @@ struct MoonbeamTermsViewFactory {
 
         let assetInfo = asset.displayInfo(with: chain.icon)
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+        let dataValidatingFactory = CrowdloanDataValidatingFactory(presentable: wireframe, assetInfo: assetInfo)
+
         let presenter = MoonbeamTermsPresenter(
             paraId: paraId,
             moonbeamService: service,
@@ -32,6 +34,7 @@ struct MoonbeamTermsViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             interactor: interactor,
             wireframe: wireframe,
+            dataValidatingFactory: dataValidatingFactory,
             logger: Logger.shared
         )
 
@@ -42,6 +45,7 @@ struct MoonbeamTermsViewFactory {
 
         presenter.view = view
         interactor.presenter = presenter
+        dataValidatingFactory.view = view
 
         return view
     }
@@ -90,12 +94,14 @@ struct MoonbeamTermsViewFactory {
         )
 
         return MoonbeamTermsInteractor(
+            accountId: accountResponse.accountId,
             paraId: paraId,
             chainId: chain.chainId,
             asset: asset,
             extrinsicService: extrinsicService,
             feeProxy: feeProxy,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             callFactory: SubstrateCallFactory(),
             moonbeamService: moonbeamService,
             operationManager: operationManager,
