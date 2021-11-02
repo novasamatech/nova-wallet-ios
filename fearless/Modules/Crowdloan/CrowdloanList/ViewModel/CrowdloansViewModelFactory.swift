@@ -28,7 +28,6 @@ final class CrowdloansViewModelFactory {
         let progressPercentsText: String
         let progressValue: Double
         let imageViewModel: ImageViewModelProtocol
-        let contribution: String?
     }
 
     struct Formatters {
@@ -115,22 +114,6 @@ final class CrowdloansViewModelFactory {
 
                 return WalletStaticImageViewModel(staticImage: icon ?? UIImage())
             }
-
-        }()
-
-        let contributionString: String? = {
-            if
-                let contributionInPlank = viewInfo.contributions[model.fundInfo.trieIndex]?.balance,
-                let contributionDecimal = Decimal.fromSubstrateAmount(
-                    contributionInPlank,
-                    precision: chainAsset.asset.assetPrecision
-                ) {
-                return formatters.token.stringFromDecimal(contributionDecimal).map { value in
-                    R.string.localizable.crowdloanContributionFormat(value, preferredLanguages: locale.rLanguages)
-                }
-            } else {
-                return nil
-            }
         }()
 
         return CommonContent(
@@ -139,8 +122,7 @@ final class CrowdloansViewModelFactory {
             progressText: progressText,
             progressPercentsText: percentsText,
             progressValue: progressValue,
-            imageViewModel: iconViewModel,
-            contribution: contributionString
+            imageViewModel: iconViewModel
         )
     }
 
@@ -196,8 +178,7 @@ final class CrowdloansViewModelFactory {
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
             progressPercentsText: commonContent.progressPercentsText,
-            progressValue: commonContent.progressValue,
-            contribution: commonContent.contribution
+            progressValue: commonContent.progressValue
         )
     }
 
@@ -226,8 +207,7 @@ final class CrowdloansViewModelFactory {
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
             progressPercentsText: "100%",
-            progressValue: 0.0,
-            contribution: commonContent.contribution
+            progressValue: 0.0
         )
     }
 

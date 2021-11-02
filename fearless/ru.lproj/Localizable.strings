@@ -405,7 +405,6 @@
 "staking.custom.clear.button.title" = "Очистить фильтры";
 "staking.custom.deselect.button.title" = "Отменить выбор";
 "staking.custom.header.validators.title" = "Валидаторов: %li из %li";
-"crowdloan.contribution.format" = "Вы вложили: %@";
 "staking.set.validators.title" = "Выберите валидаторов для начала стейкинга";
 "staking.set.validators.message" = "Валидаторы не выбраны";
 "staking.max.nominators.reached.title" = "Невозможно начать стейкинг";

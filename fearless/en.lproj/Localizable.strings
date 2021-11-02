@@ -408,7 +408,6 @@ Derivation path: %@";
 "staking.custom.clear.button.title" = "Clear filters";
 "staking.custom.deselect.button.title" = "Deselect all";
 "staking.custom.header.validators.title" = "Validators: %li of %li";
-"crowdloan.contribution.format" = "You contributed: %@";
 "staking.set.validators.title" = "Select validators to start staking";
 "staking.set.validators.message" = "Validators are not selected";
 "staking.max.nominators.reached.title" = "Cannot start staking";

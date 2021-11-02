@@ -33,5 +33,4 @@ struct CrowdloanCellViewModel {
     let iconViewModel: ImageViewModelProtocol
     let progressPercentsText: String
     let progressValue: Double
-    let contribution: String?
 }
