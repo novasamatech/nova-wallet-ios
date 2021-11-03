@@ -1544,6 +1544,7 @@
 		F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEB87272FFCB700C06154 /* CrowdloanContributionViewModel.swift */; };
 		F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEBE32731617A00C06154 /* CrowdloanRewardDestinationVM.swift */; };
 		F41CEBEA273161DE00C06154 /* CrowdloanRewardDestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEBE9273161DE00C06154 /* CrowdloanRewardDestinationView.swift */; };
+		F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4223ED027329767003D8E4E /* AcalaTransferRequest.swift */; };
 		F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */; };
 		F429C3CC272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */; };
 		F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */; };
@@ -3247,6 +3248,7 @@
 		F41CEB87272FFCB700C06154 /* CrowdloanContributionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionViewModel.swift; sourceTree = "<group>"; };
 		F41CEBE32731617A00C06154 /* CrowdloanRewardDestinationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRewardDestinationVM.swift; sourceTree = "<group>"; };
 		F41CEBE9273161DE00C06154 /* CrowdloanRewardDestinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRewardDestinationView.swift; sourceTree = "<group>"; };
+		F4223ED027329767003D8E4E /* AcalaTransferRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaTransferRequest.swift; sourceTree = "<group>"; };
 		F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewModel.swift; sourceTree = "<group>"; };
 		F429C3CB272940A2000214EE /* MoonbeamVerifyRemarkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamVerifyRemarkRequest.swift; sourceTree = "<group>"; };
 		F42D125E26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsViewModelFactory.swift; sourceTree = "<group>"; };
@@ -8339,6 +8341,7 @@
 				F4B39C4727326CC600BB6E10 /* ContributionSetup */,
 				F48EB5452722BB7000AE15ED /* AcalaBonusService.swift */,
 				F48EB5502722C9D600AE15ED /* AcalaKeys.swift */,
+				F4223ED027329767003D8E4E /* AcalaTransferRequest.swift */,
 			);
 			path = Acala;
 			sourceTree = "<group>";
@@ -10267,6 +10270,7 @@
 				AEA0C8AC267B6B5200F9666F /* SelectedValidatorListViewFactory.swift in Sources */,
 				DBA436B3B1C90965FE8F9B79 /* YourValidatorListPresenter.swift in Sources */,
 				E7CAD629FF0D4E97594F7A05 /* YourValidatorListInteractor.swift in Sources */,
+				F4223ED127329767003D8E4E /* AcalaTransferRequest.swift in Sources */,
 				A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
 				8461CC8126BBFF70007460E4 /* ImmortalEraOperationFactory.swift in Sources */,

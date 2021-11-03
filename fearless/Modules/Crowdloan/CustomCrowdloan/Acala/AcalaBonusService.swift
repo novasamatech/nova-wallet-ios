@@ -16,6 +16,7 @@ final class AcalaBonusService {
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
     static let apiContribute = "/contribute"
+    static let apiTransfer = "/transfer"
 
     var selectedContributionMethod = AcalaContributionMethod.direct
 
@@ -91,6 +92,35 @@ final class AcalaBonusService {
         operation.requestModifier = requestModifier
         return operation
     }
+
+    private func createTransferOperation(
+        info: AcalaTransferInfo
+    ) -> BaseOperation<Void> {
+        let url = Self.baseURL.appendingPathComponent(Self.apiTransfer)
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.post.rawValue
+            request.setValue(HttpContentType.json.rawValue, forHTTPHeaderField: HttpHeaderKey.contentType.rawValue)
+            request.httpBody = try JSONEncoder().encode(info)
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<Void> { data in
+            let resultData = try JSONDecoder().decode(
+                KaruraResultData.self,
+                from: data
+            )
+
+            guard resultData.result else {
+                throw CrowdloanBonusServiceError.veficationFailed
+            }
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
+    }
 }
 
 extension AcalaBonusService: CrowdloanBonusServiceProtocol {
@@ -146,14 +176,18 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         amount: BigUInt,
         with closure: @escaping (Result<Void, Error>) -> Void
     ) {
-        guard let referralCode = referralCode else {
-            DispatchQueue.main.async {
-                closure(.failure(CrowdloanBonusServiceError.veficationFailed))
-            }
-
-            return
+        switch selectedContributionMethod {
+        case .direct:
+            applyOffchainBonusForContributionDirect(amount: amount, with: closure)
+        case .liquid:
+            applyOffchainBonusForContributionLiquid(amount: amount, with: closure)
         }
+    }
 
+    private func applyOffchainBonusForContributionDirect(
+        amount: BigUInt,
+        with closure: @escaping (Result<Void, Error>) -> Void
+    ) {
         let statementOperation = createStatementFetchOperation()
 
         let infoOperation = ClosureOperation<KaruraVerifyInfo> {
@@ -168,7 +202,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
                 address: self.address,
                 amount: String(amount),
                 signature: signedData.rawData().toHex(includePrefix: true),
-                referral: referralCode
+                referral: self.referralCode
             )
         }
 
@@ -193,6 +227,35 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         }
 
         operationManager.enqueue(operations: [statementOperation, infoOperation, contributeOperation], in: .transient)
+    }
+
+    private func applyOffchainBonusForContributionLiquid(
+        amount: BigUInt,
+        with closure: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let info = AcalaTransferInfo(
+            address: address,
+            amount: String(amount),
+            referral: referralCode
+        )
+        let transferOperation = createTransferOperation(info: info)
+
+        transferOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    _ = try transferOperation.extractNoCancellableResultData()
+                    closure(.success(()))
+                } catch {
+                    if let responseError = error as? NetworkResponseError, responseError == .invalidParameters {
+                        closure(.failure(CrowdloanBonusServiceError.veficationFailed))
+                    } else {
+                        closure(.failure(error))
+                    }
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [transferOperation], in: .transient)
     }
 
     func applyOnchainBonusForContribution(
