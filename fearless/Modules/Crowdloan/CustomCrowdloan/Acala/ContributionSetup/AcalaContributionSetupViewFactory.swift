@@ -51,8 +51,21 @@ struct AcalaContributionSetupViewFactory {
             accountResponse: accountResponse
         )
 
+        let accountAddressDependingOnChain: String? = {
+            switch chain.chainId {
+            case Chain.rococo.genesisHash:
+                // requires polkadot address even in rococo testnet
+                return try? accountResponse.accountId.toAddress(
+                    using: ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
+                )
+            default:
+                return selectedAddress
+            }
+        }()
+        guard let address = accountAddressDependingOnChain else { return nil }
+
         let acalaService = AcalaBonusService(
-            address: selectedAddress,
+            address: address,
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )
