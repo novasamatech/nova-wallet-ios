@@ -157,8 +157,8 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
 
         let interactor = ImportChainAccount
             .AccountImportInteractor(
-                accountOperationFactory: accountOperationFactory,
-                accountRepository: accountRepository,
+                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountRepository: accountRepository,
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
                 keystoreImportService: keystoreImportService,

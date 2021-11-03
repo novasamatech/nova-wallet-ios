@@ -190,5 +190,11 @@ extension ImportChainAccount {
         override func applyUsernameViewModel(_: String = "") {
             view?.setName(viewModel: nil)
         }
+
+        override func setViewTitle() {
+            let title = R.string.localizable
+                .importChainAccountTitle(preferredLanguages: selectedLocale.rLanguages)
+            view?.setTitle(title)
+        }
     }
 }

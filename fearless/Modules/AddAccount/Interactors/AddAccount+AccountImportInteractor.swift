@@ -21,8 +21,8 @@ extension AddAccount {
             self.eventCenter = eventCenter
 
             super.init(
-                accountOperationFactory: accountOperationFactory,
-                accountRepository: accountRepository,
+                metaAccountOperationFactory: accountOperationFactory,
+                metaAccountRepository: accountRepository,
                 operationManager: operationManager,
                 keystoreImportService: keystoreImportService,
                 supportedNetworks: Chain.allCases, // FIXME: Remove after interactors are done

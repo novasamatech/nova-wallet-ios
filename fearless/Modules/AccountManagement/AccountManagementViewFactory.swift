@@ -20,6 +20,8 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             logger: Logger.shared
         )
 
+        presenter.localizationManager = LocalizationManager.shared
+
         let storageFacade = UserDataStorageFacade.shared
 
         let mapper = ManagedMetaAccountMapper()

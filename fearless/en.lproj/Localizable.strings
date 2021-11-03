@@ -530,5 +530,6 @@ will appear here";
 "account.actions.change.title" = "Change account";
 "account.not.found.caption" = "Account is not found";
 "account.not.found.actions.title" = "%@ account";
-"account.create.title" = "Create account";
-"account.import.title" = "Import account";
+"account.create.option.title" = "Create account";
+"account.import.option.title" = "Import account";
+"account.actions.change.sheet.title" = "Change %@ account";
