@@ -22,7 +22,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AKN-Io-Tfb" customClass="PolkadotIconView" customModule="FearlessUtils">
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="AKN-Io-Tfb" customClass="PolkadotIconView" customModule="SubstrateSdk">
                         <rect key="frame" x="16" y="10" width="24" height="24"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -31,7 +31,7 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="RIRussel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UyI-Of-1rt">
-                        <rect key="frame" x="52" y="14" width="258.5" height="16.5"/>
+                        <rect key="frame" x="52" y="13" width="262" height="18"/>
                         <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>
@@ -40,7 +40,7 @@
                         <rect key="frame" x="376" y="11" width="22" height="22"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="11.66%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CLS-Xp-ibO">
-                        <rect key="frame" x="318.5" y="14" width="49.5" height="16.5"/>
+                        <rect key="frame" x="322" y="13" width="46" height="18"/>
                         <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>

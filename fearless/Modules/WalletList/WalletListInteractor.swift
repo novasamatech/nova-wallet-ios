@@ -103,7 +103,8 @@ final class WalletListInteractor {
 
                 self?.presenter.didReceivePrices(result: .success(chainPrices))
             case .none:
-                self?.presenter.didReceivePrices(result: .success([:]))
+                // no changes in price
+                break
             }
         }
 
@@ -126,6 +127,8 @@ final class WalletListInteractor {
 
 extension WalletListInteractor: WalletListInteractorInputProtocol {
     func setup() {
+        presenter.didReceive(genericAccountId: selectedMetaAccount.substrateAccountId, name: selectedMetaAccount.name)
+
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.presenter.didReceiveChainModelChanges(changes)
             self?.updateConnectionStatus(from: changes)

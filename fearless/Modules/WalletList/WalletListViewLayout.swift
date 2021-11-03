@@ -7,6 +7,13 @@ final class WalletListViewLayout: UIView {
         return view
     }()
 
+    let tableView: UITableView = {
+        let view = UITableView()
+        view.separatorStyle = .none
+        view.backgroundColor = .clear
+        return view
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -21,6 +28,11 @@ final class WalletListViewLayout: UIView {
     func setup() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        addSubview(tableView)
+        tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
