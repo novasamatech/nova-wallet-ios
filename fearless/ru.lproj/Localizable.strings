@@ -51,7 +51,9 @@
 "wallet.username.setup.choose.title" = "Имя кошелька";
 "account.username.setup.choose.title" = "Имя";
 "username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
+"wallet.username.setup.hint" = "Примеры: Сбережения, Инвестиции, Краудлоуны, Стейкинг. Имя храниться только на вашем мобильном устройстве и показываться только вам.";
 "username.setup.title" = "Создать аккаунт";
+"wallet.username.setup.title" = "Создать кошелёк";
 "common.no.screenshot.title" = "Не делайте скриншоты";
 "common.no.screenshot.message" = "Не делайте скриншоты, которые могут быть собраны сторонними вредоносными программами";
 "common.ok" = "OK";
