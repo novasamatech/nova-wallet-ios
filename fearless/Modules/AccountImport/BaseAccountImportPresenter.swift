@@ -249,8 +249,6 @@ class BaseAccountImportPresenter {
             underlyingViewModel: contentViewModel,
             selectable: selectable
         )
-
-        view?.setSelectedNetwork(model: selectedViewModel)
     }
 
     private func applySubstrateDerivationPathViewModel() {

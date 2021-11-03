@@ -347,10 +347,6 @@ extension AccountImportViewController: AccountImportViewProtocol {
         title = newTitle
     }
 
-    func setSelectedNetwork(model _: SelectableViewModel<IconWithTitleViewModel>) {
-        // FIXME: Remove function
-    }
-
     func setSource(type: AccountImportSource) {
         let settings = presenter.provideVisibilitySettings()
         updateVisibility(settings)
