@@ -24,7 +24,8 @@ enum ChainModelGenerator {
             let node = ChainNodeModel(
                 url: URL(string: "wss://node.io/\(chainId)")!,
                 name: chainId,
-                apikey: nil
+                apikey: nil,
+                order: 0
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -54,7 +55,8 @@ enum ChainModelGenerator {
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
-                externalApi: externalApi
+                externalApi: externalApi,
+                order: Int64(index)
             )
         }
     }
@@ -81,7 +83,8 @@ enum ChainModelGenerator {
         let node = ChainNodeModel(
             url: URL(string: urlString)!,
             name: UUID().uuidString,
-            apikey: nil
+            apikey: nil,
+            order: 0
         )
 
         var options: [ChainOptions] = []
@@ -106,7 +109,8 @@ enum ChainModelGenerator {
             types: nil,
             icon: Constants.dummyURL,
             options: options.isEmpty ? nil : options,
-            externalApi: externalApi
+            externalApi: externalApi,
+            order: 0
         )
     }
 

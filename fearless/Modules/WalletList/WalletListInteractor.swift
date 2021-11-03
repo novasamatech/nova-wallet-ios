@@ -12,7 +12,7 @@ final class WalletListInteractor {
 
     private var accountInfoSubscriptions: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
-    private var availableTokenPrice: [AssetModel.PriceId: ChainModel.Id] = [:]
+    private var availableTokenPrice: [ChainModel.Id: AssetModel.PriceId] = [:]
 
     init(
         selectedMetaAccount: MetaAccountModel,
@@ -62,23 +62,25 @@ final class WalletListInteractor {
         for change in changes {
             switch change {
             case let .insert(chain), let .update(chain):
-                availableTokenPrice = availableTokenPrice.filter { $0.value != chain.chainId }
+                availableTokenPrice = availableTokenPrice.filter { $0.key != chain.chainId }
 
                 if let asset = chain.utilityAssets().first, let priceId = asset.priceId {
-                    availableTokenPrice[priceId] = chain.chainId
+                    availableTokenPrice[chain.chainId] = priceId
                 }
             case let .delete(deletedIdentifier):
-                availableTokenPrice = availableTokenPrice.filter { $0.value != deletedIdentifier }
+                availableTokenPrice = availableTokenPrice.filter { $0.key != deletedIdentifier }
             }
         }
 
         if prevPrices != availableTokenPrice {
-            updatePriceProvider(for: Array(availableTokenPrice.keys))
+            updatePriceProvider(for: Set(availableTokenPrice.values))
         }
     }
 
-    private func updatePriceProvider(for priceIds: [AssetModel.PriceId]) {
+    private func updatePriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
         priceSubscription = nil
+
+        let priceIds = Array(priceIdSet)
 
         guard !priceIds.isEmpty else {
             return
@@ -94,11 +96,14 @@ final class WalletListInteractor {
                 let chainPrices = zip(priceIds, prices).reduce(
                     into: [ChainModel.Id: PriceData]()
                 ) { result, item in
-                    guard let chainId = self?.availableTokenPrice[item.0] else {
+                    guard let chainIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
+                        .map(\.key) else {
                         return
                     }
 
-                    result[chainId] = item.1
+                    for chainId in chainIds {
+                        result[chainId] = item.1
+                    }
                 }
 
                 self?.presenter.didReceivePrices(result: .success(chainPrices))

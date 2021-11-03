@@ -32,7 +32,8 @@ final class ChainModelMapper {
         return ChainNodeModel(
             url: entity.url!,
             name: entity.name!,
-            apikey: apiKey
+            apikey: apiKey,
+            order: entity.order
         )
     }
 
@@ -99,6 +100,7 @@ final class ChainModelMapper {
             nodeEntity.name = node.name
             nodeEntity.apiQueryName = node.apikey?.queryName
             nodeEntity.apiKeyName = node.apikey?.keyName
+            nodeEntity.order = node.order
 
             return nodeEntity
         }
@@ -212,7 +214,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             types: types,
             icon: entity.icon!,
             options: options.isEmpty ? nil : options,
-            externalApi: externalApiSet
+            externalApi: externalApiSet,
+            order: entity.order
         )
     }
 
@@ -232,6 +235,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans
+        entity.order = model.order
 
         updateEntityAssets(for: entity, from: model, context: context)
 
