@@ -12,7 +12,7 @@ final class ProfileTableViewCell: UITableViewCell {
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorCellSelection()!
+        selectedBackgroundView.backgroundColor = R.color.colorAccent()!.withAlphaComponent(0.3)
         self.selectedBackgroundView = selectedBackgroundView
     }
 

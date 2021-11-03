@@ -156,8 +156,8 @@ final class AccountImportViewController: UIViewController {
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
-        title = R.string.localizable
-            .importWalletTitle(preferredLanguages: locale.rLanguages)
+        presenter.updateTitle()
+
         sourceTypeView.actionControl.contentView.titleLabel.text = R.string.localizable
             .importSourcePickerTitle(preferredLanguages: locale.rLanguages)
 
@@ -293,28 +293,15 @@ final class AccountImportViewController: UIViewController {
         }
     }
 
-    // FIXME: add to actionTextFieldChanged(_ sender: UITextField)
-    @IBAction private func actionNameTextFieldChanged() {
-        if usernameViewModel?.inputHandler.value != usernameTextField.text {
-            usernameTextField.text = usernameViewModel?.inputHandler.value
-        }
-
-        updateNextButton()
-    }
-
-    @IBAction private func actionPasswordTextFieldChanged() {
-        if passwordViewModel?.inputHandler.value != passwordTextField.text {
-            passwordTextField.text = passwordViewModel?.inputHandler.value
-        }
-
-        updateNextButton()
-    }
-
     @IBAction private func actionTextFieldChanged(_ sender: UITextField) {
         if sender == substrateDerivationPathField {
             updateTextField(sender, model: substrateDerivationPathModel)
         } else if sender == ethereumDerivationPathField {
             updateTextField(sender, model: ethereumDerivationPathModel)
+        } else if sender == usernameTextField {
+            updateTextField(sender, model: usernameViewModel)
+        } else if sender == passwordTextField {
+            updateTextField(sender, model: passwordViewModel)
         }
 
         updateNextButton()
@@ -356,8 +343,8 @@ final class AccountImportViewController: UIViewController {
 // MARK: - AccountImportViewProtocol
 
 extension AccountImportViewController: AccountImportViewProtocol {
-    func setSelectedNetwork(model _: SelectableViewModel<IconWithTitleViewModel>) {
-        // FIXME: Remove function
+    func setTitle(_ newTitle: String) {
+        title = newTitle
     }
 
     func setSource(type: AccountImportSource) {

@@ -50,6 +50,7 @@
 		2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */; };
 		2A84E87825D425750006FE9C /* AlertControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A84E87725D425750006FE9C /* AlertControllerFactory.swift */; };
 		2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */; };
+		2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */; };
 		2AD0A16A25D3854700312428 /* TransferConfirmCommandProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */; };
 		2AD0A19025D3D1E100312428 /* GitHubPhishingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */; };
 		2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */; };
@@ -1734,6 +1735,7 @@
 		2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingItem.swift; sourceTree = "<group>"; };
 		2A84E87725D425750006FE9C /* AlertControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertControllerFactory.swift; sourceTree = "<group>"; };
 		2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingAPIService.swift; sourceTree = "<group>"; };
+		2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountChanged.swift; sourceTree = "<group>"; };
 		2ACA4A5B186EE6D40BFE9D66 /* ExportMnemonicWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicWireframe.swift; sourceTree = "<group>"; };
 		2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConfirmCommandProxy.swift; sourceTree = "<group>"; };
 		2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingServiceFactory.swift; sourceTree = "<group>"; };
@@ -6807,6 +6809,7 @@
 				840BF22626C2C8A600E3A955 /* ChainSyncEvents.swift */,
 				849DF02E26C53DB900B702F4 /* RuntimeSyncEvents.swift */,
 				8436E94126C840C8003D4EA7 /* RuntimeCoderEvents.swift */,
+				2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -9856,6 +9859,7 @@
 				AE6DE7322627EA930018D5B5 /* PayoutCall.swift in Sources */,
 				84DD5F26263D72C400425ACF /* ExtrinsicFeeProxy.swift in Sources */,
 				F4433D7526C16BFB0002A91E /* AnalyticsValidatorItemViewModel.swift in Sources */,
+				2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */,
 				847C96492553614F002D288F /* ExportRestoreJsonPresenter.swift in Sources */,
 				8463A71225E30C95003B8160 /* BalanceViewModelFactory.swift in Sources */,
 				6D315EFF2B664235D297674E /* AccountImportProtocols.swift in Sources */,

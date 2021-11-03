@@ -529,3 +529,4 @@
 "account.not.found.actions.title" = "Аккаунт %@";
 "account.create.option.title" = "Создать аккаунт";
 "account.import.option.title" = "Импортировать аккаунт";
+"account.actions.change.sheet.title" = "Изменить аккаунт %@";
