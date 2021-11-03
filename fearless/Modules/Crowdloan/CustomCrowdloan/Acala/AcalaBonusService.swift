@@ -23,6 +23,7 @@ final class AcalaBonusService {
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/acala/terms")! }
     private(set) var referralCode: String?
+    private var statementData: AcalaStatementData?
 
     let signingWrapper: SigningWrapperProtocol
     let address: AccountAddress
@@ -39,7 +40,7 @@ final class AcalaBonusService {
         self.operationManager = operationManager
     }
 
-    func createStatementFetchOperation() -> BaseOperation<String> {
+    func createStatementFetchOperation() -> BaseOperation<AcalaStatementData> {
         let url = Self.baseURL.appendingPathComponent(Self.apiStatement)
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -48,13 +49,13 @@ final class AcalaBonusService {
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<String> { data in
+        let resultFactory = AnyNetworkResultFactory<AcalaStatementData> { data in
             let resultData = try JSONDecoder().decode(
-                KaruraStatementData.self,
+                AcalaStatementData.self,
                 from: data
             )
 
-            return resultData.statement
+            return resultData
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
@@ -192,7 +193,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
 
         let infoOperation = ClosureOperation<KaruraVerifyInfo> {
             guard
-                let statement = try statementOperation.extractNoCancellableResultData().data(using: .utf8) else {
+                let statement = try statementOperation.extractNoCancellableResultData().statement.data(using: .utf8) else {
                 throw CrowdloanBonusServiceError.veficationFailed
             }
 
@@ -233,12 +234,23 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         amount: BigUInt,
         with closure: @escaping (Result<Void, Error>) -> Void
     ) {
+        let statementOperation = createStatementFetchOperation()
+        statementOperation.completionBlock = {
+            do {
+                let statement = try statementOperation.extractNoCancellableResultData()
+                self.statementData = statement
+            } catch {
+                closure(.failure(error))
+            }
+        }
+
         let info = AcalaTransferInfo(
             address: address,
             amount: String(amount),
             referral: referralCode
         )
         let transferOperation = createTransferOperation(info: info)
+        transferOperation.addDependency(statementOperation)
 
         transferOperation.completionBlock = {
             DispatchQueue.main.async {
@@ -255,14 +267,38 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
             }
         }
 
-        operationManager.enqueue(operations: [transferOperation], in: .transient)
+        operationManager.enqueue(operations: [transferOperation, statementOperation], in: .transient)
     }
 
     func applyOnchainBonusForContribution(
-        amount _: BigUInt,
+        amount: BigUInt,
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        builder
+        guard
+            selectedContributionMethod == .liquid,
+            let statementData = statementData,
+            let accountId = try? statementData.proxyAddress.toAccountId(),
+            let statement = statementData.statement.data(using: .utf8)
+        else {
+            return builder
+        }
+        let callFactory = SubstrateCallFactory()
+        let transferCall = callFactory.transfer(to: accountId, amount: amount)
+        let statementRemark = callFactory.remark(remark: statement)
+
+        if
+            let referral = referralCode,
+            let referralData = "referrer:\(referral)".data(using: .utf8) {
+            let referralRemark = callFactory.remark(remark: referralData)
+            return try builder
+                .adding(call: transferCall)
+                .adding(call: statementRemark)
+                .adding(call: referralRemark)
+        } else {
+            return try builder
+                .adding(call: transferCall)
+                .adding(call: statementRemark)
+        }
     }
 }
 
