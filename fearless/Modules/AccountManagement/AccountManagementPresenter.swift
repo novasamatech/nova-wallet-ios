@@ -55,57 +55,14 @@ final class AccountManagementPresenter {
         view?.set(nameViewModel: nameViewModel)
     }
 
-    // MARK: - Actions
+    // MARK: - Bottom sheet display types
 
-    private func activateCreateAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
+    // 0. Change chain account
+    private func displayChangeActions(with title: String, for chain: ChainModel) {
+        let createAccountAction = createAccountCreateAction(for: chain)
+        let importAccountAction = createAccountImportAction(for: chain)
 
-        wireframe.showCreateAccount(
-            from: view,
-            wallet: wallet,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
-        )
-    }
-
-    private func activateImportAccount(for chainModel: ChainModel) {
-        guard let view = view,
-              let wallet = wallet
-        else { return }
-
-        wireframe.showImportAccount(
-            from: view,
-            wallet: wallet,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
-        )
-    }
-
-    private func displayNoAddressActions(for chain: ChainModel) {
-        let title = R.string.localizable.accountNotFoundActionsTitle(
-            chain.name,
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        var actions: [AlertPresentableAction] = []
-
-        let createAccountTitle = R.string.localizable
-            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        let createAccountAction = AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
-        }
-
-        actions.append(createAccountAction)
-
-        let importAccountTitle = R.string.localizable
-            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        let importAccountAction = AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
-        }
-
-        actions.append(importAccountAction)
+        let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
@@ -124,42 +81,26 @@ final class AccountManagementPresenter {
         )
     }
 
-    private func createCopyAction(for address: String) -> AlertPresentableAction {
-        let copyTitle = R.string.localizable
-            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: copyTitle) { [weak self] in
-            self?.copyAddress(address)
-        }
-    }
-
-    private func createAccountCreateAction(for chain: ChainModel) -> AlertPresentableAction {
-        let createAccountTitle = R.string.localizable
-            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
-        }
-    }
-
-    private func createAccountImportAction(for chain: ChainModel) -> AlertPresentableAction {
-        let importAccountTitle = R.string.localizable
-            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
-        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
-        }
-    }
-
-    private func createTitleFrom(_ address: String) -> String {
-        var title = address
-
-        let offset = title.count / 2
-        title.insert(
-            contentsOf: String.returnKey,
-            at: title.index(title.startIndex, offsetBy: offset)
+    private func displayReplaceActions(for chain: ChainModel) {
+        let title = R.string.localizable.accountActionsChangeSheetTitle(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
         )
 
-        return title
+        displayChangeActions(with: title, for: chain)
     }
 
+    // 1. No chain account
+    private func displayNoAddressActions(for chain: ChainModel) {
+        let title = R.string.localizable.accountNotFoundActionsTitle(
+            chain.name,
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        displayChangeActions(with: title, for: chain)
+    }
+
+    // 2. Existing Ethereum
     private func displayEthereumAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
@@ -167,17 +108,10 @@ final class AccountManagementPresenter {
         guard let address = viewModel.address else { return }
 
         let title = createTitleFrom(address)
-
-        var actions: [AlertPresentableAction] = []
-
         let copyAction = createCopyAction(for: address)
-        actions.append(copyAction)
+        let changeAccountAction = createAccountChangeAction(for: chain)
 
-        let createAccountAction = createAccountCreateAction(for: chain)
-        actions.append(createAccountAction)
-
-        let importAccountAction = createAccountImportAction(for: chain)
-        actions.append(importAccountAction)
+        let actions = [copyAction, changeAccountAction]
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
@@ -189,13 +123,10 @@ final class AccountManagementPresenter {
             closeAction: closeTitle
         )
 
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
-        )
+        wireframe.present(viewModel: actionsViewModel, style: .actionSheet, from: view)
     }
 
+    // 3. Existing Substrate
     private func displaySubstrateAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
@@ -233,21 +164,8 @@ final class AccountManagementPresenter {
             actions.append(subscanAction)
         }
 
-        let createAccountAction = createAccountCreateAction(for: chain)
-        actions.append(createAccountAction)
-
-        let importAccountAction = createAccountImportAction(for: chain)
-        actions.append(importAccountAction)
-
-        // FIXME: Pack change accounts item under one sheet
-        //        let changeAccountTitle = R.string.localizable
-        //            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
-        //        let changeAccountAction = AlertPresentableAction(title: changeAccountTitle) { [weak self] in
-        //            print("Change account")
-        //            // TODO: display another actions view?
-        //        }
-        //
-        //        actions.append(changeAccountAction)
+        let changeAccountAction = createAccountChangeAction(for: chain)
+        actions.append(changeAccountAction)
 
         // TODO: Turn on export
         // TODO: display another actions view
@@ -269,14 +187,96 @@ final class AccountManagementPresenter {
             closeAction: closeTitle
         )
 
-        wireframe.present(
-            viewModel: actionsViewModel,
-            style: .actionSheet,
-            from: view
+        wireframe.present(viewModel: actionsViewModel, style: .actionSheet, from: view)
+    }
+
+    // MARK: - Actions
+
+    private func activateCopyAddress(_ address: String) {
+        UIPasteboard.general.string = address
+
+        let locale = localizationManager?.selectedLocale
+        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
+        wireframe.presentSuccessNotification(title, from: view)
+    }
+
+    private func activateChangeAccount(for chainModel: ChainModel) {
+        displayReplaceActions(for: chainModel)
+    }
+
+    private func activateCreateAccount(for chainModel: ChainModel) {
+        guard let view = view,
+              let wallet = wallet
+        else { return }
+
+        wireframe.showCreateAccount(
+            from: view,
+            wallet: wallet,
+            chainId: chainModel.chainId,
+            isEthereumBased: chainModel.isEthereumBased
         )
     }
 
+    private func activateImportAccount(for chainModel: ChainModel) {
+        guard let view = view,
+              let wallet = wallet
+        else { return }
+
+        wireframe.showImportAccount(
+            from: view,
+            wallet: wallet,
+            chainId: chainModel.chainId,
+            isEthereumBased: chainModel.isEthereumBased
+        )
+    }
+
+    // MARK: - Bottom sheet items creation
+
+    private func createCopyAction(for address: String) -> AlertPresentableAction {
+        let copyTitle = R.string.localizable
+            .commonCopyAddress(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: copyTitle) { [weak self] in
+            self?.activateCopyAddress(address)
+        }
+    }
+
+    private func createAccountChangeAction(for chain: ChainModel) -> AlertPresentableAction {
+        let createAccountTitle = R.string.localizable
+            .accountActionsChangeTitle(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateChangeAccount(for: chain)
+        }
+    }
+
+    private func createAccountCreateAction(for chain: ChainModel) -> AlertPresentableAction {
+        let createAccountTitle = R.string.localizable
+            .accountCreateOptionTitle(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.activateCreateAccount(for: chain)
+        }
+    }
+
+    private func createAccountImportAction(for chain: ChainModel) -> AlertPresentableAction {
+        let importAccountTitle = R.string.localizable
+            .accountImportOptionTitle(preferredLanguages: selectedLocale.rLanguages)
+        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.activateImportAccount(for: chain)
+        }
+    }
+
     // MARK: - Utility functions
+
+    private func createTitleFrom(_ address: String) -> String {
+        var title = address
+
+        let offset = title.count / 2
+        title.insert(
+            contentsOf: String.returnKey,
+            at: title.index(title.startIndex, offsetBy: offset)
+        )
+
+        return title
+    }
 
     private func polkascanURL(for chainName: String, address: String) -> URL? {
         guard let urlString = polkascanExplorers[chainName] else { return nil }
@@ -286,14 +286,6 @@ final class AccountManagementPresenter {
     private func subscanURL(for chainName: String, address: String) -> URL? {
         guard let urlString = subscanExplorers[chainName] else { return nil }
         return URL(string: "\(urlString)\(address)")
-    }
-
-    private func copyAddress(_ address: String) {
-        UIPasteboard.general.string = address
-
-        let locale = localizationManager?.selectedLocale
-        let title = R.string.localizable.commonCopied(preferredLanguages: locale?.rLanguages)
-        wireframe.presentSuccessNotification(title, from: view)
     }
 
     private func generateExplorers() {
@@ -320,6 +312,8 @@ final class AccountManagementPresenter {
         self.subscanExplorers = subscanExplorers
     }
 }
+
+// MARK: - AccountManagementPresenterProtocol
 
 extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func setup() {
