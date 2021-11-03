@@ -23,7 +23,7 @@ class CrowdloanContributionSetupPresenter {
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
     private var minimumBalance: BigUInt?
-    private var minimumContribution: BigUInt?
+    var minimumContribution: BigUInt?
 
     var bonusService: CrowdloanBonusServiceProtocol?
 
