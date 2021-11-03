@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct WalletListViewFactory {
     static func createView() -> WalletListViewProtocol? {
@@ -15,7 +16,19 @@ struct WalletListViewFactory {
 
         let wireframe = WalletListWireframe()
 
-        let presenter = WalletListPresenter(interactor: interactor, wireframe: wireframe)
+        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
+        let viewModelFactory = WalletListViewModelFactory(
+            priceFormatter: priceFormatter,
+            percentFormatter: NumberFormatter.signedPercent.localizableResource()
+        )
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = WalletListPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
+        )
 
         let view = WalletListViewController(presenter: presenter)
 
