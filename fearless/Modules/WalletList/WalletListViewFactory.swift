@@ -19,6 +19,7 @@ struct WalletListViewFactory {
         let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
         let viewModelFactory = WalletListViewModelFactory(
             priceFormatter: priceFormatter,
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource()
         )
         let localizationManager = LocalizationManager.shared

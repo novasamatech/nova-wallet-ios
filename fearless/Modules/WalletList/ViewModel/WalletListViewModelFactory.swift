@@ -29,13 +29,16 @@ protocol WalletListViewModelFactoryProtocol {
 
 final class WalletListViewModelFactory {
     let priceFormatter: LocalizableResource<TokenFormatter>
+    let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
 
     init(
         priceFormatter: LocalizableResource<TokenFormatter>,
+        assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.priceFormatter = priceFormatter
+        self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
     }
 
@@ -125,17 +128,19 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
-            let factory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+            let balanceFormatter = assetFormatterFactory.createDisplayFormatter(for: assetInfo)
 
-            let balanceViewModel = factory.balanceFromPrice(
-                decimalBalance,
-                priceData: priceData
-            ).value(for: locale)
+            let balanceAmountString = balanceFormatter.value(for: locale).stringFromDecimal(
+                decimalBalance
+            ) ?? ""
 
-            balanceState = connected ? .loaded(value: balanceViewModel.amount) :
-                .cached(value: balanceViewModel.amount)
+            balanceState = connected ? .loaded(value: balanceAmountString) :
+                .cached(value: balanceAmountString)
 
-            if let balanceValue = balanceViewModel.price {
+            if let priceData = priceData, let decimalPrice = Decimal(string: priceData.price) {
+                let balanceValue = priceFormatter.value(for: locale).stringFromDecimal(
+                    decimalBalance * decimalPrice
+                ) ?? ""
                 balanceValueState = .loaded(value: balanceValue)
             } else {
                 balanceValueState = .loading
