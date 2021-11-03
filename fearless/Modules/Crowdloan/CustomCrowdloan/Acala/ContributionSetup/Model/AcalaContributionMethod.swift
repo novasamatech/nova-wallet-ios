@@ -1,6 +1,6 @@
 import Foundation
 
-enum AcalaContributionMethod {
+enum AcalaContributionMethod: CaseIterable {
     case direct
     case liquid
 }

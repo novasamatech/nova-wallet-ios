@@ -7,7 +7,11 @@ final class AcalaContributionSetupPresenter: CrowdloanContributionSetupPresenter
 }
 
 extension AcalaContributionSetupPresenter: AcalaContributionSetupPresenterProtocol {
+    var selectedContributionMethod: AcalaContributionMethod {
+        acalaService?.selectedContributionMethod ?? .direct
+    }
+
     func selectContributionMethod(_ method: AcalaContributionMethod) {
-        print(method)
+        acalaService?.selectedContributionMethod = method
     }
 }

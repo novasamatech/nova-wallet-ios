@@ -1625,6 +1625,7 @@
 		F4B39C592732712C00BB6E10 /* AcalaContributionMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C582732712C00BB6E10 /* AcalaContributionMethod.swift */; };
 		F4B39C612732717100BB6E10 /* AcalaContributionSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C602732717100BB6E10 /* AcalaContributionSetupProtocols.swift */; };
 		F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C65273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift */; };
+		F4B39C6B2732791900BB6E10 /* RadioButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C6A2732791900BB6E10 /* RadioButton.swift */; };
 		F4BDDCBE2657A57F005336BA /* TransferValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */; };
 		F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */; };
 		F4C086BD26D114F700716AEC /* SubqueryEraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */; };
@@ -3334,6 +3335,7 @@
 		F4B39C582732712C00BB6E10 /* AcalaContributionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionMethod.swift; sourceTree = "<group>"; };
 		F4B39C602732717100BB6E10 /* AcalaContributionSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupProtocols.swift; sourceTree = "<group>"; };
 		F4B39C65273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupViewFactory.swift; sourceTree = "<group>"; };
+		F4B39C6A2732791900BB6E10 /* RadioButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadioButton.swift; sourceTree = "<group>"; };
 		F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferValidatorTests.swift; sourceTree = "<group>"; };
 		F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+ProgramaticallyBeginRefresh.swift"; sourceTree = "<group>"; };
 		F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -5846,6 +5848,7 @@
 				84BAFCD126AF5EE700871E86 /* IconDetailsView.swift */,
 				F40966E326B29919008CD244 /* Stacks.swift */,
 				F43A596926D520E0005E973D /* EmptyStateViewCell.swift */,
+				F4B39C6A2732791900BB6E10 /* RadioButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10360,6 +10363,7 @@
 				51FC48FA6FD4D2FB1781424D /* ReferralCrowdloanWireframe.swift in Sources */,
 				0F3E58FC800ED8722589F89E /* ReferralCrowdloanPresenter.swift in Sources */,
 				9F4A48B1BE3A1110A0CF9F36 /* ReferralCrowdloanViewController.swift in Sources */,
+				F4B39C6B2732791900BB6E10 /* RadioButton.swift in Sources */,
 				CE2792E78B14CE02394D8CF4 /* ReferralCrowdloanViewLayout.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
 				33D23A4A92AF90C385568462 /* ChainSelectionProtocols.swift in Sources */,

@@ -150,7 +150,7 @@ class CrowdloanContributionSetupViewLayout: UIView {
         }
     }
 
-    private func applyLocalization() {
+    func applyLocalization() {
         contributionTitleLabel.text = R.string.localizable.crowdloanContributeTitle(
             preferredLanguages: locale.rLanguages
         )

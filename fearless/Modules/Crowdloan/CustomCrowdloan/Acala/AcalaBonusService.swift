@@ -17,6 +17,8 @@ final class AcalaBonusService {
     static let apiStatement = "/statement"
     static let apiContribute = "/contribute"
 
+    var selectedContributionMethod = AcalaContributionMethod.direct
+
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/acala/terms")! }
     private(set) var referralCode: String?
