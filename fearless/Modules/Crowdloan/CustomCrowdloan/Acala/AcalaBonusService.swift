@@ -284,12 +284,12 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         }
         let callFactory = SubstrateCallFactory()
         let transferCall = callFactory.transfer(to: accountId, amount: amount)
-        let statementRemark = callFactory.remark(remark: statement)
+        let statementRemark = callFactory.remarkWithEvent(remark: statement)
 
         if
             let referral = referralCode,
             let referralData = "referrer:\(referral)".data(using: .utf8) {
-            let referralRemark = callFactory.remark(remark: referralData)
+            let referralRemark = callFactory.remarkWithEvent(remark: referralData)
             return try builder
                 .adding(call: transferCall)
                 .adding(call: statementRemark)
