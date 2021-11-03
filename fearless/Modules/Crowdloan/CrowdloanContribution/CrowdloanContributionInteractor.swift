@@ -135,7 +135,7 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
     }
 
     func estimateFee(for amount: BigUInt, bonusService: CrowdloanBonusServiceProtocol?) {
-        let call = callFactory.contribute(to: paraId, amount: amount)
+        let call = callFactory.contribute(to: paraId, amount: amount, signature: nil)
 
         let identifier = String(amount)
 

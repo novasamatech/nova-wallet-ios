@@ -344,20 +344,20 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     }
 
     func selectItem(at indexPath: IndexPath) {
-        let viewModel = viewModel[indexPath.section]
+        let chainViewModel = viewModel[indexPath.section]
             .chainAccounts[indexPath.row]
 
-        guard let chainModel = chains[viewModel.chainId] else { return }
+        guard let chainModel = chains[chainViewModel.chainId] else { return }
 
-        if viewModel.address == nil {
+        if chainViewModel.address == nil {
             // Case 1: address not found
             displayNoAddressActions(for: chainModel)
         } else if chainModel.isEthereumBased {
             // Case 2: ethereum address found
-            displayEthereumAddressActions(for: chainModel, viewModel: viewModel)
+            displayEthereumAddressActions(for: chainModel, viewModel: chainViewModel)
         } else {
             // Case 3: substrate address found
-            displaySubstrateAddressActions(for: chainModel, viewModel: viewModel)
+            displaySubstrateAddressActions(for: chainModel, viewModel: chainViewModel)
         }
     }
 

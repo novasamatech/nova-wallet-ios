@@ -1,0 +1,3 @@
+import Foundation
+
+final class CrowdloanYourContributionsWireframe: CrowdloanYourContributionsWireframeProtocol {}

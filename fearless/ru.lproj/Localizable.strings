@@ -347,9 +347,10 @@
 "tabbar.crowdloan.title" = "Краудлоуны";
 "crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
 "crowdloan.you.contributions.title" = "Ваш вклад";
+"crowdloan.about.crowdloans" = "О краудлоунах";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
-"crowdloan.active.section.format" = "Активные (%@)";
-"crowdloan.completed.section.format" = "Завершённые (%@)";
+"crowdloan.active.section" = "Активные";
+"crowdloan.completed.section" = "Завершённые";
 "crowdloan.empty.message" = "Информация о краудлоунах \n появится здесь.";
 "common.time.left.format" = "%@ осталось";
 "common.existential.warning.message" = "Операция удалит учетную запись из хранилища блоков, так как это сделает общий баланс ниже минимального.";
@@ -374,9 +375,16 @@
 "crowdloan.reward" = "Примерное вознаграждение";
 "staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
+"crowdloan.submit.agreement" = "";
+"crowdloan.moonbeam.terms.description" = "";
+"crowdloan.moonbeam.missing.account.title" = "Отсутствует аккаунт Moonbeam";
+"crowdloan.moonbeam.missing.account.message" = "Добавьте аккаунт Moonbeam в кошелек, чтобы участвовать в краудлоуне Moonbeam";
+"crowdloan.moonbeam.region.restriction.title" = "Ваш регион не поддерживается";
+"crowdloan.moonbeam.region.restriction.message" = "Этот краудлоун не поддерживается в вашем регионе";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
+"crowdloan.reward.destination.format" = "%@ назначение вознаграждений";
 "common.bonus" = "Бонус";
 "crowdloan.app.bonus.format" = "Бонус Nova Wallet (%@)";
 "common.referral.code.title" = "Реферальный код";
@@ -404,7 +412,6 @@
 "staking.custom.clear.button.title" = "Очистить фильтры";
 "staking.custom.deselect.button.title" = "Отменить выбор";
 "staking.custom.header.validators.title" = "Валидаторов: %li из %li";
-"crowdloan.contribution.format" = "Вы вложили: %@";
 "staking.set.validators.title" = "Выберите валидаторов для начала стейкинга";
 "staking.set.validators.message" = "Валидаторы не выбраны";
 "staking.max.nominators.reached.title" = "Невозможно начать стейкинг";

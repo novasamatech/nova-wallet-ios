@@ -1,6 +1,7 @@
 import UIKit
 import RobinHood
 import BigInt
+import FearlessUtils
 
 final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInteractor, AccountFetching {
     var confirmPresenter: CrowdloanContributionConfirmInteractorOutputProtocol? {
@@ -48,6 +49,7 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
     override func setup() {
         super.setup()
 
+        provideRewardDestination()
         do {
             if let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) {
                 let displayAddress = try accountResponse.toDisplayAddress()
@@ -62,8 +64,8 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
         }
     }
 
-    private func submitExtrinsic(for contribution: BigUInt) {
-        let call = callFactory.contribute(to: paraId, amount: contribution)
+    private func submitExtrinsicWithSignature(for contribution: BigUInt, signature: MultiSignature?) {
+        let call = callFactory.contribute(to: paraId, amount: contribution, signature: signature)
 
         let builderClosure: ExtrinsicBuilderClosure = { builder in
             let nextBuilder = try builder.adding(call: call)
@@ -81,6 +83,31 @@ final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInterac
                 self?.confirmPresenter?.didSubmitContribution(result: result)
             }
         )
+    }
+
+    private func submitExtrinsic(for contribution: BigUInt) {
+        if let bonusService = bonusService {
+            bonusService.provideSignature(
+                contribution: contribution
+            ) { [weak self] signatureResult in
+                switch signatureResult {
+                case let .success(signature):
+                    self?.submitExtrinsicWithSignature(for: contribution, signature: signature)
+                case let .failure(error):
+                    self?.confirmPresenter?.didSubmitContribution(result: .failure(error))
+                }
+            }
+        } else {
+            submitExtrinsicWithSignature(for: contribution, signature: nil)
+        }
+    }
+
+    private func provideRewardDestination() {
+        guard
+            let bonusService = bonusService,
+            let address = bonusService.rewardDestinationAddress
+        else { return }
+        confirmPresenter?.didReceiveRewardDestinationAddress(address)
     }
 }
 
