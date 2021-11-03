@@ -1619,6 +1619,12 @@
 		F4AE12A1268DD69B0097D1C7 /* MnemonicTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AE12A0268DD69B0097D1C7 /* MnemonicTextNormalizer.swift */; };
 		F4AE12A6268DDC780097D1C7 /* MnemonicTextNormalizerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4AE12A5268DDC780097D1C7 /* MnemonicTextNormalizerTest.swift */; };
 		F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B06BF9264509E8003214D5 /* SetControllerCall.swift */; };
+		F4B39C4927326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C4827326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift */; };
+		F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C4D27326E8400BB6E10 /* AcalaContributionSetupViewController.swift */; };
+		F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C52273270A300BB6E10 /* AcalaContributionSetupPresenter.swift */; };
+		F4B39C592732712C00BB6E10 /* AcalaContributionMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C582732712C00BB6E10 /* AcalaContributionMethod.swift */; };
+		F4B39C612732717100BB6E10 /* AcalaContributionSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C602732717100BB6E10 /* AcalaContributionSetupProtocols.swift */; };
+		F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4B39C65273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift */; };
 		F4BDDCBE2657A57F005336BA /* TransferValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */; };
 		F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */; };
 		F4C086BD26D114F700716AEC /* SubqueryEraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */; };
@@ -3322,6 +3328,12 @@
 		F4AE12A0268DD69B0097D1C7 /* MnemonicTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicTextNormalizer.swift; sourceTree = "<group>"; };
 		F4AE12A5268DDC780097D1C7 /* MnemonicTextNormalizerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MnemonicTextNormalizerTest.swift; sourceTree = "<group>"; };
 		F4B06BF9264509E8003214D5 /* SetControllerCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetControllerCall.swift; sourceTree = "<group>"; };
+		F4B39C4827326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupViewLayout.swift; sourceTree = "<group>"; };
+		F4B39C4D27326E8400BB6E10 /* AcalaContributionSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupViewController.swift; sourceTree = "<group>"; };
+		F4B39C52273270A300BB6E10 /* AcalaContributionSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupPresenter.swift; sourceTree = "<group>"; };
+		F4B39C582732712C00BB6E10 /* AcalaContributionMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionMethod.swift; sourceTree = "<group>"; };
+		F4B39C602732717100BB6E10 /* AcalaContributionSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupProtocols.swift; sourceTree = "<group>"; };
+		F4B39C65273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSetupViewFactory.swift; sourceTree = "<group>"; };
 		F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferValidatorTests.swift; sourceTree = "<group>"; };
 		F4C086B726D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIRefreshControl+ProgramaticallyBeginRefresh.swift"; sourceTree = "<group>"; };
 		F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -8321,6 +8333,7 @@
 		F48EB5442722BB6000AE15ED /* Acala */ = {
 			isa = PBXGroup;
 			children = (
+				F4B39C4727326CC600BB6E10 /* ContributionSetup */,
 				F48EB5452722BB7000AE15ED /* AcalaBonusService.swift */,
 				F48EB5502722C9D600AE15ED /* AcalaKeys.swift */,
 			);
@@ -8351,6 +8364,27 @@
 				F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		F4B39C4727326CC600BB6E10 /* ContributionSetup */ = {
+			isa = PBXGroup;
+			children = (
+				F4B39C572732711400BB6E10 /* Model */,
+				F4B39C602732717100BB6E10 /* AcalaContributionSetupProtocols.swift */,
+				F4B39C52273270A300BB6E10 /* AcalaContributionSetupPresenter.swift */,
+				F4B39C4827326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift */,
+				F4B39C4D27326E8400BB6E10 /* AcalaContributionSetupViewController.swift */,
+				F4B39C65273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift */,
+			);
+			path = ContributionSetup;
+			sourceTree = "<group>";
+		};
+		F4B39C572732711400BB6E10 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				F4B39C582732712C00BB6E10 /* AcalaContributionMethod.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		F4BDDCB12657A551005336BA /* Transfer */ = {
@@ -8959,6 +8993,7 @@
 				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
+				F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */,
 				8437877A264D2D5800E6AFD2 /* NetworkTypeSelectionPresentable.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
 				8423B0E0251A759000B8687C /* Chain.swift in Sources */,
@@ -9440,6 +9475,7 @@
 				84A2C90224E07E440020D3B7 /* CryptoType+Utils.swift in Sources */,
 				845FC93426B09EDB0021EC48 /* RoundedButton+Style.swift in Sources */,
 				AE9EF25F260A82A50026910A /* StoriesPresenter.swift in Sources */,
+				F4B39C592732712C00BB6E10 /* AcalaContributionMethod.swift in Sources */,
 				AEA0C8BA268113F900F9666F /* YourValidatorList+RecommendedList.swift in Sources */,
 				84F5106D263BF9A4005D15AE /* SingleValueProviderSubscriber.swift in Sources */,
 				84D33996262250B800130A89 /* String+Substrate.swift in Sources */,
@@ -9539,6 +9575,7 @@
 				842876AA24AE049B00D91AD8 /* SelectionTitleTableViewCell.swift in Sources */,
 				84CA68DD26BEA60A003B9453 /* ConnectionFactory.swift in Sources */,
 				F40966B626B297D6008CD244 /* AnalyticsRewardsPresenter.swift in Sources */,
+				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				84DF21AD25363D28005454AE /* WalletAssetId+Chain.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,
 				84A2C90724E09DC20020D3B7 /* AccountOperationFactoryError+Presentable.swift in Sources */,
@@ -9730,6 +9767,7 @@
 				84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */,
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
+				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				8475AE34258B934F00B058F3 /* TransferValidatingError.swift in Sources */,
 				8494D8552524633300614D8F /* WalletTransferTokenView.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
@@ -10141,6 +10179,7 @@
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
 				E5F3DF66415E54AE04D0C9A9 /* StakingMainViewController.swift in Sources */,
 				F44CCBEE26D38D1900A9E02E /* AnalyticsMagentaButton.swift in Sources */,
+				F4B39C612732717100BB6E10 /* AcalaContributionSetupProtocols.swift in Sources */,
 				E2F9D7BDDE961B162EF100AB /* StakingMainViewFactory.swift in Sources */,
 				CD76A6513A708051857FD480 /* StakingAmountProtocols.swift in Sources */,
 				61B9688494251703A6373A1B /* StakingAmountWireframe.swift in Sources */,
@@ -10188,6 +10227,7 @@
 				7E1A03082260E0D31AD394CA /* StakingRewardDetailsProtocols.swift in Sources */,
 				65909D701527D99837B439D9 /* StakingRewardDetailsWireframe.swift in Sources */,
 				6A977B56FD6441F52660771C /* StakingRewardDetailsPresenter.swift in Sources */,
+				F4B39C4927326D0400BB6E10 /* AcalaContributionSetupViewLayout.swift in Sources */,
 				845B821926EF808D00D25C72 /* MetaAccountMapper.swift in Sources */,
 				19A29027666EB5388CBFAD61 /* StakingRewardDetailsInteractor.swift in Sources */,
 				F47BBD692630BB3C0087DA11 /* StakingBalanceViewFactory.swift in Sources */,

@@ -1,6 +1,6 @@
 import UIKit
 
-final class CrowdloanContributionSetupViewLayout: UIView {
+class CrowdloanContributionSetupViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
@@ -180,7 +180,7 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         )
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
