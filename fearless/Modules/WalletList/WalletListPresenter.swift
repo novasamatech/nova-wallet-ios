@@ -12,7 +12,7 @@ final class WalletListPresenter {
 
     private var connectionListDifference: ListDifferenceCalculator<ChainModel> = ListDifferenceCalculator(
         initialItems: [],
-        sortBlock: { $0.addressPrefix < $1.addressPrefix }
+        sortBlock: { $0.order < $1.order }
     )
 
     private var genericAccountId: AccountId?
