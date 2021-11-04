@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension ScaleEncodable {
     func scaleEncoded() throws -> Data {

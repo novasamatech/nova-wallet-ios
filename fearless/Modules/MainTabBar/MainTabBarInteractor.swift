@@ -1,7 +1,7 @@
 import Foundation
 import SoraKeystore
 import CommonWallet
-import FearlessUtils
+import SubstrateSdk
 
 final class MainTabBarInteractor {
     weak var presenter: MainTabBarInteractorOutputProtocol?

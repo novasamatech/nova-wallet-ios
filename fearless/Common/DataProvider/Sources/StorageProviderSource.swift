@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 @available(*, deprecated, message: "Use LocalStorageProviderSource instead")
 final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceProtocol {

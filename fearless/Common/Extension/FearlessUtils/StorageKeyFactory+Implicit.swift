@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension StorageKeyFactoryProtocol {
     func accountInfoKeyForId(_ identifier: Data) throws -> Data {

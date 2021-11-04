@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 
 final class RecommendedValidatorCell: UITableViewCell {
     @IBOutlet private var iconView: PolkadotIconView!

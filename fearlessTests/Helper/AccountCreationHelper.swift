@@ -3,7 +3,7 @@ import Foundation
 import IrohaCrypto
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class AccountCreationHelper {
     @available(*, deprecated, message: "Use createMetaAccountFromMnemonic(...) instead")

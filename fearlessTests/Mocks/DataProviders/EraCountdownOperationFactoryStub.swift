@@ -1,7 +1,7 @@
 import Foundation
 @testable import fearless
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 struct EraCountdownOperationFactoryStub: EraCountdownOperationFactoryProtocol {
     let eraCountdown: EraCountdown

@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 import RobinHood
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class WalletAssetViewModelFactory: AccountListViewModelFactoryProtocol {
     let metaAccount: MetaAccountModel

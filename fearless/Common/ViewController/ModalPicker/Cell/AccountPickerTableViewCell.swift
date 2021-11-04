@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 
 final class AccountPickerTableViewCell: UITableViewCell, ModalPickerCellProtocol {
     typealias Model = AccountPickerViewModel

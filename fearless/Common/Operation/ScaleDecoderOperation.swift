@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 
 final class ScaleDecoderOperation<T: ScaleDecodable>: BaseOperation<T?> {
