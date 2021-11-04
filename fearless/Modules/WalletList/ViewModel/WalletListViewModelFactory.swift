@@ -47,7 +47,7 @@ final class WalletListViewModelFactory {
     private func formatTotalPrice(from prices: [WalletListChainAccountPrice], locale: Locale) -> String {
         let totalPrice = prices.reduce(Decimal(0)) { result, item in
             let balance = Decimal.fromSubstrateAmount(
-                item.accountInfo.data.available,
+                item.accountInfo.data.total,
                 precision: item.assetInfo.assetPrecision
             ) ?? 0.0
 

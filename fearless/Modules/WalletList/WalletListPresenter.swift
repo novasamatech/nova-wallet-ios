@@ -10,6 +10,7 @@ final class WalletListPresenter {
 
         let chainModel: ChainModel
         let accountInfoResult: Result<AccountInfo?, Error>?
+        let value: Decimal?
     }
 
     weak var view: WalletListViewProtocol?
@@ -20,10 +21,19 @@ final class WalletListPresenter {
     private var connectionListDifference: ListDifferenceCalculator<ListModel> = ListDifferenceCalculator(
         initialItems: [],
         sortBlock: { model1, model2 in
-            let balance1 = try? model1.accountInfoResult?.get()?.data.available
-            let balance2 = try? model2.accountInfoResult?.get()?.data.available
+            let balance1 = try? model1.accountInfoResult?.get()?.data.total
+            let balance2 = try? model2.accountInfoResult?.get()?.data.total
 
-            if balance1 != nil, balance2 != nil {
+            let value1 = model1.value
+            let value2 = model2.value
+
+            if value1 != nil, value2 != nil {
+                return model1.chainModel.order < model2.chainModel.order
+            } else if value1 != nil {
+                return true
+            } else if value2 != nil {
+                return false
+            } else if balance1 != nil, balance2 != nil {
                 return model1.chainModel.order < model2.chainModel.order
             } else if balance1 != nil {
                 return true
@@ -129,9 +139,37 @@ final class WalletListPresenter {
         view?.didReceiveHeader(viewModel: viewModel)
     }
 
+    private func createListModel(for chainModel: ChainModel) -> ListModel {
+        let accountInfo = accountResults[chainModel.chainId]
+
+        let maybeBalance: Decimal? = {
+            if
+                let total = try? accountInfo?.get()?.data.total,
+                let asset = chainModel.utilityAssets().first {
+                return Decimal.fromSubstrateAmount(total, precision: Int16(bitPattern: asset.precision))
+            } else {
+                return nil
+            }
+        }()
+
+        let maybePrice: Decimal? = {
+            if
+                let mapping = try? priceResult?.get(), let priceData = mapping[chainModel.chainId] {
+                return Decimal(string: priceData.price)
+            } else {
+                return nil
+            }
+        }()
+
+        if let balance = maybeBalance, let price = maybePrice {
+            return ListModel(chainModel: chainModel, accountInfoResult: accountInfo, value: balance * price)
+        } else {
+            return ListModel(chainModel: chainModel, accountInfoResult: accountInfo, value: nil)
+        }
+    }
+
     private func provideAssetViewModels() {
         let maybePrices = try? priceResult?.get()
-
         let viewModels: [WalletListViewModel] = connectionListDifference.allItems.compactMap { model in
             let chain = model.chainModel
             guard let assetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon) else {
@@ -150,7 +188,7 @@ final class WalletListPresenter {
 
             switch model.accountInfoResult {
             case let .success(accountInfo):
-                balance = accountInfo?.data.available ?? 0
+                balance = accountInfo?.data.total ?? 0
             case .failure, .none:
                 balance = nil
             }
@@ -210,6 +248,13 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
     func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>) {
         priceResult = result
 
+        let changes: [DataProviderChange<ListModel>] = allChains.values.map { chain in
+            let model = createListModel(for: chain)
+            return .update(newItem: model)
+        }
+
+        connectionListDifference.apply(changes: changes)
+
         provideHeaderViewModel()
         provideAssetViewModels()
     }
@@ -229,16 +274,10 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         let listChanges: [DataProviderChange<ListModel>] = changes.map { change in
             switch change {
             case let .insert(newItem):
-                let model = ListModel(
-                    chainModel: newItem,
-                    accountInfoResult: accountResults[newItem.chainId]
-                )
+                let model = createListModel(for: newItem)
                 return .insert(newItem: model)
             case let .update(newItem):
-                let model = ListModel(
-                    chainModel: newItem,
-                    accountInfoResult: accountResults[newItem.chainId]
-                )
+                let model = createListModel(for: newItem)
                 return .update(newItem: model)
             case let .delete(deletedIdentifier):
                 return .delete(deletedIdentifier: deletedIdentifier)
@@ -258,7 +297,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
             return
         }
 
-        let listModel = ListModel(chainModel: chainModel, accountInfoResult: result)
+        let listModel = createListModel(for: chainModel)
         connectionListDifference.apply(changes: [.update(newItem: listModel)])
 
         provideHeaderViewModel()
