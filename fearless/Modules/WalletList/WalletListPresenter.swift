@@ -185,6 +185,11 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     func selectWallet() {
         wireframe.showWalletList(from: view)
     }
+
+    func selectAsset(at index: Int) {
+        let chainModel = connectionListDifference.allItems[index].chainModel
+        wireframe.showAssetDetails(from: view, chain: chainModel)
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {

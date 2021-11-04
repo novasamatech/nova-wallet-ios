@@ -20,15 +20,6 @@ extension MainTabBarPresenter: MainTabBarInteractorOutputProtocol {
         wireframe.showNewCrowdloan(on: view)
     }
 
-    func didReloadSelectedNetwork() {
-        wireframe.showNewWalletView(on: view)
-        wireframe.showNewCrowdloan(on: view)
-    }
-
-    func didUpdateWalletInfo() {
-        wireframe.reloadWalletContent()
-    }
-
     func didRequestImportAccount() {
         wireframe.presentAccountImport(on: view)
     }

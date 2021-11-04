@@ -51,18 +51,6 @@ extension MainTabBarInteractor: EventVisitorProtocol {
         serviceCoordinator.updateOnAccountChange()
         presenter?.didReloadSelectedAccount()
     }
-
-    func processBalanceChanged(event _: WalletBalanceChanged) {
-        presenter?.didUpdateWalletInfo()
-    }
-
-    func processStakingChanged(event _: WalletStakingInfoChanged) {
-        presenter?.didUpdateWalletInfo()
-    }
-
-    func processNewTransaction(event _: WalletNewTransactionInserted) {
-        presenter?.didUpdateWalletInfo()
-    }
 }
 
 extension MainTabBarInteractor: KeystoreImportObserver {
