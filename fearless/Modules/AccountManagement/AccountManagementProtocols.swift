@@ -33,14 +33,14 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
 
 protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable, ModalAlertPresenting {
     func showCreateAccount(
-        from view: AccountManagementViewProtocol?,
+        from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     )
 
     func showImportAccount(
-        from view: AccountManagementViewProtocol?,
+        from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
