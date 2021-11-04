@@ -6,12 +6,12 @@ enum AcalaContributionMethod: CaseIterable {
 }
 
 extension AcalaContributionMethod {
-    func title(for _: Locale) -> String {
+    func title(for locale: Locale) -> String {
         switch self {
         case .direct:
-            return "Direct"
+            return R.string.localizable.crowdloanAcalaDirect(preferredLanguages: locale.rLanguages)
         case .liquid:
-            return "Liquid"
+            return R.string.localizable.crowdloanAcalaLiquid(preferredLanguages: locale.rLanguages)
         }
     }
 }
