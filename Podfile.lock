@@ -6,7 +6,7 @@ PODS:
   - CocoaLumberjack (3.7.2):
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
-  - CommonWallet/Core (1.15.0):
+  - CommonWallet/Core (1.15.1):
     - RobinHood (~> 2.6.0)
     - SoraFoundation/DateProcessing (~> 1.0.0)
     - SoraFoundation/Localization (~> 1.0.0)
@@ -122,7 +122,7 @@ PODS:
 
 DEPENDENCIES:
   - Charts
-  - CommonWallet/Core (from `https://github.com/soramitsu/Capital-iOS.git`, commit `4133ff9b81cda094dd8e2b7f32129172224b0227`)
+  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `2f128c4d9f86d268748b8227e3e231bd6f786e35`)
   - Cuckoo
   - FireMock
   - Kingfisher
@@ -170,8 +170,8 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonWallet:
-    :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
-    :git: https://github.com/soramitsu/Capital-iOS.git
+    :commit: 2f128c4d9f86d268748b8227e3e231bd6f786e35
+    :git: https://github.com/ERussel/Capital-iOS.git
   SubstrateSdk:
     :commit: 19f8b8c9b8d3e49d94c3160100bbb04d64b87169
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
@@ -181,8 +181,8 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonWallet:
-    :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
-    :git: https://github.com/soramitsu/Capital-iOS.git
+    :commit: 2f128c4d9f86d268748b8227e3e231bd6f786e35
+    :git: https://github.com/ERussel/Capital-iOS.git
   SubstrateSdk:
     :commit: 19f8b8c9b8d3e49d94c3160100bbb04d64b87169
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
@@ -194,7 +194,7 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  CommonWallet: cdc58c26a9bbac8d45edba7c09313896b5d7350d
+  CommonWallet: 4c3c9c7f543842f04a930ddca163a5e0ab60f04a
   Cuckoo: 09ff1b7c6613b9c27dafea90702ca32208fe59d3
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
@@ -220,6 +220,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: a9114ea93d17a463a87e9372781db47ad44dfa1e
+PODFILE CHECKSUM: 0b55a5f34fdb173f1f7ed4e2a1b0d999aaa5e64b
 
 COCOAPODS: 1.11.2
