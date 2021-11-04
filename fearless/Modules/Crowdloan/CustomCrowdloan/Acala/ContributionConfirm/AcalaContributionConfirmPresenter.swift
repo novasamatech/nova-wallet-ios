@@ -33,4 +33,19 @@ final class AcalaContributionConfirmPresenter: CrowdloanContributionConfirmPrese
             logger: logger
         )
     }
+
+    override func didReceiveMinimumContribution(result: Result<BigUInt, Error>) {
+        switch result {
+        case .success:
+            switch contributionMethod {
+            case .liquid:
+                minimumContribution = BigUInt(1e+10)
+                provideAssetVewModel()
+            case .direct:
+                super.didReceiveMinimumContribution(result: result)
+            }
+        case .failure:
+            super.didReceiveMinimumContribution(result: result)
+        }
+    }
 }

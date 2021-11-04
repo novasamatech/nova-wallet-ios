@@ -1,59 +1,30 @@
 import Foundation
-import SoraKeystore
 import SoraFoundation
+import SoraKeystore
+import RobinHood
 
-struct AcalaContributionSetupViewFactory {
+struct AcalaContributionConfirmViewFactory {
     static func createView(
-        for paraId: ParaId,
+        method: AcalaContributionMethod,
+        with paraId: ParaId,
+        inputAmount: Decimal,
+        bonusService: CrowdloanBonusServiceProtocol?,
         state: CrowdloanSharedState
-    ) -> CrowdloanContributionSetupViewProtocol? {
+    ) -> CrowdloanContributionConfirmViewProtocol? {
         guard
             let chain = state.settings.value,
             let asset = chain.utilityAssets().first,
-            let selectedAccount = SelectedWalletSettings.shared.value,
-            let accountResponse = selectedAccount.fetch(for: chain.accountRequest()),
-            let selectedAddress = try? accountResponse.accountId.toAddress(
-                using: chain.chainFormat
-            ),
             let interactor = createInteractor(
                 for: paraId,
                 chain: chain,
                 asset: asset,
-                state: state,
-                selectedMetaAccount: selectedAccount,
-                accountResponse: accountResponse
-            )
-        else {
+                bonusService: bonusService,
+                state: state
+            ) else {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
-
-        let accountAddressDependingOnChain: String? = {
-            switch chain.chainId {
-            case Chain.rococo.genesisHash:
-                // requires polkadot address even in rococo testnet
-                return try? accountResponse.accountId.toAddress(
-                    using: ChainFormat.substrate(UInt16(SNAddressType.polkadotMain.rawValue))
-                )
-            default:
-                return selectedAddress
-            }
-        }()
-        guard let address = accountAddressDependingOnChain else { return nil }
-
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedAccount.metaId,
-            accountResponse: accountResponse
-        )
-
-        let acalaService = AcalaBonusService(
-            address: address,
-            signingWrapper: signingWrapper,
-            operationManager: operationManager
-        )
-        let wireframe = AcalaContributionSetupWireframe(state: state, acalaService: acalaService)
+        let wireframe = CrowdloanContributionConfirmWireframe()
 
         let assetInfo = asset.displayInfo(with: chain.icon)
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
@@ -70,19 +41,21 @@ struct AcalaContributionSetupViewFactory {
             assetInfo: assetInfo
         )
 
-        let presenter = AcalaContributionSetupPresenter(
+        let presenter = AcalaContributionConfirmPresenter(
+            contributionMethod: method,
             interactor: interactor,
             wireframe: wireframe,
             balanceViewModelFactory: balanceViewModelFactory,
             contributionViewModelFactory: contributionViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
+            inputAmount: inputAmount,
+            bonusRate: bonusService?.bonusRate,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
-            bonusService: acalaService,
             logger: Logger.shared
         )
 
-        let view = AcalaContributionSetupViewController(
+        let view = CrowdloanContributionConfirmVC(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -98,16 +71,23 @@ struct AcalaContributionSetupViewFactory {
         for paraId: ParaId,
         chain: ChainModel,
         asset: AssetModel,
-        state: CrowdloanSharedState,
-        selectedMetaAccount: MetaAccountModel,
-        accountResponse: ChainAccountResponse
-    ) -> CrowdloanContributionSetupInteractor? {
+        bonusService: CrowdloanBonusServiceProtocol?,
+        state: CrowdloanSharedState
+    ) -> CrowdloanContributionConfirmInteractor? {
+        guard let selectedMetaAccount = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
         let operationManager = OperationManagerFacade.sharedManager
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
             return nil
         }
 
@@ -122,22 +102,14 @@ struct AcalaContributionSetupViewFactory {
 
         let feeProxy = ExtrinsicFeeProxy()
 
-        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory(
-            chainRegistry: chainRegistry,
-            storageFacade: SubstrateDataStorageFacade.shared,
-            operationManager: operationManager,
-            logger: Logger.shared
+        let keystore = Keychain()
+        let signingWrapper = SigningWrapper(
+            keystore: keystore,
+            metaId: selectedMetaAccount.metaId,
+            accountResponse: accountResponse
         )
 
-        let priceLocalSubscriptionFactory = PriceProviderFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
-        let jsonLocalSubscriptionFactory = JsonDataProviderFactory(
-            storageFacade: SubstrateDataStorageFacade.shared
-        )
-
-        return CrowdloanContributionSetupInteractor(
+        return CrowdloanContributionConfirmInteractor(
             paraId: paraId,
             selectedMetaAccount: selectedMetaAccount,
             chain: chain,
@@ -146,9 +118,11 @@ struct AcalaContributionSetupViewFactory {
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
             crowdloanLocalSubscriptionFactory: state.crowdloanLocalSubscriptionFactory,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
-            jsonLocalSubscriptionFactory: jsonLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            jsonLocalSubscriptionFactory: JsonDataProviderFactory.shared,
+            signingWrapper: signingWrapper,
+            bonusService: bonusService,
             operationManager: operationManager
         )
     }

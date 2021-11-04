@@ -26,7 +26,7 @@ class CrowdloanContributionConfirmPresenter {
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
     private var minimumBalance: BigUInt?
-    private var minimumContribution: BigUInt?
+    var minimumContribution: BigUInt?
     private var rewardDestinationAddress: AccountAddress?
 
     private var crowdloanMetadata: CrowdloanMetadata? {
@@ -79,7 +79,18 @@ class CrowdloanContributionConfirmPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideAssetVewModel() {
+    func didReceiveMinimumContribution(result: Result<BigUInt, Error>) {
+        switch result {
+        case let .success(minimumContribution):
+            self.minimumContribution = minimumContribution
+
+            provideAssetVewModel()
+        case let .failure(error):
+            logger?.error("Did receive minimum contribution error: \(error)")
+        }
+    }
+
+    func provideAssetVewModel() {
         guard minimumBalance != nil else {
             return
         }
@@ -412,17 +423,6 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
             provideAssetVewModel()
         case let .failure(error):
             logger?.error("Did receive minimum balance error: \(error)")
-        }
-    }
-
-    func didReceiveMinimumContribution(result: Result<BigUInt, Error>) {
-        switch result {
-        case let .success(minimumContribution):
-            self.minimumContribution = minimumContribution
-
-            provideAssetVewModel()
-        case let .failure(error):
-            logger?.error("Did receive minimum contribution error: \(error)")
         }
     }
 
