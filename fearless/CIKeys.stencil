@@ -9,4 +9,10 @@ enum SubscanCIKeys {
 
 enum AcalaCIKeys {
     static var authToken: String = "{{ argument.acalaAuthToken }}"
+    static var authTestToken: String = "{{ argument.acalaAuthTestToken }}"
+}
+
+enum MoonbeamCrowdloanCIKeys {
+    static var apiKey: String = "{{ argument.moonbeamApiKey }}"
+    static var apiTestKey: String = "{{ argument.moonbeamApiTestKey }}"
 }

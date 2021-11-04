@@ -1,11 +1,11 @@
 import Foundation
 
-enum AcalaKeys {
-    static var authToken: String {
+enum MoonbeamKeys {
+    static var apiKey: String {
         #if F_RELEASE
-            return AcalaKeys.variable(named: "ACALA_AUTH_TOKEN") ?? AcalaCIKeys.authToken
+            return AcalaKeys.variable(named: "MOONBEAM_API_KEY") ?? MoonbeamCrowdloanCIKeys.apiKey
         #else
-            return AcalaKeys.variable(named: "ACALA_TEST_AUTH_TOKEN") ?? AcalaCIKeys.authTestToken
+            return AcalaKeys.variable(named: "MOONBEAM_TEST_API_KEY") ?? MoonbeamCrowdloanCIKeys.apiTestKey
         #endif
     }
 

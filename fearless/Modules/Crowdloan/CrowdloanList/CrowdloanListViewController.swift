@@ -87,18 +87,12 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         switch state {
         case .loading:
             didStartLoading()
-
-            rootView.bringSubviewToFront(rootView.tableView)
         case .loaded:
             rootView.tableView.refreshControl?.endRefreshing()
             didStopLoading()
-
-            rootView.bringSubviewToFront(rootView.tableView)
         case .empty, .error:
             rootView.tableView.refreshControl?.endRefreshing()
             didStopLoading()
-
-            rootView.bringSubviewToFront(rootView.statusView)
         }
 
         rootView.tableView.reloadData()
@@ -236,9 +230,7 @@ extension CrowdloanListViewController: Localizable {
     }
 }
 
-extension CrowdloanListViewController: LoadableViewProtocol {
-    var loadableContentView: UIView! { rootView.statusView }
-}
+extension CrowdloanListViewController: LoadableViewProtocol {}
 
 extension CrowdloanListViewController: EmptyStateViewOwnerProtocol {
     var emptyStateDelegate: EmptyStateDelegate { self }
