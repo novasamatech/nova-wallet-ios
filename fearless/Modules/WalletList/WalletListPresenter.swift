@@ -303,6 +303,12 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideHeaderViewModel()
         provideAssetViewModels()
     }
+
+    func didChange(name: String) {
+        self.name = name
+
+        provideHeaderViewModel()
+    }
 }
 
 extension WalletListPresenter: Localizable {
