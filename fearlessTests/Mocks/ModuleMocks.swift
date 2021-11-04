@@ -3111,6 +3111,21 @@ import SoraFoundation
     
     
     
+     func setTitle(_ newTitle: String)  {
+        
+    return cuckoo_manager.call("setTitle(_: String)",
+            parameters: (newTitle),
+            escapingParameters: (newTitle),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setTitle(newTitle))
+        
+    }
+    
+    
+    
      func setSource(type: AccountImportSource)  {
         
     return cuckoo_manager.call("setSource(type: AccountImportSource)",
@@ -3181,21 +3196,6 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.setSelectedCrypto(model: model))
-        
-    }
-    
-    
-    
-     func setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)  {
-        
-    return cuckoo_manager.call("setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)",
-            parameters: (model),
-            escapingParameters: (model),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setSelectedNetwork(model: model))
         
     }
     
@@ -3338,6 +3338,11 @@ import SoraFoundation
 	    }
 	    
 	    
+	    func setTitle<M1: Cuckoo.Matchable>(_ newTitle: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newTitle) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setTitle(_: String)", parameterMatchers: matchers))
+	    }
+	    
 	    func setSource<M1: Cuckoo.Matchable>(type: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportSource)> where M1.MatchedType == AccountImportSource {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportSource)>] = [wrap(matchable: type) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSource(type: AccountImportSource)", parameterMatchers: matchers))
@@ -3361,11 +3366,6 @@ import SoraFoundation
 	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectableViewModel<TitleWithSubtitleViewModel>)> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
 	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", parameterMatchers: matchers))
-	    }
-	    
-	    func setSelectedNetwork<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectableViewModel<IconWithTitleViewModel>)> where M1.MatchedType == SelectableViewModel<IconWithTitleViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<IconWithTitleViewModel>)>] = [wrap(matchable: model) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)", parameterMatchers: matchers))
 	    }
 	    
 	    func setSubstrateDerivationPath<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
@@ -3435,6 +3435,12 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
+	    func setTitle<M1: Cuckoo.Matchable>(_ newTitle: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newTitle) { $0 }]
+	        return cuckoo_manager.verify("setTitle(_: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func setSource<M1: Cuckoo.Matchable>(type: M1) -> Cuckoo.__DoNotUse<(AccountImportSource), Void> where M1.MatchedType == AccountImportSource {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportSource)>] = [wrap(matchable: type) { $0 }]
 	        return cuckoo_manager.verify("setSource(type: AccountImportSource)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3462,12 +3468,6 @@ import SoraFoundation
 	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(SelectableViewModel<TitleWithSubtitleViewModel>), Void> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
 	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
 	        return cuckoo_manager.verify("setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func setSelectedNetwork<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(SelectableViewModel<IconWithTitleViewModel>), Void> where M1.MatchedType == SelectableViewModel<IconWithTitleViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<IconWithTitleViewModel>)>] = [wrap(matchable: model) { $0 }]
-	        return cuckoo_manager.verify("setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3543,6 +3543,10 @@ import SoraFoundation
     
 
     
+     func setTitle(_ newTitle: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
      func setSource(type: AccountImportSource)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -3560,10 +3564,6 @@ import SoraFoundation
     }
     
      func setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func setSelectedNetwork(model: SelectableViewModel<IconWithTitleViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -3638,6 +3638,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func updateTitle()  {
+        
+    return cuckoo_manager.call("updateTitle()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateTitle())
         
     }
     
@@ -3760,6 +3775,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
+	    func updateTitle() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "updateTitle()", parameterMatchers: matchers))
+	    }
+	    
 	    func provideVisibilitySettings() -> Cuckoo.ProtocolStubFunction<(), AccountImportVisibility> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "provideVisibilitySettings() -> AccountImportVisibility", parameterMatchers: matchers))
@@ -3818,6 +3838,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func updateTitle() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("updateTitle()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func provideVisibilitySettings() -> Cuckoo.__DoNotUse<(), AccountImportVisibility> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("provideVisibilitySettings() -> AccountImportVisibility", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3869,6 +3895,10 @@ import SoraFoundation
 
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func updateTitle()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9301,6 +9331,21 @@ import SoraFoundation
     
     
     
+     func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)  {
+        
+    return cuckoo_manager.call("didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveRewardDestination(viewModel: viewModel))
+        
+    }
+    
+    
+    
     public func applyLocalization()  {
         
     return cuckoo_manager.call("applyLocalization()",
@@ -9403,6 +9448,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmViewProtocol.self, method: "didReceiveBonus(viewModel: String?)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanRewardDestinationVM)> where M1.MatchedType == CrowdloanRewardDestinationVM {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanRewardDestinationVM)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmViewProtocol.self, method: "didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)", parameterMatchers: matchers))
+	    }
+	    
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmViewProtocol.self, method: "applyLocalization()", parameterMatchers: matchers))
@@ -9487,6 +9537,12 @@ import SoraFoundation
 	    func didReceiveBonus<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(String?), Void> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: viewModel) { $0 }]
 	        return cuckoo_manager.verify("didReceiveBonus(viewModel: String?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(CrowdloanRewardDestinationVM), Void> where M1.MatchedType == CrowdloanRewardDestinationVM {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanRewardDestinationVM)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -9578,6 +9634,10 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+     func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -9662,6 +9722,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func presentRewardDestination()  {
+        
+    return cuckoo_manager.call("presentRewardDestination()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentRewardDestination())
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanContributionConfirmPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -9684,6 +9759,11 @@ import SoraFoundation
 	    func presentAccountOptions() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmPresenterProtocol.self, method: "presentAccountOptions()", parameterMatchers: matchers))
+	    }
+	    
+	    func presentRewardDestination() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmPresenterProtocol.self, method: "presentRewardDestination()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -9720,6 +9800,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("presentAccountOptions()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentRewardDestination() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("presentRewardDestination()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -9738,6 +9824,10 @@ import SoraFoundation
     }
     
      func presentAccountOptions()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func presentRewardDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9981,6 +10071,21 @@ import SoraFoundation
     
     
     
+     func didReceiveRewardDestinationAddress(_ address: AccountAddress)  {
+        
+    return cuckoo_manager.call("didReceiveRewardDestinationAddress(_: AccountAddress)",
+            parameters: (address),
+            escapingParameters: (address),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveRewardDestinationAddress(address))
+        
+    }
+    
+    
+    
      func didReceiveCrowdloan(result: Result<Crowdloan, Error>)  {
         
     return cuckoo_manager.call("didReceiveCrowdloan(result: Result<Crowdloan, Error>)",
@@ -10148,6 +10253,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveRewardDestinationAddress<M1: Cuckoo.Matchable>(_ address: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountAddress)> where M1.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountAddress)>] = [wrap(matchable: address) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveRewardDestinationAddress(_: AccountAddress)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveCrowdloan<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Crowdloan, Error>)> where M1.MatchedType == Result<Crowdloan, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<Crowdloan, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveCrowdloan(result: Result<Crowdloan, Error>)", parameterMatchers: matchers))
@@ -10227,6 +10337,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveRewardDestinationAddress<M1: Cuckoo.Matchable>(_ address: M1) -> Cuckoo.__DoNotUse<(AccountAddress), Void> where M1.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountAddress)>] = [wrap(matchable: address) { $0 }]
+	        return cuckoo_manager.verify("didReceiveRewardDestinationAddress(_: AccountAddress)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveCrowdloan<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<Crowdloan, Error>), Void> where M1.MatchedType == Result<Crowdloan, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<Crowdloan, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveCrowdloan(result: Result<Crowdloan, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -10300,6 +10416,10 @@ import SoraFoundation
     }
     
      func didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveRewardDestinationAddress(_ address: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -10673,6 +10793,21 @@ import SoraFoundation
     
     
     
+     func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)  {
+        
+    return cuckoo_manager.call("didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveRewardDestination(viewModel: viewModel))
+        
+    }
+    
+    
+    
     public func applyLocalization()  {
         
     return cuckoo_manager.call("applyLocalization()",
@@ -10738,6 +10873,11 @@ import SoraFoundation
 	    func didReceiveBonus<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: viewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupViewProtocol.self, method: "didReceiveBonus(viewModel: String?)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanRewardDestinationVM)> where M1.MatchedType == CrowdloanRewardDestinationVM {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanRewardDestinationVM)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupViewProtocol.self, method: "didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)", parameterMatchers: matchers))
 	    }
 	    
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -10813,6 +10953,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(CrowdloanRewardDestinationVM), Void> where M1.MatchedType == CrowdloanRewardDestinationVM {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanRewardDestinationVM)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func applyLocalization() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("applyLocalization()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -10874,6 +11020,10 @@ import SoraFoundation
     }
     
      func didReceiveBonus(viewModel: String?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -10998,6 +11148,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func presentRewardDestination()  {
+        
+    return cuckoo_manager.call("presentRewardDestination()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentRewardDestination())
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanContributionSetupPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -11035,6 +11200,11 @@ import SoraFoundation
 	    func presentAdditionalBonuses() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupPresenterProtocol.self, method: "presentAdditionalBonuses()", parameterMatchers: matchers))
+	    }
+	    
+	    func presentRewardDestination() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupPresenterProtocol.self, method: "presentRewardDestination()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -11089,6 +11259,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("presentAdditionalBonuses()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func presentRewardDestination() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("presentRewardDestination()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -11119,6 +11295,10 @@ import SoraFoundation
     }
     
      func presentAdditionalBonuses()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func presentRewardDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -11871,6 +12051,34 @@ import SoraFoundation
         
     }
     
+    
+    
+     var loadableContentView: UIView! {
+        get {
+            return cuckoo_manager.getter("loadableContentView",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.loadableContentView)
+        }
+        
+    }
+    
+    
+    
+     var shouldDisableInteractionWhenLoading: Bool {
+        get {
+            return cuckoo_manager.getter("shouldDisableInteractionWhenLoading",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.shouldDisableInteractionWhenLoading)
+        }
+        
+    }
+    
 
     
 
@@ -11905,6 +12113,66 @@ import SoraFoundation
         
     }
     
+    
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
+            parameters: (message, title, closeAction, view),
+            escapingParameters: (message, title, closeAction, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
+        
+    }
+    
+    
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
+            parameters: (viewModel, style, view),
+            escapingParameters: (viewModel, style, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
+        
+    }
+    
+    
+    
+     func didStartLoading()  {
+        
+    return cuckoo_manager.call("didStartLoading()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didStartLoading())
+        
+    }
+    
+    
+    
+     func didStopLoading()  {
+        
+    return cuckoo_manager.call("didStopLoading()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didStopLoading())
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanListViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -11924,6 +12192,16 @@ import SoraFoundation
 	    }
 	    
 	    
+	    var loadableContentView: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanListViewProtocol, UIView?> {
+	        return .init(manager: cuckoo_manager, name: "loadableContentView")
+	    }
+	    
+	    
+	    var shouldDisableInteractionWhenLoading: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanListViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading")
+	    }
+	    
+	    
 	    func didReceive<M1: Cuckoo.Matchable>(chainInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloansChainViewModel)> where M1.MatchedType == CrowdloansChainViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloansChainViewModel)>] = [wrap(matchable: chainInfo) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "didReceive(chainInfo: CrowdloansChainViewModel)", parameterMatchers: matchers))
@@ -11932,6 +12210,26 @@ import SoraFoundation
 	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanListState)> where M1.MatchedType == CrowdloanListState {
 	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListState)>] = [wrap(matchable: listState) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "didReceive(listState: CrowdloanListState)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func didStartLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "didStartLoading()", parameterMatchers: matchers))
+	    }
+	    
+	    func didStopLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListViewProtocol.self, method: "didStopLoading()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -11958,6 +12256,16 @@ import SoraFoundation
 	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
+	    
+	    var loadableContentView: Cuckoo.VerifyReadOnlyProperty<UIView?> {
+	        return .init(manager: cuckoo_manager, name: "loadableContentView", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var shouldDisableInteractionWhenLoading: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
 	
 	    
 	    @discardableResult
@@ -11970,6 +12278,30 @@ import SoraFoundation
 	    func didReceive<M1: Cuckoo.Matchable>(listState: M1) -> Cuckoo.__DoNotUse<(CrowdloanListState), Void> where M1.MatchedType == CrowdloanListState {
 	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListState)>] = [wrap(matchable: listState) { $0 }]
 	        return cuckoo_manager.verify("didReceive(listState: CrowdloanListState)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didStartLoading() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didStartLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didStopLoading() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didStopLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -11993,6 +12325,22 @@ import SoraFoundation
         
     }
     
+    
+     var loadableContentView: UIView! {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIView?).self)
+        }
+        
+    }
+    
+    
+     var shouldDisableInteractionWhenLoading: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
 
     
 
@@ -12002,6 +12350,22 @@ import SoraFoundation
     }
     
      func didReceive(listState: CrowdloanListState)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didStartLoading()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -12064,16 +12428,16 @@ import SoraFoundation
     
     
     
-     func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>)  {
+     func selectCrowdloan(_ paraId: ParaId)  {
         
-    return cuckoo_manager.call("selectViewModel(_: CrowdloanSectionItem<ActiveCrowdloanViewModel>)",
-            parameters: (viewModel),
-            escapingParameters: (viewModel),
+    return cuckoo_manager.call("selectCrowdloan(_: ParaId)",
+            parameters: (paraId),
+            escapingParameters: (paraId),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.selectViewModel(viewModel))
+            defaultCall: __defaultImplStub!.selectCrowdloan(paraId))
         
     }
     
@@ -12122,6 +12486,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func handleYourContributions()  {
+        
+    return cuckoo_manager.call("handleYourContributions()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.handleYourContributions())
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanListPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -12141,9 +12520,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListPresenterProtocol.self, method: "refresh(shouldReset: Bool)", parameterMatchers: matchers))
 	    }
 	    
-	    func selectViewModel<M1: Cuckoo.Matchable>(_ viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanSectionItem<ActiveCrowdloanViewModel>)> where M1.MatchedType == CrowdloanSectionItem<ActiveCrowdloanViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanSectionItem<ActiveCrowdloanViewModel>)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListPresenterProtocol.self, method: "selectViewModel(_: CrowdloanSectionItem<ActiveCrowdloanViewModel>)", parameterMatchers: matchers))
+	    func selectCrowdloan<M1: Cuckoo.Matchable>(_ paraId: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ParaId)> where M1.MatchedType == ParaId {
+	        let matchers: [Cuckoo.ParameterMatcher<(ParaId)>] = [wrap(matchable: paraId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListPresenterProtocol.self, method: "selectCrowdloan(_: ParaId)", parameterMatchers: matchers))
 	    }
 	    
 	    func becomeOnline() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -12159,6 +12538,11 @@ import SoraFoundation
 	    func selectChain() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListPresenterProtocol.self, method: "selectChain()", parameterMatchers: matchers))
+	    }
+	    
+	    func handleYourContributions() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListPresenterProtocol.self, method: "handleYourContributions()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -12190,9 +12574,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func selectViewModel<M1: Cuckoo.Matchable>(_ viewModel: M1) -> Cuckoo.__DoNotUse<(CrowdloanSectionItem<ActiveCrowdloanViewModel>), Void> where M1.MatchedType == CrowdloanSectionItem<ActiveCrowdloanViewModel> {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanSectionItem<ActiveCrowdloanViewModel>)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("selectViewModel(_: CrowdloanSectionItem<ActiveCrowdloanViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func selectCrowdloan<M1: Cuckoo.Matchable>(_ paraId: M1) -> Cuckoo.__DoNotUse<(ParaId), Void> where M1.MatchedType == ParaId {
+	        let matchers: [Cuckoo.ParameterMatcher<(ParaId)>] = [wrap(matchable: paraId) { $0 }]
+	        return cuckoo_manager.verify("selectCrowdloan(_: ParaId)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -12213,6 +12597,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("selectChain()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func handleYourContributions() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("handleYourContributions()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -12230,7 +12620,7 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func selectViewModel(_ viewModel: CrowdloanSectionItem<ActiveCrowdloanViewModel>)   {
+     func selectCrowdloan(_ paraId: ParaId)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -12243,6 +12633,10 @@ import SoraFoundation
     }
     
      func selectChain()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func handleYourContributions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -12817,24 +13211,39 @@ import SoraFoundation
     
     
     
-     func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId)  {
+     func presentContributionSetup(from view: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)  {
         
-    return cuckoo_manager.call("presentContributionSetup(from: CrowdloanListViewProtocol?, paraId: ParaId)",
-            parameters: (view, paraId),
-            escapingParameters: (view, paraId),
+    return cuckoo_manager.call("presentContributionSetup(from: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)",
+            parameters: (view, crowdloan, displayInfo),
+            escapingParameters: (view, crowdloan, displayInfo),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentContributionSetup(from: view, paraId: paraId))
+            defaultCall: __defaultImplStub!.presentContributionSetup(from: view, crowdloan: crowdloan, displayInfo: displayInfo))
         
     }
     
     
     
-     func selectChain(from view: CrowdloanListViewProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)  {
+     func showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from view: ControllerBackedProtocol?)  {
         
-    return cuckoo_manager.call("selectChain(from: CrowdloanListViewProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)",
+    return cuckoo_manager.call("showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from: ControllerBackedProtocol?)",
+            parameters: (crowdloans, viewInfo, chainAsset, view),
+            escapingParameters: (crowdloans, viewInfo, chainAsset, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showYourContributions(crowdloans: crowdloans, viewInfo: viewInfo, chainAsset: chainAsset, from: view))
+        
+    }
+    
+    
+    
+     func selectChain(from view: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)  {
+        
+    return cuckoo_manager.call("selectChain(from: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)",
             parameters: (view, delegate, selectedChainId),
             escapingParameters: (view, delegate, selectedChainId),
             superclassCall:
@@ -12854,14 +13263,19 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func presentContributionSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, paraId: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanListViewProtocol?, ParaId)> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == ParaId {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, ParaId)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: paraId) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "presentContributionSetup(from: CrowdloanListViewProtocol?, paraId: ParaId)", parameterMatchers: matchers))
+	    func presentContributionSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, crowdloan: M2, displayInfo: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanListViewProtocol?, Crowdloan, CrowdloanDisplayInfo?)> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == Crowdloan, M3.OptionalMatchedType == CrowdloanDisplayInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, Crowdloan, CrowdloanDisplayInfo?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: crowdloan) { $0.1 }, wrap(matchable: displayInfo) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "presentContributionSetup(from: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)", parameterMatchers: matchers))
 	    }
 	    
-	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainId: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(CrowdloanListViewProtocol?, ChainSelectionDelegate, ChainModel.Id?)> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == ChainSelectionDelegate, M3.OptionalMatchedType == ChainModel.Id {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, ChainSelectionDelegate, ChainModel.Id?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainId) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "selectChain(from: CrowdloanListViewProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)", parameterMatchers: matchers))
+	    func showYourContributions<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(crowdloans: M1, viewInfo: M2, chainAsset: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<([Crowdloan], CrowdloansViewInfo, ChainAssetDisplayInfo, ControllerBackedProtocol?)> where M1.MatchedType == [Crowdloan], M2.MatchedType == CrowdloansViewInfo, M3.MatchedType == ChainAssetDisplayInfo, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<([Crowdloan], CrowdloansViewInfo, ChainAssetDisplayInfo, ControllerBackedProtocol?)>] = [wrap(matchable: crowdloans) { $0.0 }, wrap(matchable: viewInfo) { $0.1 }, wrap(matchable: chainAsset) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainId: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, ChainSelectionDelegate, ChainModel.Id?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ChainSelectionDelegate, M3.OptionalMatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ChainSelectionDelegate, ChainModel.Id?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainId) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListWireframeProtocol.self, method: "selectChain(from: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -12881,15 +13295,21 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func presentContributionSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, paraId: M2) -> Cuckoo.__DoNotUse<(CrowdloanListViewProtocol?, ParaId), Void> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == ParaId {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, ParaId)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: paraId) { $0.1 }]
-	        return cuckoo_manager.verify("presentContributionSetup(from: CrowdloanListViewProtocol?, paraId: ParaId)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentContributionSetup<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, crowdloan: M2, displayInfo: M3) -> Cuckoo.__DoNotUse<(CrowdloanListViewProtocol?, Crowdloan, CrowdloanDisplayInfo?), Void> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == Crowdloan, M3.OptionalMatchedType == CrowdloanDisplayInfo {
+	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, Crowdloan, CrowdloanDisplayInfo?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: crowdloan) { $0.1 }, wrap(matchable: displayInfo) { $0.2 }]
+	        return cuckoo_manager.verify("presentContributionSetup(from: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainId: M3) -> Cuckoo.__DoNotUse<(CrowdloanListViewProtocol?, ChainSelectionDelegate, ChainModel.Id?), Void> where M1.OptionalMatchedType == CrowdloanListViewProtocol, M2.MatchedType == ChainSelectionDelegate, M3.OptionalMatchedType == ChainModel.Id {
-	        let matchers: [Cuckoo.ParameterMatcher<(CrowdloanListViewProtocol?, ChainSelectionDelegate, ChainModel.Id?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainId) { $0.2 }]
-	        return cuckoo_manager.verify("selectChain(from: CrowdloanListViewProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showYourContributions<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(crowdloans: M1, viewInfo: M2, chainAsset: M3, from view: M4) -> Cuckoo.__DoNotUse<([Crowdloan], CrowdloansViewInfo, ChainAssetDisplayInfo, ControllerBackedProtocol?), Void> where M1.MatchedType == [Crowdloan], M2.MatchedType == CrowdloansViewInfo, M3.MatchedType == ChainAssetDisplayInfo, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<([Crowdloan], CrowdloansViewInfo, ChainAssetDisplayInfo, ControllerBackedProtocol?)>] = [wrap(matchable: crowdloans) { $0.0 }, wrap(matchable: viewInfo) { $0.1 }, wrap(matchable: chainAsset) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return cuckoo_manager.verify("showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func selectChain<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, delegate: M2, selectedChainId: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, ChainSelectionDelegate, ChainModel.Id?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == ChainSelectionDelegate, M3.OptionalMatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, ChainSelectionDelegate, ChainModel.Id?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }, wrap(matchable: selectedChainId) { $0.2 }]
+	        return cuckoo_manager.verify("selectChain(from: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -12901,11 +13321,15 @@ import SoraFoundation
     
 
     
-     func presentContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId)   {
+     func presentContributionSetup(from view: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func selectChain(from view: CrowdloanListViewProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)   {
+     func showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func selectChain(from view: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

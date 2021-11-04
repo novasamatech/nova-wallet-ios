@@ -61,6 +61,8 @@ final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWiref
                 delegate: delegate,
                 existingService: existingService
             )
+        case .moonbeam:
+            break
         }
     }
 

@@ -237,7 +237,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                     <connections>
-                                                        <action selector="actionNameTextFieldChanged" destination="-1" eventType="editingChanged" id="f4Z-qP-2BT"/>
+                                                        <action selector="actionTextFieldChanged:" destination="-1" eventType="editingChanged" id="uu2-vh-x2S"/>
                                                     </connections>
                                                 </view>
                                             </subviews>
@@ -402,7 +402,7 @@
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
-                                                <action selector="actionPasswordTextFieldChanged" destination="-1" eventType="editingChanged" id="0js-uY-bT5"/>
+                                                <action selector="actionTextFieldChanged:" destination="-1" eventType="editingChanged" id="vpA-LR-Li6"/>
                                             </connections>
                                         </view>
                                     </subviews>

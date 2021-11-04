@@ -10,6 +10,7 @@ protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Local
     func didReceiveCrowdloan(viewModel: CrowdloanContributionSetupViewModel)
     func didReceiveEstimatedReward(viewModel: String?)
     func didReceiveBonus(viewModel: String?)
+    func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)
 }
 
 protocol CrowdloanContributionSetupPresenterProtocol: AnyObject {
@@ -19,6 +20,7 @@ protocol CrowdloanContributionSetupPresenterProtocol: AnyObject {
     func proceed()
     func presentLearnMore()
     func presentAdditionalBonuses()
+    func presentRewardDestination()
 }
 
 protocol CrowdloanContributionSetupInteractorInputProtocol: CrowdloanContributionInteractorInputProtocol {}
@@ -26,7 +28,7 @@ protocol CrowdloanContributionSetupInteractorInputProtocol: CrowdloanContributio
 protocol CrowdloanContributionSetupInteractorOutputProtocol: CrowdloanContributionInteractorOutputProtocol {}
 
 protocol CrowdloanContributionSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CrowdloanErrorPresentable, WebPresentable {
+    CrowdloanErrorPresentable, WebPresentable, AddressOptionsPresentable {
     func showConfirmation(
         from view: CrowdloanContributionSetupViewProtocol?,
         paraId: ParaId,
