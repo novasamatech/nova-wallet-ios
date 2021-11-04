@@ -2,7 +2,7 @@ import Foundation
 
 final class AccountManagementWireframe: AccountManagementWireframeProtocol {
     func showCreateAccount(
-        from view: AccountManagementViewProtocol?,
+        from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
@@ -15,13 +15,15 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol {
             return
         }
 
+        let controller = createAccountView.controller
+        controller.hidesBottomBarWhenPushed = true
         if let navigationController = view?.controller.navigationController {
-            navigationController.pushViewController(createAccountView.controller, animated: true)
+            navigationController.pushViewController(controller, animated: true)
         }
     }
 
     func showImportAccount(
-        from view: AccountManagementViewProtocol?,
+        from view: ControllerBackedProtocol?,
         wallet: MetaAccountModel,
         chainId: ChainModel.Id,
         isEthereumBased: Bool
@@ -34,8 +36,10 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol {
             return
         }
 
+        let controller = importAccountView.controller
+        controller.hidesBottomBarWhenPushed = true
         if let navigationController = view?.controller.navigationController {
-            navigationController.pushViewController(importAccountView.controller, animated: true)
+            navigationController.pushViewController(controller, animated: true)
         }
     }
 }

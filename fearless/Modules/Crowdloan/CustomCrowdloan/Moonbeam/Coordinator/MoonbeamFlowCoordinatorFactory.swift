@@ -64,9 +64,12 @@ struct MoonbeamFlowCoordinatorFactory {
         return MoonbeamFlowCoordinator(
             state: state,
             paraId: crowdloan.paraId,
+            metaAccount: selectedAccount,
             service: service,
             operationManager: operationManager,
             previousView: previousView,
+            accountManagementWireframe: AccountManagementWireframe(),
+            crowdloanDisplayName: displayInfo.name,
             localizationManager: LocalizationManager.shared
         )
     }
