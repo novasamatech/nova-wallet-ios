@@ -54,6 +54,8 @@
 		2AC7BC822731A1A1001D99B0 /* BalanceLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */; };
 		2AC7BC842731A214001D99B0 /* BalanceLocks+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */; };
 		2AC7BC862731A2AF001D99B0 /* BalanceLockSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */; };
+		2AC7BC8927343484001D99B0 /* BottomSheetInfoBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC8827343483001D99B0 /* BottomSheetInfoBalanceCell.swift */; };
+		2AC7BC8B273435CE001D99B0 /* BottomSheetInfoTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC8A273435CE001D99B0 /* BottomSheetInfoTableCell.swift */; };
 		2AD0A16A25D3854700312428 /* TransferConfirmCommandProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */; };
 		2AD0A19025D3D1E100312428 /* GitHubPhishingServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */; };
 		2AD0A19525D3D3EC00312428 /* GitHubOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */; };
@@ -1311,8 +1313,6 @@
 		AE8B8835267349C200AB0AA9 /* CustomVlidatorListFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8B8834267349C200AB0AA9 /* CustomVlidatorListFilter.swift */; };
 		AE8B8837267351E300AB0AA9 /* CustomValidatorListComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8B8836267351E300AB0AA9 /* CustomValidatorListComposer.swift */; };
 		AE8D028E2638074D00780D18 /* CIKeys.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8D028D2638074D00780D18 /* CIKeys.generated.swift */; };
-		AE8E67CF263A7CC6002EA1AA /* ValidatorInfoStakingAmountCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8E67CE263A7CC6002EA1AA /* ValidatorInfoStakingAmountCell.swift */; };
-		AE8E67D1263A7D35002EA1AA /* ValidatorInfoBaseTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE8E67D0263A7D35002EA1AA /* ValidatorInfoBaseTableCell.swift */; };
 		AE9EF255260A82830026910A /* StoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9EF254260A82830026910A /* StoriesViewController.swift */; };
 		AE9EF25A260A82970026910A /* StoriesInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9EF259260A82970026910A /* StoriesInteractor.swift */; };
 		AE9EF25F260A82A50026910A /* StoriesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9EF25E260A82A50026910A /* StoriesPresenter.swift */; };
@@ -1707,6 +1707,8 @@
 		2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLock.swift; sourceTree = "<group>"; };
 		2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalanceLocks+Sort.swift"; sourceTree = "<group>"; };
 		2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockSubscription.swift; sourceTree = "<group>"; };
+		2AC7BC8827343483001D99B0 /* BottomSheetInfoBalanceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetInfoBalanceCell.swift; sourceTree = "<group>"; };
+		2AC7BC8A273435CE001D99B0 /* BottomSheetInfoTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetInfoTableCell.swift; sourceTree = "<group>"; };
 		2ACA4A5B186EE6D40BFE9D66 /* ExportMnemonicWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExportMnemonicWireframe.swift; sourceTree = "<group>"; };
 		2AD0A16925D3854700312428 /* TransferConfirmCommandProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConfirmCommandProxy.swift; sourceTree = "<group>"; };
 		2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingServiceFactory.swift; sourceTree = "<group>"; };
@@ -2979,8 +2981,6 @@
 		AE8B8834267349C200AB0AA9 /* CustomVlidatorListFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomVlidatorListFilter.swift; sourceTree = "<group>"; };
 		AE8B8836267351E300AB0AA9 /* CustomValidatorListComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomValidatorListComposer.swift; sourceTree = "<group>"; };
 		AE8D028D2638074D00780D18 /* CIKeys.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CIKeys.generated.swift; sourceTree = SOURCE_ROOT; };
-		AE8E67CE263A7CC6002EA1AA /* ValidatorInfoStakingAmountCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoStakingAmountCell.swift; sourceTree = "<group>"; };
-		AE8E67D0263A7D35002EA1AA /* ValidatorInfoBaseTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoBaseTableCell.swift; sourceTree = "<group>"; };
 		AE9EF254260A82830026910A /* StoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewController.swift; sourceTree = "<group>"; };
 		AE9EF259260A82970026910A /* StoriesInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesInteractor.swift; sourceTree = "<group>"; };
 		AE9EF25E260A82A50026910A /* StoriesPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesPresenter.swift; sourceTree = "<group>"; };
@@ -3628,6 +3628,15 @@
 				AEF73FB425DBA24300407D41 /* PhishingCheckExecutor.swift */,
 			);
 			path = GitHubPhishingService;
+			sourceTree = "<group>";
+		};
+		2AC7BC8727343469001D99B0 /* BottomSheet */ = {
+			isa = PBXGroup;
+			children = (
+				2AC7BC8827343483001D99B0 /* BottomSheetInfoBalanceCell.swift */,
+				2AC7BC8A273435CE001D99B0 /* BottomSheetInfoTableCell.swift */,
+			);
+			path = BottomSheet;
 			sourceTree = "<group>";
 		};
 		2CE06DA20D3E261ED3AF2B99 /* AccountManagement */ = {
@@ -5701,6 +5710,7 @@
 		8490149D24AA7F9A008F705E /* View */ = {
 			isa = PBXGroup;
 			children = (
+				2AC7BC8727343469001D99B0 /* BottomSheet */,
 				F40966FA26B29A58008CD244 /* Chart */,
 				84100F3426A602A700A5054E /* TableViewCell */,
 				F406B0E426299E25004FDCCC /* ErrorView */,
@@ -7082,19 +7092,9 @@
 				AE2C84E325EF98C700986716 /* ValidatorInfoViewController.swift */,
 				AE2C84E825EF98D500986716 /* ValidatorInfoViewFactory.swift */,
 				AE2C84D425EF989A00986716 /* ValidatorInfoWireframe.swift */,
-				AE2C850825F0D7A500986716 /* View */,
 				AE2C850925F0D7AE00986716 /* ViewModel */,
 			);
 			path = ValidatorInfo;
-			sourceTree = "<group>";
-		};
-		AE2C850825F0D7A500986716 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				AE8E67D0263A7D35002EA1AA /* ValidatorInfoBaseTableCell.swift */,
-				AE8E67CE263A7CC6002EA1AA /* ValidatorInfoStakingAmountCell.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		AE2C850925F0D7AE00986716 /* ViewModel */ = {
@@ -9000,6 +9000,7 @@
 				8467FD5324EFD210005D486C /* UserDataStorageFacade.swift in Sources */,
 				AE6F7FE12685E812002BBC3E /* ValidatorListFilterViewController.swift in Sources */,
 				AEF50586261EE6230098574D /* PurchaseProviderPickerTableViewCell.swift in Sources */,
+				2AC7BC8927343484001D99B0 /* BottomSheetInfoBalanceCell.swift in Sources */,
 				842876AD24AE049B00D91AD8 /* SelectionSubtitleTableViewCell.swift in Sources */,
 				840DCBFB25E0703A00D45C6A /* RewardSelectionView.swift in Sources */,
 				849013DE24A927E2008F705E /* LocalizationManager+Shared.swift in Sources */,
@@ -9471,7 +9472,6 @@
 				8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */,
 				84DF21A5253473B0005454AE /* ModalInfoFactory.swift in Sources */,
 				84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */,
-				AE8E67CF263A7CC6002EA1AA /* ValidatorInfoStakingAmountCell.swift in Sources */,
 				841AAC2726F6A2A500F0A25E /* ChainAccountFetching.swift in Sources */,
 				847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */,
 				849AFEB326DADC1300B65924 /* SubqueryHistory.swift in Sources */,
@@ -9593,7 +9593,6 @@
 				AE7129BC2608C069000AA3F5 /* NetworkStakingInfoOperationFactory.swift in Sources */,
 				84754CA02513D83E00854599 /* AccountPickerViewModel.swift in Sources */,
 				AE2C84E425EF98C700986716 /* ValidatorInfoViewController.swift in Sources */,
-				AE8E67D1263A7D35002EA1AA /* ValidatorInfoBaseTableCell.swift in Sources */,
 				84D8F16D24D82C7E00AF43E9 /* ModalPickerConfiguration.swift in Sources */,
 				84BAB6102642C286007782D0 /* SelectedRebondVariant.swift in Sources */,
 				01C91580211D58645169C91B /* UsernameSetupViewController.swift in Sources */,
@@ -9751,6 +9750,7 @@
 				84644A2B2567222A004EAA4B /* TriangularedBlurButton.swift in Sources */,
 				844D22A325EE7E4600C022F7 /* AnySingleValueProvider.swift in Sources */,
 				84754C982511FC1F00854599 /* ManagedConnectionViewModelFactory.swift in Sources */,
+				2AC7BC8B273435CE001D99B0 /* BottomSheetInfoTableCell.swift in Sources */,
 				84CEAAF726D7B8010021B881 /* SettingsMigrator.swift in Sources */,
 				844DB624262D9C710025A8F0 /* ErasRewardDistribution.swift in Sources */,
 				84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */,

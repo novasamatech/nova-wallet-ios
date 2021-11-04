@@ -56,15 +56,6 @@ extension StorageKeyFactoryProtocol {
             storageName: "HistoryDepth"
         )
     }
-    
-    func locksForId(_ identifier: Data) throws -> Data {
-        try createStorageKey(
-            moduleName: "Balances",
-            storageName: "Locks",
-            key: identifier,
-            hasher: .blake128Concat
-        )
-    }
 
     func key(from codingPath: StorageCodingPath) throws -> Data {
         try createStorageKey(moduleName: codingPath.moduleName, storageName: codingPath.itemName)
