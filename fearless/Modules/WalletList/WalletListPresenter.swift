@@ -165,6 +165,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func selectWallet() {
+        wireframe.showWalletList(from: view)
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {

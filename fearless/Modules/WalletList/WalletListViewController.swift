@@ -35,6 +35,10 @@ final class WalletListViewController: UIViewController, ViewHolder {
         rootView.tableView.registerClassForCell(WalletListHeaderCell.self)
         rootView.tableView.registerClassForCell(WalletListAssetCell.self)
     }
+
+    @objc func actionSelectAccount() {
+        presenter.selectWallet()
+    }
 }
 
 extension WalletListViewController: UITableViewDelegate {
@@ -68,6 +72,12 @@ extension WalletListViewController: UITableViewDataSource {
                 headerCell.bind(viewModel: viewModel)
             }
 
+            headerCell.iconButton.addTarget(
+                self,
+                action: #selector(actionSelectAccount),
+                for: .touchUpInside
+            )
+
             return headerCell
         } else {
             let assetCell = tableView.dequeueReusableCellWithType(WalletListAssetCell.self)!
@@ -76,6 +86,8 @@ extension WalletListViewController: UITableViewDataSource {
         }
     }
 }
+
+extension WalletListViewController: HiddableBarWhenPushed {}
 
 extension WalletListViewController: WalletListViewProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel) {

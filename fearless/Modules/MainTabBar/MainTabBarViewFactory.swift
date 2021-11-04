@@ -142,13 +142,14 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             selectedImage: selectedIcon
         )
 
-        return view.controller
+        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+
+        return navigationController
     }
 
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        // TODO: Remove when staking is fixed
         let viewController = StakingMainViewFactory.createView()?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
@@ -180,7 +181,6 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        // TODO: Remove when settings fixed
         let viewController = ProfileViewFactory.createView()?.controller ?? UIViewController()
 
         let navigationController = FearlessNavigationController(rootViewController: viewController)
