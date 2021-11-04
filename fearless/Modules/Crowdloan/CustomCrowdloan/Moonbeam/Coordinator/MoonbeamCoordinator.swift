@@ -27,10 +27,37 @@ final class MoonbeamFlowCoordinator: Coordinator {
 
     func start() {
         if service.hasMoonbeamAccount {
-            checkAgreement()
+            checkHealth()
         } else {
             showMoonbeamAccountAlert()
         }
+    }
+
+    func checkHealth() {
+        let healthOperation = service.createCheckHealthOperation()
+        previousView?.didStartLoading()
+
+        healthOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                self?.previousView?.didStopLoading()
+                do {
+                    _ = try healthOperation.extractNoCancellableResultData()
+                    self?.checkAgreement()
+                } catch {
+                    let locale = self?.localizationManager.selectedLocale ?? .current
+                    self?.previousView?.present(
+                        message: R.string.localizable
+                            .crowdloanMoonbeamRegionRestrictionMessage(preferredLanguages: locale.rLanguages),
+                        title: R.string.localizable
+                            .crowdloanMoonbeamRegionRestrictionTitle(preferredLanguages: locale.rLanguages),
+                        closeAction: R.string.localizable.commonOk(preferredLanguages: locale.rLanguages),
+                        from: nil
+                    )
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [healthOperation], in: .transient)
     }
 
     func showMoonbeamAccountAlert() {
