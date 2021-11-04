@@ -14,6 +14,7 @@ final class WalletListInteractor {
     private var accountInfoSubscriptions: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private var availableTokenPrice: [ChainModel.Id: AssetModel.PriceId] = [:]
+    private var availableChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -29,6 +30,26 @@ final class WalletListInteractor {
         self.eventCenter = eventCenter
     }
 
+    private func resetWallet() {
+        clearAccountSubscriptions()
+
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        providerWalletInfo()
+
+        let changes = availableChains.values.filter {
+            selectedMetaAccount.fetch(for: $0.accountRequest()) != nil
+        }.map {
+            DataProviderChange.insert(newItem: $0)
+        }
+
+        presenter.didReceiveChainModelChanges(changes)
+
+        updateAccountInfoSubscription(from: changes)
+    }
+
     private func providerWalletInfo() {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -38,6 +59,43 @@ final class WalletListInteractor {
             genericAccountId: selectedMetaAccount.substrateAccountId,
             name: selectedMetaAccount.name
         )
+    }
+
+    private func clearAccountSubscriptions() {
+        accountInfoSubscriptions.values.forEach { $0.removeObserver(self) }
+        accountInfoSubscriptions = [:]
+    }
+
+    private func handle(changes: [DataProviderChange<ChainModel>]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        let actualChanges = changes.filter { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                return selectedMetaAccount.fetch(for: newItem.accountRequest()) != nil ? true : false
+            case .delete:
+                return true
+            }
+        }
+
+        presenter.didReceiveChainModelChanges(actualChanges)
+        updateAvailableChains(from: changes)
+        updateAccountInfoSubscription(from: actualChanges)
+        updateConnectionStatus(from: changes)
+        updatePriceSubscription(from: changes)
+    }
+
+    private func updateAvailableChains(from changes: [DataProviderChange<ChainModel>]) {
+        for change in changes {
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                availableChains[newItem.chainId] = newItem
+            case let .delete(deletedIdentifier):
+                availableChains[deletedIdentifier] = nil
+            }
+        }
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -153,10 +211,7 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
         providerWalletInfo()
 
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
-            self?.presenter.didReceiveChainModelChanges(changes)
-            self?.updateConnectionStatus(from: changes)
-            self?.updateAccountInfoSubscription(from: changes)
-            self?.updatePriceSubscription(from: changes)
+            self?.handle(changes: changes)
         }
 
         eventCenter.add(observer: self, dispatchIn: .main)
@@ -177,11 +232,11 @@ extension WalletListInteractor: ConnectionStateSubscription {
 
 extension WalletListInteractor: EventVisitorProtocol {
     func processChainAccountChanged(event _: ChainAccountChanged) {
-        providerWalletInfo()
+        resetWallet()
     }
 
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
-        providerWalletInfo()
+        resetWallet()
     }
 
     func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
