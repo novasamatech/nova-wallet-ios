@@ -2,7 +2,7 @@ import UIKit
 
 final class BottomSheetInfoBalanceCell: BottomSheetInfoTableCell, ModalPickerCellProtocol {
     enum Constants {
-        static let verticalInset: CGFloat = 10.0
+        static let verticalInset: CGFloat = 8.0
     }
 
     typealias Model = StakingAmountViewModel
@@ -25,20 +25,19 @@ final class BottomSheetInfoBalanceCell: BottomSheetInfoTableCell, ModalPickerCel
 
     override func setupLayout() {
         super.setupLayout()
+        contentView.addSubview(amountLabel)
+        amountLabel.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(Constants.verticalInset)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(UIConstants.horizontalInset)
+        }
 
         contentView.addSubview(priceLabel)
         priceLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(UIConstants.horizontalInset)
-        }
-
-        contentView.addSubview(amountLabel)
-        amountLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(Constants.verticalInset)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(UIConstants.horizontalInset)
-            make.bottom.equalTo(priceLabel.snp.top)
+            make.top.equalTo(amountLabel.snp.bottom)
         }
     }
 
