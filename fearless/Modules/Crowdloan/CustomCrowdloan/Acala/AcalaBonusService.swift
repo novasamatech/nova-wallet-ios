@@ -9,7 +9,7 @@ final class AcalaBonusService {
         static let defaultReferralCode = "0xc5c184f0565e2192d6aedae584ee736cef875f0e1c558ee3ede26869acd0b4d6"
         static let baseURL = URL(string: "https://crowdloan.aca-api.network")!
     #else
-        static let defaultReferralCode = "0xbcb330a49b5766dcd63fff92cf95243ec2a29c4131f19155724095e5cfd5197a"
+        static let defaultReferralCode = "0x08eb319467ea54784cd9edfbd03bbcc53f7a021ed8d9ed2ca97b6ae46b3f6014"
         static let baseURL = URL(string: "https://crowdloan.aca-dev.network")!
     #endif
 
