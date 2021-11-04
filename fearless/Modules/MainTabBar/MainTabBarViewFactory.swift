@@ -25,15 +25,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             keystoreImportService: keystoreImportService
         )
 
-        let chainsRepository = SubstrateRepositoryFactory().createChainRepository()
-
-        guard
-            let walletContext = try? WalletContextFactory(
-                chainRepository: chainsRepository,
-                operationQueue: OperationQueue(),
-                logger: Logger.shared
-            ).createContext(),
-            let walletController = createWalletController(for: localizationManager) else {
+        guard let walletController = createWalletController(for: localizationManager) else {
             return nil
         }
 
@@ -66,7 +58,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
 
         let presenter = MainTabBarPresenter()
 
-        let wireframe = MainTabBarWireframe(walletContext: walletContext)
+        let wireframe = MainTabBarWireframe()
 
         view.presenter = presenter
         presenter.view = view
@@ -78,27 +70,14 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func reloadWalletView(
-        on view: MainTabBarViewProtocol,
-        wireframe: MainTabBarWireframeProtocol
+        on view: MainTabBarViewProtocol
     ) {
         let localizationManager = LocalizationManager.shared
 
-        let chainsRepository = SubstrateRepositoryFactory().createChainRepository()
-
-        guard
-            let walletContext = try? WalletContextFactory(
-                chainRepository: chainsRepository,
-                operationQueue: OperationQueue(),
-                logger: Logger.shared
-            ).createContext(),
-            let walletController = createWalletController(
-                for: localizationManager
-            )
-        else {
+        guard let walletController = createWalletController(for: localizationManager) else {
             return
         }
 
-        wireframe.walletContext = walletContext
         view.didReplaceView(for: walletController, for: Self.walletIndex)
     }
 

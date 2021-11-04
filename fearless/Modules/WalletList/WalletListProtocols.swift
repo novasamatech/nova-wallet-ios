@@ -10,6 +10,7 @@ protocol WalletListViewProtocol: ControllerBackedProtocol {
 protocol WalletListPresenterProtocol: AnyObject {
     func setup()
     func selectWallet()
+    func selectAsset(at index: Int)
 }
 
 protocol WalletListInteractorInputProtocol: AnyObject {
@@ -26,4 +27,5 @@ protocol WalletListInteractorOutputProtocol: AnyObject {
 
 protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
+    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel)
 }

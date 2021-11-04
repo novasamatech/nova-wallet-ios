@@ -16,16 +16,11 @@ protocol MainTabBarInteractorInputProtocol: AnyObject {
 
 protocol MainTabBarInteractorOutputProtocol: AnyObject {
     func didReloadSelectedAccount()
-    func didReloadSelectedNetwork()
-    func didUpdateWalletInfo()
     func didRequestImportAccount()
 }
 
 protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible {
-    var walletContext: CommonWalletContextProtocol { get set }
-
     func showNewWalletView(on view: MainTabBarViewProtocol?)
-    func reloadWalletContent()
 
     func showNewCrowdloan(on view: MainTabBarViewProtocol?)
 
@@ -34,10 +29,6 @@ protocol MainTabBarWireframeProtocol: AlertPresentable, AuthorizationAccessible 
 
 protocol MainTabBarViewFactoryProtocol: AnyObject {
     static func createView() -> MainTabBarViewProtocol?
-    static func reloadWalletView(
-        on view: MainTabBarViewProtocol,
-        wireframe: MainTabBarWireframeProtocol
-    )
-
+    static func reloadWalletView(on view: MainTabBarViewProtocol)
     static func reloadCrowdloanView(on view: MainTabBarViewProtocol)
 }
