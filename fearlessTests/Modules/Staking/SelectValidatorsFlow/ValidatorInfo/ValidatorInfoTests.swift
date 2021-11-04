@@ -3,7 +3,7 @@ import XCTest
 import Cuckoo
 import SoraKeystore
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 import SoraFoundation
 
 class ValidatorInfoTests: XCTestCase {

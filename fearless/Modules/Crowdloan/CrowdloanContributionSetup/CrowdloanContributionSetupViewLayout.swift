@@ -19,6 +19,15 @@ final class CrowdloanContributionSetupViewLayout: UIView {
 
     let hintView = UIFactory.default.createHintView()
 
+    let rewardDestinationTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()!
+        label.font = .h4Title
+        return label
+    }()
+
+    private(set) var rewardDestinationAccountView: CrowdloanRewardDestinationView?
+
     let networkFeeView = NetworkFeeView()
 
     private(set) var estimatedRewardView: TitleValueView?
@@ -95,6 +104,11 @@ final class CrowdloanContributionSetupViewLayout: UIView {
             symbol,
             preferredLanguages: locale.rLanguages
         )
+    }
+
+    func bind(rewardDestination viewModel: CrowdloanRewardDestinationVM) {
+        createRewardDestinationViewIfNeeded()
+        rewardDestinationAccountView?.bind(viewModel: viewModel)
     }
 
     func bind(feeViewModel: BalanceViewModelProtocol?) {
@@ -261,6 +275,25 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         }
 
         estimatedRewardView = view
+    }
+
+    private func createRewardDestinationViewIfNeeded() {
+        guard rewardDestinationAccountView == nil else {
+            return
+        }
+
+        guard
+            let hindIndex = contentView.stackView.arrangedSubviews.firstIndex(of: hintView) else {
+            return
+        }
+        let view = CrowdloanRewardDestinationView()
+
+        contentView.stackView.insertArrangedSubview(view, at: hindIndex + 1)
+        view.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+        }
+
+        rewardDestinationAccountView = view
     }
 
     private func removeEstimatedRewardViewIfNeeded() {

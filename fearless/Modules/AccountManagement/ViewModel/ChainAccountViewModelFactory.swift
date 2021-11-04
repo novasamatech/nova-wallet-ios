@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import UIKit
 
 protocol ChainAccountViewModelFactoryProtocol {
@@ -51,6 +51,8 @@ final class ChainAccountViewModelFactory {
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
                 accountIcon: icon
             )
+        }.sorted { first, second in
+            first.name < second.name
         }
     }
 
@@ -95,6 +97,12 @@ final class ChainAccountViewModelFactory {
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
                 accountIcon: icon
             )
+        }.sorted { first, second in
+            guard first.address != nil, second.address != nil else {
+                return first.address == nil
+            }
+
+            return first.name < second.name
         }
     }
 }

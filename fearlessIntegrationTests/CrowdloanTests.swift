@@ -1,6 +1,6 @@
 import XCTest
 @testable import fearless
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 import SoraKeystore
 import IrohaCrypto

@@ -28,6 +28,17 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         }
     }
 
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    ) {
+        queue.async {
+            completionClosure(self.txHash)
+        }
+    }
+
     func estimateFee(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         runningIn queue: DispatchQueue,

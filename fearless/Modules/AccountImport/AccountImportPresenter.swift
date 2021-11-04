@@ -93,4 +93,10 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             return .walletJSON
         }
     }
+
+    override func setViewTitle() {
+        let title = R.string.localizable
+            .importWalletTitle(preferredLanguages: selectedLocale.rLanguages)
+        view?.setTitle(title)
+    }
 }

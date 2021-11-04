@@ -1,5 +1,5 @@
 import XCTest
-import FearlessUtils
+import SubstrateSdk
 import SoraKeystore
 import RobinHood
 @testable import fearless

@@ -1,6 +1,6 @@
 import RobinHood
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 
 final class PayoutValidatorsForNominatorFactory {

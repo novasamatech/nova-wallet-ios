@@ -2,7 +2,7 @@ import Foundation
 import SoraUI
 import SoraFoundation
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 
 enum AccountHeaderType {
     case title(_ title: LocalizableResource<String>)

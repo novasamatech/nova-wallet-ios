@@ -2,7 +2,7 @@ import XCTest
 @testable import fearless
 import SoraFoundation
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 import Cuckoo
 import BigInt
 
@@ -126,15 +126,27 @@ class CrowdloanListTests: XCTestCase {
 
         wait(for: [listCompletionExpectation, chainCompletionExpectation], timeout: 10)
 
-        let actualActiveParaIds = actualViewModel?.active?.crowdloans
-            .reduce(into: Set<ParaId>()) { (result, crowdloan) in
-                result.insert(crowdloan.paraId)
-            } ?? Set<ParaId>()
+        let actualActiveParaIds: Set<ParaId> = {
+            let activeSection = actualViewModel!.sections[0]
+            if case let .active(_, cellViewModels) = activeSection {
+                return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
+                    result.insert(viewModel.paraId)
+                }
+            } else {
+                return Set()
+            }
+        }()
 
-        let actualCompletedParaIds = actualViewModel?.completed?.crowdloans
-            .reduce(into: Set<ParaId>()) { (result, crowdloan) in
-                result.insert(crowdloan.paraId)
-            } ?? Set<ParaId>()
+        let actualCompletedParaIds: Set<ParaId> = {
+            let completed = actualViewModel!.sections[1]
+            if case let .completed(_, cellViewModels) = completed {
+                return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
+                    result.insert(viewModel.paraId)
+                }
+            } else {
+                return Set()
+            }
+        }()
 
         XCTAssertEqual(expectedActiveParaIds, actualActiveParaIds)
         XCTAssertEqual(expectedCompletedParaIds, actualCompletedParaIds)

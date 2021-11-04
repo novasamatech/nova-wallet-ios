@@ -1,7 +1,7 @@
 import XCTest
 @testable import fearless
 import Cuckoo
-import FearlessUtils
+import SubstrateSdk
 
 class ConnectionPoolTests: XCTestCase {
     func testSetupCreatesNewConnections() {
@@ -11,7 +11,7 @@ class ConnectionPoolTests: XCTestCase {
             let connectionFactory = MockConnectionFactoryProtocol()
 
             stub(connectionFactory) { stub in
-                stub.createConnection(for: any()).then { _ in
+                stub.createConnection(for: any(), delegate: any()).then { _, _ in
                     MockConnection()
                 }
             }
@@ -55,7 +55,7 @@ class ConnectionPoolTests: XCTestCase {
             }
 
             stub(connectionFactory) { stub in
-                stub.createConnection(for: any()).then { _ in
+                stub.createConnection(for: any(), delegate: any()).then { _, _ in
                     setupConnection()
                 }
             }

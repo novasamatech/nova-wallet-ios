@@ -2,7 +2,7 @@ import UIKit
 import SoraKeystore
 import RobinHood
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 
 final class StakingRebondConfirmationInteractor: RuntimeConstantFetching, AccountFetching {

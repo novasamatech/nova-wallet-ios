@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 
 struct ManagedWalletViewModelItem: Equatable {
     let identifier: String

@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 struct NominateCall: Codable {
     let targets: [MultiAddress]

@@ -1,6 +1,6 @@
 import UIKit
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 import SoraKeystore
 
@@ -20,8 +20,8 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
         self.eventCenter = eventCenter
 
         super.init(
-            accountOperationFactory: accountOperationFactory,
-            accountRepository: accountRepository,
+            metaAccountOperationFactory: accountOperationFactory,
+            metaAccountRepository: accountRepository,
             operationManager: operationManager,
             keystoreImportService: keystoreImportService,
             supportedNetworks: Chain.allCases,

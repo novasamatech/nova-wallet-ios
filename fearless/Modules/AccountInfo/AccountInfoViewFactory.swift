@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import SoraKeystore
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class AccountInfoViewFactory: AccountInfoViewFactoryProtocol {
     static func createView(address: String) -> AccountInfoViewProtocol? {

@@ -11,8 +11,8 @@ class BaseChainAccountConfirmInteractor {
     let chainModelId: ChainModel.Id
     let mnemonic: IRMnemonicProtocol
     let shuffledWords: [String]
-    let accountOperationFactory: MetaAccountOperationFactoryProtocol
-    let accountRepository: AnyDataProviderRepository<MetaAccountModel>
+    let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
+    let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
 
     init(
@@ -20,8 +20,8 @@ class BaseChainAccountConfirmInteractor {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id,
         mnemonic: IRMnemonicProtocol,
-        accountOperationFactory: MetaAccountOperationFactoryProtocol,
-        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+        metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol
     ) {
         self.request = request
@@ -29,8 +29,8 @@ class BaseChainAccountConfirmInteractor {
         self.chainModelId = chainModelId
         self.mnemonic = mnemonic
         shuffledWords = mnemonic.allWords().shuffled()
-        self.accountOperationFactory = accountOperationFactory
-        self.accountRepository = accountRepository
+        self.metaAccountOperationFactory = metaAccountOperationFactory
+        self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
     }
 
@@ -53,7 +53,7 @@ extension BaseChainAccountConfirmInteractor: AccountConfirmInteractorInputProtoc
             return
         }
 
-        let operation = accountOperationFactory.replaceChainAccountOperation(
+        let operation = metaAccountOperationFactory.replaceChainAccountOperation(
             for: metaAccountModel,
             request: request,
             chainId: chainModelId
@@ -63,7 +63,7 @@ extension BaseChainAccountConfirmInteractor: AccountConfirmInteractorInputProtoc
     }
 
     func skipConfirmation() {
-        let operation = accountOperationFactory.replaceChainAccountOperation(
+        let operation = metaAccountOperationFactory.replaceChainAccountOperation(
             for: metaAccountModel,
             request: request,
             chainId: chainModelId

@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import CommonWallet
-import FearlessUtils
+import SubstrateSdk
 
 protocol CrowdloanContributionViewModelFactoryProtocol {
     func createContributionSetupViewModel(
@@ -35,6 +35,12 @@ protocol CrowdloanContributionViewModelFactoryProtocol {
         from displayInfo: CrowdloanDisplayInfo,
         locale: Locale
     ) -> LearnMoreViewModel
+
+    func createRewardDestinationViewModel(
+        from displayInfo: CrowdloanDisplayInfo,
+        address: AccountAddress,
+        locale: Locale
+    ) -> CrowdloanRewardDestinationVM
 }
 
 final class CrowdloanContributionViewModelFactory {
@@ -289,5 +295,29 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         locale: Locale
     ) -> LearnMoreViewModel {
         createLearnMore(from: displayInfo, locale: locale)
+    }
+
+    func createRewardDestinationViewModel(
+        from displayInfo: CrowdloanDisplayInfo,
+        address: AccountAddress,
+        locale: Locale
+    ) -> CrowdloanRewardDestinationVM {
+        let icon: UIImage? = {
+            guard let accountId = try? address.toAccountId() else { return nil }
+            return try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
+                R.color.colorWhite()!,
+                size: UIConstants.normalAddressIconSize,
+                contentScale: UIScreen.main.scale
+            )
+        }()
+
+        return CrowdloanRewardDestinationVM(
+            title: R.string.localizable
+                .crowdloanRewardDestinationFormat(displayInfo.token, preferredLanguages: locale.rLanguages),
+            accountName: displayInfo.name,
+            accountAddress: address,
+            crowdloanIcon: displayInfo.icon,
+            substrateIcon: icon
+        )
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import SoraKeystore
 import CommonWallet
-import FearlessUtils
+import SubstrateSdk
 
 final class MainTabBarInteractor {
     weak var presenter: MainTabBarInteractorOutputProtocol?
@@ -50,18 +50,6 @@ extension MainTabBarInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         serviceCoordinator.updateOnAccountChange()
         presenter?.didReloadSelectedAccount()
-    }
-
-    func processBalanceChanged(event _: WalletBalanceChanged) {
-        presenter?.didUpdateWalletInfo()
-    }
-
-    func processStakingChanged(event _: WalletStakingInfoChanged) {
-        presenter?.didUpdateWalletInfo()
-    }
-
-    func processNewTransaction(event _: WalletNewTransactionInserted) {
-        presenter?.didUpdateWalletInfo()
     }
 }
 

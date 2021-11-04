@@ -15,8 +15,8 @@ extension AddChainAccount {
             request: ChainAccountImportMnemonicRequest,
             chainModelId: ChainModel.Id,
             mnemonic: IRMnemonicProtocol,
-            accountOperationFactory: MetaAccountOperationFactoryProtocol,
-            accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+            metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+            metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
             eventCenter: EventCenterProtocol
@@ -29,33 +29,41 @@ extension AddChainAccount {
                 metaAccountModel: metaAccountModel,
                 chainModelId: chainModelId,
                 mnemonic: mnemonic,
-                accountOperationFactory: accountOperationFactory,
-                accountRepository: accountRepository,
+                metaAccountOperationFactory: metaAccountOperationFactory,
+                metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager
             )
         }
 
         override func createAccountUsingOperation(_ importOperation: BaseOperation<MetaAccountModel>) {
-            guard currentOperation == nil else {
-                return
-            }
-
-            let saveOperation: ClosureOperation<MetaAccountModel> = ClosureOperation { [weak self] in
-                let accountItem = try importOperation
+            let persistentOperation = metaAccountRepository.saveOperation({
+                let metaAccountItem = try importOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                self?.settings.save(value: accountItem)
 
-                return accountItem
+                return [metaAccountItem]
+            }, { [] })
+
+            persistentOperation.addDependency(importOperation)
+
+            let saveOperation: ClosureOperation<Void> = ClosureOperation {
+                let metaAccountItem = try importOperation
+                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+
+                if let savedAccountItem = self.settings.value,
+                   savedAccountItem.identifier == metaAccountItem.identifier {
+                    self.settings.save(value: metaAccountItem)
+                    self.eventCenter.notify(with: SelectedAccountChanged())
+                }
             }
+
+            saveOperation.addDependency(importOperation)
+            saveOperation.addDependency(persistentOperation)
 
             saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
-                    self?.currentOperation = nil
-
                     switch saveOperation.result {
                     case .success:
-                        self?.settings.setup()
-                        self?.eventCenter.notify(with: SelectedAccountChanged())
+                        self?.eventCenter.notify(with: ChainAccountChanged())
                         self?.presenter?.didCompleteConfirmation()
 
                     case let .failure(error):
@@ -68,10 +76,8 @@ extension AddChainAccount {
                 }
             }
 
-            saveOperation.addDependency(importOperation)
-
             operationManager.enqueue(
-                operations: [importOperation, saveOperation],
+                operations: [importOperation, persistentOperation, saveOperation],
                 in: .transient
             )
         }

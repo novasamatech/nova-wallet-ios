@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 import IrohaCrypto
 
@@ -9,6 +9,7 @@ typealias EstimateFeeIndexedClosure = ([FeeExtrinsicResult]) -> Void
 
 typealias SubmitExtrinsicResult = Result<String, Error>
 typealias ExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
+
 typealias ExtrinsicSubmitIndexedClosure = ([SubmitExtrinsicResult]) -> Void
 
 protocol ExtrinsicServiceProtocol {
@@ -26,6 +27,13 @@ protocol ExtrinsicServiceProtocol {
     )
 
     func submit(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping ExtrinsicSubmitClosure
+    )
+
+    func submitAndWatch(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
@@ -152,6 +160,27 @@ extension ExtrinsicService: ExtrinsicServiceProtocol {
         }
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+    }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        completion completionClosure: @escaping (Result<String, Error>) -> Void
+    ) {
+        let extrinsicOperation = operationFactory.submitAndWatch(closure, signer: signer)
+
+        extrinsicOperation.targetOperation.completionBlock = {
+            queue.async {
+                if let result = extrinsicOperation.targetOperation.result, let params = try? result.get() {
+                    completionClosure(.success(params))
+                } else {
+                    completionClosure(.failure(BaseOperationError.parentOperationCancelled))
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: extrinsicOperation.allOperations, in: .transient)
     }
 
     func submit(

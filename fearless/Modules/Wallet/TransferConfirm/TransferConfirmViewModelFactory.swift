@@ -1,6 +1,6 @@
 import Foundation
 import CommonWallet
-import FearlessUtils
+import SubstrateSdk
 
 final class TransferConfirmViewModelFactory {
     weak var commandFactory: WalletCommandFactoryProtocol?

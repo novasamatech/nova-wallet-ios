@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 
 typealias ExtrinsicBuilderClosure = (ExtrinsicBuilderProtocol) throws -> (ExtrinsicBuilderProtocol)
@@ -18,6 +18,11 @@ protocol ExtrinsicOperationFactoryProtocol {
         signer: SigningWrapperProtocol,
         numberOfExtrinsics: Int
     ) -> CompoundOperationWrapper<[SubmitExtrinsicResult]>
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<String>
 }
 
 extension ExtrinsicOperationFactoryProtocol {
@@ -367,6 +372,38 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         return CompoundOperationWrapper(
             targetOperation: wrapperOperation,
             dependencies: builderWrapper.allOperations + submitOperationList
+        )
+    }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<String> {
+        let wrapperClosure: ExtrinsicBuilderIndexedClosure = { builder, _ in
+            try closure(builder)
+        }
+
+        let signingClosure: (Data) throws -> Data = { data in
+            try signer.sign(data).rawData()
+        }
+
+        let builderWrapper = createExtrinsicOperation(
+            customClosure: wrapperClosure,
+            numberOfExtrinsics: 1,
+            signingClosure: signingClosure
+        )
+
+        let resOperation: ClosureOperation<String> = ClosureOperation {
+            let extrinsic = try builderWrapper.targetOperation.extractNoCancellableResultData().first!
+            return extrinsic.toHex(includePrefix: true)
+        }
+        builderWrapper.allOperations.forEach {
+            resOperation.addDependency($0)
+        }
+
+        return CompoundOperationWrapper(
+            targetOperation: resOperation,
+            dependencies: builderWrapper.allOperations
         )
     }
 }

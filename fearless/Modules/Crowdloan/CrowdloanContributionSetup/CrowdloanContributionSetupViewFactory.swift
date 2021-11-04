@@ -5,7 +5,8 @@ import SoraFoundation
 struct CrowdloanContributionSetupViewFactory {
     static func createView(
         for paraId: ParaId,
-        state: CrowdloanSharedState
+        state: CrowdloanSharedState,
+        bonusService: CrowdloanBonusServiceProtocol? = nil
     ) -> CrowdloanContributionSetupViewProtocol? {
         guard
             let chain = state.settings.value,
@@ -39,6 +40,7 @@ struct CrowdloanContributionSetupViewFactory {
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
+            bonusService: bonusService,
             logger: Logger.shared
         )
 

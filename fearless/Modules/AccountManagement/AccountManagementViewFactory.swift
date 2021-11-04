@@ -1,7 +1,7 @@
 import Foundation
 import SoraFoundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 import SoraKeystore
 
@@ -19,6 +19,8 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             walletId: walletId,
             logger: Logger.shared
         )
+
+        presenter.localizationManager = LocalizationManager.shared
 
         let storageFacade = UserDataStorageFacade.shared
 

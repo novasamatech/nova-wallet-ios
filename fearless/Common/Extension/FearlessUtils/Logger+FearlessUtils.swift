@@ -1,3 +1,3 @@
-import FearlessUtils
+import SubstrateSdk
 
 extension Logger: SDKLoggerProtocol {}

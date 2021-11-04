@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 final class OnboardingMainInteractor {
     weak var presenter: OnboardingMainInteractorOutputProtocol?

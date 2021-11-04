@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension WebSocketEngine: ConnectionAutobalancing {
     var ranking: [ConnectionRank] {

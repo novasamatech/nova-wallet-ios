@@ -2,7 +2,7 @@ import UIKit
 import SoraKeystore
 import RobinHood
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 
 final class ControllerAccountInteractor: AccountFetching {
     weak var presenter: ControllerAccountInteractorOutputProtocol!

@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class StakingRedeemViewFactory {
     static func createView(for state: StakingSharedState) -> StakingRedeemViewProtocol? {

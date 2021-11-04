@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 
 class SelectedValidatorCell: UITableViewCell {
     let iconView: PolkadotIconView = {
