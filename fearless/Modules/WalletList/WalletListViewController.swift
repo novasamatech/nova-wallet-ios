@@ -49,6 +49,12 @@ extension WalletListViewController: UITableViewDelegate {
             return 88.0
         }
     }
+
+    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == 1 else { return }
+
+        presenter.selectAsset(at: indexPath.row)
+    }
 }
 
 extension WalletListViewController: UITableViewDataSource {
