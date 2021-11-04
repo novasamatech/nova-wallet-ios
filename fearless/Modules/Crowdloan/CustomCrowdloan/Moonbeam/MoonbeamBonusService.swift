@@ -321,11 +321,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
     func modify(request: URLRequest) throws -> URLRequest {
-        #if F_RELEASE
-            let apiKey = MoonbeamKeys.authToken
-        #else
-            let apiKey = MoonbeamKeys.authTestToken
-        #endif
+        let apiKey = MoonbeamKeys.apiKey
         var modifiedRequest = request
         modifiedRequest.addValue(apiKey, forHTTPHeaderField: "x-api-key")
         return modifiedRequest

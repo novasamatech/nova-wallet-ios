@@ -1,11 +1,13 @@
 import Foundation
 
 enum AcalaKeys {
-    static var authToken: String =
-        AcalaKeys.variable(named: "ACALA_AUTH_TOKEN") ?? AcalaCIKeys.authToken
-
-    static var authTestToken: String =
-        AcalaKeys.variable(named: "ACALA_TEST_AUTH_TOKEN") ?? AcalaCIKeys.authTestToken
+    static var authToken: String {
+        #if F_RELEASE
+            return AcalaKeys.variable(named: "ACALA_AUTH_TOKEN") ?? AcalaCIKeys.authToken
+        #else
+            return AcalaKeys.variable(named: "ACALA_TEST_AUTH_TOKEN") ?? AcalaCIKeys.authTestToken
+        #endif
+    }
 
     static func variable(named name: String) -> String? {
         let processInfo = ProcessInfo.processInfo
