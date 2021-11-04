@@ -72,10 +72,10 @@ class AccountImportTests: XCTestCase {
 
                 setupExpectation.fulfill()
             }
-
+            
+            when(stub).setTitle(any()).thenDoNothing()
             when(stub).setSource(type: any()).thenDoNothing()
             when(stub).setSelectedCrypto(model: any()).thenDoNothing()
-            when(stub).setSelectedNetwork(model: any()).thenDoNothing()
             when(stub).setSubstrateDerivationPath(viewModel: any()).thenDoNothing()
             when(stub).setEthereumDerivationPath(viewModel: any()).thenDoNothing()
         }

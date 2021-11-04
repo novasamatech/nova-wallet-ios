@@ -10,23 +10,23 @@ class BaseAccountImportInteractor {
     private(set) lazy var jsonDecoder = JSONDecoder()
     private(set) lazy var mnemonicCreator = IRMnemonicCreator()
 
-    let accountOperationFactory: MetaAccountOperationFactoryProtocol
-    let accountRepository: AnyDataProviderRepository<MetaAccountModel>
+    let metaAccountOperationFactory: MetaAccountOperationFactoryProtocol
+    let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
     let keystoreImportService: KeystoreImportServiceProtocol
     let supportedNetworks: [Chain]
     let defaultNetwork: Chain
 
     init(
-        accountOperationFactory: MetaAccountOperationFactoryProtocol,
-        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
+        metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
         supportedNetworks: [Chain],
         defaultNetwork: Chain
     ) {
-        self.accountOperationFactory = accountOperationFactory
-        self.accountRepository = accountRepository
+        self.metaAccountOperationFactory = metaAccountOperationFactory
+        self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
         self.keystoreImportService = keystoreImportService
         self.supportedNetworks = supportedNetworks
@@ -91,7 +91,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             cryptoType: request.cryptoType
         )
 
-        let accountOperation = accountOperationFactory.newMetaAccountOperation(
+        let accountOperation = metaAccountOperationFactory.newMetaAccountOperation(
             request: creationRequest,
             mnemonic: mnemonic
         )
@@ -100,12 +100,12 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     }
 
     func importAccountWithSeed(request: MetaAccountImportSeedRequest) {
-        let operation = accountOperationFactory.newMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactory.newMetaAccountOperation(request: request)
         importAccountUsingOperation(operation)
     }
 
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest) {
-        let operation = accountOperationFactory.newMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactory.newMetaAccountOperation(request: request)
         importAccountUsingOperation(operation)
     }
 
@@ -115,19 +115,19 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             return
         }
 
-        let operation = accountOperationFactory
+        let operation = metaAccountOperationFactory
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
 
     func importAccountWithSeed(chainId: ChainModel.Id, request: ChainAccountImportSeedRequest, into wallet: MetaAccountModel) {
-        let operation = accountOperationFactory
+        let operation = metaAccountOperationFactory
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
 
     func importAccountWithKeystore(chainId: ChainModel.Id, request: ChainAccountImportKeystoreRequest, into wallet: MetaAccountModel) {
-        let operation = accountOperationFactory
+        let operation = metaAccountOperationFactory
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }

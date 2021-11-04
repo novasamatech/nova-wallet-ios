@@ -4,6 +4,7 @@ import RobinHood
 protocol ChainRegistryProtocol: AnyObject {
     var availableChainIds: Set<ChainModel.Id>? { get }
 
+    func getChain(for chainId: ChainModel.Id) -> ChainModel?
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
     func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?
 
@@ -33,6 +34,7 @@ final class ChainRegistry {
     let logger: LoggerProtocol?
 
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: SpecVersionSubscriptionProtocol] = [:]
+    private var availableChains = Set<ChainModel>()
 
     private let mutex = NSLock()
 
@@ -103,14 +105,23 @@ final class ChainRegistry {
                     runtimeSyncService.register(chain: newChain, with: connection)
 
                     setupRuntimeVersionSubscription(for: newChain, connection: connection)
+                    availableChains.insert(newChain)
                 case let .update(updatedChain):
                     _ = try connectionPool.setupConnection(for: updatedChain)
                     _ = runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
+
+                    if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
+                        availableChains.remove(at: currentChain)
+                    }
+                    availableChains.insert(updatedChain)
                 case let .delete(chainId):
                     runtimeProviderPool.destroyRuntimeProvider(for: chainId)
                     clearRuntimeSubscription(for: chainId)
 
                     runtimeSyncService.unregister(chainId: chainId)
+                    if let currentChain = availableChains.firstIndex(where: { $0.chainId == chainId }) {
+                        availableChains.remove(at: currentChain)
+                    }
                 }
             } catch {
                 logger?.error("Unexpected error on handling chains update: \(error)")
@@ -152,6 +163,16 @@ extension ChainRegistry: ChainRegistryProtocol {
         }
 
         return Set(runtimeVersionSubscriptions.keys)
+    }
+
+    func getChain(for chainId: ChainModel.Id) -> ChainModel? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return availableChains.first(where: { $0.chainId == chainId })
     }
 
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection? {

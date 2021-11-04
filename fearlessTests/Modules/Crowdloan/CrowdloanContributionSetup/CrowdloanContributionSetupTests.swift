@@ -172,7 +172,8 @@ class CrowdloanContributionSetupTests: XCTestCase {
             contributionViewModelFactory: crowdloanViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
-            localizationManager: LocalizationManager.shared
+            localizationManager: LocalizationManager.shared,
+            bonusService: nil
         )
 
         interactor.presenter = presenter

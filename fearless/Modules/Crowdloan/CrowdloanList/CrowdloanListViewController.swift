@@ -61,25 +61,26 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
     }
 
     func configure() {
-        rootView.tableView.registerClassForCell(CrowdloanChainTableViewCell.self)
         rootView.tableView.registerClassForCell(YourCrowdloansTableViewCell.self)
-        rootView.tableView.registerClassForCell(ActiveCrowdloanTableViewCell.self)
-        rootView.tableView.registerClassForCell(CompletedCrowdloanTableViewCell.self)
+        rootView.tableView.registerClassForCell(CrowdloanTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: CrowdloanStatusSectionView.self)
-
-        rootView.tableView.tableFooterView = UIView()
-
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
 
         if let refreshControl = rootView.tableView.refreshControl {
             refreshControl.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
         }
+        rootView.headerView.chainSelectionView.addTarget(
+            self,
+            action: #selector(actionSelectChain),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        title = R.string.localizable.tabbarCrowdloanTitle_v190(preferredLanguages: languages)
+        rootView.headerView.titleLabel.text = R.string.localizable
+            .tabbarCrowdloanTitle_v190(preferredLanguages: languages)
     }
 
     private func applyState() {
@@ -87,24 +88,20 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         case .loading:
             didStartLoading()
 
-            rootView.setSeparators(enabled: false)
             rootView.bringSubviewToFront(rootView.tableView)
         case .loaded:
             rootView.tableView.refreshControl?.endRefreshing()
             didStopLoading()
 
-            rootView.setSeparators(enabled: true)
             rootView.bringSubviewToFront(rootView.tableView)
         case .empty, .error:
             rootView.tableView.refreshControl?.endRefreshing()
             didStopLoading()
 
-            rootView.setSeparators(enabled: false)
             rootView.bringSubviewToFront(rootView.statusView)
         }
 
         rootView.tableView.reloadData()
-
         reloadEmptyState(animated: false)
     }
 
@@ -119,94 +116,49 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
 
 extension CrowdloanListViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        guard chainInfo != nil else {
-            return 0
-        }
-
         switch state {
         case let .loaded(viewModel):
-            if viewModel.active != nil, viewModel.completed != nil {
-                return 3
-            } else if viewModel.active != nil || viewModel.completed != nil {
-                return 2
-            } else {
-                return 1
-            }
+            return viewModel.sections.count
         case .loading, .empty, .error:
-            return 1
+            return 0
         }
     }
 
     func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        } else {
-            guard case let .loaded(viewModel) = state else {
-                return 0
+        switch state {
+        case let .loaded(viewModel):
+            let sectionModel = viewModel.sections[section]
+            switch sectionModel {
+            case .yourContributions:
+                return 1
+            case let .active(_, cellViewModels):
+                return cellViewModels.count
+            case let .completed(_, cellViewModels):
+                return cellViewModels.count
             }
-
-            if section == 1 {
-                return viewModel.active?.crowdloans.count ?? viewModel.completed?.crowdloans.count ?? 0
-            } else {
-                return viewModel.completed?.crowdloans.count ?? 0
-            }
+        case .loading, .empty, .error:
+            return 0
         }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let chainInfoCell = tableView.dequeueReusableCellWithType(CrowdloanChainTableViewCell.self)!
-
-            if let viewModel = chainInfo {
-                chainInfoCell.bind(viewModel: viewModel)
+        switch state {
+        case let .loaded(viewModel):
+            let sectionModel = viewModel.sections[indexPath.section]
+            switch sectionModel {
+            case let .yourContributions(title, contrubutionsCount):
+                let cell = tableView.dequeueReusableCellWithType(YourCrowdloansTableViewCell.self)!
+                cell.bind(title: title, count: contrubutionsCount)
+                return cell
+            case let .active(_, cellViewModels), let .completed(_, cellViewModels):
+                let cell = tableView.dequeueReusableCellWithType(CrowdloanTableViewCell.self)!
+                let cellViewModel = cellViewModels[indexPath.row]
+                cell.bind(viewModel: cellViewModel)
+                return cell
             }
-
-            chainInfoCell.chainSelectionView.addTarget(
-                self,
-                action: #selector(actionSelectChain),
-                for: .touchUpInside
-            )
-
-            return chainInfoCell
-        }
-
-        guard case let .loaded(viewModel) = state else {
+        case .loading, .empty, .error:
             return UITableViewCell()
         }
-
-        if indexPath.section == 1, let active = viewModel.active {
-            return createActiveTableViewCell(
-                tableView,
-                viewModel: active.crowdloans[indexPath.row].content
-            )
-        }
-
-        if let completed = viewModel.completed {
-            return createCompletedTableViewCell(
-                tableView,
-                viewModel: completed.crowdloans[indexPath.row].content
-            )
-        }
-
-        return UITableViewCell()
-    }
-
-    private func createActiveTableViewCell(
-        _ tableView: UITableView,
-        viewModel: ActiveCrowdloanViewModel
-    ) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(ActiveCrowdloanTableViewCell.self)!
-        cell.bind(viewModel: viewModel)
-        return cell
-    }
-
-    private func createCompletedTableViewCell(
-        _ tableView: UITableView,
-        viewModel: CompletedCrowdloanViewModel
-    ) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(CompletedCrowdloanTableViewCell.self)!
-        cell.bind(viewModel: viewModel)
-        return cell
     }
 }
 
@@ -218,29 +170,46 @@ extension CrowdloanListViewController: UITableViewDelegate {
             return
         }
 
-        if indexPath.section == 1, let active = viewModel.active {
-            presenter.selectViewModel(active.crowdloans[indexPath.row])
+        let sectionModel = viewModel.sections[indexPath.section]
+        switch sectionModel {
+        case let .active(_, cellViewModels):
+            let viewModel = cellViewModels[indexPath.row]
+            presenter.selectCrowdloan(viewModel.paraId)
+        case .yourContributions:
+            presenter.handleYourContributions()
+        default:
+            return
         }
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard section > 0, case let .loaded(viewModel) = state else {
+        guard case let .loaded(viewModel) = state else {
             return nil
         }
 
-        let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-
-        if section == 1, let active = viewModel.active {
-            headerView.bind(title: active.title, status: .active)
-        } else if let completed = viewModel.completed {
-            headerView.bind(title: completed.title, status: .completed)
+        let sectionModel = viewModel.sections[section]
+        switch sectionModel {
+        case let .active(title, cells), let .completed(title, cells):
+            let headerView: CrowdloanStatusSectionView = tableView.dequeueReusableHeaderFooterView()
+            headerView.bind(title: title, count: cells.count)
+            return headerView
+        default:
+            return nil
         }
-
-        return headerView
     }
 
     func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        section > 0 ? 40.0 : 0.0
+        guard case let .loaded(viewModel) = state else {
+            return 0.0
+        }
+
+        let sectionModel = viewModel.sections[section]
+        switch sectionModel {
+        case .active, .completed:
+            return UITableView.automaticDimension
+        default:
+            return 0.0
+        }
     }
 }
 
@@ -248,7 +217,8 @@ extension CrowdloanListViewController: CrowdloanListViewProtocol {
     func didReceive(chainInfo: CrowdloansChainViewModel) {
         self.chainInfo = chainInfo
 
-        rootView.tableView.reloadData()
+        rootView.headerView.bind(viewModel: chainInfo)
+        rootView.headerView.setNeedsLayout()
     }
 
     func didReceive(listState: CrowdloanListState) {
@@ -315,3 +285,5 @@ extension CrowdloanListViewController: ErrorStateViewDelegate {
         presenter.refresh(shouldReset: true)
     }
 }
+
+extension CrowdloanListViewController: HiddableBarWhenPushed {}
