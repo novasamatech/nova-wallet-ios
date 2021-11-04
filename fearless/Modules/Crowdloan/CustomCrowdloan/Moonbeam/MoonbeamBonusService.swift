@@ -28,10 +28,10 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 
     var referralCode: String? { nil }
 
-    #if F_DEV
-        static let baseURL = URL(string: "https://wallet-test.api.purestake.xyz")!
-    #else
+    #if F_RELEASE
         static let baseURL = URL(string: "https://yy9252r9jh.api.purestake.io")!
+    #else
+        static let baseURL = URL(string: "https://wallet-test.api.purestake.xyz")!
     #endif
 
     static let apiHealth = "/health"
@@ -320,10 +320,10 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 }
 
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
-    #if F_DEV
-        static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
-    #else
+    #if F_RELEASE
         static let apiKey = "s2blK9qnbOaL17skehEEg3qvJ5pn0mnBvJAJGCA6"
+    #else
+        static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
     #endif
 
     func modify(request: URLRequest) throws -> URLRequest {

@@ -5,12 +5,12 @@ import IrohaCrypto
 import FearlessUtils
 
 final class AcalaBonusService {
-    #if F_DEV
-        static let defaultReferralCode = "0xbcb330a49b5766dcd63fff92cf95243ec2a29c4131f19155724095e5cfd5197a"
-        static let baseURL = URL(string: "https://crowdloan.aca-dev.network")!
-    #else
+    #if F_RELEASE
         static let defaultReferralCode = "0xc5c184f0565e2192d6aedae584ee736cef875f0e1c558ee3ede26869acd0b4d6"
         static let baseURL = URL(string: "https://crowdloan.aca-api.network")!
+    #else
+        static let defaultReferralCode = "0xbcb330a49b5766dcd63fff92cf95243ec2a29c4131f19155724095e5cfd5197a"
+        static let baseURL = URL(string: "https://crowdloan.aca-dev.network")!
     #endif
 
     static let apiReferral = "/referral"
