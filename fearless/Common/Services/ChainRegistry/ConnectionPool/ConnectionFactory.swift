@@ -1,10 +1,10 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 typealias ChainConnection = JSONRPCEngine & ConnectionAutobalancing & ConnectionStateReporting
 
 protocol ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel) throws -> ChainConnection
+    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
 }
 
 final class ConnectionFactory {
@@ -16,11 +16,13 @@ final class ConnectionFactory {
 }
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
-    func createConnection(for chain: ChainModel) throws -> ChainConnection {
-        guard let url = chain.nodes.first?.url else {
+    func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
+        guard let url = chain.nodes.sorted(by: { $0.order < $1.order }).first?.url else {
             throw JSONRPCEngineError.unknownError
         }
 
-        return WebSocketEngine(url: url, logger: logger)
+        let connection = WebSocketEngine(url: url, logger: logger)
+        connection.delegate = delegate
+        return connection
     }
 }

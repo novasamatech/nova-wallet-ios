@@ -1,6 +1,6 @@
 import IrohaCrypto
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactoryProtocol {
     let iconGenerator: IconGenerating

@@ -2,7 +2,7 @@ import Foundation
 import SoraKeystore
 import RobinHood
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 
 final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetching {
     weak var presenter: StakingUnbondConfirmInteractorOutputProtocol!

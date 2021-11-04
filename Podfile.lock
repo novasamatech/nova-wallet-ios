@@ -16,19 +16,6 @@ PODS:
   - Cuckoo (1.5.0):
     - Cuckoo/Swift (= 1.5.0)
   - Cuckoo/Swift (1.5.0)
-  - FearlessUtils (0.13.1):
-    - BigInt (~> 5.0)
-    - IrohaCrypto/ed25519 (~> 0.9.0)
-    - IrohaCrypto/Scrypt (~> 0.9.0)
-    - IrohaCrypto/secp256k1 (~> 0.9.0)
-    - IrohaCrypto/sr25519 (~> 0.9.0)
-    - IrohaCrypto/ss58 (~> 0.9.0)
-    - keccak.c (~> 0.1.0)
-    - ReachabilitySwift (~> 5.0)
-    - RobinHood (~> 2.6.0)
-    - Starscream
-    - TweetNacl (~> 1.0.0)
-    - xxHash-Swift (~> 1.0.0)
   - FireMock (3.1)
   - IrohaCrypto/BIP39 (0.9.0):
     - IrohaCrypto/Common
@@ -112,6 +99,19 @@ PODS:
   - SoraUI/Skrull (1.10.3)
   - Sourcery (1.4.1)
   - Starscream (4.0.4)
+  - SubstrateSdk (1.0.0):
+    - BigInt (~> 5.0)
+    - IrohaCrypto/ed25519 (~> 0.9.0)
+    - IrohaCrypto/Scrypt (~> 0.9.0)
+    - IrohaCrypto/secp256k1 (~> 0.9.0)
+    - IrohaCrypto/sr25519 (~> 0.9.0)
+    - IrohaCrypto/ss58 (~> 0.9.0)
+    - keccak.c (~> 0.1.0)
+    - ReachabilitySwift (~> 5.0)
+    - RobinHood (~> 2.6.0)
+    - Starscream
+    - TweetNacl (~> 1.0.0)
+    - xxHash-Swift (~> 1.0.0)
   - SVGKit (2.1.0):
     - CocoaLumberjack (~> 3.0)
   - SwiftFormat/CLI (0.47.13)
@@ -124,7 +124,6 @@ DEPENDENCIES:
   - Charts
   - CommonWallet/Core (from `https://github.com/soramitsu/Capital-iOS.git`, commit `4133ff9b81cda094dd8e2b7f32129172224b0227`)
   - Cuckoo
-  - "FearlessUtils (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `e0df8b6264da455e6e47c39f781a7ee72d3e618a`)"
   - FireMock
   - Kingfisher
   - R.swift
@@ -135,6 +134,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (~> 1.10.3)
   - Sourcery (~> 1.4)
+  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `19f8b8c9b8d3e49d94c3160100bbb04d64b87169`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -172,8 +172,8 @@ EXTERNAL SOURCES:
   CommonWallet:
     :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
     :git: https://github.com/soramitsu/Capital-iOS.git
-  FearlessUtils:
-    :commit: e0df8b6264da455e6e47c39f781a7ee72d3e618a
+  SubstrateSdk:
+    :commit: 19f8b8c9b8d3e49d94c3160100bbb04d64b87169
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -183,8 +183,8 @@ CHECKOUT OPTIONS:
   CommonWallet:
     :commit: 4133ff9b81cda094dd8e2b7f32129172224b0227
     :git: https://github.com/soramitsu/Capital-iOS.git
-  FearlessUtils:
-    :commit: e0df8b6264da455e6e47c39f781a7ee72d3e618a
+  SubstrateSdk:
+    :commit: 19f8b8c9b8d3e49d94c3160100bbb04d64b87169
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -196,7 +196,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CommonWallet: cdc58c26a9bbac8d45edba7c09313896b5d7350d
   Cuckoo: 09ff1b7c6613b9c27dafea90702ca32208fe59d3
-  FearlessUtils: ead374df3270e36667321837d83cd23b1bb135a6
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
@@ -213,6 +212,7 @@ SPEC CHECKSUMS:
   SoraUI: 1ec71151eb962591eeb898bcdd98bded59745f2d
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
+  SubstrateSdk: 8d0bd631ff9f1fe4ac1d629f806c8b91a2b4de53
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
@@ -220,6 +220,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 79a222a8420a60361d2f815a8a98517056457593
+PODFILE CHECKSUM: a9114ea93d17a463a87e9372781db47ad44dfa1e
 
 COCOAPODS: 1.11.2

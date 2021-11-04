@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 
 enum RewardCalculatorServiceError: Error {

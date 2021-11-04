@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 final class SiDataTypeMapper: SiTypeMapping {
     func map(type: RuntimeType, identifier _: String) -> Node? {

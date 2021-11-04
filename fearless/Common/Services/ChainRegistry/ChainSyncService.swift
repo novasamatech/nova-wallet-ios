@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 protocol ChainSyncServiceProtocol {
     func syncUp()
@@ -69,7 +69,11 @@ final class ChainSyncService {
         let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
         let processingOperation: BaseOperation<SyncChanges> = ClosureOperation {
             let remoteData = try remoteFetchOperation.extractNoCancellableResultData()
-            let remoteChains = try JSONDecoder().decode([ChainModel].self, from: remoteData)
+            let remoteItems = try JSONDecoder().decode([RemoteChainModel].self, from: remoteData)
+
+            let remoteChains = remoteItems.enumerated().map { index, chain in
+                ChainModel(remoteModel: chain, order: Int64(index))
+            }
 
             let remoteMapping = remoteChains.reduce(into: [ChainModel.Id: ChainModel]()) { mapping, item in
                 mapping[item.chainId] = item

@@ -1,4 +1,4 @@
-import FearlessUtils
+import SubstrateSdk
 import SoraFoundation
 
 typealias ChainAccountListViewModel = [ChainAccountListSectionViewModel]

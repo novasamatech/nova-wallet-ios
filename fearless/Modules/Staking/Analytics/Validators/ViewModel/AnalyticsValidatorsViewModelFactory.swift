@@ -1,5 +1,5 @@
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 import IrohaCrypto
 

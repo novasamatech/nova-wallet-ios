@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import RobinHood
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 
 struct YourValidatorListViewFactory {
     static func createView(for state: StakingSharedState) -> YourValidatorListViewProtocol? {

@@ -1,6 +1,6 @@
 import XCTest
 import Cuckoo
-import FearlessUtils
+import SubstrateSdk
 import SoraFoundation
 import SoraKeystore
 @testable import fearless

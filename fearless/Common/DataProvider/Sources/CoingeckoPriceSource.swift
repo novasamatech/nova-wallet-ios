@@ -6,6 +6,7 @@ final class CoingeckoPriceSource: SingleValueProviderSourceProtocol {
 
     let priceId: AssetModel.PriceId?
 
+    @available(*, deprecated, message: "Use init(priceId:) instead")
     init(assetId: WalletAssetId) {
         priceId = assetId.coingeckoTokenId
     }

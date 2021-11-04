@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 final class AccountInfoViewController: UIViewController {
     private enum Constants {

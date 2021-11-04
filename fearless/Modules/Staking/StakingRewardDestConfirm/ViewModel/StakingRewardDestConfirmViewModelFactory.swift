@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol StakingRewardDestConfirmVMFactoryProtocol {
     func createViewModel(

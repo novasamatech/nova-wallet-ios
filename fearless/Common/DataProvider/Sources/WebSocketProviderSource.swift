@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 typealias WebSocketProviderKeyClosure = (@escaping () throws -> RuntimeCoderFactoryProtocol) throws
     -> BaseOperation<[Data]>

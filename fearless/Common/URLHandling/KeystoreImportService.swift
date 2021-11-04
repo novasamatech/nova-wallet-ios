@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol KeystoreImportObserver: AnyObject {
     func didUpdateDefinition(from oldDefinition: KeystoreDefinition?)

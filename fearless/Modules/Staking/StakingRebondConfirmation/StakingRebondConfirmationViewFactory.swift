@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 struct StakingRebondConfirmationViewFactory {
     static func createView(for variant: SelectedRebondVariant, state: StakingSharedState)

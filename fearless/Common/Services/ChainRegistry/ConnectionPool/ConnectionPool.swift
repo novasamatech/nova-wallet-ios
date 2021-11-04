@@ -1,8 +1,15 @@
 import Foundation
+import SubstrateSdk
 
 protocol ConnectionPoolProtocol {
     func setupConnection(for chain: ChainModel) throws -> ChainConnection
     func getConnection(for chainId: ChainModel.Id) -> ChainConnection?
+    func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+    func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)
+}
+
+protocol ConnectionStateSubscription: AnyObject {
+    func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
 }
 
 class ConnectionPool {
@@ -11,6 +18,8 @@ class ConnectionPool {
     private var mutex = NSLock()
 
     private(set) var connections: [ChainModel.Id: WeakWrapper] = [:]
+
+    private(set) var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] = [:]
 
     private func clearUnusedConnections() {
         connections = connections.filter { $0.value.target != nil }
@@ -22,6 +31,39 @@ class ConnectionPool {
 }
 
 extension ConnectionPool: ConnectionPoolProtocol {
+    func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        if let subscribers = stateSubscriptions[chainId], subscribers.contains(where: { $0.target === subscriber }) {
+            return
+        }
+
+        var subscribers = stateSubscriptions[chainId] ?? []
+        subscribers.append(WeakWrapper(target: subscriber))
+        stateSubscriptions[chainId] = subscribers
+
+        let connection = connections[chainId] as? ChainConnection
+
+        DispatchQueue.main.async {
+            subscriber.didReceive(state: connection?.state ?? .notConnected, for: chainId)
+        }
+    }
+
+    func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let subscribers = stateSubscriptions[chainId]
+        stateSubscriptions[chainId] = subscribers?.filter { $0.target !== subscriber }
+    }
+
     func setupConnection(for chain: ChainModel) throws -> ChainConnection {
         mutex.lock()
 
@@ -37,7 +79,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
             return connection
         }
 
-        let connection = try connectionFactory.createConnection(for: chain)
+        let connection = try connectionFactory.createConnection(for: chain, delegate: self)
         connections[chain.chainId] = WeakWrapper(target: connection)
 
         return connection
@@ -51,5 +93,36 @@ extension ConnectionPool: ConnectionPoolProtocol {
         }
 
         return connections[chainId]?.target as? ChainConnection
+    }
+}
+
+extension ConnectionPool: WebSocketEngineDelegate {
+    func webSocketDidChangeState(
+        _ connection: AnyObject,
+        from _: WebSocketEngine.State,
+        to newState: WebSocketEngine.State
+    ) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let allChainIds = connections.keys
+        let maybeChainId = allChainIds.first(where: { connections[$0]?.target === connection })
+
+        guard let chainId = maybeChainId else {
+            return
+        }
+
+        let maybeSubscriptions = stateSubscriptions[chainId]?.compactMap { $0.target as? ConnectionStateSubscription }
+
+        guard let subscriptions = maybeSubscriptions, !subscriptions.isEmpty else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            subscriptions.forEach { $0.didReceive(state: newState, for: chainId) }
+        }
     }
 }
