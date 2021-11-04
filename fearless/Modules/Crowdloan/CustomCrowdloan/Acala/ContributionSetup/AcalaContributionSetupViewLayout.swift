@@ -34,25 +34,7 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
             make.height.equalTo(44)
         }
 
-        let infoIcon = UIImageView(image: R.image.iconInfoFilled()!.withRenderingMode(.alwaysTemplate))
-        infoIcon.tintColor = R.color.colorBlue()
-
-        let arrowIcon = UIImageView(image: R.image.iconSmallArrow()!.withRenderingMode(.alwaysTemplate))
-        arrowIcon.tintColor = R.color.colorBlue()
-        arrowIcon.contentMode = .center
-
-        let infoStack = UIView.hStack(
-            alignment: .center,
-            spacing: 8,
-            [infoIcon, infoLabel, arrowIcon, UIView()]
-        )
-
-        contentView.stackView.insertArrangedSubview(infoStack, at: titleLabelIndex + 2)
-        contentView.stackView.setCustomSpacing(24, after: infoStack)
-        infoStack.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-        arrowIcon.snp.makeConstraints { $0.size.equalTo(12) }
+        // TODO: Add custom  "Learn more about different contributions to Acala" backgroundControl
     }
 
     override func applyLocalization() {
