@@ -5,25 +5,39 @@ import SubstrateSdk
 final class WalletListInteractor {
     weak var presenter: WalletListInteractorOutputProtocol!
 
-    let selectedMetaAccount: MetaAccountModel
+    let selectedWalletSettings: SelectedWalletSettings
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let eventCenter: EventCenterProtocol
 
     private var accountInfoSubscriptions: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private var availableTokenPrice: [ChainModel.Id: AssetModel.PriceId] = [:]
 
     init(
-        selectedMetaAccount: MetaAccountModel,
+        selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        eventCenter: EventCenterProtocol
     ) {
-        self.selectedMetaAccount = selectedMetaAccount
+        self.selectedWalletSettings = selectedWalletSettings
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.eventCenter = eventCenter
+    }
+
+    private func providerWalletInfo() {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
+        presenter.didReceive(
+            genericAccountId: selectedMetaAccount.substrateAccountId,
+            name: selectedMetaAccount.name
+        )
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -38,6 +52,10 @@ final class WalletListInteractor {
     }
 
     private func updateAccountInfoSubscription(from changes: [DataProviderChange<ChainModel>]) {
+        guard let selectedMetaAccount = selectedWalletSettings.value else {
+            return
+        }
+
         accountInfoSubscriptions = changes.reduce(into: accountInfoSubscriptions) { result, change in
             switch change {
             case let .insert(chain), let .update(chain):
@@ -80,7 +98,7 @@ final class WalletListInteractor {
     private func updatePriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
         priceSubscription = nil
 
-        let priceIds = Array(priceIdSet)
+        let priceIds = Array(priceIdSet).sorted()
 
         guard !priceIds.isEmpty else {
             return
@@ -132,7 +150,7 @@ final class WalletListInteractor {
 
 extension WalletListInteractor: WalletListInteractorInputProtocol {
     func setup() {
-        presenter.didReceive(genericAccountId: selectedMetaAccount.substrateAccountId, name: selectedMetaAccount.name)
+        providerWalletInfo()
 
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             self?.presenter.didReceiveChainModelChanges(changes)
@@ -140,6 +158,8 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
             self?.updateAccountInfoSubscription(from: changes)
             self?.updatePriceSubscription(from: changes)
         }
+
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
 
@@ -152,5 +172,23 @@ extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscri
 extension WalletListInteractor: ConnectionStateSubscription {
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
         presenter.didReceive(state: state, for: chainId)
+    }
+}
+
+extension WalletListInteractor: EventVisitorProtocol {
+    func processChainAccountChanged(event _: ChainAccountChanged) {
+        providerWalletInfo()
+    }
+
+    func processSelectedAccountChanged(event _: SelectedAccountChanged) {
+        providerWalletInfo()
+    }
+
+    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
+        guard let name = selectedWalletSettings.value?.name else {
+            return
+        }
+
+        presenter.didChange(name: name)
     }
 }

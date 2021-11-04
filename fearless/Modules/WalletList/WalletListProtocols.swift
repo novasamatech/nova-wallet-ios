@@ -23,6 +23,7 @@ protocol WalletListInteractorOutputProtocol: AnyObject {
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, chainId: ChainModel.Id)
     func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>)
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
+    func didChange(name: String)
 }
 
 protocol WalletListWireframeProtocol: AnyObject {
