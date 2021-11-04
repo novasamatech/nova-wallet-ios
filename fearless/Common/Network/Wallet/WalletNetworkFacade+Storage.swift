@@ -42,11 +42,12 @@ extension WalletNetworkFacade {
                         params: StorageRequestParams(path: .account)
                     )
 
-                let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> = createBalanceLocksFetchOperation(
-                    for: selectedAccount.accountId,
-                    chainId: chain.chainId,
-                    chainFormat: chain.chainFormat
-                )
+                let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> =
+                    createBalanceLocksFetchOperation(
+                        for: selectedAccount.accountId,
+                        chainId: chain.chainId,
+                        chainFormat: chain.chainFormat
+                    )
 
                 let mappingOperation = createBalanceMappingOperation(
                     asset: asset,
@@ -124,7 +125,6 @@ extension WalletNetworkFacade {
         chainId: ChainModel.Id,
         chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<BalanceLocks?> {
-        // TODO: Move to Network Operation Factory
         let operationManager = OperationManagerFacade.sharedManager
 
         let requestFactory = StorageRequestFactory(
@@ -161,6 +161,7 @@ extension WalletNetworkFacade {
             )
         }
 
+        // TODO: Wrap into an array
         let mapOperation = ClosureOperation<BalanceLocks?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
         }
