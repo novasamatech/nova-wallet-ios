@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 struct AnalyticsValidatorsViewFactory {
     static func createView(for state: StakingSharedState) -> AnalyticsValidatorsViewProtocol? {

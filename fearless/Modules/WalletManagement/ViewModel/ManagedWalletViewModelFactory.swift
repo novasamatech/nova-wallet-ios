@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol ManagedWalletViewModelFactoryProtocol {
     func createViewModelFromItem(_ item: ManagedMetaAccountModel) -> ManagedWalletViewModelItem

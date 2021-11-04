@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import FearlessUtils
+import SubstrateSdk
 import SoraKeystore
 import IrohaCrypto
 

@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol ConnectionStateReporting {
     var state: WebSocketEngine.State { get }

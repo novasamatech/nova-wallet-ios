@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 struct SlashingSpans: Decodable {
     @StringCodable var lastNonzeroSlash: UInt32

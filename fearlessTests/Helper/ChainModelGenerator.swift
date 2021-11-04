@@ -24,7 +24,8 @@ enum ChainModelGenerator {
             let node = ChainNodeModel(
                 url: URL(string: "wss://node.io/\(chainId)")!,
                 name: chainId,
-                apikey: nil
+                apikey: nil,
+                order: 0
             )
 
             let types = withTypes ? ChainModel.TypesSettings(
@@ -45,6 +46,64 @@ enum ChainModelGenerator {
             )
 
             return ChainModel(
+                chainId: chainId,
+                parentId: nil,
+                name: String(chainId.reversed()),
+                assets: [asset],
+                nodes: [node],
+                addressPrefix: UInt16(index),
+                types: types,
+                icon: URL(string: "https://github.com")!,
+                options: options.isEmpty ? nil : options,
+                externalApi: externalApi,
+                order: Int64(index)
+            )
+        }
+    }
+
+    static func generateRemote(
+        count: Int,
+        withTypes: Bool = true,
+        hasStaking: Bool = false,
+        hasCrowdloans: Bool = false
+    ) -> [RemoteChainModel] {
+        (0..<count).map { index in
+            let chainId = Data.random(of: 32)!.toHex()
+
+            let asset = AssetModel(
+                assetId: UInt32(index),
+                icon: nil,
+                name: chainId,
+                symbol: chainId.prefix(3).uppercased(),
+                precision: 12,
+                priceId: nil,
+                staking: hasStaking ? "relaychain" : nil
+            )
+
+            let node = RemoteChainNodeModel(
+                url: URL(string: "wss://node.io/\(chainId)")!,
+                name: chainId,
+                apikey: nil
+            )
+
+            let types = withTypes ? ChainModel.TypesSettings(
+                url: URL(string: "https://github.com")!,
+                overridesCommon: false
+            ) : nil
+
+            var options: [ChainOptions] = []
+
+            if hasCrowdloans {
+                options.append(.crowdloans)
+            }
+
+            let externalApi: ChainModel.ExternalApiSet? = generateExternaApis(
+                for: chainId,
+                hasStaking: hasStaking,
+                hasCrowdloans: hasCrowdloans
+            )
+
+            return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
                 name: String(chainId.reversed()),
@@ -81,7 +140,8 @@ enum ChainModelGenerator {
         let node = ChainNodeModel(
             url: URL(string: urlString)!,
             name: UUID().uuidString,
-            apikey: nil
+            apikey: nil,
+            order: 0
         )
 
         var options: [ChainOptions] = []
@@ -106,7 +166,8 @@ enum ChainModelGenerator {
             types: nil,
             icon: Constants.dummyURL,
             options: options.isEmpty ? nil : options,
-            externalApi: externalApi
+            externalApi: externalApi,
+            order: 0
         )
     }
 

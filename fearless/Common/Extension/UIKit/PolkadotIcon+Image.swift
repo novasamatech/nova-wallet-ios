@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension DrawableIcon {
     func imageWithFillColor(_ color: UIColor, size: CGSize, contentScale: CGFloat) -> UIImage? {

@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 typealias RuntimeMetadataClosure = () throws -> RuntimeMetadata
 

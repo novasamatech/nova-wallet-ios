@@ -1,8 +1,8 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 extension CryptoType {
-    init(_ utilsType: FearlessUtils.CryptoType) {
+    init(_ utilsType: SubstrateSdk.CryptoType) {
         switch utilsType {
         case .sr25519:
             self = .sr25519
@@ -13,7 +13,7 @@ extension CryptoType {
         }
     }
 
-    var utilsType: FearlessUtils.CryptoType {
+    var utilsType: SubstrateSdk.CryptoType {
         switch self {
         case .sr25519:
             return .sr25519

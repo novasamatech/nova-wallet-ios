@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 struct ActiveEraInfo: Codable, Equatable {
     @StringCodable var index: EraIndex

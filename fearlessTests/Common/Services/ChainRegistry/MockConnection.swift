@@ -1,6 +1,6 @@
 import Foundation
 @testable import fearless
-import FearlessUtils
+import SubstrateSdk
 
 final class MockConnection {
     let internalConnection = MockJSONRPCEngine()

@@ -1,7 +1,7 @@
 import SoraFoundation
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 struct StakingBalanceViewFactory {
     static func createView(for state: StakingSharedState) -> StakingBalanceViewProtocol? {

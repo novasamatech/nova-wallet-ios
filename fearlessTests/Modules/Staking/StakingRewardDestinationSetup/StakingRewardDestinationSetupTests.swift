@@ -10,7 +10,7 @@ import XCTest
 @testable import fearless
 import Cuckoo
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import SoraKeystore
 import SoraFoundation
 import BigInt

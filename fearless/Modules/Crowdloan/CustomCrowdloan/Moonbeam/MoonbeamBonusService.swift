@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 import BigInt
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 
 protocol MoonbeamBonusServiceProtocol: CrowdloanBonusServiceProtocol {
     var hasMoonbeamAccount: Bool { get }

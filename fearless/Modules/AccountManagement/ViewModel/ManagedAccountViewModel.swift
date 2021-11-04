@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 
 @available(*, unavailable, message: "No more needed")
 struct ManagedAccountViewModelItem: Equatable {

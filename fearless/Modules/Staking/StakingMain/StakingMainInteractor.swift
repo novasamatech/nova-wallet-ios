@@ -1,7 +1,7 @@
 import Foundation
 import SoraKeystore
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 import SoraFoundation
 
 final class StakingMainInteractor: RuntimeConstantFetching {

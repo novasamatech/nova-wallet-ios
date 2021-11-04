@@ -37,6 +37,53 @@ struct ChainModel: Equatable, Codable, Hashable {
     let icon: URL
     let options: [ChainOptions]?
     let externalApi: ExternalApiSet?
+    let order: Int64
+
+    init(
+        chainId: Id,
+        parentId: Id?,
+        name: String,
+        assets: Set<AssetModel>,
+        nodes: Set<ChainNodeModel>,
+        addressPrefix: UInt16,
+        types: TypesSettings?,
+        icon: URL,
+        options: [ChainOptions]?,
+        externalApi: ExternalApiSet?,
+        order: Int64
+    ) {
+        self.chainId = chainId
+        self.parentId = parentId
+        self.name = name
+        self.assets = assets
+        self.nodes = nodes
+        self.addressPrefix = addressPrefix
+        self.types = types
+        self.icon = icon
+        self.options = options
+        self.externalApi = externalApi
+        self.order = order
+    }
+
+    init(remoteModel: RemoteChainModel, order: Int64) {
+        chainId = remoteModel.chainId
+        parentId = remoteModel.parentId
+        name = remoteModel.name
+        assets = Set(remoteModel.assets)
+
+        let nodeList = remoteModel.nodes.enumerated().map { index, node in
+            ChainNodeModel(remoteModel: node, order: Int16(index))
+        }
+
+        nodes = Set(nodeList)
+
+        addressPrefix = remoteModel.addressPrefix
+        types = remoteModel.types
+        icon = remoteModel.icon
+        options = remoteModel.options
+        externalApi = remoteModel.externalApi
+        self.order = order
+    }
 
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false

@@ -30,13 +30,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         guard
             let walletContext = try? WalletContextFactory(
                 chainRepository: chainsRepository,
-                operationQueue: OperationQueue()
+                operationQueue: OperationQueue(),
+                logger: Logger.shared
             ).createContext(),
-            let walletController = createWalletController(
-                walletContext: walletContext,
-                localizationManager: localizationManager
-            )
-        else {
+            let walletController = createWalletController(for: localizationManager) else {
             return nil
         }
 
@@ -95,8 +92,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
                 logger: Logger.shared
             ).createContext(),
             let walletController = createWalletController(
-                walletContext: walletContext,
-                localizationManager: localizationManager
+                for: localizationManager
             )
         else {
             return
@@ -124,45 +120,36 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     }
 
     static func createWalletController(
-        walletContext: CommonWalletContextProtocol,
-        localizationManager: LocalizationManagerProtocol
+        for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        do {
-            let viewController = try walletContext.createRootController()
-
-            let localizableTitle = LocalizableResource { locale in
-                R.string.localizable.tabbarWalletTitle(preferredLanguages: locale.rLanguages)
-            }
-
-            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-            let icon = R.image.iconTabWallet()
-            let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
-                .withRenderingMode(.alwaysOriginal)
-            let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
-                .withRenderingMode(.alwaysOriginal)
-            viewController.tabBarItem = createTabBarItem(
-                title: currentTitle,
-                normalImage: normalIcon,
-                selectedImage: selectedIcon
-            )
-
-            localizationManager.addObserver(with: viewController) { [weak viewController] _, _ in
-                let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-                viewController?.tabBarItem.title = currentTitle
-            }
-
-            return viewController
-        } catch {
-            Logger.shared.error("Can't create wallet: \(error)")
-
+        guard let view = WalletListViewFactory.createView() else {
             return nil
         }
+
+        let localizableTitle = LocalizableResource { locale in
+            R.string.localizable.tabbarWalletTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+        let icon = R.image.iconTabWallet()
+        let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
+            .withRenderingMode(.alwaysOriginal)
+        let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
+            .withRenderingMode(.alwaysOriginal)
+        view.controller.tabBarItem = createTabBarItem(
+            title: currentTitle,
+            normalImage: normalIcon,
+            selectedImage: selectedIcon
+        )
+
+        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+
+        return navigationController
     }
 
     static func createStakingController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        // TODO: Remove when staking is fixed
         let viewController = StakingMainViewFactory.createView()?.controller ?? UIViewController()
 
         let localizableTitle = LocalizableResource { locale in
@@ -194,7 +181,6 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        // TODO: Remove when settings fixed
         let viewController = ProfileViewFactory.createView()?.controller ?? UIViewController()
 
         let navigationController = FearlessNavigationController(rootViewController: viewController)

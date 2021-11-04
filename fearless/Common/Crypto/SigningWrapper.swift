@@ -1,7 +1,7 @@
 import Foundation
 import IrohaCrypto
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 
 enum SigningWrapperError: Error {
     case missingSelectedAccount

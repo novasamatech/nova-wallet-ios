@@ -1,6 +1,6 @@
 import UIKit
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 import SoraKeystore
 

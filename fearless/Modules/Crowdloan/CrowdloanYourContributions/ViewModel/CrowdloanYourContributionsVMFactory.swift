@@ -1,6 +1,6 @@
 import Foundation
 import UIKit.UIScreen
-import FearlessUtils
+import SubstrateSdk
 
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol

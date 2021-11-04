@@ -1,6 +1,6 @@
 import SoraKeystore
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 struct MoonbeamFlowCoordinatorFactory {
     static func createCoordinator(
