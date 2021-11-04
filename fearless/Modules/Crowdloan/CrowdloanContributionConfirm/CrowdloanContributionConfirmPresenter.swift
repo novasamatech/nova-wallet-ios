@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class CrowdloanContributionConfirmPresenter {
+class CrowdloanContributionConfirmPresenter {
     weak var view: CrowdloanContributionConfirmViewProtocol?
     let wireframe: CrowdloanContributionConfirmWireframeProtocol
     let interactor: CrowdloanContributionConfirmInteractorInputProtocol

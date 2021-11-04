@@ -1651,6 +1651,8 @@
 		F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */; };
 		F4C2009C2727ED1C00B0F3D0 /* SystemRemarkCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C2009B2727ED1C00B0F3D0 /* SystemRemarkCall.swift */; };
 		F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */; };
+		F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4CE0F9427343E630094CD8A /* AcalaContributionConfirmPresenter.swift */; };
+		F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4CE0F9927343FFD0094CD8A /* AcalaContributionConfirmVC.swift */; };
 		F4D054662729944800210294 /* MoonbeamMakeSignatureRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D054652729944800210294 /* MoonbeamMakeSignatureRequest.swift */; };
 		F4D0546B2729949100210294 /* MoonbeamMakeSignatureResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D0546A2729949100210294 /* MoonbeamMakeSignatureResponse.swift */; };
 		F4D551A12643DD240002363F /* AccountSelectionPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D551A02643DD240002363F /* AccountSelectionPresentable.swift */; };
@@ -3380,6 +3382,8 @@
 		F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryEraStakersInfoSource.swift; sourceTree = "<group>"; };
 		F4C2009B2727ED1C00B0F3D0 /* SystemRemarkCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemRemarkCall.swift; sourceTree = "<group>"; };
 		F4C201812728678400B0F3D0 /* ExtrinsicStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicStatus.swift; sourceTree = "<group>"; };
+		F4CE0F9427343E630094CD8A /* AcalaContributionConfirmPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionConfirmPresenter.swift; sourceTree = "<group>"; };
+		F4CE0F9927343FFD0094CD8A /* AcalaContributionConfirmVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionConfirmVC.swift; sourceTree = "<group>"; };
 		F4D054652729944800210294 /* MoonbeamMakeSignatureRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamMakeSignatureRequest.swift; sourceTree = "<group>"; };
 		F4D0546A2729949100210294 /* MoonbeamMakeSignatureResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamMakeSignatureResponse.swift; sourceTree = "<group>"; };
 		F4D551A02643DD240002363F /* AccountSelectionPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSelectionPresentable.swift; sourceTree = "<group>"; };
@@ -8423,6 +8427,7 @@
 			isa = PBXGroup;
 			children = (
 				F4B39C4727326CC600BB6E10 /* ContributionSetup */,
+				F4CE0F9327343E3E0094CD8A /* ContributionConfirm */,
 				F48EB5452722BB7000AE15ED /* AcalaBonusService.swift */,
 				F4223F0F2732D445003D8E4E /* AcalaStatementData.swift */,
 				F48EB5502722C9D600AE15ED /* AcalaKeys.swift */,
@@ -8484,6 +8489,15 @@
 				F4BDDCBD2657A57F005336BA /* TransferValidatorTests.swift */,
 			);
 			path = Transfer;
+			sourceTree = "<group>";
+		};
+		F4CE0F9327343E3E0094CD8A /* ContributionConfirm */ = {
+			isa = PBXGroup;
+			children = (
+				F4CE0F9427343E630094CD8A /* AcalaContributionConfirmPresenter.swift */,
+				F4CE0F9927343FFD0094CD8A /* AcalaContributionConfirmVC.swift */,
+			);
+			path = ContributionConfirm;
 			sourceTree = "<group>";
 		};
 		F4D6FF1726B3DF9E002313AF /* Container */ = {
@@ -9094,6 +9108,7 @@
 				F477CD26262EAD30004DF739 /* StakingPayoutViewModelFactory.swift in Sources */,
 				84C07EE824AF2E4D008FC35B /* WalletHistoryStyle.swift in Sources */,
 				844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */,
+				F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */,
 				8493D0E126FF4F5000A28008 /* ScaleCoder+Extension.swift in Sources */,
 				8428766724ADF22000D91AD8 /* TransformAnimator+Common.swift in Sources */,
 				AEFC6D6F2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift in Sources */,
@@ -9531,6 +9546,7 @@
 				F4223F102732D445003D8E4E /* AcalaStatementData.swift in Sources */,
 				8460E1192541FD1800826F55 /* TransactionDetailsAccessoryView.swift in Sources */,
 				847DD8DC26034B99003DE053 /* LocalizableViewProtocol.swift in Sources */,
+				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
 				84FAB0672542D06B00319F74 /* WalletContactOperationFactory.swift in Sources */,
