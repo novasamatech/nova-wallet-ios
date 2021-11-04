@@ -11,34 +11,22 @@ enum WalletContextFactoryError: Error {
 }
 
 protocol WalletContextFactoryProtocol {
-    func createContext() throws -> CommonWalletContextProtocol
+    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol
 }
 
 final class WalletContextFactory {
-    let chainRepository: AnyDataProviderRepository<ChainModel>
-    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     init(
-        chainRepository: AnyDataProviderRepository<ChainModel>,
-        operationQueue: OperationQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
-        self.chainRepository = chainRepository
-        self.operationQueue = operationQueue
         self.logger = logger
-    }
-
-    func allChains() throws -> [ChainModel] {
-        let operation = chainRepository.fetchAllOperation(with: RepositoryFetchOptions())
-        operationQueue.addOperations([operation], waitUntilFinished: true)
-        return try operation.extractNoCancellableResultData()
     }
 }
 
 extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
-    func createContext() throws -> CommonWalletContextProtocol {
+    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value else {
             throw WalletContextFactoryError.missingAccount
         }
@@ -49,7 +37,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             logger.info("Ethereum address: \(ethereumAddress.toHex(includePrefix: true))")
         }
 
-        let chains = try allChains()
+        let chains = [chain]
         let chainAssets: [ChainAsset] = chains.reversed().compactMap { chain in
             guard
                 metaAccount.fetch(for: chain.accountRequest()) != nil,

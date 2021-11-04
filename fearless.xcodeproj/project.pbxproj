@@ -1593,6 +1593,7 @@
 		F462B35C260C86880005AB01 /* ViewHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F462B35B260C86880005AB01 /* ViewHolder.swift */; };
 		F462B364260C88050005AB01 /* UITableView+Reuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F462B363260C88050005AB01 /* UITableView+Reuse.swift */; };
 		F469114B26392DD500E04D4D /* StakingBondMoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F469114A26392DD500E04D4D /* StakingBondMoreTests.swift */; };
+		F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46F9F8F2733E02B00FFA556 /* MoonbeamKeys.swift */; };
 		F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471897526C297AA006487AD /* AnalyticsValidatorsPage.swift */; };
 		F471897B26C29A78006487AD /* AnalyticsValidatorsPageSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471897A26C29A78006487AD /* AnalyticsValidatorsPageSelector.swift */; };
 		F474D388260CBEE600013699 /* StakingRewardDetailsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F474D387260CBEE600013699 /* StakingRewardDetailsViewLayout.swift */; };
@@ -3315,6 +3316,7 @@
 		F462B35B260C86880005AB01 /* ViewHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewHolder.swift; sourceTree = "<group>"; };
 		F462B363260C88050005AB01 /* UITableView+Reuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Reuse.swift"; sourceTree = "<group>"; };
 		F469114A26392DD500E04D4D /* StakingBondMoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBondMoreTests.swift; sourceTree = "<group>"; };
+		F46F9F8F2733E02B00FFA556 /* MoonbeamKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamKeys.swift; sourceTree = "<group>"; };
 		F471897526C297AA006487AD /* AnalyticsValidatorsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsPage.swift; sourceTree = "<group>"; };
 		F471897A26C29A78006487AD /* AnalyticsValidatorsPageSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsPageSelector.swift; sourceTree = "<group>"; };
 		F474D387260CBEE600013699 /* StakingRewardDetailsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewLayout.swift; sourceTree = "<group>"; };
@@ -8541,6 +8543,7 @@
 				4F2C58329980DEFF34CF1F8C /* MoonbeamTerms */,
 				F429C3C427293EBF000214EE /* Network */,
 				F4E17FB727216C2F00FE36D3 /* MoonbeamBonusService.swift */,
+				F46F9F8F2733E02B00FFA556 /* MoonbeamKeys.swift */,
 			);
 			path = Moonbeam;
 			sourceTree = "<group>";
@@ -9472,6 +9475,7 @@
 				84FD3DB72540EF0700A234E3 /* TransactionSubscription.swift in Sources */,
 				2AD0A16A25D3854700312428 /* TransferConfirmCommandProxy.swift in Sources */,
 				84C3F7832602086100D47501 /* StakingViewState.swift in Sources */,
+				F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */,
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
 				84FAB072254366ED00319F74 /* ContactTableViewCell.swift in Sources */,

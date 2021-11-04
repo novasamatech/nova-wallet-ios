@@ -133,7 +133,7 @@ final class CrowdloanContributionConfirmPresenter {
 
     private func provideBonusViewModel() {
         let viewModel: String? = {
-            if let displayInfo = displayInfo, let bonusRate = bonusRate {
+            if let displayInfo = displayInfo, let flow = displayInfo.customFlow, flow.supportsAdditionalBonus {
                 return contributionViewModelFactory.createAdditionalBonusViewModel(
                     inputAmount: inputAmount,
                     displayInfo: displayInfo,
