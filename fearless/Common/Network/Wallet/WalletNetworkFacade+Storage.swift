@@ -3,6 +3,7 @@ import CommonWallet
 import RobinHood
 import FearlessUtils
 
+// TODO: Add storage locks fetch
 extension WalletNetworkFacade {
     func fetchBalanceInfoForAsset(
         _ assets: [WalletAsset]
