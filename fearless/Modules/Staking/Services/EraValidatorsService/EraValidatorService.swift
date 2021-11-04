@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 enum EraValidatorServiceError: Error {
     case unsuppotedStoragePath(_ path: StorageCodingPath)

@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 import RobinHood
 import xxHash_Swift
-import FearlessUtils
+import SubstrateSdk
 import IrohaCrypto
 import Starscream
 import BigInt

@@ -1,7 +1,7 @@
 import UIKit
 import RobinHood
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 
 final class CrowdloanContributionConfirmInteractor: CrowdloanContributionInteractor, AccountFetching {
     var confirmPresenter: CrowdloanContributionConfirmInteractorOutputProtocol? {

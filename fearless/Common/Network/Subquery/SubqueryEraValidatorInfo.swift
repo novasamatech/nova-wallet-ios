@@ -1,4 +1,4 @@
-import FearlessUtils
+import SubstrateSdk
 
 struct SubqueryEraValidatorInfo {
     let address: AccountAddress

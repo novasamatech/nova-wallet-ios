@@ -1,5 +1,5 @@
 import UIKit
-import FearlessUtils
+import SubstrateSdk
 import SoraFoundation
 import SoraUI
 import CommonWallet

@@ -1,7 +1,7 @@
 import Foundation
 import RobinHood
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 
 typealias DecodedAccountInfo = ChainStorageDecodedItem<AccountInfo>

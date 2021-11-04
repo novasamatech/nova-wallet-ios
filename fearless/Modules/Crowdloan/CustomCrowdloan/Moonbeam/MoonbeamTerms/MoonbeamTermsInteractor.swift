@@ -1,7 +1,7 @@
 import UIKit
 import BigInt
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class MoonbeamTermsInteractor {
     weak var presenter: MoonbeamTermsInteractorOutputProtocol!

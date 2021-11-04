@@ -1,6 +1,6 @@
 import RobinHood
 import SoraKeystore
-import FearlessUtils
+import SubstrateSdk
 
 protocol ExtrinsicServiceFactoryProtocol {
     func createService(

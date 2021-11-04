@@ -3,7 +3,7 @@ import Foundation
 import RobinHood
 import IrohaCrypto
 import BigInt
-import FearlessUtils
+import SubstrateSdk
 
 final class SingleValueProviderFactoryStub: SingleValueProviderFactoryProtocol {
     let price: AnySingleValueProvider<PriceData>

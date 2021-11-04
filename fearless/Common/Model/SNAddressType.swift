@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 enum SNAddressType: UInt8 {
     case polkadotMain = 0

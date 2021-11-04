@@ -1,6 +1,6 @@
 import XCTest
 @testable import fearless
-import FearlessUtils
+import SubstrateSdk
 
 class ExtrinsicEraTests: XCTestCase {
     func testMortalEraDecoding() throws {

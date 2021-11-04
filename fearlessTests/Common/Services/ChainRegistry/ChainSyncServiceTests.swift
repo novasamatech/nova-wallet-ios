@@ -27,14 +27,19 @@ class ChainSyncServiceTests: XCTestCase {
 
         // when
 
-        let newItems = ChainModelGenerator.generate(count: 8)
-        let updatedItems = ChainModelGenerator.generate(count: 5)
-        let deletedItems = ChainModelGenerator.generate(count: 3)
+        let remoteItems = ChainModelGenerator.generateRemote(count: 16)
+        let localMappedItems = remoteItems.enumerated().map { index, item in
+            ChainModel(remoteModel: item, order: Int64(index))
+        }
+
+        let newItems = Array(localMappedItems[0..<8])
+        let updatedItems = Array(localMappedItems[8..<13])
+        let deletedItems = Array(localMappedItems[13..<16])
         let allItems = updatedItems + deletedItems + newItems
 
         stub(dataOperationFactory) { stub in
             stub.fetchData(from: any()).then { _ in
-                let responseData = try! JSONEncoder().encode(allItems)
+                let responseData = try! JSONEncoder().encode(remoteItems)
                 return BaseOperation.createWithResult(responseData)
             }
         }
@@ -99,7 +104,7 @@ class ChainSyncServiceTests: XCTestCase {
 
         // when
 
-        let newItems = ChainModelGenerator.generate(count: 8)
+        let newItems = ChainModelGenerator.generateRemote(count: 8)
         let responseData = try! JSONEncoder().encode(newItems)
         let failureOperation = BaseOperation<Data>.createWithError(
             BaseOperationError.unexpectedDependentResult

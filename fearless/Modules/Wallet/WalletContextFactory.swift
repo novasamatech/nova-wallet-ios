@@ -4,7 +4,7 @@ import SoraKeystore
 import RobinHood
 import IrohaCrypto
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 enum WalletContextFactoryError: Error {
     case missingAccount

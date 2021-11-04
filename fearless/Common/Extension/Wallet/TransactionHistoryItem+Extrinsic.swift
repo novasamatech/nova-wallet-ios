@@ -1,6 +1,6 @@
 import Foundation
 import IrohaCrypto
-import FearlessUtils
+import SubstrateSdk
 import BigInt
 
 extension TransactionHistoryItem {

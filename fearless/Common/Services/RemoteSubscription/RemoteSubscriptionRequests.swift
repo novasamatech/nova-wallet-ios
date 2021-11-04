@@ -1,6 +1,6 @@
 import Foundation
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 protocol SubscriptionRequestProtocol {
     var localKey: String { get }

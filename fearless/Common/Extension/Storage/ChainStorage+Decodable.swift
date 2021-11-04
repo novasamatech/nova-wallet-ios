@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 import RobinHood
 
 extension AnyDataProviderRepository where AnyDataProviderRepository.Model == ChainStorageItem {

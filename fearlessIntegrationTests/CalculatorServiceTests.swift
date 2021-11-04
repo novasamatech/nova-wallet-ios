@@ -3,7 +3,7 @@ import XCTest
 import SoraKeystore
 import RobinHood
 import SoraFoundation
-import FearlessUtils
+import SubstrateSdk
 
 class CalculatorServiceTests: XCTestCase {
     func testWestendCalculatorSetupWithoutCache() throws {
