@@ -203,9 +203,14 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
 
 private class AcalaRequestModifier: NetworkRequestModifierProtocol {
     func modify(request: URLRequest) throws -> URLRequest {
+        #if F_RELEASE
+            let token = AcalaKeys.authToken
+        #else
+            let token = AcalaKeys.authTestToken
+        #endif
         var modifiedRequest = request
         modifiedRequest.addValue(
-            "Bearer \(AcalaKeys.authToken)",
+            "Bearer \(token)",
             forHTTPHeaderField: "Authorization"
         )
         return modifiedRequest

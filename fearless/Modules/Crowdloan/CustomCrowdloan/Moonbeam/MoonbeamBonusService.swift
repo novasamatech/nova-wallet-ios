@@ -320,15 +320,14 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
 }
 
 private class MoonbeamRequestModifier: NetworkRequestModifierProtocol {
-    #if F_RELEASE
-        static let apiKey = "s2blK9qnbOaL17skehEEg3qvJ5pn0mnBvJAJGCA6"
-    #else
-        static let apiKey = "4klO0S7XEI5I2eAkWLoSH6thDH5FuRbb6tpR7PqU"
-    #endif
-
     func modify(request: URLRequest) throws -> URLRequest {
+        #if F_RELEASE
+            let apiKey = MoonbeamKeys.authToken
+        #else
+            let apiKey = MoonbeamKeys.authTestToken
+        #endif
         var modifiedRequest = request
-        modifiedRequest.addValue(Self.apiKey, forHTTPHeaderField: "x-api-key")
+        modifiedRequest.addValue(apiKey, forHTTPHeaderField: "x-api-key")
         return modifiedRequest
     }
 }

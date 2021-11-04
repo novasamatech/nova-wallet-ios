@@ -1,11 +1,11 @@
 import Foundation
 
-enum AcalaKeys {
+enum MoonbeamKeys {
     static var authToken: String =
-        AcalaKeys.variable(named: "ACALA_AUTH_TOKEN") ?? AcalaCIKeys.authToken
+        AcalaKeys.variable(named: "MOONBEAM_API_KEY") ?? MoonbeamCrowdloanCIKeys.apiKey
 
     static var authTestToken: String =
-        AcalaKeys.variable(named: "ACALA_TEST_AUTH_TOKEN") ?? AcalaCIKeys.authTestToken
+        AcalaKeys.variable(named: "MOONBEAM_TEST_API_KEY") ?? MoonbeamCrowdloanCIKeys.apiTestKey
 
     static func variable(named name: String) -> String? {
         let processInfo = ProcessInfo.processInfo
