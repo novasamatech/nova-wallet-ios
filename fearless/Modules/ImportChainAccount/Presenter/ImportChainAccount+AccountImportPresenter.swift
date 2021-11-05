@@ -20,7 +20,7 @@ extension ImportChainAccount {
         private func prooceedWithSubstrate() {
             guard
                 let selectedSourceType = selectedSourceType,
-                let selectedCryptoType = selectedCryptoType,
+                let selectedCryptoType = selectedSubstrateCryptoType,
                 let sourceViewModel = sourceViewModel
             else {
                 return

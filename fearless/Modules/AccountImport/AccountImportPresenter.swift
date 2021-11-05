@@ -5,7 +5,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     override func processProceed() {
         guard
             let selectedSourceType = selectedSourceType,
-            let selectedCryptoType = selectedCryptoType,
+            let selectedCryptoType = selectedSubstrateCryptoType,
             let sourceViewModel = sourceViewModel,
             let usernameViewModel = usernameViewModel
         else {
