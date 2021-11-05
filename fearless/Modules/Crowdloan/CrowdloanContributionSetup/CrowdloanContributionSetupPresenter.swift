@@ -188,6 +188,26 @@ class CrowdloanContributionSetupPresenter {
 
         interactor.estimateFee(for: amount, bonusService: bonusService)
     }
+
+    private func applyDefaultReferralCode() {
+        guard
+            let bonusService = bonusService,
+            let defaultReferralCode = bonusService.defaultReferralCode
+        else { return }
+        view?.didStartLoading()
+
+        bonusService.save(referralCode: defaultReferralCode) { [weak self] result in
+            guard let self = self else { return }
+            self.view?.didStopLoading()
+
+            switch result {
+            case .success:
+                self.proceed()
+            case let .failure(error):
+                _ = self.wireframe.present(error: error, from: self.view, locale: self.selectedLocale)
+            }
+        }
+    }
 }
 
 extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresenterProtocol {
@@ -267,8 +287,16 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
                 totalAmount: totalBalanceValue,
                 minimumBalance: minimumBalance,
                 locale: selectedLocale
-            )
+            ),
 
+            dataValidatingFactory.hasAppliedReferralCode(
+                bonusService: bonusService,
+                locale: selectedLocale
+            ) { [weak self] apply in
+                if apply {
+                    self?.applyDefaultReferralCode()
+                }
+            }
         ]).runValidation { [weak self] in
             guard let strongSelf = self, let contribution = contributionDecimal,
                   let paraId = strongSelf.crowdloan?.paraId else { return }

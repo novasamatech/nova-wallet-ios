@@ -5,7 +5,7 @@ import IrohaCrypto
 import SubstrateSdk
 
 final class KaruraBonusService {
-    static let defaultReferralCode = "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
+    let defaultReferralCode: String? = "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
 
     #if F_RELEASE
         static let baseURL = URL(string: "https://api.aca-staging.network")!

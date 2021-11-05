@@ -14,6 +14,12 @@ protocol CrowdloanErrorPresentable: BaseErrorPresentable {
     func presentCrowdloanEnded(from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentCrowdloanPrivateNotSupported(from view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentHaveNotAppliedBonusWarning(
+        from view: ControllerBackedProtocol,
+        locale: Locale?,
+        action: @escaping (Bool) -> Void
+    )
 }
 
 extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -89,5 +95,37 @@ extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresenta
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentHaveNotAppliedBonusWarning(
+        from view: ControllerBackedProtocol,
+        locale _: Locale?,
+        action: @escaping (Bool) -> Void
+    ) {
+        let title = "You have not applied bonus "
+        let message = "If you don't have referral code, you can apply Nova referral code to receive bonus for your contribution"
+
+        let applyTitle = "Apply bonus"
+        let applyAction = AlertPresentableAction(title: applyTitle) {
+            action(true)
+        }
+
+        let skipTitle = "Skip"
+        let skipAction = AlertPresentableAction(title: skipTitle, style: .destructive) {
+            action(false)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [skipAction, applyAction],
+            closeAction: nil
+        )
+
+        present(
+            viewModel: viewModel,
+            style: .alert,
+            from: view
+        )
     }
 }
