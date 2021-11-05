@@ -106,8 +106,11 @@ final class MoonbeamTermsViewLayout: UIView {
             .crowdloanMoonbeamTermsDescription(preferredLanguages: locale.rLanguages)
 
         let termsConditions = R.string.localizable.crowdloanTermsValue(preferredLanguages: locale.rLanguages)
-        termsLabel.text = R.string.localizable.crowdloanTermsFormat(termsConditions)
-        learnMoreView.titleLabel.text = termsConditions
+        termsLabel.text = R.string.localizable
+            .crowdloanTermsFormat(termsConditions, preferredLanguages: locale.rLanguages)
+        learnMoreView.titleLabel.text = R.string.localizable
+            .crowdloanMoonbeamTermsTitle(preferredLanguages: locale.rLanguages)
+        networkFeeConfirmView.locale = locale
         updateActionButton()
     }
 
