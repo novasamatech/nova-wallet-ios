@@ -1,4 +1,5 @@
 import SoraFoundation
+import BigInt
 
 protocol MoonbeamTermsViewProtocol: ControllerBackedProtocol, LoadableViewProtocol, Localizable {
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>)
@@ -22,6 +23,7 @@ protocol MoonbeamTermsInteractorOutputProtocol: AnyObject {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveVerifyRemark(result: Result<Bool, Error>)
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
+    func didReceiveMinimumBalance(result: Result<BigUInt, Error>)
 }
 
 protocol MoonbeamTermsWireframeProtocol: WebPresentable,
