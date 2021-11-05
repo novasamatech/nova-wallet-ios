@@ -9,8 +9,8 @@ class BaseAccountCreatePresenter {
 
     internal var metadata: MetaAccountCreationMetadata?
 
-    internal var selectedSubstrateCryptoType: MultiassetCryptoType?
-    internal let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
+    private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
+    private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
 
     internal var substrateDerivationPathViewModel: InputViewModelProtocol?
     internal var ethereumDerivationPathViewModel: InputViewModelProtocol?

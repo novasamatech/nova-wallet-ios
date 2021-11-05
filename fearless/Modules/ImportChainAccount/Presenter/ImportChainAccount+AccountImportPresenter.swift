@@ -106,16 +106,16 @@ extension ImportChainAccount {
                 return
             }
 
-            let selectedCryptoType: MultiassetCryptoType = .ethereumEcdsa
+            let cryptoType: MultiassetCryptoType = .ethereumEcdsa
 
             if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateSubstrateDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
+                view?.didValidateEthereumDerivationPath(.invalid)
+                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: cryptoType)
 
                 return
             }
 
-            let ethereumDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ??
+            let ethereumDerivationPath = ethereumDerivationPathViewModel?.inputHandler.value ??
                 DerivationPathConstants.defaultEthereum
 
             switch selectedSourceType {
@@ -124,7 +124,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportMnemonicRequest(
                     mnemonic: mnemonic,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithMnemonic(
@@ -138,7 +138,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportSeedRequest(
                     seed: seed,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithSeed(
@@ -153,7 +153,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportKeystoreRequest(
                     keystore: keystore,
                     password: password,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithKeystore(

@@ -19,19 +19,24 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
             return
         }
 
-        guard substrateViewModel.inputHandler.completed else {
+        var derivationPathCheckError = false
+        if !substrateViewModel.inputHandler.completed {
+            derivationPathCheckError = true
             view?.didValidateSubstrateDerivationPath(.invalid)
             presentDerivationPathError(cryptoType)
-            return
         }
 
-        guard ethereumViewModel.inputHandler.completed else {
+        if !ethereumViewModel.inputHandler.completed {
             view?.didValidateEthereumDerivationPath(.invalid)
+            if !derivationPathCheckError {
             presentDerivationPathError(.ethereumEcdsa)
-            return
+                derivationPathCheckError = true
+            }
         }
+        
+        guard !derivationPathCheckError else { return }
 
-        let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+        let substrateDerivationPath = substrateViewModel.inputHandler.value
 
         let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
             DerivationPathConstants.defaultEthereum : ethereumViewModel.inputHandler.value
