@@ -99,18 +99,18 @@ extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresenta
 
     func presentHaveNotAppliedBonusWarning(
         from view: ControllerBackedProtocol,
-        locale _: Locale?,
+        locale: Locale?,
         action: @escaping (Bool) -> Void
     ) {
-        let title = "You have not applied bonus "
-        let message = "If you don't have referral code, you can apply Nova referral code to receive bonus for your contribution"
+        let title = R.string.localizable.crowdloanHavenotAppliedBonusTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.crowdloanHavenotAppliedBonusMessage(preferredLanguages: locale?.rLanguages)
 
-        let applyTitle = "Apply bonus"
+        let applyTitle = R.string.localizable.crowdloanHavenotAppliedBonusApply(preferredLanguages: locale?.rLanguages)
         let applyAction = AlertPresentableAction(title: applyTitle) {
             action(true)
         }
 
-        let skipTitle = "Skip"
+        let skipTitle = R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
         let skipAction = AlertPresentableAction(title: skipTitle, style: .destructive) {
             action(false)
         }

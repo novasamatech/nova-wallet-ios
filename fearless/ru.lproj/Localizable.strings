@@ -391,6 +391,9 @@
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
 "crowdloan.reward.destination.format" = "%@ назначение вознаграждений";
+"crowdloan.havenot.applied.bonus.title" = "Вы не применили бонус";
+"crowdloan.havenot.applied.bonus.message" = "Если у вас нет реферального кода, вы можете применить код Nova, чтобы получить бонус за свой вклад";
+"crowdloan.havenot.applied.bonus.apply" = "Применить";
 "common.bonus" = "Бонус";
 "crowdloan.app.bonus.format" = "Бонус Nova Wallet (%@)";
 "common.referral.code.title" = "Реферальный код";
