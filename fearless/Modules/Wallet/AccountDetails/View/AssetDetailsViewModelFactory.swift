@@ -47,8 +47,8 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 
-        let totalPrice = balanceContext.price * balance.balance.decimalValue
-        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice) ?? ""
+//        let totalPrice = balanceContext.price * balance.balance.decimalValue
+//        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice) ?? ""
 
         let priceChangeString = NumberFormatter.signedPercent
             .localizableResource()
@@ -68,19 +68,24 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let transferableTitle = R.string.localizable.walletBalanceAvailable(preferredLanguages: locale.rLanguages)
         let lockedTitle = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
 
-        let leftTitle = R.string.localizable
-            .walletBalanceAvailable(preferredLanguages: locale.rLanguages)
+        // total = total
+        // transferable = available
+        // locked = locked
 
-        let rightTitle = R.string.localizable
-            .walletBalanceLocked(preferredLanguages: locale.rLanguages)
+        let totalPrice = balanceContext.price * balance.balance.decimalValue
+        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice)
 
-        let leftDetails = numberFormatter
-            .value(for: locale)
-            .stringFromDecimal(context.available) ?? ""
+        let transferablePrice = balanceContext.price * balanceContext.available
+        let transferablePriceString = priceFormatter.stringFromDecimal(transferablePrice)
 
-        let rightDetails = numberFormatter
+        let lockedPrice = balanceContext.price * balanceContext.locked
+        let lockedPriceString = priceFormatter.stringFromDecimal(lockedPrice)
+
+        /*
+         let rightDetails = numberFormatter
             .value(for: locale)
             .stringFromDecimal(context.frozen) ?? ""
+         */
 
         let imageViewModel: WalletImageViewModelProtocol?
 
@@ -100,9 +105,9 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let title = asset.symbol
 
         // TODO: Assign real values
-        let totalBalance = BalanceViewModel(amount: "", price: "")
-        let transferableBalance = BalanceViewModel(amount: "", price: "")
-        let lockedBalance = BalanceViewModel(amount: "", price: "")
+        let totalBalance = BalanceViewModel(amount: "", price: totalPriceString)
+        let transferableBalance = BalanceViewModel(amount: "", price: transferablePriceString)
+        let lockedBalance = BalanceViewModel(amount: "", price: lockedPriceString)
 
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
@@ -118,7 +123,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             amount: amount,
             price: priceString,
             priceChangeViewModel: priceChangeViewModel,
-            totalVolume: totalPriceString,
+            totalVolume: totalPriceString ?? "",
             balancesTitle: balancesTitle,
             totalTitle: totalTitle,
             totalBalance: totalBalance,
