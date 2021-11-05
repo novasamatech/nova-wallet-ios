@@ -9,6 +9,7 @@ final class CrowdloanBonusServiceStub: CrowdloanBonusServiceProtocol {
     var bonusRate: Decimal { 0.05 }
 
     private(set) var referralCode: String?
+    var defaultReferralCode: String? { nil }
 
     func save(referralCode: String, completion closure: @escaping (Result<Void, Error>) -> Void) {
         self.referralCode = referralCode

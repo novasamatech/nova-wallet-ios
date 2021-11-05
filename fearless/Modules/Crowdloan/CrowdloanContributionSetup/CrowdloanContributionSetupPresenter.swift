@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class CrowdloanContributionSetupPresenter {
+class CrowdloanContributionSetupPresenter {
     weak var view: CrowdloanContributionSetupViewProtocol?
     let wireframe: CrowdloanContributionSetupWireframeProtocol
     let interactor: CrowdloanContributionSetupInteractorInputProtocol
@@ -14,7 +14,7 @@ final class CrowdloanContributionSetupPresenter {
     let logger: LoggerProtocol?
 
     private var crowdloan: Crowdloan?
-    private var displayInfo: CrowdloanDisplayInfo?
+    var displayInfo: CrowdloanDisplayInfo?
     private var totalBalanceValue: BigUInt?
     private var balance: Decimal?
     private var priceData: PriceData?
@@ -23,11 +23,11 @@ final class CrowdloanContributionSetupPresenter {
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
     private var minimumBalance: BigUInt?
-    private var minimumContribution: BigUInt?
+    var minimumContribution: BigUInt?
 
-    private var bonusService: CrowdloanBonusServiceProtocol?
+    var bonusService: CrowdloanBonusServiceProtocol?
 
-    private var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
+    var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
 
     private var crowdloanMetadata: CrowdloanMetadata? {
         if
@@ -44,7 +44,7 @@ final class CrowdloanContributionSetupPresenter {
         }
     }
 
-    private var inputResult: AmountInputResult?
+    var inputResult: AmountInputResult?
 
     init(
         interactor: CrowdloanContributionSetupInteractorInputProtocol,
@@ -136,7 +136,7 @@ final class CrowdloanContributionSetupPresenter {
         view?.didReceiveEstimatedReward(viewModel: viewModel)
     }
 
-    private func provideBonusViewModel() {
+    func provideBonusViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee) ?? 0
         let viewModel: String? = {
             if let displayInfo = displayInfo, let flow = displayInfo.customFlow, flow.supportsAdditionalBonus {
@@ -187,6 +187,26 @@ final class CrowdloanContributionSetupPresenter {
         }
 
         interactor.estimateFee(for: amount, bonusService: bonusService)
+    }
+
+    private func applyDefaultReferralCode() {
+        guard
+            let bonusService = bonusService,
+            let defaultReferralCode = bonusService.defaultReferralCode
+        else { return }
+        view?.didStartLoading()
+
+        bonusService.save(referralCode: defaultReferralCode) { [weak self] result in
+            guard let self = self else { return }
+            self.view?.didStopLoading()
+
+            switch result {
+            case .success:
+                self.proceed()
+            case let .failure(error):
+                _ = self.wireframe.present(error: error, from: self.view, locale: self.selectedLocale)
+            }
+        }
     }
 }
 
@@ -267,8 +287,16 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
                 totalAmount: totalBalanceValue,
                 minimumBalance: minimumBalance,
                 locale: selectedLocale
-            )
+            ),
 
+            dataValidatingFactory.hasAppliedReferralCode(
+                bonusService: bonusService,
+                locale: selectedLocale
+            ) { [weak self] apply in
+                if apply {
+                    self?.applyDefaultReferralCode()
+                }
+            }
         ]).runValidation { [weak self] in
             guard let strongSelf = self, let contribution = contributionDecimal,
                   let paraId = strongSelf.crowdloan?.paraId else { return }

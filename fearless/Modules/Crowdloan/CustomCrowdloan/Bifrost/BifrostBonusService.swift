@@ -4,7 +4,7 @@ import SubstrateSdk
 import BigInt
 
 final class BifrostBonusService {
-    static let defaultReferralCode = "FRLS69"
+    let defaultReferralCode: String? = "FRLS69"
 
     static let baseURL = URL(string: "https://salp-api.bifrost.finance")!
 

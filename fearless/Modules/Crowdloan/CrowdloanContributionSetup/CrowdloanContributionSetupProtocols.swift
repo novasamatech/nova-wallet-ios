@@ -3,7 +3,7 @@ import CommonWallet
 import BigInt
 import SoraFoundation
 
-protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Localizable {
+protocol CrowdloanContributionSetupViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceiveAsset(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveInput(viewModel: AmountInputViewModelProtocol)

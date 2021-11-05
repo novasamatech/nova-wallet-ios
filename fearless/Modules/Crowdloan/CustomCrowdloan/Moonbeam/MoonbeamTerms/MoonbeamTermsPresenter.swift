@@ -17,6 +17,8 @@ final class MoonbeamTermsPresenter {
     private var priceData: PriceData?
     private var fee: Decimal?
     private var balance: Decimal?
+    private var totalBalanceValue: BigUInt?
+    private var minimumBalance: BigUInt?
 
     init(
         paraId: ParaId,
@@ -64,6 +66,8 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
 
     func handleAction() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+        let spendingAmount = (fee?.toSubstrateAmount(precision: assetInfo.assetPrecision) ?? 0)
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFeeIfNeeded()
@@ -71,6 +75,12 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
             dataValidatingFactory.canPayFee(
                 balance: balance,
                 fee: fee,
+                locale: locale
+            ),
+            dataValidatingFactory.exsitentialDepositIsNotViolated(
+                spendingAmount: spendingAmount,
+                totalAmount: totalBalanceValue,
+                minimumBalance: minimumBalance,
                 locale: locale
             )
         ]).runValidation { [weak self] in
@@ -138,11 +148,21 @@ extension MoonbeamTermsPresenter: MoonbeamTermsInteractorOutputProtocol {
                     accountInfo.data.available,
                     precision: assetInfo.assetPrecision
                 )
+                totalBalanceValue = accountInfo.data.total
             } else {
                 balance = nil
             }
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
+        }
+    }
+
+    func didReceiveMinimumBalance(result: Result<BigUInt, Error>) {
+        switch result {
+        case let .success(minimumBalance):
+            self.minimumBalance = minimumBalance
+        case let .failure(error):
+            logger?.error("Did receive minimum balance error: \(error)")
         }
     }
 }

@@ -71,7 +71,7 @@ extension MoonbeamTermsViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             rootView.locale = selectedLocale
-            title = R.string.localizable.crowdloanTermsValue(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.aboutTerms(preferredLanguages: selectedLocale.rLanguages)
             updateFee()
         }
     }
