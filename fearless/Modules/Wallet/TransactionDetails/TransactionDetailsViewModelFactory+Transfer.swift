@@ -74,8 +74,8 @@ extension TransactionDetailsViewModelFactory {
 
         let icon: UIImage?
 
-        if let address = data.peerName {
-            icon = try? iconGenerator.generateFromAddress(address)
+        if let accountId = try? data.peerName?.toAccountId(using: chainAccount.chainFormat) {
+            icon = try? iconGenerator.generateFromAccountId(accountId)
                 .imageWithFillColor(
                     R.color.colorWhite()!,
                     size: CGSize(width: 32.0, height: 32.0),

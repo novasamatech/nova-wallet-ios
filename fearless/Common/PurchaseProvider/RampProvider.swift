@@ -25,7 +25,6 @@ final class RampProvider: PurchaseProviderProtocol {
 
     func buildPurchaseActions(
         for chain: Chain,
-        assetId _: WalletAssetId?,
         address: String
     ) -> [PurchaseAction] {
         let optionUrl: URL?
