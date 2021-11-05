@@ -41,6 +41,7 @@ struct AcalaContributionConfirmViewFactory {
             assetInfo: assetInfo
         )
 
+        let bonusRate = bonusService?.referralCode != nil ? bonusService?.bonusRate : nil
         let presenter = AcalaContributionConfirmPresenter(
             contributionMethod: method,
             interactor: interactor,
@@ -49,7 +50,7 @@ struct AcalaContributionConfirmViewFactory {
             contributionViewModelFactory: contributionViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             inputAmount: inputAmount,
-            bonusRate: bonusService?.bonusRate,
+            bonusRate: bonusRate,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
             logger: Logger.shared
