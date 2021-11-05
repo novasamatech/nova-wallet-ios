@@ -455,34 +455,6 @@
                                 <action selector="actionSend" destination="iN0-l3-epB" eventType="touchUpInside" id="tfI-j1-bU9"/>
                             </connections>
                         </view>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="paZ-oi-LNG" customClass="BorderedContainerView" customModule="SoraUI">
-                            <rect key="frame" x="112" y="8" width="115.5" height="64"/>
-                            <color key="backgroundColor" systemColor="labelColor"/>
-                            <userDefinedRuntimeAttributes>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="_topBorder" value="NO"/>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomBorder" value="NO"/>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="_leftBorder" value="YES"/>
-                                <userDefinedRuntimeAttribute type="boolean" keyPath="_rightBorder" value="YES"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
-                                    <real key="value" value="0.0"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="number" keyPath="strokeWidth">
-                                    <real key="value" value="1"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="strokeColor">
-                                    <color key="value" name="colorBlurSeparator"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
-                                    <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="highlightedFillColor">
-                                    <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="highlightedStrokeColor">
-                                    <color key="value" name="colorBlurSeparator"/>
-                                </userDefinedRuntimeAttribute>
-                            </userDefinedRuntimeAttributes>
-                        </view>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CZ1-mR-zue" customClass="RoundedButton" customModule="SoraUI">
                             <rect key="frame" x="113" y="0.0" width="113.5" height="80"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -574,7 +546,6 @@
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="BH9-GQ-WWi" secondAttribute="bottom" id="1wm-tc-5iu"/>
                         <constraint firstAttribute="trailing" secondItem="kJm-Iu-UQl" secondAttribute="trailing" id="2KB-pb-37Z"/>
-                        <constraint firstItem="paZ-oi-LNG" firstAttribute="bottom" secondItem="kJm-Iu-UQl" secondAttribute="bottom" constant="-8" id="BS7-k5-xPd"/>
                         <constraint firstItem="BH9-GQ-WWi" firstAttribute="top" secondItem="5WV-bu-ZuX" secondAttribute="top" id="BYJ-LS-hcj"/>
                         <constraint firstAttribute="height" constant="80" id="Cc9-Rc-DgT"/>
                         <constraint firstItem="kJm-Iu-UQl" firstAttribute="top" secondItem="5WV-bu-ZuX" secondAttribute="top" id="EA4-d2-fbW"/>
@@ -582,14 +553,11 @@
                         <constraint firstItem="CZ1-mR-zue" firstAttribute="leading" secondItem="Fv6-uX-qxI" secondAttribute="trailing" id="NMD-cz-eV5"/>
                         <constraint firstItem="CZ1-mR-zue" firstAttribute="width" secondItem="5WV-bu-ZuX" secondAttribute="width" multiplier="0.33" id="RbO-zh-HZ5"/>
                         <constraint firstItem="Fv6-uX-qxI" firstAttribute="width" secondItem="5WV-bu-ZuX" secondAttribute="width" multiplier="0.33" id="US4-Fb-JfX"/>
-                        <constraint firstItem="paZ-oi-LNG" firstAttribute="leading" secondItem="CZ1-mR-zue" secondAttribute="leading" constant="-1" id="W9S-dW-dez"/>
                         <constraint firstAttribute="bottom" secondItem="CZ1-mR-zue" secondAttribute="bottom" id="aqY-BM-fST"/>
                         <constraint firstAttribute="bottom" secondItem="kJm-Iu-UQl" secondAttribute="bottom" id="bTp-if-jwD"/>
-                        <constraint firstItem="paZ-oi-LNG" firstAttribute="trailing" secondItem="CZ1-mR-zue" secondAttribute="trailing" constant="1" id="dLd-LT-asV"/>
                         <constraint firstItem="Fv6-uX-qxI" firstAttribute="top" secondItem="5WV-bu-ZuX" secondAttribute="top" id="lR8-w8-qhg"/>
                         <constraint firstItem="kJm-Iu-UQl" firstAttribute="leading" secondItem="5WV-bu-ZuX" secondAttribute="leading" id="n2g-4r-xHS"/>
                         <constraint firstAttribute="trailing" secondItem="BH9-GQ-WWi" secondAttribute="trailing" id="nmv-oj-RIL"/>
-                        <constraint firstItem="paZ-oi-LNG" firstAttribute="top" secondItem="kJm-Iu-UQl" secondAttribute="top" constant="8" id="o1U-TX-qq1"/>
                         <constraint firstItem="BH9-GQ-WWi" firstAttribute="width" secondItem="5WV-bu-ZuX" secondAttribute="width" multiplier="0.33" id="r23-9e-jcH"/>
                         <constraint firstAttribute="bottom" secondItem="Fv6-uX-qxI" secondAttribute="bottom" id="ri4-uu-tmK"/>
                         <constraint firstItem="Fv6-uX-qxI" firstAttribute="leading" secondItem="5WV-bu-ZuX" secondAttribute="leading" id="uqm-fN-vbF"/>
