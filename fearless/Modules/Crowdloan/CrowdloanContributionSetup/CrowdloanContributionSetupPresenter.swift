@@ -14,7 +14,7 @@ class CrowdloanContributionSetupPresenter {
     let logger: LoggerProtocol?
 
     private var crowdloan: Crowdloan?
-    private var displayInfo: CrowdloanDisplayInfo?
+    var displayInfo: CrowdloanDisplayInfo?
     private var totalBalanceValue: BigUInt?
     private var balance: Decimal?
     private var priceData: PriceData?
@@ -27,7 +27,7 @@ class CrowdloanContributionSetupPresenter {
 
     var bonusService: CrowdloanBonusServiceProtocol?
 
-    private var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
+    var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
 
     private var crowdloanMetadata: CrowdloanMetadata? {
         if
@@ -44,7 +44,7 @@ class CrowdloanContributionSetupPresenter {
         }
     }
 
-    private var inputResult: AmountInputResult?
+    var inputResult: AmountInputResult?
 
     init(
         interactor: CrowdloanContributionSetupInteractorInputProtocol,
@@ -136,7 +136,7 @@ class CrowdloanContributionSetupPresenter {
         view?.didReceiveEstimatedReward(viewModel: viewModel)
     }
 
-    private func provideBonusViewModel() {
+    func provideBonusViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee) ?? 0
         let viewModel: String? = {
             if let displayInfo = displayInfo, let flow = displayInfo.customFlow, flow.supportsAdditionalBonus {
