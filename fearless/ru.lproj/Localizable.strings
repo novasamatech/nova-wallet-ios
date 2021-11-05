@@ -528,6 +528,9 @@
 "account.actions.change.title" = "Изменить аккаунт";
 "account.not.found.caption" = "Аккаунт не найден";
 "account.not.found.actions.title" = "Аккаунт %@";
+"wallet.account.locks.vesting" = "Вестинг";
+"wallet.account.locks.democracy" = "Демократия";
+"wallet.account.locks.elections" = "Выборы";
 "account.create.option.title" = "Создать аккаунт";
 "account.import.option.title" = "Импортировать аккаунт";
 "account.actions.change.sheet.title" = "Изменить аккаунт %@";

@@ -31,8 +31,8 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let amountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
             .value(for: locale)
 
-        let priceFormater = amountFormatterFactory.createTokenFormatter(for: priceAsset)
-            .value(for: locale)
+        let localizablePriceFormatter = amountFormatterFactory.createTokenFormatter(for: priceAsset)
+        let priceFormatter = localizablePriceFormatter.value(for: locale)
 
         let decimalBalance = balance.balance.decimalValue
         let amount: String
@@ -45,10 +45,10 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let balanceContext = BalanceContext(context: balance.context ?? [:])
 
-        let priceString = priceFormater.stringFromDecimal(balanceContext.price) ?? ""
+        let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 
         let totalPrice = balanceContext.price * balance.balance.decimalValue
-        let totalPriceString = priceFormater.stringFromDecimal(totalPrice) ?? ""
+        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice) ?? ""
 
         let priceChangeString = NumberFormatter.signedPercent
             .localizableResource()
@@ -67,7 +67,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             .walletBalanceAvailable(preferredLanguages: locale.rLanguages)
 
         let rightTitle = R.string.localizable
-            .walletBalanceFrozen(preferredLanguages: locale.rLanguages)
+            .walletBalanceLocked(preferredLanguages: locale.rLanguages)
 
         let leftDetails = numberFormatter
             .value(for: locale)
@@ -97,7 +97,9 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
             amountFormatter: numberFormatter,
-            commandFactory: commandFactory
+            priceFormatter: localizablePriceFormatter,
+            commandFactory: commandFactory,
+            precision: asset.precision
         )
 
         return AssetDetailsViewModel(
