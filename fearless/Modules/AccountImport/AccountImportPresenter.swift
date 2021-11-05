@@ -41,8 +41,9 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         let username = usernameViewModel.inputHandler.value
         let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
 
-        let ethereumDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ??
-            DerivationPathConstants.defaultEthereum
+        let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+        let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
+            DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
         switch selectedSourceType {
         case .mnemonic:

@@ -115,8 +115,9 @@ extension ImportChainAccount {
                 return
             }
 
-            let ethereumDerivationPath = ethereumDerivationPathViewModel?.inputHandler.value ??
-                DerivationPathConstants.defaultEthereum
+            let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+            let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
+                DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
             switch selectedSourceType {
             case .mnemonic:

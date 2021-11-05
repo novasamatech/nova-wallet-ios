@@ -29,11 +29,11 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
         if !ethereumViewModel.inputHandler.completed {
             view?.didValidateEthereumDerivationPath(.invalid)
             if !derivationPathCheckError {
-            presentDerivationPathError(.ethereumEcdsa)
+                presentDerivationPathError(.ethereumEcdsa)
                 derivationPathCheckError = true
             }
         }
-        
+
         guard !derivationPathCheckError else { return }
 
         let substrateDerivationPath = substrateViewModel.inputHandler.value
