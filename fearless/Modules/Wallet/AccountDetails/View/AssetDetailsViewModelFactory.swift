@@ -92,7 +92,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             imageViewModel = nil
         }
 
-        let title = asset.platform?.value(for: locale) ?? ""
+        let title = asset.symbol
 
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
