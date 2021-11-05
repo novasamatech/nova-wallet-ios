@@ -177,7 +177,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         ).configure(builder: builder.historyModuleBuilder)
 
         TransactionDetailsConfigurator(
-            address: address,
+            chainAccount: chainAccountResponse,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.transactionDetailsModuleBuilder)
