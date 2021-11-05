@@ -17,10 +17,12 @@ class BaseAccountImportPresenter {
     var wireframe: AccountImportWireframeProtocol!
     var interactor: AccountImportInteractorInputProtocol!
 
+    private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
+
     private(set) var metadata: MetaAccountImportMetadata?
 
     private(set) var selectedSourceType: AccountImportSource?
-    private(set) var selectedCryptoType: MultiassetCryptoType?
+    private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
     private(set) var selectedNetworkType: Chain?
 
     private(set) var sourceViewModel: InputViewModelProtocol?
@@ -37,7 +39,7 @@ class BaseAccountImportPresenter {
         }
 
         if let preferredInfo = preferredInfo {
-            selectedCryptoType = preferredInfo.cryptoType
+            selectedSubstrateCryptoType = preferredInfo.cryptoType
 
             if let preferredNetwork = preferredInfo.networkType,
                metadata.availableNetworks.contains(preferredNetwork) {
@@ -47,7 +49,7 @@ class BaseAccountImportPresenter {
             }
 
         } else {
-            selectedCryptoType = selectedCryptoType ?? metadata.defaultCryptoType
+            selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? metadata.defaultCryptoType
             selectedNetworkType = selectedNetworkType ?? metadata.defaultNetwork
         }
 
@@ -87,6 +89,7 @@ class BaseAccountImportPresenter {
                 normalizer: normalizer
             )
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
+
         case .seed:
             let placeholder = R.string.localizable
                 .accountImportRawSeedPlaceholder(preferredLanguages: locale.rLanguages)
@@ -96,6 +99,7 @@ class BaseAccountImportPresenter {
                 predicate: NSPredicate.seed
             )
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
+
         case .keystore:
             let placeholder = R.string.localizable
                 .accountImportRecoveryJsonPlaceholder(preferredLanguages: locale.rLanguages)
@@ -186,11 +190,13 @@ class BaseAccountImportPresenter {
             applySubstrateDerivationPathViewModel()
             applyEthereumDerivationPathViewModel()
             applyNetworkTypeViewModel(preferredInfo)
+
         case .seed:
             applyCryptoTypeViewModel(preferredInfo)
             applySubstrateDerivationPathViewModel()
             ethereumDerivationPathViewModel = nil
             applyNetworkTypeViewModel(preferredInfo)
+
         case .keystore:
             applyCryptoTypeViewModel(preferredInfo)
             substrateDerivationPathViewModel = nil
@@ -200,15 +206,16 @@ class BaseAccountImportPresenter {
     }
 
     private func applyCryptoTypeViewModel(_ preferredInfo: MetaAccountImportPreferredInfo?) {
-        guard let cryptoType = selectedCryptoType else {
-            return
-        }
+        guard let cryptoType = selectedSubstrateCryptoType else { return }
 
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+        let substrateViewModel = TitleWithSubtitleViewModel(
+            title: cryptoType.titleForLocale(selectedLocale),
+            subtitle: cryptoType.subtitleForLocale(selectedLocale)
+        )
 
-        let viewModel = TitleWithSubtitleViewModel(
-            title: cryptoType.titleForLocale(locale),
-            subtitle: cryptoType.subtitleForLocale(locale)
+        let ethereumViewModel = TitleWithSubtitleViewModel(
+            title: selectedEthereumCryptoType.titleForLocale(selectedLocale),
+            subtitle: selectedEthereumCryptoType.subtitleForLocale(selectedLocale)
         )
 
         let selectable: Bool
@@ -219,9 +226,14 @@ class BaseAccountImportPresenter {
             selectable = (metadata?.availableCryptoTypes.count ?? 0) > 1
         }
 
-        view?.setSelectedCrypto(model: SelectableViewModel(
-            underlyingViewModel: viewModel,
+        view?.setSelectedSubstrateCrypto(model: SelectableViewModel(
+            underlyingViewModel: substrateViewModel,
             selectable: selectable
+        ))
+
+        view?.setSelectedEthereumCrypto(model: SelectableViewModel(
+            underlyingViewModel: ethereumViewModel,
+            selectable: false
         ))
     }
 
@@ -252,7 +264,7 @@ class BaseAccountImportPresenter {
     }
 
     private func applySubstrateDerivationPathViewModel() {
-        guard let cryptoType = selectedCryptoType else {
+        guard let cryptoType = selectedSubstrateCryptoType else {
             return
         }
 
@@ -410,7 +422,7 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func selectCryptoType() {
         if let metadata = metadata {
             let context = AccountImportContext.cryptoType.rawValue as NSString
-            let selectedType = selectedCryptoType ?? metadata.defaultCryptoType
+            let selectedType = selectedSubstrateCryptoType ?? metadata.defaultCryptoType
             wireframe.presentCryptoTypeSelection(
                 from: view,
                 availableTypes: metadata.availableCryptoTypes,
@@ -461,7 +473,7 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
 
     private func validateSubstrate() {
         guard let viewModel = substrateDerivationPathViewModel,
-              let cryptoType = selectedCryptoType,
+              let cryptoType = selectedSubstrateCryptoType,
               let sourceType = selectedSourceType
         else { return }
 
@@ -501,7 +513,7 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
         self.metadata = metadata
 
         selectedSourceType = metadata.defaultSource
-        selectedCryptoType = metadata.defaultCryptoType
+        selectedSubstrateCryptoType = metadata.defaultCryptoType
         selectedNetworkType = metadata.defaultNetwork
 
         applySourceType()
@@ -542,18 +554,20 @@ extension BaseAccountImportPresenter: ModalPickerViewControllerDelegate {
                 selectedSourceType = metadata?.availableSources[index]
 
                 selectedNetworkType = metadata?.defaultNetwork
-                selectedCryptoType = metadata?.defaultCryptoType
+                selectedSubstrateCryptoType = metadata?.defaultCryptoType
 
                 applySourceType()
 
                 view?.didCompleteSourceTypeSelection()
+
             case .cryptoType:
-                selectedCryptoType = metadata?.availableCryptoTypes[index]
+                selectedSubstrateCryptoType = metadata?.availableCryptoTypes[index]
 
                 applyCryptoTypeViewModel(nil)
                 applySubstrateDerivationPathViewModel()
 
                 view?.didCompleteCryptoTypeSelection()
+
             case .addressType:
                 selectedNetworkType = metadata?.availableNetworks[index]
 

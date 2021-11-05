@@ -22,7 +22,7 @@ extension AddChainAccount {
 
         private func prooceedWithSubstrate() {
             guard
-                let cryptoType = selectedCryptoType,
+                let cryptoType = selectedSubstrateCryptoType,
                 let substrateViewModel = substrateDerivationPathViewModel,
                 let metadata = metadata
             else {
