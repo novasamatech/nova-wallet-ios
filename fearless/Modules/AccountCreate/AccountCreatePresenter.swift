@@ -11,7 +11,7 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
 
     override func processProceed() {
         guard
-            let cryptoType = selectedCryptoType,
+            let cryptoType = selectedSubstrateCryptoType,
             let substrateViewModel = substrateDerivationPathViewModel,
             let ethereumViewModel = ethereumDerivationPathViewModel,
             let metadata = metadata

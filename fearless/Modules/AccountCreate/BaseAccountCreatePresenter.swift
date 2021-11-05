@@ -9,7 +9,8 @@ class BaseAccountCreatePresenter {
 
     internal var metadata: MetaAccountCreationMetadata?
 
-    internal var selectedCryptoType: MultiassetCryptoType?
+    internal var selectedSubstrateCryptoType: MultiassetCryptoType?
+    internal let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
 
     internal var substrateDerivationPathViewModel: InputViewModelProtocol?
     internal var ethereumDerivationPathViewModel: InputViewModelProtocol?
@@ -17,19 +18,29 @@ class BaseAccountCreatePresenter {
     internal var displaySubstrate: Bool = true
     internal var displayEthereum: Bool = true
 
-    private func applyCryptoTypeViewModel() {
-        guard let cryptoType = selectedCryptoType else {
-            return
-        }
-
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+    private func applySubstrateCryptoTypeViewModel() {
+        guard let cryptoType = selectedSubstrateCryptoType else { return }
 
         let viewModel = TitleWithSubtitleViewModel(
-            title: cryptoType.titleForLocale(locale),
-            subtitle: cryptoType.subtitleForLocale(locale)
+            title: cryptoType.titleForLocale(selectedLocale),
+            subtitle: cryptoType.subtitleForLocale(selectedLocale)
         )
 
-        view?.setSelectedCrypto(model: viewModel)
+        view?.setSelectedSubstrateCrypto(model: viewModel)
+    }
+
+    private func applyEthereumCryptoTypeViewModel() {
+        let viewModel = TitleWithSubtitleViewModel(
+            title: selectedEthereumCryptoType.titleForLocale(selectedLocale),
+            subtitle: selectedEthereumCryptoType.subtitleForLocale(selectedLocale)
+        )
+
+        view?.setSelectedEthereumCrypto(model: viewModel)
+    }
+
+    private func applyCryptoTypeViewModel() {
+        if displaySubstrate { applySubstrateCryptoTypeViewModel() }
+        if displayEthereum { applyEthereumCryptoTypeViewModel() }
     }
 
     private func applyEthereumDerivationPathViewModel() {
@@ -51,7 +62,7 @@ class BaseAccountCreatePresenter {
     }
 
     private func applySubstrateDerivationPathViewModel() {
-        guard let cryptoType = selectedCryptoType else {
+        guard let cryptoType = selectedSubstrateCryptoType else {
             return
         }
 
@@ -81,7 +92,7 @@ class BaseAccountCreatePresenter {
     }
 
     private func validateSubstrate() {
-        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = selectedCryptoType else {
+        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = selectedSubstrateCryptoType else {
             return
         }
 
@@ -153,7 +164,7 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 
     func selectCryptoType() {
         if let metadata = metadata {
-            let selectedType = selectedCryptoType ?? metadata.defaultCryptoType
+            let selectedType = selectedSubstrateCryptoType ?? metadata.defaultCryptoType
             wireframe.presentCryptoTypeSelection(
                 from: view,
                 availableTypes: metadata.availableCryptoTypes,
@@ -175,7 +186,7 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
     func didReceive(metadata: MetaAccountCreationMetadata) {
         self.metadata = metadata
 
-        selectedCryptoType = metadata.defaultCryptoType
+        selectedSubstrateCryptoType = metadata.defaultCryptoType
 
         view?.set(mnemonic: metadata.mnemonic)
 
@@ -199,7 +210,7 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
 
 extension BaseAccountCreatePresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
-        selectedCryptoType = metadata?.availableCryptoTypes[index]
+        selectedSubstrateCryptoType = metadata?.availableCryptoTypes[index]
 
         applyCryptoTypeViewModel()
         applySubstrateDerivationPathViewModel()
