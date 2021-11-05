@@ -252,7 +252,7 @@ class CrowdloanContributionSetupViewLayout: UIView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        contentView.scrollBottomOffset = 2 * UIConstants.horizontalInset + UIConstants.actionHeight
+        contentView.scrollBottomOffset = 100
     }
 
     private func createEstimatedRewardViewIfNeeded() {
