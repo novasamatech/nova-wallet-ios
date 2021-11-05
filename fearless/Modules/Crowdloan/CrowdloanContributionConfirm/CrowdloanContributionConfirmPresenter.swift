@@ -86,7 +86,9 @@ class CrowdloanContributionConfirmPresenter {
 
             provideAssetVewModel()
         case let .failure(error):
-            logger?.error("Did receive minimum contribution error: \(error)")
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+                logger?.error("Did receive minimum contribution error: \(error)")
+            }
         }
     }
 
