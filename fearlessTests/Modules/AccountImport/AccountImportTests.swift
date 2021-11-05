@@ -75,7 +75,8 @@ class AccountImportTests: XCTestCase {
             
             when(stub).setTitle(any()).thenDoNothing()
             when(stub).setSource(type: any()).thenDoNothing()
-            when(stub).setSelectedCrypto(model: any()).thenDoNothing()
+            when(stub).setSelectedSubstrateCrypto(model: any()).thenDoNothing()
+            when(stub).setSelectedEthereumCrypto(model: any()).thenDoNothing()
             when(stub).setSubstrateDerivationPath(viewModel: any()).thenDoNothing()
             when(stub).setEthereumDerivationPath(viewModel: any()).thenDoNothing()
         }
