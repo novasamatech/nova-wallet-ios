@@ -11,7 +11,7 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
     let amount: String // TODO: Check if used anywhere else
     let price: String
     let priceChangeViewModel: WalletPriceChangeViewModel
-    let totalVolume: String
+    let totalVolume: String // TODO: Check if used anywhere else
 
     // FIXME: Convert according to new layout
     let leftTitle: String

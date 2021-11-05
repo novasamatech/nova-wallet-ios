@@ -11,7 +11,6 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
     @IBOutlet private var iconView: UIImageView!
     @IBOutlet private var priceLabel: UILabel!
     @IBOutlet private var priceChangeLabel: UILabel!
-    @IBOutlet private var totalVolumeLabel: UILabel!
     @IBOutlet private var leftTitleLabel: UILabel!
     @IBOutlet private var leftDetailsLabel: UILabel!
     @IBOutlet private var rightTitleLabel: UILabel!
@@ -55,7 +54,6 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         }
 
         priceLabel.text = assetViewModel.price
-        totalVolumeLabel.text = assetViewModel.totalVolume
         leftTitleLabel.text = assetViewModel.leftTitle
         leftDetailsLabel.text = assetViewModel.leftDetails
         rightTitleLabel.text = assetViewModel.rightTitle
