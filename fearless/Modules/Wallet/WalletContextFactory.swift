@@ -8,6 +8,7 @@ import SubstrateSdk
 
 enum WalletContextFactoryError: Error {
     case missingAccount
+    case missingAsset
 }
 
 protocol WalletContextFactoryProtocol {
@@ -27,26 +28,24 @@ final class WalletContextFactory {
 extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
     func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol {
-        guard let metaAccount = SelectedWalletSettings.shared.value else {
+        guard let metaAccount = SelectedWalletSettings.shared.value,
+              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
             throw WalletContextFactoryError.missingAccount
         }
 
-        logger.info("Start wallet for: \(metaAccount.metaId)")
+        guard let asset = chain.utilityAssets().first else {
+            throw WalletContextFactoryError.missingAsset
+        }
+
+        let accountId = chainAccountResponse.accountId
+        let address = try accountId.toAddress(using: chain.chainFormat)
+        logger.info("Start wallet for: \(address)")
 
         if let ethereumAddress = metaAccount.ethereumAddress {
             logger.info("Ethereum address: \(ethereumAddress.toHex(includePrefix: true))")
         }
 
-        let chains = [chain]
-        let chainAssets: [ChainAsset] = chains.reversed().compactMap { chain in
-            guard
-                metaAccount.fetch(for: chain.accountRequest()) != nil,
-                let asset = chain.utilityAssets().first else {
-                return nil
-            }
-
-            return ChainAsset(chain: chain, asset: asset)
-        }
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
         let priceAssetInfo = AssetBalanceDisplayInfo.usd()
         let priceAsset = WalletAsset(
@@ -58,23 +57,21 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             modes: .view
         )
 
-        let walletAssets: [WalletAsset] = chainAssets.compactMap { chainAsset in
-            WalletAsset(
-                identifier: chainAsset.chainAssetId.walletId,
-                name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
-                platform: LocalizableResource { _ in chainAsset.chain.name },
-                symbol: chainAsset.asset.symbol,
-                precision: chainAsset.assetDisplayInfo.assetPrecision,
-                modes: WalletAssetModes.all
-            )
-        }
-
-        let accountSettings = WalletAccountSettings(
-            accountId: metaAccount.metaId,
-            assets: [priceAsset] + walletAssets
+        let walletAsset = WalletAsset(
+            identifier: chainAsset.chainAssetId.walletId,
+            name: LocalizableResource { _ in chainAsset.asset.name ?? chainAsset.chain.name },
+            platform: LocalizableResource { _ in chainAsset.chain.name },
+            symbol: chainAsset.asset.symbol,
+            precision: chainAsset.assetDisplayInfo.assetPrecision,
+            modes: WalletAssetModes.all
         )
 
-        let chainsById: [ChainModel.Id: ChainModel] = chains.reduce(into: [:]) { result, chain in
+        let accountSettings = WalletAccountSettings(
+            accountId: accountId.toHex(),
+            assets: [priceAsset, walletAsset]
+        )
+
+        let chainsById: [ChainModel.Id: ChainModel] = [chain].reduce(into: [:]) { result, chain in
             result[chain.chainId] = chain
         }
 
@@ -116,7 +113,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let contactOperationFactory = WalletContactOperationFactory(
             storageFacade: substrateFacade,
-            targetAddress: ""
+            targetAddress: address
         )
 
         let networkFacade = WalletNetworkFacade(
@@ -145,26 +142,18 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let localizationManager = LocalizationManager.shared
 
         WalletCommonConfigurator(
+            chainAccount: chainAccountResponse,
             localizationManager: localizationManager,
-            metaAccount: metaAccount,
-            assets: walletAssets
+            assets: [walletAsset]
         ).configure(builder: builder)
 
         WalletCommonStyleConfigurator().configure(builder: builder.styleBuilder)
 
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
-        let accountListConfigurator = WalletAccountListConfigurator(
-            metaAccount: metaAccount,
-            chains: chainsById,
-            priceAsset: priceAsset,
-            logger: logger
-        )
-
-        accountListConfigurator.configure(builder: builder.accountListModuleBuilder)
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
-            metaAccount: metaAccount,
-            chains: chainsById,
+            address: address,
+            chain: chain,
             purchaseProvider: purchaseProvider,
             priceAsset: priceAsset
         )
@@ -175,11 +164,18 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
+            chainFormat: chain.chainFormat,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 
-        let contactsConfigurator = ContactsConfigurator(metaAccount: metaAccount, chains: chainsById)
+        TransactionDetailsConfigurator(
+            chainAccount: chainAccountResponse,
+            amountFormatterFactory: amountFormatterFactory,
+            assets: accountSettings.assets
+        ).configure(builder: builder.transactionDetailsModuleBuilder)
+
+        let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
         let transferConfigurator = TransferConfigurator(
@@ -191,16 +187,30 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         transferConfigurator.configure(builder: builder.transferModuleBuilder)
 
         let confirmConfigurator = TransferConfirmConfigurator(
-            chains: chainsById,
+            chainAsset: chainAsset,
             amountFormatterFactory: assetBalanceFormatterFactory
         )
 
         confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
 
+        let receiveConfigurator = ReceiveConfigurator(
+            displayName: metaAccount.name,
+            address: address,
+            chainFormat: chain.chainFormat,
+            assets: [walletAsset],
+            localizationManager: localizationManager
+        )
+
+        receiveConfigurator.configure(builder: builder.receiveModuleBuilder)
+
+        let invoiceScanConfigurator = InvoiceScanConfigurator(chainFormat: chain.chainFormat)
+        invoiceScanConfigurator.configure(builder: builder.invoiceScanModuleBuilder)
+
         let context = try builder.build()
 
         transferConfigurator.commandFactory = context
         confirmConfigurator.commandFactory = context
+        receiveConfigurator.commandFactory = context
 
         return context
     }

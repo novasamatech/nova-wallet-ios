@@ -2,21 +2,21 @@ import Foundation
 import CommonWallet
 
 final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
-    let metaAccount: MetaAccountModel
-    let chains: [ChainModel.Id: ChainModel]
+    let address: AccountAddress
+    let chain: ChainModel
     let purchaseProvider: PurchaseProviderProtocol
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let priceAsset: WalletAsset
 
     init(
-        metaAccount: MetaAccountModel,
-        chains: [ChainModel.Id: ChainModel],
+        address: AccountAddress,
+        chain: ChainModel,
         purchaseProvider: PurchaseProviderProtocol,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         priceAsset: WalletAsset
     ) {
-        self.metaAccount = metaAccount
-        self.chains = chains
+        self.address = address
+        self.chain = chain
         self.purchaseProvider = purchaseProvider
         self.amountFormatterFactory = amountFormatterFactory
         self.priceAsset = priceAsset
@@ -79,10 +79,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let imageViewModel: WalletImageViewModelProtocol?
 
-        if
-            let chainAssetId = ChainAssetId(walletId: asset.identifier),
-            let chain = chains[chainAssetId.chainId],
-            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) {
+        if let asset = chain.utilityAssets().first {
             let iconUrl = asset.icon ?? chain.icon
             imageViewModel = WalletRemoteImageViewModel(
                 url: iconUrl,
@@ -122,14 +119,6 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> WalletViewModelProtocol? {
-        guard
-            let assetId = assetId,
-            let chainAssetId = ChainAssetId(walletId: assetId),
-            let chain = chains[chainAssetId.chainId],
-            let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress() else {
-            return nil
-        }
-
         let sendCommand: WalletCommandProtocol = commandFactory.prepareSendCommand(for: assetId)
         let sendTitle = R.string.localizable
             .walletSendTitle(preferredLanguages: locale.rLanguages)
@@ -147,16 +136,10 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             command: receiveCommand
         )
 
-        // TODO: fix purchase
         let buyCommand: WalletCommandProtocol?
-        if
-            let walletAssetId = WalletAssetId(chainId: chainAssetId.chainId),
-            let walletChain = walletAssetId.chain {
-            let actions = purchaseProvider.buildPurchaseActions(
-                for: walletChain,
-                assetId: walletAssetId,
-                address: address
-            )
+
+        if let walletChain = Chain(rawValue: chain.chainId) {
+            let actions = purchaseProvider.buildPurchaseActions(for: walletChain, address: address)
 
             buyCommand = actions.isEmpty ? nil :
                 WalletSelectPurchaseProviderCommand(

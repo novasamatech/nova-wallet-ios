@@ -9,6 +9,7 @@ enum TransactionHistoryViewModelFactoryError: Error {
 }
 
 final class TransactionHistoryViewModelFactory {
+    let chainFormat: ChainFormat
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
@@ -16,10 +17,12 @@ final class TransactionHistoryViewModelFactory {
     let iconGenerator = PolkadotIconGenerator()
 
     init(
+        chainFormat: ChainFormat,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
         assets: [WalletAsset]
     ) {
+        self.chainFormat = chainFormat
         self.amountFormatterFactory = amountFormatterFactory
         self.dateFormatter = dateFormatter
         self.assets = assets
@@ -46,8 +49,8 @@ final class TransactionHistoryViewModelFactory {
         let imageViewModel: WalletImageViewModelProtocol?
         let icon: UIImage?
 
-        if let address = data.peerName {
-            icon = try? iconGenerator.generateFromAddress(address)
+        if let accountId = try? data.peerName?.toAccountId(using: chainFormat) {
+            icon = try? iconGenerator.generateFromAccountId(accountId)
                 .imageWithFillColor(
                     R.color.colorWhite()!,
                     size: UIConstants.normalAddressIconSize,
@@ -143,8 +146,13 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        // TODO: Fix tx history icon
-        let imageViewModel: WalletImageViewModelProtocol? = nil
+        let imageViewModel: WalletImageViewModelProtocol?
+
+        if let icon = R.image.iconExtrinsic() {
+            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
+        } else {
+            imageViewModel = nil
+        }
 
         let command = commandFactory.prepareTransactionDetailsCommand(with: data)
 

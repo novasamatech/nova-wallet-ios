@@ -5,8 +5,8 @@ import IrohaCrypto
 final class InvoiceScanConfigurator {
     let searchEngine: InvoiceLocalSearchEngineProtocol
 
-    init(networkType: SNAddressType) {
-        searchEngine = InvoiceScanLocalSearchEngine(networkType: networkType)
+    init(chainFormat: ChainFormat) {
+        searchEngine = InvoiceScanLocalSearchEngine(chainFormat: chainFormat)
     }
 
     let style: InvoiceScanViewStyleProtocol = {

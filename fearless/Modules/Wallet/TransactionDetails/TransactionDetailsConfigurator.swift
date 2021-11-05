@@ -5,12 +5,12 @@ final class TransactionDetailsConfigurator {
     let viewModelFactory: TransactionDetailsViewModelFactory
 
     init(
-        address: String,
+        chainAccount: ChainAccountResponse,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
         viewModelFactory = TransactionDetailsViewModelFactory(
-            address: address,
+            chainAccount: chainAccount,
             assets: assets,
             dateFormatter: DateFormatter.txDetails,
             amountFormatterFactory: amountFormatterFactory

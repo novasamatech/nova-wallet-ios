@@ -5,16 +5,16 @@ import IrohaCrypto
 
 struct WalletCommonConfigurator {
     let localizationManager: LocalizationManagerProtocol
-    let metaAccount: MetaAccountModel
+    let chainAccount: ChainAccountResponse
     let assets: [WalletAsset]
 
     init(
+        chainAccount: ChainAccountResponse,
         localizationManager: LocalizationManagerProtocol,
-        metaAccount: MetaAccountModel,
         assets: [WalletAsset]
     ) {
         self.localizationManager = localizationManager
-        self.metaAccount = metaAccount
+        self.chainAccount = chainAccount
         self.assets = assets
     }
 
@@ -27,11 +27,11 @@ struct WalletCommonConfigurator {
             dataStorageFacade: SubstrateDataStorageFacade.shared
         )
 
-        // TODO: Fix when qr coding decoding fixed
         let qrCoderFactory = WalletQRCoderFactory(
-            networkType: .genericSubstrate,
-            publicKey: metaAccount.substratePublicKey,
-            username: metaAccount.name,
+            addressPrefix: chainAccount.addressPrefix,
+            chainFormat: chainAccount.chainFormat,
+            publicKey: chainAccount.publicKey,
+            username: chainAccount.name,
             assets: assets
         )
 
