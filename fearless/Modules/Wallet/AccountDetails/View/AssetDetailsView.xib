@@ -606,6 +606,8 @@
                 <outlet property="transferableSectionTitleLabel" destination="M1c-hO-8zc" id="I5k-oh-vUX"/>
                 <outlet property="transferableSectionTokenLabel" destination="7ki-ET-btL" id="7zH-JY-gQz"/>
                 <outlet property="widgetTitleLabel" destination="QkP-OX-ZDR" id="Xbn-dp-qQe"/>
+                <outletCollection property="separators" destination="6Db-GA-Eb2" collectionClass="NSMutableArray" id="s1C-MM-NGO"/>
+                <outletCollection property="separators" destination="2sN-nW-WdG" collectionClass="NSMutableArray" id="9f0-1L-Rnp"/>
             </connections>
             <point key="canvasLocation" x="138.40000000000001" y="138.98050974512745"/>
         </view>
