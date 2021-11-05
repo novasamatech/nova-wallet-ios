@@ -533,3 +533,6 @@ will appear here";
 "account.create.option.title" = "Create account";
 "account.import.option.title" = "Import account";
 "account.actions.change.sheet.title" = "Change %@ account";
+"wallet.account.locks.vesting" = "Vesting";
+"wallet.account.locks.democracy" = "Democracy";
+"wallet.account.locks.elections" = "Elections";
