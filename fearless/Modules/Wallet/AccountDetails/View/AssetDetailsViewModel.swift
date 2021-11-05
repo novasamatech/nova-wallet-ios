@@ -8,10 +8,8 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
 
     let title: String
     let imageViewModel: WalletImageViewModelProtocol?
-    let amount: String // TODO: Check if used anywhere else
     let price: String
     let priceChangeViewModel: WalletPriceChangeViewModel
-    let totalVolume: String // TODO: Check if used anywhere else
 
     let balancesTitle: String
 
@@ -29,10 +27,8 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
     init(
         title: String,
         imageViewModel: WalletImageViewModelProtocol?,
-        amount: String,
         price: String,
         priceChangeViewModel: WalletPriceChangeViewModel,
-        totalVolume: String,
         balancesTitle: String,
         totalTitle: String,
         totalBalance: BalanceViewModel,
@@ -44,10 +40,8 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
     ) {
         self.title = title
         self.imageViewModel = imageViewModel
-        self.amount = amount
         self.price = price
         self.priceChangeViewModel = priceChangeViewModel
-        self.totalVolume = totalVolume
         self.balancesTitle = balancesTitle
         self.totalTitle = totalTitle
         self.totalBalance = totalBalance
