@@ -30,7 +30,7 @@ class ReferralCrowdloanTests: XCTestCase {
 
         let asset = chain.assets.first!
 
-        let expectedCode = KaruraBonusService.defaultReferralCode
+        let expectedCode = "0x9642d0db9f3b301b44df74b63b0b930011e3f52154c5ca24b4dc67b3c7322f15"
 
         let assetInfo = asset.displayInfo(with: chain.icon)
         let crowdloanViewModelFactory = CrowdloanContributionViewModelFactory(
@@ -51,7 +51,7 @@ class ReferralCrowdloanTests: XCTestCase {
             inputAmount: 10,
             crowdloanDelegate: delegate,
             crowdloanViewModelFactory: crowdloanViewModelFactory,
-            defaultReferralCode: KaruraBonusService.defaultReferralCode,
+            defaultReferralCode: expectedCode,
             localizationManager: LocalizationManager.shared
         )
 

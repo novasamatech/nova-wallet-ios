@@ -36,7 +36,7 @@ struct ChainSelectionViewFactory {
         )
 
         let title = LocalizableResource { locale in
-            R.string.localizable.commonSelectNetwork(
+            R.string.localizable.commonSelectAsset(
                 preferredLanguages: locale.rLanguages
             )
         }

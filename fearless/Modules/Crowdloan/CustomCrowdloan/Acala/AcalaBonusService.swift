@@ -6,10 +6,10 @@ import SubstrateSdk
 
 final class AcalaBonusService {
     #if F_RELEASE
-        static let defaultReferralCode = "0xc5c184f0565e2192d6aedae584ee736cef875f0e1c558ee3ede26869acd0b4d6"
+        let defaultReferralCode: String? = "0xc5c184f0565e2192d6aedae584ee736cef875f0e1c558ee3ede26869acd0b4d6"
         static let baseURL = URL(string: "https://crowdloan.aca-api.network")!
     #else
-        static let defaultReferralCode = "0x08eb319467ea54784cd9edfbd03bbcc53f7a021ed8d9ed2ca97b6ae46b3f6014"
+        let defaultReferralCode: String? = "0x08eb319467ea54784cd9edfbd03bbcc53f7a021ed8d9ed2ca97b6ae46b3f6014"
         static let baseURL = URL(string: "https://crowdloan.aca-dev.network")!
     #endif
 
