@@ -150,14 +150,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         WalletCommonStyleConfigurator().configure(builder: builder.styleBuilder)
 
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
-        let accountListConfigurator = WalletAccountListConfigurator(
-            metaAccount: metaAccount,
-            chains: chainsById,
-            priceAsset: priceAsset,
-            logger: logger
-        )
-
-        accountListConfigurator.configure(builder: builder.accountListModuleBuilder)
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
             metaAccount: metaAccount,
@@ -172,6 +164,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
         TransactionHistoryConfigurator(
+            chainFormat: chain.chainFormat,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
