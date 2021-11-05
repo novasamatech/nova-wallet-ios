@@ -203,6 +203,7 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func putOffline() {
+        view?.didStopLoading()
         interactor.putOffline()
     }
 
