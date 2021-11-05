@@ -3,12 +3,12 @@ import CommonWallet
 import IrohaCrypto
 
 final class InvoiceScanLocalSearchEngine: InvoiceLocalSearchEngineProtocol {
-    let networkType: SNAddressType
+    let chainFormat: ChainFormat
 
     private lazy var addressFactory = SS58AddressFactory()
 
-    init(networkType: SNAddressType) {
-        self.networkType = networkType
+    init(chainFormat: ChainFormat) {
+        self.chainFormat = chainFormat
     }
 
     func searchByAccountId(_ accountIdHex: String) -> SearchData? {
@@ -16,8 +16,7 @@ final class InvoiceScanLocalSearchEngine: InvoiceLocalSearchEngineProtocol {
             return nil
         }
 
-        guard let address = try? addressFactory
-            .addressFromAccountId(data: accountId, type: networkType) else {
+        guard let address = try? accountId.toAddress(using: chainFormat) else {
             return nil
         }
 
