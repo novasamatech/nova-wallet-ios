@@ -152,8 +152,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
-            metaAccount: metaAccount,
-            chains: chainsById,
+            address: address,
+            chain: chain,
             purchaseProvider: purchaseProvider,
             priceAsset: priceAsset
         )
@@ -175,7 +175,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             assets: accountSettings.assets
         ).configure(builder: builder.transactionDetailsModuleBuilder)
 
-        let contactsConfigurator = ContactsConfigurator(metaAccount: metaAccount, chains: chainsById)
+        let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
         let transferConfigurator = TransferConfigurator(
@@ -187,7 +187,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         transferConfigurator.configure(builder: builder.transferModuleBuilder)
 
         let confirmConfigurator = TransferConfirmConfigurator(
-            chains: chainsById,
+            chainAsset: chainAsset,
             amountFormatterFactory: assetBalanceFormatterFactory
         )
 
