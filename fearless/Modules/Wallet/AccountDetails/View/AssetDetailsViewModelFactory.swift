@@ -1,5 +1,6 @@
 import Foundation
 import CommonWallet
+import SoraFoundation
 
 final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
     let metaAccount: MetaAccountModel
@@ -22,6 +23,26 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         self.priceAsset = priceAsset
     }
 
+    private func createFormattedAmount(from decimalValue: Decimal, with amountFormatter: TokenFormatter) -> String {
+        guard let amountString = amountFormatter.stringFromDecimal(decimalValue) else {
+            return decimalValue.stringWithPointSeparator
+        }
+
+        return amountString
+    }
+
+    private func createBalanceViewModel(
+        from amount: Decimal,
+        price: Decimal,
+        with amountFormatter: TokenFormatter,
+        priceFormatter: TokenFormatter
+    ) -> BalanceViewModel {
+        let amountString = createFormattedAmount(from: amount, with: amountFormatter)
+        let priceString = priceFormatter.stringFromDecimal(amount * price)
+
+        return BalanceViewModel(amount: amountString, price: priceString)
+    }
+
     func createAssetViewModel(
         for asset: WalletAsset,
         balance: BalanceData,
@@ -34,61 +55,11 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let localizablePriceFormatter = amountFormatterFactory.createTokenFormatter(for: priceAsset)
         let priceFormatter = localizablePriceFormatter.value(for: locale)
 
-        let decimalBalance = balance.balance.decimalValue
-        let amount: String
-
-        if let balanceString = amountFormatter.stringFromDecimal(decimalBalance) {
-            amount = balanceString
-        } else {
-            amount = balance.balance.stringValue
-        }
-
         let balanceContext = BalanceContext(context: balance.context ?? [:])
 
-        let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
-
-//        let totalPrice = balanceContext.price * balance.balance.decimalValue
-//        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice) ?? ""
-
-        let priceChangeString = NumberFormatter.signedPercent
-            .localizableResource()
-            .value(for: locale)
-            .string(from: balanceContext.priceChange as NSNumber) ?? ""
-
-        let priceChangeViewModel = balanceContext.priceChange >= 0.0 ?
-            WalletPriceChangeViewModel.goingUp(displayValue: priceChangeString) :
-            WalletPriceChangeViewModel.goingDown(displayValue: priceChangeString)
-
-        let context = BalanceContext(context: balance.context ?? [:])
-
-        let numberFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
-
-        let balancesTitle = R.string.localizable.walletBalancesWidgetTitle(preferredLanguages: locale.rLanguages)
-        let totalTitle = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
-        let transferableTitle = R.string.localizable.walletBalanceAvailable(preferredLanguages: locale.rLanguages)
-        let lockedTitle = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
-
-        // total = total
-        // transferable = available
-        // locked = locked
-
-        let totalPrice = balanceContext.price * balance.balance.decimalValue
-        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice)
-
-        let transferablePrice = balanceContext.price * balanceContext.available
-        let transferablePriceString = priceFormatter.stringFromDecimal(transferablePrice)
-
-        let lockedPrice = balanceContext.price * balanceContext.locked
-        let lockedPriceString = priceFormatter.stringFromDecimal(lockedPrice)
-
-        /*
-         let rightDetails = numberFormatter
-            .value(for: locale)
-            .stringFromDecimal(context.frozen) ?? ""
-         */
+        let title = asset.symbol
 
         let imageViewModel: WalletImageViewModelProtocol?
-
         if
             let chainAssetId = ChainAssetId(walletId: asset.identifier),
             let chain = chains[chainAssetId.chainId],
@@ -102,12 +73,44 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             imageViewModel = nil
         }
 
-        let title = asset.symbol
+        let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 
-        // TODO: Assign real values
-        let totalBalance = BalanceViewModel(amount: "", price: totalPriceString)
-        let transferableBalance = BalanceViewModel(amount: "", price: transferablePriceString)
-        let lockedBalance = BalanceViewModel(amount: "", price: lockedPriceString)
+        let priceChangeString = NumberFormatter.signedPercent
+            .localizableResource()
+            .value(for: locale)
+            .string(from: balanceContext.priceChange as NSNumber) ?? ""
+
+        let priceChangeViewModel = balanceContext.priceChange >= 0.0 ?
+            WalletPriceChangeViewModel.goingUp(displayValue: priceChangeString) :
+            WalletPriceChangeViewModel.goingDown(displayValue: priceChangeString)
+
+        let numberFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
+
+        let balancesTitle = R.string.localizable.walletBalancesWidgetTitle(preferredLanguages: locale.rLanguages)
+        let totalTitle = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+        let transferableTitle = R.string.localizable.walletBalanceAvailable(preferredLanguages: locale.rLanguages)
+        let lockedTitle = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
+
+        let totalBalance = createBalanceViewModel(
+            from: balance.balance.decimalValue,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
+
+        let transferableBalance = createBalanceViewModel(
+            from: balanceContext.available,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
+
+        let lockedBalance = createBalanceViewModel(
+            from: balanceContext.locked,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
 
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
@@ -120,10 +123,8 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         return AssetDetailsViewModel(
             title: title,
             imageViewModel: imageViewModel,
-            amount: amount,
             price: priceString,
             priceChangeViewModel: priceChangeViewModel,
-            totalVolume: totalPriceString ?? "",
             balancesTitle: balancesTitle,
             totalTitle: totalTitle,
             totalBalance: totalBalance,
@@ -133,11 +134,6 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             lockedBalance: lockedBalance,
             infoDetailsCommand: infoDetailsCommand
         )
-
-        /*
-         transferableTokenValue: leftDetails,
-         lockedTokenValue: rightDetails,
-         */
     }
 
     func createActionsViewModel(
