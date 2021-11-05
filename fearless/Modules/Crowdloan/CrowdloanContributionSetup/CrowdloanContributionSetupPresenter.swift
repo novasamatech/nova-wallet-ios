@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class CrowdloanContributionSetupPresenter {
+class CrowdloanContributionSetupPresenter {
     weak var view: CrowdloanContributionSetupViewProtocol?
     let wireframe: CrowdloanContributionSetupWireframeProtocol
     let interactor: CrowdloanContributionSetupInteractorInputProtocol
@@ -23,9 +23,9 @@ final class CrowdloanContributionSetupPresenter {
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
     private var minimumBalance: BigUInt?
-    private var minimumContribution: BigUInt?
+    var minimumContribution: BigUInt?
 
-    private var bonusService: CrowdloanBonusServiceProtocol?
+    var bonusService: CrowdloanBonusServiceProtocol?
 
     private var balanceMinusFee: Decimal { (balance ?? 0) - (fee ?? 0) }
 

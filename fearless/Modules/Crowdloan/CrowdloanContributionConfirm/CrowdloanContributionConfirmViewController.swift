@@ -1,7 +1,7 @@
 import UIKit
 import SoraFoundation
 
-final class CrowdloanContributionConfirmVC: UIViewController, ViewHolder {
+class CrowdloanContributionConfirmVC: UIViewController, ViewHolder {
     typealias RootViewType = CrowdloanContributionConfirmViewLayout
 
     let presenter: CrowdloanContributionConfirmPresenterProtocol
