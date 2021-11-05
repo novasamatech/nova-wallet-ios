@@ -234,22 +234,21 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         amount: BigUInt,
         with closure: @escaping (Result<Void, Error>) -> Void
     ) {
-        let statementOperation = createStatementFetchOperation()
-        statementOperation.completionBlock = {
-            do {
-                let statement = try statementOperation.extractNoCancellableResultData()
-                self.statementData = statement
-            } catch {
-                closure(.failure(error))
-            }
-        }
-
         let info = AcalaTransferInfo(
             address: address,
             amount: String(amount),
             referral: referralCode
         )
         let transferOperation = createTransferOperation(info: info)
+        let statementOperation = createStatementFetchOperation()
+        transferOperation.configurationBlock = {
+            do {
+                let statement = try statementOperation.extractNoCancellableResultData()
+                self.statementData = statement
+            } catch {
+                transferOperation.result = .failure(error)
+            }
+        }
         transferOperation.addDependency(statementOperation)
 
         transferOperation.completionBlock = {
