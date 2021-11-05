@@ -6,7 +6,7 @@ import SoraKeystore
 
 final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     let accountViewModel: ReceiveAccountViewModelProtocol
-    let chain: Chain
+    let chainFormat: ChainFormat
     let localizationManager: LocalizationManagerProtocol
 
     weak var commandFactory: WalletCommandFactoryProtocol?
@@ -15,19 +15,23 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
 
     init(
         accountViewModel: ReceiveAccountViewModelProtocol,
-        chain: Chain,
+        chainFormat: ChainFormat,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.accountViewModel = accountViewModel
-        self.chain = chain
+        self.chainFormat = chainFormat
         self.localizationManager = localizationManager
     }
 
     func createHeaderView() -> UIView? {
         let address = accountViewModel.address
+        guard let accountId = try? address.toAccountId(using: chainFormat) else {
+            return nil
+        }
+
         let username = accountViewModel.displayName
 
-        let icon = try? iconGenerator.generateFromAddress(address)
+        let icon = try? iconGenerator.generateFromAccountId(accountId)
             .imageWithFillColor(
                 R.color.colorWhite()!,
                 size: CGSize(width: 32.0, height: 32.0),
@@ -43,9 +47,10 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
         let locale = localizationManager.selectedLocale
 
         if let commandFactory = commandFactory {
+            // TODO: Fix account presentation
             let command = WalletAccountOpenCommand(
                 address: address,
-                chain: chain,
+                chain: Chain.westend,
                 commandFactory: commandFactory,
                 locale: locale
             )

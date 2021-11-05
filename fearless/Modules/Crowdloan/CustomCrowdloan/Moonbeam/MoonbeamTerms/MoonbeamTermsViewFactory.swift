@@ -99,6 +99,7 @@ struct MoonbeamTermsViewFactory {
             chainId: chain.chainId,
             asset: asset,
             extrinsicService: extrinsicService,
+            runtimeService: runtimeService,
             feeProxy: feeProxy,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

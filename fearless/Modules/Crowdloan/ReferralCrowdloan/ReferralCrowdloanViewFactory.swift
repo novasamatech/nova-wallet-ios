@@ -53,12 +53,13 @@ struct ReferralCrowdloanViewFactory {
             }
         }()
 
+        guard let defaultReferralCode = bonusService.defaultReferralCode else { return nil }
         return createView(
             for: delegate,
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: AcalaBonusService.defaultReferralCode,
+            defaultReferralCode: defaultReferralCode,
             state: state
         )
     }
@@ -97,12 +98,13 @@ struct ReferralCrowdloanViewFactory {
             }
         }()
 
+        guard let defaultReferralCode = bonusService.defaultReferralCode else { return nil }
         return createView(
             for: delegate,
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: KaruraBonusService.defaultReferralCode,
+            defaultReferralCode: defaultReferralCode,
             state: state
         )
     }
@@ -129,12 +131,13 @@ struct ReferralCrowdloanViewFactory {
             }
         }()
 
+        guard let defaultReferralCode = bonusService.defaultReferralCode else { return nil }
         return createView(
             for: delegate,
             displayInfo: displayInfo,
             inputAmount: inputAmount,
             bonusService: bonusService,
-            defaultReferralCode: BifrostBonusService.defaultReferralCode,
+            defaultReferralCode: defaultReferralCode,
             state: state
         )
     }

@@ -7,16 +7,16 @@ final class AssetDetailsConfigurator {
     let viewModelFactory: AssetDetailsViewModelFactory
 
     init(
-        metaAccount: MetaAccountModel,
-        chains: [ChainModel.Id: ChainModel],
+        address: AccountAddress,
+        chain: ChainModel,
         purchaseProvider: PurchaseProviderProtocol,
         priceAsset: WalletAsset
     ) {
         let amountFormatterFactory = AmountFormatterFactory()
 
         viewModelFactory = AssetDetailsViewModelFactory(
-            metaAccount: metaAccount,
-            chains: chains,
+            address: address,
+            chain: chain,
             purchaseProvider: purchaseProvider,
             amountFormatterFactory: amountFormatterFactory,
             priceAsset: priceAsset

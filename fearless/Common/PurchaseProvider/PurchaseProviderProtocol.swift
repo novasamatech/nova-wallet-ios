@@ -14,7 +14,6 @@ protocol PurchaseProviderProtocol {
     func with(callbackUrl: URL) -> Self
     func buildPurchaseActions(
         for chain: Chain,
-        assetId: WalletAssetId?,
         address: String
     ) -> [PurchaseAction]
 }

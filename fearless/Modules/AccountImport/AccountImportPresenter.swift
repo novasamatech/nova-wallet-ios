@@ -5,7 +5,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     override func processProceed() {
         guard
             let selectedSourceType = selectedSourceType,
-            let selectedCryptoType = selectedCryptoType,
+            let selectedCryptoType = selectedSubstrateCryptoType,
             let sourceViewModel = sourceViewModel,
             let usernameViewModel = usernameViewModel
         else {
@@ -41,8 +41,9 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         let username = usernameViewModel.inputHandler.value
         let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
 
-        let ethereumDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ??
-            DerivationPathConstants.defaultEthereum
+        let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+        let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
+            DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
         switch selectedSourceType {
         case .mnemonic:
