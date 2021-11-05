@@ -5,11 +5,11 @@ import SubstrateSdk
 final class TransferConfirmViewModelFactory {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
-    let chains: [String: ChainModel]
+    let chainAsset: ChainAsset
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    init(chains: [String: ChainModel], amountFormatterFactory: AssetBalanceFormatterFactoryProtocol) {
-        self.chains = chains
+    init(chainAsset: ChainAsset, amountFormatterFactory: AssetBalanceFormatterFactoryProtocol) {
+        self.chainAsset = chainAsset
         self.amountFormatterFactory = amountFormatterFactory
     }
 
@@ -130,13 +130,19 @@ final class TransferConfirmViewModelFactory {
         let headerTitle = R.string.localizable
             .walletSendReceiverTitle(preferredLanguages: locale.rLanguages)
 
-        let iconGenerator = PolkadotIconGenerator()
-        let icon = try? iconGenerator.generateFromAddress(payload.receiverName)
-            .imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
+        let icon: UIImage?
+
+        if let accountId = try? payload.receiverName.toAccountId() {
+            let iconGenerator = PolkadotIconGenerator()
+            icon = try? iconGenerator.generateFromAccountId(accountId)
+                .imageWithFillColor(
+                    R.color.colorWhite()!,
+                    size: UIConstants.smallAddressIconSize,
+                    contentScale: UIScreen.main.scale
+                )
+        } else {
+            icon = nil
+        }
 
         // TODO: Fix when subscan integrated
         let command = WalletAccountOpenCommand(
@@ -164,16 +170,6 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
         _ payload: ConfirmationPayload,
         locale: Locale
     ) -> [WalletFormViewBindingProtocol]? {
-        guard
-            let chainAssetId = ChainAssetId(walletId: payload.transferInfo.asset),
-            let chain = chains[chainAssetId.chainId],
-            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
-        else {
-            return nil
-        }
-
-        let chainAsset = ChainAsset(chain: chain, asset: asset)
-
         var viewModelList: [WalletFormViewBindingProtocol] = []
 
         populateAsset(in: &viewModelList, payload: payload, chainAsset: chainAsset, locale: locale)
@@ -188,21 +184,13 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
         _ payload: ConfirmationPayload,
         locale: Locale
     ) -> AccessoryViewModelProtocol? {
-        guard
-            let chainAssetId = ChainAssetId(walletId: payload.transferInfo.asset),
-            let chain = chains[chainAssetId.chainId],
-            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
-        else {
-            return nil
-        }
-
         var decimalAmount = payload.transferInfo.amount.decimalValue
 
         for fee in payload.transferInfo.fees {
             decimalAmount += fee.value.decimalValue
         }
 
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset.displayInfo)
+        let formatter = amountFormatterFactory.createTokenFormatter(for: chainAsset.asset.displayInfo)
 
         guard let amount = formatter.value(for: locale).stringFromDecimal(decimalAmount) else {
             return nil

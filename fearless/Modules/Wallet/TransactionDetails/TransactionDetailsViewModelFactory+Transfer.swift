@@ -9,7 +9,7 @@ extension TransactionDetailsViewModelFactory {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> [WalletFormViewBindingProtocol]? {
-        guard let chain = WalletAssetId(rawValue: data.assetId)?.chain else {
+        guard let address = try? chainAccount.accountId.toAddress(using: chainAccount.chainFormat) else {
             return nil
         }
 
@@ -22,7 +22,6 @@ extension TransactionDetailsViewModelFactory {
         populateTransactionId(
             in: &viewModels,
             data: data,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -32,14 +31,12 @@ extension TransactionDetailsViewModelFactory {
         populateSender(
             in: &viewModels,
             address: sender,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
         populateReceiver(
             in: &viewModels,
             address: receiver,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -77,8 +74,8 @@ extension TransactionDetailsViewModelFactory {
 
         let icon: UIImage?
 
-        if let address = data.peerName {
-            icon = try? iconGenerator.generateFromAddress(address)
+        if let accountId = try? data.peerName?.toAccountId(using: chainAccount.chainFormat) {
+            icon = try? iconGenerator.generateFromAccountId(accountId)
                 .imageWithFillColor(
                     R.color.colorWhite()!,
                     size: CGSize(width: 32.0, height: 32.0),
@@ -131,7 +128,6 @@ extension TransactionDetailsViewModelFactory {
     private func populateSender(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         address: String,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
@@ -141,7 +137,6 @@ extension TransactionDetailsViewModelFactory {
             in: &viewModelList,
             title: title,
             address: address,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -150,7 +145,6 @@ extension TransactionDetailsViewModelFactory {
     private func populateReceiver(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         address: String,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
@@ -160,7 +154,6 @@ extension TransactionDetailsViewModelFactory {
             in: &viewModelList,
             title: title,
             address: address,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )

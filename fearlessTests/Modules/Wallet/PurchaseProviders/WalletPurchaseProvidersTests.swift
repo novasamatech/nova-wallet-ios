@@ -4,7 +4,6 @@ import UIKit.UIColor
 
 class WalletPurchaseProvidersTests: XCTestCase {
     let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
-    let assetId: WalletAssetId = .dot
     let chain = Chain.polkadot
 
 
@@ -39,9 +38,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chain,
-                                               assetId: assetId,
-                                               address: address)
+        let actions = provider.buildPurchaseActions(for: chain, address: address)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
@@ -73,9 +70,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chain,
-                                               assetId: assetId,
-                                               address: address)
+        let actions = provider.buildPurchaseActions(for: chain, address: address)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
