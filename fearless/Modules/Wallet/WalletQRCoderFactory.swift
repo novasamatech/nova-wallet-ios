@@ -5,14 +5,13 @@ import SubstrateSdk
 
 final class WalletQREncoder: WalletQREncoderProtocol {
     let username: String?
-    let networkType: SNAddressType
+    let chainFormat: ChainFormat
     let publicKey: Data
 
     private lazy var substrateEncoder = SubstrateQREncoder()
-    private lazy var addressFactory = SS58AddressFactory()
 
-    init(networkType: SNAddressType, publicKey: Data, username: String?) {
-        self.networkType = networkType
+    init(chainFormat: ChainFormat, publicKey: Data, username: String?) {
+        self.chainFormat = chainFormat
         self.publicKey = publicKey
         self.username = username
     }
@@ -20,10 +19,7 @@ final class WalletQREncoder: WalletQREncoderProtocol {
     func encode(receiverInfo: ReceiveInfo) throws -> Data {
         let accountId = try Data(hexString: receiverInfo.accountId)
 
-        let address = try addressFactory.address(
-            fromPublicKey: AccountIdWrapper(rawData: accountId),
-            type: networkType
-        )
+        let address = try accountId.toAddress(using: chainFormat)
 
         let info = SubstrateQRInfo(
             address: address,
@@ -35,22 +31,18 @@ final class WalletQREncoder: WalletQREncoderProtocol {
 }
 
 final class WalletQRDecoder: WalletQRDecoderProtocol {
-    private lazy var addressFactory = SS58AddressFactory()
     private let substrateDecoder: SubstrateQRDecoder
     private let assets: [WalletAsset]
 
-    init(networkType: SNAddressType, assets: [WalletAsset]) {
-        substrateDecoder = SubstrateQRDecoder(chainType: ChainType(networkType.rawValue))
+    init(addressPrefix: ChainType, assets: [WalletAsset]) {
+        substrateDecoder = SubstrateQRDecoder(chainType: addressPrefix)
         self.assets = assets
     }
 
     func decode(data: Data) throws -> ReceiveInfo {
         let info = try substrateDecoder.decode(data: data)
 
-        let accountId = try addressFactory.accountId(
-            fromAddress: info.address,
-            type: substrateDecoder.chainType
-        )
+        let accountId = try info.address.toAccountId()
 
         return ReceiveInfo(
             accountId: accountId.toHex(),
@@ -62,13 +54,21 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
 }
 
 final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
-    let networkType: SNAddressType
+    let addressPrefix: ChainType
+    let chainFormat: ChainFormat
     let publicKey: Data
     let username: String?
     let assets: [WalletAsset]
 
-    init(networkType: SNAddressType, publicKey: Data, username: String?, assets: [WalletAsset]) {
-        self.networkType = networkType
+    init(
+        addressPrefix: ChainType,
+        chainFormat: ChainFormat,
+        publicKey: Data,
+        username: String?,
+        assets: [WalletAsset]
+    ) {
+        self.addressPrefix = addressPrefix
+        self.chainFormat = chainFormat
         self.publicKey = publicKey
         self.username = username
         self.assets = assets
@@ -76,13 +76,13 @@ final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
 
     func createEncoder() -> WalletQREncoderProtocol {
         WalletQREncoder(
-            networkType: networkType,
+            chainFormat: chainFormat,
             publicKey: publicKey,
             username: username
         )
     }
 
     func createDecoder() -> WalletQRDecoderProtocol {
-        WalletQRDecoder(networkType: networkType, assets: assets)
+        WalletQRDecoder(addressPrefix: addressPrefix, assets: assets)
     }
 }

@@ -241,13 +241,22 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
         mnemonicView?.bind(words: mnemonic, columnsCount: 2)
     }
 
-    func setSelectedCrypto(model: TitleWithSubtitleViewModel) {
+    func setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel) {
         let title = "\(model.title) | \(model.subtitle)"
 
         substrateCryptoTypeView.actionControl.contentView.subtitleLabelView.text = title
 
         substrateCryptoTypeView.actionControl.contentView.invalidateLayout()
         substrateCryptoTypeView.actionControl.invalidateLayout()
+    }
+
+    func setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel) {
+        let title = "\(model.title) | \(model.subtitle)"
+
+        ethereumCryptoTypeView.actionControl.contentView.subtitleLabelView.text = title
+
+        ethereumCryptoTypeView.actionControl.contentView.invalidateLayout()
+        ethereumCryptoTypeView.actionControl.invalidateLayout()
     }
 
     func setSubstrateDerivationPath(viewModel: InputViewModelProtocol?) {

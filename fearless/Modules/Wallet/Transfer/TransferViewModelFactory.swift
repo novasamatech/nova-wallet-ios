@@ -136,24 +136,25 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         locale: Locale
     ) throws
         -> MultilineTitleIconViewModelProtocol? {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId }),
-            let commandFactory = commandFactory
-        else {
+        guard let commandFactory = commandFactory else {
             return nil
         }
 
         let header = R.string.localizable
             .walletSendReceiverTitle(preferredLanguages: locale.rLanguages)
 
-        let iconGenerator = PolkadotIconGenerator()
-        let icon = try? iconGenerator.generateFromAddress(payload.receiverName)
-            .imageWithFillColor(
+        let icon: UIImage?
+
+        if let accountId = try? payload.receiverName.toAccountId() {
+            let iconGenerator = PolkadotIconGenerator()
+            icon = try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
                 R.color.colorWhite()!,
                 size: UIConstants.smallAddressIconSize,
                 contentScale: UIScreen.main.scale
             )
+        } else {
+            icon = nil
+        }
 
         // TODO: Fix account viewer
         let command = WalletAccountOpenCommand(
