@@ -335,37 +335,14 @@
                                                 </stackView>
                                             </subviews>
                                         </stackView>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCS-ks-Idr" customClass="RoundedButton" customModule="SoraUI">
-                                            <rect key="frame" x="0.0" y="0.0" width="311" height="128"/>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                            <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="color" keyPath="_fillColor">
-                                                    <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
-                                                    <color key="value" name="colorHighlightedAccent"/>
-                                                </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="number" keyPath="_shadowOpacity">
-                                                    <real key="value" value="0.0"/>
-                                                </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="boolean" keyPath="_highlighted" value="NO"/>
-                                            </userDefinedRuntimeAttributes>
-                                            <connections>
-                                                <action selector="actionFrozen" destination="-2" eventType="touchUpInside" id="upx-cb-Xv4"/>
-                                            </connections>
-                                        </view>
                                     </subviews>
                                     <viewLayoutGuide key="safeArea" id="EeA-ey-E3a"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstItem="WCS-ks-Idr" firstAttribute="leading" secondItem="EeA-ey-E3a" secondAttribute="leading" id="4yk-wg-AB1"/>
                                         <constraint firstItem="EeA-ey-E3a" firstAttribute="trailing" secondItem="aS9-Os-xb3" secondAttribute="trailing" id="Bpk-GI-yQE"/>
                                         <constraint firstItem="EeA-ey-E3a" firstAttribute="top" secondItem="aS9-Os-xb3" secondAttribute="top" id="LjV-V4-rgC"/>
                                         <constraint firstItem="aS9-Os-xb3" firstAttribute="bottom" secondItem="EeA-ey-E3a" secondAttribute="bottom" id="Trq-aq-E4C"/>
-                                        <constraint firstItem="EeA-ey-E3a" firstAttribute="trailing" secondItem="WCS-ks-Idr" secondAttribute="trailing" id="Y8I-RU-NNZ"/>
-                                        <constraint firstItem="WCS-ks-Idr" firstAttribute="top" secondItem="EeA-ey-E3a" secondAttribute="top" id="fHK-Qi-294"/>
                                         <constraint firstItem="aS9-Os-xb3" firstAttribute="leading" secondItem="EeA-ey-E3a" secondAttribute="leading" id="lXL-at-82B"/>
-                                        <constraint firstItem="EeA-ey-E3a" firstAttribute="bottom" secondItem="WCS-ks-Idr" secondAttribute="bottom" id="pzh-z1-hQz"/>
                                     </constraints>
                                 </view>
                             </subviews>
@@ -376,14 +353,41 @@
                                 <constraint firstAttribute="trailing" secondItem="2sN-nW-WdG" secondAttribute="trailing" id="z5C-L9-ciu"/>
                             </constraints>
                         </stackView>
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCS-ks-Idr" customClass="RoundedButton" customModule="SoraUI">
+                            <rect key="frame" x="0.0" y="212" width="343" height="146"/>
+                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="color" keyPath="_fillColor">
+                                    <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
+                                    <color key="value" name="colorHighlightedAccent"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="number" keyPath="_shadowOpacity">
+                                    <real key="value" value="0.0"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="_highlighted" value="NO"/>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="_topLeftRounded" value="NO"/>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="_topRightRounded" value="NO"/>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomLeftRounded" value="YES"/>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomRightRounded" value="YES"/>
+                            </userDefinedRuntimeAttributes>
+                            <connections>
+                                <action selector="actionFrozen" destination="-2" eventType="touchUpInside" id="upx-cb-Xv4"/>
+                            </connections>
+                        </view>
                     </subviews>
                     <viewLayoutGuide key="safeArea" id="tX5-Gs-bfE"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="top" secondItem="ux5-Ve-mCi" secondAttribute="top" id="By5-xK-xxx"/>
+                        <constraint firstItem="WCS-ks-Idr" firstAttribute="leading" secondItem="1il-4U-1mN" secondAttribute="leading" id="Jfu-ks-V4t"/>
+                        <constraint firstItem="WCS-ks-Idr" firstAttribute="trailing" secondItem="1il-4U-1mN" secondAttribute="trailing" id="KGd-93-1HD"/>
                         <constraint firstItem="ux5-Ve-mCi" firstAttribute="leading" secondItem="tX5-Gs-bfE" secondAttribute="leading" constant="16" id="L1n-p8-cTj"/>
                         <constraint firstItem="1il-4U-1mN" firstAttribute="leading" secondItem="tX5-Gs-bfE" secondAttribute="leading" id="M5Q-Jq-2U9"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="trailing" secondItem="1il-4U-1mN" secondAttribute="trailing" id="NhI-mw-sDZ"/>
+                        <constraint firstItem="WCS-ks-Idr" firstAttribute="bottom" secondItem="1il-4U-1mN" secondAttribute="bottom" id="PBb-Az-sDN"/>
+                        <constraint firstItem="WCS-ks-Idr" firstAttribute="height" secondItem="2Zn-mB-TFB" secondAttribute="height" constant="18" id="SNG-DD-ynP"/>
                         <constraint firstItem="1il-4U-1mN" firstAttribute="top" secondItem="tX5-Gs-bfE" secondAttribute="top" id="Taw-1c-94p"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="trailing" secondItem="ux5-Ve-mCi" secondAttribute="trailing" constant="16" id="XWJ-eT-9o1"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="bottom" secondItem="ux5-Ve-mCi" secondAttribute="bottom" constant="12" id="cw7-Nb-uhF"/>
