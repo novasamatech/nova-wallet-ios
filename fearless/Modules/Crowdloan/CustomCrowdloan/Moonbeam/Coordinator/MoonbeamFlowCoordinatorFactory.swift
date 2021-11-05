@@ -61,6 +61,8 @@ struct MoonbeamFlowCoordinatorFactory {
             operationManager: operationManager
         )
 
+        guard let crowdloanChainId = displayInfo.chainId else { return nil }
+
         return MoonbeamFlowCoordinator(
             state: state,
             paraId: crowdloan.paraId,
@@ -70,6 +72,7 @@ struct MoonbeamFlowCoordinatorFactory {
             previousView: previousView,
             accountManagementWireframe: AccountManagementWireframe(),
             crowdloanDisplayName: displayInfo.name,
+            crowdloanChainId: crowdloanChainId,
             localizationManager: LocalizationManager.shared
         )
     }
