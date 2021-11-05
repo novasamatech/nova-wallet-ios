@@ -26,10 +26,6 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
     @IBOutlet var lockedSectionFiatLabel: UILabel!
 
     // Action buttons
-    @IBOutlet private var leftTitleLabel: UILabel!
-    @IBOutlet private var leftDetailsLabel: UILabel!
-    @IBOutlet private var rightTitleLabel: UILabel!
-    @IBOutlet private var rightDetailsLabel: UILabel!
     @IBOutlet private var sendButton: RoundedButton!
     @IBOutlet private var receiveButton: RoundedButton!
     @IBOutlet private var buyButton: RoundedButton!
@@ -71,24 +67,19 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         priceLabel.text = assetViewModel.price
 
         // Balances widget
-        widgetTitleLabel.text = "Your balance" // TODO: Add "Your balance" title
-        totalSectionTitleLabel.text = "Total" // TODO: Add "Total" title
-        transferableSectionTitleLabel.text = "Transferable" // TODO: Add "Transferable" title
-        lockedSectionTitleLabel.text = assetViewModel.rightTitle
+        widgetTitleLabel.text = assetViewModel.balancesTitle
+        totalSectionTitleLabel.text = assetViewModel.totalTitle
+        transferableSectionTitleLabel.text = assetViewModel.transferableTitle
+        lockedSectionTitleLabel.text = assetViewModel.lockedTitle
 
-        totalSectionTokenLabel.text = ""
-        totalSectionFiatLabel.text = ""
+        totalSectionTokenLabel.text = assetViewModel.totalBalance.amount
+        totalSectionFiatLabel.text = assetViewModel.totalBalance.price
 
-        transferableSectionTokenLabel.text = assetViewModel.leftDetails
-        transferableSectionFiatLabel.text = ""
+        transferableSectionTokenLabel.text = assetViewModel.transferableBalance.amount
+        transferableSectionFiatLabel.text = assetViewModel.transferableBalance.price
 
-        lockedSectionTokenLabel.text = assetViewModel.rightDetails
-        lockedSectionFiatLabel.text = ""
-
-        leftTitleLabel.text = assetViewModel.leftTitle
-        leftDetailsLabel.text = assetViewModel.leftDetails
-        rightTitleLabel.text = assetViewModel.rightTitle
-        rightDetailsLabel.text = assetViewModel.rightDetails
+        lockedSectionTokenLabel.text = assetViewModel.lockedBalance.amount
+        lockedSectionFiatLabel.text = assetViewModel.lockedBalance.price
 
         switch assetViewModel.priceChangeViewModel {
         case let .goingUp(displayString):

@@ -536,3 +536,4 @@
 "account.actions.change.sheet.title" = "Изменить аккаунт %@";
 "common.invalid.hard.soft.numeric.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Например, //44//60//0/0/0";
 "common.invalid.hard.soft.numeric.password.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Путь может оканчиваться ///'password'. Например, //44//60//0/0/0///mypass.";
+"wallet.balances.widget.title" = "Ваш баланс";

@@ -63,6 +63,11 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let numberFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
 
+        let balancesTitle = R.string.localizable.walletBalancesWidgetTitle(preferredLanguages: locale.rLanguages)
+        let totalTitle = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+        let transferableTitle = R.string.localizable.walletBalanceAvailable(preferredLanguages: locale.rLanguages)
+        let lockedTitle = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
+
         let leftTitle = R.string.localizable
             .walletBalanceAvailable(preferredLanguages: locale.rLanguages)
 
@@ -94,6 +99,11 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let title = asset.symbol
 
+        // TODO: Assign real values
+        let totalBalance = BalanceViewModel(amount: "", price: "")
+        let transferableBalance = BalanceViewModel(amount: "", price: "")
+        let lockedBalance = BalanceViewModel(amount: "", price: "")
+
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
             amountFormatter: numberFormatter,
@@ -109,12 +119,20 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             price: priceString,
             priceChangeViewModel: priceChangeViewModel,
             totalVolume: totalPriceString,
-            leftTitle: leftTitle,
-            leftDetails: leftDetails,
-            rightTitle: rightTitle,
-            rightDetails: rightDetails,
+            balancesTitle: balancesTitle,
+            totalTitle: totalTitle,
+            totalBalance: totalBalance,
+            transferableTitle: transferableTitle,
+            transferableBalance: transferableBalance,
+            lockedTitle: lockedTitle,
+            lockedBalance: lockedBalance,
             infoDetailsCommand: infoDetailsCommand
         )
+
+        /*
+         transferableTokenValue: leftDetails,
+         lockedTokenValue: rightDetails,
+         */
     }
 
     func createActionsViewModel(
