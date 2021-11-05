@@ -28,12 +28,12 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                 </imageView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XiF-bI-eRb">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="57"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
                     <subviews>
                         <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G6Z-u5-QrL">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="57"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="x14-yu-BL4">
-                                <rect key="frame" x="0.0" y="0.0" width="375" height="57"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </view>
                             <blurEffect style="dark"/>
@@ -75,10 +75,10 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5JS-T5-tOO">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="57"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a7Y-Re-tLd">
-                            <rect key="frame" x="146" y="31" width="83" height="18"/>
+                            <rect key="frame" x="146" y="0.0" width="83" height="18"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lKX-kZ-DNE">
                                     <rect key="frame" x="0.0" y="0.0" width="20" height="18"/>
@@ -121,25 +121,16 @@
                                 <constraint firstAttribute="bottom" secondItem="lKX-kZ-DNE" secondAttribute="bottom" id="svg-dx-W01"/>
                             </constraints>
                         </view>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0 KSM" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="evE-q1-4OE">
-                            <rect key="frame" x="16" y="0.0" width="343" height="23"/>
-                            <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="18"/>
-                            <color key="textColor" name="colorWhite"/>
-                            <nil key="highlightedColor"/>
-                        </label>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="evE-q1-4OE" firstAttribute="leading" secondItem="5JS-T5-tOO" secondAttribute="leading" constant="16" id="3sP-SZ-Zre"/>
                         <constraint firstAttribute="bottom" secondItem="a7Y-Re-tLd" secondAttribute="bottom" constant="8" id="Tu0-rk-lJk"/>
-                        <constraint firstAttribute="trailing" secondItem="evE-q1-4OE" secondAttribute="trailing" constant="16" id="gnq-UG-4sV"/>
-                        <constraint firstItem="a7Y-Re-tLd" firstAttribute="top" secondItem="evE-q1-4OE" secondAttribute="bottom" constant="8" id="kMa-Fl-i6G"/>
+                        <constraint firstItem="a7Y-Re-tLd" firstAttribute="top" secondItem="5JS-T5-tOO" secondAttribute="top" id="lXD-iR-1Ry"/>
                         <constraint firstItem="a7Y-Re-tLd" firstAttribute="centerX" secondItem="5JS-T5-tOO" secondAttribute="centerX" id="niC-YV-svf"/>
-                        <constraint firstItem="evE-q1-4OE" firstAttribute="top" secondItem="5JS-T5-tOO" secondAttribute="top" id="pho-fs-27z"/>
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="Pis-uo-4Ke">
-                    <rect key="frame" x="16" y="73" width="343" height="50"/>
+                    <rect key="frame" x="16" y="42" width="343" height="50"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Ps-8u-8Jk">
                             <rect key="frame" x="0.0" y="0.0" width="151.5" height="50"/>
@@ -239,7 +230,7 @@
                     <viewLayoutGuide key="safeArea" id="p51-sl-Moz"/>
                 </stackView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5WV-bu-ZuX">
-                    <rect key="frame" x="16" y="136" width="343" height="80"/>
+                    <rect key="frame" x="16" y="105" width="343" height="80"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJm-Iu-UQl" customClass="TriangularedBlurView" customModule="fearless" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="80"/>
@@ -466,7 +457,6 @@
                 <constraint firstAttribute="bottom" secondItem="I39-OJ-jHO" secondAttribute="bottom" id="zIK-j6-dWY"/>
             </constraints>
             <connections>
-                <outlet property="balanceLabel" destination="evE-q1-4OE" id="c1F-B0-ZU1"/>
                 <outlet property="buyButton" destination="BH9-GQ-WWi" id="Na1-1e-fCf"/>
                 <outlet property="iconView" destination="YQT-cH-p8Y" id="aVk-lW-gSW"/>
                 <outlet property="leftDetailsLabel" destination="pkg-Qs-2HX" id="i5c-dc-YFm"/>

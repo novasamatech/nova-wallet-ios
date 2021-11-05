@@ -8,14 +8,16 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
 
     let title: String
     let imageViewModel: WalletImageViewModelProtocol?
-    let amount: String
+    let amount: String // TODO: Check if used anywhere else
     let price: String
     let priceChangeViewModel: WalletPriceChangeViewModel
     let totalVolume: String
 
+    // FIXME: Convert according to new layout
     let leftTitle: String
     let leftDetails: String
 
+    // FIXME: Convert according to new layout
     let rightTitle: String
     let rightDetails: String
 
