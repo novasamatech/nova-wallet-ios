@@ -20,16 +20,17 @@ final class ReceiveConfigurator: AdaptiveDesignable {
     let shareFactory: AccountShareFactoryProtocol
 
     init(
-        settings: SettingsManagerProtocol,
+        displayName: String,
+        address: AccountAddress,
+        chainFormat: ChainFormat,
         assets: [WalletAsset],
         localizationManager: LocalizationManagerProtocol
     ) {
-        let accountViewModel = ReceiveAccountViewModel(settings: settings)
-        let chain = settings.selectedConnection.type.chain
+        let accountViewModel = ReceiveAccountViewModel(displayName: displayName, address: address)
 
         receiveFactory = ReceiveViewFactory(
             accountViewModel: accountViewModel,
-            chain: chain,
+            chainFormat: chainFormat,
             localizationManager: localizationManager
         )
         shareFactory = AccountShareFactory(

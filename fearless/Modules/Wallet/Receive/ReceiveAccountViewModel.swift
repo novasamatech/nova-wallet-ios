@@ -7,13 +7,11 @@ protocol ReceiveAccountViewModelProtocol {
 }
 
 struct ReceiveAccountViewModel: ReceiveAccountViewModelProtocol {
-    let settings: SettingsManagerProtocol
+    let displayName: String
+    let address: String
 
-    init(settings: SettingsManagerProtocol) {
-        self.settings = settings
+    init(displayName: String, address: String) {
+        self.displayName = displayName
+        self.address = address
     }
-
-    var displayName: String { settings.selectedAccount?.username ?? "" }
-
-    var address: String { settings.selectedAccount?.address ?? "" }
 }

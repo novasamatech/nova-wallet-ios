@@ -14,6 +14,12 @@ protocol CrowdloanErrorPresentable: BaseErrorPresentable {
     func presentCrowdloanEnded(from view: ControllerBackedProtocol, locale: Locale?)
 
     func presentCrowdloanPrivateNotSupported(from view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentHaveNotAppliedBonusWarning(
+        from view: ControllerBackedProtocol,
+        locale: Locale?,
+        action: @escaping (Bool) -> Void
+    )
 }
 
 extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -89,5 +95,37 @@ extension CrowdloanErrorPresentable where Self: AlertPresentable & ErrorPresenta
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentHaveNotAppliedBonusWarning(
+        from view: ControllerBackedProtocol,
+        locale: Locale?,
+        action: @escaping (Bool) -> Void
+    ) {
+        let title = R.string.localizable.crowdloanHavenotAppliedBonusTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.crowdloanHavenotAppliedBonusMessage(preferredLanguages: locale?.rLanguages)
+
+        let applyTitle = R.string.localizable.crowdloanHavenotAppliedBonusApply(preferredLanguages: locale?.rLanguages)
+        let applyAction = AlertPresentableAction(title: applyTitle) {
+            action(true)
+        }
+
+        let skipTitle = R.string.localizable.commonSkip(preferredLanguages: locale?.rLanguages)
+        let skipAction = AlertPresentableAction(title: skipTitle, style: .destructive) {
+            action(false)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: message,
+            actions: [skipAction, applyAction],
+            closeAction: nil
+        )
+
+        present(
+            viewModel: viewModel,
+            style: .alert,
+            from: view
+        )
     }
 }

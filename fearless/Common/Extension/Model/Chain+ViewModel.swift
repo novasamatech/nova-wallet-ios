@@ -26,17 +26,4 @@ extension Chain {
             return R.image.iconKsmSmallBg()
         }
     }
-
-    var extrinsicIcon: UIImage? {
-        switch self {
-        case .polkadot:
-            return R.image.iconPolkadotExtrinsic()
-        case .kusama:
-            return R.image.iconKusamaExtrinsic()
-        case .westend:
-            return R.image.iconWestendExtrinsic()
-        case .rococo:
-            return R.image.iconKusamaExtrinsic()
-        }
-    }
 }

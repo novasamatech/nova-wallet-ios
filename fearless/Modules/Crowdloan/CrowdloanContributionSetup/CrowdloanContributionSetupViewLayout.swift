@@ -1,6 +1,6 @@
 import UIKit
 
-final class CrowdloanContributionSetupViewLayout: UIView {
+class CrowdloanContributionSetupViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
@@ -150,7 +150,7 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         }
     }
 
-    private func applyLocalization() {
+    func applyLocalization() {
         contributionTitleLabel.text = R.string.localizable.crowdloanContributeTitle(
             preferredLanguages: locale.rLanguages
         )
@@ -180,7 +180,7 @@ final class CrowdloanContributionSetupViewLayout: UIView {
         )
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
@@ -252,7 +252,7 @@ final class CrowdloanContributionSetupViewLayout: UIView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        contentView.scrollBottomOffset = 2 * UIConstants.horizontalInset + UIConstants.actionHeight
+        contentView.scrollBottomOffset = 100
     }
 
     private func createEstimatedRewardViewIfNeeded() {

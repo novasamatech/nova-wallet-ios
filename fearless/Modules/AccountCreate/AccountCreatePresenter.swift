@@ -11,7 +11,7 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
 
     override func processProceed() {
         guard
-            let cryptoType = selectedCryptoType,
+            let cryptoType = selectedSubstrateCryptoType,
             let substrateViewModel = substrateDerivationPathViewModel,
             let ethereumViewModel = ethereumDerivationPathViewModel,
             let metadata = metadata
@@ -19,19 +19,24 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
             return
         }
 
-        guard substrateViewModel.inputHandler.completed else {
+        var derivationPathCheckError = false
+        if !substrateViewModel.inputHandler.completed {
+            derivationPathCheckError = true
             view?.didValidateSubstrateDerivationPath(.invalid)
             presentDerivationPathError(cryptoType)
-            return
         }
 
-        guard ethereumViewModel.inputHandler.completed else {
+        if !ethereumViewModel.inputHandler.completed {
             view?.didValidateEthereumDerivationPath(.invalid)
-            presentDerivationPathError(.ethereumEcdsa)
-            return
+            if !derivationPathCheckError {
+                presentDerivationPathError(.ethereumEcdsa)
+                derivationPathCheckError = true
+            }
         }
 
-        let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+        guard !derivationPathCheckError else { return }
+
+        let substrateDerivationPath = substrateViewModel.inputHandler.value
 
         let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
             DerivationPathConstants.defaultEthereum : ethereumViewModel.inputHandler.value

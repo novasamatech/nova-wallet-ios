@@ -27,6 +27,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
     }
 
     var referralCode: String? { nil }
+    var defaultReferralCode: String? { nil }
 
     #if F_RELEASE
         static let baseURL = URL(string: "https://yy9252r9jh.api.purestake.io")!

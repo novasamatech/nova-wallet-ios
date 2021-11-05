@@ -3,13 +3,14 @@ import BigInt
 import RobinHood
 import SubstrateSdk
 
-final class MoonbeamTermsInteractor {
+final class MoonbeamTermsInteractor: RuntimeConstantFetching {
     weak var presenter: MoonbeamTermsInteractorOutputProtocol!
     let accountId: AccountId
     let chainId: ChainModel.Id
     let paraId: ParaId
     let asset: AssetModel
     let extrinsicService: ExtrinsicServiceProtocol
+    let runtimeService: RuntimeCodingServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -30,6 +31,7 @@ final class MoonbeamTermsInteractor {
         chainId: ChainModel.Id,
         asset: AssetModel,
         extrinsicService: ExtrinsicServiceProtocol,
+        runtimeService: RuntimeCodingServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -45,6 +47,7 @@ final class MoonbeamTermsInteractor {
         self.chainId = chainId
         self.asset = asset
         self.extrinsicService = extrinsicService
+        self.runtimeService = runtimeService
         self.feeProxy = feeProxy
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
@@ -149,6 +152,13 @@ extension MoonbeamTermsInteractor: MoonbeamTermsInteractorInputProtocol {
         estimateFee()
         subscribeToPrice()
         accountInfoProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chainId)
+        fetchConstant(
+            for: .existentialDeposit,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            self?.presenter.didReceiveMinimumBalance(result: result)
+        }
     }
 
     var termsURL: URL {

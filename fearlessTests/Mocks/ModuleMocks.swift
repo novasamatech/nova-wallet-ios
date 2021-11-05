@@ -2151,16 +2151,31 @@ import SoraFoundation
     
     
     
-     func setSelectedCrypto(model: TitleWithSubtitleViewModel)  {
+     func setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)  {
         
-    return cuckoo_manager.call("setSelectedCrypto(model: TitleWithSubtitleViewModel)",
+    return cuckoo_manager.call("setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)",
             parameters: (model),
             escapingParameters: (model),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setSelectedCrypto(model: model))
+            defaultCall: __defaultImplStub!.setSelectedSubstrateCrypto(model: model))
+        
+    }
+    
+    
+    
+     func setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)  {
+        
+    return cuckoo_manager.call("setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)",
+            parameters: (model),
+            escapingParameters: (model),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setSelectedEthereumCrypto(model: model))
         
     }
     
@@ -2263,9 +2278,14 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "set(mnemonic: [String])", parameterMatchers: matchers))
 	    }
 	    
-	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TitleWithSubtitleViewModel)> where M1.MatchedType == TitleWithSubtitleViewModel {
+	    func setSelectedSubstrateCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TitleWithSubtitleViewModel)> where M1.MatchedType == TitleWithSubtitleViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSelectedCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func setSelectedEthereumCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TitleWithSubtitleViewModel)> where M1.MatchedType == TitleWithSubtitleViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func setSubstrateDerivationPath<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol?)> where M1.OptionalMatchedType == InputViewModelProtocol {
@@ -2326,9 +2346,15 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(TitleWithSubtitleViewModel), Void> where M1.MatchedType == TitleWithSubtitleViewModel {
+	    func setSelectedSubstrateCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(TitleWithSubtitleViewModel), Void> where M1.MatchedType == TitleWithSubtitleViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
-	        return cuckoo_manager.verify("setSelectedCrypto(model: TitleWithSubtitleViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func setSelectedEthereumCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(TitleWithSubtitleViewModel), Void> where M1.MatchedType == TitleWithSubtitleViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
+	        return cuckoo_manager.verify("setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -2390,7 +2416,11 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func setSelectedCrypto(model: TitleWithSubtitleViewModel)   {
+     func setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -3186,16 +3216,31 @@ import SoraFoundation
     
     
     
-     func setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)  {
+     func setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)  {
         
-    return cuckoo_manager.call("setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)",
+    return cuckoo_manager.call("setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)",
             parameters: (model),
             escapingParameters: (model),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.setSelectedCrypto(model: model))
+            defaultCall: __defaultImplStub!.setSelectedSubstrateCrypto(model: model))
+        
+    }
+    
+    
+    
+     func setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)  {
+        
+    return cuckoo_manager.call("setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)",
+            parameters: (model),
+            escapingParameters: (model),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setSelectedEthereumCrypto(model: model))
         
     }
     
@@ -3363,9 +3408,14 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setPassword(viewModel: InputViewModelProtocol)", parameterMatchers: matchers))
 	    }
 	    
-	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectableViewModel<TitleWithSubtitleViewModel>)> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
+	    func setSelectedSubstrateCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectableViewModel<TitleWithSubtitleViewModel>)> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
 	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", parameterMatchers: matchers))
+	    }
+	    
+	    func setSelectedEthereumCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectableViewModel<TitleWithSubtitleViewModel>)> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", parameterMatchers: matchers))
 	    }
 	    
 	    func setSubstrateDerivationPath<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
@@ -3465,9 +3515,15 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func setSelectedCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(SelectableViewModel<TitleWithSubtitleViewModel>), Void> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
+	    func setSelectedSubstrateCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(SelectableViewModel<TitleWithSubtitleViewModel>), Void> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
 	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
-	        return cuckoo_manager.verify("setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func setSelectedEthereumCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(SelectableViewModel<TitleWithSubtitleViewModel>), Void> where M1.MatchedType == SelectableViewModel<TitleWithSubtitleViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(SelectableViewModel<TitleWithSubtitleViewModel>)>] = [wrap(matchable: model) { $0 }]
+	        return cuckoo_manager.verify("setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3563,7 +3619,11 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)   {
+     func setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -10697,6 +10757,34 @@ import SoraFoundation
         
     }
     
+    
+    
+     var loadableContentView: UIView! {
+        get {
+            return cuckoo_manager.getter("loadableContentView",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.loadableContentView)
+        }
+        
+    }
+    
+    
+    
+     var shouldDisableInteractionWhenLoading: Bool {
+        get {
+            return cuckoo_manager.getter("shouldDisableInteractionWhenLoading",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.shouldDisableInteractionWhenLoading)
+        }
+        
+    }
+    
 
     
 
@@ -10821,6 +10909,36 @@ import SoraFoundation
         
     }
     
+    
+    
+     func didStartLoading()  {
+        
+    return cuckoo_manager.call("didStartLoading()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didStartLoading())
+        
+    }
+    
+    
+    
+     func didStopLoading()  {
+        
+    return cuckoo_manager.call("didStopLoading()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didStopLoading())
+        
+    }
+    
 
 	 struct __StubbingProxy_CrowdloanContributionSetupViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -10842,6 +10960,16 @@ import SoraFoundation
 	    
 	    var localizationManager: Cuckoo.ProtocolToBeStubbedOptionalProperty<MockCrowdloanContributionSetupViewProtocol, LocalizationManagerProtocol> {
 	        return .init(manager: cuckoo_manager, name: "localizationManager")
+	    }
+	    
+	    
+	    var loadableContentView: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanContributionSetupViewProtocol, UIView?> {
+	        return .init(manager: cuckoo_manager, name: "loadableContentView")
+	    }
+	    
+	    
+	    var shouldDisableInteractionWhenLoading: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockCrowdloanContributionSetupViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading")
 	    }
 	    
 	    
@@ -10885,6 +11013,16 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupViewProtocol.self, method: "applyLocalization()", parameterMatchers: matchers))
 	    }
 	    
+	    func didStartLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupViewProtocol.self, method: "didStartLoading()", parameterMatchers: matchers))
+	    }
+	    
+	    func didStopLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupViewProtocol.self, method: "didStopLoading()", parameterMatchers: matchers))
+	    }
+	    
 	}
 
 	 struct __VerificationProxy_CrowdloanContributionSetupViewProtocol: Cuckoo.VerificationProxy {
@@ -10912,6 +11050,16 @@ import SoraFoundation
 	    
 	    var localizationManager: Cuckoo.VerifyOptionalProperty<LocalizationManagerProtocol> {
 	        return .init(manager: cuckoo_manager, name: "localizationManager", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var loadableContentView: Cuckoo.VerifyReadOnlyProperty<UIView?> {
+	        return .init(manager: cuckoo_manager, name: "loadableContentView", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var shouldDisableInteractionWhenLoading: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
@@ -10964,6 +11112,18 @@ import SoraFoundation
 	        return cuckoo_manager.verify("applyLocalization()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didStartLoading() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didStartLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didStopLoading() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didStopLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -10992,6 +11152,22 @@ import SoraFoundation
         }
         
         set { }
+        
+    }
+    
+    
+     var loadableContentView: UIView! {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIView?).self)
+        }
+        
+    }
+    
+    
+     var shouldDisableInteractionWhenLoading: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
         
     }
     
@@ -11028,6 +11204,14 @@ import SoraFoundation
     }
     
     public func applyLocalization()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didStartLoading()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

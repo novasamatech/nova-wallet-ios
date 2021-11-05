@@ -11,6 +11,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let localizationManager: LocalizationManagerProtocol
     let crowdloanDisplayName: String
     let accountManagementWireframe: AccountManagementWireframeProtocol
+    let crowdloanChainId: String
 
     init(
         state: CrowdloanSharedState,
@@ -21,6 +22,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         accountManagementWireframe: AccountManagementWireframeProtocol,
         crowdloanDisplayName: String,
+        crowdloanChainId: String,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.state = state
@@ -31,6 +33,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         self.previousView = previousView
         self.accountManagementWireframe = accountManagementWireframe
         self.crowdloanDisplayName = crowdloanDisplayName
+        self.crowdloanChainId = crowdloanChainId
         self.localizationManager = localizationManager
     }
 
@@ -96,10 +99,8 @@ final class MoonbeamFlowCoordinator: Coordinator {
     }
 
     private func showAccountActions() {
-        guard let chain = state.settings.value else { return }
-
-        let createAccountAction = createAccountCreateAction(for: chain)
-        let importAccountAction = createAccountImportAction(for: chain)
+        let createAccountAction = createAccountCreateAction()
+        let importAccountAction = createAccountImportAction()
 
         let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
 
@@ -121,43 +122,43 @@ final class MoonbeamFlowCoordinator: Coordinator {
         )
     }
 
-    private func createAccountCreateAction(for chain: ChainModel) -> AlertPresentableAction {
+    private func createAccountCreateAction() -> AlertPresentableAction {
         let locale = localizationManager.selectedLocale
         let createAccountTitle = R.string.localizable
             .accountCreateOptionTitle(preferredLanguages: locale.rLanguages)
         return AlertPresentableAction(title: createAccountTitle) { [weak self] in
-            self?.activateCreateAccount(for: chain)
+            self?.activateCreateAccount()
         }
     }
 
-    private func createAccountImportAction(for chain: ChainModel) -> AlertPresentableAction {
+    private func createAccountImportAction() -> AlertPresentableAction {
         let locale = localizationManager.selectedLocale
         let importAccountTitle = R.string.localizable
             .accountImportOptionTitle(preferredLanguages: locale.rLanguages)
         return AlertPresentableAction(title: importAccountTitle) { [weak self] in
-            self?.activateImportAccount(for: chain)
+            self?.activateImportAccount()
         }
     }
 
-    private func activateCreateAccount(for chainModel: ChainModel) {
+    private func activateCreateAccount() {
         guard let view = previousView else { return }
 
         accountManagementWireframe.showCreateAccount(
             from: view,
             wallet: metaAccount,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
+            chainId: crowdloanChainId,
+            isEthereumBased: true
         )
     }
 
-    private func activateImportAccount(for chainModel: ChainModel) {
+    private func activateImportAccount() {
         guard let view = previousView else { return }
 
         accountManagementWireframe.showImportAccount(
             from: view,
             wallet: metaAccount,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
+            chainId: crowdloanChainId,
+            isEthereumBased: true
         )
     }
 

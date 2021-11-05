@@ -50,7 +50,9 @@ extension WalletListViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
         guard indexPath.section == 1 else { return }
 
         presenter.selectAsset(at: indexPath.row)
