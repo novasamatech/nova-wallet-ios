@@ -11,6 +11,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
     let localizationManager: LocalizationManagerProtocol
     let crowdloanDisplayName: String
     let accountManagementWireframe: AccountManagementWireframeProtocol
+    let crowdloanChainId: String
 
     init(
         state: CrowdloanSharedState,
@@ -21,6 +22,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         previousView: (ControllerBackedProtocol & AlertPresentable & LoadableViewProtocol)?,
         accountManagementWireframe: AccountManagementWireframeProtocol,
         crowdloanDisplayName: String,
+        crowdloanChainId: String,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.state = state
@@ -31,6 +33,7 @@ final class MoonbeamFlowCoordinator: Coordinator {
         self.previousView = previousView
         self.accountManagementWireframe = accountManagementWireframe
         self.crowdloanDisplayName = crowdloanDisplayName
+        self.crowdloanChainId = crowdloanChainId
         self.localizationManager = localizationManager
     }
 
@@ -139,25 +142,25 @@ final class MoonbeamFlowCoordinator: Coordinator {
         }
     }
 
-    private func activateCreateAccount(for chainModel: ChainModel) {
+    private func activateCreateAccount(for _: ChainModel) {
         guard let view = previousView else { return }
 
         accountManagementWireframe.showCreateAccount(
             from: view,
             wallet: metaAccount,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
+            chainId: crowdloanChainId,
+            isEthereumBased: true
         )
     }
 
-    private func activateImportAccount(for chainModel: ChainModel) {
+    private func activateImportAccount(for _: ChainModel) {
         guard let view = previousView else { return }
 
         accountManagementWireframe.showImportAccount(
             from: view,
             wallet: metaAccount,
-            chainId: chainModel.chainId,
-            isEthereumBased: chainModel.isEthereumBased
+            chainId: crowdloanChainId,
+            isEthereumBased: true
         )
     }
 
