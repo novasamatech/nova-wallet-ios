@@ -36,4 +36,17 @@ extension MultiassetCryptoType {
             return .ethereum
         }
     }
+
+    init(secretType: KeystoreSecretType) {
+        switch secretType {
+        case .sr25519:
+            self = .sr25519
+        case .ed25519:
+            self = .ed25519
+        case .ecdsa:
+            self = .substrateEcdsa
+        case .ethereum:
+            self = .ethereumEcdsa
+        }
+    }
 }

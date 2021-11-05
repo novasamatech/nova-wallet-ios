@@ -38,7 +38,9 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
         isEthereumBased: Bool,
         in wallet: MetaAccountModel
     ) -> AccountImportViewProtocol? {
-        guard let interactor = createChainAccountImportInteractor() else {
+        guard let interactor = createChainAccountImportInteractor(
+            isEthereumBased: isEthereumBased
+        ) else {
             return nil
         }
 
@@ -140,7 +142,9 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
         return interactor
     }
 
-    private static func createChainAccountImportInteractor() -> BaseAccountImportInteractor? {
+    private static func createChainAccountImportInteractor(
+        isEthereumBased: Bool
+    ) -> BaseAccountImportInteractor? {
         guard let keystoreImportService: KeystoreImportServiceProtocol =
             URLHandlingService.shared.findService()
         else {
@@ -162,7 +166,8 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
                 operationManager: OperationManagerFacade.sharedManager,
                 settings: SelectedWalletSettings.shared,
                 keystoreImportService: keystoreImportService,
-                eventCenter: eventCenter
+                eventCenter: eventCenter,
+                isEthereumBased: isEthereumBased
             )
 
         return interactor

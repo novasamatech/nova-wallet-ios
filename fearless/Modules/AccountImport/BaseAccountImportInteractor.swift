@@ -14,23 +14,23 @@ class BaseAccountImportInteractor {
     let metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationManager: OperationManagerProtocol
     let keystoreImportService: KeystoreImportServiceProtocol
-    let supportedNetworks: [Chain]
-    let defaultNetwork: Chain
+    let availableCryptoTypes: [MultiassetCryptoType]
+    let defaultCryptoType: MultiassetCryptoType
 
     init(
         metaAccountOperationFactory: MetaAccountOperationFactoryProtocol,
         metaAccountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationManager: OperationManagerProtocol,
         keystoreImportService: KeystoreImportServiceProtocol,
-        supportedNetworks: [Chain],
-        defaultNetwork: Chain
+        availableCryptoTypes: [MultiassetCryptoType],
+        defaultCryptoType: MultiassetCryptoType
     ) {
         self.metaAccountOperationFactory = metaAccountOperationFactory
         self.metaAccountRepository = metaAccountRepository
         self.operationManager = operationManager
         self.keystoreImportService = keystoreImportService
-        self.supportedNetworks = supportedNetworks
-        self.defaultNetwork = defaultNetwork
+        self.availableCryptoTypes = availableCryptoTypes
+        self.defaultCryptoType = defaultCryptoType
     }
 
     private func setupKeystoreImportObserver() {
@@ -60,10 +60,8 @@ class BaseAccountImportInteractor {
         let metadata = MetaAccountImportMetadata(
             availableSources: AccountImportSource.allCases,
             defaultSource: .mnemonic,
-            availableNetworks: supportedNetworks,
-            defaultNetwork: defaultNetwork,
-            availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
-            defaultCryptoType: .sr25519
+            availableCryptoTypes: availableCryptoTypes,
+            defaultCryptoType: defaultCryptoType
         )
 
         presenter.didReceiveAccountImport(metadata: metadata)
@@ -109,8 +107,12 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         importAccountUsingOperation(operation)
     }
 
-    func importAccountWithMnemonic(chainId: ChainModel.Id, request: ChainAccountImportMnemonicRequest, into wallet: MetaAccountModel) {
-        guard let mnemonic = try? mnemonicCreator.mnemonic(fromList: request.mnemonic) else {
+    func importAccountWithMnemonic(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportMnemonicRequest,
+        into wallet: MetaAccountModel
+    ) {
+        guard (try? mnemonicCreator.mnemonic(fromList: request.mnemonic)) != nil else {
             presenter.didReceiveAccountImport(error: AccountCreateError.invalidMnemonicFormat)
             return
         }
@@ -120,13 +122,21 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
         importAccountUsingOperation(operation)
     }
 
-    func importAccountWithSeed(chainId: ChainModel.Id, request: ChainAccountImportSeedRequest, into wallet: MetaAccountModel) {
+    func importAccountWithSeed(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportSeedRequest,
+        into wallet: MetaAccountModel
+    ) {
         let operation = metaAccountOperationFactory
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
     }
 
-    func importAccountWithKeystore(chainId: ChainModel.Id, request: ChainAccountImportKeystoreRequest, into wallet: MetaAccountModel) {
+    func importAccountWithKeystore(
+        chainId: ChainModel.Id,
+        request: ChainAccountImportKeystoreRequest,
+        into wallet: MetaAccountModel
+    ) {
         let operation = metaAccountOperationFactory
             .replaceChainAccountOperation(for: wallet, request: request, chainId: chainId)
         importAccountUsingOperation(operation)
