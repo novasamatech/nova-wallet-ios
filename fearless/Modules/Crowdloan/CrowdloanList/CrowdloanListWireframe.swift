@@ -14,14 +14,21 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?
     ) {
-        if let info = displayInfo, info.customFlow == .moonbeam {
-            moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
-                previousView: view,
-                state: state,
-                crowdloan: crowdloan,
-                displayInfo: info
-            )
-            moonbeamCoordinator?.start()
+        if let info = displayInfo {
+            switch info.customFlow {
+            case .moonbeam:
+                moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
+                    previousView: view,
+                    state: state,
+                    crowdloan: crowdloan,
+                    displayInfo: info
+                )
+                moonbeamCoordinator?.start()
+            case .acala:
+                showAcalaContributionSetup(from: view, paraId: crowdloan.paraId)
+            default:
+                showContributionSetup(from: view, paraId: crowdloan.paraId)
+            }
         } else {
             showContributionSetup(from: view, paraId: crowdloan.paraId)
         }
@@ -48,6 +55,18 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
 
     private func showContributionSetup(from view: CrowdloanListViewProtocol?, paraId: ParaId) {
         guard let setupView = CrowdloanContributionSetupViewFactory.createView(
+            for: paraId,
+            state: state
+        ) else {
+            return
+        }
+
+        setupView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(setupView.controller, animated: true)
+    }
+
+    private func showAcalaContributionSetup(from view: ControllerBackedProtocol?, paraId: ParaId) {
+        guard let setupView = AcalaContributionSetupViewFactory.createView(
             for: paraId,
             state: state
         ) else {

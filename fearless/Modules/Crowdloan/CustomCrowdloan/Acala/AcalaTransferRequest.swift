@@ -1,8 +1,7 @@
 import Foundation
 
-struct KaruraVerifyInfo: Encodable {
+struct AcalaTransferInfo: Encodable {
     let address: String
     let amount: String
-    let signature: String
     let referral: String?
 }

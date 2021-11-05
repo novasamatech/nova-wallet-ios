@@ -2,10 +2,10 @@ import UIKit
 import CommonWallet
 import SoraFoundation
 
-final class CrowdloanContributionSetupViewController: UIViewController, ViewHolder {
+class CrowdloanContributionSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = CrowdloanContributionSetupViewLayout
 
-    let presenter: CrowdloanContributionSetupPresenterProtocol
+    private let presenter: CrowdloanContributionSetupPresenterProtocol
 
     private var amountInputViewModel: AmountInputViewModelProtocol?
 

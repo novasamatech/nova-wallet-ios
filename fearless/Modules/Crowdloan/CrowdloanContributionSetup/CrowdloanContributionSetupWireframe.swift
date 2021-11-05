@@ -1,6 +1,6 @@
 import Foundation
 
-final class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframeProtocol {
+class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframeProtocol {
     let state: CrowdloanSharedState
 
     init(state: CrowdloanSharedState) {
