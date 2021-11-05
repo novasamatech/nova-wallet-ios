@@ -29,6 +29,6 @@ final class AssetDetailsConfigurator {
             .with(containingViewFactory: containingViewFactory)
             .with(listViewModelFactory: viewModelFactory)
             .with(localizableTitle: LocalizableResource { _ in "" })
-            .with(additionalInsets: UIEdgeInsets(top: 110, left: 0, bottom: -110, right: 0))
+            .with(additionalInsets: .zero)
     }
 }

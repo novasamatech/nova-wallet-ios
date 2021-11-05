@@ -5,7 +5,7 @@ import SoraUI
 final class AssetDetailsView: BaseAccountDetailsContainingView {
     var contentInsets: UIEdgeInsets = .zero
 
-    var preferredContentHeight: CGFloat { 227.0 }
+    var preferredContentHeight: CGFloat { 337.0 }
 
     // Header
     @IBOutlet private var titleLabel: UILabel!
