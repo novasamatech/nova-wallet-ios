@@ -4,7 +4,7 @@ import SoraFoundation
 import SubstrateSdk
 
 final class TransactionDetailsViewModelFactory {
-    let address: String
+    let chainAccount: ChainAccountResponse
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
@@ -12,12 +12,12 @@ final class TransactionDetailsViewModelFactory {
     let iconGenerator = PolkadotIconGenerator()
 
     init(
-        address: String,
+        chainAccount: ChainAccountResponse,
         assets: [WalletAsset],
         dateFormatter: LocalizableResource<DateFormatter>,
         amountFormatterFactory: NumberFormatterFactoryProtocol
     ) {
-        self.address = address
+        self.chainAccount = chainAccount
         self.assets = assets
         self.dateFormatter = dateFormatter
         self.amountFormatterFactory = amountFormatterFactory
@@ -165,7 +165,6 @@ final class TransactionDetailsViewModelFactory {
     func populateTransactionId(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         data: AssetTransactionData,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
@@ -174,9 +173,10 @@ final class TransactionDetailsViewModelFactory {
 
         let actionIcon = R.image.iconMore()
 
+        // TODO: Fix tx open
         let command = WalletExtrinsicOpenCommand(
             extrinsicHash: data.transactionId,
-            chain: chain,
+            chain: .westend,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -196,22 +196,26 @@ final class TransactionDetailsViewModelFactory {
         in viewModelList: inout [WalletFormViewBindingProtocol],
         title: String,
         address: String,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
-        let icon: UIImage? = try? iconGenerator.generateFromAddress(address)
-            .imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
+        let icon: UIImage?
+        if let accountId = try? address.toAccountId(using: chainAccount.chainFormat) {
+            icon = try? iconGenerator.generateFromAccountId(accountId)
+                .imageWithFillColor(
+                    R.color.colorWhite()!,
+                    size: UIConstants.smallAddressIconSize,
+                    contentScale: UIScreen.main.scale
+                )
+        } else {
+            icon = nil
+        }
 
         let actionIcon = R.image.iconMore()
 
         let command = WalletAccountOpenCommand(
             address: address,
-            chain: chain,
+            chain: .westend,
             commandFactory: commandFactory,
             locale: locale
         )

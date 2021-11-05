@@ -9,7 +9,7 @@ extension TransactionDetailsViewModelFactory {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> [WalletFormViewBindingProtocol]? {
-        guard let chain = WalletAssetId(rawValue: data.assetId)?.chain else {
+        guard let address = try? chainAccount.accountId.toAddress(using: chainAccount.chainFormat) else {
             return nil
         }
 
@@ -18,7 +18,6 @@ extension TransactionDetailsViewModelFactory {
         populateTransactionId(
             in: &viewModels,
             data: data,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -26,7 +25,6 @@ extension TransactionDetailsViewModelFactory {
         populateSender(
             in: &viewModels,
             address: address,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -70,7 +68,6 @@ extension TransactionDetailsViewModelFactory {
     private func populateSender(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         address: String,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
@@ -80,7 +77,6 @@ extension TransactionDetailsViewModelFactory {
             in: &viewModelList,
             title: title,
             address: address,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
