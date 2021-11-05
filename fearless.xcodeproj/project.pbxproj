@@ -57,7 +57,6 @@
 		2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */; };
 		2AC7BC822731A1A1001D99B0 /* BalanceLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */; };
 		2AC7BC842731A214001D99B0 /* BalanceLocks+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */; };
-		2AC7BC862731A2AF001D99B0 /* BalanceLockSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */; };
 		2AC7BC8927343484001D99B0 /* BottomSheetInfoBalanceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC8827343483001D99B0 /* BottomSheetInfoBalanceCell.swift */; };
 		2AC7BC8B273435CE001D99B0 /* BottomSheetInfoTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC8A273435CE001D99B0 /* BottomSheetInfoTableCell.swift */; };
 		2AC7BC8E27347FF1001D99B0 /* BalanceLocksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC8D27347FF1001D99B0 /* BalanceLocksTests.swift */; };
@@ -1762,7 +1761,6 @@
 		2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockType.swift; sourceTree = "<group>"; };
 		2AC7BC812731A1A1001D99B0 /* BalanceLock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLock.swift; sourceTree = "<group>"; };
 		2AC7BC832731A214001D99B0 /* BalanceLocks+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BalanceLocks+Sort.swift"; sourceTree = "<group>"; };
-		2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockSubscription.swift; sourceTree = "<group>"; };
 		2AC7BC8827343483001D99B0 /* BottomSheetInfoBalanceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetInfoBalanceCell.swift; sourceTree = "<group>"; };
 		2AC7BC8A273435CE001D99B0 /* BottomSheetInfoTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomSheetInfoTableCell.swift; sourceTree = "<group>"; };
 		2AC7BC8D27347FF1001D99B0 /* BalanceLocksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLocksTests.swift; sourceTree = "<group>"; };
@@ -5223,7 +5221,6 @@
 			isa = PBXGroup;
 			children = (
 				8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */,
-				2AC7BC852731A2AF001D99B0 /* BalanceLockSubscription.swift */,
 				843910C0253F36F300E3C217 /* BaseStorageChildSubscription.swift */,
 				84F30EA025FD3EE700039D09 /* ChildSubscriptionFactory.swift */,
 				84F30E9B25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift */,
@@ -9175,7 +9172,6 @@
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				8493D3E62705994200157009 /* StakingSharedState.swift in Sources */,
-				2AC7BC862731A2AF001D99B0 /* BalanceLockSubscription.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
 				84038FEE26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift in Sources */,
 				84293E5D261BB7B3008E5EDD /* TransactionType+Wallet.swift in Sources */,

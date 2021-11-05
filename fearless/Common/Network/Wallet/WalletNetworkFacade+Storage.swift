@@ -161,7 +161,6 @@ extension WalletNetworkFacade {
             )
         }
 
-        // TODO: Wrap into an array
         let mapOperation = ClosureOperation<BalanceLocks?> {
             try wrapper.targetOperation.extractNoCancellableResultData().first?.value
         }
