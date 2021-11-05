@@ -1,6 +1,7 @@
 import Foundation
 import CommonWallet
 import SoraFoundation
+import UIKit
 
 final class AssetDetailsConfigurator {
     let viewModelFactory: AssetDetailsViewModelFactory
@@ -28,6 +29,6 @@ final class AssetDetailsConfigurator {
             .with(containingViewFactory: containingViewFactory)
             .with(listViewModelFactory: viewModelFactory)
             .with(localizableTitle: LocalizableResource { _ in "" })
-            .with(additionalInsets: .zero)
+            .with(additionalInsets: UIEdgeInsets(top: 110, left: 0, bottom: -110, right: 0))
     }
 }
