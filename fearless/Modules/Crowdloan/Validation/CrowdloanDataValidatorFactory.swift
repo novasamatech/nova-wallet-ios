@@ -28,6 +28,12 @@ protocol CrowdloanDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtoco
         displayInfo: CrowdloanDisplayInfo?,
         locale: Locale
     ) -> DataValidating
+
+    func hasAppliedReferralCode(
+        bonusService: CrowdloanBonusServiceProtocol?,
+        locale: Locale,
+        action: @escaping (Bool) -> Void
+    ) -> DataValidating
 }
 
 final class CrowdloanDataValidatingFactory: CrowdloanDataValidatorFactoryProtocol {
@@ -164,5 +170,35 @@ final class CrowdloanDataValidatingFactory: CrowdloanDataValidatorFactoryProtoco
             let supportsPrivate = displayInfo?.customFlow?.supportsPrivateCrowdloans ?? false
             return isPublic || supportsPrivate
         })
+    }
+
+    func hasAppliedReferralCode(
+        bonusService: CrowdloanBonusServiceProtocol?,
+        locale: Locale,
+        action: @escaping (Bool) -> Void
+    ) -> DataValidating {
+        WarningConditionViolation(
+            onWarning: { [weak self] delegate in
+                guard let view = self?.view else {
+                    return
+                }
+                self?.presentable.presentHaveNotAppliedBonusWarning(from: view, locale: locale) { apply in
+                    action(apply)
+                    if !apply {
+                        delegate.didCompleteWarningHandling()
+                    }
+                }
+            },
+            preservesCondition: {
+                guard let service = bonusService else { return true }
+                if service.referralCode != nil {
+                    return true
+                } else if service.defaultReferralCode != nil {
+                    return false
+                } else {
+                    return true
+                }
+            }
+        )
     }
 }

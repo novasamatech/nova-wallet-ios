@@ -277,6 +277,24 @@ final class AccountImportViewController: UIViewController {
         }
     }
 
+    private func applyModel(_ model: SelectableViewModel<TitleWithSubtitleViewModel>, to view: BorderedSubtitleActionView) {
+        let title = "\(model.underlyingViewModel.title) | \(model.underlyingViewModel.subtitle)"
+
+        view.actionControl.contentView.subtitleLabelView.text = title
+
+        view.actionControl.showsImageIndicator = model.selectable
+        view.isUserInteractionEnabled = model.selectable
+
+        if model.selectable {
+            view.applyEnabledStyle()
+        } else {
+            view.applyDisabledStyle()
+        }
+
+        view.actionControl.contentView.invalidateLayout()
+        view.actionControl.invalidateLayout()
+    }
+
     // MARK: - Actions
 
     @IBAction private func actionExpand() {
@@ -407,22 +425,12 @@ extension AccountImportViewController: AccountImportViewProtocol {
         updateNextButton()
     }
 
-    func setSelectedCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>) {
-        let title = "\(model.underlyingViewModel.title) | \(model.underlyingViewModel.subtitle)"
+    func setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>) {
+        applyModel(model, to: substrateCryptoTypeView)
+    }
 
-        substrateCryptoTypeView.actionControl.contentView.subtitleLabelView.text = title
-
-        substrateCryptoTypeView.actionControl.showsImageIndicator = model.selectable
-        substrateCryptoTypeView.isUserInteractionEnabled = model.selectable
-
-        if model.selectable {
-            substrateCryptoTypeView.applyEnabledStyle()
-        } else {
-            substrateCryptoTypeView.applyDisabledStyle()
-        }
-
-        substrateCryptoTypeView.actionControl.contentView.invalidateLayout()
-        substrateCryptoTypeView.actionControl.invalidateLayout()
+    func setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>) {
+        applyModel(model, to: ethereumCryptoTypeView)
     }
 
     func setSubstrateDerivationPath(viewModel: InputViewModelProtocol) {

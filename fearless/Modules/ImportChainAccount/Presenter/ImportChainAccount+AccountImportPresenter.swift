@@ -20,7 +20,7 @@ extension ImportChainAccount {
         private func prooceedWithSubstrate() {
             guard
                 let selectedSourceType = selectedSourceType,
-                let selectedCryptoType = selectedCryptoType,
+                let selectedCryptoType = selectedSubstrateCryptoType,
                 let sourceViewModel = sourceViewModel
             else {
                 return
@@ -106,17 +106,18 @@ extension ImportChainAccount {
                 return
             }
 
-            let selectedCryptoType: MultiassetCryptoType = .ethereumEcdsa
+            let cryptoType: MultiassetCryptoType = .ethereumEcdsa
 
             if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateSubstrateDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
+                view?.didValidateEthereumDerivationPath(.invalid)
+                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: cryptoType)
 
                 return
             }
 
-            let ethereumDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ??
-                DerivationPathConstants.defaultEthereum
+            let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+            let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
+                DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
             switch selectedSourceType {
             case .mnemonic:
@@ -124,7 +125,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportMnemonicRequest(
                     mnemonic: mnemonic,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithMnemonic(
@@ -138,7 +139,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportSeedRequest(
                     seed: seed,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithSeed(
@@ -153,7 +154,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportKeystoreRequest(
                     keystore: keystore,
                     password: password,
-                    cryptoType: selectedCryptoType
+                    cryptoType: cryptoType
                 )
 
                 interactor.importAccountWithKeystore(
