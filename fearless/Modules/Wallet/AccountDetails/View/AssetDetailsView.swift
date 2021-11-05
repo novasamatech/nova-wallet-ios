@@ -7,10 +7,25 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     var preferredContentHeight: CGFloat { 227.0 }
 
+    // Header
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var iconView: UIImageView!
     @IBOutlet private var priceLabel: UILabel!
     @IBOutlet private var priceChangeLabel: UILabel!
+
+    // Balances widget
+    @IBOutlet var widgetTitleLabel: UILabel!
+    @IBOutlet var totalSectionTitleLabel: UILabel!
+    @IBOutlet var totalSectionTokenLabel: UILabel!
+    @IBOutlet var totalSectionFiatLabel: UILabel!
+    @IBOutlet var transferableSectionTitleLabel: UILabel!
+    @IBOutlet var transferableSectionTokenLabel: UILabel!
+    @IBOutlet var transferableSectionFiatLabel: UILabel!
+    @IBOutlet var lockedSectionTitleLabel: UILabel!
+    @IBOutlet var lockedSectionTokenLabel: UILabel!
+    @IBOutlet var lockedSectionFiatLabel: UILabel!
+
+    // Action buttons
     @IBOutlet private var leftTitleLabel: UILabel!
     @IBOutlet private var leftDetailsLabel: UILabel!
     @IBOutlet private var rightTitleLabel: UILabel!
@@ -54,6 +69,22 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         }
 
         priceLabel.text = assetViewModel.price
+
+        // Balances widget
+        widgetTitleLabel.text = "Your balance" // TODO: Add "Your balance" title
+        totalSectionTitleLabel.text = "Total" // TODO: Add "Total" title
+        transferableSectionTitleLabel.text = "Transferable" // TODO: Add "Transferable" title
+        lockedSectionTitleLabel.text = assetViewModel.rightTitle
+
+        totalSectionTokenLabel.text = ""
+        totalSectionFiatLabel.text = ""
+
+        transferableSectionTokenLabel.text = assetViewModel.leftDetails
+        transferableSectionFiatLabel.text = ""
+
+        lockedSectionTokenLabel.text = assetViewModel.rightDetails
+        lockedSectionFiatLabel.text = ""
+
         leftTitleLabel.text = assetViewModel.leftTitle
         leftDetailsLabel.text = assetViewModel.leftDetails
         rightTitleLabel.text = assetViewModel.rightTitle
