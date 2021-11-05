@@ -30,18 +30,15 @@ final class ChainAccountViewModelFactory {
             let chainName = chainModel.name
 
             let accountAddress: String?
+            let icon: DrawableIcon?
 
-            if chainModel.isEthereumBased {
-                accountAddress = try? chainAccount.accountId.toAddress(using: .ethereum)
+            if let accountResponse = wallet.fetch(for: chainModel.accountRequest()) {
+                accountAddress = try? accountResponse.accountId.toAddress(using: chainModel.chainFormat)
+                icon = try? iconGenerator.generateFromAccountId(accountResponse.accountId)
             } else {
-                accountAddress = try? chainAccount.accountId.toAddress(
-                    using: ChainFormat.substrate(chainModel.addressPrefix)
-                )
+                accountAddress = nil
+                icon = nil
             }
-
-            let icon = try? iconGenerator.generateFromAddress(
-                wallet.substrateAccountId.toAddress(using: ChainFormat.substrate(42))
-            )
 
             return ChainAccountViewModelItem(
                 chainId: chainAccount.chainId,
@@ -71,22 +68,12 @@ final class ChainAccountViewModelFactory {
             let accountAddress: String?
             let icon: DrawableIcon?
 
-            if chainModel.isEthereumBased {
-                if let ethereumAddress = wallet.ethereumAddress {
-                    accountAddress = ethereumAddress.toHex(includePrefix: true)
-                    icon = try? iconGenerator.generateFromAddress(
-                        wallet.substrateAccountId.toAddress(using: ChainFormat.substrate(42))
-                    )
-                } else {
-                    accountAddress = nil
-                    icon = nil
-                }
-
+            if let accountResponse = wallet.fetch(for: chainModel.accountRequest()) {
+                accountAddress = try? accountResponse.accountId.toAddress(using: chainModel.chainFormat)
+                icon = try? iconGenerator.generateFromAccountId(accountResponse.accountId)
             } else {
-                accountAddress = try? wallet.substrateAccountId.toAddress(
-                    using: ChainFormat.substrate(chainModel.addressPrefix)
-                )
-                icon = try? iconGenerator.generateFromAddress(accountAddress ?? "")
+                accountAddress = nil
+                icon = nil
             }
 
             return ChainAccountViewModelItem(
