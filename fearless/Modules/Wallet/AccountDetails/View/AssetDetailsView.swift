@@ -7,6 +7,8 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     var preferredContentHeight: CGFloat { 337.0 }
 
+    @IBOutlet var separators: [BorderedContainerView]!
+
     // Header
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var iconView: UIImageView!
@@ -32,6 +34,14 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     private var actionsViewModel: WalletActionsViewModelProtocol?
     private var assetViewModel: AssetDetailsViewModel?
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        separators.forEach {
+            $0.strokeWidth = UIConstants.separatorHeight
+        }
+    }
 
     func setContentInsets(_ contentInsets: UIEdgeInsets, animated _: Bool) {
         self.contentInsets = contentInsets
