@@ -25,8 +25,8 @@ extension AddAccount {
                 metaAccountRepository: accountRepository,
                 operationManager: operationManager,
                 keystoreImportService: keystoreImportService,
-                supportedNetworks: Chain.allCases, // FIXME: Remove after interactors are done
-                defaultNetwork: Chain.kusama // FIXME: Remove after interactors are done
+                availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
+                defaultCryptoType: .sr25519
             )
         }
 
