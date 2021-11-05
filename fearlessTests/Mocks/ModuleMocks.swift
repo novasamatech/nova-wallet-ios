@@ -6572,9 +6572,9 @@ import SoraFoundation
     
     
     
-     func showCreateAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)  {
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)  {
         
-    return cuckoo_manager.call("showCreateAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)",
+    return cuckoo_manager.call("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)",
             parameters: (view, wallet, chainId, isEthereumBased),
             escapingParameters: (view, wallet, chainId, isEthereumBased),
             superclassCall:
@@ -6587,9 +6587,9 @@ import SoraFoundation
     
     
     
-     func showImportAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)  {
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)  {
         
-    return cuckoo_manager.call("showImportAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)",
+    return cuckoo_manager.call("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)",
             parameters: (view, wallet, chainId, isEthereumBased),
             escapingParameters: (view, wallet, chainId, isEthereumBased),
             superclassCall:
@@ -6669,14 +6669,14 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showCreateAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", parameterMatchers: matchers))
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", parameterMatchers: matchers))
 	    }
 	    
-	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showImportAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", parameterMatchers: matchers))
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -6716,15 +6716,15 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
-	        return cuckoo_manager.verify("showCreateAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
+	        return cuckoo_manager.verify("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.__DoNotUse<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool), Void> where M1.OptionalMatchedType == AccountManagementViewProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountManagementViewProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
-	        return cuckoo_manager.verify("showImportAccount(from: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, wallet: M2, chainId: M3, isEthereumBased: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel.Id, M4.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel.Id, Bool)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chainId) { $0.2 }, wrap(matchable: isEthereumBased) { $0.3 }]
+	        return cuckoo_manager.verify("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -6760,11 +6760,11 @@ import SoraFoundation
     
 
     
-     func showCreateAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func showImportAccount(from view: AccountManagementViewProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

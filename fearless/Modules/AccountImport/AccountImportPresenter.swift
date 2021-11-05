@@ -21,19 +21,22 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             return
         }
 
+        var derivationPathCheckError = false
         if let viewModel = substrateDerivationPathViewModel, !viewModel.inputHandler.completed {
+            derivationPathCheckError = true
             view?.didValidateSubstrateDerivationPath(.invalid)
             presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
-
-            return
         }
 
         if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-            view?.didValidateSubstrateDerivationPath(.invalid)
-            presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
-
-            return
+            view?.didValidateEthereumDerivationPath(.invalid)
+            if !derivationPathCheckError {
+                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: .ethereumEcdsa)
+                derivationPathCheckError = true
+            }
         }
+
+        guard !derivationPathCheckError else { return }
 
         let username = usernameViewModel.inputHandler.value
         let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
