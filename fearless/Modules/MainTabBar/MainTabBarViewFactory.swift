@@ -69,18 +69,6 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         return view
     }
 
-    static func reloadWalletView(
-        on view: MainTabBarViewProtocol
-    ) {
-        let localizationManager = LocalizationManager.shared
-
-        guard let walletController = createWalletController(for: localizationManager) else {
-            return
-        }
-
-        view.didReplaceView(for: walletController, for: Self.walletIndex)
-    }
-
     static func reloadCrowdloanView(on view: MainTabBarViewProtocol) {
         let localizationManager = LocalizationManager.shared
 
