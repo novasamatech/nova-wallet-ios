@@ -702,6 +702,9 @@
                 <outlet property="iconView" destination="YQT-cH-p8Y" id="aVk-lW-gSW"/>
                 <outlet property="leftDetailsLabel" destination="pkg-Qs-2HX" id="i5c-dc-YFm"/>
                 <outlet property="leftTitleLabel" destination="ZSe-JF-sIh" id="34K-W9-0xU"/>
+                <outlet property="lockedSectionFiatLabel" destination="1wb-oe-fdd" id="RXh-Vv-p8U"/>
+                <outlet property="lockedSectionTitleLabel" destination="yvY-MM-RKZ" id="Pj6-JS-TEp"/>
+                <outlet property="lockedSectionTokenLabel" destination="VgA-FT-249" id="eRW-db-OF6"/>
                 <outlet property="priceChangeLabel" destination="EB0-RE-RYL" id="U0I-wd-9ic"/>
                 <outlet property="priceLabel" destination="lKX-kZ-DNE" id="SRe-yg-u7t"/>
                 <outlet property="receiveButton" destination="CZ1-mR-zue" id="VtO-ye-MVl"/>
@@ -709,6 +712,13 @@
                 <outlet property="rightTitleLabel" destination="gf2-bh-O5W" id="Xo0-Xh-raH"/>
                 <outlet property="sendButton" destination="Fv6-uX-qxI" id="d6M-ec-rdV"/>
                 <outlet property="titleLabel" destination="fG9-KC-Bq2" id="KGM-Ng-2gQ"/>
+                <outlet property="totalSectionFiatLabel" destination="Lab-fR-1Ro" id="a9y-Xp-m3Q"/>
+                <outlet property="totalSectionTitleLabel" destination="Yy0-9k-yTm" id="l2M-bt-OdB"/>
+                <outlet property="totalSectionTokenLabel" destination="knQ-wz-hG9" id="yaE-o2-rAB"/>
+                <outlet property="transferableSectionFiatLabel" destination="5br-8a-yOj" id="28G-bH-Db6"/>
+                <outlet property="transferableSectionTitleLabel" destination="M1c-hO-8zc" id="I5k-oh-vUX"/>
+                <outlet property="transferableSectionTokenLabel" destination="7ki-ET-btL" id="7zH-JY-gQz"/>
+                <outlet property="widgetTitleLabel" destination="QkP-OX-ZDR" id="Xbn-dp-qQe"/>
             </connections>
             <point key="canvasLocation" x="138.40000000000001" y="138.98050974512745"/>
         </view>
