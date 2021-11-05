@@ -78,7 +78,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="375" height="26"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a7Y-Re-tLd">
-                            <rect key="frame" x="146" y="0.0" width="83" height="18"/>
+                            <rect key="frame" x="166" y="0.0" width="43" height="18"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lKX-kZ-DNE">
                                     <rect key="frame" x="0.0" y="0.0" width="20" height="18"/>
@@ -87,37 +87,19 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="+0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EB0-RE-RYL">
-                                    <rect key="frame" x="23" y="0.0" width="19" height="18"/>
+                                    <rect key="frame" x="24" y="0.0" width="19" height="18"/>
                                     <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                                     <color key="textColor" name="colorGreen"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h9i-Iq-xQI">
-                                    <rect key="frame" x="52" y="0.0" width="1" height="18"/>
-                                    <color key="backgroundColor" name="colorGray"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="1" id="9d9-3C-2Ve"/>
-                                    </constraints>
-                                </view>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YBm-za-3E9">
-                                    <rect key="frame" x="63" y="0.0" width="20" height="18"/>
-                                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
-                                    <color key="textColor" name="colorWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
                                 <constraint firstItem="lKX-kZ-DNE" firstAttribute="top" secondItem="a7Y-Re-tLd" secondAttribute="top" id="7oh-QZ-uxl"/>
-                                <constraint firstItem="YBm-za-3E9" firstAttribute="centerY" secondItem="lKX-kZ-DNE" secondAttribute="centerY" id="H3j-Q3-x1L"/>
-                                <constraint firstItem="YBm-za-3E9" firstAttribute="leading" secondItem="h9i-Iq-xQI" secondAttribute="trailing" constant="10" id="Hp0-ZZ-S82"/>
+                                <constraint firstAttribute="trailing" secondItem="EB0-RE-RYL" secondAttribute="trailing" id="KIj-C6-1WJ"/>
                                 <constraint firstItem="lKX-kZ-DNE" firstAttribute="leading" secondItem="a7Y-Re-tLd" secondAttribute="leading" id="NtQ-go-Orz"/>
-                                <constraint firstItem="h9i-Iq-xQI" firstAttribute="height" secondItem="a7Y-Re-tLd" secondAttribute="height" id="Pio-d7-KgV"/>
-                                <constraint firstItem="h9i-Iq-xQI" firstAttribute="leading" secondItem="EB0-RE-RYL" secondAttribute="trailing" constant="10" id="Quf-0U-t0i"/>
-                                <constraint firstAttribute="trailing" secondItem="YBm-za-3E9" secondAttribute="trailing" id="VA8-Nx-fxd"/>
                                 <constraint firstItem="EB0-RE-RYL" firstAttribute="centerY" secondItem="lKX-kZ-DNE" secondAttribute="centerY" id="exf-hs-8G0"/>
-                                <constraint firstItem="h9i-Iq-xQI" firstAttribute="centerY" secondItem="lKX-kZ-DNE" secondAttribute="centerY" id="kps-fd-uc2"/>
-                                <constraint firstItem="EB0-RE-RYL" firstAttribute="leading" secondItem="lKX-kZ-DNE" secondAttribute="trailing" constant="3" id="qNI-iA-V5o"/>
+                                <constraint firstItem="EB0-RE-RYL" firstAttribute="leading" secondItem="lKX-kZ-DNE" secondAttribute="trailing" constant="4" id="qNI-iA-V5o"/>
                                 <constraint firstAttribute="bottom" secondItem="lKX-kZ-DNE" secondAttribute="bottom" id="svg-dx-W01"/>
                             </constraints>
                         </view>
@@ -468,25 +450,10 @@
                 <outlet property="rightTitleLabel" destination="gf2-bh-O5W" id="Xo0-Xh-raH"/>
                 <outlet property="sendButton" destination="Fv6-uX-qxI" id="d6M-ec-rdV"/>
                 <outlet property="titleLabel" destination="fG9-KC-Bq2" id="KGM-Ng-2gQ"/>
-                <outlet property="totalVolumeLabel" destination="YBm-za-3E9" id="0ic-L4-hjO"/>
             </connections>
             <point key="canvasLocation" x="139" y="139"/>
         </view>
     </objects>
-    <designables>
-        <designable name="BH9-GQ-WWi">
-            <size key="intrinsicContentSize" width="40" height="63.5"/>
-        </designable>
-        <designable name="CZ1-mR-zue">
-            <size key="intrinsicContentSize" width="64" height="63.5"/>
-        </designable>
-        <designable name="Fv6-uX-qxI">
-            <size key="intrinsicContentSize" width="48" height="63.5"/>
-        </designable>
-        <designable name="WCS-ks-Idr">
-            <size key="intrinsicContentSize" width="16" height="16"/>
-        </designable>
-    </designables>
     <resources>
         <image name="backgroundImage" width="375" height="812"/>
         <image name="iconBuy" width="24" height="24"/>
@@ -496,9 +463,6 @@
         <image name="iconSend" width="24" height="24"/>
         <namedColor name="colorBlurSeparator">
             <color red="1" green="1" blue="1" alpha="0.23999999463558197" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="colorGray">
-            <color red="0.52941176470588236" green="0.52941176470588236" blue="0.52941176470588236" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorGreen">
             <color red="0.054901960784313725" green="0.82745098039215681" blue="0.23137254901960785" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
