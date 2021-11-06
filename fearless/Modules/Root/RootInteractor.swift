@@ -50,7 +50,7 @@ final class RootInteractor {
             }
         }
     }
-    
+
     private func setupTableViewsAppearance() {
         if #available(iOS 15, *) {
             UITableView.appearance().sectionHeaderTopPadding = 0
@@ -83,7 +83,7 @@ extension RootInteractor: RootInteractorInputProtocol {
 
     func setup() {
         setupTableViewsAppearance()
-        
+
         setupURLHandlingService()
         runMigrators()
 
