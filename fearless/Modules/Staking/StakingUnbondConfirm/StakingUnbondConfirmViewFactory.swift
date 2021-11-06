@@ -18,7 +18,7 @@ struct StakingUnbondConfirmViewFactory {
             from: interactor,
             wireframe: wireframe,
             amount: amount,
-            assetInfo: state.settings.value.assetDisplayInfo
+            chainAsset: state.settings.value
         )
 
         let view = StakingUnbondConfirmViewController(
@@ -36,8 +36,9 @@ struct StakingUnbondConfirmViewFactory {
         from interactor: StakingUnbondConfirmInteractorInputProtocol,
         wireframe: StakingUnbondConfirmWireframeProtocol,
         amount: Decimal,
-        assetInfo: AssetBalanceDisplayInfo
+        chainAsset: ChainAsset
     ) -> StakingUnbondConfirmPresenter {
+        let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory(assetInfo: assetInfo)
@@ -52,6 +53,7 @@ struct StakingUnbondConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            explorers: chainAsset.chain.explorers,
             logger: Logger.shared
         )
     }

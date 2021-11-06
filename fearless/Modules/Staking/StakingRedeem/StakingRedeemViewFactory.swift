@@ -20,7 +20,7 @@ final class StakingRedeemViewFactory {
             from: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: chainAsset.assetDisplayInfo
+            chainAsset: chainAsset
         )
 
         let view = StakingRedeemViewController(
@@ -39,8 +39,9 @@ final class StakingRedeemViewFactory {
         from interactor: StakingRedeemInteractorInputProtocol,
         wireframe: StakingRedeemWireframeProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        assetInfo: AssetBalanceDisplayInfo
+        chainAsset: ChainAsset
     ) -> StakingRedeemPresenter {
+        let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let confirmationViewModelFactory = StakingRedeemViewModelFactory(assetInfo: assetInfo)
@@ -52,6 +53,7 @@ final class StakingRedeemViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            explorers: chainAsset.chain.explorers,
             logger: Logger.shared
         )
     }

@@ -13,6 +13,7 @@ class CrowdloanContributionConfirmPresenter {
     let inputAmount: Decimal
     let bonusRate: Decimal?
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
     private var displayAddress: DisplayAddress?
@@ -65,6 +66,7 @@ class CrowdloanContributionConfirmPresenter {
         bonusRate: Decimal?,
         assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -76,6 +78,7 @@ class CrowdloanContributionConfirmPresenter {
         self.bonusRate = bonusRate
         self.assetInfo = assetInfo
         self.logger = logger
+        self.explorers = explorers
         self.localizationManager = localizationManager
     }
 
@@ -264,11 +267,10 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
             return
         }
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: selectedLocale
         )
     }
@@ -281,11 +283,10 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmPre
             return
         }
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: selectedLocale
         )
     }

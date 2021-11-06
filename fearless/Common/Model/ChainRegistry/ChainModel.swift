@@ -21,6 +21,13 @@ struct ChainModel: Equatable, Codable, Hashable {
         let crowdloans: ExternalApi?
     }
 
+    struct Explorer: Codable, Hashable {
+        let name: String
+        let account: String?
+        let extrinsic: String?
+        let event: String?
+    }
+
     enum TypesUsage {
         case onlyCommon
         case both
@@ -37,6 +44,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     let icon: URL
     let options: [ChainOptions]?
     let externalApi: ExternalApiSet?
+    let explorers: [Explorer]?
     let order: Int64
 
     init(
@@ -50,6 +58,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         icon: URL,
         options: [ChainOptions]?,
         externalApi: ExternalApiSet?,
+        explorers: [Explorer]?,
         order: Int64
     ) {
         self.chainId = chainId
@@ -62,6 +71,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.icon = icon
         self.options = options
         self.externalApi = externalApi
+        self.explorers = explorers
         self.order = order
     }
 
@@ -82,6 +92,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         icon = remoteModel.icon
         options = remoteModel.options
         externalApi = remoteModel.externalApi
+        explorers = remoteModel.explorers
         self.order = order
     }
 

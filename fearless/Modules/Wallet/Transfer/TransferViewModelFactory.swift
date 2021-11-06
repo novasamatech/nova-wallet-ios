@@ -6,14 +6,17 @@ import SubstrateSdk
 final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
+    let explorers: [ChainModel.Explorer]?
     let assets: [WalletAsset]
     let amountFormatterFactory: NumberFormatterFactoryProtocol
 
     init(
         assets: [WalletAsset],
+        explorers: [ChainModel.Explorer]?,
         amountFormatterFactory: NumberFormatterFactoryProtocol
     ) {
         self.assets = assets
+        self.explorers = explorers
         self.amountFormatterFactory = amountFormatterFactory
     }
 
@@ -156,10 +159,9 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             icon = nil
         }
 
-        // TODO: Fix account viewer
         let command = WalletAccountOpenCommand(
             address: payload.receiverName,
-            chain: .westend,
+            explorers: explorers,
             commandFactory: commandFactory,
             locale: locale
         )

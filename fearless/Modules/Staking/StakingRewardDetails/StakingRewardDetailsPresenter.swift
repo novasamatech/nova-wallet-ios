@@ -9,14 +9,17 @@ final class StakingRewardDetailsPresenter {
 
     private let input: StakingRewardDetailsInput
     private let viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol
+    private let explorers: [ChainModel.Explorer]?
     private var priceData: PriceData?
 
     init(
         input: StakingRewardDetailsInput,
-        viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol
+        viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol,
+        explorers: [ChainModel.Explorer]?
     ) {
         self.input = input
         self.viewModelFactory = viewModelFactory
+        self.explorers = explorers
     }
 
     private func updateView() {
@@ -45,11 +48,10 @@ extension StakingRewardDetailsPresenter: StakingRewardDetailsPresenterProtocol {
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: locale
         )
     }

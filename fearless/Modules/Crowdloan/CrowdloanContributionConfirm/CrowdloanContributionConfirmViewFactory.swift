@@ -50,6 +50,7 @@ struct CrowdloanContributionConfirmViewFactory {
             bonusRate: bonusService?.bonusRate,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
+            explorers: chain.explorers,
             logger: Logger.shared
         )
 

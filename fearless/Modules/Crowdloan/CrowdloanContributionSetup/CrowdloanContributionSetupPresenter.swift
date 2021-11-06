@@ -11,6 +11,7 @@ class CrowdloanContributionSetupPresenter {
     let contributionViewModelFactory: CrowdloanContributionViewModelFactoryProtocol
     let dataValidatingFactory: CrowdloanDataValidatorFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
     private var crowdloan: Crowdloan?
@@ -55,6 +56,7 @@ class CrowdloanContributionSetupPresenter {
         assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol,
         bonusService: CrowdloanBonusServiceProtocol?,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -64,6 +66,7 @@ class CrowdloanContributionSetupPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
         self.bonusService = bonusService
+        self.explorers = explorers
         self.logger = logger
         self.localizationManager = localizationManager
     }
@@ -343,11 +346,10 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupPresent
             return
         }
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: selectedLocale
         )
     }

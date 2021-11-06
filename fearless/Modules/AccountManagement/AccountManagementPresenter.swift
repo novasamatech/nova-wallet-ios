@@ -15,8 +15,6 @@ final class AccountManagementPresenter {
     private var wallet: MetaAccountModel?
     private var chains: [ChainModel.Id: ChainModel] = [:]
     private var viewModel: ChainAccountListViewModel = []
-    private var polkascanExplorers: [String: String] = [:]
-    private var subscanExplorers: [String: String] = [:]
 
     init(
         viewModelFactory: ChainAccountViewModelFactoryProtocol,
@@ -90,7 +88,6 @@ final class AccountManagementPresenter {
         displayChangeActions(with: title, for: chain)
     }
 
-    // 1. No chain account
     private func displayNoAddressActions(for chain: ChainModel) {
         let title = R.string.localizable.accountNotFoundActionsTitle(
             chain.name,
@@ -100,34 +97,7 @@ final class AccountManagementPresenter {
         displayChangeActions(with: title, for: chain)
     }
 
-    // 2. Existing Ethereum
-    private func displayEthereumAddressActions(
-        for chain: ChainModel,
-        viewModel: ChainAccountViewModelItem
-    ) {
-        guard let address = viewModel.address else { return }
-
-        let title = createTitleFrom(address)
-        let copyAction = createCopyAction(for: address)
-        let changeAccountAction = createAccountChangeAction(for: chain)
-
-        let actions = [copyAction, changeAccountAction]
-
-        let closeTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
-
-        let actionsViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: closeTitle
-        )
-
-        wireframe.present(viewModel: actionsViewModel, style: .actionSheet, from: view)
-    }
-
-    // 3. Existing Substrate
-    private func displaySubstrateAddressActions(
+    private func displayExistingAddressActions(
         for chain: ChainModel,
         viewModel: ChainAccountViewModelItem
     ) {
@@ -139,30 +109,22 @@ final class AccountManagementPresenter {
         let copyAction = createCopyAction(for: address)
         actions.append(copyAction)
 
-        if let url = polkascanURL(for: chain.name, address: address) {
-            let polkascanTitle = R.string.localizable
-                .transactionDetailsViewPolkascan(preferredLanguages: selectedLocale.rLanguages)
+        let explorerActions: [AlertPresentableAction] = chain.explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.account,
+                let url = try? RobinHood.EndpointBuilder(urlTemplate: urlTemplate)
+                .buildParameterURL(address) else {
+                return nil
+            }
 
-            let polkascanAction = AlertPresentableAction(title: polkascanTitle) { [weak self] in
+            return AlertPresentableAction(title: explorer.name) { [weak self] in
                 if let view = self?.view {
                     self?.wireframe.showWeb(url: url, from: view, style: .automatic)
                 }
             }
+        } ?? []
 
-            actions.append(polkascanAction)
-        }
-
-        if let url = subscanURL(for: chain.name, address: address) {
-            let subscanTitle = R.string.localizable
-                .transactionDetailsViewSubscan(preferredLanguages: selectedLocale.rLanguages)
-            let subscanAction = AlertPresentableAction(title: subscanTitle) { [weak self] in
-                if let view = self?.view {
-                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
-                }
-            }
-
-            actions.append(subscanAction)
-        }
+        actions.append(contentsOf: explorerActions)
 
         let changeAccountAction = createAccountChangeAction(for: chain)
         actions.append(changeAccountAction)
@@ -277,47 +239,12 @@ final class AccountManagementPresenter {
 
         return title
     }
-
-    private func polkascanURL(for chainName: String, address: String) -> URL? {
-        guard let urlString = polkascanExplorers[chainName] else { return nil }
-        return URL(string: "\(urlString)\(address)")
-    }
-
-    private func subscanURL(for chainName: String, address: String) -> URL? {
-        guard let urlString = subscanExplorers[chainName] else { return nil }
-        return URL(string: "\(urlString)\(address)")
-    }
-
-    private func generateExplorers() {
-        let polkascanExplorers: [String: String] = [
-            "Polkadot": "https://polkascan.io/polkadot/account/",
-            "Kusama": "https://polkascan.io/kusama/account/"
-        ]
-
-        let subscanExplorers: [String: String] = [
-            "Polkadot": "https://polkadot.subscan.io/account/",
-            "Kusama": "https://kusama.subscan.io/account/",
-            "Westend": "https://westend.subscan.io/account/",
-            "Calamari": "https://calamari.subscan.io/account/",
-            "Moonriver": "https://moonriver.subscan.io/account/",
-            "Statemine": "https://statemine.subscan.io/account/",
-            "Shiden": "https://shiden.subscan.io/account/",
-            "Bifrost": "https://bifrost.subscan.io/account/",
-            "KILT Spiritnet": "https://spiritnet.subscan.io/account/",
-            "Karura": "https://karura.subscan.io/account/",
-            "Khala": "https://khala.subscan.io/account/"
-        ]
-
-        self.polkascanExplorers = polkascanExplorers
-        self.subscanExplorers = subscanExplorers
-    }
 }
 
 // MARK: - AccountManagementPresenterProtocol
 
 extension AccountManagementPresenter: AccountManagementPresenterProtocol {
     func setup() {
-        generateExplorers()
         interactor.setup(walletId: walletId)
     }
 
@@ -350,14 +277,9 @@ extension AccountManagementPresenter: AccountManagementPresenterProtocol {
         guard let chainModel = chains[chainViewModel.chainId] else { return }
 
         if chainViewModel.address == nil {
-            // Case 1: address not found
             displayNoAddressActions(for: chainModel)
-        } else if chainModel.isEthereumBased {
-            // Case 2: ethereum address found
-            displayEthereumAddressActions(for: chainModel, viewModel: chainViewModel)
         } else {
-            // Case 3: substrate address found
-            displaySubstrateAddressActions(for: chainModel, viewModel: chainViewModel)
+            displayExistingAddressActions(for: chainModel, viewModel: chainViewModel)
         }
     }
 
