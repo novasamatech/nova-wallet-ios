@@ -7,8 +7,9 @@ extension GradientButton {
         applyEnabledStyle()
     }
 
+    // FIXME: Replace gradient buttons with rounded buttons with own styles
     func applyEnabledStyle() {
-        gradientBackgroundView?.startColor = R.color.colorAccentGradientStart()!
+        gradientBackgroundView?.startColor = R.color.colorAccentGradientEnd()!
         gradientBackgroundView?.endColor = R.color.colorAccentGradientEnd()!
         gradientBackgroundView?.startPoint = CGPoint(x: 0.0, y: 0.5)
         gradientBackgroundView?.endPoint = CGPoint(x: 1.0, y: 0.5)

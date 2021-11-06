@@ -10,7 +10,7 @@ extension NSAttributedString {
         let rangeDecorator = RangeAttributedStringDecorator(attributes: attributes)
 
         let highlightAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorPink()!
+            .foregroundColor: R.color.colorNovaBlue()!
         ]
 
         let termsConditions = R.string.localizable.crowdloanTermsValue(preferredLanguages: locale?.rLanguages)

@@ -89,6 +89,9 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Create Account"/>
                         <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconPlusFilled"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="_sideLength">
+                            <real key="value" value="0.0"/>
+                        </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="actionSignupWithSender:" destination="-1" eventType="touchUpInside" id="TJA-qA-tUz"/>
