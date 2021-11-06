@@ -8,7 +8,7 @@ final class AcalaContributionSetupViewLayout: CrowdloanContributionSetupViewLayo
 
     let infoLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorBlue()
+        label.textColor = R.color.colorNovaBlue()
         label.font = .p2Paragraph
         return label
     }()

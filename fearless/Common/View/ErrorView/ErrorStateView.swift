@@ -21,7 +21,7 @@ class ErrorStateView: UIView {
 
     let retryButton: UIButton = {
         let button = UIButton()
-        button.setTitleColor(R.color.colorPink(), for: .normal)
+        button.setTitleColor(R.color.colorAccent(), for: .normal)
         return button
     }()
 

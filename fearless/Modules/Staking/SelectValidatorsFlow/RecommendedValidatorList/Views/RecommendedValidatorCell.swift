@@ -10,7 +10,7 @@ final class RecommendedValidatorCell: UITableViewCell {
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorHighlightedPink()
+        selectedBackgroundView.backgroundColor = R.color.colorHighlightedAccent()
         self.selectedBackgroundView = selectedBackgroundView
     }
 

@@ -53,7 +53,7 @@ final class RewardAnalyticsWidgetView: UIView {
     let backgroundButton: TriangularedButton = {
         let button = TriangularedButton()
         button.triangularedView?.fillColor = .clear
-        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedPink()!
+        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedAccent()!
         button.triangularedView?.shadowOpacity = 0.0
         return button
     }()
