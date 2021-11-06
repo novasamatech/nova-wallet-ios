@@ -8,6 +8,7 @@ final class ControllerAccountPresenter {
     let viewModelFactory: ControllerAccountViewModelFactoryProtocol
     let applicationConfig: ApplicationConfigProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     weak var view: ControllerAccountViewProtocol?
 
@@ -29,6 +30,7 @@ final class ControllerAccountPresenter {
         applicationConfig: ApplicationConfigProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.wireframe = wireframe
@@ -37,6 +39,7 @@ final class ControllerAccountPresenter {
         self.applicationConfig = applicationConfig
         self.assetInfo = assetInfo
         self.dataValidatingFactory = dataValidatingFactory
+        self.explorers = explorers
         self.logger = logger
     }
 
@@ -112,11 +115,10 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
     private func presentAccountOptions(for address: AccountAddress?) {
         guard let view = view, let address = address else { return }
 
-        // TODO: Fix when supported
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: view.localizationManager?.selectedLocale ?? .current
         )
     }

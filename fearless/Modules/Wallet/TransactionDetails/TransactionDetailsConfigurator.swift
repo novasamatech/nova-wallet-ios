@@ -7,10 +7,12 @@ final class TransactionDetailsConfigurator {
     init(
         chainAccount: ChainAccountResponse,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
-        assets: [WalletAsset]
+        assets: [WalletAsset],
+        explorers: [ChainModel.Explorer]?
     ) {
         viewModelFactory = TransactionDetailsViewModelFactory(
             chainAccount: chainAccount,
+            explorers: explorers,
             assets: assets,
             dateFormatter: DateFormatter.txDetails,
             amountFormatterFactory: amountFormatterFactory

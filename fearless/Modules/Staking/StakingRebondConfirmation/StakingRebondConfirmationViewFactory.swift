@@ -22,7 +22,7 @@ struct StakingRebondConfirmationViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: chainAsset.assetDisplayInfo
+            chainAsset: chainAsset
         )
 
         let view = StakingRebondConfirmationViewController(
@@ -42,11 +42,14 @@ struct StakingRebondConfirmationViewFactory {
         interactor: StakingRebondConfirmationInteractorInputProtocol,
         wireframe: StakingRebondConfirmationWireframeProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        assetInfo: AssetBalanceDisplayInfo
+        chainAsset: ChainAsset
     ) -> StakingRebondConfirmationPresenter {
+        let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmationViewModelFactory = StakingRebondConfirmationViewModelFactory(assetInfo: assetInfo)
+        let confirmationViewModelFactory = StakingRebondConfirmationViewModelFactory(
+            assetInfo: assetInfo
+        )
 
         return StakingRebondConfirmationPresenter(
             variant: variant,
@@ -56,6 +59,7 @@ struct StakingRebondConfirmationViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            explorers: chainAsset.chain.explorers,
             logger: Logger.shared
         )
     }

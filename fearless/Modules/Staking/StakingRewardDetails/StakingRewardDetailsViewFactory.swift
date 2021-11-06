@@ -22,7 +22,8 @@ final class StakingRewardDetailsViewFactory {
         )
         let presenter = StakingRewardDetailsPresenter(
             input: input,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            explorers: chainAsset.chain.explorers
         )
         let view = StakingRewardDetailsViewController(
             presenter: presenter,

@@ -11,6 +11,7 @@ final class StakingBondMoreConfirmationPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
     private var balance: Decimal?
@@ -27,6 +28,7 @@ final class StakingBondMoreConfirmationPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -36,6 +38,7 @@ final class StakingBondMoreConfirmationPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.explorers = explorers
         self.logger = logger
     }
 
@@ -128,11 +131,10 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: locale
         )
     }

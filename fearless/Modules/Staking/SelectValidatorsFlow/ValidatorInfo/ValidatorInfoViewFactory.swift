@@ -6,7 +6,8 @@ import SoraFoundation
 final class ValidatorInfoViewFactory {
     private static func createView(
         with interactor: ValidatorInfoInteractorBase,
-        assetInfo: AssetBalanceDisplayInfo
+        assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?
     ) -> ValidatorInfoViewProtocol? {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
@@ -24,6 +25,7 @@ final class ValidatorInfoViewFactory {
             wireframe: wireframe,
             viewModelFactory: validatorInfoViewModelFactory,
             localizationManager: localizationManager,
+            explorers: explorers,
             logger: Logger.shared
         )
 
@@ -52,7 +54,11 @@ extension ValidatorInfoViewFactory {
             validatorInfo: validatorInfo
         )
 
-        return createView(with: interactor, assetInfo: chainAsset.assetDisplayInfo)
+        return createView(
+            with: interactor,
+            assetInfo: chainAsset.assetDisplayInfo,
+            explorers: chainAsset.chain.explorers
+        )
     }
 
     static func createView(
@@ -90,6 +96,10 @@ extension ValidatorInfoViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        return createView(with: interactor, assetInfo: chainAsset.assetDisplayInfo)
+        return createView(
+            with: interactor,
+            assetInfo: chainAsset.assetDisplayInfo,
+            explorers: chainAsset.chain.explorers
+        )
     }
 }

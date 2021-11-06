@@ -97,6 +97,7 @@ final class SelectValidatorsConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            explorers: chainAsset.chain.explorers,
             logger: Logger.shared
         )
 
