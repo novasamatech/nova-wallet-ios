@@ -10,6 +10,7 @@ final class AccountManagementInteractor {
     let settings: SelectedWalletSettings
     let operationManager: OperationManagerProtocol
     let eventCenter: EventCenterProtocol
+    let keystore: KeystoreProtocol
 
     private lazy var saveScheduler = Scheduler(with: self, callbackQueue: .main)
     private var saveInterval: TimeInterval
@@ -22,6 +23,7 @@ final class AccountManagementInteractor {
         operationManager: OperationManagerProtocol,
         settings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
+        keystore: KeystoreProtocol,
         saveInterval: TimeInterval = 2.0
     ) {
         self.walletRepository = walletRepository
@@ -29,6 +31,7 @@ final class AccountManagementInteractor {
         self.operationManager = operationManager
         self.settings = settings
         self.eventCenter = eventCenter
+        self.keystore = keystore
         self.saveInterval = saveInterval
     }
 
@@ -173,6 +176,46 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
 
     func flushPendingName() {
         performChangeFinalizationIfNeeded()
+    }
+
+    func requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel) {
+        do {
+            guard let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+
+            var options: [ExportOption] = [.keystore]
+
+            let entropyTag = KeystoreTagV2.entropyTagForMetaId(
+                metaAccount.metaId,
+                accountId: accountId
+            )
+            if try keystore.checkKey(for: entropyTag) {
+                options.append(.mnemonic)
+            }
+
+            let seedTag = chain.isEthereumBased ?
+                KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId, accountId: accountId)
+            let hasSeed = try keystore.checkKey(for: seedTag)
+            if hasSeed || accountResponse.cryptoType.supportsSeedFromSecretKey {
+                options.append(.seed)
+            }
+
+            presenter?.didReceive(
+                exportOptionsResult: .success(options),
+                metaAccount: metaAccount,
+                chain: chain
+            )
+        } catch {
+            presenter?.didReceive(
+                exportOptionsResult: .failure(error),
+                metaAccount: metaAccount,
+                chain: chain
+            )
+        }
     }
 }
 

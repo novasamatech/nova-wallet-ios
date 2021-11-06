@@ -37,6 +37,15 @@ extension MultiassetCryptoType {
         }
     }
 
+    var supportsSeedFromSecretKey: Bool {
+        switch self {
+        case .ed25519, .substrateEcdsa:
+            return true
+        case .sr25519, .ethereumEcdsa:
+            return false
+        }
+    }
+
     init(secretType: KeystoreSecretType) {
         switch secretType {
         case .sr25519:
