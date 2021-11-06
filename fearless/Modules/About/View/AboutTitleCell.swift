@@ -7,7 +7,7 @@ final class AboutTitleCell: UITableViewCell {
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorCellSelection()!
+        selectedBackgroundView.backgroundColor = R.color.colorHighlightedAccent()!
         self.selectedBackgroundView = selectedBackgroundView
     }
 

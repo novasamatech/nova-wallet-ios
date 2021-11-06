@@ -28,19 +28,19 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Asset value" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FOw-EL-VT5">
-                        <rect key="frame" x="16" y="8" width="175.5" height="18"/>
+                        <rect key="frame" x="16" y="8" width="150.5" height="16.5"/>
                         <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
                         <color key="textColor" name="colorAccent"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$21,000.43" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="33J-Tg-BMc">
-                        <rect key="frame" x="16" y="28" width="175.5" height="38"/>
+                        <rect key="frame" x="16" y="31" width="150.5" height="35"/>
                         <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="30"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" horizontalHuggingPriority="252" horizontalCompressionResistancePriority="751" translatesAutoresizingMaskIntoConstraints="NO" id="sAM-KP-e9Z" customClass="RoundedButton" customModule="SoraUI">
-                        <rect key="frame" x="191.5" y="0.0" width="183.5" height="66"/>
+                        <rect key="frame" x="166.5" y="0.0" width="208.5" height="66"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="_cornerRadius">

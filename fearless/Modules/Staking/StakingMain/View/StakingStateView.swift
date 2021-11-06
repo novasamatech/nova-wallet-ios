@@ -353,7 +353,7 @@ extension StakingStateView {
         let button = TriangularedButton()
         button.triangularedView?.cornerCut = [.bottomRight, .bottomLeft]
         button.triangularedView?.fillColor = .clear
-        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedPink()!
+        button.triangularedView?.highlightedFillColor = R.color.colorHighlightedAccent()!
         button.triangularedView?.shadowOpacity = 0.0
         return button
     }

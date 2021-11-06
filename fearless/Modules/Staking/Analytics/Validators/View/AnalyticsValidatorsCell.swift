@@ -136,7 +136,7 @@ final class AnalyticsValidatorsCell: UITableViewCell {
     private func setupBackground() {
         backgroundColor = .clear
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorCellSelection()
+        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
     }
 
     func bind(viewModel: AnalyticsValidatorItemViewModel) {

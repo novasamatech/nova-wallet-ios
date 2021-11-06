@@ -338,7 +338,7 @@
                                                     <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="color" keyPath="highlightedFillColor">
-                                                    <color key="value" name="colorHighlightedPink"/>
+                                                    <color key="value" name="colorHighlightedAccent"/>
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="image" keyPath="iconImage" value="iconFearlessSmall"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Learn more about Payouts"/>
@@ -480,9 +480,6 @@
         </namedColor>
         <namedColor name="colorHighlightedAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="colorHighlightedPink">
-            <color red="1" green="0.0" blue="0.60392156862745094" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorLightGray">
             <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
