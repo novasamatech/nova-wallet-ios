@@ -8,42 +8,47 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
 
     let title: String
     let imageViewModel: WalletImageViewModelProtocol?
-    let amount: String
     let price: String
     let priceChangeViewModel: WalletPriceChangeViewModel
-    let totalVolume: String
 
-    let leftTitle: String
-    let leftDetails: String
+    let balancesTitle: String
 
-    let rightTitle: String
-    let rightDetails: String
+    let totalTitle: String
+    let totalBalance: BalanceViewModel
+
+    let transferableTitle: String
+    let transferableBalance: BalanceViewModel
+
+    let lockedTitle: String
+    let lockedBalance: BalanceViewModel
 
     let infoDetailsCommand: WalletCommandProtocol
 
     init(
         title: String,
         imageViewModel: WalletImageViewModelProtocol?,
-        amount: String,
         price: String,
         priceChangeViewModel: WalletPriceChangeViewModel,
-        totalVolume: String,
-        leftTitle: String,
-        leftDetails: String,
-        rightTitle: String,
-        rightDetails: String,
+        balancesTitle: String,
+        totalTitle: String,
+        totalBalance: BalanceViewModel,
+        transferableTitle: String,
+        transferableBalance: BalanceViewModel,
+        lockedTitle: String,
+        lockedBalance: BalanceViewModel,
         infoDetailsCommand: WalletCommandProtocol
     ) {
         self.title = title
         self.imageViewModel = imageViewModel
-        self.amount = amount
         self.price = price
         self.priceChangeViewModel = priceChangeViewModel
-        self.totalVolume = totalVolume
-        self.leftTitle = leftTitle
-        self.leftDetails = leftDetails
-        self.rightTitle = rightTitle
-        self.rightDetails = rightDetails
+        self.balancesTitle = balancesTitle
+        self.totalTitle = totalTitle
+        self.totalBalance = totalBalance
+        self.transferableTitle = transferableTitle
+        self.transferableBalance = transferableBalance
+        self.lockedTitle = lockedTitle
+        self.lockedBalance = lockedBalance
         self.infoDetailsCommand = infoDetailsCommand
     }
 }

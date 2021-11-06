@@ -45,6 +45,15 @@ enum ChainModelGenerator {
                 hasCrowdloans: hasCrowdloans
             )
 
+            let explorers: [ChainModel.Explorer] = [
+                ChainModel.Explorer(
+                    name: UUID().uuidString,
+                    account: "https://github.com/{address}",
+                    extrinsic: nil,
+                    event: nil
+                )
+            ]
+
             return ChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -56,6 +65,7 @@ enum ChainModelGenerator {
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
+                explorers: explorers,
                 order: Int64(index)
             )
         }
@@ -103,6 +113,15 @@ enum ChainModelGenerator {
                 hasCrowdloans: hasCrowdloans
             )
 
+            let explorers: [ChainModel.Explorer] = [
+                ChainModel.Explorer(
+                    name: UUID().uuidString,
+                    account: "https://github.com/{address}",
+                    extrinsic: nil,
+                    event: nil
+                )
+            ]
+
             return RemoteChainModel(
                 chainId: chainId,
                 parentId: nil,
@@ -113,7 +132,8 @@ enum ChainModelGenerator {
                 types: types,
                 icon: URL(string: "https://github.com")!,
                 options: options.isEmpty ? nil : options,
-                externalApi: externalApi
+                externalApi: externalApi,
+                explorers: explorers
             )
         }
     }
@@ -156,6 +176,15 @@ enum ChainModelGenerator {
             hasCrowdloans: hasCrowdloans
         )
 
+        let explorers: [ChainModel.Explorer] = [
+            ChainModel.Explorer(
+                name: UUID().uuidString,
+                account: "https://github.com/{address}",
+                extrinsic: nil,
+                event: nil
+            )
+        ]
+
         return ChainModel(
             chainId: chainId,
             parentId: nil,
@@ -167,6 +196,7 @@ enum ChainModelGenerator {
             icon: Constants.dummyURL,
             options: options.isEmpty ? nil : options,
             externalApi: externalApi,
+            explorers: explorers,
             order: 0
         )
     }

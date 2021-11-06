@@ -15,6 +15,7 @@
         <attribute name="chainId" attributeType="String"/>
         <attribute name="crowdloansApiType" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiUrl" optional="YES" attributeType="URI"/>
+        <attribute name="explorers" optional="YES" attributeType="Binary"/>
         <attribute name="hasCrowdloans" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="historyApiType" optional="YES" attributeType="String"/>
         <attribute name="historyApiUrl" optional="YES" attributeType="URI"/>
@@ -94,7 +95,7 @@
     </entity>
     <elements>
         <element name="CDAsset" positionX="-36" positionY="90" width="128" height="149"/>
-        <element name="CDChain" positionX="-45" positionY="81" width="128" height="314"/>
+        <element name="CDChain" positionX="-45" positionY="81" width="128" height="329"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
         <element name="CDContactItem" positionX="-45" positionY="81" width="128" height="118"/>
