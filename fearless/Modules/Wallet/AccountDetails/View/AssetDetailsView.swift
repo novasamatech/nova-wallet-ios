@@ -5,24 +5,43 @@ import SoraUI
 final class AssetDetailsView: BaseAccountDetailsContainingView {
     var contentInsets: UIEdgeInsets = .zero
 
-    var preferredContentHeight: CGFloat { 227.0 }
+    var preferredContentHeight: CGFloat { 337.0 }
 
+    @IBOutlet var separators: [BorderedContainerView]!
+
+    // Header
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var iconView: UIImageView!
-    @IBOutlet private var balanceLabel: UILabel!
     @IBOutlet private var priceLabel: UILabel!
     @IBOutlet private var priceChangeLabel: UILabel!
-    @IBOutlet private var totalVolumeLabel: UILabel!
-    @IBOutlet private var leftTitleLabel: UILabel!
-    @IBOutlet private var leftDetailsLabel: UILabel!
-    @IBOutlet private var rightTitleLabel: UILabel!
-    @IBOutlet private var rightDetailsLabel: UILabel!
+
+    // Balances widget
+    @IBOutlet var widgetTitleLabel: UILabel!
+    @IBOutlet var totalSectionTitleLabel: UILabel!
+    @IBOutlet var totalSectionTokenLabel: UILabel!
+    @IBOutlet var totalSectionFiatLabel: UILabel!
+    @IBOutlet var transferableSectionTitleLabel: UILabel!
+    @IBOutlet var transferableSectionTokenLabel: UILabel!
+    @IBOutlet var transferableSectionFiatLabel: UILabel!
+    @IBOutlet var lockedSectionTitleLabel: UILabel!
+    @IBOutlet var lockedSectionTokenLabel: UILabel!
+    @IBOutlet var lockedSectionFiatLabel: UILabel!
+
+    // Action buttons
     @IBOutlet private var sendButton: RoundedButton!
     @IBOutlet private var receiveButton: RoundedButton!
     @IBOutlet private var buyButton: RoundedButton!
 
     private var actionsViewModel: WalletActionsViewModelProtocol?
     private var assetViewModel: AssetDetailsViewModel?
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        separators.forEach {
+            $0.strokeWidth = UIConstants.separatorHeight
+        }
+    }
 
     func setContentInsets(_ contentInsets: UIEdgeInsets, animated _: Bool) {
         self.contentInsets = contentInsets
@@ -55,13 +74,22 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
             self?.iconView.image = image
         }
 
-        balanceLabel.text = assetViewModel.amount
         priceLabel.text = assetViewModel.price
-        totalVolumeLabel.text = assetViewModel.totalVolume
-        leftTitleLabel.text = assetViewModel.leftTitle
-        leftDetailsLabel.text = assetViewModel.leftDetails
-        rightTitleLabel.text = assetViewModel.rightTitle
-        rightDetailsLabel.text = assetViewModel.rightDetails
+
+        // Balances widget
+        widgetTitleLabel.text = assetViewModel.balancesTitle
+        totalSectionTitleLabel.text = assetViewModel.totalTitle
+        transferableSectionTitleLabel.text = assetViewModel.transferableTitle
+        lockedSectionTitleLabel.text = assetViewModel.lockedTitle
+
+        totalSectionTokenLabel.text = assetViewModel.totalBalance.amount
+        totalSectionFiatLabel.text = assetViewModel.totalBalance.price
+
+        transferableSectionTokenLabel.text = assetViewModel.transferableBalance.amount
+        transferableSectionFiatLabel.text = assetViewModel.transferableBalance.price
+
+        lockedSectionTokenLabel.text = assetViewModel.lockedBalance.amount
+        lockedSectionFiatLabel.text = assetViewModel.lockedBalance.price
 
         switch assetViewModel.priceChangeViewModel {
         case let .goingUp(displayString):

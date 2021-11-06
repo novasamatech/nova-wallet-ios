@@ -151,7 +151,7 @@ operations will appear here";
 "wallet.search.empty.title" = "Make sure that the address is \
 from the right network";
 "wallet.contacts.search.placeholder" = "Account address or account name";
-"wallet.balance.available" = "Available";
+"wallet.balance.available" = "Transferable";
 "wallet.transfer.total.title" = "Total";
 "wallet.search.contacts" = "Contacts";
 "common.retry" = "Retry";
@@ -542,3 +542,4 @@ will appear here";
 "wallet.account.locks.vesting" = "Vesting";
 "wallet.account.locks.democracy" = "Democracy";
 "wallet.account.locks.elections" = "Elections";
+"wallet.balances.widget.title" = "Your balance";
