@@ -9,32 +9,18 @@ final class AccountImportJsonFactory {
     func createInfo(from definition: KeystoreDefinition) throws -> MetaAccountImportPreferredInfo {
         let info = try KeystoreInfoFactory().createInfo(from: definition)
 
-        let chain: Chain?
-        let networkTypeConfirmed: Bool
-
-        if let definitionGenesisHashString = definition.meta?.genesisHash,
-           let definitionGenesisHash = try? Data(hexString: definitionGenesisHashString),
-           let genesisBasedChain = Chain.allCases
-           .first(where: { definitionGenesisHash == (try? Data(hexString: $0.genesisHash)) }) {
-            chain = genesisBasedChain
-            networkTypeConfirmed = true
-        } else {
-            if let chainType = info.chainType {
-                chain = SNAddressType(rawValue: UInt8(chainType))?.chain
+        let genesisHash: Data? = {
+            if let definitionGenesisHashString = definition.meta?.genesisHash {
+                return try? Data(hexString: definitionGenesisHashString)
             } else {
-                chain = nil
+                return nil
             }
+        }()
 
-            networkTypeConfirmed = false
-        }
-
-        // TODO: Check with Ethereum data
-        // cryptoType: MultiassetCryptoType(rawValue: info.cryptoType),
         return MetaAccountImportPreferredInfo(
             username: info.meta?.name,
-            networkType: chain,
-            cryptoType: MultiassetCryptoType(rawValue: 0), // FIXME: Pass correct value here
-            networkTypeConfirmed: networkTypeConfirmed
+            cryptoType: MultiassetCryptoType(secretType: info.secretType),
+            genesisHash: genesisHash
         )
     }
 }

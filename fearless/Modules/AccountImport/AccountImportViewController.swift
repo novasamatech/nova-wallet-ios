@@ -456,10 +456,6 @@ extension AccountImportViewController: AccountImportViewProtocol {
         substrateCryptoTypeView.actionControl.deactivate(animated: true)
     }
 
-    func didCompleteAddressTypeSelection() {
-        // FIXME: Remove this function
-    }
-
     func didValidateSubstrateDerivationPath(_ status: FieldStatus) {
         updateSubstrateDerivationPath(status: status)
     }

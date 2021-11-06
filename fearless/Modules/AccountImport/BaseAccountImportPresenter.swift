@@ -4,7 +4,6 @@ import SoraFoundation
 enum AccountImportContext: String {
     case sourceType
     case cryptoType
-    case addressType
 }
 
 class BaseAccountImportPresenter {
@@ -23,7 +22,6 @@ class BaseAccountImportPresenter {
 
     private(set) var selectedSourceType: AccountImportSource?
     private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
-    private(set) var selectedNetworkType: Chain?
 
     private(set) var sourceViewModel: InputViewModelProtocol?
     private(set) var usernameViewModel: InputViewModelProtocol?
@@ -40,17 +38,8 @@ class BaseAccountImportPresenter {
 
         if let preferredInfo = preferredInfo {
             selectedSubstrateCryptoType = preferredInfo.cryptoType
-
-            if let preferredNetwork = preferredInfo.networkType,
-               metadata.availableNetworks.contains(preferredNetwork) {
-                selectedNetworkType = preferredInfo.networkType
-            } else {
-                selectedNetworkType = metadata.defaultNetwork
-            }
-
         } else {
             selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? metadata.defaultCryptoType
-            selectedNetworkType = selectedNetworkType ?? metadata.defaultNetwork
         }
 
         view?.setSource(type: selectedSourceType)
@@ -151,31 +140,6 @@ class BaseAccountImportPresenter {
         }
     }
 
-    private func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {
-        guard let metadata = metadata else {
-            return
-        }
-
-        if preferredInfo.networkType == nil {
-            let locale = localizationManager?.selectedLocale
-            let message = R.string.localizable.accountImportJsonNoNetwork(preferredLanguages: locale?.rLanguages)
-            view?.setUploadWarning(message: message)
-            return
-        }
-
-        if let preferredNetwork = preferredInfo.networkType,
-           !metadata.availableNetworks.contains(preferredNetwork) {
-            let locale = localizationManager?.selectedLocale ?? Locale.current
-            let message = R.string.localizable
-                .accountImportWrongNetwork(
-                    preferredNetwork.titleForLocale(locale),
-                    metadata.defaultNetwork.titleForLocale(locale)
-                )
-            view?.setUploadWarning(message: message)
-            return
-        }
-    }
-
     private func applyAdvanced(_ preferredInfo: MetaAccountImportPreferredInfo?) {
         guard let selectedSourceType = selectedSourceType else {
             let locale = localizationManager?.selectedLocale
@@ -189,19 +153,14 @@ class BaseAccountImportPresenter {
             applyCryptoTypeViewModel(preferredInfo)
             applySubstrateDerivationPathViewModel()
             applyEthereumDerivationPathViewModel()
-            applyNetworkTypeViewModel(preferredInfo)
-
         case .seed:
             applyCryptoTypeViewModel(preferredInfo)
             applySubstrateDerivationPathViewModel()
             ethereumDerivationPathViewModel = nil
-            applyNetworkTypeViewModel(preferredInfo)
-
         case .keystore:
             applyCryptoTypeViewModel(preferredInfo)
             substrateDerivationPathViewModel = nil
             ethereumDerivationPathViewModel = nil
-            applyNetworkTypeViewModel(preferredInfo)
         }
     }
 
@@ -235,32 +194,6 @@ class BaseAccountImportPresenter {
             underlyingViewModel: ethereumViewModel,
             selectable: false
         ))
-    }
-
-    private func applyNetworkTypeViewModel(_ preferredInfo: MetaAccountImportPreferredInfo?) {
-        guard let networkType = selectedNetworkType else {
-            return
-        }
-
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-
-        let contentViewModel = IconWithTitleViewModel(
-            icon: networkType.icon,
-            title: networkType.titleForLocale(locale)
-        )
-
-        let selectable: Bool
-
-        if let preferredInfo = preferredInfo, preferredInfo.networkType != nil {
-            selectable = !preferredInfo.networkTypeConfirmed
-        } else {
-            selectable = (metadata?.availableNetworks.count ?? 0) > 1
-        }
-
-        let selectedViewModel = SelectableViewModel(
-            underlyingViewModel: contentViewModel,
-            selectable: selectable
-        )
     }
 
     private func applySubstrateDerivationPathViewModel() {
@@ -388,6 +321,10 @@ class BaseAccountImportPresenter {
     internal func setViewTitle() {
         fatalError("This function should be overriden")
     }
+
+    internal func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {
+        fatalError("This function should be overriden")
+    }
 }
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
@@ -426,21 +363,6 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
             wireframe.presentCryptoTypeSelection(
                 from: view,
                 availableTypes: metadata.availableCryptoTypes,
-                selectedType: selectedType,
-                delegate: self,
-                context: context
-            )
-        }
-    }
-
-    // TODO: Remove
-    func selectNetworkType() {
-        if let metadata = metadata {
-            let context = AccountImportContext.addressType.rawValue as NSString
-            let selectedType = selectedNetworkType ?? metadata.defaultNetwork
-            wireframe.presentNetworkTypeSelection(
-                from: view,
-                availableTypes: metadata.availableNetworks,
                 selectedType: selectedType,
                 delegate: self,
                 context: context
@@ -514,7 +436,6 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
 
         selectedSourceType = metadata.defaultSource
         selectedSubstrateCryptoType = metadata.defaultCryptoType
-        selectedNetworkType = metadata.defaultNetwork
 
         applySourceType()
     }
@@ -552,8 +473,6 @@ extension BaseAccountImportPresenter: ModalPickerViewControllerDelegate {
             switch selectionContext {
             case .sourceType:
                 selectedSourceType = metadata?.availableSources[index]
-
-                selectedNetworkType = metadata?.defaultNetwork
                 selectedSubstrateCryptoType = metadata?.defaultCryptoType
 
                 applySourceType()
@@ -567,12 +486,6 @@ extension BaseAccountImportPresenter: ModalPickerViewControllerDelegate {
                 applySubstrateDerivationPathViewModel()
 
                 view?.didCompleteCryptoTypeSelection()
-
-            case .addressType:
-                selectedNetworkType = metadata?.availableNetworks[index]
-
-                applyNetworkTypeViewModel(nil)
-                view?.didCompleteAddressTypeSelection()
             }
         }
     }
@@ -586,8 +499,6 @@ extension BaseAccountImportPresenter: ModalPickerViewControllerDelegate {
                 view?.didCompleteSourceTypeSelection()
             case .cryptoType:
                 view?.didCompleteCryptoTypeSelection()
-            case .addressType:
-                view?.didCompleteAddressTypeSelection()
             }
         }
     }

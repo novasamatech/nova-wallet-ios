@@ -103,4 +103,6 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             .importWalletTitle(preferredLanguages: selectedLocale.rLanguages)
         view?.setTitle(title)
     }
+
+    override func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {}
 }

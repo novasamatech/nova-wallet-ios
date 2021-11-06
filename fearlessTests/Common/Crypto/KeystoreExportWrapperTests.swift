@@ -60,7 +60,7 @@ class KeystoreExportWrapperTests: XCTestCase {
                                                                     password: password,
                                                                     keychain: resultKeystore,
                                                                     settings: resultSettings,
-                                                                    networkType: info.networkType ?? .westend,
+                                                                    networkType:  .westend,
                                                                     cryptoType: .sr25519) // FIXME: cryptoType: info.cryptoType ?? .sr25519)
 
             // then

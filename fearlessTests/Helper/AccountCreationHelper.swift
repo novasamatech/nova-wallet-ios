@@ -89,7 +89,7 @@ final class AccountCreationHelper {
                                                  password: password,
                                                  keychain: keychain,
                                                  settings: settings,
-                                                 networkType: info.networkType ?? .westend,
+                                                 networkType: .westend,
                                                  cryptoType: .sr25519) // FIXME: Pass actual crypto type here
     }
 
@@ -217,7 +217,6 @@ final class AccountCreationHelper {
             password: password,
             keychain: keychain,
             settings: settings,
-            networkType: info.networkType ?? .westend,
             cryptoType: cryptoType ?? .sr25519
         )
     }
@@ -227,7 +226,6 @@ final class AccountCreationHelper {
         password: String,
         keychain: KeystoreProtocol,
         settings: SelectedWalletSettings,
-        networkType: Chain,
         cryptoType: MultiassetCryptoType,
         username: String = "username"
     ) throws {

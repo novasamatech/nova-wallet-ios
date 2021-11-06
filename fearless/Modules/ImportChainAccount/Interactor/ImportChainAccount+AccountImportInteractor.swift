@@ -15,18 +15,23 @@ extension ImportChainAccount {
             operationManager: OperationManagerProtocol,
             settings: SelectedWalletSettings,
             keystoreImportService: KeystoreImportServiceProtocol,
-            eventCenter: EventCenterProtocol
+            eventCenter: EventCenterProtocol,
+            isEthereumBased: Bool
         ) {
             self.settings = settings
             self.eventCenter = eventCenter
+
+            let availableCryptoTypes: [MultiassetCryptoType] = isEthereumBased ? [.ethereumEcdsa] :
+                MultiassetCryptoType.substrateTypeList
+            let defaultCryptoType: MultiassetCryptoType = isEthereumBased ? .ethereumEcdsa : .sr25519
 
             super.init(
                 metaAccountOperationFactory: metaAccountOperationFactory,
                 metaAccountRepository: metaAccountRepository,
                 operationManager: operationManager,
                 keystoreImportService: keystoreImportService,
-                supportedNetworks: Chain.allCases, // FIXME: Remove after interactors are done
-                defaultNetwork: Chain.kusama // FIXME: Remove after interactors are done
+                availableCryptoTypes: availableCryptoTypes,
+                defaultCryptoType: defaultCryptoType
             )
         }
 

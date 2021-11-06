@@ -45,7 +45,7 @@ final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
             address: account.address,
             secretKeyData: secretKey,
             publicKeyData: account.publicKeyData,
-            cryptoType: account.cryptoType.utilsType
+            secretType: account.cryptoType.secretType
         )
 
         let definition = try builder.build(from: keystoreData, password: password)
