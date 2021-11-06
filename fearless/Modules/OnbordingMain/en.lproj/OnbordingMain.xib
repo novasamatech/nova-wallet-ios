@@ -48,7 +48,6 @@
                         <userDefinedRuntimeAttribute type="number" keyPath="_shadowOpacity">
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Create Account"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
@@ -85,10 +84,11 @@
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_highlighted" value="NO"/>
-                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconPlus"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
-                            <integer key="value" value="0"/>
+                            <integer key="value" value="1"/>
                         </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Create Account"/>
+                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconPlusFilled"/>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="actionSignupWithSender:" destination="-1" eventType="touchUpInside" id="TJA-qA-tUz"/>
@@ -142,6 +142,10 @@
                         <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconUploadNova"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
+                            <integer key="value" value="1"/>
+                        </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="actionRestoreAccessWithSender:" destination="-1" eventType="touchUpInside" id="Tqc-wf-yUA"/>
@@ -193,14 +197,15 @@
     </objects>
     <designables>
         <designable name="JKh-WT-j8k">
-            <size key="intrinsicContentSize" width="145.5" height="24"/>
+            <size key="intrinsicContentSize" width="137.5" height="18"/>
         </designable>
         <designable name="bcI-vv-wu7">
-            <size key="intrinsicContentSize" width="114.5" height="18"/>
+            <size key="intrinsicContentSize" width="138.5" height="18"/>
         </designable>
     </designables>
     <resources>
-        <image name="iconPlus" width="24" height="24"/>
+        <image name="iconPlusFilled" width="16" height="16"/>
+        <image name="iconUploadNova" width="16" height="16"/>
         <image name="logo" width="246" height="345.5"/>
         <image name="novabg-splash" width="375" height="812"/>
         <namedColor name="colorAccent">
