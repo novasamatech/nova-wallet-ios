@@ -1,6 +1,7 @@
 import Foundation
 import CommonWallet
 import SoraFoundation
+import UIKit
 
 final class AssetDetailsConfigurator {
     let viewModelFactory: AssetDetailsViewModelFactory
