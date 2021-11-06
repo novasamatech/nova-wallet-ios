@@ -15,7 +15,6 @@ protocol AccountImportViewProtocol: ControllerBackedProtocol {
 
     func didCompleteSourceTypeSelection()
     func didCompleteCryptoTypeSelection()
-    func didCompleteAddressTypeSelection()
 
     func didValidateSubstrateDerivationPath(_ status: FieldStatus)
     func didValidateEthereumDerivationPath(_ status: FieldStatus)
@@ -27,7 +26,6 @@ protocol AccountImportPresenterProtocol: AnyObject {
     func provideVisibilitySettings() -> AccountImportVisibility
     func selectSourceType()
     func selectCryptoType()
-    func selectNetworkType()
     func activateUpload()
     func validateDerivationPath()
     func proceed()

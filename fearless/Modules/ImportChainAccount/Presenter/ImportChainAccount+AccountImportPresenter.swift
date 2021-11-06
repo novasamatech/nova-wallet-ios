@@ -197,5 +197,21 @@ extension ImportChainAccount {
                 .importChainAccountTitle(preferredLanguages: selectedLocale.rLanguages)
             view?.setTitle(title)
         }
+
+        override func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {
+            if preferredInfo.genesisHash == nil {
+                let locale = localizationManager?.selectedLocale
+                let message = R.string.localizable.accountImportJsonNoNetwork(preferredLanguages: locale?.rLanguages)
+                view?.setUploadWarning(message: message)
+                return
+            }
+
+            if (try? Data(hexString: chainModelId)) != preferredInfo.genesisHash {
+                let message = R.string.localizable
+                    .accountImportWrongNetwork(preferredLanguages: selectedLocale.rLanguages)
+                view?.setUploadWarning(message: message)
+                return
+            }
+        }
     }
 }

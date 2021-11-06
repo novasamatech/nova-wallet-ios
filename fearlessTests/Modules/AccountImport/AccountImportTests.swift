@@ -56,7 +56,6 @@ class AccountImportTests: XCTestCase {
         stub(view) { stub in
             when(stub).didCompleteSourceTypeSelection().thenDoNothing()
             when(stub).didCompleteCryptoTypeSelection().thenDoNothing()
-            when(stub).didCompleteAddressTypeSelection().thenDoNothing()
             when(stub).didValidateSubstrateDerivationPath(any()).thenDoNothing()
             when(stub).didValidateEthereumDerivationPath(any()).thenDoNothing()
             when(stub).isSetup.get.thenReturn(false, true)

@@ -206,7 +206,7 @@ Seed: %@\
 Derivation path: %@";
 "common.changed" = "Changed";
 "account.import.json.no.network" = "JSON contains no network information. Please specify it below.";
-"account.import.wrong.network" = "Network in JSON is %@, does not match selected %@. The latter will be used to import an account.";
+"account.import.wrong.network" = "Network in JSON does not match selected one. The latter will be used to import an account.";
 "common.address" = "Address";
 "wallet.asset.buy" = "Buy";
 "wallet.send.dead.recipient.title" = "Amount is too low";

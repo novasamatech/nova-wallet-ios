@@ -3321,21 +3321,6 @@ import SoraFoundation
     
     
     
-     func didCompleteAddressTypeSelection()  {
-        
-    return cuckoo_manager.call("didCompleteAddressTypeSelection()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didCompleteAddressTypeSelection())
-        
-    }
-    
-    
-    
      func didValidateSubstrateDerivationPath(_ status: FieldStatus)  {
         
     return cuckoo_manager.call("didValidateSubstrateDerivationPath(_: FieldStatus)",
@@ -3441,11 +3426,6 @@ import SoraFoundation
 	    func didCompleteCryptoTypeSelection() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "didCompleteCryptoTypeSelection()", parameterMatchers: matchers))
-	    }
-	    
-	    func didCompleteAddressTypeSelection() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportViewProtocol.self, method: "didCompleteAddressTypeSelection()", parameterMatchers: matchers))
 	    }
 	    
 	    func didValidateSubstrateDerivationPath<M1: Cuckoo.Matchable>(_ status: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(FieldStatus)> where M1.MatchedType == FieldStatus {
@@ -3557,12 +3537,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didCompleteAddressTypeSelection() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("didCompleteAddressTypeSelection()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func didValidateSubstrateDerivationPath<M1: Cuckoo.Matchable>(_ status: M1) -> Cuckoo.__DoNotUse<(FieldStatus), Void> where M1.MatchedType == FieldStatus {
 	        let matchers: [Cuckoo.ParameterMatcher<(FieldStatus)>] = [wrap(matchable: status) { $0 }]
 	        return cuckoo_manager.verify("didValidateSubstrateDerivationPath(_: FieldStatus)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3644,10 +3618,6 @@ import SoraFoundation
     }
     
      func didCompleteCryptoTypeSelection()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func didCompleteAddressTypeSelection()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -3763,21 +3733,6 @@ import SoraFoundation
     
     
     
-     func selectNetworkType()  {
-        
-    return cuckoo_manager.call("selectNetworkType()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.selectNetworkType())
-        
-    }
-    
-    
-    
      func activateUpload()  {
         
     return cuckoo_manager.call("activateUpload()",
@@ -3855,11 +3810,6 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "selectCryptoType()", parameterMatchers: matchers))
 	    }
 	    
-	    func selectNetworkType() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "selectNetworkType()", parameterMatchers: matchers))
-	    }
-	    
 	    func activateUpload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportPresenterProtocol.self, method: "activateUpload()", parameterMatchers: matchers))
@@ -3922,12 +3872,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func selectNetworkType() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("selectNetworkType()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func activateUpload() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateUpload()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -3971,10 +3915,6 @@ import SoraFoundation
     }
     
      func selectCryptoType()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func selectNetworkType()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

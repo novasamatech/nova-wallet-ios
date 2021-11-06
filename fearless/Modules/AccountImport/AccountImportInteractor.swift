@@ -24,8 +24,8 @@ final class AccountImportInteractor: BaseAccountImportInteractor {
             metaAccountRepository: accountRepository,
             operationManager: operationManager,
             keystoreImportService: keystoreImportService,
-            supportedNetworks: Chain.allCases,
-            defaultNetwork: ConnectionItem.defaultConnection.type.chain
+            availableCryptoTypes: MultiassetCryptoType.substrateTypeList,
+            defaultCryptoType: .sr25519
         )
     }
 
