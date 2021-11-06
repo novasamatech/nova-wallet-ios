@@ -49,10 +49,10 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> WalletViewModelProtocol? {
-        let amountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
-            .value(for: locale)
-
+        let loclaizableAmountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
         let localizablePriceFormatter = amountFormatterFactory.createTokenFormatter(for: priceAsset)
+
+        let amountFormatter = loclaizableAmountFormatter.value(for: locale)
         let priceFormatter = localizablePriceFormatter.value(for: locale)
 
         let balanceContext = BalanceContext(context: balance.context ?? [:])
@@ -80,8 +80,6 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         let priceChangeViewModel = balanceContext.priceChange >= 0.0 ?
             WalletPriceChangeViewModel.goingUp(displayValue: priceChangeString) :
             WalletPriceChangeViewModel.goingDown(displayValue: priceChangeString)
-
-        let numberFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
 
         let balancesTitle = R.string.localizable.walletBalancesWidgetTitle(preferredLanguages: locale.rLanguages)
         let totalTitle = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
@@ -111,7 +109,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
-            amountFormatter: numberFormatter,
+            amountFormatter: loclaizableAmountFormatter,
             priceFormatter: localizablePriceFormatter,
             commandFactory: commandFactory,
             precision: asset.precision
