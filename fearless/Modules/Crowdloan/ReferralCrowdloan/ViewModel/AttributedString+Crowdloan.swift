@@ -19,7 +19,8 @@ extension NSAttributedString {
             attributes: highlightAttributes
         )
 
-        let resultString = R.string.localizable.crowdloanTermsFormat(termsConditions)
+        let resultString = R.string.localizable
+            .crowdloanTermsFormat(termsConditions, preferredLanguages: locale?.rLanguages)
 
         return CompoundAttributedStringDecorator(
             decorators: [rangeDecorator, termDecorator]
