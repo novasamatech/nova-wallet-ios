@@ -5,24 +5,18 @@ struct BalanceContext {
     static let reservedKey = "account.balance.reserved.key"
     static let miscFrozenKey = "account.balance.misc.frozen.key"
     static let feeFrozenKey = "account.balance.fee.frozen.key"
-
     static let priceKey = "account.balance.price.key"
     static let priceChangeKey = "account.balance.price.change.key"
-
     static let minimalBalanceKey = "account.balance.minimal.key"
-
     static let balanceLocksKey = "account.balance.locks.key"
 
     let free: Decimal
     let reserved: Decimal
     let miscFrozen: Decimal
     let feeFrozen: Decimal
-
     let price: Decimal
     let priceChange: Decimal
-
     let minimalBalance: Decimal
-
     let balanceLocks: BalanceLocks
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import CommonWallet
+import SoraFoundation
 
 final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
     let address: AccountAddress
@@ -22,33 +23,54 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         self.priceAsset = priceAsset
     }
 
+    private func createFormattedAmount(from decimalValue: Decimal, with amountFormatter: TokenFormatter) -> String {
+        guard let amountString = amountFormatter.stringFromDecimal(decimalValue) else {
+            return decimalValue.stringWithPointSeparator
+        }
+
+        return amountString
+    }
+
+    private func createBalanceViewModel(
+        from amount: Decimal,
+        price: Decimal,
+        with amountFormatter: TokenFormatter,
+        priceFormatter: TokenFormatter
+    ) -> BalanceViewModel {
+        let amountString = createFormattedAmount(from: amount, with: amountFormatter)
+        let priceString = priceFormatter.stringFromDecimal(amount * price)
+
+        return BalanceViewModel(amount: amountString, price: priceString)
+    }
+
     func createAssetViewModel(
         for asset: WalletAsset,
         balance: BalanceData,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> WalletViewModelProtocol? {
-        let amountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
-            .value(for: locale)
-
+        let loclaizableAmountFormatter = amountFormatterFactory.createTokenFormatter(for: asset)
         let localizablePriceFormatter = amountFormatterFactory.createTokenFormatter(for: priceAsset)
+
+        let amountFormatter = loclaizableAmountFormatter.value(for: locale)
         let priceFormatter = localizablePriceFormatter.value(for: locale)
-
-        let decimalBalance = balance.balance.decimalValue
-        let amount: String
-
-        if let balanceString = amountFormatter.stringFromDecimal(decimalBalance) {
-            amount = balanceString
-        } else {
-            amount = balance.balance.stringValue
-        }
 
         let balanceContext = BalanceContext(context: balance.context ?? [:])
 
-        let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
+        let title = asset.symbol
 
-        let totalPrice = balanceContext.price * balance.balance.decimalValue
-        let totalPriceString = priceFormatter.stringFromDecimal(totalPrice) ?? ""
+        let imageViewModel: WalletImageViewModelProtocol?
+        if let asset = chain.utilityAssets().first {
+            let iconUrl = asset.icon ?? chain.icon
+            imageViewModel = WalletRemoteImageViewModel(
+                url: iconUrl,
+                size: CGSize(width: 24, height: 24)
+            )
+        } else {
+            imageViewModel = nil
+        }
+
+        let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 
         let priceChangeString = NumberFormatter.signedPercent
             .localizableResource()
@@ -59,41 +81,35 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             WalletPriceChangeViewModel.goingUp(displayValue: priceChangeString) :
             WalletPriceChangeViewModel.goingDown(displayValue: priceChangeString)
 
-        let context = BalanceContext(context: balance.context ?? [:])
+        let balancesTitle = R.string.localizable.walletBalancesWidgetTitle(preferredLanguages: locale.rLanguages)
+        let totalTitle = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+        let transferableTitle = R.string.localizable.walletBalanceAvailable(preferredLanguages: locale.rLanguages)
+        let lockedTitle = R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)
 
-        let numberFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
+        let totalBalance = createBalanceViewModel(
+            from: balance.balance.decimalValue,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
 
-        let leftTitle = R.string.localizable
-            .walletBalanceAvailable(preferredLanguages: locale.rLanguages)
+        let transferableBalance = createBalanceViewModel(
+            from: balanceContext.available,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
 
-        let rightTitle = R.string.localizable
-            .walletBalanceLocked(preferredLanguages: locale.rLanguages)
-
-        let leftDetails = numberFormatter
-            .value(for: locale)
-            .stringFromDecimal(context.available) ?? ""
-
-        let rightDetails = numberFormatter
-            .value(for: locale)
-            .stringFromDecimal(context.frozen) ?? ""
-
-        let imageViewModel: WalletImageViewModelProtocol?
-
-        if let asset = chain.utilityAssets().first {
-            let iconUrl = asset.icon ?? chain.icon
-            imageViewModel = WalletRemoteImageViewModel(
-                url: iconUrl,
-                size: CGSize(width: 32, height: 32)
-            )
-        } else {
-            imageViewModel = nil
-        }
-
-        let title = asset.platform?.value(for: locale) ?? ""
+        let lockedBalance = createBalanceViewModel(
+            from: balanceContext.locked,
+            price: balanceContext.price,
+            with: amountFormatter,
+            priceFormatter: priceFormatter
+        )
 
         let infoDetailsCommand = WalletAccountInfoCommand(
             balanceContext: balanceContext,
-            amountFormatter: numberFormatter,
+            amountFormatter: loclaizableAmountFormatter,
             priceFormatter: localizablePriceFormatter,
             commandFactory: commandFactory,
             precision: asset.precision
@@ -102,14 +118,15 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         return AssetDetailsViewModel(
             title: title,
             imageViewModel: imageViewModel,
-            amount: amount,
             price: priceString,
             priceChangeViewModel: priceChangeViewModel,
-            totalVolume: totalPriceString,
-            leftTitle: leftTitle,
-            leftDetails: leftDetails,
-            rightTitle: rightTitle,
-            rightDetails: rightDetails,
+            balancesTitle: balancesTitle,
+            totalTitle: totalTitle,
+            totalBalance: totalBalance,
+            transferableTitle: transferableTitle,
+            transferableBalance: transferableBalance,
+            lockedTitle: lockedTitle,
+            lockedBalance: lockedBalance,
             infoDetailsCommand: infoDetailsCommand
         )
     }

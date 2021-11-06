@@ -60,7 +60,7 @@ struct ModalInfoFactory {
 
     static func createFromBalanceContext(
         _ balanceContext: BalanceContext,
-        amountFormatter: LocalizableResource<LocalizableDecimalFormatting>,
+        amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
     ) -> UIViewController {
@@ -179,7 +179,7 @@ struct ModalInfoFactory {
 
     private static func createViewModelsForContext(
         _ balanceContext: BalanceContext,
-        amountFormatter: LocalizableResource<LocalizableDecimalFormatting>,
+        amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
     ) -> [LocalizableResource<StakingAmountViewModel>] {
@@ -229,7 +229,7 @@ struct ModalInfoFactory {
     private static func createLockViewModel(
         from locks: BalanceLocks,
         balanceContext: BalanceContext,
-        amountFormatter: LocalizableResource<LocalizableDecimalFormatting>,
+        amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
         precision: Int16
     ) -> [LocalizableResource<StakingAmountViewModel>] {

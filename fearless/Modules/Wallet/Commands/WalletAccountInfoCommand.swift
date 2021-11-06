@@ -6,13 +6,13 @@ final class WalletAccountInfoCommand: WalletCommandProtocol {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     let balanceContext: BalanceContext
-    let amountFormatter: LocalizableResource<LocalizableDecimalFormatting>
+    let amountFormatter: LocalizableResource<TokenFormatter>
     let priceFormatter: LocalizableResource<TokenFormatter>
     let precision: Int16
 
     init(
         balanceContext: BalanceContext,
-        amountFormatter: LocalizableResource<LocalizableDecimalFormatting>,
+        amountFormatter: LocalizableResource<TokenFormatter>,
         priceFormatter: LocalizableResource<TokenFormatter>,
         commandFactory: WalletCommandFactoryProtocol,
         precision: Int16
