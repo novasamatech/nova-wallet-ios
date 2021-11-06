@@ -85,6 +85,10 @@
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_highlighted" value="NO"/>
+                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconPlus"/>
+                        <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
+                            <integer key="value" value="0"/>
+                        </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="actionSignupWithSender:" destination="-1" eventType="touchUpInside" id="TJA-qA-tUz"/>
@@ -189,17 +193,18 @@
     </objects>
     <designables>
         <designable name="JKh-WT-j8k">
-            <size key="intrinsicContentSize" width="113.5" height="18"/>
+            <size key="intrinsicContentSize" width="145.5" height="24"/>
         </designable>
         <designable name="bcI-vv-wu7">
             <size key="intrinsicContentSize" width="114.5" height="18"/>
         </designable>
     </designables>
     <resources>
+        <image name="iconPlus" width="24" height="24"/>
         <image name="logo" width="246" height="345.5"/>
         <image name="novabg-splash" width="375" height="812"/>
         <namedColor name="colorAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
             <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
