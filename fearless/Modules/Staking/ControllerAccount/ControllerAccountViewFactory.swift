@@ -29,6 +29,7 @@ struct ControllerAccountViewFactory {
             applicationConfig: ApplicationConfig.shared,
             assetInfo: chainAsset.assetDisplayInfo,
             dataValidatingFactory: dataValidatingFactory,
+            explorers: chainAsset.chain.explorers,
             logger: Logger.shared
         )
 

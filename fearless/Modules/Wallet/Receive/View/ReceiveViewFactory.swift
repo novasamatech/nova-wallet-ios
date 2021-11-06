@@ -7,6 +7,7 @@ import SoraKeystore
 final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     let accountViewModel: ReceiveAccountViewModelProtocol
     let chainFormat: ChainFormat
+    let explorers: [ChainModel.Explorer]?
     let localizationManager: LocalizationManagerProtocol
 
     weak var commandFactory: WalletCommandFactoryProtocol?
@@ -16,10 +17,12 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     init(
         accountViewModel: ReceiveAccountViewModelProtocol,
         chainFormat: ChainFormat,
+        explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.accountViewModel = accountViewModel
         self.chainFormat = chainFormat
+        self.explorers = explorers
         self.localizationManager = localizationManager
     }
 
@@ -47,10 +50,9 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
         let locale = localizationManager.selectedLocale
 
         if let commandFactory = commandFactory {
-            // TODO: Fix account presentation
             let command = WalletAccountOpenCommand(
                 address: address,
-                chain: Chain.westend,
+                explorers: explorers,
                 commandFactory: commandFactory,
                 locale: locale
             )

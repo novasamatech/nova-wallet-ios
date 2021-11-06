@@ -18,6 +18,7 @@ final class StakingPayoutConfirmationPresenter {
     private let payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let assetInfo: AssetBalanceDisplayInfo
+    private let explorers: [ChainModel.Explorer]?
     private let logger: LoggerProtocol?
 
     init(
@@ -25,12 +26,14 @@ final class StakingPayoutConfirmationPresenter {
         payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.payoutConfirmViewModelFactory = payoutConfirmViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.explorers = explorers
         self.logger = logger
     }
 
@@ -109,11 +112,10 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: viewModel.address,
-            chain: .westend,
+            explorers: explorers,
             locale: locale
         )
     }

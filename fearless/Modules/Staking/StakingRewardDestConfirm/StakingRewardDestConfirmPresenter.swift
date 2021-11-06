@@ -10,6 +10,7 @@ final class StakingRewardDestConfirmPresenter {
     let confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
     private var controllerAccount: AccountItem?
@@ -26,6 +27,7 @@ final class StakingRewardDestConfirmPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -35,6 +37,7 @@ final class StakingRewardDestConfirmPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.explorers = explorers
         self.logger = logger
     }
 
@@ -110,8 +113,12 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             return
         }
 
-        // TODO: Fix when implemented
-        wireframe.presentAccountOptions(from: view, address: address, chain: .westend, locale: locale)
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            explorers: explorers,
+            locale: locale
+        )
     }
 
     func presentPayoutAccountOptions() {
@@ -122,8 +129,12 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             return
         }
 
-        // TODO: Fix when implemented
-        wireframe.presentAccountOptions(from: view, address: address, chain: .westend, locale: locale)
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            explorers: explorers,
+            locale: locale
+        )
     }
 }
 

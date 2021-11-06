@@ -30,7 +30,8 @@ class ControllerAccountTests: XCTestCase {
             viewModelFactory: viewModelFactory,
             applicationConfig: ApplicationConfig.shared,
             assetInfo: chainAsset.assetDisplayInfo,
-            dataValidatingFactory: dataValidatingFactory
+            dataValidatingFactory: dataValidatingFactory,
+            explorers: nil
         )
         presenter.view = view
         dataValidatingFactory.view = view

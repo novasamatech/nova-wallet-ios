@@ -79,7 +79,8 @@ class SelectValidatorsConfirmTests: XCTestCase {
             confirmationViewModelFactory: confirmViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
-            assetInfo: chainAsset.assetDisplayInfo
+            assetInfo: chainAsset.assetDisplayInfo,
+            explorers: nil
         )
 
         presenter.view = view

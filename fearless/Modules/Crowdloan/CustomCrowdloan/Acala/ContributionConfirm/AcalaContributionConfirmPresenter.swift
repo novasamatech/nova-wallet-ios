@@ -16,6 +16,7 @@ final class AcalaContributionConfirmPresenter: CrowdloanContributionConfirmPrese
         inputAmount: Decimal,
         bonusRate: Decimal?,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -30,6 +31,7 @@ final class AcalaContributionConfirmPresenter: CrowdloanContributionConfirmPrese
             bonusRate: bonusRate,
             assetInfo: assetInfo,
             localizationManager: localizationManager,
+            explorers: explorers,
             logger: logger
         )
     }

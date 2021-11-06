@@ -11,16 +11,11 @@ extension TransactionDetailsViewModelFactory {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> [WalletFormViewBindingProtocol]? {
-        guard let chain = WalletAssetId(rawValue: data.assetId)?.chain else {
-            return nil
-        }
-
         var viewModels: [WalletFormViewBindingProtocol] = []
 
         populateEventId(
             in: &viewModels,
             data: data,
-            chain: chain,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -47,7 +42,6 @@ extension TransactionDetailsViewModelFactory {
     func populateEventId(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         data: AssetTransactionData,
-        chain: Chain,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
@@ -58,7 +52,7 @@ extension TransactionDetailsViewModelFactory {
 
         let command = WalletExtrinsicOpenCommand(
             extrinsicHash: data.peerId,
-            chain: chain,
+            explorers: explorers,
             commandFactory: commandFactory,
             locale: locale
         )

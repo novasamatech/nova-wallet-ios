@@ -156,7 +156,8 @@ class StakingRewardDestConfirmTests: XCTestCase {
             confirmModelFactory: StakingRewardDestConfirmVMFactory(),
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidating,
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            explorers: nil
         )
 
         presenter.view = view

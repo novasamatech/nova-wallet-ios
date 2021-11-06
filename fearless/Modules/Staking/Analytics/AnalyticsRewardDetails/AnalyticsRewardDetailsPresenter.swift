@@ -1,5 +1,6 @@
 import Foundation
 import UIKit.UIPasteboard
+import RobinHood
 
 final class AnalyticsRewardDetailsPresenter {
     weak var view: AnalyticsRewardDetailsViewProtocol?
@@ -32,31 +33,22 @@ final class AnalyticsRewardDetailsPresenter {
         wireframe.presentSuccessNotification(title, from: view)
     }
 
-    private func createPolkascanAction(locale: Locale) -> AlertPresentableAction? {
-        // TODO: fix when api implemented
-        guard let url = Chain.westend.polkascanEventURL(rewardModel.eventId) else { return nil }
-        let polkascanTitle = R.string.localizable
-            .transactionDetailsViewPolkascan(preferredLanguages: locale.rLanguages)
-
-        return AlertPresentableAction(title: polkascanTitle) { [weak self] in
-            if let view = self?.view {
-                self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+    private func createExplorerActions() -> [AlertPresentableAction] {
+        chain.explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.event,
+                let url = try? EndpointBuilder(urlTemplate: urlTemplate).buildParameterURL(
+                    urlTemplate
+                ) else {
+                return nil
             }
-        }
-    }
 
-    private func createSubscanAction(locale: Locale) -> AlertPresentableAction? {
-        // TODO: fix when api implemented
-        let blockNumber = String(rewardModel.eventId.prefix(while: { $0 != "-" }))
-        guard let url = Chain.westend.subscanBlockURL(blockNumber) else { return nil }
-
-        let subscanTitle = R.string.localizable
-            .transactionDetailsViewSubscan(preferredLanguages: locale.rLanguages)
-        return AlertPresentableAction(title: subscanTitle) { [weak self] in
-            if let view = self?.view {
-                self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+            return AlertPresentableAction(title: explorer.name) { [weak self] in
+                if let view = self?.view {
+                    self?.wireframe.showWeb(url: url, from: view, style: .automatic)
+                }
             }
-        }
+        } ?? []
     }
 
     private func createCopyAction(locale _: Locale) -> AlertPresentableAction {
@@ -76,11 +68,7 @@ extension AnalyticsRewardDetailsPresenter: AnalyticsRewardDetailsPresenterProtoc
 
     func handleEventIdAction() {
         let locale = view?.selectedLocale ?? .current
-        let actions = [
-            createCopyAction(locale: locale),
-            createPolkascanAction(locale: locale),
-            createSubscanAction(locale: locale)
-        ].compactMap { $0 }
+        let actions = [createCopyAction(locale: locale)] + createExplorerActions()
 
         let viewModel = AlertPresentableViewModel(
             title: R.string.localizable.commonChooseAction(preferredLanguages: locale.rLanguages),

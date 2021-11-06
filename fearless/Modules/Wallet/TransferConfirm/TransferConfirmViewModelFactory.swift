@@ -144,10 +144,9 @@ final class TransferConfirmViewModelFactory {
             icon = nil
         }
 
-        // TODO: Fix when subscan integrated
         let command = WalletAccountOpenCommand(
             address: payload.receiverName,
-            chain: .westend,
+            explorers: chainAsset.chain.explorers,
             commandFactory: commandFactory,
             locale: locale
         )

@@ -118,6 +118,22 @@ final class ChainModelMapper {
         entity.nodes = Set(nodeEntities) as NSSet
     }
 
+    private func createExplorers(from chain: CDChain) -> [ChainModel.Explorer]? {
+        guard let data = chain.explorers else {
+            return nil
+        }
+
+        return try? JSONDecoder().decode([ChainModel.Explorer].self, from: data)
+    }
+
+    private func updateExplorers(for entity: CDChain, from explorers: [ChainModel.Explorer]?) {
+        if let explorers = explorers {
+            entity.explorers = try? JSONEncoder().encode(explorers)
+        } else {
+            entity.explorers = nil
+        }
+    }
+
     private func createExternalApi(from entity: CDChain) -> ChainModel.ExternalApiSet? {
         let staking: ChainModel.ExternalApi?
 
@@ -203,6 +219,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         }
 
         let externalApiSet = createExternalApi(from: entity)
+        let explorers = createExplorers(from: entity)
 
         return ChainModel(
             chainId: entity.chainId!,
@@ -215,6 +232,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             icon: entity.icon!,
             options: options.isEmpty ? nil : options,
             externalApi: externalApiSet,
+            explorers: explorers,
             order: entity.order
         )
     }
@@ -242,5 +260,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         updateEntityNodes(for: entity, from: model, context: context)
 
         updateExternalApis(in: entity, from: model.externalApi)
+
+        updateExplorers(for: entity, from: model.explorers)
     }
 }

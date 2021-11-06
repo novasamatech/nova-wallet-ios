@@ -41,6 +41,7 @@ struct CrowdloanContributionSetupViewFactory {
             assetInfo: assetInfo,
             localizationManager: localizationManager,
             bonusService: bonusService,
+            explorers: chain.explorers,
             logger: Logger.shared
         )
 
