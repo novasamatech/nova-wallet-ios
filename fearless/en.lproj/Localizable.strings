@@ -10,9 +10,9 @@
 "connection.error.title" = "Connection Failed";
 "connection.error.message" = "Please, check internet connection and try again later.";
 "onboarding.create.wallet" = "Create a new wallet";
-"onboarding.restore.wallet" = "I already have a wallet";
+"onboarding.restore.wallet" = "Already have a wallet";
 "onboarding.create.chain.account" = "Create a new account";
-"onboarding.restore.chain.account" = "I already have an account";
+"onboarding.restore.chain.account" = "Already have an account";
 "import.wallet.title" = "Import wallet";
 "import.chain.account.title" = "Import account";
 "onboarding.terms.and.conditions.1" = "I have read and agreed to\

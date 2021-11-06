@@ -63,6 +63,12 @@ final class OnboardingMainViewController: UIViewController, AdaptiveDesignable {
             restoreWidthConstraint.constant *= designScaleRatio.width
             signupWidthConstraint.constant *= designScaleRatio.width
         }
+//
+//        signUpButton.imageWithTitleView?.spacingBetweenLabelAndIcon =
+//        signUpButton.frame.size.width - signUpButton.imageWithTitleView?.titleLabel
+//
+//        imageWithTitleView!.spacingBetweenLabelAndIcon = newValue
+//        invalidateLayout()
     }
 
     // MARK: Action
