@@ -51,7 +51,8 @@ class StakingRewardDetailsTests: XCTestCase {
         )
         let presenter = StakingRewardDetailsPresenter(
             input: input,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            explorers: nil
         )
         presenter.wireframe = wireframe
         presenter.view = view

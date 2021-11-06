@@ -172,7 +172,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         TransactionDetailsConfigurator(
             chainAccount: chainAccountResponse,
             amountFormatterFactory: amountFormatterFactory,
-            assets: accountSettings.assets
+            assets: accountSettings.assets,
+            explorers: chain.explorers
         ).configure(builder: builder.transactionDetailsModuleBuilder)
 
         let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
@@ -180,6 +181,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let transferConfigurator = TransferConfigurator(
             assets: accountSettings.assets,
+            explorers: chain.explorers,
             amountFormatterFactory: amountFormatterFactory,
             localizationManager: localizationManager
         )
@@ -198,6 +200,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             address: address,
             chainFormat: chain.chainFormat,
             assets: [walletAsset],
+            explorers: chain.explorers,
             localizationManager: localizationManager
         )
 

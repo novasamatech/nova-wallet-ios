@@ -42,6 +42,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
             payoutConfirmViewModelFactory: viewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             assetInfo: assetInfo,
+            explorers: nil,
             logger: nil
         )
 

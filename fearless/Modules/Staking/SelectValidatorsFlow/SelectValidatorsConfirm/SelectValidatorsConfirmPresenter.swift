@@ -22,6 +22,7 @@ final class SelectValidatorsConfirmPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
 
     init(
         interactor: SelectValidatorsConfirmInteractorInputProtocol,
@@ -30,6 +31,7 @@ final class SelectValidatorsConfirmPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -39,6 +41,7 @@ final class SelectValidatorsConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
         self.assetInfo = assetInfo
+        self.explorers = explorers
     }
 
     private func provideConfirmationState() {
@@ -126,11 +129,10 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: state.wallet.address,
-            chain: .westend,
+            explorers: explorers,
             locale: locale
         )
     }
@@ -143,11 +145,10 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmPresenterProt
         if case let .payout(account) = state.rewardDestination, let view = view {
             let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-            // TODO: Fix when backend supports
             wireframe.presentAccountOptions(
                 from: view,
                 address: account.address,
-                chain: .westend,
+                explorers: explorers,
                 locale: locale
             )
         }

@@ -10,6 +10,7 @@ final class StakingRedeemPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     let assetInfo: AssetBalanceDisplayInfo
+    let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
     private var stakingLedger: StakingLedger?
@@ -93,6 +94,7 @@ final class StakingRedeemPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -101,6 +103,7 @@ final class StakingRedeemPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.assetInfo = assetInfo
+        self.explorers = explorers
         self.logger = logger
     }
 }
@@ -150,11 +153,10 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
 
         let locale = view.localizationManager?.selectedLocale ?? Locale.current
 
-        // TODO: Fix when backend supports
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: locale
         )
     }

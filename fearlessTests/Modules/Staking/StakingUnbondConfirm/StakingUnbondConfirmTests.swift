@@ -137,7 +137,8 @@ class StakingUnbondConfirmTests: XCTestCase {
             confirmViewModelFactory: confirmViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: StakingDataValidatingFactory(presentable: wireframe),
-            assetInfo: assetInfo
+            assetInfo: assetInfo,
+            explorers: nil
         )
 
         presenter.view = view

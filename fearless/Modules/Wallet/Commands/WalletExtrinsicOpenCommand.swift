@@ -1,21 +1,22 @@
 import Foundation
 import CommonWallet
+import RobinHood
 
 final class WalletExtrinsicOpenCommand: WalletCommandProtocol {
     let extrinsicHash: String
     let locale: Locale
-    let chain: Chain
+    let explorers: [ChainModel.Explorer]?
 
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         extrinsicHash: String,
-        chain: Chain,
+        explorers: [ChainModel.Explorer]?,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
         self.extrinsicHash = extrinsicHash
-        self.chain = chain
+        self.explorers = explorers
         self.commandFactory = commandFactory
         self.locale = locale
     }
@@ -38,25 +39,20 @@ final class WalletExtrinsicOpenCommand: WalletCommandProtocol {
 
         alertController.addAction(copy)
 
-        if let url = chain.polkascanExtrinsicURL(extrinsicHash) {
-            let polkascanTitle = R.string.localizable
-                .transactionDetailsViewPolkascan(preferredLanguages: locale.rLanguages)
-            let viewPolkascan = UIAlertAction(title: polkascanTitle, style: .default) { [weak self] _ in
-                self?.present(url: url)
+        let actions: [UIAlertAction] = explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.extrinsic,
+                let url = try? EndpointBuilder(urlTemplate: urlTemplate)
+                .buildParameterURL(extrinsicHash) else {
+                return nil
             }
 
-            alertController.addAction(viewPolkascan)
-        }
-
-        if let url = chain.subscanExtrinsicURL(extrinsicHash) {
-            let subscanTitle = R.string.localizable
-                .transactionDetailsViewSubscan(preferredLanguages: locale.rLanguages)
-            let viewSubscan = UIAlertAction(title: subscanTitle, style: .default) { [weak self] _ in
+            return UIAlertAction(title: explorer.name, style: .default) { [weak self] _ in
                 self?.present(url: url)
             }
+        } ?? []
 
-            alertController.addAction(viewSubscan)
-        }
+        actions.forEach { alertController.addAction($0) }
 
         let cancelTitle = R.string.localizable
             .commonCancel(preferredLanguages: locale.rLanguages)

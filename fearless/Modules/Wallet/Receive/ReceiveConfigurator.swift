@@ -24,6 +24,7 @@ final class ReceiveConfigurator: AdaptiveDesignable {
         address: AccountAddress,
         chainFormat: ChainFormat,
         assets: [WalletAsset],
+        explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol
     ) {
         let accountViewModel = ReceiveAccountViewModel(displayName: displayName, address: address)
@@ -31,6 +32,7 @@ final class ReceiveConfigurator: AdaptiveDesignable {
         receiveFactory = ReceiveViewFactory(
             accountViewModel: accountViewModel,
             chainFormat: chainFormat,
+            explorers: explorers,
             localizationManager: localizationManager
         )
         shareFactory = AccountShareFactory(

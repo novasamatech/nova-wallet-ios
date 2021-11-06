@@ -5,6 +5,7 @@ import SubstrateSdk
 
 final class TransactionDetailsViewModelFactory {
     let chainAccount: ChainAccountResponse
+    let explorers: [ChainModel.Explorer]?
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
@@ -13,11 +14,13 @@ final class TransactionDetailsViewModelFactory {
 
     init(
         chainAccount: ChainAccountResponse,
+        explorers: [ChainModel.Explorer]?,
         assets: [WalletAsset],
         dateFormatter: LocalizableResource<DateFormatter>,
         amountFormatterFactory: NumberFormatterFactoryProtocol
     ) {
         self.chainAccount = chainAccount
+        self.explorers = explorers
         self.assets = assets
         self.dateFormatter = dateFormatter
         self.amountFormatterFactory = amountFormatterFactory
@@ -173,10 +176,9 @@ final class TransactionDetailsViewModelFactory {
 
         let actionIcon = R.image.iconMore()
 
-        // TODO: Fix tx open
         let command = WalletExtrinsicOpenCommand(
             extrinsicHash: data.transactionId,
-            chain: .westend,
+            explorers: explorers,
             commandFactory: commandFactory,
             locale: locale
         )
@@ -215,7 +217,7 @@ final class TransactionDetailsViewModelFactory {
 
         let command = WalletAccountOpenCommand(
             address: address,
-            chain: .westend,
+            explorers: explorers,
             commandFactory: commandFactory,
             locale: locale
         )

@@ -29,7 +29,8 @@ struct ControllerAccountConfirmationViewFactory {
             assetInfo: assetInfo,
             iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory,
-            dataValidatingFactory: dataValidatingFactory
+            dataValidatingFactory: dataValidatingFactory,
+            explorers: chainAsset.chain.explorers
         )
 
         let view = ControllerAccountConfirmationVC(

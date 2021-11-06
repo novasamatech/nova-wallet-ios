@@ -4,18 +4,18 @@ import CommonWallet
 final class WalletAccountOpenCommand: WalletCommandProtocol {
     let address: String
     let locale: Locale
-    let chain: Chain
+    let explorers: [ChainModel.Explorer]?
 
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         address: String,
-        chain: Chain,
+        explorers: [ChainModel.Explorer]?,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
         self.address = address
-        self.chain = chain
+        self.explorers = explorers
         self.commandFactory = commandFactory
         self.locale = locale
     }
@@ -23,7 +23,7 @@ final class WalletAccountOpenCommand: WalletCommandProtocol {
     func execute() throws {
         let controller = UIAlertController.presentAccountOptions(
             address,
-            chain: chain,
+            explorers: explorers,
             locale: locale,
             copyClosure: copyAddress,
             urlClosure: present(url:)

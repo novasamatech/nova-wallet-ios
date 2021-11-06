@@ -14,6 +14,7 @@ final class ControllerAccountConfirmationPresenter {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let logger: LoggerProtocol?
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
+    private let explorers: [ChainModel.Explorer]?
 
     private var stashAccountItem: AccountItem?
     private var fee: Decimal?
@@ -27,6 +28,7 @@ final class ControllerAccountConfirmationPresenter {
         iconGenerator: IconGenerating,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        explorers: [ChainModel.Explorer]?,
         logger: LoggerProtocol? = nil
     ) {
         self.controllerAccountItem = controllerAccountItem
@@ -34,6 +36,7 @@ final class ControllerAccountConfirmationPresenter {
         self.iconGenerator = iconGenerator
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
+        self.explorers = explorers
         self.logger = logger
     }
 
@@ -131,11 +134,10 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
             let address = address
         else { return }
 
-        // TODO: Fix when done
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            chain: .westend,
+            explorers: explorers,
             locale: view.localizationManager?.selectedLocale ?? .current
         )
     }
