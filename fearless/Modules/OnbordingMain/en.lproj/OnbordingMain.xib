@@ -58,9 +58,6 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="number" keyPath="_strokeWidth">
-                            <real key="value" value="0.0"/>
-                        </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_strokeColor">
                             <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </userDefinedRuntimeAttribute>
@@ -89,9 +86,6 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Create Account"/>
                         <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconPlusFilled"/>
-                        <userDefinedRuntimeAttribute type="number" keyPath="_sideLength">
-                            <real key="value" value="0.0"/>
-                        </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <action selector="actionSignupWithSender:" destination="-1" eventType="touchUpInside" id="TJA-qA-tUz"/>
@@ -215,7 +209,7 @@
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
