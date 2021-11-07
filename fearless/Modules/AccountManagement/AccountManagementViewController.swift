@@ -51,6 +51,7 @@ final class AccountManagementViewController: UIViewController {
 
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
+        tableView.separatorStyle = .none
     }
 
     private func setupLocalization() {
