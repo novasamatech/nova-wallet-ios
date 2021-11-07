@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -30,13 +30,13 @@
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="boolean" keyPath="_topBorder" value="NO"/>
                             <userDefinedRuntimeAttribute type="boolean" keyPath="_leftBorder" value="NO"/>
-                            <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomBorder" value="YES"/>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomBorder" value="NO"/>
                             <userDefinedRuntimeAttribute type="boolean" keyPath="_rightBorder" value="NO"/>
                             <userDefinedRuntimeAttribute type="color" keyPath="strokeColor">
                                 <color key="value" name="colorDarkGray"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="strokeWidth">
-                                <real key="value" value="1"/>
+                                <real key="value" value="0.0"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
@@ -103,7 +103,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tC2-y9-sqp" customClass="RoundedButton" customModule="SoraUI">
-                                <rect key="frame" x="342" y="0.0" width="40" height="48"/>
+                                <rect key="frame" x="342" y="12" width="40" height="24"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="1YJ-bu-IIL"/>
@@ -164,6 +164,11 @@
             <point key="canvasLocation" x="139" y="133"/>
         </tableViewCell>
     </objects>
+    <designables>
+        <designable name="tC2-y9-sqp">
+            <size key="intrinsicContentSize" width="32" height="24"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconHorMore" width="24" height="24"/>
         <image name="iconKsmAsset" width="48" height="48"/>

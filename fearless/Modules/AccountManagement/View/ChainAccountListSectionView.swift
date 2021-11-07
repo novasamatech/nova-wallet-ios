@@ -3,7 +3,12 @@ import SoraUI
 import SoraFoundation
 
 class ChainAccountListSectionView: UITableViewHeaderFooterView {
-    let borderView = UIFactory.default.createBorderedContainerView()
+    // FIXME: Remove bordered view
+    let borderView: BorderedContainerView = {
+        let view = UIFactory.default.createBorderedContainerView()
+        view.borderType = .none
+        return view
+    }()
 
     let descriptionLabel: UILabel = {
         let label = UILabel()
