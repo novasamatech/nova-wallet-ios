@@ -45,4 +45,12 @@ extension AcalaContributionSetupPresenter: AcalaContributionSetupPresenterProtoc
             minimumContribution = BigUInt(1e+10)
         }
     }
+
+    func handleLearnMoreAboutContributions() {
+        guard
+            let url = acalaService?.learnMoreURL,
+            let view = view
+        else { return }
+        wireframe.showWeb(url: url, from: view, style: .automatic)
+    }
 }

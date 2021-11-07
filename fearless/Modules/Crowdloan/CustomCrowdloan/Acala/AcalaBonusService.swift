@@ -22,6 +22,9 @@ final class AcalaBonusService {
 
     var bonusRate: Decimal { 0.05 }
     var termsURL: URL { URL(string: "https://acala.network/acala/terms")! }
+    // swiftlint:disable:next line_length
+    let learnMoreURL = URL(string: "https://wiki.acala.network/acala/acala-crowdloan/crowdloan-event#3.2-ways-to-participate")!
+
     private(set) var referralCode: String?
     private var statementData: AcalaStatementData?
 
@@ -193,7 +196,9 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
 
         let infoOperation = ClosureOperation<KaruraVerifyInfo> {
             guard
-                let statement = try statementOperation.extractNoCancellableResultData().statement.data(using: .utf8) else {
+                let statement = try statementOperation.extractNoCancellableResultData()
+                .statement.data(using: .utf8)
+            else {
                 throw CrowdloanBonusServiceError.veficationFailed
             }
 
