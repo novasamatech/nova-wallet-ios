@@ -75,12 +75,6 @@ final class RewardEstimationView: LocalizableView {
         if let viewModel = widgetViewModel?.rewardViewModel?.value(for: locale) {
             stopLoadingIfNeeded()
 
-            averageAPYTitleLabel.text = R.string.localizable
-                .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
-
-            maximumAPYTitleLabel.text = R.string.localizable
-                .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
-
             averageAPYValueLabel.text = viewModel.avgAPY.apy
             maximumAPYValueLabel.text = viewModel.maxAPY.apy
         } else {
@@ -95,6 +89,12 @@ final class RewardEstimationView: LocalizableView {
             "",
             preferredLanguages: languages
         )
+        
+        averageAPYTitleLabel.text = R.string.localizable
+            .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+
+        maximumAPYTitleLabel.text = R.string.localizable
+            .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
 
         applyActionTitle()
     }
@@ -150,7 +150,6 @@ final class RewardEstimationView: LocalizableView {
         skeletonView.startSkrulling()
     }
 
-    // TODO: Change
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
         let smallRowSize = CGSize(width: 57.0, height: 6.0)
