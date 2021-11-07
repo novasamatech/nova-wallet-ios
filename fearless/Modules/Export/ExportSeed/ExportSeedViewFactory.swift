@@ -3,8 +3,11 @@ import SoraKeystore
 import RobinHood
 import SoraFoundation
 
-final class ExportSeedViewFactory: ExportSeedViewFactoryProtocol {
-    static func createViewForAddress(_ address: String) -> ExportGenericViewProtocol? {
+final class ExportSeedViewFactory {
+    static func createViewForMetaAccount(
+        _ metaAccount: MetaAccountModel,
+        chain: ChainModel
+    ) -> ExportGenericViewProtocol? {
         let uiFactory = UIFactory()
         let view = ExportGenericViewController(
             uiFactory: uiFactory,
@@ -16,16 +19,15 @@ final class ExportSeedViewFactory: ExportSeedViewFactoryProtocol {
         let localizationManager = LocalizationManager.shared
 
         let presenter = ExportSeedPresenter(
-            address: address,
             localizationManager: localizationManager
         )
 
         let keychain = Keychain()
-        let repository = AccountRepositoryFactory.createRepository()
 
         let interactor = ExportSeedInteractor(
+            metaAccount: metaAccount,
+            chain: chain,
             keystore: keychain,
-            repository: AnyDataProviderRepository(repository),
             operationManager: OperationManagerFacade.sharedManager
         )
         let wireframe = ExportSeedWireframe()

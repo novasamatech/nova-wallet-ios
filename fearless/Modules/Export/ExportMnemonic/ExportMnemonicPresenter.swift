@@ -6,13 +6,11 @@ final class ExportMnemonicPresenter {
     var wireframe: ExportMnemonicWireframeProtocol!
     var interactor: ExportMnemonicInteractorInputProtocol!
 
-    let address: String
     let localizationManager: LocalizationManager
 
     private(set) var exportData: ExportMnemonicData?
 
-    init(address: String, localizationManager: LocalizationManager) {
-        self.address = address
+    init(localizationManager: LocalizationManager) {
         self.localizationManager = localizationManager
     }
 
@@ -52,7 +50,7 @@ final class ExportMnemonicPresenter {
 
 extension ExportMnemonicPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        interactor.fetchExportDataForAddress(address)
+        interactor.fetchExportDataForAddress()
     }
 
     func activateExport() {

@@ -25,6 +25,8 @@ final class ExportGenericViewController: UIViewController, ImportantViewProtocol
 
     private var viewModel: ExportGenericViewModelProtocol?
 
+    private var networkIconViewModel: ImageViewModelProtocol?
+
     var advancedAppearanceAnimator = TransitionAnimator(
         type: .push,
         duration: 0.35,
@@ -444,7 +446,15 @@ extension ExportGenericViewController {
         networkView.title = R.string.localizable
             .commonNetwork(preferredLanguages: locale.rLanguages)
         networkView.subtitle = chain.name
-        networkView.iconImage = chain.icon
+
+        networkIconViewModel?.cancel(on: networkView.iconView)
+        networkView.iconImage = nil
+
+        if let asset = chain.utilityAssets().first {
+            let url = asset.icon ?? chain.icon
+            networkIconViewModel = RemoteImageViewModel(url: url)
+            networkIconViewModel?.loadAmountInputIcon(on: networkView.iconView, animated: true)
+        }
 
         return networkView
     }
