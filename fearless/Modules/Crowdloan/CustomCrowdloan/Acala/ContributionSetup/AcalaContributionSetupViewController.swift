@@ -31,6 +31,11 @@ final class AcalaContributionSetupViewController: CrowdloanContributionSetupView
         rootView.buttons.forEach { button in
             button.addTarget(self, action: #selector(radioButtonAction(control:)), for: .touchUpInside)
         }
+        rootView.acalaLearnMoreView.addTarget(
+            self,
+            action: #selector(learnMoreAboutAcalaAction),
+            for: .touchUpInside
+        )
         rootView.bind(selectedMethod: presenter.selectedContributionMethod)
     }
 
@@ -40,5 +45,10 @@ final class AcalaContributionSetupViewController: CrowdloanContributionSetupView
         let method = button.model
         rootView.bind(selectedMethod: method)
         presenter.selectContributionMethod(method)
+    }
+
+    @objc
+    private func learnMoreAboutAcalaAction() {
+        presenter.handleLearnMoreAboutContributions()
     }
 }
