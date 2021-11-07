@@ -314,9 +314,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         alertsContainerView.setNeedsLayout()
     }
 
-    private func applyAnalyticsRewards(viewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
-        analyticsContainerView.isHidden = false
-        analyticsView.bind(viewModel: viewModel)
+    private func applyAnalyticsRewards(viewModel _: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
+        // TODO: Temporary disable Analytics feature
+        // analyticsContainerView.isHidden = false
+        // analyticsView.bind(viewModel: viewModel)
     }
 }
 
