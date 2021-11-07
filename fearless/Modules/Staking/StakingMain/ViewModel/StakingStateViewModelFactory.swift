@@ -198,22 +198,67 @@ final class StakingStateViewModelFactory {
 
         let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
 
-        let monthlyViewModel = rewardViewModelFactory.createRewardViewModel(
+        let avgAPY = calculator.calculateAvgReturn(isCompound: true, period: .year)
+        let maxAPY = calculator.calculateMaxReturn(isCompound: true, period: .year)
+
+        let avgViewModel = rewardViewModelFactory.createRewardViewModel(
             reward: (amount ?? 0.0) * monthlyReturn,
             targetReturn: monthlyReturn,
+            apy: avgAPY,
             priceData: commonData.price
         )
 
-        let yearlyViewModel = rewardViewModelFactory.createRewardViewModel(
+        let maxViewModel = rewardViewModelFactory.createRewardViewModel(
             reward: (amount ?? 0.0) * yearlyReturn,
             targetReturn: yearlyReturn,
+            apy: maxAPY,
             priceData: commonData.price
         )
 
         return LocalizableResource { locale in
             PeriodRewardViewModel(
-                monthlyReward: monthlyViewModel.value(for: locale),
-                yearlyReward: yearlyViewModel.value(for: locale)
+                monthlyReward: avgViewModel.value(for: locale),
+                yearlyReward: maxViewModel.value(for: locale)
+            )
+        }
+    }
+
+    private func createAPYViewModel(
+        for chainAsset: ChainAsset,
+        commonData: StakingStateCommonData,
+        amount: Decimal?
+    ) throws -> LocalizableResource<APYViewModel>? {
+        guard let calculator = commonData.calculatorEngine else {
+            return nil
+        }
+
+        let rewardViewModelFactory = getRewardViewModelFactory(for: chainAsset)
+
+        let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
+
+        let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
+
+        let avgAPY = calculator.calculateAvgReturn(isCompound: true, period: .year)
+        let maxAPY = calculator.calculateMaxReturn(isCompound: true, period: .year)
+
+        let avgViewModel = rewardViewModelFactory.createRewardViewModel(
+            reward: (amount ?? 0.0) * monthlyReturn,
+            targetReturn: monthlyReturn,
+            apy: avgAPY,
+            priceData: commonData.price
+        )
+
+        let maxViewModel = rewardViewModelFactory.createRewardViewModel(
+            reward: (amount ?? 0.0) * yearlyReturn,
+            targetReturn: yearlyReturn,
+            apy: maxAPY,
+            priceData: commonData.price
+        )
+
+        return LocalizableResource { locale in
+            APYViewModel(
+                avgAPY: avgViewModel.value(for: locale),
+                maxAPY: maxViewModel.value(for: locale)
             )
         }
     }
@@ -239,7 +284,7 @@ final class StakingStateViewModelFactory {
                 priceData: commonData.price
             )
 
-        let reward: LocalizableResource<PeriodRewardViewModel>? = try createPeriodReward(
+        let reward: LocalizableResource<APYViewModel>? = try createAPYViewModel(
             for: chainAsset,
             commonData: commonData,
             amount: amount

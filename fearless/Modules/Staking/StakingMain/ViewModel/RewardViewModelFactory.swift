@@ -7,6 +7,7 @@ protocol RewardViewModelFactoryProtocol {
     func createRewardViewModel(
         reward: Decimal,
         targetReturn: Decimal,
+        apy: Decimal,
         priceData: PriceData?
     ) -> LocalizableResource<RewardViewModelProtocol>
 }
@@ -29,6 +30,7 @@ final class RewardViewModelFactory: RewardViewModelFactoryProtocol {
     func createRewardViewModel(
         reward: Decimal,
         targetReturn: Decimal,
+        apy: Decimal,
         priceData: PriceData?
     ) -> LocalizableResource<RewardViewModelProtocol> {
         let localizableAmountFormatter = formatterFactory.createTokenFormatter(for: targetAssetInfo)
@@ -43,11 +45,14 @@ final class RewardViewModelFactory: RewardViewModelFactoryProtocol {
 
             let rewardPercentageString = percentageFormatter.string(from: targetReturn as NSNumber)
 
+            let apyPercentageString = percentageFormatter.string(from: apy as NSNumber)
+
             guard let priceData = priceData, let rate = Decimal(string: priceData.price) else {
                 return RewardViewModel(
                     amount: amountString,
                     price: nil,
-                    increase: rewardPercentageString
+                    increase: rewardPercentageString,
+                    apy: apyPercentageString
                 )
             }
 
@@ -59,7 +64,8 @@ final class RewardViewModelFactory: RewardViewModelFactoryProtocol {
             return RewardViewModel(
                 amount: amountString,
                 price: priceString,
-                increase: rewardPercentageString
+                increase: rewardPercentageString,
+                apy: apyPercentageString
             )
         }
     }

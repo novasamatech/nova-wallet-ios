@@ -132,24 +132,10 @@ final class RewardEstimationView: LocalizableView {
             maximumAPYTitleLabel.text = R.string.localizable
                 .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
 
-            // TODO: Add values here
-
-            monthlyTitleLabel.text = viewModel.monthlyReward.increase.map {
-                R.string.localizable.stakingMonthPeriodFormat($0, preferredLanguages: locale.rLanguages)
-            }
-
-            monthlyAmountLabel.text = viewModel.monthlyReward.amount
-            monthlyFiatAmountLabel.text = viewModel.monthlyReward.price
-
-            yearlyTitleLabel.text = viewModel.yearlyReward.increase.map {
-                R.string.localizable.stakingYearPeriodFormat($0, preferredLanguages: locale.rLanguages)
-            }
-
-            yearlyAmountLabel.text = viewModel.yearlyReward.amount
-            yearlyFiatAmountLabel.text = viewModel.yearlyReward.price
+            averageAPYValueLabel.text = viewModel.avgAPY.apy
+            maximumAPYValueLabel.text = viewModel.maxAPY.apy
         } else {
             startLoadingIfNeeded()
-
             infoButton.isHidden = true
         }
     }
@@ -230,6 +216,8 @@ final class RewardEstimationView: LocalizableView {
             return
         }
 
+        averageAPYValueLabel.alpha = 0.0
+        maximumAPYValueLabel.alpha = 0.0
         monthlyTitleLabel.alpha = 0.0
         monthlyAmountLabel.alpha = 0.0
         monthlyFiatAmountLabel.alpha = 0.0
@@ -251,6 +239,8 @@ final class RewardEstimationView: LocalizableView {
         skeletonView?.removeFromSuperview()
         skeletonView = nil
 
+        averageAPYValueLabel.alpha = 1.0
+        maximumAPYValueLabel.alpha = 1.0
         monthlyTitleLabel.alpha = 1.0
         monthlyAmountLabel.alpha = 1.0
         monthlyFiatAmountLabel.alpha = 1.0
@@ -287,6 +277,20 @@ final class RewardEstimationView: LocalizableView {
         let smallRowSize = CGSize(width: 57.0, height: 6.0)
 
         return [
+            SingleSkeleton.createRow(
+                inPlaceOf: averageAPYValueLabel,
+                containerView: self,
+                spaceSize: spaceSize,
+                size: bigRowSize
+            ),
+
+            SingleSkeleton.createRow(
+                inPlaceOf: maximumAPYValueLabel,
+                containerView: self,
+                spaceSize: spaceSize,
+                size: bigRowSize
+            ),
+
             SingleSkeleton.createRow(
                 inPlaceOf: monthlyTitleLabel,
                 containerView: self,
