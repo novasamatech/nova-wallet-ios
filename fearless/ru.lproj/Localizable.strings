@@ -388,6 +388,7 @@
 "crowdloan.moonbeam.region.restriction.message" = "Этот краудлоун не поддерживается в вашем регионе";
 "crowdloan.acala.direct" = "Напрямую";
 "crowdloan.acala.liquid" = "Liquid вклад";
+"crowdloan.acala.learn.more" = "Подробнее о различных вкладах в Acala";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
@@ -466,7 +467,7 @@
 "staking.validator.other.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. Только номинаторы с наибольшим стейком получат награду.";
 "wallet.history.title_v1.9.0" = "История";
 "staking.main.lockup.period.title_v1.9.0" = "Время вывода";
-"staking.estimate.earning.title_v1.9.0" = "Расчёт доходности";
+"staking.estimate.earning.title_v1.9.0" = "Расчёт доходности %@";
 "staking.main.stake.balance.staked" = "Застейкано";
 "staking.setup.restake.title" = "Увеличения стейка";
 "staking.setup.payout.title" = "Выплаты";

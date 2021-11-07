@@ -314,9 +314,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         alertsContainerView.setNeedsLayout()
     }
 
-    private func applyAnalyticsRewards(viewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
-        analyticsContainerView.isHidden = false
-        analyticsView.bind(viewModel: viewModel)
+    private func applyAnalyticsRewards(viewModel _: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
+        // TODO: Temporary disable Analytics feature
+        // analyticsContainerView.isHidden = false
+        // analyticsView.bind(viewModel: viewModel)
     }
 }
 
@@ -343,20 +344,23 @@ extension StakingMainViewController: Localizable {
 }
 
 extension StakingMainViewController: RewardEstimationViewDelegate {
+    // TODO: Remove
     func rewardEstimationView(_: RewardEstimationView, didChange amount: Decimal?) {
-        presenter.updateAmount(amount ?? 0.0)
+        presenter.updateAmount(amount ?? 0.0) // TODO: Remove
     }
 
+    // TODO: Remove
     func rewardEstimationView(_: RewardEstimationView, didSelect percentage: Float) {
-        presenter.selectAmountPercentage(percentage)
+        presenter.selectAmountPercentage(percentage) // TODO: Remove
     }
 
     func rewardEstimationDidStartAction(_: RewardEstimationView) {
         presenter.performMainAction()
     }
 
+    // TODO: Remove
     func rewardEstimationDidRequestInfo(_: RewardEstimationView) {
-        presenter.performRewardInfoAction()
+        presenter.performRewardInfoAction() // TODO: Remove
     }
 }
 
