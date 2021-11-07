@@ -89,7 +89,7 @@ final class RewardEstimationView: LocalizableView {
             "",
             preferredLanguages: languages
         )
-        
+
         averageAPYTitleLabel.text = R.string.localizable
             .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
 
