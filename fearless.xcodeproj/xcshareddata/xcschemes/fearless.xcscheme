@@ -65,6 +65,9 @@
                   Identifier = "AddConnectionTests">
                </Test>
                <Test
+                  Identifier = "CrowdloanContributionConfirmTests/testContributionConfirmation()">
+               </Test>
+               <Test
                   Identifier = "NetworkConnectionsMigratorTests">
                </Test>
                <Test
