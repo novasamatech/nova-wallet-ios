@@ -6,6 +6,7 @@ extension CDTransactionHistoryItem: CoreDataCodable {
     public func populate(from decoder: Decoder, using _: NSManagedObjectContext) throws {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        chainId = try container.decode(String.self, forKey: .chainId)
         identifier = try container.decode(String.self, forKey: .txHash)
         sender = try container.decode(String.self, forKey: .sender)
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
@@ -35,6 +36,7 @@ extension CDTransactionHistoryItem: CoreDataCodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
+        try container.encodeIfPresent(chainId, forKey: .chainId)
         try container.encodeIfPresent(identifier, forKey: .txHash)
         try container.encodeIfPresent(sender, forKey: .sender)
         try container.encodeIfPresent(receiver, forKey: .receiver)

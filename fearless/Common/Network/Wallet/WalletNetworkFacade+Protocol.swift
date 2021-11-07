@@ -123,8 +123,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
               let chain = chains[chainAssetId.chainId],
               let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
-              let assetId = WalletAssetId(chainId: chainAssetId.chainId)
+              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress()
         else {
             let pageData = AssetTransactionPageData(
                 transactions: [],
@@ -138,7 +137,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
         let remoteHistoryWrapper: CompoundOperationWrapper<WalletRemoteHistoryData>
 
-        if let baseUrl = assetId.subscanUrl {
+        if let baseUrl = WalletAssetId(chainId: chainAssetId.chainId)?.subscanUrl {
             let remoteHistoryFactory = SubscanHistoryOperationFactory(
                 baseURL: baseUrl,
                 filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
@@ -159,7 +158,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
         let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
 
-        let txStorage = repositoryFactory.createTxRepository(for: address)
+        let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
 
         if pagination.context == nil {
             let operation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
@@ -231,7 +230,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
             let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
 
-            let txStorage = repositoryFactory.createTxRepository(for: address)
+            let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
             let txSaveOperation = txStorage.saveOperation({
                 switch transferWrapper.targetOperation.result {
                 case let .success(txHash):
