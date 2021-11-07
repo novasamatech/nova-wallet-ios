@@ -75,7 +75,6 @@ private final class AcalaLearnMoreView: BackgroundedContentControl {
         let image = R.image.iconSmallArrow()!.withRenderingMode(.alwaysTemplate)
         imageView.image = image
         imageView.tintColor = R.color.colorNovaBlue()!
-        // imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
