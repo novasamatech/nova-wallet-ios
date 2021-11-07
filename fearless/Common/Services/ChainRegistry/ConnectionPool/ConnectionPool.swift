@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import SoraFoundation
 
 protocol ConnectionPoolProtocol {
     func setupConnection(for chain: ChainModel) throws -> ChainConnection
@@ -14,6 +15,7 @@ protocol ConnectionStateSubscription: AnyObject {
 
 class ConnectionPool {
     let connectionFactory: ConnectionFactoryProtocol
+    let applicationHandler: ApplicationHandlerProtocol
 
     private var mutex = NSLock()
 
@@ -25,8 +27,11 @@ class ConnectionPool {
         connections = connections.filter { $0.value.target != nil }
     }
 
-    init(connectionFactory: ConnectionFactoryProtocol) {
+    init(connectionFactory: ConnectionFactoryProtocol, applicationHandler: ApplicationHandlerProtocol) {
         self.connectionFactory = connectionFactory
+        self.applicationHandler = applicationHandler
+
+        applicationHandler.delegate = self
     }
 }
 
@@ -123,6 +128,28 @@ extension ConnectionPool: WebSocketEngineDelegate {
 
         DispatchQueue.main.async {
             subscriptions.forEach { $0.didReceive(state: newState, for: chainId) }
+        }
+    }
+}
+
+extension ConnectionPool: ApplicationHandlerDelegate {
+    func didReceiveDidBecomeActive(notification _: Notification) {
+        connections.values.forEach { wrapper in
+            guard let connection = wrapper.target as? WebSocketEngine else {
+                return
+            }
+
+            connection.connectIfNeeded()
+        }
+    }
+
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        connections.values.forEach { wrapper in
+            guard let connection = wrapper.target as? WebSocketEngine else {
+                return
+            }
+
+            connection.disconnectIfNeeded()
         }
     }
 }
