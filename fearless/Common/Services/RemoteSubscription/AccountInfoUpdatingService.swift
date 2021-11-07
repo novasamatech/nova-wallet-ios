@@ -14,7 +14,12 @@ final class AccountInfoUpdatingService {
     private(set) var selectedMetaAccount: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol
-    let logger: LoggerProtocol?
+    let eventCenter: EventCenterProtocol
+    let storageFacade: StorageFacadeProtocol
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let storageRequestFactory: StorageRequestFactoryProtocol
+    let operationManager: OperationManagerProtocol
+    let logger: LoggerProtocol
 
     private var subscribedChains: [ChainModel.Id: SubscriptionInfo] = [:]
 
@@ -28,12 +33,21 @@ final class AccountInfoUpdatingService {
         selectedAccount: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
-        logger: LoggerProtocol?
+        storageFacade: StorageFacadeProtocol,
+        storageRequestFactory: StorageRequestFactoryProtocol,
+        eventCenter: EventCenterProtocol,
+        operationManager: OperationManagerProtocol,
+        logger: LoggerProtocol
     ) {
         selectedMetaAccount = selectedAccount
         self.chainRegistry = chainRegistry
         self.remoteSubscriptionService = remoteSubscriptionService
+        self.storageFacade = storageFacade
+        self.eventCenter = eventCenter
+        self.storageRequestFactory = storageRequestFactory
+        self.operationManager = operationManager
         self.logger = logger
+        repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
     }
 
     private func removeAllSubscriptions() {
@@ -68,8 +82,10 @@ final class AccountInfoUpdatingService {
     }
 
     private func addSubscriptionIfNeeded(for chain: ChainModel) {
-        guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            logger?.error("Couldn't create account for chain \(chain.chainId)")
+        guard
+            let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
+            let address = try? accountId.toAddress(using: chain.chainFormat) else {
+            logger.error("Couldn't create account for chain \(chain.chainId)")
             return
         }
 
@@ -77,12 +93,36 @@ final class AccountInfoUpdatingService {
             return
         }
 
+        let txStorage = repositoryFactory.createTxRepository(for: address)
+        let contactOperationFactory = WalletContactOperationFactory(
+            storageFacade: storageFacade,
+            targetAddress: address
+        )
+
+        let transactionSubscription = TransactionSubscription(
+            chainRegistry: chainRegistry,
+            accountId: accountId,
+            chainModel: chain,
+            txStorage: txStorage,
+            contactOperationFactory: contactOperationFactory,
+            storageRequestFactory: storageRequestFactory,
+            operationManager: operationManager,
+            eventCenter: eventCenter,
+            logger: logger
+        )
+
+        let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+            transactionSubscription: transactionSubscription,
+            eventCenter: eventCenter
+        )
+
         let maybeSubscriptionId = remoteSubscriptionService.attachToAccountInfo(
             of: accountId,
             chainId: chain.chainId,
             chainFormat: chain.chainFormat,
             queue: nil,
-            closure: nil
+            closure: nil,
+            subscriptionHandlingFactory: subscriptionHandlingFactory
         )
 
         if let subsciptionId = maybeSubscriptionId {
@@ -95,7 +135,7 @@ final class AccountInfoUpdatingService {
 
     private func removeSubscription(for chainId: ChainModel.Id) {
         guard let subscriptionInfo = subscribedChains[chainId] else {
-            logger?.error("Expected to remove subscription but not found for \(chainId)")
+            logger.error("Expected to remove subscription but not found for \(chainId)")
             return
         }
 

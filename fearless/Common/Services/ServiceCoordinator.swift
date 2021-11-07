@@ -1,6 +1,7 @@
 import Foundation
 import SoraKeystore
 import SoraFoundation
+import SubstrateSdk
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     func updateOnAccountChange()
@@ -64,7 +65,9 @@ extension ServiceCoordinator {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
+        let operationManager = OperationManagerFacade.sharedManager
         let walletSettings = SelectedWalletSettings.shared
+        let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
         let walletRemoteSubscription = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
@@ -73,10 +76,19 @@ extension ServiceCoordinator {
             logger: logger
         )
 
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
         let accountInfoService = AccountInfoUpdatingService(
             selectedAccount: walletSettings.value,
             chainRegistry: chainRegistry,
             remoteSubscriptionService: walletRemoteSubscription,
+            storageFacade: substrateStorageFacade,
+            storageRequestFactory: storageRequestFactory,
+            eventCenter: EventCenter.shared,
+            operationManager: operationManager,
             logger: logger
         )
 

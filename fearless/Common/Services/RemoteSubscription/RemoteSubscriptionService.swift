@@ -52,6 +52,7 @@ class RemoteSubscriptionService {
 
     private lazy var localStorageKeyFactory = LocalStorageKeyFactory()
     private lazy var remoteStorageKeyFactory = StorageKeyFactory()
+    private lazy var defaultSubscriptionHandlingFactory = DefaultRemoteSubscriptionHandlingFactory()
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -70,7 +71,8 @@ class RemoteSubscriptionService {
         chainId: ChainModel.Id,
         cacheKey: String,
         queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
+        closure: RemoteSubscriptionClosure?,
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol? = nil
     ) -> UUID {
         mutex.lock()
 
@@ -98,7 +100,12 @@ class RemoteSubscriptionService {
             return subscriptionId
         }
 
-        let wrapper = subscriptionOperation(using: requests, chainId: chainId, cacheKey: cacheKey)
+        let wrapper = subscriptionOperation(
+            using: requests,
+            chainId: chainId,
+            cacheKey: cacheKey,
+            subscriptionHandlingFactory: subscriptionHandlingFactory ?? defaultSubscriptionHandlingFactory
+        )
 
         let pending = Pending(
             subscriptionIds: [subscriptionId],
@@ -155,7 +162,8 @@ class RemoteSubscriptionService {
     private func subscriptionOperation(
         using requests: [SubscriptionRequestProtocol],
         chainId: ChainModel.Id,
-        cacheKey: String
+        cacheKey: String,
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol
     ) -> CompoundOperationWrapper<StorageSubscriptionContainer> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             return CompoundOperationWrapper.createWithError(
@@ -182,7 +190,8 @@ class RemoteSubscriptionService {
             let container = try self.createContainer(
                 for: chainId,
                 remoteKeys: remoteKeys,
-                localKeys: localKeys
+                localKeys: localKeys,
+                subscriptionHandlingFactory: subscriptionHandlingFactory
             )
 
             return container
@@ -213,7 +222,8 @@ class RemoteSubscriptionService {
     private func createContainer(
         for chainId: ChainModel.Id,
         remoteKeys: [Data],
-        localKeys: [String]
+        localKeys: [String],
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol
     ) throws -> StorageSubscriptionContainer {
         guard remoteKeys.count == localKeys.count else {
             throw RemoteSubscriptionServiceError.remoteKeysNotMatchLocal
@@ -224,7 +234,7 @@ class RemoteSubscriptionService {
         }
 
         let subscriptions = zip(remoteKeys, localKeys).map { keysPair in
-            EmptyHandlingStorageSubscription(
+            subscriptionHandlingFactory.createHandler(
                 remoteStorageKey: keysPair.0,
                 localStorageKey: keysPair.1,
                 storage: repository,
