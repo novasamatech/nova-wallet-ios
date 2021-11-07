@@ -2,6 +2,6 @@ import Foundation
 
 struct RestoreJson {
     let data: String
-    let chain: Chain
-    let cryptoType: CryptoType
+    let chain: ChainModel
+    let cryptoType: MultiassetCryptoType
 }

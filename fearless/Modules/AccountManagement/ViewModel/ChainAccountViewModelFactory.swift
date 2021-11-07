@@ -40,7 +40,7 @@ final class ChainAccountViewModelFactory {
                 icon = nil
             }
 
-            return ChainAccountViewModelItem(
+            let viewModel = ChainAccountViewModelItem(
                 chainId: chainAccount.chainId,
                 name: chainName,
                 address: accountAddress,
@@ -48,8 +48,13 @@ final class ChainAccountViewModelFactory {
                 chainIconViewModel: RemoteImageViewModel(url: chainModel.icon),
                 accountIcon: icon
             )
-        }.sorted { first, second in
-            first.name < second.name
+
+            return viewModel
+        }.sorted { viewModel1, viewModel2 in
+            let order1 = chains[viewModel1.chainId]?.order ?? 0
+            let order2 = chains[viewModel2.chainId]?.order ?? 0
+
+            return order1 < order2
         }
     }
 
@@ -89,7 +94,10 @@ final class ChainAccountViewModelFactory {
                 return first.address == nil
             }
 
-            return first.name < second.name
+            let order1 = chains[first.chainId]?.order ?? 0
+            let order2 = chains[second.chainId]?.order ?? 0
+
+            return order1 < order2
         }
     }
 }

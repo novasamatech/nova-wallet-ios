@@ -3,8 +3,11 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 
-final class ExportMnemonicViewFactory: ExportMnemonicViewFactoryProtocol {
-    static func createViewForAddress(_ address: String) -> ExportGenericViewProtocol? {
+final class ExportMnemonicViewFactory {
+    static func createViewForMetaAccount(
+        _ metaAccount: MetaAccountModel,
+        chain: ChainModel
+    ) -> ExportGenericViewProtocol? {
         let accessoryActionTitle = LocalizableResource { locale in
             R.string.localizable.accountConfirmationTitle(preferredLanguages: locale.rLanguages)
         }
@@ -20,16 +23,15 @@ final class ExportMnemonicViewFactory: ExportMnemonicViewFactoryProtocol {
         let localizationManager = LocalizationManager.shared
 
         let presenter = ExportMnemonicPresenter(
-            address: address,
             localizationManager: localizationManager
         )
 
         let keychain = Keychain()
-        let repository = AccountRepositoryFactory.createRepository()
 
         let interactor = ExportMnemonicInteractor(
+            metaAccount: metaAccount,
+            chain: chain,
             keystore: keychain,
-            repository: repository,
             operationManager: OperationManagerFacade.sharedManager
         )
         let wireframe = ExportMnemonicWireframe()

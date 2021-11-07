@@ -6,13 +6,11 @@ final class ExportSeedPresenter {
     var wireframe: ExportSeedWireframeProtocol!
     var interactor: ExportSeedInteractorInputProtocol!
 
-    let address: String
     let localizationManager: LocalizationManager
 
     private(set) var exportViewModel: ExportStringViewModel?
 
-    init(address: String, localizationManager: LocalizationManager) {
-        self.address = address
+    init(localizationManager: LocalizationManager) {
         self.localizationManager = localizationManager
     }
 
@@ -28,7 +26,7 @@ final class ExportSeedPresenter {
         if let derivationPath = viewModel.derivationPath {
             text = R.string.localizable
                 .exportSeedWithDpTemplate(
-                    viewModel.networkType.titleForLocale(locale),
+                    viewModel.chain.name,
                     viewModel.data,
                     derivationPath,
                     preferredLanguages: locale.rLanguages
@@ -36,7 +34,7 @@ final class ExportSeedPresenter {
         } else {
             text = R.string.localizable
                 .exportSeedWithoutDpTemplate(
-                    viewModel.networkType.titleForLocale(locale),
+                    viewModel.chain.name,
                     viewModel.data,
                     preferredLanguages: locale.rLanguages
                 )
@@ -52,7 +50,7 @@ final class ExportSeedPresenter {
 
 extension ExportSeedPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        interactor.fetchExportDataForAddress(address)
+        interactor.fetchExportDataForAddress()
     }
 
     func activateExport() {
@@ -80,11 +78,17 @@ extension ExportSeedPresenter: ExportGenericPresenterProtocol {
 
 extension ExportSeedPresenter: ExportSeedInteractorOutputProtocol {
     func didReceive(exportData: ExportSeedData) {
+        guard let cryptoType = exportData.metaAccount.fetch(
+            for: exportData.chain.accountRequest()
+        )?.cryptoType else {
+            return
+        }
+
         let viewModel = ExportStringViewModel(
             option: .seed,
-            networkType: exportData.networkType,
+            chain: exportData.chain,
             derivationPath: exportData.derivationPath,
-            cryptoType: exportData.account.cryptoType,
+            cryptoType: cryptoType,
             data: exportData.seed.toHex(includePrefix: true)
         )
 

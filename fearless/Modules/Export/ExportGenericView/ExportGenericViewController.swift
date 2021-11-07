@@ -25,6 +25,8 @@ final class ExportGenericViewController: UIViewController, ImportantViewProtocol
 
     private var viewModel: ExportGenericViewModelProtocol?
 
+    private var networkIconViewModel: ImageViewModelProtocol?
+
     var advancedAppearanceAnimator = TransitionAnimator(
         type: .push,
         duration: 0.35,
@@ -362,7 +364,7 @@ extension ExportGenericViewController {
         }
 
         let networkTypeView = setupNetworkView(
-            chain: viewModel.networkType,
+            chain: viewModel.chain,
             advancedContainerView: containerView,
             locale: locale
         )
@@ -400,7 +402,7 @@ extension ExportGenericViewController {
     }
 
     private func setupCryptoTypeView(
-        _ cryptoType: CryptoType,
+        _ cryptoType: MultiassetCryptoType,
         advancedContainerView: UIView,
         locale: Locale
     ) -> UIView {
@@ -433,7 +435,7 @@ extension ExportGenericViewController {
     }
 
     private func setupNetworkView(
-        chain: Chain,
+        chain: ChainModel,
         advancedContainerView: UIView,
         locale: Locale
     ) -> UIView {
@@ -443,8 +445,16 @@ extension ExportGenericViewController {
 
         networkView.title = R.string.localizable
             .commonNetwork(preferredLanguages: locale.rLanguages)
-        networkView.subtitle = chain.titleForLocale(locale)
-        networkView.iconImage = chain.icon
+        networkView.subtitle = chain.name
+
+        networkIconViewModel?.cancel(on: networkView.iconView)
+        networkView.iconImage = nil
+
+        if let asset = chain.utilityAssets().first {
+            let url = asset.icon ?? chain.icon
+            networkIconViewModel = RemoteImageViewModel(url: url)
+            networkIconViewModel?.loadAmountInputIcon(on: networkView.iconView, animated: true)
+        }
 
         return networkView
     }

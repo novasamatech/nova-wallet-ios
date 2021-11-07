@@ -1,8 +1,8 @@
 import Foundation
 
 struct ExportSeedData {
-    let account: AccountItem
+    let metaAccount: MetaAccountModel
     let seed: Data
     let derivationPath: String?
-    let networkType: Chain
+    let chain: ChainModel
 }

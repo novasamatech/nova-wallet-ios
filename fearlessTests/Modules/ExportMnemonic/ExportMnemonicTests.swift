@@ -10,25 +10,22 @@ class ExportMnemonicTests: XCTestCase {
         // given
 
         let keychain = InMemoryKeychain()
-        let settings = InMemorySettingsManager()
+        let operationQueue = OperationQueue()
 
         let storageFacade = UserDataStorageTestFacade()
-        let repository = AccountRepositoryFactory.createRepository(for: storageFacade)
+        let walletSettings = SelectedWalletSettings(storageFacade: storageFacade, operationQueue: operationQueue)
+        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 2)
 
         let derivationPath = "//some//work"
 
-        try AccountCreationHelper
-            .createAccountFromMnemonic(cryptoType: .sr25519,
-                                       networkType: .kusama,
-                                       derivationPath: derivationPath,
-                                       keychain: keychain,
-                                       settings: settings)
+        try AccountCreationHelper.createMetaAccountFromMnemonic(
+            cryptoType: .sr25519,
+            derivationPath: derivationPath,
+            keychain: keychain,
+            settings: walletSettings
+        )
 
-        let givenAccount = settings.selectedAccount!
-
-        let saveOperation = repository.saveOperation({ [givenAccount] }, { [] })
-
-        OperationQueue().addOperation(saveOperation)
+        let metaAccount = walletSettings.value!
 
         // when
 
@@ -56,12 +53,14 @@ class ExportMnemonicTests: XCTestCase {
             }
         }
 
-        let presenter = ExportMnemonicPresenter(address: givenAccount.address,
-                                                localizationManager: LocalizationManager.shared)
+        let presenter = ExportMnemonicPresenter(localizationManager: LocalizationManager.shared)
 
-        let interactor = ExportMnemonicInteractor(keystore: keychain,
-                                                  repository: AnyDataProviderRepository(repository),
-                                                  operationManager: OperationManagerFacade.sharedManager)
+        let interactor = ExportMnemonicInteractor(
+            metaAccount: metaAccount,
+            chain: chain,
+            keystore: keychain,
+            operationManager: OperationManagerFacade.sharedManager
+        )
 
         presenter.view = view
         presenter.wireframe = wireframe
@@ -83,7 +82,8 @@ class ExportMnemonicTests: XCTestCase {
 
         wait(for: [sharingExpectation], timeout: Constants.defaultExpectationDuration)
 
-        XCTAssertEqual(givenAccount, presenter.exportData?.account)
+        XCTAssertEqual(metaAccount, presenter.exportData?.metaAccount)
+        XCTAssertEqual(chain, presenter.exportData?.chain)
         XCTAssertEqual(derivationPath, presenter.exportData?.derivationPath)
     }
 }

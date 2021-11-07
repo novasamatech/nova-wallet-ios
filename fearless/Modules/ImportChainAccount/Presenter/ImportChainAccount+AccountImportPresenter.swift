@@ -213,5 +213,7 @@ extension ImportChainAccount {
                 return
             }
         }
+
+        override func shouldUseEthereumSeed() -> Bool { isEthereumBased }
     }
 }

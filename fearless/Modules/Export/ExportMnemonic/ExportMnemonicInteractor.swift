@@ -11,55 +11,62 @@ enum ExportMnemonicInteractorError: Error {
 final class ExportMnemonicInteractor {
     weak var presenter: ExportMnemonicInteractorOutputProtocol!
 
+    let metaAccount: MetaAccountModel
+    let chain: ChainModel
     let keystore: KeystoreProtocol
-    let repository: AnyDataProviderRepository<AccountItem>
     let operationManager: OperationManagerProtocol
 
     init(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel,
         keystore: KeystoreProtocol,
-        repository: AnyDataProviderRepository<AccountItem>,
         operationManager: OperationManagerProtocol
     ) {
+        self.metaAccount = metaAccount
+        self.chain = chain
         self.keystore = keystore
-        self.repository = repository
         self.operationManager = operationManager
     }
 }
 
 extension ExportMnemonicInteractor: ExportMnemonicInteractorInputProtocol {
-    func fetchExportDataForAddress(_ address: String) {
-        let accountOperation = repository.fetchOperation(by: address, options: RepositoryFetchOptions())
-
+    func fetchExportDataForAddress() {
         let exportOperation: BaseOperation<ExportMnemonicData> = ClosureOperation { [weak self] in
-            guard let account = try accountOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+            guard
+                let metaAccount = self?.metaAccount,
+                let chain = self?.chain
             else {
                 throw ExportMnemonicInteractorError.missingAccount
             }
 
-            guard let entropy = try self?.keystore.fetchEntropyForAddress(address) else {
+            let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+            let entropyTag = KeystoreTagV2.entropyTagForMetaId(metaAccount.metaId, accountId: accountId)
+
+            guard let entropy = try self?.keystore.loadIfKeyExists(entropyTag) else {
                 throw ExportMnemonicInteractorError.missingEntropy
             }
 
             let mnemonic = try IRMnemonicCreator().mnemonic(fromEntropy: entropy)
 
-            let derivationPath: String? = try self?.keystore.fetchDeriviationForAddress(address)
+            let derivationTag = chain.isEthereumBased ?
+                KeystoreTagV2.ethereumDerivationTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.substrateDerivationTagForMetaId(metaAccount.metaId, accountId: accountId)
 
-            let addressRawType = try SS58AddressFactory().type(fromAddress: address)
+            let derivationPath: String?
 
-            guard let chain = SNAddressType(rawValue: addressRawType.uint8Value)?.chain else {
-                throw AccountExportPasswordInteractorError.unsupportedAddress
+            if let derivationPathData = try self?.keystore.loadIfKeyExists(derivationTag) {
+                derivationPath = String(data: derivationPathData, encoding: .utf8)
+            } else {
+                derivationPath = nil
             }
 
             return ExportMnemonicData(
-                account: account,
+                metaAccount: metaAccount,
                 mnemonic: mnemonic,
                 derivationPath: derivationPath,
-                networkType: chain
+                chain: chain
             )
         }
-
-        exportOperation.addDependency(accountOperation)
 
         exportOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -74,6 +81,6 @@ extension ExportMnemonicInteractor: ExportMnemonicInteractorInputProtocol {
             }
         }
 
-        operationManager.enqueue(operations: [accountOperation, exportOperation], in: .transient)
+        operationManager.enqueue(operations: [exportOperation], in: .transient)
     }
 }
