@@ -4,27 +4,22 @@ import SoraFoundation
 import SoraUI
 
 protocol RewardEstimationViewDelegate: AnyObject {
-    func rewardEstimationView(_ view: RewardEstimationView, didChange amount: Decimal?)
-    func rewardEstimationView(_ view: RewardEstimationView, didSelect percentage: Float)
-    func rewardEstimationDidStartAction(_ view: RewardEstimationView)
-    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView)
+    func rewardEstimationView(_ view: RewardEstimationView, didChange amount: Decimal?) // TODO: Remove
+    func rewardEstimationView(_ view: RewardEstimationView, didSelect percentage: Float) // TODO: Remove
+    func rewardEstimationDidStartAction(_ view: RewardEstimationView) // TODO: What is it?
+    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView) // TODO: What is it?
 }
 
 final class RewardEstimationView: LocalizableView {
     @IBOutlet var backgroundView: TriangularedBlurView!
-    @IBOutlet var amountInputView: AmountInputView!
+
+    @IBOutlet var averageAPYTitleLabel: UILabel!
+    @IBOutlet var averageAPYValueLabel: UILabel!
+
+    @IBOutlet var maximumAPYTitleLabel: UILabel!
+    @IBOutlet var maximumAPYValueLabel: UILabel!
 
     @IBOutlet var estimateWidgetTitleLabel: UILabel!
-
-    @IBOutlet var monthlyTitleLabel: UILabel!
-    @IBOutlet var monthlyAmountLabel: UILabel!
-    @IBOutlet var monthlyFiatAmountLabel: UILabel!
-
-    @IBOutlet var yearlyTitleLabel: UILabel!
-    @IBOutlet var yearlyAmountLabel: UILabel!
-    @IBOutlet var yearlyFiatAmountLabel: UILabel!
-
-    @IBOutlet private var infoButton: RoundedButton!
 
     @IBOutlet private var actionButton: TriangularedButton!
 
@@ -42,16 +37,11 @@ final class RewardEstimationView: LocalizableView {
 
     weak var delegate: RewardEstimationViewDelegate?
 
-    var uiFactory: UIFactoryProtocol? {
-        didSet {
-            setupInputAccessoryView()
-        }
-    }
+    var uiFactory: UIFactoryProtocol? // TODO: Remove
 
     var locale = Locale.current {
         didSet {
             applyLocalization()
-            applyInputViewModel()
 
             if widgetViewModel != nil {
                 applyWidgetViewModel()
@@ -59,109 +49,53 @@ final class RewardEstimationView: LocalizableView {
         }
     }
 
-    private var inputViewModel: AmountInputViewModelProtocol?
+    private var inputViewModel: AmountInputViewModelProtocol? // TODO: Remove
     private var widgetViewModel: StakingEstimationViewModel?
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        amountInputView.textField.delegate = self
-
         applyLocalization()
-
-        setupAmountField()
     }
 
     func bind(viewModel: StakingEstimationViewModel) {
-        widgetViewModel?.assetBalance.value(for: locale).iconViewModel?.cancel(
-            on: amountInputView.iconView
-        )
-
         widgetViewModel = viewModel
-
-        if inputViewModel == nil || (inputViewModel?.decimalAmount != widgetViewModel?.amount) {
-            applyInputViewModel()
-        }
-
         applyWidgetViewModel()
     }
 
     private func applyWidgetViewModel() {
         if let viewModel = widgetViewModel?.assetBalance.value(for: locale) {
-            amountInputView.balanceText = R.string.localizable
-                .commonAvailableFormat(
-                    viewModel.balance ?? "",
+            estimateWidgetTitleLabel.text = R.string.localizable
+                .stakingEstimateEarningTitle_v190(
+                    viewModel.symbol,
                     preferredLanguages: locale.rLanguages
                 )
-            amountInputView.priceText = viewModel.price
-
-            amountInputView.assetIcon = nil
-
-            viewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
-
-            amountInputView.symbol = viewModel.symbol
         }
 
         if let viewModel = widgetViewModel?.rewardViewModel?.value(for: locale) {
             stopLoadingIfNeeded()
 
-            infoButton.isHidden = false
-
-            monthlyTitleLabel.text = viewModel.monthlyReward.increase.map {
-                R.string.localizable.stakingMonthPeriodFormat($0, preferredLanguages: locale.rLanguages)
-            }
-
-            monthlyAmountLabel.text = viewModel.monthlyReward.amount
-            monthlyFiatAmountLabel.text = viewModel.monthlyReward.price
-
-            yearlyTitleLabel.text = viewModel.yearlyReward.increase.map {
-                R.string.localizable.stakingYearPeriodFormat($0, preferredLanguages: locale.rLanguages)
-            }
-
-            yearlyAmountLabel.text = viewModel.yearlyReward.amount
-            yearlyFiatAmountLabel.text = viewModel.yearlyReward.price
+            averageAPYValueLabel.text = viewModel.avgAPY.apy
+            maximumAPYValueLabel.text = viewModel.maxAPY.apy
         } else {
             startLoadingIfNeeded()
-
-            infoButton.isHidden = true
         }
-    }
-
-    private func applyInputViewModel() {
-        guard let widgetViewModel = widgetViewModel, let amountFormatterFactory = amountFormatterFactory else {
-            return
-        }
-
-        let assetInfo = widgetViewModel.assetInfo
-
-        let formatter = amountFormatterFactory.createInputFormatter(for: assetInfo).value(for: locale)
-        let newInputViewModel = AmountInputViewModel(
-            symbol: assetInfo.symbol,
-            amount: widgetViewModel.amount,
-            limit: widgetViewModel.inputLimit,
-            formatter: formatter,
-            precision: Int16(formatter.maximumFractionDigits)
-        )
-
-        inputViewModel?.observable.remove(observer: self)
-
-        inputViewModel = newInputViewModel
-
-        amountInputView.fieldText = newInputViewModel.displayAmount
-        newInputViewModel.observable.add(observer: self)
     }
 
     private func applyLocalization() {
         let languages = locale.rLanguages
 
         estimateWidgetTitleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
+            "",
             preferredLanguages: languages
         )
 
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: languages)
+        averageAPYTitleLabel.text = R.string.localizable
+            .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
 
-        setupInputAccessoryView()
+        maximumAPYTitleLabel.text = R.string.localizable
+            .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+
         applyActionTitle()
     }
 
@@ -171,40 +105,13 @@ final class RewardEstimationView: LocalizableView {
         actionButton.invalidateLayout()
     }
 
-    private func setupInputAccessoryView() {
-        guard let accessoryView = uiFactory?.createAmountAccessoryView(for: self, locale: locale) else {
-            return
-        }
-
-        amountInputView.textField.inputAccessoryView = accessoryView
-    }
-
-    private func setupAmountField() {
-        let textColor = R.color.colorWhite()!
-        let placeholder = NSAttributedString(
-            string: "0",
-            attributes: [
-                .foregroundColor: textColor.withAlphaComponent(0.5),
-                .font: UIFont.h4Title
-            ]
-        )
-
-        amountInputView.textField.attributedPlaceholder = placeholder
-        amountInputView.textField.keyboardType = .decimalPad
-    }
-
     func startLoadingIfNeeded() {
         guard skeletonView == nil else {
             return
         }
 
-        monthlyTitleLabel.alpha = 0.0
-        monthlyAmountLabel.alpha = 0.0
-        monthlyFiatAmountLabel.alpha = 0.0
-
-        yearlyTitleLabel.alpha = 0.0
-        yearlyAmountLabel.alpha = 0.0
-        yearlyFiatAmountLabel.alpha = 0.0
+        averageAPYValueLabel.alpha = 0.0
+        maximumAPYValueLabel.alpha = 0.0
 
         setupSkeleton()
     }
@@ -218,13 +125,8 @@ final class RewardEstimationView: LocalizableView {
         skeletonView?.removeFromSuperview()
         skeletonView = nil
 
-        monthlyTitleLabel.alpha = 1.0
-        monthlyAmountLabel.alpha = 1.0
-        monthlyFiatAmountLabel.alpha = 1.0
-
-        yearlyTitleLabel.alpha = 1.0
-        yearlyAmountLabel.alpha = 1.0
-        yearlyFiatAmountLabel.alpha = 1.0
+        averageAPYValueLabel.alpha = 1.0
+        maximumAPYValueLabel.alpha = 1.0
     }
 
     private func setupSkeleton() {
@@ -254,93 +156,23 @@ final class RewardEstimationView: LocalizableView {
 
         return [
             SingleSkeleton.createRow(
-                inPlaceOf: monthlyTitleLabel,
-                containerView: self,
-                spaceSize: spaceSize,
-                size: smallRowSize
-            ),
-
-            SingleSkeleton.createRow(
-                inPlaceOf: monthlyAmountLabel,
+                inPlaceOf: averageAPYValueLabel,
                 containerView: self,
                 spaceSize: spaceSize,
                 size: bigRowSize
             ),
 
             SingleSkeleton.createRow(
-                inPlaceOf: monthlyFiatAmountLabel,
-                containerView: self,
-                spaceSize: spaceSize,
-                size: smallRowSize
-            ),
-
-            SingleSkeleton.createRow(
-                inPlaceOf: yearlyTitleLabel,
-                containerView: self,
-                spaceSize: spaceSize,
-                size: smallRowSize
-            ),
-
-            SingleSkeleton.createRow(
-                inPlaceOf: yearlyAmountLabel,
+                inPlaceOf: maximumAPYValueLabel,
                 containerView: self,
                 spaceSize: spaceSize,
                 size: bigRowSize
-            ),
-
-            SingleSkeleton.createRow(
-                inPlaceOf: yearlyFiatAmountLabel,
-                containerView: self,
-                spaceSize: spaceSize,
-                size: smallRowSize
             )
         ]
     }
 
     @IBAction private func actionTouchUpInside() {
-        amountInputView.textField.resignFirstResponder()
-
         delegate?.rewardEstimationDidStartAction(self)
-    }
-
-    @IBAction private func infoTouchUpInside() {
-        delegate?.rewardEstimationDidRequestInfo(self)
-    }
-}
-
-extension RewardEstimationView: UITextFieldDelegate {
-    func textField(
-        _: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        inputViewModel?.didReceiveReplacement(string, for: range) ?? false
-    }
-}
-
-extension RewardEstimationView: AmountInputAccessoryViewDelegate {
-    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
-        amountInputView.textField.resignFirstResponder()
-
-        delegate?.rewardEstimationView(self, didSelect: percentage)
-    }
-
-    func didSelectDone(on _: AmountInputAccessoryView) {
-        amountInputView.textField.resignFirstResponder()
-    }
-}
-
-extension RewardEstimationView: AmountInputViewModelObserver {
-    func amountInputDidChange() {
-        guard let inputViewModel = inputViewModel else {
-            return
-        }
-
-        amountInputView.fieldText = inputViewModel.displayAmount
-
-        let amount = inputViewModel.decimalAmount
-
-        delegate?.rewardEstimationView(self, didChange: amount)
     }
 }
 

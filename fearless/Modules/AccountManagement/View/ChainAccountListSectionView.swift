@@ -13,14 +13,6 @@ class ChainAccountListSectionView: UITableViewHeaderFooterView {
         return label
     }()
 
-    let mainStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 0.0, bottom: 8.0, right: 0.0)
-        return stackView
-    }()
-
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
 
@@ -42,12 +34,11 @@ class ChainAccountListSectionView: UITableViewHeaderFooterView {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
-        borderView.addSubview(mainStackView)
-        mainStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        borderView.addSubview(descriptionLabel)
+        descriptionLabel.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalToSuperview().inset(16.0)
         }
-
-        mainStackView.addArrangedSubview(descriptionLabel)
     }
 
     func bind(description: String) {

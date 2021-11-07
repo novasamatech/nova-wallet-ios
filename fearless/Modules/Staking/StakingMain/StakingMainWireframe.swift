@@ -60,6 +60,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(storiesView.controller, animated: true, completion: nil)
     }
 
+    // TODO: Remove
     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal) {
         let infoVew = ModalInfoFactory.createRewardDetails(for: maxReward, avgReward: avgReward)
 
