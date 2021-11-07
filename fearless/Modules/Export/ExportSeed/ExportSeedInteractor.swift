@@ -29,7 +29,7 @@ final class ExportSeedInteractor {
 }
 
 extension ExportSeedInteractor: ExportSeedInteractorInputProtocol {
-    func fetchExportDataForAddress() {
+    func fetchExportData() {
         let exportOperation: BaseOperation<ExportSeedData> = ClosureOperation { [weak self] in
             guard
                 let metaAccount = self?.metaAccount,
