@@ -34,10 +34,20 @@ final class WalletListViewController: UIViewController, ViewHolder {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(WalletListHeaderCell.self)
         rootView.tableView.registerClassForCell(WalletListAssetCell.self)
+
+        rootView.tableView.refreshControl?.addTarget(
+            self,
+            action: #selector(actionRefresh),
+            for: .valueChanged
+        )
     }
 
     @objc func actionSelectAccount() {
         presenter.selectWallet()
+    }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
     }
 }
 
@@ -108,5 +118,9 @@ extension WalletListViewController: WalletListViewProtocol {
         assetViewModels = viewModel
 
         rootView.tableView.reloadData()
+    }
+
+    func didCompleteRefreshing() {
+        rootView.tableView.refreshControl?.endRefreshing()
     }
 }
