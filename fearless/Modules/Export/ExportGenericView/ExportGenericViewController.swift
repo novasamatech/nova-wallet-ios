@@ -362,7 +362,7 @@ extension ExportGenericViewController {
         }
 
         let networkTypeView = setupNetworkView(
-            chain: viewModel.networkType,
+            chain: viewModel.chain,
             advancedContainerView: containerView,
             locale: locale
         )
@@ -400,7 +400,7 @@ extension ExportGenericViewController {
     }
 
     private func setupCryptoTypeView(
-        _ cryptoType: CryptoType,
+        _ cryptoType: MultiassetCryptoType,
         advancedContainerView: UIView,
         locale: Locale
     ) -> UIView {
@@ -433,7 +433,7 @@ extension ExportGenericViewController {
     }
 
     private func setupNetworkView(
-        chain: Chain,
+        chain: ChainModel,
         advancedContainerView: UIView,
         locale: Locale
     ) -> UIView {
@@ -443,7 +443,7 @@ extension ExportGenericViewController {
 
         networkView.title = R.string.localizable
             .commonNetwork(preferredLanguages: locale.rLanguages)
-        networkView.subtitle = chain.titleForLocale(locale)
+        networkView.subtitle = chain.name
         networkView.iconImage = chain.icon
 
         return networkView

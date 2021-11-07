@@ -16,10 +16,7 @@ final class AccountExportPasswordPresenter {
 
     let localizationManager: LocalizationManagerProtocol
 
-    let address: String
-
-    init(address: String, localizationManager: LocalizationManagerProtocol) {
-        self.address = address
+    init(localizationManager: LocalizationManagerProtocol) {
         self.localizationManager = localizationManager
     }
 }
@@ -38,7 +35,7 @@ extension AccountExportPasswordPresenter: AccountExportPasswordPresenterProtocol
             return
         }
 
-        interactor.exportAccount(address: address, password: password)
+        interactor.exportAccount(password: password)
     }
 }
 

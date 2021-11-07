@@ -102,16 +102,7 @@ final class AccountInfoWireframe: AccountInfoWireframeProtocol, AuthorizationPre
         )
     }
 
-    private func showKeystoreExport(for address: String, from view: AccountInfoViewProtocol?) {
-        guard let passwordView = AccountExportPasswordViewFactory.createView(with: address) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            passwordView.controller,
-            animated: true
-        )
-    }
+    private func showKeystoreExport(for _: String, from _: AccountInfoViewProtocol?) {}
 
     private func showSeedExport(for address: String, from view: AccountInfoViewProtocol?) {
         guard let seedView = ExportSeedViewFactory.createViewForAddress(address) else {

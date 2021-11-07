@@ -28,7 +28,7 @@ final class ExportMnemonicPresenter {
         if let derivationPath = exportData?.derivationPath {
             text = R.string.localizable
                 .exportMnemonicWithDpTemplate(
-                    data.networkType.titleForLocale(locale),
+                    data.chain.name,
                     data.mnemonic.toString(),
                     derivationPath,
                     preferredLanguages: locale.rLanguages
@@ -36,7 +36,7 @@ final class ExportMnemonicPresenter {
         } else {
             text = R.string.localizable
                 .exportMnemonicWithoutDpTemplate(
-                    data.networkType.titleForLocale(locale),
+                    data.chain.name,
                     data.mnemonic.toString(),
                     preferredLanguages: locale.rLanguages
                 )
@@ -90,11 +90,18 @@ extension ExportMnemonicPresenter: ExportMnemonicInteractorOutputProtocol {
     func didReceive(exportData: ExportMnemonicData) {
         self.exportData = exportData
 
+        guard let cryptoType = exportData.metaAccount.fetch(
+            for: exportData.chain.accountRequest()
+        )?.cryptoType else {
+            didReceive(error: ChainAccountFetchingError.accountNotExists)
+            return
+        }
+
         let viewModel = ExportMnemonicViewModel(
             option: .mnemonic,
-            networkType: exportData.networkType,
+            chain: exportData.chain,
             derivationPath: exportData.derivationPath,
-            cryptoType: exportData.account.cryptoType,
+            cryptoType: cryptoType,
             mnemonic: exportData.mnemonic.allWords()
         )
         view?.set(viewModel: viewModel)

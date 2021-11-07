@@ -28,7 +28,7 @@ final class ExportSeedPresenter {
         if let derivationPath = viewModel.derivationPath {
             text = R.string.localizable
                 .exportSeedWithDpTemplate(
-                    viewModel.networkType.titleForLocale(locale),
+                    viewModel.chain.name,
                     viewModel.data,
                     derivationPath,
                     preferredLanguages: locale.rLanguages
@@ -36,7 +36,7 @@ final class ExportSeedPresenter {
         } else {
             text = R.string.localizable
                 .exportSeedWithoutDpTemplate(
-                    viewModel.networkType.titleForLocale(locale),
+                    viewModel.chain.name,
                     viewModel.data,
                     preferredLanguages: locale.rLanguages
                 )
@@ -80,11 +80,17 @@ extension ExportSeedPresenter: ExportGenericPresenterProtocol {
 
 extension ExportSeedPresenter: ExportSeedInteractorOutputProtocol {
     func didReceive(exportData: ExportSeedData) {
+        guard let cryptoType = exportData.metaAccount.fetch(
+            for: exportData.chain.accountRequest()
+        )?.cryptoType else {
+            return
+        }
+
         let viewModel = ExportStringViewModel(
             option: .seed,
-            networkType: exportData.networkType,
+            chain: exportData.chain,
             derivationPath: exportData.derivationPath,
-            cryptoType: exportData.account.cryptoType,
+            cryptoType: cryptoType,
             data: exportData.seed.toHex(includePrefix: true)
         )
 
