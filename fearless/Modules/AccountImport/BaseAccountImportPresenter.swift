@@ -9,7 +9,8 @@ enum AccountImportContext: String {
 class BaseAccountImportPresenter {
     static let maxMnemonicLength: Int = 250
     static let maxMnemonicSize: Int = 24
-    static let maxRawSeedLength: Int = 66
+    static let maxSubstrateRawSeedLength: Int = 66
+    static let maxEthereumRawSeedLength: Int = 130
     static let maxKeystoreLength: Int = 4000
 
     weak var view: AccountImportViewProtocol?
@@ -80,13 +81,28 @@ class BaseAccountImportPresenter {
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
 
         case .seed:
-            let placeholder = R.string.localizable
-                .accountImportRawSeedPlaceholder(preferredLanguages: locale.rLanguages)
-            let inputHandler = InputHandler(
-                value: value,
-                maxLength: Self.maxRawSeedLength,
-                predicate: NSPredicate.seed
-            )
+            let inputHandler: InputHandler
+            let placeholder: String
+
+            if shouldUseEthereumSeed() {
+                inputHandler = InputHandler(
+                    value: value,
+                    maxLength: Self.maxEthereumRawSeedLength,
+                    predicate: NSPredicate.ethereumSeed
+                )
+
+                placeholder = R.string.localizable
+                    .accountImportEthereumSeedPlaceholder(preferredLanguages: locale.rLanguages)
+            } else {
+                inputHandler = InputHandler(
+                    value: value,
+                    maxLength: Self.maxSubstrateRawSeedLength,
+                    predicate: NSPredicate.substrateSeed
+                )
+                placeholder = R.string.localizable
+                    .accountImportSubstrateSeedPlaceholder(preferredLanguages: locale.rLanguages)
+            }
+
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
 
         case .keystore:
@@ -323,6 +339,10 @@ class BaseAccountImportPresenter {
     }
 
     internal func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {
+        fatalError("This function should be overriden")
+    }
+
+    internal func shouldUseEthereumSeed() -> Bool {
         fatalError("This function should be overriden")
     }
 }

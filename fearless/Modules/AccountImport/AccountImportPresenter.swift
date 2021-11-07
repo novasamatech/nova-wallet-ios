@@ -105,4 +105,6 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     }
 
     override func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {}
+
+    override func shouldUseEthereumSeed() -> Bool { false }
 }
