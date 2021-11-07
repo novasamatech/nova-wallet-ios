@@ -388,6 +388,7 @@
 "crowdloan.moonbeam.region.restriction.message" = "Этот краудлоун не поддерживается в вашем регионе";
 "crowdloan.acala.direct" = "Напрямую";
 "crowdloan.acala.liquid" = "Liquid вклад";
+"crowdloan.acala.learn.more" = "Подробнее о различных вкладах в Acala";
 "crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
