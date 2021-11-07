@@ -2,6 +2,10 @@ import UIKit
 import RobinHood
 import SoraKeystore
 
+enum AccountManagementError: Error {
+    case missingAccount
+}
+
 final class AccountManagementInteractor {
     weak var presenter: AccountManagementInteractorOutputProtocol?
 
@@ -116,7 +120,7 @@ final class AccountManagementInteractor {
             guard let currentItem = try fetchOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
             else {
-                throw AccountInfoInteractorError.missingAccount
+                throw AccountManagementError.missingAccount
             }
 
             guard currentItem.info.name != newName else {
