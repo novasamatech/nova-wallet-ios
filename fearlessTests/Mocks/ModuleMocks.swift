@@ -14636,16 +14636,16 @@ import IrohaCrypto
     
     
     
-     func fetchExportDataForAddress()  {
+     func fetchExportData()  {
         
-    return cuckoo_manager.call("fetchExportDataForAddress()",
+    return cuckoo_manager.call("fetchExportData()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.fetchExportDataForAddress())
+            defaultCall: __defaultImplStub!.fetchExportData())
         
     }
     
@@ -14658,9 +14658,9 @@ import IrohaCrypto
 	    }
 	    
 	    
-	    func fetchExportDataForAddress() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func fetchExportData() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicInteractorInputProtocol.self, method: "fetchExportDataForAddress()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicInteractorInputProtocol.self, method: "fetchExportData()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14680,9 +14680,9 @@ import IrohaCrypto
 	
 	    
 	    @discardableResult
-	    func fetchExportDataForAddress() -> Cuckoo.__DoNotUse<(), Void> {
+	    func fetchExportData() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("fetchExportDataForAddress()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("fetchExportData()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -14694,7 +14694,7 @@ import IrohaCrypto
     
 
     
-     func fetchExportDataForAddress()   {
+     func fetchExportData()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
