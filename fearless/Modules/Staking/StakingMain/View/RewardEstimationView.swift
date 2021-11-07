@@ -107,6 +107,12 @@ final class RewardEstimationView: LocalizableView {
             viewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
 
             amountInputView.symbol = viewModel.symbol
+
+            estimateWidgetTitleLabel.text = R.string.localizable
+                .stakingEstimateEarningTitle_v190(
+                    viewModel.symbol,
+                    preferredLanguages: locale.rLanguages
+                )
         }
 
         if let viewModel = widgetViewModel?.rewardViewModel?.value(for: locale) {
@@ -163,6 +169,7 @@ final class RewardEstimationView: LocalizableView {
         let languages = locale.rLanguages
 
         estimateWidgetTitleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
+            "",
             preferredLanguages: languages
         )
 

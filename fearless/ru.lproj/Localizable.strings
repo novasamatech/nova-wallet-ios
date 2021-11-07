@@ -466,7 +466,7 @@
 "staking.validator.other.oversubscribed.message" = "Превышен лимит номинаторов для валидатора. Только номинаторы с наибольшим стейком получат награду.";
 "wallet.history.title_v1.9.0" = "История";
 "staking.main.lockup.period.title_v1.9.0" = "Время вывода";
-"staking.estimate.earning.title_v1.9.0" = "Расчёт доходности";
+"staking.estimate.earning.title_v1.9.0" = "Расчёт доходности %@";
 "staking.main.stake.balance.staked" = "Застейкано";
 "staking.setup.restake.title" = "Увеличения стейка";
 "staking.setup.payout.title" = "Выплаты";
