@@ -39,6 +39,10 @@ final class MainTabBarViewController: UITabBarController {
             appearance.backgroundEffect = nil
 
             tabBar.standardAppearance = appearance
+
+            if #available(iOS 15.0, *) {
+                UITabBar.appearance().scrollEdgeAppearance = appearance
+            }
         } else {
             tabBar.backgroundImage = UIImage.background(from: R.color.colorAlmostBlack()!)
             tabBar.shadowImage = UIImage()

@@ -24,7 +24,7 @@ extension BalanceContext {
     var total: Decimal { free + reserved }
     var frozen: Decimal { reserved + locked }
     var locked: Decimal { max(miscFrozen, feeFrozen) }
-    var available: Decimal { free - locked }
+    var available: Decimal { free >= locked ? free - locked : 0.0 }
 }
 
 extension BalanceContext {

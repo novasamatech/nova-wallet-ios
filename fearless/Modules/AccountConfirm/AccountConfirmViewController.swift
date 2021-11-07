@@ -342,8 +342,8 @@ extension AccountConfirmViewController {
             originalPositions[button] = positions[button]
 
             let animationBlock = {
-                button.roundedBackgroundView?.fillColor = R.color.colorHighlightedPink()!
-                button.roundedBackgroundView?.highlightedFillColor = R.color.colorHighlightedPink()!
+                button.roundedBackgroundView?.fillColor = R.color.colorHighlightedAccent()!
+                button.roundedBackgroundView?.highlightedFillColor = R.color.colorHighlightedAccent()!
                 button.changesContentOpacityWhenHighlighted = true
                 self.layoutSubmittedButtons()
 

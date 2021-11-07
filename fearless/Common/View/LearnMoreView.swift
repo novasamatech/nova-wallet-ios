@@ -40,7 +40,7 @@ final class LearnMoreView: BackgroundedContentControl {
         let shapeView = ShapeView()
         shapeView.isUserInteractionEnabled = false
         shapeView.fillColor = .clear
-        shapeView.highlightedFillColor = R.color.colorCellSelection()!
+        shapeView.highlightedFillColor = R.color.colorHighlightedAccent()!
         backgroundView = shapeView
 
         setupLayout()
