@@ -11,58 +11,69 @@ final class ExportSeedInteractor {
     weak var presenter: ExportSeedInteractorOutputProtocol!
 
     let keystore: KeystoreProtocol
-    let repository: AnyDataProviderRepository<AccountItem>
+    let metaAccount: MetaAccountModel
+    let chain: ChainModel
     let operationManager: OperationManagerProtocol
 
     init(
+        metaAccount: MetaAccountModel,
+        chain: ChainModel,
         keystore: KeystoreProtocol,
-        repository: AnyDataProviderRepository<AccountItem>,
         operationManager: OperationManagerProtocol
     ) {
         self.keystore = keystore
-        self.repository = repository
+        self.metaAccount = metaAccount
+        self.chain = chain
         self.operationManager = operationManager
     }
 }
 
 extension ExportSeedInteractor: ExportSeedInteractorInputProtocol {
-    func fetchExportDataForAddress(_ address: String) {
-        let accountOperation = repository.fetchOperation(by: address, options: RepositoryFetchOptions())
-
+    func fetchExportDataForAddress() {
         let exportOperation: BaseOperation<ExportSeedData> = ClosureOperation { [weak self] in
-            guard let account = try accountOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-            else {
+            guard
+                let metaAccount = self?.metaAccount,
+                let chain = self?.chain,
+                let accountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
                 throw ExportMnemonicInteractorError.missingAccount
             }
 
-            var optionalSeed: Data? = try self?.keystore.fetchSeedForAddress(address)
+            let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
+            let seedTag = chain.isEthereumBased ?
+                KeystoreTagV2.ethereumSeedTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.substrateSeedTagForMetaId(metaAccount.metaId, accountId: accountId)
+            var optionalSeed: Data? = try self?.keystore.loadIfKeyExists(seedTag)
 
-            if optionalSeed == nil, account.cryptoType.supportsSeedFromSecretKey {
-                optionalSeed = try self?.keystore.fetchSecretKeyForAddress(address)
+            if optionalSeed == nil, accountResponse.cryptoType.supportsSeedFromSecretKey {
+                let secretTag = chain.isEthereumBased ?
+                    KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                    KeystoreTagV2.substrateSecretKeyTagForMetaId(metaAccount.metaId, accountId: accountId)
+                optionalSeed = try self?.keystore.loadIfKeyExists(secretTag)
             }
 
             guard let seed = optionalSeed else {
                 throw ExportSeedInteractorError.missingSeed
             }
 
-            let derivationPath: String? = try self?.keystore.fetchDeriviationForAddress(address)
+            let derivationTag = chain.isEthereumBased ?
+                KeystoreTagV2.ethereumDerivationTagForMetaId(metaAccount.metaId, accountId: accountId) :
+                KeystoreTagV2.substrateDerivationTagForMetaId(metaAccount.metaId, accountId: accountId)
 
-            let addressRawType = try SS58AddressFactory().type(fromAddress: address)
+            let derivationPath: String?
 
-            guard let chain = SNAddressType(rawValue: addressRawType.uint8Value)?.chain else {
-                throw AccountExportPasswordInteractorError.unsupportedAddress
+            if let derivationPathData = try self?.keystore.loadIfKeyExists(derivationTag) {
+                derivationPath = String(data: derivationPathData, encoding: .utf8)
+            } else {
+                derivationPath = nil
             }
 
             return ExportSeedData(
-                account: account,
+                metaAccount: metaAccount,
                 seed: seed,
                 derivationPath: derivationPath,
-                networkType: chain
+                chain: chain
             )
         }
-
-        exportOperation.addDependency(accountOperation)
 
         exportOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
@@ -77,6 +88,6 @@ extension ExportSeedInteractor: ExportSeedInteractorInputProtocol {
             }
         }
 
-        operationManager.enqueue(operations: [accountOperation, exportOperation], in: .transient)
+        operationManager.enqueue(operations: [exportOperation], in: .transient)
     }
 }

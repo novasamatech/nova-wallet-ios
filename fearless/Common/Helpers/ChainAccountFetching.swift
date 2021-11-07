@@ -115,6 +115,10 @@ extension MetaAccountModel {
         }
     }
 
+    func fetchChainAccountId(for request: ChainAccountRequest) -> AccountId? {
+        chainAccounts.first(where: { $0.chainId == request.chainId })?.accountId
+    }
+
     func contains(accountId: AccountId) -> Bool {
         substrateAccountId == accountId ||
             ethereumAddress == accountId ||

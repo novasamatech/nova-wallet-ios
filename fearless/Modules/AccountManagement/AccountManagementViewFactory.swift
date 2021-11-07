@@ -37,7 +37,8 @@ final class AccountManagementViewFactory: AccountManagementViewFactoryProtocol {
             chainRepository: chainRepository,
             operationManager: OperationManagerFacade.sharedManager,
             settings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            keystore: Keychain()
         )
 
         view.presenter = presenter

@@ -129,15 +129,17 @@ final class AccountManagementPresenter {
         let changeAccountAction = createAccountChangeAction(for: chain)
         actions.append(changeAccountAction)
 
-        // TODO: Turn on export
-        // TODO: display another actions view
-        //        let exportAccountTitle = R.string.localizable
-        //            .commonExport(preferredLanguages: selectedLocale.rLanguages)
-        //        let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
-        //            print("Export account")
-        //        }
+        let exportAccountTitle = R.string.localizable.commonExport(
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
-        //        actions.append(exportAction)
+        if let wallet = wallet {
+            let exportAction = AlertPresentableAction(title: exportAccountTitle) { [weak self] in
+                self?.interactor.requestExportOptions(metaAccount: wallet, chain: chain)
+            }
+
+            actions.append(exportAction)
+        }
 
         let closeTitle = R.string.localizable
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
@@ -333,6 +335,27 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                     from: view,
                     locale: selectedLocale
                 )
+            }
+        }
+    }
+
+    func didReceive(
+        exportOptionsResult: Result<[ExportOption], Error>,
+        metaAccount: MetaAccountModel,
+        chain: ChainModel
+    ) {
+        switch exportOptionsResult {
+        case let .success(options):
+            wireframe.showExportAccount(
+                for: metaAccount,
+                chain: chain,
+                options: options,
+                locale: selectedLocale,
+                from: view
+            )
+        case let .failure(error):
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+                logger?.error("Did receive export error \(error)")
             }
         }
     }

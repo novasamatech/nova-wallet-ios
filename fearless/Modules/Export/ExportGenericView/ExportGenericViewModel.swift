@@ -8,9 +8,9 @@ protocol ExportGenericViewModelBinding {
 
 protocol ExportGenericViewModelProtocol {
     var option: ExportOption { get }
-    var networkType: Chain { get }
+    var chain: ChainModel { get }
     var derivationPath: String? { get }
-    var cryptoType: CryptoType { get }
+    var cryptoType: MultiassetCryptoType { get }
 
     func accept(binder: ExportGenericViewModelBinding, locale: Locale) -> UIView
 }
@@ -18,11 +18,11 @@ protocol ExportGenericViewModelProtocol {
 struct ExportStringViewModel: ExportGenericViewModelProtocol {
     let option: ExportOption
 
-    let networkType: Chain
+    let chain: ChainModel
 
     let derivationPath: String?
 
-    let cryptoType: CryptoType
+    let cryptoType: MultiassetCryptoType
 
     let data: String
 
@@ -38,11 +38,11 @@ struct ExportStringViewModel: ExportGenericViewModelProtocol {
 struct ExportMnemonicViewModel: ExportGenericViewModelProtocol {
     let option: ExportOption
 
-    let networkType: Chain
+    let chain: ChainModel
 
     let derivationPath: String?
 
-    let cryptoType: CryptoType
+    let cryptoType: MultiassetCryptoType
 
     let mnemonic: [String]
 

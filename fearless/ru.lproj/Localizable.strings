@@ -87,7 +87,8 @@
 "account.import.password.placeholder" = "Пароль";
 "recover.json.hint" = "Вставьте json строку или загрузите файл…";
 "account.import.recovery.json.placeholder" = "Вставьте json";
-"account.import.raw.seed.placeholder" = "Бинарный сид: 64 шестнадцатиричных символа";
+"account.import.substrate.seed.placeholder" = "Бинарный сид: 64 шестнадцатиричных символа";
+"account.import.ethereum.seed.placeholder" = "Бинарный сид: 128 шестнадцатиричных символа";
 "import.mnemonic" = "Мнемоническая фраза";
 "account.import.invalid.seed" = "Seed неверный. Пожалуйста, убедитесь, что введенные данные содержат 64 hex символа.";
 "account.import.invalid.keystore" = "Неверный формат данных восстановления. Пожалуйста, удостоверьтесь, что данные соответствуют json формату.";
