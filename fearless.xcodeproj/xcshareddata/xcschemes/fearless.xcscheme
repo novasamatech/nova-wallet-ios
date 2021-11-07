@@ -65,9 +65,6 @@
                   Identifier = "AddConnectionTests">
                </Test>
                <Test
-                  Identifier = "ExportMnemonicTests">
-               </Test>
-               <Test
                   Identifier = "NetworkConnectionsMigratorTests">
                </Test>
                <Test
