@@ -88,9 +88,9 @@ final class TransactionSubscription {
             parseOperation.addDependency(fetchBlockOperation)
             parseOperation.addDependency(eventsWrapper.targetOperation)
 
-            let address = try accountId.toAddress(using: chainModel.chainFormat)
             let txSaveOperation = createTxSaveOperation(
-                for: address,
+                for: accountId,
+                chain: chainModel,
                 dependingOn: parseOperation
             )
 
@@ -139,16 +139,16 @@ final class TransactionSubscription {
 
 extension TransactionSubscription {
     private func createTxSaveOperation(
-        for address: String,
+        for accountId: AccountId,
+        chain: ChainModel,
         dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>
     ) -> BaseOperation<Void> {
         txStorage.saveOperation({
-            let addressFactory = SS58AddressFactory()
-            return try processingOperaton.extractNoCancellableResultData().compactMap { result in
+            try processingOperaton.extractNoCancellableResultData().compactMap { result in
                 TransactionHistoryItem.createFromSubscriptionResult(
                     result,
-                    address: address,
-                    addressFactory: addressFactory
+                    accountId: accountId,
+                    chain: chain
                 )
             }
         }, { [] })

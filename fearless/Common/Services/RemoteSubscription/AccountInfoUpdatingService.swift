@@ -93,7 +93,7 @@ final class AccountInfoUpdatingService {
             return
         }
 
-        let txStorage = repositoryFactory.createTxRepository(for: address)
+        let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
         let contactOperationFactory = WalletContactOperationFactory(
             storageFacade: storageFacade,
             targetAddress: address
