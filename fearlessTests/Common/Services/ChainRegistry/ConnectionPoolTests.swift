@@ -2,6 +2,7 @@ import XCTest
 @testable import fearless
 import Cuckoo
 import SubstrateSdk
+import SoraFoundation
 
 class ConnectionPoolTests: XCTestCase {
     func testSetupCreatesNewConnections() {
@@ -16,7 +17,10 @@ class ConnectionPoolTests: XCTestCase {
                 }
             }
 
-            let connectionPool = ConnectionPool(connectionFactory: connectionFactory)
+            let connectionPool = ConnectionPool(
+                connectionFactory: connectionFactory,
+                applicationHandler: ApplicationHandler()
+            )
 
             // when
 
@@ -60,7 +64,10 @@ class ConnectionPoolTests: XCTestCase {
                 }
             }
 
-            let connectionPool = ConnectionPool(connectionFactory: connectionFactory)
+            let connectionPool = ConnectionPool(
+                connectionFactory: connectionFactory,
+                applicationHandler: ApplicationHandler()
+            )
 
             // when
 

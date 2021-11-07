@@ -28,7 +28,8 @@ class EthereumBaseIntegrationTests: XCTestCase {
             chainId: chainId,
             chainFormat: .ethereum,
             queue: nil,
-            closure: nil
+            closure: nil,
+            subscriptionHandlingFactory: nil
         ) else {
             XCTFail("Can't subscribe to remote storage")
             return
