@@ -3,23 +3,24 @@ import SoraFoundation
 import SoraKeystore
 import RobinHood
 
-final class AccountExportPasswordViewFactory: AccountExportPasswordViewFactoryProtocol {
-    static func createView(with address: String) -> AccountExportPasswordViewProtocol? {
+final class AccountExportPasswordViewFactory {
+    static func createView(
+        with metaAccount: MetaAccountModel,
+        chain: ChainModel
+    ) -> AccountExportPasswordViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
         let view = AccountExportPasswordViewController(nib: R.nib.accountExportPasswordViewController)
         let presenter = AccountExportPasswordPresenter(
-            address: address,
             localizationManager: localizationManager
         )
 
         let exportJsonWrapper = KeystoreExportWrapper(keystore: Keychain())
 
-        let repository = AccountRepositoryFactory.createRepository()
-
         let interactor = AccountExportPasswordInteractor(
+            metaAccount: metaAccount,
+            chain: chain,
             exportJsonWrapper: exportJsonWrapper,
-            repository: repository,
             operationManager: OperationManagerFacade.sharedManager
         )
         let wireframe = AccountExportPasswordWireframe()

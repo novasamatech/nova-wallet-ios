@@ -126,11 +126,14 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     }
 
     private func showKeystoreExport(
-        for _: MetaAccountModel,
-        chain _: ChainModel,
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
         from view: AccountManagementViewProtocol?
     ) {
-        guard let passwordView = AccountExportPasswordViewFactory.createView(with: "") else {
+        guard let passwordView = AccountExportPasswordViewFactory.createView(
+            with: wallet,
+            chain: chain
+        ) else {
             return
         }
 
