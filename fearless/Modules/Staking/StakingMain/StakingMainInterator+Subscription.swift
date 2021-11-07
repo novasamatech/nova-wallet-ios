@@ -36,7 +36,8 @@ extension StakingMainInteractor {
             }
 
             subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
-            subscribeRewardsAnalytics(for: stashItem.stash)
+            // TODO: Temporary disable Analytics feature
+            // subscribeRewardsAnalytics(for: stashItem.stash)
         }
 
         presenter?.didReceive(stashItem: stashItem)
