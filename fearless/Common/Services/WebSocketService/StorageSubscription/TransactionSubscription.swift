@@ -81,7 +81,8 @@ final class TransactionSubscription {
                 for: accountId,
                 dependingOn: fetchBlockOperation,
                 eventsOperation: eventsWrapper.targetOperation,
-                coderOperation: coderFactoryOperation
+                coderOperation: coderFactoryOperation,
+                chain: chainModel
             )
 
             parseOperation.addDependency(fetchBlockOperation)
@@ -195,7 +196,8 @@ extension TransactionSubscription {
         for accountId: AccountId,
         dependingOn fetchOperation: BaseOperation<SignedBlock>,
         eventsOperation: BaseOperation<[StorageResponse<[EventRecord]>]>,
-        coderOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        coderOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chain: ChainModel
     ) -> BaseOperation<[TransactionSubscriptionResult]> {
         ClosureOperation<[TransactionSubscriptionResult]> {
             let block = try fetchOperation
@@ -210,7 +212,10 @@ extension TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId)
+            let extrinsicProcessor = ExtrinsicProcessor(
+                accountId: accountId,
+                isEthereumBased: chain.isEthereumBased
+            )
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {
