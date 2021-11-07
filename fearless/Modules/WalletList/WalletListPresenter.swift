@@ -233,6 +233,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         let chainModel = chainList.allItems[index].chainModel
         wireframe.showAssetDetails(from: view, chain: chainModel)
     }
+
+    func refresh() {
+        interactor.refresh()
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {
@@ -257,7 +261,13 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideAssetViewModels()
     }
 
-    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>) {
+    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>?) {
+        view?.didCompleteRefreshing()
+
+        guard let result = result else {
+            return
+        }
+
         priceResult = result
 
         let changes: [DataProviderChange<ListModel>] = allChains.values.map { chain in

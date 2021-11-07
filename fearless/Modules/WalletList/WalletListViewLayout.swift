@@ -11,6 +11,10 @@ final class WalletListViewLayout: UIView {
         let view = UITableView()
         view.separatorStyle = .none
         view.backgroundColor = .clear
+
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = R.color.colorWhite()
+        view.refreshControl = refreshControl
         return view
     }()
 
