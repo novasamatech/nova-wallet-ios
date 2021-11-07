@@ -6,10 +6,12 @@ import RobinHood
 
 final class ContactsViewModelFactory: ContactsFactoryWrapperProtocol {
     private let iconGenerator = PolkadotIconGenerator()
-    var dataStorageFacade: StorageFacadeProtocol
+    let dataStorageFacade: StorageFacadeProtocol
+    let chainFormat: ChainFormat
 
-    init(dataStorageFacade: StorageFacadeProtocol) {
+    init(dataStorageFacade: StorageFacadeProtocol, chainFormat: ChainFormat) {
         self.dataStorageFacade = dataStorageFacade
+        self.chainFormat = chainFormat
     }
 
     func createContactViewModelFromContact(
@@ -19,13 +21,13 @@ final class ContactsViewModelFactory: ContactsFactoryWrapperProtocol {
         delegate: ContactViewModelDelegate?,
         commandFactory: WalletCommandFactoryProtocol
     ) -> ContactViewModelProtocol? {
-        do {
-            guard parameters.accountId != contact.accountId else {
-                return nil
-            }
+        guard parameters.accountId != contact.accountId else {
+            return nil
+        }
 
-            // TODO: Fix icon for Ethereum based network
-            let icon = try? iconGenerator.generateFromAddress(contact.firstName)
+        do {
+            let accountId = try contact.firstName.toAccountId(using: chainFormat)
+            let icon = try? iconGenerator.generateFromAccountId(accountId)
                 .imageWithFillColor(
                     .white,
                     size: CGSize(width: 24.0, height: 24.0),
@@ -64,6 +66,7 @@ final class ContactsViewModelFactory: ContactsFactoryWrapperProtocol {
             )
 
             return viewModel
+
         } catch {
             return nil
         }
