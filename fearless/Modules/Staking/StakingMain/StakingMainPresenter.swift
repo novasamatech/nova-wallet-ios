@@ -261,22 +261,27 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         )
     }
 
+    // TODO: Remove
     func performRewardInfoAction() {
         guard let rewardCalculator = stateMachine
             .viewState(using: { (state: BaseStakingState) in state })?.commonData.calculatorEngine else {
             return
         }
 
+        // TODO: Use in view model generation
         let maxReward = rewardCalculator.calculateMaxReturn(isCompound: true, period: .year)
         let avgReward = rewardCalculator.calculateAvgReturn(isCompound: true, period: .year)
 
+        // TODO: Remove
         wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
     }
 
+    // TODO: Remove
     func updateAmount(_ newValue: Decimal) {
         stateMachine.state.process(rewardEstimationAmount: newValue)
     }
 
+    // TODO: Remove
     func selectAmountPercentage(_ percentage: Float) {
         if let balance = balance {
             let newAmount = balance * Decimal(Double(percentage))

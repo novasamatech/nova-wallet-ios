@@ -4,26 +4,31 @@ import SoraFoundation
 import SoraUI
 
 protocol RewardEstimationViewDelegate: AnyObject {
-    func rewardEstimationView(_ view: RewardEstimationView, didChange amount: Decimal?)
-    func rewardEstimationView(_ view: RewardEstimationView, didSelect percentage: Float)
-    func rewardEstimationDidStartAction(_ view: RewardEstimationView)
-    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView)
+    func rewardEstimationView(_ view: RewardEstimationView, didChange amount: Decimal?) // TODO: Remove
+    func rewardEstimationView(_ view: RewardEstimationView, didSelect percentage: Float) // TODO: Remove
+    func rewardEstimationDidStartAction(_ view: RewardEstimationView) // TODO: What is it?
+    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView) // TODO: What is it?
 }
 
 final class RewardEstimationView: LocalizableView {
     @IBOutlet var backgroundView: TriangularedBlurView!
+
+    // TODO: Remove
     @IBOutlet var amountInputView: AmountInputView!
 
     @IBOutlet var estimateWidgetTitleLabel: UILabel!
 
-    @IBOutlet var monthlyTitleLabel: UILabel!
-    @IBOutlet var monthlyAmountLabel: UILabel!
-    @IBOutlet var monthlyFiatAmountLabel: UILabel!
+    // TODO: Add average title label
+    @IBOutlet var monthlyTitleLabel: UILabel! // TODO: What is it?
+    @IBOutlet var monthlyAmountLabel: UILabel! // TODO: Remove
+    @IBOutlet var monthlyFiatAmountLabel: UILabel! // TODO: Remove
 
-    @IBOutlet var yearlyTitleLabel: UILabel!
-    @IBOutlet var yearlyAmountLabel: UILabel!
-    @IBOutlet var yearlyFiatAmountLabel: UILabel!
+    // TODO: Add max title label
+    @IBOutlet var yearlyTitleLabel: UILabel! // TODO: What is it?
+    @IBOutlet var yearlyAmountLabel: UILabel! // TODO: Remove
+    @IBOutlet var yearlyFiatAmountLabel: UILabel! // TODO: Remove
 
+    // TODO: Remove
     @IBOutlet private var infoButton: RoundedButton!
 
     @IBOutlet private var actionButton: TriangularedButton!
@@ -51,7 +56,7 @@ final class RewardEstimationView: LocalizableView {
     var locale = Locale.current {
         didSet {
             applyLocalization()
-            applyInputViewModel()
+            applyInputViewModel() // TODO: Remove
 
             if widgetViewModel != nil {
                 applyWidgetViewModel()
@@ -59,19 +64,20 @@ final class RewardEstimationView: LocalizableView {
         }
     }
 
-    private var inputViewModel: AmountInputViewModelProtocol?
+    private var inputViewModel: AmountInputViewModelProtocol? // TODO: Remove
     private var widgetViewModel: StakingEstimationViewModel?
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        amountInputView.textField.delegate = self
+        amountInputView.textField.delegate = self // TODO: Remove
 
         applyLocalization()
 
         setupAmountField()
     }
 
+    // TODO: Change
     func bind(viewModel: StakingEstimationViewModel) {
         widgetViewModel?.assetBalance.value(for: locale).iconViewModel?.cancel(
             on: amountInputView.iconView
@@ -86,6 +92,7 @@ final class RewardEstimationView: LocalizableView {
         applyWidgetViewModel()
     }
 
+    // TODO: Change
     private func applyWidgetViewModel() {
         if let viewModel = widgetViewModel?.assetBalance.value(for: locale) {
             amountInputView.balanceText = R.string.localizable
@@ -127,6 +134,7 @@ final class RewardEstimationView: LocalizableView {
         }
     }
 
+    // TODO: Remove
     private func applyInputViewModel() {
         guard let widgetViewModel = widgetViewModel, let amountFormatterFactory = amountFormatterFactory else {
             return
@@ -171,6 +179,7 @@ final class RewardEstimationView: LocalizableView {
         actionButton.invalidateLayout()
     }
 
+    // TODO: Remove
     private func setupInputAccessoryView() {
         guard let accessoryView = uiFactory?.createAmountAccessoryView(for: self, locale: locale) else {
             return
@@ -179,6 +188,7 @@ final class RewardEstimationView: LocalizableView {
         amountInputView.textField.inputAccessoryView = accessoryView
     }
 
+    // TODO: Remove
     private func setupAmountField() {
         let textColor = R.color.colorWhite()!
         let placeholder = NSAttributedString(
@@ -193,6 +203,7 @@ final class RewardEstimationView: LocalizableView {
         amountInputView.textField.keyboardType = .decimalPad
     }
 
+    // TODO: Change
     func startLoadingIfNeeded() {
         guard skeletonView == nil else {
             return
@@ -209,6 +220,7 @@ final class RewardEstimationView: LocalizableView {
         setupSkeleton()
     }
 
+    // TODO: Change
     func stopLoadingIfNeeded() {
         guard skeletonView != nil else {
             return
@@ -248,6 +260,7 @@ final class RewardEstimationView: LocalizableView {
         skeletonView.startSkrulling()
     }
 
+    // TODO: Change
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
         let smallRowSize = CGSize(width: 57.0, height: 6.0)
@@ -303,11 +316,13 @@ final class RewardEstimationView: LocalizableView {
         delegate?.rewardEstimationDidStartAction(self)
     }
 
+    // TODO: Remove
     @IBAction private func infoTouchUpInside() {
         delegate?.rewardEstimationDidRequestInfo(self)
     }
 }
 
+// TODO: Remove
 extension RewardEstimationView: UITextFieldDelegate {
     func textField(
         _: UITextField,
@@ -318,6 +333,7 @@ extension RewardEstimationView: UITextFieldDelegate {
     }
 }
 
+// TODO: Remove
 extension RewardEstimationView: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
         amountInputView.textField.resignFirstResponder()
@@ -330,6 +346,7 @@ extension RewardEstimationView: AmountInputAccessoryViewDelegate {
     }
 }
 
+// TODO: Remove
 extension RewardEstimationView: AmountInputViewModelObserver {
     func amountInputDidChange() {
         guard let inputViewModel = inputViewModel else {
