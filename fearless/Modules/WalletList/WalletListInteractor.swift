@@ -217,7 +217,11 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
     }
 
     func refresh() {
-        priceSubscription?.refresh()
+        if let provider = priceSubscription {
+            provider.refresh()
+        } else {
+            presenter.didReceivePrices(result: nil)
+        }
     }
 }
 
