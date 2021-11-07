@@ -13,18 +13,24 @@ protocol RewardEstimationViewDelegate: AnyObject {
 final class RewardEstimationView: LocalizableView {
     @IBOutlet var backgroundView: TriangularedBlurView!
 
+    @IBOutlet var averageAPYTitleLabel: UILabel!
+    @IBOutlet var averageAPYValueLabel: UILabel!
+
+    @IBOutlet var maximumAPYTitleLabel: UILabel!
+    @IBOutlet var maximumAPYValueLabel: UILabel!
+
     // TODO: Remove
     @IBOutlet var amountInputView: AmountInputView!
 
     @IBOutlet var estimateWidgetTitleLabel: UILabel!
 
     // TODO: Add average title label
-    @IBOutlet var monthlyTitleLabel: UILabel! // TODO: What is it?
+    @IBOutlet var monthlyTitleLabel: UILabel! // TODO: Remove
     @IBOutlet var monthlyAmountLabel: UILabel! // TODO: Remove
     @IBOutlet var monthlyFiatAmountLabel: UILabel! // TODO: Remove
 
     // TODO: Add max title label
-    @IBOutlet var yearlyTitleLabel: UILabel! // TODO: What is it?
+    @IBOutlet var yearlyTitleLabel: UILabel! // TODO: Remove
     @IBOutlet var yearlyAmountLabel: UILabel! // TODO: Remove
     @IBOutlet var yearlyFiatAmountLabel: UILabel! // TODO: Remove
 
@@ -119,6 +125,14 @@ final class RewardEstimationView: LocalizableView {
             stopLoadingIfNeeded()
 
             infoButton.isHidden = false
+
+            averageAPYTitleLabel.text = R.string.localizable
+                .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+
+            maximumAPYTitleLabel.text = R.string.localizable
+                .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+
+            // TODO: Add values here
 
             monthlyTitleLabel.text = viewModel.monthlyReward.increase.map {
                 R.string.localizable.stakingMonthPeriodFormat($0, preferredLanguages: locale.rLanguages)
