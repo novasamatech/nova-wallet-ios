@@ -66,7 +66,7 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
         accountView.translatesAutoresizingMaskIntoConstraints = false
         self.accountView = accountView
 
-        accountView.highlightedFillColor = R.color.colorHighlightedPink()!
+        accountView.highlightedFillColor = R.color.colorHighlightedAccent()!
 
         let languages = (localizationManager?.selectedLocale ?? Locale.current).rLanguages
         accountView.title = R.string.localizable

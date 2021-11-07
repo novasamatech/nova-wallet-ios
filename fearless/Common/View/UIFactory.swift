@@ -402,7 +402,7 @@ final class UIFactory: UIFactoryProtocol {
             view.actionImage = R.image.iconSmallArrowDown()
         }
 
-        view.highlightedFillColor = R.color.colorHighlightedPink()!
+        view.highlightedFillColor = R.color.colorHighlightedAccent()!
         view.borderWidth = 1
         return view
     }
@@ -431,7 +431,7 @@ final class UIFactory: UIFactoryProtocol {
         view.iconRadius = 16.0
 
         view.fillColor = .clear
-        view.highlightedFillColor = R.color.colorHighlightedPink()!
+        view.highlightedFillColor = R.color.colorHighlightedAccent()!
         view.strokeColor = R.color.colorStrokeGray()!
         view.highlightedStrokeColor = R.color.colorStrokeGray()!
         view.borderWidth = 1.0
@@ -514,7 +514,7 @@ final class UIFactory: UIFactoryProtocol {
         let view = DetailsTriangularedView()
         view.layout = .largeIconTitleSubtitle
         view.fillColor = .clear
-        view.highlightedFillColor = R.color.colorCellSelection()!
+        view.highlightedFillColor = R.color.colorHighlightedAccent()!
         view.titleLabel.textColor = R.color.colorWhite()
         view.titleLabel.font = .p1Paragraph
         view.subtitleLabel?.textColor = R.color.colorLightGray()

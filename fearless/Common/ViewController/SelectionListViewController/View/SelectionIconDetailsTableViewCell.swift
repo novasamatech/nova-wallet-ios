@@ -39,7 +39,7 @@ final class SelectionIconDetailsTableViewCell: UITableViewCell {
         backgroundColor = .clear
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorCellSelection()
+        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()
 
         setupLayout()
     }

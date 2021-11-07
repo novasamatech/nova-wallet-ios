@@ -6,7 +6,7 @@ final class NetworkAvailabilityLayerPresenter {
 
     var unavailbleStyle: ApplicationStatusStyle {
         ApplicationStatusStyle(
-            backgroundColor: R.color.colorPink()!,
+            backgroundColor: R.color.colorAccent()!,
             titleColor: UIColor.white,
             titleFont: UIFont.h6Title
         )
