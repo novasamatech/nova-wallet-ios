@@ -389,6 +389,7 @@ Derivation path: %@";
 "crowdloan.moonbeam.region.restriction.message" = "This crowdloan isn't available in your location.";
 "crowdloan.acala.direct" = "Direct";
 "crowdloan.acala.liquid" = "Liquid";
+"crowdloan.acala.learn.more" = "Learn more about different contributions to Acala";
 "crowdloan.private.crowdloan.title" = "Private crowdloan";
 "crowdloan.private.crowdloan.message" = "Private crowdloans are not yet supported.";
 "crowdloan.reward.destination.format" = "%@ reward destination";
