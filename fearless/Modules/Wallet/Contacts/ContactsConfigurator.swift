@@ -6,6 +6,8 @@ import SoraFoundation
 final class ContactsConfigurator {
     private var localSearchEngine: ContactsLocalSearchEngine
 
+    let chainFormat: ChainFormat
+
     private lazy var contactsViewStyle: ContactsViewStyleProtocol = {
         let searchTextStyle = WalletTextStyle(
             font: UIFont.p1Paragraph,
@@ -69,7 +71,12 @@ final class ContactsConfigurator {
     }()
 
     init(accountId: AccountId, chainFormat: ChainFormat) {
-        let viewModelFactory = ContactsViewModelFactory(dataStorageFacade: SubstrateDataStorageFacade.shared)
+        self.chainFormat = chainFormat
+
+        let viewModelFactory = ContactsViewModelFactory(
+            dataStorageFacade: SubstrateDataStorageFacade.shared,
+            chainFormat: chainFormat
+        )
         localSearchEngine = ContactsLocalSearchEngine(
             accountId: accountId,
             chainFormat: chainFormat,
@@ -78,7 +85,10 @@ final class ContactsConfigurator {
     }
 
     func configure(builder: ContactsModuleBuilderProtocol) {
-        let listViewModelFactory = ContactsListViewModelFactory()
+        let listViewModelFactory = ContactsListViewModelFactory(
+            facade: SubstrateDataStorageFacade.shared,
+            chainFormat: chainFormat
+        )
 
         let searchPlaceholder = LocalizableResource { locale in
             R.string.localizable
