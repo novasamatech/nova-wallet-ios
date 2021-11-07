@@ -20,7 +20,7 @@ class ExtrinsicProcessingTests: XCTestCase {
             let receiverAccountId = try addressFactory.accountId(from: transferReceiver)
 
             let coderFactory = try RuntimeCodingServiceStub.createWestendCodingFactory()
-            let processor = ExtrinsicProcessor(accountId: senderAccountId)
+            let processor = ExtrinsicProcessor(accountId: senderAccountId, isEthereumBased: false)
 
             let eventRecordsData = try Data(hexString: eventRecordsHex)
             let typeName = coderFactory.metadata.getStorageMetadata(for: .events)!.type.typeName
