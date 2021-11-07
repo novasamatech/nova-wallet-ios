@@ -176,7 +176,6 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
             let validatorStakeInfo = try activeValidatorsStakeInfoWrapper.targetOperation
                 .extractNoCancellableResultData()
             let identities = try identitiesWrapper.targetOperation.extractNoCancellableResultData()
-            let addressFactory = SS58AddressFactory()
 
             return try validatorStakeInfo.compactMap { validatorAccountId, validatorStakeInfo in
                 guard let nominatorIndex = validatorStakeInfo.nominators
