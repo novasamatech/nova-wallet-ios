@@ -155,7 +155,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let buyCommand: WalletCommandProtocol?
 
-        if let walletChain = Chain(rawValue: chain.chainId) {
+        if let walletChain = Chain(genesisHash: chain.chainId) {
             let actions = purchaseProvider.buildPurchaseActions(for: walletChain, address: address)
 
             buyCommand = actions.isEmpty ? nil :

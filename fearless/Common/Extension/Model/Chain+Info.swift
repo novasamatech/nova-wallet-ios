@@ -1,6 +1,21 @@
 import Foundation
 
 extension Chain {
+    init?(genesisHash: String) {
+        switch genesisHash {
+        case Chain.polkadot.genesisHash:
+            self = .polkadot
+        case Chain.kusama.genesisHash:
+            self = .kusama
+        case Chain.westend.genesisHash:
+            self = .westend
+        case Chain.rococo.genesisHash:
+            self = .rococo
+        default:
+            return nil
+        }
+    }
+
     var genesisHash: String {
         switch self {
         case .polkadot:
