@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "backgroundImage.png",
+      "filename" : "nova-main-bg.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "backgroundImage@2x.png",
+      "filename" : "nova-main-bg@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "backgroundImage@3x.png",
+      "filename" : "nova-main-bg@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

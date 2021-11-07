@@ -467,7 +467,7 @@ Derivation path: %@";
 "staking.validator.other.oversubscribed.message" = "Oversubscribed. Only the top staked nominators are paid rewards.";
 "wallet.history.title_v1.9.0" = "History";
 "staking.main.lockup.period.title_v1.9.0" = "Unstaking period";
-"staking.estimate.earning.title_v1.9.0" = "Estimated earnings";
+"staking.estimate.earning.title_v1.9.0" = "Estimated %@ earnings";
 "staking.main.stake.balance.staked" = "Staked";
 "staking.setup.restake.title" = "Restake";
 "staking.setup.payout.title" = "Payout";
