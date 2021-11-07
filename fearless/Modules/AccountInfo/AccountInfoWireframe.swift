@@ -91,27 +91,9 @@ final class AccountInfoWireframe: AccountInfoWireframeProtocol, AuthorizationPre
         )
     }
 
-    private func showMnemonicExport(for address: String, from view: AccountInfoViewProtocol?) {
-        guard let mnemonicView = ExportMnemonicViewFactory.createViewForAddress(address) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            mnemonicView.controller,
-            animated: true
-        )
-    }
+    private func showMnemonicExport(for _: String, from _: AccountInfoViewProtocol?) {}
 
     private func showKeystoreExport(for _: String, from _: AccountInfoViewProtocol?) {}
 
-    private func showSeedExport(for address: String, from view: AccountInfoViewProtocol?) {
-        guard let seedView = ExportSeedViewFactory.createViewForAddress(address) else {
-            return
-        }
-
-        view?.controller.navigationController?.pushViewController(
-            seedView.controller,
-            animated: true
-        )
-    }
+    private func showSeedExport(for _: String, from _: AccountInfoViewProtocol?) {}
 }

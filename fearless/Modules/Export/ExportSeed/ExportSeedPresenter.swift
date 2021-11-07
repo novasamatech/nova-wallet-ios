@@ -6,13 +6,11 @@ final class ExportSeedPresenter {
     var wireframe: ExportSeedWireframeProtocol!
     var interactor: ExportSeedInteractorInputProtocol!
 
-    let address: String
     let localizationManager: LocalizationManager
 
     private(set) var exportViewModel: ExportStringViewModel?
 
-    init(address: String, localizationManager: LocalizationManager) {
-        self.address = address
+    init(localizationManager: LocalizationManager) {
         self.localizationManager = localizationManager
     }
 
@@ -52,7 +50,7 @@ final class ExportSeedPresenter {
 
 extension ExportSeedPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        interactor.fetchExportDataForAddress(address)
+        interactor.fetchExportDataForAddress()
     }
 
     func activateExport() {

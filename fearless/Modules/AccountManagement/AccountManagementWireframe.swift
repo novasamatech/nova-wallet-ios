@@ -111,11 +111,11 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     }
 
     private func showMnemonicExport(
-        for _: MetaAccountModel,
-        chain _: ChainModel,
+        for metaAccount: MetaAccountModel,
+        chain: ChainModel,
         from view: AccountManagementViewProtocol?
     ) {
-        guard let mnemonicView = ExportMnemonicViewFactory.createViewForAddress("") else {
+        guard let mnemonicView = ExportMnemonicViewFactory.createViewForMetaAccount(metaAccount, chain: chain) else {
             return
         }
 
@@ -144,11 +144,11 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     }
 
     private func showSeedExport(
-        for _: MetaAccountModel,
-        chain _: ChainModel,
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
         from view: AccountManagementViewProtocol?
     ) {
-        guard let seedView = ExportSeedViewFactory.createViewForAddress("") else {
+        guard let seedView = ExportSeedViewFactory.createViewForMetaAccount(wallet, chain: chain) else {
             return
         }
 
