@@ -40,21 +40,16 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
     }
 
     func decode(data: Data) throws -> ReceiveInfo {
-        do {
-            let info = try substrateDecoder.decode(data: data)
+        let info = try substrateDecoder.decode(data: data)
 
-            let accountId = try info.address.toAccountId()
+        let accountId = try info.address.toAccountId()
 
-            return ReceiveInfo(
-                accountId: accountId.toHex(),
-                assetId: assets.first?.identifier,
-                amount: nil,
-                details: nil
-            )
-        } catch {
-            Logger.shared.error("Did receive error: \(error)")
-            throw error
-        }
+        return ReceiveInfo(
+            accountId: accountId.toHex(),
+            assetId: assets.first?.identifier,
+            amount: nil,
+            details: nil
+        )
     }
 }
 
