@@ -11,33 +11,33 @@ class AccountExportPasswordTests: XCTestCase {
 
         let facade = UserDataStorageTestFacade()
 
-        let settings = InMemorySettingsManager()
+        let walletSettings = SelectedWalletSettings(storageFacade: facade, operationQueue: OperationQueue())
         let keychain = InMemoryKeychain()
 
-        try AccountCreationHelper.createAccountFromMnemonic(cryptoType: .sr25519,
-                                                            keychain: keychain,
-                                                            settings: settings)
+        try AccountCreationHelper.createMetaAccountFromMnemonic(
+            cryptoType: .sr25519,
+            keychain: keychain,
+            settings: walletSettings
+        )
 
-        let givenAccount = settings.selectedAccount!
-
-        let accountsRepository = AccountRepositoryFactory.createRepository(for: facade)
-        let operation = accountsRepository.saveOperation({ [givenAccount]}, { [] })
-
-        OperationQueue().addOperations([operation], waitUntilFinished: true)
+        let metaAccount = walletSettings.value!
+        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 2)
 
         let view = MockAccountExportPasswordViewProtocol()
         let wireframe = MockAccountExportPasswordWireframeProtocol()
 
-        let presenter = AccountExportPasswordPresenter(address: givenAccount.address,
-                                                       localizationManager: LocalizationManager.shared)
+        let presenter = AccountExportPasswordPresenter(localizationManager: LocalizationManager.shared)
 
         presenter.view = view
         presenter.wireframe = wireframe
 
         let exportWrapper = KeystoreExportWrapper(keystore: keychain)
-        let interactor = AccountExportPasswordInteractor(exportJsonWrapper: exportWrapper,
-                                                         repository: AnyDataProviderRepository(accountsRepository),
-                                                         operationManager: OperationManagerFacade.sharedManager)
+        let interactor = AccountExportPasswordInteractor(
+            metaAccount: metaAccount,
+            chain: chain,
+            exportJsonWrapper: exportWrapper,
+            operationManager: OperationManagerFacade.sharedManager
+        )
         presenter.interactor = interactor
         interactor.presenter = presenter
 
