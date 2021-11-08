@@ -3,6 +3,7 @@ import RobinHood
 
 struct TransactionHistoryItem: Codable {
     enum CodingKeys: String, CodingKey {
+        case chainId
         case sender
         case receiver
         case status
@@ -21,6 +22,7 @@ struct TransactionHistoryItem: Codable {
         case failed
     }
 
+    let chainId: String
     let sender: String
     let receiver: String?
     let status: Status

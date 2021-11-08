@@ -50,7 +50,7 @@ final class ExportSeedPresenter {
 
 extension ExportSeedPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        interactor.fetchExportDataForAddress()
+        interactor.fetchExportData()
     }
 
     func activateExport() {

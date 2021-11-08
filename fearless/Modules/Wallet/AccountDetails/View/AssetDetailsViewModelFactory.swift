@@ -153,19 +153,20 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             command: receiveCommand
         )
 
-        let buyCommand: WalletCommandProtocol?
+        // TODO: Enable buy command when tokens ready
+        let buyCommand: WalletCommandProtocol? = nil
 
-        if let walletChain = Chain(genesisHash: chain.chainId) {
-            let actions = purchaseProvider.buildPurchaseActions(for: walletChain, address: address)
+        /* if let walletChain = Chain(genesisHash: chain.chainId) {
+             let actions = purchaseProvider.buildPurchaseActions(for: walletChain, address: address)
 
-            buyCommand = actions.isEmpty ? nil :
-                WalletSelectPurchaseProviderCommand(
-                    actions: actions,
-                    commandFactory: commandFactory
-                )
-        } else {
-            buyCommand = nil
-        }
+             buyCommand = actions.isEmpty ? nil :
+                 WalletSelectPurchaseProviderCommand(
+                     actions: actions,
+                     commandFactory: commandFactory
+                 )
+         } else {
+             buyCommand = nil
+         } */
 
         let buyTitle = R.string.localizable.walletAssetBuy(preferredLanguages: locale.rLanguages)
         let buyViewModel = WalletDisablingAction(title: buyTitle, command: buyCommand)

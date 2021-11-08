@@ -1,5 +1,5 @@
 protocol ExportSeedInteractorInputProtocol: AnyObject {
-    func fetchExportDataForAddress()
+    func fetchExportData()
 }
 
 protocol ExportSeedInteractorOutputProtocol: AnyObject {

@@ -44,6 +44,7 @@ extension TransactionHistoryItem {
         let timestamp = Int64(Date().timeIntervalSince1970)
 
         return TransactionHistoryItem(
+            chainId: senderAccount.chainId,
             sender: sender,
             receiver: receiver,
             status: .pending,

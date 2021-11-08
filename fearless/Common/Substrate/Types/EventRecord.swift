@@ -2,14 +2,23 @@ import Foundation
 import SubstrateSdk
 
 struct EventRecord: Decodable {
+    enum CodingKeys: String, CodingKey {
+        case phase
+        case event
+    }
+
     let phase: Phase
     let event: Event
 
     init(from decoder: Decoder) throws {
-        var container = try decoder.unkeyedContainer()
-
-        phase = try container.decode(Phase.self)
-        event = try container.decode(Event.self)
+        if let keyedContainer = try? decoder.container(keyedBy: CodingKeys.self) {
+            phase = try keyedContainer.decode(Phase.self, forKey: .phase)
+            event = try keyedContainer.decode(Event.self, forKey: .event)
+        } else {
+            var unkeyedContainer = try decoder.unkeyedContainer()
+            phase = try unkeyedContainer.decode(Phase.self)
+            event = try unkeyedContainer.decode(Event.self)
+        }
     }
 }
 

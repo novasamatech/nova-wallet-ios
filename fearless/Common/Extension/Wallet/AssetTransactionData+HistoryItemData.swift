@@ -189,11 +189,20 @@ extension AssetTransactionData {
         )
 
         let amount: Decimal = {
-            if let encodedCall = item.call,
-               let call = try? JSONDecoder.scaleCompatible()
-               .decode(RuntimeCall<TransferCall>.self, from: encodedCall) {
+            guard let encodedCall = item.call else {
+                return .zero
+            }
+
+            if let substrateTransfer = try? JSONDecoder.scaleCompatible()
+                .decode(RuntimeCall<TransferCall>.self, from: encodedCall) {
                 return Decimal.fromSubstrateAmount(
-                    call.args.value,
+                    substrateTransfer.args.value,
+                    precision: chainAssetInfo.asset.assetPrecision
+                ) ?? .zero
+            } else if let ethereumTransfer = try? JSONDecoder.scaleCompatible()
+                .decode(RuntimeCall<EthereumTransferCall>.self, from: encodedCall) {
+                return Decimal.fromSubstrateAmount(
+                    ethereumTransfer.args.value,
                     precision: chainAssetInfo.asset.assetPrecision
                 ) ?? .zero
             } else {

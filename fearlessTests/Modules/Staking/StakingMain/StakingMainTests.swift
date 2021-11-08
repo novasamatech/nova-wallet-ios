@@ -187,7 +187,7 @@ class StakingMainTests: XCTestCase {
             }
 
             stub.didReceiveStakingState(viewModel: any()).then { state in
-                if case let .nominator(_, _, analyticsViewModel) = state, analyticsViewModel != nil {
+                if case .nominator = state {
                     nominatorStateExpectation.fulfill()
                 }
             }

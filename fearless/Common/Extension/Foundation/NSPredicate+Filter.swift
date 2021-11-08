@@ -8,12 +8,16 @@ extension NSPredicate {
         return NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.order), rawValue)
     }
 
-    static func filterTransactionsBy(address: String) -> NSPredicate {
+    static func filterTransactionsBy(address: String, chainId: ChainModel.Id) -> NSPredicate {
         let senderPredicate = filterTransactionsBySender(address: address)
         let receiverPredicate = filterTransactionsByReceiver(address: address)
+        let chainPredicate = filterTransactionsByChainId(chainId)
 
         let orPredicates = [senderPredicate, receiverPredicate]
-        return NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainPredicate,
+            NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        ])
     }
 
     static func filterTransactionsBySender(address: String) -> NSPredicate {
@@ -22,6 +26,10 @@ extension NSPredicate {
 
     static func filterTransactionsByReceiver(address: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.receiver), address)
+    }
+
+    static func filterTransactionsByChainId(_ chainId: String) -> NSPredicate {
+        NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.chainId), chainId)
     }
 
     static func filterContactsByTarget(address: String) -> NSPredicate {

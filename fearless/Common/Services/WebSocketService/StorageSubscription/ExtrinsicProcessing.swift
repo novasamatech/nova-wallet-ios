@@ -21,9 +21,11 @@ protocol ExtrinsicProcessing {
 
 final class ExtrinsicProcessor {
     let accountId: Data
+    let isEthereumBased: Bool
 
-    init(accountId: Data) {
+    init(accountId: Data, isEthereumBased: Bool) {
         self.accountId = accountId
+        self.isEthereumBased = isEthereumBased
     }
 
     private func matchStatus(
@@ -73,10 +75,37 @@ final class ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
-            let call = try extrinsic.call.map(to: RuntimeCall<TransferCall>.self)
-            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == sender || accountId == call.args.dest.accountId
+            let sender: AccountId?
+
+            if isEthereumBased {
+                let rawSender = try extrinsic.signature?.address.map(to: [StringScaleMapper<UInt8>].self)
+                    .map(\.value)
+                sender = rawSender.map { Data($0) }
+            } else {
+                sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
+            }
+
+            let parsingResult: (CallCodingPath, Bool, AccountId?) = try {
+                if isEthereumBased {
+                    let call = try extrinsic.call.map(to: RuntimeCall<EthereumTransferCall>.self)
+                    let callAccountId = call.args.dest
+                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                    let isAccountMatched = accountId == sender || accountId == callAccountId
+
+                    return (callPath, isAccountMatched, callAccountId)
+                } else {
+                    let call = try extrinsic.call.map(to: RuntimeCall<TransferCall>.self)
+                    let callAccountId = call.args.dest.accountId
+                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                    let isAccountMatched = accountId == sender || accountId == callAccountId
+
+                    return (callPath, isAccountMatched, callAccountId)
+                }
+            }()
+
+            let callPath = parsingResult.0
+            let isAccountMatched = parsingResult.1
+            let callAccountId = parsingResult.2
 
             guard
                 callPath.isTransfer,
@@ -95,7 +124,7 @@ final class ExtrinsicProcessor {
                 metadata: metadata
             )
 
-            let peerId = accountId == sender ? call.args.dest.accountId : sender
+            let peerId = accountId == sender ? callAccountId : sender
 
             return ExtrinsicProcessingResult(
                 extrinsic: extrinsic,
@@ -117,7 +146,16 @@ final class ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
+            let sender: AccountId?
+
+            if isEthereumBased {
+                let rawSender = try extrinsic.signature?.address.map(to: [StringScaleMapper<UInt8>].self)
+                    .map(\.value)
+                sender = rawSender.map { Data($0) }
+            } else {
+                sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
+            }
+
             let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
             let isAccountMatched = accountId == sender

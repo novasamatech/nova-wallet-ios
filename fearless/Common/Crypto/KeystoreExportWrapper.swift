@@ -4,7 +4,6 @@ import SubstrateSdk
 import IrohaCrypto
 
 protocol KeystoreExportWrapperProtocol {
-    func export(account: AccountItem, password: String?) throws -> Data
     func export(metaAccount: MetaAccountModel, chain: ChainModel, password: String?) throws -> Data
 }
 
@@ -25,33 +24,6 @@ final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
 
     init(keystore: KeystoreProtocol) {
         self.keystore = keystore
-    }
-
-    func export(account: AccountItem, password: String?) throws -> Data {
-        guard let secretKey = try keystore.fetchSecretKeyForAddress(account.address) else {
-            throw KeystoreExportWrapperError.missingSecretKey
-        }
-
-        let addressType = try ss58Factory.type(fromAddress: account.address)
-
-        var builder = KeystoreBuilder()
-            .with(name: account.username)
-
-        if let genesisHash = SNAddressType(rawValue: addressType.uint8Value)?.chain.genesisHash,
-           let genesisHashData = try? Data(hexString: genesisHash) {
-            builder = builder.with(genesisHash: genesisHashData.toHex(includePrefix: true))
-        }
-
-        let keystoreData = KeystoreData(
-            address: account.address,
-            secretKeyData: secretKey,
-            publicKeyData: account.publicKeyData,
-            secretType: account.cryptoType.secretType
-        )
-
-        let definition = try builder.build(from: keystoreData, password: password)
-
-        return try jsonEncoder.encode(definition)
     }
 
     func export(metaAccount: MetaAccountModel, chain: ChainModel, password: String?) throws -> Data {

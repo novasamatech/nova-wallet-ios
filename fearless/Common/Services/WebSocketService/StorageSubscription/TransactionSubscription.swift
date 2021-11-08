@@ -12,10 +12,9 @@ struct TransactionSubscriptionResult {
 }
 
 final class TransactionSubscription {
-    let engine: JSONRPCEngine
-    let address: String
-    let chain: Chain
-    let runtimeService: RuntimeCodingServiceProtocol
+    let chainRegistry: ChainRegistryProtocol
+    let accountId: AccountId
+    let chainModel: ChainModel
     let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
     let contactOperationFactory: WalletContactOperationFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
@@ -24,10 +23,9 @@ final class TransactionSubscription {
     let logger: LoggerProtocol
 
     init(
-        engine: JSONRPCEngine,
-        address: String,
-        chain: Chain,
-        runtimeService: RuntimeCodingServiceProtocol,
+        chainRegistry: ChainRegistryProtocol,
+        accountId: AccountId,
+        chainModel: ChainModel,
         txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
         contactOperationFactory: WalletContactOperationFactoryProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
@@ -35,10 +33,9 @@ final class TransactionSubscription {
         eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
-        self.engine = engine
-        self.address = address
-        self.chain = chain
-        self.runtimeService = runtimeService
+        self.chainRegistry = chainRegistry
+        self.accountId = accountId
+        self.chainModel = chainModel
         self.contactOperationFactory = contactOperationFactory
         self.storageRequestFactory = storageRequestFactory
         self.txStorage = txStorage
@@ -51,19 +48,27 @@ final class TransactionSubscription {
         do {
             logger.debug("Did start fetching block: \(blockHash.toHex(includePrefix: true))")
 
+            guard let connection = chainRegistry.getConnection(for: chainModel.chainId) else {
+                throw ChainRegistryError.connectionUnavailable
+            }
+
             let fetchBlockOperation: JSONRPCOperation<[String], SignedBlock> =
                 JSONRPCOperation(
-                    engine: engine,
+                    engine: connection,
                     method: RPCMethod.getChainBlock,
                     parameters: [blockHash.toHex(includePrefix: true)]
                 )
+
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainModel.chainId) else {
+                throw ChainRegistryError.runtimeMetadaUnavailable
+            }
 
             let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
             let eventsKey = try StorageKeyFactory().key(from: .events)
             let eventsWrapper: CompoundOperationWrapper<[StorageResponse<[EventRecord]>]> =
                 storageRequestFactory.queryItems(
-                    engine: engine,
+                    engine: connection,
                     keys: { [eventsKey] },
                     factory: { try coderFactoryOperation.extractNoCancellableResultData() },
                     storagePath: .events,
@@ -73,24 +78,26 @@ final class TransactionSubscription {
             eventsWrapper.allOperations.forEach { $0.addDependency(coderFactoryOperation) }
 
             let parseOperation = createParseOperation(
-                for: address,
+                for: accountId,
                 dependingOn: fetchBlockOperation,
                 eventsOperation: eventsWrapper.targetOperation,
-                coderOperation: coderFactoryOperation
+                coderOperation: coderFactoryOperation,
+                chain: chainModel
             )
 
             parseOperation.addDependency(fetchBlockOperation)
             parseOperation.addDependency(eventsWrapper.targetOperation)
 
             let txSaveOperation = createTxSaveOperation(
-                for: address,
+                for: accountId,
+                chain: chainModel,
                 dependingOn: parseOperation
             )
 
             let contactSaveWrapper = createContactSaveWrapper(
                 dependingOn: parseOperation,
                 contactOperationFactory: contactOperationFactory,
-                chain: chain
+                chainFormat: chainModel.chainFormat
             )
 
             txSaveOperation.addDependency(parseOperation)
@@ -132,16 +139,16 @@ final class TransactionSubscription {
 
 extension TransactionSubscription {
     private func createTxSaveOperation(
-        for address: String,
+        for accountId: AccountId,
+        chain: ChainModel,
         dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>
     ) -> BaseOperation<Void> {
         txStorage.saveOperation({
-            let addressFactory = SS58AddressFactory()
-            return try processingOperaton.extractNoCancellableResultData().compactMap { result in
+            try processingOperaton.extractNoCancellableResultData().compactMap { result in
                 TransactionHistoryItem.createFromSubscriptionResult(
                     result,
-                    address: address,
-                    addressFactory: addressFactory
+                    accountId: accountId,
+                    chain: chain
                 )
             }
         }, { [] })
@@ -150,19 +157,13 @@ extension TransactionSubscription {
     private func createContactSaveWrapper(
         dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>,
         contactOperationFactory: WalletContactOperationFactoryProtocol,
-        chain: Chain
+        chainFormat: ChainFormat
     ) -> CompoundOperationWrapper<Void> {
-        let addressFactory = SS58AddressFactory()
-
         let extractionOperation = ClosureOperation<Set<AccountAddress>> {
             try processingOperaton.extractNoCancellableResultData()
                 .reduce(into: Set<AccountAddress>()) { result, item in
                     if let peerId = item.processingResult.peerId {
-                        let address = try addressFactory.addressFromAccountId(
-                            data: peerId,
-                            type: chain.addressType
-                        )
-
+                        let address = try peerId.toAddress(using: chainFormat)
                         result.insert(address)
                     }
                 }
@@ -192,10 +193,11 @@ extension TransactionSubscription {
     }
 
     private func createParseOperation(
-        for address: AccountAddress,
+        for accountId: AccountId,
         dependingOn fetchOperation: BaseOperation<SignedBlock>,
         eventsOperation: BaseOperation<[StorageResponse<[EventRecord]>]>,
-        coderOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        coderOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        chain: ChainModel
     ) -> BaseOperation<[TransactionSubscriptionResult]> {
         ClosureOperation<[TransactionSubscriptionResult]> {
             let block = try fetchOperation
@@ -210,8 +212,10 @@ extension TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let accountId = try SS58AddressFactory().accountId(from: address)
-            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId)
+            let extrinsicProcessor = ExtrinsicProcessor(
+                accountId: accountId,
+                isEthereumBased: chain.isEthereumBased
+            )
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {

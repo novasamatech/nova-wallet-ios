@@ -30,7 +30,7 @@ final class ExportMnemonicInteractor {
 }
 
 extension ExportMnemonicInteractor: ExportMnemonicInteractorInputProtocol {
-    func fetchExportDataForAddress() {
+    func fetchExportData() {
         let exportOperation: BaseOperation<ExportMnemonicData> = ClosureOperation { [weak self] in
             guard
                 let metaAccount = self?.metaAccount,

@@ -31,7 +31,9 @@ extension AccountAddress {
         if hasPrefix("0x") {
             return try AccountId(hexString: self)
         } else {
-            return try SS58AddressFactory().accountId(from: self)
+            let addressFactory = SS58AddressFactory()
+            let type = try addressFactory.type(fromAddress: self)
+            return try addressFactory.accountId(fromAddress: self, type: type.uint16Value)
         }
     }
 }

@@ -47,14 +47,14 @@ final class WalletListPresenter {
                 let balance1 = try? model1.accountInfoResult?.get()?.data.total
                 let balance2 = try? model2.accountInfoResult?.get()?.data.total
 
-                let value1 = model1.value
-                let value2 = model2.value
+                let optValue1 = model1.value
+                let optValue2 = model2.value
 
-                if value1 != nil, value2 != nil {
-                    return model1.chainModel.order < model2.chainModel.order
-                } else if value1 != nil {
+                if let value1 = optValue1, let value2 = optValue2 {
+                    return value1 > value2
+                } else if optValue1 != nil {
                     return true
-                } else if value2 != nil {
+                } else if optValue2 != nil {
                     return false
                 } else if balance1 != nil, balance2 != nil {
                     return model1.chainModel.order < model2.chainModel.order
@@ -233,6 +233,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         let chainModel = chainList.allItems[index].chainModel
         wireframe.showAssetDetails(from: view, chain: chainModel)
     }
+
+    func refresh() {
+        interactor.refresh()
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {
@@ -257,7 +261,13 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideAssetViewModels()
     }
 
-    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>) {
+    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>?) {
+        view?.didCompleteRefreshing()
+
+        guard let result = result else {
+            return
+        }
+
         priceResult = result
 
         let changes: [DataProviderChange<ListModel>] = allChains.values.map { chain in
