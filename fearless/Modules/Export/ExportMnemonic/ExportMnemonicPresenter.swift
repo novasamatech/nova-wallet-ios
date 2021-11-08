@@ -50,7 +50,7 @@ final class ExportMnemonicPresenter {
 
 extension ExportMnemonicPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        interactor.fetchExportDataForAddress()
+        interactor.fetchExportData()
     }
 
     func activateExport() {

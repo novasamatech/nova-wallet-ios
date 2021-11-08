@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 /**
  *  Class is designed to handle creation of `ChainRegistryProtocol` instance for application.
@@ -65,7 +66,10 @@ final class ChainRegistryFactory {
 
         let runtimeProviderPool = RuntimeProviderPool(runtimeProviderFactory: runtimeProviderFactory)
 
-        let connectionPool = ConnectionPool(connectionFactory: ConnectionFactory(logger: Logger.shared))
+        let connectionPool = ConnectionPool(
+            connectionFactory: ConnectionFactory(logger: Logger.shared),
+            applicationHandler: ApplicationHandler(with: nil)
+        )
 
         let mapper = ChainModelMapper()
         let chainRepository: CoreDataRepository<ChainModel, CDChain> =

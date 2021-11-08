@@ -2866,6 +2866,7 @@ import Cuckoo
 @testable import SoraKeystore
 
 import Foundation
+import SoraFoundation
 import SubstrateSdk
 
 
@@ -5354,16 +5355,16 @@ import SubstrateSdk
     
     
     
-     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID? {
+     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?",
-            parameters: (accountId, chainId, chainFormat, queue, closure),
-            escapingParameters: (accountId, chainId, chainFormat, queue, closure),
+    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+            parameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
+            escapingParameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure))
+            defaultCall: __defaultImplStub!.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure, subscriptionHandlingFactory: subscriptionHandlingFactory))
         
     }
     
@@ -5391,9 +5392,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5) -> Cuckoo.ProtocolStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", parameterMatchers: matchers))
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ProtocolStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionServiceProtocol.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -5418,9 +5419,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
-	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5438,7 +5439,7 @@ import SubstrateSdk
     
 
     
-     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
+     func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     
@@ -5475,16 +5476,16 @@ import SubstrateSdk
     
     
     
-     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID? {
+     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID? {
         
-    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?",
-            parameters: (accountId, chainId, chainFormat, queue, closure),
-            escapingParameters: (accountId, chainId, chainFormat, queue, closure),
+    return cuckoo_manager.call("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?",
+            parameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
+            escapingParameters: (accountId, chainId, chainFormat, queue, closure, subscriptionHandlingFactory),
             superclassCall:
                 
-                super.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure)
+                super.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure, subscriptionHandlingFactory: subscriptionHandlingFactory)
                 ,
-            defaultCall: __defaultImplStub!.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure))
+            defaultCall: __defaultImplStub!.attachToAccountInfo(of: accountId, chainId: chainId, chainFormat: chainFormat, queue: queue, closure: closure, subscriptionHandlingFactory: subscriptionHandlingFactory))
         
     }
     
@@ -5512,9 +5513,9 @@ import SubstrateSdk
 	    }
 	    
 	    
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5) -> Cuckoo.ClassStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", parameterMatchers: matchers))
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.ClassStubFunction<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockWalletRemoteSubscriptionService.self, method: "attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", parameterMatchers: matchers))
 	    }
 	    
 	    func detachFromAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(for subscriptionId: M1, accountId: M2, chainId: M3, queue: M4, closure: M5) -> Cuckoo.ClassStubNoReturnFunction<(UUID, AccountId, ChainModel.Id, DispatchQueue?, RemoteSubscriptionClosure?)> where M1.MatchedType == UUID, M2.MatchedType == AccountId, M3.MatchedType == ChainModel.Id, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
@@ -5539,9 +5540,9 @@ import SubstrateSdk
 	
 	    
 	    @discardableResult
-	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }]
-	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func attachToAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(of accountId: M1, chainId: M2, chainFormat: M3, queue: M4, closure: M5, subscriptionHandlingFactory: M6) -> Cuckoo.__DoNotUse<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?), UUID?> where M1.MatchedType == AccountId, M2.MatchedType == ChainModel.Id, M3.MatchedType == ChainFormat, M4.OptionalMatchedType == DispatchQueue, M5.OptionalMatchedType == RemoteSubscriptionClosure, M6.OptionalMatchedType == RemoteSubscriptionHandlingFactoryProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountId, ChainModel.Id, ChainFormat, DispatchQueue?, RemoteSubscriptionClosure?, RemoteSubscriptionHandlingFactoryProtocol?)>] = [wrap(matchable: accountId) { $0.0 }, wrap(matchable: chainId) { $0.1 }, wrap(matchable: chainFormat) { $0.2 }, wrap(matchable: queue) { $0.3 }, wrap(matchable: closure) { $0.4 }, wrap(matchable: subscriptionHandlingFactory) { $0.5 }]
+	        return cuckoo_manager.verify("attachToAccountInfo(of: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -5559,7 +5560,7 @@ import SubstrateSdk
     
 
     
-     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
+     override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
     

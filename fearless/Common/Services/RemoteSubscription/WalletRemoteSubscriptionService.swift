@@ -7,7 +7,8 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
+        closure: RemoteSubscriptionClosure?,
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
     ) -> UUID?
 
     func detachFromAccountInfo(
@@ -25,7 +26,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         chainFormat: ChainFormat,
         queue: DispatchQueue?,
-        closure: RemoteSubscriptionClosure?
+        closure: RemoteSubscriptionClosure?,
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
     ) -> UUID? {
         do {
             let storagePath = StorageCodingPath.account
@@ -47,7 +49,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                     chainId: chainId,
                     cacheKey: localKey,
                     queue: queue,
-                    closure: closure
+                    closure: closure,
+                    subscriptionHandlingFactory: subscriptionHandlingFactory
                 )
             case .ethereum:
                 let request = MapSubscriptionRequest(
@@ -60,7 +63,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                     chainId: chainId,
                     cacheKey: localKey,
                     queue: queue,
-                    closure: closure
+                    closure: closure,
+                    subscriptionHandlingFactory: subscriptionHandlingFactory
                 )
             }
         } catch {

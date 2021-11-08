@@ -1,7 +1,7 @@
 import IrohaCrypto
 
 protocol ExportMnemonicInteractorInputProtocol: AnyObject {
-    func fetchExportDataForAddress()
+    func fetchExportData()
 }
 
 protocol ExportMnemonicInteractorOutputProtocol: AnyObject {

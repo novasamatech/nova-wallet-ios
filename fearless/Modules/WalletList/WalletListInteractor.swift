@@ -184,8 +184,7 @@ final class WalletListInteractor {
 
                 self?.presenter.didReceivePrices(result: .success(chainPrices))
             case .none:
-                // no changes in price
-                break
+                self?.presenter.didReceivePrices(result: nil)
             }
         }
 
@@ -215,6 +214,14 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
         }
 
         eventCenter.add(observer: self, dispatchIn: .main)
+    }
+
+    func refresh() {
+        if let provider = priceSubscription {
+            provider.refresh()
+        } else {
+            presenter.didReceivePrices(result: nil)
+        }
     }
 }
 

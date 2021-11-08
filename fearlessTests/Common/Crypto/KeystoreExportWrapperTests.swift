@@ -10,16 +10,15 @@ class KeystoreExportWrapperTests: XCTestCase {
                                      password: Constants.validSrKeystorePassword)
     }
 
-    // FIXME: fix AccountCreationHelper and fix the test
-//    func testEd25519AccountExport() {
-//        performExportTestForFilename(Constants.validEd25519KeystoreName,
-//                                    password: Constants.validEd25519KeystorePassword)
-//    }
+    func testEd25519AccountExport() {
+        performExportTestForFilename(Constants.validEd25519KeystoreName,
+                                    password: Constants.validEd25519KeystorePassword)
+    }
 
-//    func testEcdsaAccountExport() {
-//        performExportTestForFilename(Constants.validEcdsaKeystoreName,
-//                                    password: Constants.validEcdsaKeystorePassword)
-//    }
+    func testEcdsaAccountExport() {
+        performExportTestForFilename(Constants.validEcdsaKeystoreName,
+                                    password: Constants.validEcdsaKeystorePassword)
+    }
 
     // MARK: Private
 
@@ -27,48 +26,62 @@ class KeystoreExportWrapperTests: XCTestCase {
                                               password: String) {
         do {
             // given
+            let facade = UserDataStorageTestFacade()
 
             let expectedKeystore = InMemoryKeychain()
-            let expectedSettings = InMemorySettingsManager()
+            let expectedSettings = SelectedWalletSettings(
+                storageFacade: facade, operationQueue: OperationQueue()
+            )
 
-            try AccountCreationHelper.createAccountFromKeystore(
+            try AccountCreationHelper.createMetaAccountFromKeystore(
                 name,
                 password: password,
                 keychain: expectedKeystore,
                 settings: expectedSettings
             )
 
-            let expectedAccountItem = expectedSettings.selectedAccount!
-            let expectedSecretKey = try expectedKeystore.fetchSecretKeyForAddress(expectedAccountItem.address)
+            let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 2)
+            let expectedWallet = expectedSettings.value!
+
+            let secretTag = KeystoreTagV2.substrateSecretKeyTagForMetaId(expectedWallet.metaId)
+            let expectedSecretKey = try expectedKeystore.loadIfKeyExists(secretTag)
 
             // when
 
             let exportData = try KeystoreExportWrapper(keystore: expectedKeystore)
-                .export(account: expectedAccountItem,
-                        password: password)
+                .export(metaAccount: expectedWallet, chain: chain, password: password)
 
             Logger.shared.debug("\(exportData.toUTF8String()!)")
 
             let resultKeystore = InMemoryKeychain()
-            let resultSettings = InMemorySettingsManager()
+            let resultSettings = SelectedWalletSettings(storageFacade: facade, operationQueue: OperationQueue())
 
             let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: exportData)
 
             let info = try AccountImportJsonFactory().createInfo(from: definition)
 
-            try AccountCreationHelper.createAccountFromKeystoreData(exportData,
-                                                                    password: password,
-                                                                    keychain: resultKeystore,
-                                                                    settings: resultSettings,
-                                                                    networkType:  .westend,
-                                                                    cryptoType: .sr25519) // FIXME: cryptoType: info.cryptoType ?? .sr25519)
+            try AccountCreationHelper.createMetaAccountFromKeystoreData(
+                exportData,
+                password: password,
+                keychain: resultKeystore,
+                settings: resultSettings,
+                cryptoType: info.cryptoType ?? .sr25519
+            )
 
             // then
 
-            let resultAccountItem = resultSettings.selectedAccount!
-            let resultSecretKey = try expectedKeystore.fetchSecretKeyForAddress(resultAccountItem.address)
+            let resultWallet = resultSettings.value!
 
-            XCTAssertEqual(expectedAccountItem, resultAccountItem)
+            let resultSecretTag = KeystoreTagV2.substrateSecretKeyTagForMetaId(resultWallet.metaId)
+            let resultSecretKey = try resultKeystore.loadIfKeyExists(resultSecretTag)
+
+            XCTAssertEqual(expectedWallet.chainAccounts, resultWallet.chainAccounts)
+            XCTAssertEqual(expectedWallet.ethereumAddress, resultWallet.ethereumAddress)
+            XCTAssertEqual(expectedWallet.ethereumPublicKey, resultWallet.ethereumPublicKey)
+            XCTAssertEqual(expectedWallet.substrateAccountId, resultWallet.substrateAccountId)
+            XCTAssertEqual(expectedWallet.substratePublicKey, resultWallet.substratePublicKey)
+            XCTAssertEqual(expectedWallet.substrateCryptoType, resultWallet.substrateCryptoType)
+            XCTAssertEqual(expectedWallet.name, resultWallet.name)
             XCTAssertEqual(expectedSecretKey, resultSecretKey)
 
         } catch {

@@ -11,7 +11,7 @@ struct WalletListViewFactory {
             eventCenter: EventCenter.shared
         )
 
-        let wireframe = WalletListWireframe()
+        let wireframe = WalletListWireframe(walletUpdater: WalletDetailsUpdater.shared)
 
         let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
         let viewModelFactory = WalletListViewModelFactory(

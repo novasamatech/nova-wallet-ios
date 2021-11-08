@@ -1,6 +1,12 @@
 import Foundation
 
 final class WalletListWireframe: WalletListWireframeProtocol {
+    let walletUpdater: WalletDetailsUpdating
+
+    init(walletUpdater: WalletDetailsUpdating) {
+        self.walletUpdater = walletUpdater
+    }
+
     func showWalletList(from view: WalletListViewProtocol?) {
         guard let accountManagement = WalletManagementViewFactory.createViewForSwitch() else {
             return
@@ -28,5 +34,7 @@ final class WalletListWireframe: WalletListWireframeProtocol {
         }
 
         try? context.createAssetDetails(for: assetId, in: navigationController)
+
+        walletUpdater.context = context
     }
 }
