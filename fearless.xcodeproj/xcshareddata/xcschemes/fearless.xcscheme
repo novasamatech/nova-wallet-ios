@@ -50,9 +50,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "AccountExportPasswordTests/testSuccessfullExport()">
-               </Test>
-               <Test
                   Identifier = "AccountInfoExportTests">
                </Test>
                <Test
