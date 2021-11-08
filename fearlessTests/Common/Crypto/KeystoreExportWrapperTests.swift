@@ -73,9 +73,15 @@ class KeystoreExportWrapperTests: XCTestCase {
             let resultWallet = resultSettings.value!
 
             let resultSecretTag = KeystoreTagV2.substrateSecretKeyTagForMetaId(resultWallet.metaId)
-            let resultSecretKey = try expectedKeystore.loadIfKeyExists(resultSecretTag)
+            let resultSecretKey = try resultKeystore.loadIfKeyExists(resultSecretTag)
 
-            XCTAssertEqual(expectedWallet, resultWallet)
+            XCTAssertEqual(expectedWallet.chainAccounts, resultWallet.chainAccounts)
+            XCTAssertEqual(expectedWallet.ethereumAddress, resultWallet.ethereumAddress)
+            XCTAssertEqual(expectedWallet.ethereumPublicKey, resultWallet.ethereumPublicKey)
+            XCTAssertEqual(expectedWallet.substrateAccountId, resultWallet.substrateAccountId)
+            XCTAssertEqual(expectedWallet.substratePublicKey, resultWallet.substratePublicKey)
+            XCTAssertEqual(expectedWallet.substrateCryptoType, resultWallet.substrateCryptoType)
+            XCTAssertEqual(expectedWallet.name, resultWallet.name)
             XCTAssertEqual(expectedSecretKey, resultSecretKey)
 
         } catch {
