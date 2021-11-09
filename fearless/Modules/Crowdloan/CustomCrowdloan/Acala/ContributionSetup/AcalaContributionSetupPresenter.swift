@@ -11,7 +11,11 @@ final class AcalaContributionSetupPresenter: CrowdloanContributionSetupPresenter
     override func provideBonusViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee) ?? 0
         let viewModel: String? = {
-            if let displayInfo = displayInfo, let flow = displayInfo.customFlow, flow.supportsAdditionalBonus {
+            if
+                let displayInfo = displayInfo,
+                let flowString = displayInfo.customFlow,
+                let flow = CrowdloanFlow(rawValue: flowString),
+                flow.supportsAdditionalBonus {
                 let bonusRate = bonusService?.referralCode != nil ? bonusService?.bonusRate : nil
                 return contributionViewModelFactory.createAdditionalBonusViewModel(
                     inputAmount: inputAmount,

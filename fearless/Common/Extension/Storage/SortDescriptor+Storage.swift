@@ -17,4 +17,8 @@ extension NSSortDescriptor {
     static var chainsByAddressPrefix: NSSortDescriptor {
         NSSortDescriptor(key: #keyPath(CDChain.addressPrefix), ascending: true)
     }
+
+    static var chainsByOrder: NSSortDescriptor {
+        NSSortDescriptor(key: #keyPath(CDChain.order), ascending: true)
+    }
 }

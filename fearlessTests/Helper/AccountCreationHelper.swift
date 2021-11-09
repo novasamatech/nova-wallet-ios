@@ -251,6 +251,6 @@ final class AccountCreationHelper {
 
     static func selectMetaAccount(_ accountItem: MetaAccountModel, settings: SelectedWalletSettings) throws {
         settings.save(value: accountItem)
-        settings.setup(runningCompletionIn: .global()) { _ in}
+        settings.setup()
     }
 }

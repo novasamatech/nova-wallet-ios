@@ -8,7 +8,7 @@ struct CrowdloanDisplayInfo: Codable, Equatable {
     let website: String
     let icon: String
     let rewardRate: Decimal?
-    let customFlow: CrowdloanFlow?
+    let customFlow: String?
     let extras: [String: String]?
 }
 
