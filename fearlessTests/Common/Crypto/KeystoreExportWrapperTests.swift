@@ -28,33 +28,28 @@ class KeystoreExportWrapperTests: XCTestCase {
             // given
             let facade = UserDataStorageTestFacade()
 
-            let expectedKeystore = InMemoryKeychain()
-            let expectedSettings = SelectedWalletSettings(
+            let keystore = InMemoryKeychain()
+            let settings = SelectedWalletSettings(
                 storageFacade: facade, operationQueue: OperationQueue()
             )
 
             try AccountCreationHelper.createMetaAccountFromKeystore(
                 name,
                 password: password,
-                keychain: expectedKeystore,
-                settings: expectedSettings
+                keychain: keystore,
+                settings: settings
             )
 
             let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 2)
-            let expectedWallet = expectedSettings.value!
+            let expectedWallet = settings.value!
 
             let secretTag = KeystoreTagV2.substrateSecretKeyTagForMetaId(expectedWallet.metaId)
-            let expectedSecretKey = try expectedKeystore.loadIfKeyExists(secretTag)
+            let expectedSecretKey = try keystore.loadIfKeyExists(secretTag)
 
             // when
 
-            let exportData = try KeystoreExportWrapper(keystore: expectedKeystore)
+            let exportData = try KeystoreExportWrapper(keystore: keystore)
                 .export(metaAccount: expectedWallet, chain: chain, password: password)
-
-            Logger.shared.debug("\(exportData.toUTF8String()!)")
-
-            let resultKeystore = InMemoryKeychain()
-            let resultSettings = SelectedWalletSettings(storageFacade: facade, operationQueue: OperationQueue())
 
             let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: exportData)
 
@@ -63,17 +58,17 @@ class KeystoreExportWrapperTests: XCTestCase {
             try AccountCreationHelper.createMetaAccountFromKeystoreData(
                 exportData,
                 password: password,
-                keychain: resultKeystore,
-                settings: resultSettings,
+                keychain: keystore,
+                settings: settings,
                 cryptoType: info.cryptoType ?? .sr25519
             )
 
             // then
 
-            let resultWallet = resultSettings.value!
+            let resultWallet = settings.value!
 
             let resultSecretTag = KeystoreTagV2.substrateSecretKeyTagForMetaId(resultWallet.metaId)
-            let resultSecretKey = try resultKeystore.loadIfKeyExists(resultSecretTag)
+            let resultSecretKey = try keystore.loadIfKeyExists(resultSecretTag)
 
             XCTAssertEqual(expectedWallet.chainAccounts, resultWallet.chainAccounts)
             XCTAssertEqual(expectedWallet.ethereumAddress, resultWallet.ethereumAddress)

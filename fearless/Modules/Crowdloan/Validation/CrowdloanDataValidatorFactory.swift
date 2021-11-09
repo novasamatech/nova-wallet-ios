@@ -167,7 +167,13 @@ final class CrowdloanDataValidatingFactory: CrowdloanDataValidatorFactoryProtoco
 
         }, preservesCondition: {
             let isPublic = crowdloan?.fundInfo.verifier == nil
-            let supportsPrivate = displayInfo?.customFlow?.supportsPrivateCrowdloans ?? false
+            let supportsPrivate: Bool = {
+                if let flowString = displayInfo?.customFlow, let flow = CrowdloanFlow(rawValue: flowString) {
+                    return flow.supportsPrivateCrowdloans
+                } else {
+                    return false
+                }
+            }()
             return isPublic || supportsPrivate
         })
     }
