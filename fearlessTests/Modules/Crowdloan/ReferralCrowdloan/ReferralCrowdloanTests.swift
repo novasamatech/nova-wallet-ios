@@ -14,7 +14,7 @@ class ReferralCrowdloanTests: XCTestCase {
         website: "http://google.com",
         icon: "http://google.com/icon.svg",
         rewardRate: 12.0,
-        customFlow: .karura,
+        customFlow: "Karura",
         extras: nil
     )
 

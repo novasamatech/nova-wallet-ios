@@ -14,8 +14,11 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
         crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?
     ) {
-        if let info = displayInfo {
-            switch info.customFlow {
+        if
+            let info = displayInfo,
+            let flowString = info.customFlow,
+            let flow = CrowdloanFlow(rawValue: flowString) {
+            switch flow {
             case .moonbeam:
                 moonbeamCoordinator = MoonbeamFlowCoordinatorFactory.createCoordinator(
                     previousView: view,
