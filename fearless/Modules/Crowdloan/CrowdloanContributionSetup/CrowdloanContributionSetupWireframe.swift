@@ -63,6 +63,14 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
                 delegate: delegate,
                 existingService: existingService
             )
+        case .astar:
+            showAstarCustomFlow(
+                from: view,
+                for: displayInfo,
+                inputAmount: inputAmount,
+                delegate: delegate,
+                existingService: existingService
+            )
         case .moonbeam:
             break
         }
@@ -135,6 +143,30 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
 
         let navigationController = FearlessNavigationController(
             rootViewController: bifrostView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    private func showAstarCustomFlow(
+        from view: CrowdloanContributionSetupViewProtocol?,
+        for displayInfo: CrowdloanDisplayInfo,
+        inputAmount: Decimal,
+        delegate: CustomCrowdloanDelegate,
+        existingService: CrowdloanBonusServiceProtocol?
+    ) {
+        guard let astarView = ReferralCrowdloanViewFactory.createAstarView(
+            for: delegate,
+            displayInfo: displayInfo,
+            inputAmount: inputAmount,
+            existingService: existingService,
+            state: state
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: astarView.controller
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
