@@ -12,7 +12,7 @@ final class InvoiceScanLocalSearchEngine: InvoiceLocalSearchEngineProtocol {
     }
 
     func searchByAccountId(_ accountIdHex: String) -> SearchData? {
-        guard let accountId = AccountId.matchHex(accountIdHex) else {
+        guard let accountId = AccountId.matchHex(accountIdHex, chainFormat: chainFormat) else {
             return nil
         }
 
