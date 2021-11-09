@@ -1510,6 +1510,8 @@
 		F20C8D17ABF18B7104E14394 /* StakingAmountInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312DE7ADA5ABC3214AD3D4AD /* StakingAmountInteractor.swift */; };
 		F3D2AC37709EAF088A594B73 /* AccountManagementViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCA2DD3A8898D64CBC9F97 /* AccountManagementViewController.swift */; };
 		F400A7C2260CE1670061D576 /* StakingRewardStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F400A7C1260CE1670061D576 /* StakingRewardStatus.swift */; };
+		F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F402BC82273ACDC30075F803 /* AstarBonusService.swift */; };
+		F402BC8B273AD20D0075F803 /* AstarBonusServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F402BC8A273AD20D0075F803 /* AstarBonusServiceError.swift */; };
 		F406B0E626299E34004FDCCC /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F406B0E526299E34004FDCCC /* ErrorStateView.swift */; };
 		F408E9B626B807200043CFE0 /* AnalyticsRewardsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F408E9B526B807200043CFE0 /* AnalyticsRewardsHeaderView.swift */; };
 		F408E9BE26B80FD30043CFE0 /* AnalyticsSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F408E9BD26B80FD30043CFE0 /* AnalyticsSectionHeader.swift */; };
@@ -3232,6 +3234,8 @@
 		F2B676982F60C55530BDD569 /* AccountManagementPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountManagementPresenter.swift; sourceTree = "<group>"; };
 		F3E916D32F1FC6D61B853C08 /* NetworkManagementViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NetworkManagementViewFactory.swift; sourceTree = "<group>"; };
 		F400A7C1260CE1670061D576 /* StakingRewardStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardStatus.swift; sourceTree = "<group>"; };
+		F402BC82273ACDC30075F803 /* AstarBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstarBonusService.swift; sourceTree = "<group>"; };
+		F402BC8A273AD20D0075F803 /* AstarBonusServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AstarBonusServiceError.swift; sourceTree = "<group>"; };
 		F406B0E526299E34004FDCCC /* ErrorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorStateView.swift; sourceTree = "<group>"; };
 		F408E9B526B807200043CFE0 /* AnalyticsRewardsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardsHeaderView.swift; sourceTree = "<group>"; };
 		F408E9BD26B80FD30043CFE0 /* AnalyticsSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsSectionHeader.swift; sourceTree = "<group>"; };
@@ -6819,6 +6823,7 @@
 			children = (
 				F4E17FB627216C1C00FE36D3 /* Moonbeam */,
 				F48EB5442722BB6000AE15ED /* Acala */,
+				F402BC81273ACDAB0075F803 /* Astar */,
 				8444D1352671179000AF6D8C /* Bifrost */,
 				84981CC72666DFC500C4C691 /* Karura */,
 				84DED4022666537600A153BB /* CrowdloanBonusService.swift */,
@@ -7994,6 +7999,15 @@
 				F400A7C1260CE1670061D576 /* StakingRewardStatus.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		F402BC81273ACDAB0075F803 /* Astar */ = {
+			isa = PBXGroup;
+			children = (
+				F402BC82273ACDC30075F803 /* AstarBonusService.swift */,
+				F402BC8A273AD20D0075F803 /* AstarBonusServiceError.swift */,
+			);
+			path = Astar;
 			sourceTree = "<group>";
 		};
 		F406B0E426299E25004FDCCC /* ErrorView */ = {
@@ -9691,6 +9705,7 @@
 				2AD0A19025D3D1E100312428 /* GitHubPhishingServiceFactory.swift in Sources */,
 				AEF505A92620249F0098574D /* UIColor+HEX.swift in Sources */,
 				84FB1F77252705E900E0242B /* HistoryItemViewModel.swift in Sources */,
+				F402BC83273ACDC30075F803 /* AstarBonusService.swift in Sources */,
 				84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */,
 				AE8B883226733BAD00AB0AA9 /* CustomValidatorListHeaderView.swift in Sources */,
 				849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */,
@@ -10276,6 +10291,7 @@
 				843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */,
 				6BAF97802DB9C640515F47C7 /* StakingMainInteractor.swift in Sources */,
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
+				F402BC8B273AD20D0075F803 /* AstarBonusServiceError.swift in Sources */,
 				E5F3DF66415E54AE04D0C9A9 /* StakingMainViewController.swift in Sources */,
 				F44CCBEE26D38D1900A9E02E /* AnalyticsMagentaButton.swift in Sources */,
 				F4B39C612732717100BB6E10 /* AcalaContributionSetupProtocols.swift in Sources */,

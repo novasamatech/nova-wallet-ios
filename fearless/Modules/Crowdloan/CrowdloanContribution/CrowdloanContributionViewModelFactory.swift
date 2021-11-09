@@ -286,7 +286,9 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
         if let rewardRate = displayInfo.rewardRate {
             return formatter.stringFromDecimal(inputAmount * rewardRate * bonusRate)
         } else {
-            return nil
+            let percentFormatter = NumberFormatter.percentSingle
+            percentFormatter.locale = locale
+            return percentFormatter.stringFromDecimal(bonusRate)
         }
     }
 

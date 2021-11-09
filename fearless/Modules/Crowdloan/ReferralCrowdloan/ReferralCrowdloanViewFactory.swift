@@ -154,11 +154,12 @@ struct ReferralCrowdloanViewFactory {
         }
 
         let bonusService: CrowdloanBonusServiceProtocol = {
-            if let service = existingService as? BifrostBonusService {
+            if let service = existingService as? AstarBonusService {
                 return service
             } else {
-                return BifrostBonusService(
+                return AstarBonusService(
                     paraId: paraId,
+                    state: state,
                     operationManager: OperationManagerFacade.sharedManager
                 )
             }

@@ -400,6 +400,7 @@
 "crowdloan.app.bonus.format" = "Бонус Nova Wallet (%@)";
 "common.referral.code.title" = "Реферальный код";
 "karura.referral.code.action" = "Введите реферальный код";
+"crowdloan.astar.invalid.referral.message" = "Реферальный код Astar должен являться корректным Polkadot адресом";
 "staking.add.controller" = "Чтобы выполнить это действие, добавьте контроллер аккаунт %@ в приложение";
 "crowdloan.empty.bonus.title" = "Получите специальный бонус";
 "staking.select.validators.recommended.title" = "Стейкинг с рекоммендованными валидаторами";
