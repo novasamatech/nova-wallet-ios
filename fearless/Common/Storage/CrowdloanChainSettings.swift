@@ -35,7 +35,11 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
         }()
 
         let repository = AnyDataProviderRepository(
-            storageFacade.createRepository(filter: filter, sortDescriptors: [], mapper: mapper)
+            storageFacade.createRepository(
+                filter: filter,
+                sortDescriptors: [NSSortDescriptor.chainsByOrder],
+                mapper: mapper
+            )
         )
 
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())

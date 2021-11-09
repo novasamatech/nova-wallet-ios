@@ -32,7 +32,9 @@ class CrowdloanContributionSetupWireframe: CrowdloanContributionSetupWireframePr
         delegate: CustomCrowdloanDelegate,
         existingService: CrowdloanBonusServiceProtocol?
     ) {
-        guard let customFlow = displayInfo.customFlow else {
+        guard
+            let customFlowString = displayInfo.customFlow,
+            let customFlow = CrowdloanFlow(rawValue: customFlowString) else {
             return
         }
 

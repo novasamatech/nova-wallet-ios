@@ -30,12 +30,20 @@ final class StakingAssetSettings: PersistentValueSettings<ChainAsset> {
             ])
 
             repository = AnyDataProviderRepository(
-                storageFacade.createRepository(filter: filter, sortDescriptors: [], mapper: mapper)
+                storageFacade.createRepository(
+                    filter: filter,
+                    sortDescriptors: [NSSortDescriptor.chainsByOrder],
+                    mapper: mapper
+                )
             )
         } else {
             let filter = NSPredicate.relayChains()
             repository = AnyDataProviderRepository(
-                storageFacade.createRepository(filter: filter, sortDescriptors: [], mapper: mapper)
+                storageFacade.createRepository(
+                    filter: filter,
+                    sortDescriptors: [NSSortDescriptor.chainsByOrder],
+                    mapper: mapper
+                )
             )
         }
 
