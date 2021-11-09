@@ -5,6 +5,7 @@ enum CrowdloanFlow: String, Codable {
     case bifrost = "Bifrost"
     case acala = "Acala"
     case moonbeam = "Moonbeam"
+    case astar = "Astar"
 }
 
 extension CrowdloanFlow {
@@ -12,7 +13,7 @@ extension CrowdloanFlow {
         switch self {
         case .moonbeam:
             return true
-        case .karura, .bifrost, .acala:
+        case .karura, .bifrost, .acala, .astar:
             return false
         }
     }
@@ -23,7 +24,7 @@ extension CrowdloanFlow {
         switch self {
         case .moonbeam:
             return false
-        case .karura, .bifrost, .acala:
+        case .karura, .bifrost, .acala, .astar:
             return true
         }
     }

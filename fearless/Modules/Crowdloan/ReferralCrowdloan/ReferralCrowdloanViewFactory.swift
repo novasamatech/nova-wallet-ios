@@ -142,6 +142,40 @@ struct ReferralCrowdloanViewFactory {
         )
     }
 
+    static func createAstarView(
+        for delegate: CustomCrowdloanDelegate,
+        displayInfo: CrowdloanDisplayInfo,
+        inputAmount: Decimal,
+        existingService: CrowdloanBonusServiceProtocol?,
+        state: CrowdloanSharedState
+    ) -> ReferralCrowdloanViewProtocol? {
+        guard let paraId = ParaId(displayInfo.paraid) else {
+            return nil
+        }
+
+        let bonusService: CrowdloanBonusServiceProtocol = {
+            if let service = existingService as? AstarBonusService {
+                return service
+            } else {
+                return AstarBonusService(
+                    paraId: paraId,
+                    state: state,
+                    operationManager: OperationManagerFacade.sharedManager
+                )
+            }
+        }()
+
+        guard let defaultReferralCode = bonusService.defaultReferralCode else { return nil }
+        return createView(
+            for: delegate,
+            displayInfo: displayInfo,
+            inputAmount: inputAmount,
+            bonusService: bonusService,
+            defaultReferralCode: defaultReferralCode,
+            state: state
+        )
+    }
+
     private static func createView(
         for delegate: CustomCrowdloanDelegate,
         displayInfo: CrowdloanDisplayInfo,
