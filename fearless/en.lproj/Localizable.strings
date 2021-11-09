@@ -400,6 +400,7 @@ Derivation path: %@";
 "crowdloan.app.bonus.format" = "Nova Wallet bonus (%@)";
 "common.referral.code.title" = "Referral code";
 "karura.referral.code.action" = "Enter your referral code";
+"crowdloan.astar.invalid.referral.message" = "Astar referral code should be a valid Polkadot address";
 "staking.add.controller" = "Add controller account %@ to the application to perform this action.";
 "crowdloan.empty.bonus.title" = "Get a special bonus";
 "staking.select.validators.recommended.title" = "Stake with recommended validators";
