@@ -14,12 +14,17 @@ typealias EraIndex = UInt32
 typealias EraRange = (start: EraIndex, end: EraIndex)
 
 extension AccountId {
-    static func matchHex(_ value: String) -> AccountId? {
+    static func matchHex(_ value: String, chainFormat: ChainFormat) -> AccountId? {
         guard let data = try? Data(hexString: value) else {
             return nil
         }
 
-        return data.count == SubstrateConstants.accountIdLength ? data : nil
+        switch chainFormat {
+        case .ethereum:
+            return data.count == SubstrateConstants.ethereumAddressLength ? data : nil
+        case .substrate:
+            return data.count == SubstrateConstants.accountIdLength ? data : nil
+        }
     }
 }
 

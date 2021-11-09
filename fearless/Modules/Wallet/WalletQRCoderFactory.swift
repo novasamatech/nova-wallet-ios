@@ -34,8 +34,14 @@ final class WalletQRDecoder: WalletQRDecoderProtocol {
     private let substrateDecoder: SubstrateQRDecoder
     private let assets: [WalletAsset]
 
-    init(addressPrefix: ChainType, assets: [WalletAsset]) {
-        substrateDecoder = SubstrateQRDecoder(chainType: addressPrefix)
+    init(chainFormat: ChainFormat, assets: [WalletAsset]) {
+        switch chainFormat {
+        case .ethereum:
+            substrateDecoder = SubstrateQRDecoder(addressFormat: .ethereum)
+        case let .substrate(type):
+            substrateDecoder = SubstrateQRDecoder(addressFormat: .substrate(type: type))
+        }
+
         self.assets = assets
     }
 
@@ -83,6 +89,6 @@ final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
     }
 
     func createDecoder() -> WalletQRDecoderProtocol {
-        WalletQRDecoder(addressPrefix: addressPrefix, assets: assets)
+        WalletQRDecoder(chainFormat: chainFormat, assets: assets)
     }
 }
