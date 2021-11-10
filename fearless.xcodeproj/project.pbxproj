@@ -11205,7 +11205,7 @@
 		};
 		84AE11CD273C068700B294B7 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 849013F924A92A05008F705E /* fearless.release.xcconfig */;
+			baseConfigurationReference = 84AE11CA273C007E00B294B7 /* fearless.staging.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon$(ICON_SUFFIX)";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
