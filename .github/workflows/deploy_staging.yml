@@ -1,8 +1,8 @@
-name: Distribute to Firebase
+name: Build, Test and Deploy to Firebase
 
 on:
-  push:
-    branches: [ develop ]
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -27,7 +27,6 @@ jobs:
             ${{ runner.os }}-pods-
 
       - name: Install Cocoapods
-        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
         run: pod install --repo-update
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
@@ -35,7 +34,7 @@ jobs:
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ""
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.STAGING_PROVISIONING_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
           # create variables
@@ -69,10 +68,10 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Dev
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Staging
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsStaging.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -96,8 +95,8 @@ jobs:
       - name: Upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
+          appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: dev-team
+          groups: external-users
           file: export/fearless.ipa
           releaseNotes: ${{ github.event.head_commit.message }}
