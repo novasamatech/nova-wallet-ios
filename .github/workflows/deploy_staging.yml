@@ -72,7 +72,7 @@ jobs:
         run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Staging
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsStaging.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
