@@ -69,7 +69,7 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Debug
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Dev
 
       - name: Export archive
         run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsAdHoc.plist

@@ -4,5 +4,3 @@ OTHER_SWIFT_FLAGS = $(inherited) "-DF_DEV"
 
 APP_NAME = Nova Dev
 ICON_SUFFIX = Dev
-
-PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev

@@ -3,5 +3,3 @@
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
 
 APP_NAME = Nova
-
-PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.staging
