@@ -1,8 +1,8 @@
 name: Build, Test and Deploy to Firebase
 
 on:
-  release:
-    types: [ published ]
+  push:
+    branches: [ feature/ci-staging ]
 
 jobs:
   build:
