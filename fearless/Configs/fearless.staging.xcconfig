@@ -2,4 +2,4 @@
 
 OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
 
-APP_NAME = Nova
+APP_NAME = Nova Early Access
