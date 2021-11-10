@@ -4,3 +4,8 @@ OTHER_SWIFT_FLAGS = $(inherited) "-DENABLE_UITUNNEL" "-DF_DEV"
 
 APP_NAME = Nova Dev
 ICON_SUFFIX = Dev
+
+PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawallet.dev
+DEVELOPMENT_TEAM: The team identifier.
+CODE_SIGN_IDENTITY: The development certificate SHA-1 hash.
+PROVISIONING_PROFILE_SPECIFIER: The provisioning profile UUID.
