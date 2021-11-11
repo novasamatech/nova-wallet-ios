@@ -4,6 +4,7 @@ import SoraFoundation
 final class SettingsPresenter {
     weak var view: SettingsViewProtocol?
     let viewModelFactory: SettingsViewModelFactoryProtocol
+    let config: ApplicationConfigProtocol
     private(set) var userSettings: UserSettings?
     let interactor: SettingsInteractorInputProtocol
     let wireframe: SettingsWireframeProtocol
@@ -11,12 +12,14 @@ final class SettingsPresenter {
 
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
+        config: ApplicationConfigProtocol,
         interactor: SettingsInteractorInputProtocol,
         wireframe: SettingsWireframeProtocol,
         localizationManager: LocalizationManagerProtocol?,
         logger: LoggerProtocol? = nil
     ) {
         self.viewModelFactory = viewModelFactory
+        self.config = config
         self.interactor = interactor
         self.wireframe = wireframe
         self.logger = logger
@@ -31,6 +34,12 @@ final class SettingsPresenter {
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
+    }
+
+    private func show(url: URL) {
+        if let view = view {
+            wireframe.showWeb(url: url, from: view, style: .automatic)
+        }
     }
 }
 
@@ -50,19 +59,19 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .changePin:
             wireframe.showPincodeChange(from: view)
         case .telegram:
-            wireframe.showAbout(from: view)
+            show(url: config.socialURL)
         case .twitter:
-            wireframe.showAbout(from: view)
+            show(url: config.twitterURL)
         case .rateUs:
             wireframe.showAbout(from: view)
         case .website:
-            wireframe.showAbout(from: view)
+            show(url: config.websiteURL)
         case .github:
-            wireframe.showAbout(from: view)
+            show(url: config.opensourceURL)
         case .terms:
-            wireframe.showAbout(from: view)
+            show(url: config.termsURL)
         case .privacyPolicy:
-            wireframe.showAbout(from: view)
+            show(url: config.privacyPolicyURL)
         }
     }
 }

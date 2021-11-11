@@ -21,6 +21,7 @@ struct SettingsViewFactory {
 
         let presenter = SettingsPresenter(
             viewModelFactory: profileViewModelFactory,
+            config: ApplicationConfig.shared,
             interactor: interactor,
             wireframe: wireframe,
             localizationManager: localizationManager,

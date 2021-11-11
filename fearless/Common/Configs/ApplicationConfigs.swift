@@ -9,6 +9,7 @@ protocol ApplicationConfigProtocol {
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
+    var twitterURL: URL { get }
     var appName: String { get }
     var logoURL: URL { get }
     var purchaseAppName: String { get }
@@ -44,6 +45,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var socialURL: URL {
         URL(string: "https://t.me/novawallet")!
+    }
+
+    var twitterURL: URL {
+        URL(string: "https://twitter.com/NovaWalletApp")!
     }
 
     // swiftlint:disable force_cast
