@@ -5,13 +5,10 @@ import SubstrateSdk
 final class SettingsViewController: UIViewController {
     var presenter: SettingsPresenterProtocol!
 
-    var iconGenerating: IconGenerating?
-
     @IBOutlet private var tableView: UITableView!
 
     private var sections: [(SettingsSection, [SettingsCellViewModel])] = []
     private(set) var userViewModel: ProfileUserViewModelProtocol?
-    private(set) var userIcon: UIImage?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,13 +65,7 @@ extension SettingsViewController: UITableViewDelegate {
 extension SettingsViewController: SettingsViewProtocol {
     func didLoad(userViewModel: ProfileUserViewModelProtocol) {
         self.userViewModel = userViewModel
-        userIcon = try? iconGenerating?.generateFromAddress(userViewModel.details)
-            .imageWithFillColor(
-                .white,
-                size: UIConstants.normalAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
-        tableView.reloadData()
+        // TODO: setup icon
     }
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {
@@ -85,8 +76,6 @@ extension SettingsViewController: SettingsViewProtocol {
 
 extension SettingsViewController: Localizable {
     func applyLocalization() {
-        if isViewLoaded {
-            tableView.reloadData()
-        }
+        if isViewLoaded {}
     }
 }

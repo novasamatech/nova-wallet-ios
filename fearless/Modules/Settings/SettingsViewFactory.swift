@@ -18,7 +18,6 @@ struct SettingsViewFactory {
         let wireframe = SettingsWireframe()
 
         let view = SettingsViewController(nib: R.nib.profileViewController)
-        view.iconGenerating = PolkadotIconGenerator()
 
         let presenter = SettingsPresenter(
             viewModelFactory: profileViewModelFactory,
