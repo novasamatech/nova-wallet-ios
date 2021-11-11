@@ -2,7 +2,7 @@ import Foundation
 
 protocol ProfileViewProtocol: ControllerBackedProtocol {
     func didLoad(userViewModel: ProfileUserViewModelProtocol)
-    func didLoad(optionViewModels: [ProfileOptionViewModelProtocol])
+    func didLoad(optionViewModels: [SettingsCellViewModel])
 }
 
 protocol ProfilePresenterProtocol: AnyObject {

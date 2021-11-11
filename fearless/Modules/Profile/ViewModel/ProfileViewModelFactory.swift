@@ -10,7 +10,7 @@ protocol ProfileViewModelFactoryProtocol: AnyObject {
         from settings: UserSettings,
         language: Language,
         locale: Locale
-    ) -> [ProfileOptionViewModelProtocol]
+    ) -> [SettingsCellViewModel]
 }
 
 enum ProfileOption: UInt, CaseIterable {
@@ -42,8 +42,8 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
         from _: UserSettings,
         language: Language,
         locale: Locale
-    ) -> [ProfileOptionViewModelProtocol] {
-        let optionViewModels = ProfileOption.allCases.compactMap { (option) -> ProfileOptionViewModel? in
+    ) -> [SettingsCellViewModel] {
+        let optionViewModels = ProfileOption.allCases.compactMap { (option) -> SettingsCellViewModel? in
             switch option {
             case .accountList:
                 return createAccountListViewModel(for: locale)
@@ -61,10 +61,10 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
         return optionViewModels
     }
 
-    private func createAccountListViewModel(for locale: Locale) -> ProfileOptionViewModel {
+    private func createAccountListViewModel(for locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileWalletsTitle(preferredLanguages: locale.rLanguages)
-        let viewModel = ProfileOptionViewModel(
+        let viewModel = SettingsCellViewModel(
             title: title,
             icon: R.image.iconProfileAccounts()!,
             accessoryTitle: nil
@@ -72,11 +72,11 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
         return viewModel
     }
 
-    private func createConnectionListViewModel(for locale: Locale) -> ProfileOptionViewModel {
+    private func createConnectionListViewModel(for locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileNetworkTitle(preferredLanguages: locale.rLanguages)
 
-        let viewModel = ProfileOptionViewModel(
+        let viewModel = SettingsCellViewModel(
             title: title,
             icon: R.image.iconProfileNetworks()!,
             accessoryTitle: nil
@@ -85,21 +85,21 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
         return viewModel
     }
 
-    private func createChangePincode(for locale: Locale) -> ProfileOptionViewModel {
+    private func createChangePincode(for locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
-        return ProfileOptionViewModel(
+        return SettingsCellViewModel(
             title: title,
             icon: R.image.iconProfilePin()!,
             accessoryTitle: nil
         )
     }
 
-    private func createLanguageViewModel(from language: Language?, locale: Locale) -> ProfileOptionViewModel {
+    private func createLanguageViewModel(from language: Language?, locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileLanguageTitle(preferredLanguages: locale.rLanguages)
         let subtitle = language?.title(in: locale)?.capitalized
-        let viewModel = ProfileOptionViewModel(
+        let viewModel = SettingsCellViewModel(
             title: title,
             icon: R.image.iconProfileLanguage()!,
             accessoryTitle: subtitle
@@ -108,10 +108,10 @@ final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
         return viewModel
     }
 
-    private func createAboutViewModel(for locale: Locale) -> ProfileOptionViewModel {
+    private func createAboutViewModel(for locale: Locale) -> SettingsCellViewModel {
         let title = R.string.localizable
             .profileAboutTitle(preferredLanguages: locale.rLanguages)
-        return ProfileOptionViewModel(
+        return SettingsCellViewModel(
             title: title,
             icon: R.image.iconProfileAbout()!,
             accessoryTitle: nil

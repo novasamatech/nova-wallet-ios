@@ -16,7 +16,7 @@ final class ProfileViewController: UIViewController {
 
     @IBOutlet private var tableView: UITableView!
 
-    private(set) var optionViewModels: [ProfileOptionViewModelProtocol] = []
+    private(set) var optionViewModels: [SettingsCellViewModel] = []
     private(set) var userViewModel: ProfileUserViewModelProtocol?
     private(set) var userIcon: UIImage?
 
@@ -131,7 +131,7 @@ extension ProfileViewController: ProfileViewProtocol {
         tableView.reloadData()
     }
 
-    func didLoad(optionViewModels: [ProfileOptionViewModelProtocol]) {
+    func didLoad(optionViewModels: [SettingsCellViewModel]) {
         self.optionViewModels = optionViewModels
         tableView.reloadData()
     }

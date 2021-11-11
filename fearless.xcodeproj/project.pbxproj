@@ -277,7 +277,7 @@
 		8428765324ADDE0200D91AD8 /* ProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764424ADDE0200D91AD8 /* ProfileViewController.xib */; };
 		8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */; };
 		8428765524ADDE0200D91AD8 /* ProfileUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */; };
-		8428765624ADDE0200D91AD8 /* ProfileOptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* ProfileOptionViewModel.swift */; };
+		8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */; };
 		8428765724ADDE0200D91AD8 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */; };
 		8428765824ADDE0200D91AD8 /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */; };
 		8428765924ADDE0200D91AD8 /* ProfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764D24ADDE0200D91AD8 /* ProfileProtocol.swift */; };
@@ -1552,6 +1552,7 @@
 		F418E86F264D0F0400699085 /* Migrating.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E86E264D0F0400699085 /* Migrating.swift */; };
 		F418E887264D308700699085 /* StakingAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E886264D308700699085 /* StakingAlert.swift */; };
 		F418E891264D318C00699085 /* AlertsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418E890264D318C00699085 /* AlertsView.swift */; };
+		F419FD7A273D05B00061652C /* SettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F419FD79273D05B00061652C /* SettingsSection.swift */; };
 		F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */; };
 		F41CEB7B272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEB7A272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift */; };
 		F41CEB83272FF3DD00C06154 /* CrowdloanYourContributionsVMFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41CEB82272FF3DD00C06154 /* CrowdloanYourContributionsVMFactory.swift */; };
@@ -1993,7 +1994,7 @@
 		8428764524ADDE0200D91AD8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ProfileViewController.xib; sourceTree = "<group>"; };
 		8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewModelFactory.swift; sourceTree = "<group>"; };
 		8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileUserViewModel.swift; sourceTree = "<group>"; };
-		8428764924ADDE0200D91AD8 /* ProfileOptionViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileOptionViewModel.swift; sourceTree = "<group>"; };
+		8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCellViewModel.swift; sourceTree = "<group>"; };
 		8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
 		8428764D24ADDE0200D91AD8 /* ProfileProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileProtocol.swift; sourceTree = "<group>"; };
@@ -3277,6 +3278,7 @@
 		F418E86E264D0F0400699085 /* Migrating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migrating.swift; sourceTree = "<group>"; };
 		F418E886264D308700699085 /* StakingAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAlert.swift; sourceTree = "<group>"; };
 		F418E890264D318C00699085 /* AlertsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertsView.swift; sourceTree = "<group>"; };
+		F419FD79273D05B00061652C /* SettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSection.swift; sourceTree = "<group>"; };
 		F41C728226428A9400E8BB41 /* ControllerAccountViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewLayout.swift; sourceTree = "<group>"; };
 		F41CEB7A272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanYourContributionsViewModel.swift; sourceTree = "<group>"; };
 		F41CEB82272FF3DD00C06154 /* CrowdloanYourContributionsVMFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanYourContributionsVMFactory.swift; sourceTree = "<group>"; };
@@ -4294,7 +4296,8 @@
 			children = (
 				8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */,
 				8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */,
-				8428764924ADDE0200D91AD8 /* ProfileOptionViewModel.swift */,
+				8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */,
+				F419FD79273D05B00061652C /* SettingsSection.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -9179,7 +9182,7 @@
 				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
 				845CB6EF26276104005F798B /* SubscanQueryService.swift in Sources */,
 				849ABE5126276C3400011A2A /* SubscanQueryParams.swift in Sources */,
-				8428765624ADDE0200D91AD8 /* ProfileOptionViewModel.swift in Sources */,
+				8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
 				F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */,
 				8423B0E4251A774700B8687C /* SNAddressType+Chain.swift in Sources */,
@@ -10067,6 +10070,7 @@
 				AE9EF264260A82B80026910A /* StoriesWireframe.swift in Sources */,
 				848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */,
 				841185E7263F3B6D00E8A8B6 /* HintView.swift in Sources */,
+				F419FD7A273D05B00061652C /* SettingsSection.swift in Sources */,
 				8494D87C252537E500614D8F /* SubscanError.swift in Sources */,
 				DAEE468553039B3600F64A0E /* AccountManagementWireframe.swift in Sources */,
 				F4E117B9264BAA81006F03B0 /* ControllerAccountConfirmationVM.swift in Sources */,
