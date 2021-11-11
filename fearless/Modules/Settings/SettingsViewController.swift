@@ -2,13 +2,17 @@ import UIKit
 import SoraFoundation
 import SubstrateSdk
 
-final class SettingsViewController: UIViewController {
+final class SettingsViewController: UIViewController, ViewHolder {
+    typealias RootViewType = SettingsViewLayout
+
     var presenter: SettingsPresenterProtocol!
 
-    @IBOutlet private var tableView: UITableView!
-
     private var sections: [(SettingsSection, [SettingsCellViewModel])] = []
-    private(set) var userViewModel: ProfileUserViewModelProtocol?
+    private var userViewModel: ProfileUserViewModelProtocol?
+
+    override func loadView() {
+        view = SettingsViewLayout()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,9 +24,10 @@ final class SettingsViewController: UIViewController {
     }
 
     private func configureTableView() {
-        tableView.registerClassForCell(SettingsTableViewCell.self)
-        tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
-        tableView.alwaysBounceVertical = false
+        rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+        rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 }
 
@@ -71,12 +76,15 @@ extension SettingsViewController: SettingsViewProtocol {
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {
         self.sections = sections
-        tableView.reloadData()
+        rootView.tableView.reloadData()
     }
 }
 
 extension SettingsViewController: Localizable {
     func applyLocalization() {
-        if isViewLoaded {}
+        if isViewLoaded {
+            rootView.headerView.titleLabel.text = R.string.localizable
+                .tabbarSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
+        }
     }
 }

@@ -274,7 +274,6 @@
 		84265E062523D7BE005EEE2D /* WalletInputAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */; };
 		84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */; };
 		8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */; };
-		8428765324ADDE0200D91AD8 /* ProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764424ADDE0200D91AD8 /* ProfileViewController.xib */; };
 		8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */; };
 		8428765524ADDE0200D91AD8 /* ProfileUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */; };
 		8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */; };
@@ -1580,6 +1579,7 @@
 		F44CCBEE26D38D1900A9E02E /* AnalyticsMagentaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CCBED26D38D1900A9E02E /* AnalyticsMagentaButton.swift */; };
 		F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CD8F326242825005DDF23 /* PayoutRewardsService+Fetch.swift */; };
 		F452D895273D22CF008F7295 /* SettingsTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */; };
+		F452D89A273D237E008F7295 /* SettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F452D899273D237E008F7295 /* SettingsViewLayout.swift */; };
 		F458D3982642911B0055CB75 /* ControllerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F458D3972642911B0055CB75 /* ControllerAccountViewModel.swift */; };
 		F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F458D3C02642B7D80055CB75 /* LearnMoreView.swift */; };
 		F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4617409260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift */; };
@@ -1989,7 +1989,6 @@
 		84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletInputAmountView.swift; sourceTree = "<group>"; };
 		84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryFacade.swift; sourceTree = "<group>"; };
 		8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
-		8428764524ADDE0200D91AD8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ProfileViewController.xib; sourceTree = "<group>"; };
 		8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewModelFactory.swift; sourceTree = "<group>"; };
 		8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileUserViewModel.swift; sourceTree = "<group>"; };
 		8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCellViewModel.swift; sourceTree = "<group>"; };
@@ -3305,6 +3304,7 @@
 		F44CD8F326242825005DDF23 /* PayoutRewardsService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PayoutRewardsService+Fetch.swift"; sourceTree = "<group>"; };
 		F44CD8F826244EC3005DDF23 /* PayoutRewardsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutRewardsServiceTests.swift; sourceTree = "<group>"; };
 		F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableHeaderView.swift; sourceTree = "<group>"; };
+		F452D899273D237E008F7295 /* SettingsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewLayout.swift; sourceTree = "<group>"; };
 		F458D3972642911B0055CB75 /* ControllerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModel.swift; sourceTree = "<group>"; };
 		F458D3C02642B7D80055CB75 /* LearnMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMoreView.swift; sourceTree = "<group>"; };
 		F4617409260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationViewLayout.swift; sourceTree = "<group>"; };
@@ -4281,7 +4281,6 @@
 				8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */,
 				8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */,
 				8428765024ADDE0200D91AD8 /* SettingsViewController.swift */,
-				8428764424ADDE0200D91AD8 /* ProfileViewController.xib */,
 				8428765124ADDE0200D91AD8 /* SettingsInteractor.swift */,
 			);
 			path = Settings;
@@ -4302,9 +4301,10 @@
 		8428764A24ADDE0200D91AD8 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				F452D899273D237E008F7295 /* SettingsViewLayout.swift */,
+				F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */,
 				8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */,
 				F466AA84273D0D4200D14021 /* SettingsSectionHeaderView.swift */,
-				F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -8758,7 +8758,6 @@
 				8428768D24AE046300D91AD8 /* AboutHeaderView.xib in Resources */,
 				849014B824AA87E3008F705E /* PinSetupViewController.xib in Resources */,
 				84D8F16924D821ED00AF43E9 /* IconWithTitleTableViewCell.xib in Resources */,
-				8428765324ADDE0200D91AD8 /* ProfileViewController.xib in Resources */,
 				84DF21A325347042005454AE /* DetailsDisplayTableViewCell.xib in Resources */,
 				849528DE2603697B009DC845 /* RewardEstimationView.xib in Resources */,
 				8428769424AE046300D91AD8 /* AboutViewController.xib in Resources */,
@@ -9176,6 +9175,7 @@
 				8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
 				F436BB962726FBBB004B1794 /* MoonbeamFlowCoordinatorFactory.swift in Sources */,
+				F452D89A273D237E008F7295 /* SettingsViewLayout.swift in Sources */,
 				8423B0E4251A774700B8687C /* SNAddressType+Chain.swift in Sources */,
 				84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */,
 				84D97ECF2521CA2F00F07405 /* WalletBaseTokenView.swift in Sources */,
@@ -10688,14 +10688,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		8428764424ADDE0200D91AD8 /* ProfileViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8428764524ADDE0200D91AD8 /* en */,
-			);
-			name = ProfileViewController.xib;
-			sourceTree = "<group>";
-		};
 		849013B624A80986008F705E /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

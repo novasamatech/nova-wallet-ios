@@ -17,7 +17,7 @@ struct SettingsViewFactory {
 
         let wireframe = SettingsWireframe()
 
-        let view = SettingsViewController(nib: R.nib.profileViewController)
+        let view = SettingsViewController()
 
         let presenter = SettingsPresenter(
             viewModelFactory: profileViewModelFactory,
