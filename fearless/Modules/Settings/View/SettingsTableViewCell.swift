@@ -29,15 +29,19 @@ final class SettingsTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
-        selectedBackgroundView = UIView()
-        selectedBackgroundView!.backgroundColor = R.color.colorAccent()!.withAlphaComponent(0.3)
+        selectionStyle = .none
         setupLayout()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        roundView.fillColor = highlighted ? R.color.colorAccent()!.withAlphaComponent(0.3) : R.color.color0x1D1D20()!
     }
 
     private func setupLayout() {
