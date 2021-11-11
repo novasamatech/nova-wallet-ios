@@ -4274,7 +4274,7 @@
 			path = ConnectionPool;
 			sourceTree = "<group>";
 		};
-		8428764224ADDE0200D91AD8 /* Profile */ = {
+		8428764224ADDE0200D91AD8 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				8493D0DD26FE5D0800A28008 /* Model */,
@@ -4288,7 +4288,7 @@
 				8428764424ADDE0200D91AD8 /* ProfileViewController.xib */,
 				8428765124ADDE0200D91AD8 /* ProfileInteractor.swift */,
 			);
-			path = Profile;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		8428764624ADDE0200D91AD8 /* ViewModel */ = {
@@ -5528,7 +5528,7 @@
 				81B4F8399E320644C4CD5637 /* NetworkManagement */,
 				8490140124A92F6D008F705E /* OnbordingMain */,
 				849014A724AA87E3008F705E /* Pincode */,
-				8428764224ADDE0200D91AD8 /* Profile */,
+				8428764224ADDE0200D91AD8 /* Settings */,
 				F1A9198B13888515D787A6C1 /* Purchase */,
 				8490146E24A94A37008F705E /* Root */,
 				84F43B8725DE9F8500AEDA56 /* Staking */,
