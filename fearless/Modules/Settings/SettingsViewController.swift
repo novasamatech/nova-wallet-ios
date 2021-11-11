@@ -88,3 +88,5 @@ extension SettingsViewController: Localizable {
         }
     }
 }
+
+extension SettingsViewController: HiddableBarWhenPushed {}
