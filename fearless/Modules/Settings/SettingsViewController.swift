@@ -3,26 +3,20 @@ import SoraFoundation
 import SubstrateSdk
 
 final class SettingsViewController: UIViewController {
-    private enum Constants {
-        static let sectionCellHeight: CGFloat = 56.0
-        static let detailsCellHeight: CGFloat = 86.0
-        static let headerInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 16, right: 16.0)
-    }
-
     var presenter: SettingsPresenterProtocol!
 
     var iconGenerating: IconGenerating?
 
     @IBOutlet private var tableView: UITableView!
 
-    private(set) var optionViewModels: [SettingsCellViewModel] = []
+    private var sections: [(SettingsSection, [SettingsCellViewModel])] = []
     private(set) var userViewModel: ProfileUserViewModelProtocol?
     private(set) var userIcon: UIImage?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
+        applyLocalization()
         configureTableView()
 
         presenter.setup()
@@ -30,73 +24,36 @@ final class SettingsViewController: UIViewController {
 
     private func configureTableView() {
         tableView.registerClassForCell(SettingsTableViewCell.self)
-
-        tableView.register(
-            UINib(resource: R.nib.profileDetailsTableViewCell),
-            forCellReuseIdentifier: R.reuseIdentifier.profileDetailsCellId.identifier
-        )
-
-        tableView.register(
-            UINib(resource: R.nib.profileSectionTableViewCell),
-            forCellReuseIdentifier: R.reuseIdentifier.profileSectionCellId.identifier
-        )
-
+        tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
         tableView.alwaysBounceVertical = false
     }
 }
 
 extension SettingsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
-        1
+        sections.count
     }
 
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        optionViewModels.count + 2
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        sections[section].1.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.row {
-        case 0:
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: R.reuseIdentifier.profileSectionCellId,
-                for: indexPath
-            )!
-
-            let locale = localizationManager?.selectedLocale
-            cell.titleLabel.text = R.string.localizable.profileTitle(preferredLanguages: locale?.rLanguages)
-
-            return cell
-        case 1:
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: R.reuseIdentifier.profileDetailsCellId,
-                for: indexPath
-            )!
-
-            if let userViewModel = userViewModel {
-                cell.bind(model: userViewModel, icon: userIcon)
-            }
-
-            cell.detailsView.layout = .singleTitle
-
-            return cell
-        default:
-            let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
-
-            cell.bind(viewModel: optionViewModels[indexPath.row - 2])
-
-            return cell
-        }
+        let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
+        let cellViewModel = sections[indexPath.section].1[indexPath.row]
+        cell.bind(viewModel: cellViewModel)
+        return cell
     }
 
-    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch indexPath.row {
-        case 0:
-            return Constants.sectionCellHeight
-        case 1:
-            return Constants.detailsCellHeight
-        default:
-            return UITableView.automaticDimension
-        }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header: SettingsSectionHeaderView = tableView.dequeueReusableHeaderFooterView()
+        let title = sections[section].0.title(for: selectedLocale)
+        header.titleLabel.text = title
+        return header
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
+        56 // UITableView.automaticDimension
     }
 }
 
@@ -124,21 +81,16 @@ extension SettingsViewController: SettingsViewProtocol {
         tableView.reloadData()
     }
 
-    func didLoad(optionViewModels: [SettingsCellViewModel]) {
-        self.optionViewModels = optionViewModels
+    func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {
+        self.sections = sections
         tableView.reloadData()
     }
 }
 
 extension SettingsViewController: Localizable {
-    private func setupLocalization() {
-        tableView.reloadData()
-    }
-
     func applyLocalization() {
         if isViewLoaded {
-            setupLocalization()
-            view.setNeedsLayout()
+            tableView.reloadData()
         }
     }
 }

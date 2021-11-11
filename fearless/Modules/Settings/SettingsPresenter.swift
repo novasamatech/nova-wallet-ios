@@ -24,7 +24,7 @@ final class SettingsPresenter {
 
         let locale = localizationManager?.selectedLocale ?? Locale.current
         let userDetailsViewModel = viewModelFactory.createUserViewModel(from: userSettings, locale: locale)
-        view?.didLoad(userViewModel: userDetailsViewModel)
+        // view?.didLoad(userViewModel: userDetailsViewModel)
     }
 
     private func updateOptionsViewModel() {
@@ -37,12 +37,12 @@ final class SettingsPresenter {
 
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
-        let optionViewModels = viewModelFactory.createOptionViewModels(
+        let sectionViewModels = viewModelFactory.createSectionViewModels(
             from: userSettings,
             language: language,
             locale: locale
         )
-        view?.didLoad(optionViewModels: optionViewModels)
+        view?.reload(sections: sectionViewModels)
     }
 }
 

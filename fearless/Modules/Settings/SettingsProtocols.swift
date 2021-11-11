@@ -1,8 +1,7 @@
 import Foundation
 
 protocol SettingsViewProtocol: ControllerBackedProtocol {
-    func didLoad(userViewModel: ProfileUserViewModelProtocol)
-    func didLoad(optionViewModels: [SettingsCellViewModel])
+    func reload(sections: [(SettingsSection, [SettingsCellViewModel])])
 }
 
 protocol SettingsPresenterProtocol: AnyObject {

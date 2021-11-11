@@ -6,11 +6,11 @@ import IrohaCrypto
 protocol SettingsViewModelFactoryProtocol: AnyObject {
     func createUserViewModel(from settings: UserSettings, locale: Locale) -> ProfileUserViewModelProtocol
 
-    func createOptionViewModels(
+    func createSectionViewModels(
         from settings: UserSettings,
         language: Language,
         locale: Locale
-    ) -> [SettingsCellViewModel]
+    ) -> [(SettingsSection, [SettingsCellViewModel])]
 }
 
 enum ProfileOption: UInt, CaseIterable {
@@ -38,27 +38,17 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         )
     }
 
-    func createOptionViewModels(
+    func createSectionViewModels(
         from _: UserSettings,
         language: Language,
         locale: Locale
-    ) -> [SettingsCellViewModel] {
-        let optionViewModels = ProfileOption.allCases.compactMap { (option) -> SettingsCellViewModel? in
-            switch option {
-            case .accountList:
-                return createAccountListViewModel(for: locale)
-            case .connectionList:
-                return nil // TODO: Implement when new networks settings scene is done
-            case .changePincode:
-                return createChangePincode(for: locale)
-            case .language:
-                return createLanguageViewModel(from: language, locale: locale)
-            case .about:
-                return createAboutViewModel(for: locale)
-            }
-        }
-
-        return optionViewModels
+    ) -> [(SettingsSection, [SettingsCellViewModel])] {
+        [
+            (.general, [createAccountListViewModel(for: locale)]),
+            (.preferences, [createLanguageViewModel(from: language, locale: locale)]),
+            (.security, [createChangePincode(for: locale)]),
+            (.about, [createAboutViewModel(for: locale)]),
+        ]
     }
 
     private func createAccountListViewModel(for locale: Locale) -> SettingsCellViewModel {
