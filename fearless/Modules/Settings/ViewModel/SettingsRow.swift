@@ -51,17 +51,17 @@ extension SettingsRow {
         case .telegram:
             return R.image.iconAboutTg()!
         case .twitter:
-            return nil
+            return R.image.iconTwitter()!
         case .rateUs:
-            return nil
+            return R.image.iconStar()!
         case .website:
             return R.image.iconAboutWeb()!
         case .github:
             return R.image.iconAboutGit()!
         case .terms:
-            return nil
+            return R.image.iconTerms()!
         case .privacyPolicy:
-            return nil
+            return R.image.iconTerms()!
         }
     }
 }
