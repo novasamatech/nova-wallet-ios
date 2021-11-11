@@ -63,7 +63,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .twitter:
             show(url: config.twitterURL)
         case .rateUs:
-            wireframe.showAbout(from: view)
+            // TODO:
+            show(url: config.websiteURL)
         case .website:
             show(url: config.websiteURL)
         case .github:
