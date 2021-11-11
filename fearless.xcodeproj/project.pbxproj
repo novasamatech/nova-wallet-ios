@@ -278,8 +278,7 @@
 		8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */; };
 		8428765524ADDE0200D91AD8 /* ProfileUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */; };
 		8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */; };
-		8428765724ADDE0200D91AD8 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */; };
-		8428765824ADDE0200D91AD8 /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */; };
+		8428765724ADDE0200D91AD8 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */; };
 		8428765924ADDE0200D91AD8 /* SettingsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764D24ADDE0200D91AD8 /* SettingsProtocols.swift */; };
 		8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */; };
 		8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */; };
@@ -1995,8 +1994,7 @@
 		8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewModelFactory.swift; sourceTree = "<group>"; };
 		8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileUserViewModel.swift; sourceTree = "<group>"; };
 		8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCellViewModel.swift; sourceTree = "<group>"; };
-		8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
-		8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
+		8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 		8428764D24ADDE0200D91AD8 /* SettingsProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsProtocols.swift; sourceTree = "<group>"; };
 		8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewFactory.swift; sourceTree = "<group>"; };
 		8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsWireframe.swift; sourceTree = "<group>"; };
@@ -4305,8 +4303,7 @@
 		8428764A24ADDE0200D91AD8 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */,
-				8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */,
+				8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */,
 				8467FD4224ED5F46005D486C /* ProfileSectionTableViewCell.swift */,
 				8467FD4424ED5F60005D486C /* ProfileSectionTableViewCell.xib */,
 				8467FD4624ED6496005D486C /* ProfileDetailsTableViewCell.xib */,
@@ -8739,7 +8736,6 @@
 				842876AC24AE049B00D91AD8 /* SelectionTitleTableViewCell.xib in Resources */,
 				849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */,
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
-				8428765824ADDE0200D91AD8 /* ProfileTableViewCell.xib in Resources */,
 				849013FD24A92A05008F705E /* fearless.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
 				84D2F45A25EF0556008B914D /* RecommendedValidatorCell.xib in Resources */,
@@ -9385,7 +9381,7 @@
 				8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */,
 				842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */,
 				8490147724A94A37008F705E /* RootPresenter.swift in Sources */,
-				8428765724ADDE0200D91AD8 /* ProfileTableViewCell.swift in Sources */,
+				8428765724ADDE0200D91AD8 /* SettingsTableViewCell.swift in Sources */,
 				8401AE8D2641EF7B000B03E3 /* NetworkFeeConfirmView.swift in Sources */,
 				841AAC2F26F73E0C00F0A25E /* LocalStorageKeyFactory.swift in Sources */,
 				843C49DF24DF3CB300B71DDA /* AccountImportMetadata.swift in Sources */,

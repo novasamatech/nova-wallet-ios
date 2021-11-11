@@ -4,7 +4,6 @@ import SubstrateSdk
 
 final class SettingsViewController: UIViewController {
     private enum Constants {
-        static let optionCellHeight: CGFloat = 48.0
         static let sectionCellHeight: CGFloat = 56.0
         static let detailsCellHeight: CGFloat = 86.0
         static let headerInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 16, right: 16.0)
@@ -30,10 +29,7 @@ final class SettingsViewController: UIViewController {
     }
 
     private func configureTableView() {
-        tableView.register(
-            UINib(resource: R.nib.profileTableViewCell),
-            forCellReuseIdentifier: R.reuseIdentifier.profileCellId.identifier
-        )
+        tableView.registerClassForCell(SettingsTableViewCell.self)
 
         tableView.register(
             UINib(resource: R.nib.profileDetailsTableViewCell),
@@ -84,10 +80,7 @@ extension SettingsViewController: UITableViewDataSource {
 
             return cell
         default:
-            let cell = tableView.dequeueReusableCell(
-                withIdentifier: R.reuseIdentifier.profileCellId,
-                for: indexPath
-            )!
+            let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
 
             cell.bind(viewModel: optionViewModels[indexPath.row - 2])
 
@@ -102,7 +95,7 @@ extension SettingsViewController: UITableViewDataSource {
         case 1:
             return Constants.detailsCellHeight
         default:
-            return Constants.optionCellHeight
+            return UITableView.automaticDimension
         }
     }
 }
