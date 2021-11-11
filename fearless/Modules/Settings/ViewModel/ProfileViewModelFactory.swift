@@ -3,24 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 import IrohaCrypto
 
-protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createUserViewModel(from settings: UserSettings, locale: Locale) -> ProfileUserViewModelProtocol
-
-    func createSectionViewModels(
-        from settings: UserSettings,
-        language: Language,
-        locale: Locale
-    ) -> [(SettingsSection, [SettingsCellViewModel])]
-}
-
-enum ProfileOption: UInt, CaseIterable {
-    case accountList
-    case language
-    case changePincode
-    case about
-    case connectionList
-}
-
 final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
 
@@ -28,19 +10,8 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         self.iconGenerator = iconGenerator
     }
 
-    func createUserViewModel(from settings: UserSettings, locale _: Locale) -> ProfileUserViewModelProtocol {
-        let icon = try? iconGenerator.generateFromAddress(settings.details)
-
-        return ProfileUserViewModel(
-            name: settings.userName,
-            details: settings.details,
-            icon: icon
-        )
-    }
-
     func createSectionViewModels(
-        from _: UserSettings,
-        language: Language,
+        language: Language?,
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [

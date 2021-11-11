@@ -10,6 +10,13 @@ protocol SettingsPresenterProtocol: AnyObject {
     func activateOption(at index: UInt)
 }
 
+protocol SettingsViewModelFactoryProtocol: AnyObject {
+    func createSectionViewModels(
+        language: Language?,
+        locale: Locale
+    ) -> [(SettingsSection, [SettingsCellViewModel])]
+}
+
 protocol SettingsInteractorInputProtocol: AnyObject {
     func setup()
 }

@@ -8,7 +8,7 @@ final class SettingsPresenter {
 
     var logger: LoggerProtocol?
 
-    private(set) var viewModelFactory: SettingsViewModelFactoryProtocol
+    let viewModelFactory: SettingsViewModelFactoryProtocol
 
     private(set) var userSettings: UserSettings?
     private(set) var wallet: MetaAccountModel?
@@ -17,29 +17,11 @@ final class SettingsPresenter {
         self.viewModelFactory = viewModelFactory
     }
 
-    private func updateAccountViewModel() {
-        guard let userSettings = userSettings else {
-            return
-        }
-
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        let userDetailsViewModel = viewModelFactory.createUserViewModel(from: userSettings, locale: locale)
-        // view?.didLoad(userViewModel: userDetailsViewModel)
-    }
-
-    private func updateOptionsViewModel() {
-        guard
-            let userSettings = userSettings,
-            let language = localizationManager?.selectedLanguage
-        else {
-            return
-        }
-
+    private func updateView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
         let sectionViewModels = viewModelFactory.createSectionViewModels(
-            from: userSettings,
-            language: language,
+            language: localizationManager?.selectedLanguage,
             locale: locale
         )
         view?.reload(sections: sectionViewModels)
@@ -48,7 +30,7 @@ final class SettingsPresenter {
 
 extension SettingsPresenter: SettingsPresenterProtocol {
     func setup() {
-        updateOptionsViewModel()
+        updateView()
 
         interactor.setup()
     }
@@ -58,23 +40,23 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         wireframe.showAccountDetails(for: wallet.identifier, from: view)
     }
 
-    func activateOption(at index: UInt) {
-        guard let option = ProfileOption(rawValue: index) else {
-            return
-        }
-
-        switch option {
-        case .accountList:
-            wireframe.showAccountSelection(from: view)
-        case .connectionList:
-            wireframe.showConnectionSelection(from: view)
-        case .changePincode:
-            wireframe.showPincodeChange(from: view)
-        case .language:
-            wireframe.showLanguageSelection(from: view)
-        case .about:
-            wireframe.showAbout(from: view)
-        }
+    func activateOption(at _: UInt) {
+//        guard let option = ProfileOption(rawValue: index) else {
+//            return
+//        }
+//
+//        switch option {
+//        case .accountList:
+//            wireframe.showAccountSelection(from: view)
+//        case .connectionList:
+//            wireframe.showConnectionSelection(from: view)
+//        case .changePincode:
+//            wireframe.showPincodeChange(from: view)
+//        case .language:
+//            wireframe.showLanguageSelection(from: view)
+//        case .about:
+//            wireframe.showAbout(from: view)
+//        }
     }
 }
 
@@ -85,8 +67,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 
     func didReceive(userSettings: UserSettings) {
         self.userSettings = userSettings
-        updateAccountViewModel()
-        updateOptionsViewModel()
+        updateView()
     }
 
     func didReceiveUserDataProvider(error: Error) {
@@ -103,8 +84,7 @@ extension SettingsPresenter: SettingsInteractorOutputProtocol {
 extension SettingsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
-            updateAccountViewModel()
-            updateOptionsViewModel()
+            updateView()
         }
     }
 }
