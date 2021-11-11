@@ -10,11 +10,6 @@ struct SettingsViewFactory {
 
         let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: PolkadotIconGenerator())
 
-        let view = SettingsViewController(nib: R.nib.profileViewController)
-        view.iconGenerating = PolkadotIconGenerator()
-
-        let presenter = SettingsPresenter(viewModelFactory: profileViewModelFactory)
-
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared
@@ -22,15 +17,23 @@ struct SettingsViewFactory {
 
         let wireframe = SettingsWireframe()
 
+        let view = SettingsViewController(nib: R.nib.profileViewController)
+        view.iconGenerating = PolkadotIconGenerator()
+
+        let presenter = SettingsPresenter(
+            viewModelFactory: profileViewModelFactory,
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
         view.presenter = presenter
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         view.localizationManager = localizationManager
         presenter.localizationManager = localizationManager
-        presenter.logger = Logger.shared
 
         return view
     }

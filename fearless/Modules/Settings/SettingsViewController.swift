@@ -61,11 +61,7 @@ extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        if indexPath.row == 1 {
-            presenter.activateAccountDetails()
-        } else if indexPath.row >= 2 {
-            presenter.activateOption(at: UInt(indexPath.row) - 2)
-        }
+        presenter.activateOption(at: indexPath.row)
     }
 }
 

@@ -41,35 +41,17 @@ final class SettingsInteractor {
             presenter?.didReceiveUserDataProvider(error: error)
         }
     }
-
-    private func provideSelectedMetaAccount() {
-        do {
-            guard let wallet = selectedWalletSettings.value else {
-                throw ProfileInteractorError.noSelectedAccount
-            }
-            presenter?.didReceive(wallet: wallet)
-        } catch {
-            presenter?.didReceiveUserDataProvider(error: error)
-        }
-    }
 }
 
 extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
         provideUserSettings()
-        provideSelectedMetaAccount()
     }
 }
 
 extension SettingsInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideUserSettings()
-        provideSelectedMetaAccount()
-    }
-
-    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
-        provideUserSettings()
-        provideSelectedMetaAccount()
     }
 }

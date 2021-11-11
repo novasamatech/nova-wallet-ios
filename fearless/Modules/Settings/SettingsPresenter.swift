@@ -3,18 +3,24 @@ import SoraFoundation
 
 final class SettingsPresenter {
     weak var view: SettingsViewProtocol?
-    var interactor: SettingsInteractorInputProtocol!
-    var wireframe: SettingsWireframeProtocol!
-
-    var logger: LoggerProtocol?
-
     let viewModelFactory: SettingsViewModelFactoryProtocol
-
     private(set) var userSettings: UserSettings?
-    private(set) var wallet: MetaAccountModel?
+    let interactor: SettingsInteractorInputProtocol
+    let wireframe: SettingsWireframeProtocol
+    let logger: LoggerProtocol?
 
-    init(viewModelFactory: SettingsViewModelFactoryProtocol) {
+    init(
+        viewModelFactory: SettingsViewModelFactoryProtocol,
+        interactor: SettingsInteractorInputProtocol,
+        wireframe: SettingsWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol?,
+        logger: LoggerProtocol? = nil
+    ) {
         self.viewModelFactory = viewModelFactory
+        self.interactor = interactor
+        self.wireframe = wireframe
+        self.logger = logger
+        self.localizationManager = localizationManager
     }
 
     private func updateView() {
@@ -35,12 +41,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         interactor.setup()
     }
 
-    func activateAccountDetails() {
-        guard let wallet = self.wallet else { return }
-        wireframe.showAccountDetails(for: wallet.identifier, from: view)
-    }
-
-    func activateOption(at _: UInt) {
+    func activateOption(at _: Int) {
 //        guard let option = ProfileOption(rawValue: index) else {
 //            return
 //        }
@@ -61,10 +62,6 @@ extension SettingsPresenter: SettingsPresenterProtocol {
 }
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
-    func didReceive(wallet: MetaAccountModel) {
-        self.wallet = wallet
-    }
-
     func didReceive(userSettings: UserSettings) {
         self.userSettings = userSettings
         updateView()

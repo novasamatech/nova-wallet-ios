@@ -6,8 +6,7 @@ protocol SettingsViewProtocol: ControllerBackedProtocol {
 
 protocol SettingsPresenterProtocol: AnyObject {
     func setup()
-    func activateAccountDetails()
-    func activateOption(at index: UInt)
+    func activateOption(at index: Int)
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
@@ -23,7 +22,6 @@ protocol SettingsInteractorInputProtocol: AnyObject {
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
     func didReceive(userSettings: UserSettings)
-    func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
 }
 
