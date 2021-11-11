@@ -15,43 +15,31 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [
-            (.general, [createAccountListViewModel(for: locale)]),
+            (.general, [createCommonViewViewModel(row: .wallets, locale: locale)]),
             (.preferences, [createLanguageViewModel(from: language, locale: locale)]),
-            (.security, [createChangePincode(for: locale)]),
-            (.about, [createAboutViewModel(for: locale)]),
+            (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
+            (.community, [
+                createCommonViewViewModel(row: .telegram, locale: locale),
+                createCommonViewViewModel(row: .twitter, locale: locale),
+                createCommonViewViewModel(row: .rateUs, locale: locale)
+            ]),
+            (.about, [
+                createCommonViewViewModel(row: .website, locale: locale),
+                createCommonViewViewModel(row: .github, locale: locale),
+                createCommonViewViewModel(row: .terms, locale: locale),
+                createCommonViewViewModel(row: .privacyPolicy, locale: locale)
+            ])
         ]
     }
 
-    private func createAccountListViewModel(for locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profileWalletsTitle(preferredLanguages: locale.rLanguages)
-        let viewModel = SettingsCellViewModel(
-            title: title,
-            icon: R.image.iconProfileAccounts()!,
-            accessoryTitle: nil
-        )
-        return viewModel
-    }
-
-    private func createConnectionListViewModel(for locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profileNetworkTitle(preferredLanguages: locale.rLanguages)
-
-        let viewModel = SettingsCellViewModel(
-            title: title,
-            icon: R.image.iconProfileNetworks()!,
-            accessoryTitle: nil
-        )
-
-        return viewModel
-    }
-
-    private func createChangePincode(for locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
-        return SettingsCellViewModel(
-            title: title,
-            icon: R.image.iconProfilePin()!,
+    private func createCommonViewViewModel(
+        row: SettingsRow,
+        locale: Locale
+    ) -> SettingsCellViewModel {
+        SettingsCellViewModel(
+            row: row,
+            title: row.title(for: locale),
+            icon: row.icon,
             accessoryTitle: nil
         )
     }
@@ -61,21 +49,12 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             .profileLanguageTitle(preferredLanguages: locale.rLanguages)
         let subtitle = language?.title(in: locale)?.capitalized
         let viewModel = SettingsCellViewModel(
+            row: .language,
             title: title,
             icon: R.image.iconProfileLanguage()!,
             accessoryTitle: subtitle
         )
 
         return viewModel
-    }
-
-    private func createAboutViewModel(for locale: Locale) -> SettingsCellViewModel {
-        let title = R.string.localizable
-            .profileAboutTitle(preferredLanguages: locale.rLanguages)
-        return SettingsCellViewModel(
-            title: title,
-            icon: R.image.iconProfileAbout()!,
-            accessoryTitle: nil
-        )
     }
 }

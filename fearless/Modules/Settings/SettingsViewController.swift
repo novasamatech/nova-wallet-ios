@@ -58,7 +58,8 @@ extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        presenter.activateOption(at: indexPath.row)
+        let row = sections[indexPath.section].1[indexPath.row].row
+        presenter.actionRow(row)
     }
 }
 

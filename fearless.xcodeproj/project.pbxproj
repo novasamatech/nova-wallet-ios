@@ -1589,6 +1589,7 @@
 		F462B35C260C86880005AB01 /* ViewHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F462B35B260C86880005AB01 /* ViewHolder.swift */; };
 		F462B364260C88050005AB01 /* UITableView+Reuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F462B363260C88050005AB01 /* UITableView+Reuse.swift */; };
 		F466AA85273D0D4200D14021 /* SettingsSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F466AA84273D0D4200D14021 /* SettingsSectionHeaderView.swift */; };
+		F466AA90273D188600D14021 /* SettingsRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F466AA8F273D188600D14021 /* SettingsRow.swift */; };
 		F469114B26392DD500E04D4D /* StakingBondMoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F469114A26392DD500E04D4D /* StakingBondMoreTests.swift */; };
 		F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46F9F8F2733E02B00FFA556 /* MoonbeamKeys.swift */; };
 		F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F471897526C297AA006487AD /* AnalyticsValidatorsPage.swift */; };
@@ -3314,6 +3315,7 @@
 		F462B35B260C86880005AB01 /* ViewHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewHolder.swift; sourceTree = "<group>"; };
 		F462B363260C88050005AB01 /* UITableView+Reuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Reuse.swift"; sourceTree = "<group>"; };
 		F466AA84273D0D4200D14021 /* SettingsSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionHeaderView.swift; sourceTree = "<group>"; };
+		F466AA8F273D188600D14021 /* SettingsRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRow.swift; sourceTree = "<group>"; };
 		F469114A26392DD500E04D4D /* StakingBondMoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingBondMoreTests.swift; sourceTree = "<group>"; };
 		F46F9F8F2733E02B00FFA556 /* MoonbeamKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoonbeamKeys.swift; sourceTree = "<group>"; };
 		F471897526C297AA006487AD /* AnalyticsValidatorsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsValidatorsPage.swift; sourceTree = "<group>"; };
@@ -4294,6 +4296,7 @@
 				8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */,
 				8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */,
 				F419FD79273D05B00061652C /* SettingsSection.swift */,
+				F466AA8F273D188600D14021 /* SettingsRow.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -9659,6 +9662,7 @@
 				8460E12925422C5A00826F55 /* WalletCompoundDetailsViewModel.swift in Sources */,
 				AEA0C8BE2681141700F9666F /* YourValidatorList+SelectedList.swift in Sources */,
 				AEE0C447272AB1D0009F9AD5 /* AddChainAccount+AccountCreatePresenter.swift in Sources */,
+				F466AA90273D188600D14021 /* SettingsRow.swift in Sources */,
 				8430AAE926022F69005B1066 /* StashState.swift in Sources */,
 				84644B3325685915004EAA4B /* WalletHistoryBackgroundView.swift in Sources */,
 				8428768424AE046300D91AD8 /* LanguageSelectionInteractor.swift in Sources */,

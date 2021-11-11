@@ -6,7 +6,7 @@ protocol SettingsViewProtocol: ControllerBackedProtocol {
 
 protocol SettingsPresenterProtocol: AnyObject {
     func setup()
-    func activateOption(at index: Int)
+    func actionRow(_ row: SettingsRow)
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {

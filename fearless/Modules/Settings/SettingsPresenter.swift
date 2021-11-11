@@ -41,23 +41,29 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         interactor.setup()
     }
 
-    func activateOption(at _: Int) {
-//        guard let option = ProfileOption(rawValue: index) else {
-//            return
-//        }
-//
-//        switch option {
-//        case .accountList:
-//            wireframe.showAccountSelection(from: view)
-//        case .connectionList:
-//            wireframe.showConnectionSelection(from: view)
-//        case .changePincode:
-//            wireframe.showPincodeChange(from: view)
-//        case .language:
-//            wireframe.showLanguageSelection(from: view)
-//        case .about:
-//            wireframe.showAbout(from: view)
-//        }
+    func actionRow(_ row: SettingsRow) {
+        switch row {
+        case .wallets:
+            wireframe.showAccountSelection(from: view)
+        case .language:
+            wireframe.showLanguageSelection(from: view)
+        case .changePin:
+            wireframe.showPincodeChange(from: view)
+        case .telegram:
+            wireframe.showAbout(from: view)
+        case .twitter:
+            wireframe.showAbout(from: view)
+        case .rateUs:
+            wireframe.showAbout(from: view)
+        case .website:
+            wireframe.showAbout(from: view)
+        case .github:
+            wireframe.showAbout(from: view)
+        case .terms:
+            wireframe.showAbout(from: view)
+        case .privacyPolicy:
+            wireframe.showAbout(from: view)
+        }
     }
 }
 
