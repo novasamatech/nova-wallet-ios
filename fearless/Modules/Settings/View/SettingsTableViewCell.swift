@@ -18,6 +18,14 @@ final class SettingsTableViewCell: UITableViewCell {
         return label
     }()
 
+    private let roundView: RoundedView = {
+        let view = RoundedView()
+        view.fillColor = R.color.color0x1D1D20()!
+        view.cornerRadius = 10
+        view.shadowOpacity = 0.0
+        return view
+    }()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -38,11 +46,10 @@ final class SettingsTableViewCell: UITableViewCell {
         ])
         iconImageView.snp.makeConstraints { $0.size.equalTo(24) }
 
-        let roundView = UIView()
-        roundView.backgroundColor = R.color.colorDarkGray()
         roundView.addSubview(content)
         content.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
+            make.bottom.top.equalToSuperview().inset(12)
         }
 
         contentView.addSubview(roundView)
