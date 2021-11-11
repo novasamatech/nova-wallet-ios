@@ -1,19 +1,19 @@
 import Foundation
 import SoraFoundation
 
-final class ProfilePresenter {
-    weak var view: ProfileViewProtocol?
-    var interactor: ProfileInteractorInputProtocol!
-    var wireframe: ProfileWireframeProtocol!
+final class SettingsPresenter {
+    weak var view: SettingsViewProtocol?
+    var interactor: SettingsInteractorInputProtocol!
+    var wireframe: SettingsWireframeProtocol!
 
     var logger: LoggerProtocol?
 
-    private(set) var viewModelFactory: ProfileViewModelFactoryProtocol
+    private(set) var viewModelFactory: SettingsViewModelFactoryProtocol
 
     private(set) var userSettings: UserSettings?
     private(set) var wallet: MetaAccountModel?
 
-    init(viewModelFactory: ProfileViewModelFactoryProtocol) {
+    init(viewModelFactory: SettingsViewModelFactoryProtocol) {
         self.viewModelFactory = viewModelFactory
     }
 
@@ -46,7 +46,7 @@ final class ProfilePresenter {
     }
 }
 
-extension ProfilePresenter: ProfilePresenterProtocol {
+extension SettingsPresenter: SettingsPresenterProtocol {
     func setup() {
         updateOptionsViewModel()
 
@@ -78,7 +78,7 @@ extension ProfilePresenter: ProfilePresenterProtocol {
     }
 }
 
-extension ProfilePresenter: ProfileInteractorOutputProtocol {
+extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
         self.wallet = wallet
     }
@@ -100,7 +100,7 @@ extension ProfilePresenter: ProfileInteractorOutputProtocol {
     }
 }
 
-extension ProfilePresenter: Localizable {
+extension SettingsPresenter: Localizable {
     func applyLocalization() {
         if view?.isSetup == true {
             updateAccountViewModel()

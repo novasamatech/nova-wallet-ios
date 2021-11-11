@@ -4,23 +4,23 @@ import SoraKeystore
 import IrohaCrypto
 import SubstrateSdk
 
-final class ProfileViewFactory: ProfileViewFactoryProtocol {
-    static func createView() -> ProfileViewProtocol? {
+struct SettingsViewFactory {
+    static func createView() -> SettingsViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let profileViewModelFactory = ProfileViewModelFactory(iconGenerator: PolkadotIconGenerator())
+        let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: PolkadotIconGenerator())
 
-        let view = ProfileViewController(nib: R.nib.profileViewController)
+        let view = SettingsViewController(nib: R.nib.profileViewController)
         view.iconGenerating = PolkadotIconGenerator()
 
-        let presenter = ProfilePresenter(viewModelFactory: profileViewModelFactory)
+        let presenter = SettingsPresenter(viewModelFactory: profileViewModelFactory)
 
-        let interactor = ProfileInteractor(
+        let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared
         )
 
-        let wireframe = ProfileWireframe()
+        let wireframe = SettingsWireframe()
 
         view.presenter = presenter
         presenter.view = view

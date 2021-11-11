@@ -273,18 +273,18 @@
 		84265E042523D20A005EEE2D /* WalletBaseAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84265E032523D20A005EEE2D /* WalletBaseAmountView.swift */; };
 		84265E062523D7BE005EEE2D /* WalletInputAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */; };
 		84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */; };
-		8428765224ADDE0200D91AD8 /* ProfilePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764324ADDE0200D91AD8 /* ProfilePresenter.swift */; };
+		8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */; };
 		8428765324ADDE0200D91AD8 /* ProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764424ADDE0200D91AD8 /* ProfileViewController.xib */; };
 		8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */; };
 		8428765524ADDE0200D91AD8 /* ProfileUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */; };
 		8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */; };
 		8428765724ADDE0200D91AD8 /* ProfileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */; };
 		8428765824ADDE0200D91AD8 /* ProfileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */; };
-		8428765924ADDE0200D91AD8 /* ProfileProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764D24ADDE0200D91AD8 /* ProfileProtocol.swift */; };
-		8428765A24ADDE0200D91AD8 /* ProfileViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764E24ADDE0200D91AD8 /* ProfileViewFactory.swift */; };
-		8428765B24ADDE0200D91AD8 /* ProfileWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764F24ADDE0200D91AD8 /* ProfileWireframe.swift */; };
-		8428765C24ADDE0200D91AD8 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428765024ADDE0200D91AD8 /* ProfileViewController.swift */; };
-		8428765D24ADDE0200D91AD8 /* ProfileInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428765124ADDE0200D91AD8 /* ProfileInteractor.swift */; };
+		8428765924ADDE0200D91AD8 /* SettingsProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764D24ADDE0200D91AD8 /* SettingsProtocols.swift */; };
+		8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */; };
+		8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */; };
+		8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428765024ADDE0200D91AD8 /* SettingsViewController.swift */; };
+		8428765D24ADDE0200D91AD8 /* SettingsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428765124ADDE0200D91AD8 /* SettingsInteractor.swift */; };
 		8428765F24ADE0BB00D91AD8 /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428765E24ADE0BB00D91AD8 /* UserSettings.swift */; };
 		8428766724ADF22000D91AD8 /* TransformAnimator+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428766624ADF22000D91AD8 /* TransformAnimator+Common.swift */; };
 		8428766924ADF27D00D91AD8 /* AuthorizationPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */; };
@@ -1990,18 +1990,18 @@
 		84265E032523D20A005EEE2D /* WalletBaseAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletBaseAmountView.swift; sourceTree = "<group>"; };
 		84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletInputAmountView.swift; sourceTree = "<group>"; };
 		84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryFacade.swift; sourceTree = "<group>"; };
-		8428764324ADDE0200D91AD8 /* ProfilePresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfilePresenter.swift; sourceTree = "<group>"; };
+		8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
 		8428764524ADDE0200D91AD8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ProfileViewController.xib; sourceTree = "<group>"; };
 		8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewModelFactory.swift; sourceTree = "<group>"; };
 		8428764824ADDE0200D91AD8 /* ProfileUserViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileUserViewModel.swift; sourceTree = "<group>"; };
 		8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCellViewModel.swift; sourceTree = "<group>"; };
 		8428764B24ADDE0200D91AD8 /* ProfileTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileTableViewCell.swift; sourceTree = "<group>"; };
 		8428764C24ADDE0200D91AD8 /* ProfileTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileTableViewCell.xib; sourceTree = "<group>"; };
-		8428764D24ADDE0200D91AD8 /* ProfileProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileProtocol.swift; sourceTree = "<group>"; };
-		8428764E24ADDE0200D91AD8 /* ProfileViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewFactory.swift; sourceTree = "<group>"; };
-		8428764F24ADDE0200D91AD8 /* ProfileWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileWireframe.swift; sourceTree = "<group>"; };
-		8428765024ADDE0200D91AD8 /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
-		8428765124ADDE0200D91AD8 /* ProfileInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileInteractor.swift; sourceTree = "<group>"; };
+		8428764D24ADDE0200D91AD8 /* SettingsProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsProtocols.swift; sourceTree = "<group>"; };
+		8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewFactory.swift; sourceTree = "<group>"; };
+		8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsWireframe.swift; sourceTree = "<group>"; };
+		8428765024ADDE0200D91AD8 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		8428765124ADDE0200D91AD8 /* SettingsInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsInteractor.swift; sourceTree = "<group>"; };
 		8428765E24ADE0BB00D91AD8 /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		8428766624ADF22000D91AD8 /* TransformAnimator+Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransformAnimator+Common.swift"; sourceTree = "<group>"; };
 		8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizationPresentable.swift; sourceTree = "<group>"; };
@@ -4280,13 +4280,13 @@
 				8493D0DD26FE5D0800A28008 /* Model */,
 				8428764624ADDE0200D91AD8 /* ViewModel */,
 				8428764A24ADDE0200D91AD8 /* View */,
-				8428764D24ADDE0200D91AD8 /* ProfileProtocol.swift */,
-				8428764324ADDE0200D91AD8 /* ProfilePresenter.swift */,
-				8428764E24ADDE0200D91AD8 /* ProfileViewFactory.swift */,
-				8428764F24ADDE0200D91AD8 /* ProfileWireframe.swift */,
-				8428765024ADDE0200D91AD8 /* ProfileViewController.swift */,
+				8428764D24ADDE0200D91AD8 /* SettingsProtocols.swift */,
+				8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */,
+				8428764E24ADDE0200D91AD8 /* SettingsViewFactory.swift */,
+				8428764F24ADDE0200D91AD8 /* SettingsWireframe.swift */,
+				8428765024ADDE0200D91AD8 /* SettingsViewController.swift */,
 				8428764424ADDE0200D91AD8 /* ProfileViewController.xib */,
-				8428765124ADDE0200D91AD8 /* ProfileInteractor.swift */,
+				8428765124ADDE0200D91AD8 /* SettingsInteractor.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -9145,7 +9145,7 @@
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
 				84FB1F69252694B600E0242B /* HistoryInfo.swift in Sources */,
 				84C74361251E4B5E009576C6 /* FeeType.swift in Sources */,
-				8428765224ADDE0200D91AD8 /* ProfilePresenter.swift in Sources */,
+				8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */,
 				F4F22987260DC4F300ACFDB8 /* StakingRewardDetailsSimpleLabelViewModel.swift in Sources */,
 				84DD5F77263DFD9C00425ACF /* WarningConditionViolation.swift in Sources */,
 				84D2F45425EF044B008B914D /* RecommendedValidatorListViewModel.swift in Sources */,
@@ -9381,7 +9381,7 @@
 				84F4A90A254CC863000CF0A3 /* KeystoreExportWrapper.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
-				8428765A24ADDE0200D91AD8 /* ProfileViewFactory.swift in Sources */,
+				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,
 				8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */,
 				842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */,
 				8490147724A94A37008F705E /* RootPresenter.swift in Sources */,
@@ -9422,7 +9422,7 @@
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletNewTransactionInserted.swift in Sources */,
-				8428765C24ADDE0200D91AD8 /* ProfileViewController.swift in Sources */,
+				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */,
 				84F30E9C25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift in Sources */,
@@ -9621,7 +9621,7 @@
 				AEA0C8C12681180900F9666F /* InitBondingCustomValidatorListWireframe.swift in Sources */,
 				842876A624AE049B00D91AD8 /* SelectableViewModelProtocol.swift in Sources */,
 				84D1F2FB260F51770077DDFE /* SwitchAccount.swift in Sources */,
-				8428765D24ADDE0200D91AD8 /* ProfileInteractor.swift in Sources */,
+				8428765D24ADDE0200D91AD8 /* SettingsInteractor.swift in Sources */,
 				849014C124AA87E4008F705E /* LocalAuthProtocol.swift in Sources */,
 				841E6B0A25EC1C140007DDFE /* ValidatorOperationFactory.swift in Sources */,
 				8472C5B5265CF9C500E2481B /* StakingRewardDestConfirmProtocols.swift in Sources */,
@@ -9722,7 +9722,7 @@
 				844CB57026F9CB3300396E13 /* CrowdloanLocalSubscriptionHandler.swift in Sources */,
 				843910B9253EFB8100E3C217 /* StorageKeyFactory+Implicit.swift in Sources */,
 				849ABE562627738900011A2A /* Mapping.swift in Sources */,
-				8428765B24ADDE0200D91AD8 /* ProfileWireframe.swift in Sources */,
+				8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */,
 				8430AAFB260230C5005B1066 /* ValidatorState.swift in Sources */,
 				84293E67261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift in Sources */,
 				8424308D265B1814003E07EC /* CrowdloanOperationFactory.swift in Sources */,
@@ -9802,7 +9802,7 @@
 				843910B4253EE52100E3C217 /* WalletBalanceChanged.swift in Sources */,
 				84CEAAF526D7ADF20021B881 /* KeystoreMigrator.swift in Sources */,
 				84FAB0692542EBDE00319F74 /* SearchData+Contacts.swift in Sources */,
-				8428765924ADDE0200D91AD8 /* ProfileProtocol.swift in Sources */,
+				8428765924ADDE0200D91AD8 /* SettingsProtocols.swift in Sources */,
 				84293E41261AF05E008E5EDD /* HistoryItemTableViewCell.swift in Sources */,
 				AEE5FB0326415E40002B8FDC /* StakingRebondSetupWireframe.swift in Sources */,
 				84D8F15D24D8178000AF43E9 /* IconWithTitleViewModel.swift in Sources */,

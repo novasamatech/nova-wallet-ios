@@ -148,7 +148,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createProfileController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        let viewController = ProfileViewFactory.createView()?.controller ?? UIViewController()
+        guard let viewController = SettingsViewFactory.createView()?.controller else { return nil }
 
         let navigationController = FearlessNavigationController(rootViewController: viewController)
 

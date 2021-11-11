@@ -3,7 +3,7 @@ import SoraFoundation
 import SubstrateSdk
 import IrohaCrypto
 
-protocol ProfileViewModelFactoryProtocol: AnyObject {
+protocol SettingsViewModelFactoryProtocol: AnyObject {
     func createUserViewModel(from settings: UserSettings, locale: Locale) -> ProfileUserViewModelProtocol
 
     func createOptionViewModels(
@@ -21,7 +21,7 @@ enum ProfileOption: UInt, CaseIterable {
     case connectionList
 }
 
-final class ProfileViewModelFactory: ProfileViewModelFactoryProtocol {
+final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
     let iconGenerator: IconGenerating
 
     init(iconGenerator: IconGenerating) {

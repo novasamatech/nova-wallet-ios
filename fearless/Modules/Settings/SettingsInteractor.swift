@@ -6,8 +6,8 @@ enum ProfileInteractorError: Error {
     case noSelectedAccount
 }
 
-final class ProfileInteractor {
-    weak var presenter: ProfileInteractorOutputProtocol?
+final class SettingsInteractor {
+    weak var presenter: SettingsInteractorOutputProtocol?
 
     let selectedWalletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
@@ -54,7 +54,7 @@ final class ProfileInteractor {
     }
 }
 
-extension ProfileInteractor: ProfileInteractorInputProtocol {
+extension SettingsInteractor: SettingsInteractorInputProtocol {
     func setup() {
         eventCenter.add(observer: self, dispatchIn: .main)
         provideUserSettings()
@@ -62,7 +62,7 @@ extension ProfileInteractor: ProfileInteractorInputProtocol {
     }
 }
 
-extension ProfileInteractor: EventVisitorProtocol {
+extension SettingsInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideUserSettings()
         provideSelectedMetaAccount()

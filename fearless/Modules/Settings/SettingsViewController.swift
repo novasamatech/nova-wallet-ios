@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SubstrateSdk
 
-final class ProfileViewController: UIViewController {
+final class SettingsViewController: UIViewController {
     private enum Constants {
         static let optionCellHeight: CGFloat = 48.0
         static let sectionCellHeight: CGFloat = 56.0
@@ -10,7 +10,7 @@ final class ProfileViewController: UIViewController {
         static let headerInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 16, right: 16.0)
     }
 
-    var presenter: ProfilePresenterProtocol!
+    var presenter: SettingsPresenterProtocol!
 
     var iconGenerating: IconGenerating?
 
@@ -49,7 +49,7 @@ final class ProfileViewController: UIViewController {
     }
 }
 
-extension ProfileViewController: UITableViewDataSource {
+extension SettingsViewController: UITableViewDataSource {
     func numberOfSections(in _: UITableView) -> Int {
         1
     }
@@ -107,7 +107,7 @@ extension ProfileViewController: UITableViewDataSource {
     }
 }
 
-extension ProfileViewController: UITableViewDelegate {
+extension SettingsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -119,7 +119,7 @@ extension ProfileViewController: UITableViewDelegate {
     }
 }
 
-extension ProfileViewController: ProfileViewProtocol {
+extension SettingsViewController: SettingsViewProtocol {
     func didLoad(userViewModel: ProfileUserViewModelProtocol) {
         self.userViewModel = userViewModel
         userIcon = try? iconGenerating?.generateFromAddress(userViewModel.details)
@@ -137,7 +137,7 @@ extension ProfileViewController: ProfileViewProtocol {
     }
 }
 
-extension ProfileViewController: Localizable {
+extension SettingsViewController: Localizable {
     private func setupLocalization() {
         tableView.reloadData()
     }
