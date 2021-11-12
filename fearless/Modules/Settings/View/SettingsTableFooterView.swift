@@ -4,7 +4,7 @@ final class SettingsTableFooterView: UITableViewHeaderFooterView {
     let appNameLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTransparentText()
-        label.font = .p3Paragraph
+        label.font = .p2Paragraph
         return label
     }()
 
@@ -22,7 +22,7 @@ final class SettingsTableFooterView: UITableViewHeaderFooterView {
     }
 
     private func setupLayout() {
-        let logoIcon = UIImageView(image: R.image.logo())
+        let logoIcon = UIImageView(image: R.image.novaGrayLogo())
         let content = UIView.vStack(alignment: .center, spacing: 8, [logoIcon, appNameLabel])
         logoIcon.snp.makeConstraints { $0.size.equalTo(32) }
 

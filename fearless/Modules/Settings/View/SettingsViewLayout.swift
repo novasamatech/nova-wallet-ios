@@ -3,12 +3,12 @@ import SnapKit
 
 final class SettingsViewLayout: UIView {
     let headerView = SettingsTableHeaderView()
+    let footerView = SettingsTableFooterView()
 
     let tableView: UITableView = {
         let view = UITableView()
         view.backgroundColor = R.color.colorBlack()
         view.separatorColor = R.color.colorDarkGray()
-        view.tableFooterView = UIView()
         return view
     }()
 
@@ -27,7 +27,8 @@ final class SettingsViewLayout: UIView {
         super.layoutSubviews()
 
         headerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 51))
-        tableView.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
+        footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 122))
+        tableView.contentInset = .init(top: 0, left: 0, bottom: 122, right: 0)
     }
 
     private func setupLayout() {
@@ -36,5 +37,6 @@ final class SettingsViewLayout: UIView {
             make.edges.equalToSuperview()
         }
         tableView.tableHeaderView = headerView
+        tableView.tableFooterView = footerView
     }
 }
