@@ -8,10 +8,9 @@ final class ProfileViewFactory: ProfileViewFactoryProtocol {
     static func createView() -> ProfileViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let profileViewModelFactory = ProfileViewModelFactory(iconGenerator: PolkadotIconGenerator())
+        let profileViewModelFactory = ProfileViewModelFactory(iconGenerator: NovaIconGenerator())
 
         let view = ProfileViewController(nib: R.nib.profileViewController)
-        view.iconGenerating = PolkadotIconGenerator()
 
         let presenter = ProfilePresenter(viewModelFactory: profileViewModelFactory)
 

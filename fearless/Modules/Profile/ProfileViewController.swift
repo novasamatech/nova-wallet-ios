@@ -12,8 +12,6 @@ final class ProfileViewController: UIViewController {
 
     var presenter: ProfilePresenterProtocol!
 
-    var iconGenerating: IconGenerating?
-
     @IBOutlet private var tableView: UITableView!
 
     private(set) var optionViewModels: [ProfileOptionViewModelProtocol] = []
@@ -122,9 +120,9 @@ extension ProfileViewController: UITableViewDelegate {
 extension ProfileViewController: ProfileViewProtocol {
     func didLoad(userViewModel: ProfileUserViewModelProtocol) {
         self.userViewModel = userViewModel
-        userIcon = try? iconGenerating?.generateFromAddress(userViewModel.details)
+        userIcon = userViewModel.icon?
             .imageWithFillColor(
-                .white,
+                .clear,
                 size: UIConstants.normalAddressIconSize,
                 contentScale: UIScreen.main.scale
             )
