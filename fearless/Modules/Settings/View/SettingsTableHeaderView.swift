@@ -8,7 +8,16 @@ final class SettingsTableHeaderView: UIView {
         return label
     }()
 
-    let walletButton = UIButton()
+    let accountDetailsView: DetailsTriangularedView = {
+        let detailsView = UIFactory().createDetailsView(with: .singleTitle, filled: false)
+        detailsView.titleLabel.lineBreakMode = .byTruncatingMiddle
+        detailsView.titleLabel.font = .p1Paragraph
+        detailsView.actionImage = R.image.iconMore()
+        detailsView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        detailsView.strokeColor = R.color.colorStrokeGray()!
+        detailsView.borderWidth = 1
+        return detailsView
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,13 +32,14 @@ final class SettingsTableHeaderView: UIView {
     }
 
     private func setupLayout() {
-        let content = UIView.hStack([titleLabel, UIView(), walletButton])
+        let content = UIView.vStack(spacing: 16, [titleLabel, accountDetailsView])
+        accountDetailsView.snp.makeConstraints { $0.size.equalTo(52) }
+
         addSubview(content)
         content.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(10)
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview()
         }
-        walletButton.snp.makeConstraints { $0.size.equalTo(40) }
     }
 }

@@ -8,7 +8,6 @@ final class SettingsViewController: UIViewController, ViewHolder {
     var presenter: SettingsPresenterProtocol!
 
     private var sections: [(SettingsSection, [SettingsCellViewModel])] = []
-    private var userViewModel: ProfileUserViewModelProtocol?
 
     override func loadView() {
         view = SettingsViewLayout()
@@ -19,7 +18,11 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
         applyLocalization()
         configureTableView()
-        rootView.headerView.walletButton.addTarget(self, action: #selector(handleButtonAction), for: .touchUpInside)
+        rootView.headerView.accountDetailsView.addTarget(
+            self,
+            action: #selector(handleAccountAction),
+            for: .touchUpInside
+        )
         presenter.setup()
     }
 
@@ -31,7 +34,7 @@ final class SettingsViewController: UIViewController, ViewHolder {
     }
 
     @objc
-    private func handleButtonAction() {
+    private func handleAccountAction() {
         presenter.handleWalletAction()
     }
 }
@@ -88,8 +91,9 @@ extension SettingsViewController: UITableViewDelegate {
 }
 
 extension SettingsViewController: SettingsViewProtocol {
-    func setWalletIcon(_ icon: UIImage) {
-        rootView.headerView.walletButton.setImage(icon, for: .normal)
+    func didLoad(userViewModel: SettingsAccountViewModel) {
+        rootView.headerView.accountDetailsView.iconImage = userViewModel.icon
+        rootView.headerView.accountDetailsView.title = userViewModel.name
     }
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {

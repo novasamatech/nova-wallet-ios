@@ -10,13 +10,15 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         self.iconGenerator = iconGenerator
     }
 
-    func createWalletIcon(for accountId: AccountId) -> UIImage? {
-        try? iconGenerator.generateFromAccountId(accountId)
+    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel {
+        let icon = try? iconGenerator.generateFromAccountId(wallet.substrateAccountId)
             .imageWithFillColor(
                 .clear,
-                size: CGSize(width: 40, height: 40),
+                size: UIConstants.normalAddressIconSize,
                 contentScale: UIScreen.main.scale
             )
+
+        return SettingsAccountViewModel(name: wallet.name, icon: icon)
     }
 
     func createSectionViewModels(

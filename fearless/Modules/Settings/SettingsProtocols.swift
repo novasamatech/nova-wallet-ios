@@ -3,7 +3,7 @@ import UIKit.UIImage
 
 protocol SettingsViewProtocol: ControllerBackedProtocol {
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])])
-    func setWalletIcon(_ icon: UIImage)
+    func didLoad(userViewModel: SettingsAccountViewModel)
 }
 
 protocol SettingsPresenterProtocol: AnyObject {
@@ -14,7 +14,7 @@ protocol SettingsPresenterProtocol: AnyObject {
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
-    func createWalletIcon(for accountId: AccountId) -> UIImage?
+    func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel
 
     func createSectionViewModels(
         language: Language?,

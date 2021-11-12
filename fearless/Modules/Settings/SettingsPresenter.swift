@@ -37,6 +37,12 @@ final class SettingsPresenter {
         view?.reload(sections: sectionViewModels)
     }
 
+    private func updateAccountView() {
+        guard let wallet = wallet else { return }
+        let viewModel = viewModelFactory.createAccountViewModel(for: wallet)
+        view?.didLoad(userViewModel: viewModel)
+    }
+
     private func show(url: URL) {
         if let view = view {
             wireframe.showWeb(url: url, from: view, style: .automatic)
@@ -88,10 +94,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
     func didReceive(wallet: MetaAccountModel) {
-        if let icon = viewModelFactory.createWalletIcon(for: wallet.substrateAccountId) {
-            view?.setWalletIcon(icon)
-        }
         self.wallet = wallet
+        updateAccountView()
     }
 
     func didReceiveUserDataProvider(error: Error) {
