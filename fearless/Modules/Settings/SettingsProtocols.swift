@@ -1,7 +1,9 @@
 import Foundation
+import UIKit.UIImage
 
 protocol SettingsViewProtocol: ControllerBackedProtocol {
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])])
+    func setWalletIcon(_ icon: UIImage)
 }
 
 protocol SettingsPresenterProtocol: AnyObject {
@@ -11,6 +13,8 @@ protocol SettingsPresenterProtocol: AnyObject {
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
+    func createWalletIcon(for accountId: AccountId) -> UIImage?
+
     func createSectionViewModels(
         language: Language?,
         locale: Locale
@@ -22,7 +26,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
-    func didReceive(userSettings: UserSettings)
+    func didReceive(accountId: AccountId)
     func didReceiveUserDataProvider(error: Error)
 }
 

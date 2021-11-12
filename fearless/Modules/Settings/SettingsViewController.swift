@@ -83,9 +83,8 @@ extension SettingsViewController: UITableViewDelegate {
 }
 
 extension SettingsViewController: SettingsViewProtocol {
-    func didLoad(userViewModel: ProfileUserViewModelProtocol) {
-        self.userViewModel = userViewModel
-        // TODO: setup icon
+    func setWalletIcon(_ icon: UIImage) {
+        rootView.headerView.walletButton.setImage(icon, for: .normal)
     }
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {

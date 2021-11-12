@@ -5,7 +5,6 @@ final class SettingsPresenter {
     weak var view: SettingsViewProtocol?
     let viewModelFactory: SettingsViewModelFactoryProtocol
     let config: ApplicationConfigProtocol
-    private(set) var userSettings: UserSettings?
     let interactor: SettingsInteractorInputProtocol
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
@@ -82,9 +81,10 @@ extension SettingsPresenter: SettingsPresenterProtocol {
 }
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
-    func didReceive(userSettings: UserSettings) {
-        self.userSettings = userSettings
-        updateView()
+    func didReceive(accountId: AccountId) {
+        if let icon = viewModelFactory.createWalletIcon(for: accountId) {
+            view?.setWalletIcon(icon)
+        }
     }
 
     func didReceiveUserDataProvider(error: Error) {

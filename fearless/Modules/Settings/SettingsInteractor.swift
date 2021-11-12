@@ -25,18 +25,7 @@ final class SettingsInteractor {
             guard let wallet = selectedWalletSettings.value else {
                 throw ProfileInteractorError.noSelectedAccount
             }
-
-            // TODO: Apply total account value logic instead
-            let genericAddress = try wallet.substrateAccountId.toAddress(
-                using: ChainFormat.substrate(42)
-            )
-
-            let userSettings = UserSettings(
-                userName: wallet.name,
-                details: genericAddress
-            )
-
-            presenter?.didReceive(userSettings: userSettings)
+            presenter?.didReceive(accountId: wallet.substrateAccountId)
         } catch {
             presenter?.didReceiveUserDataProvider(error: error)
         }

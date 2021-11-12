@@ -8,6 +8,8 @@ final class SettingsTableHeaderView: UIView {
         return label
     }()
 
+    let walletButton = UIButton()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -21,12 +23,13 @@ final class SettingsTableHeaderView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        let content = UIView.hStack([titleLabel, UIView(), walletButton])
+        addSubview(content)
+        content.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(10)
-            make.height.equalTo(41)
-            make.leading.equalToSuperview().inset(16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview()
         }
+        walletButton.snp.makeConstraints { $0.size.equalTo(40) }
     }
 }

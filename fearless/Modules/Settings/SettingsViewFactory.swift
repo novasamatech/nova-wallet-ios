@@ -8,7 +8,7 @@ struct SettingsViewFactory {
     static func createView() -> SettingsViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: PolkadotIconGenerator())
+        let profileViewModelFactory = SettingsViewModelFactory(iconGenerator: NovaIconGenerator())
 
         let interactor = SettingsInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
