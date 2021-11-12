@@ -26,9 +26,9 @@ final class SettingsViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        headerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 119))
+        headerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 127))
         footerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: 122))
-        tableView.contentInset = .init(top: 0, left: 0, bottom: 16, right: 0)
+        tableView.contentInset = .init(top: 0, left: 0, bottom: footerView.frame.height + 16, right: 0)
     }
 
     private func setupLayout() {

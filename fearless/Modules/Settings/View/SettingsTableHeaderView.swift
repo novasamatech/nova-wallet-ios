@@ -32,8 +32,8 @@ final class SettingsTableHeaderView: UIView {
     }
 
     private func setupLayout() {
-        let content = UIView.vStack(spacing: 16, [titleLabel, accountDetailsView])
-        accountDetailsView.snp.makeConstraints { $0.size.equalTo(52) }
+        let content = UIView.vStack(spacing: 16, [.hStack([titleLabel, UIView()]), accountDetailsView])
+        accountDetailsView.snp.makeConstraints { $0.height.equalTo(52) }
 
         addSubview(content)
         content.snp.makeConstraints { make in
