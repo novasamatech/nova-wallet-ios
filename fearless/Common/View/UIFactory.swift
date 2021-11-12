@@ -262,10 +262,10 @@ final class UIFactory: UIFactoryProtocol {
 
         return createActionsAccessoryView(
             for: toolBar,
-               actions: actions,
-               doneAction: doneAction,
-               target: toolBar,
-               spacing: spacing
+            actions: actions,
+            doneAction: doneAction,
+            target: toolBar,
+            spacing: spacing
         )
     }
 
