@@ -1567,6 +1567,7 @@
 		F44CD8F426242825005DDF23 /* PayoutRewardsService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44CD8F326242825005DDF23 /* PayoutRewardsService+Fetch.swift */; };
 		F452D895273D22CF008F7295 /* SettingsTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */; };
 		F452D89A273D237E008F7295 /* SettingsViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F452D899273D237E008F7295 /* SettingsViewLayout.swift */; };
+		F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F452D8C9273E58D5008F7295 /* SettingsTableFooterView.swift */; };
 		F458D3982642911B0055CB75 /* ControllerAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F458D3972642911B0055CB75 /* ControllerAccountViewModel.swift */; };
 		F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F458D3C02642B7D80055CB75 /* LearnMoreView.swift */; };
 		F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4617409260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift */; };
@@ -3279,6 +3280,7 @@
 		F44CD8F826244EC3005DDF23 /* PayoutRewardsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutRewardsServiceTests.swift; sourceTree = "<group>"; };
 		F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableHeaderView.swift; sourceTree = "<group>"; };
 		F452D899273D237E008F7295 /* SettingsViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewLayout.swift; sourceTree = "<group>"; };
+		F452D8C9273E58D5008F7295 /* SettingsTableFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableFooterView.swift; sourceTree = "<group>"; };
 		F458D3972642911B0055CB75 /* ControllerAccountViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControllerAccountViewModel.swift; sourceTree = "<group>"; };
 		F458D3C02642B7D80055CB75 /* LearnMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnMoreView.swift; sourceTree = "<group>"; };
 		F4617409260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationViewLayout.swift; sourceTree = "<group>"; };
@@ -4279,6 +4281,7 @@
 				F452D894273D22CF008F7295 /* SettingsTableHeaderView.swift */,
 				8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */,
 				F466AA84273D0D4200D14021 /* SettingsSectionHeaderView.swift */,
+				F452D8C9273E58D5008F7295 /* SettingsTableFooterView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9146,6 +9149,7 @@
 				84DD5F64263DFAB700425ACF /* ErrorConditionViolation.swift in Sources */,
 				8428768324AE046300D91AD8 /* LanguageSelectionViewController.swift in Sources */,
 				8493D3E62705994200157009 /* StakingSharedState.swift in Sources */,
+				F452D8CA273E58D5008F7295 /* SettingsTableFooterView.swift in Sources */,
 				8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */,
 				84038FEE26FFBA6200C73F3F /* PriceLocalSubscriptionHandler.swift in Sources */,
 				84293E5D261BB7B3008E5EDD /* TransactionType+Wallet.swift in Sources */,
