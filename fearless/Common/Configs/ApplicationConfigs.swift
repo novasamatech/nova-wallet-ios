@@ -106,7 +106,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #if F_RELEASE
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains.json")!
         #else
-            return URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v2/chains_dev.json")!
         #endif
     }
 
