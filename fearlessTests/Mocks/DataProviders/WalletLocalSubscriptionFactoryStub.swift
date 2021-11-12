@@ -10,8 +10,6 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         self.accountInfo = balance.map { value in
             AccountInfo(
                 nonce: 0,
-                consumers: 1,
-                providers: 2,
                 data: AccountData(
                     free: value,
                     reserved: 0,
