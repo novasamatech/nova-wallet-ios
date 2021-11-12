@@ -51,7 +51,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         let viewModel = SettingsCellViewModel(
             row: .language,
             title: title,
-            icon: R.image.iconProfileLanguage()!,
+            icon: SettingsRow.language.icon,
             accessoryTitle: subtitle
         )
 

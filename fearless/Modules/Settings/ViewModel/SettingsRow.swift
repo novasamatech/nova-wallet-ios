@@ -43,21 +43,21 @@ extension SettingsRow {
     var icon: UIImage? {
         switch self {
         case .wallets:
-            return R.image.iconProfileAccounts()!
+            return R.image.iconWallets()
         case .language:
-            return R.image.iconProfileLanguage()!
+            return R.image.iconLanguage()
         case .changePin:
-            return R.image.iconProfilePin()!
+            return R.image.iconPinCode()
         case .telegram:
-            return R.image.iconAboutTg()!
+            return R.image.iconTelegram()
         case .twitter:
-            return R.image.iconTwitter()!
+            return R.image.iconTwitter()
         case .rateUs:
-            return R.image.iconStar()!
+            return R.image.iconStar()
         case .website:
-            return R.image.iconAboutWeb()!
+            return R.image.iconWebsite()
         case .github:
-            return R.image.iconAboutGit()!
+            return R.image.iconGithub()
         case .terms:
             return R.image.iconTerms()!
         case .privacyPolicy:
