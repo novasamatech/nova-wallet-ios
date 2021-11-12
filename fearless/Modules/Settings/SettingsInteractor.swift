@@ -43,4 +43,8 @@ extension SettingsInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         provideUserSettings()
     }
+
+    func processSelectedUsernameChanged(event _: SelectedUsernameChanged) {
+        provideUserSettings()
+    }
 }
