@@ -274,7 +274,7 @@
 		84265E062523D7BE005EEE2D /* WalletInputAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */; };
 		84282FBD26D05A54002CA322 /* ChainRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */; };
 		8428765224ADDE0200D91AD8 /* SettingsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */; };
-		8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */; };
+		8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764724ADDE0200D91AD8 /* SettingsViewModelFactory.swift */; };
 		8428765524ADDE0200D91AD8 /* SettingsAccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764824ADDE0200D91AD8 /* SettingsAccountViewModel.swift */; };
 		8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */; };
 		8428765724ADDE0200D91AD8 /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */; };
@@ -1977,7 +1977,7 @@
 		84265E052523D7BE005EEE2D /* WalletInputAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletInputAmountView.swift; sourceTree = "<group>"; };
 		84282FBC26D05A54002CA322 /* ChainRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryFacade.swift; sourceTree = "<group>"; };
 		8428764324ADDE0200D91AD8 /* SettingsPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsPresenter.swift; sourceTree = "<group>"; };
-		8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewModelFactory.swift; sourceTree = "<group>"; };
+		8428764724ADDE0200D91AD8 /* SettingsViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModelFactory.swift; sourceTree = "<group>"; };
 		8428764824ADDE0200D91AD8 /* SettingsAccountViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsAccountViewModel.swift; sourceTree = "<group>"; };
 		8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsCellViewModel.swift; sourceTree = "<group>"; };
 		8428764B24ADDE0200D91AD8 /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
@@ -4265,7 +4265,7 @@
 		8428764624ADDE0200D91AD8 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				8428764724ADDE0200D91AD8 /* ProfileViewModelFactory.swift */,
+				8428764724ADDE0200D91AD8 /* SettingsViewModelFactory.swift */,
 				8428764824ADDE0200D91AD8 /* SettingsAccountViewModel.swift */,
 				8428764924ADDE0200D91AD8 /* SettingsCellViewModel.swift */,
 				F419FD79273D05B00061652C /* SettingsSection.swift */,
@@ -9748,7 +9748,7 @@
 				844EFB5F265FCE180090ACB1 /* CrowdloanContributionInteractor.swift in Sources */,
 				845BB8C025E4508800E5FCDC /* SS58FactoryExtensions.swift in Sources */,
 				F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */,
-				8428765424ADDE0200D91AD8 /* ProfileViewModelFactory.swift in Sources */,
+				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
 				F40966C326B297D6008CD244 /* AnalyticsContainerViewLayout.swift in Sources */,
 				84E1CD02260DCC62001E81B5 /* SwitchAccount+OnboardingMainWireframe.swift in Sources */,
 				AEC167062667671B0058F572 /* RecommendedValidatorListViewModelFactory.swift in Sources */,
