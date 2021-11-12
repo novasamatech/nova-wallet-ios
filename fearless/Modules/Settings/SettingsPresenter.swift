@@ -9,6 +9,8 @@ final class SettingsPresenter {
     let wireframe: SettingsWireframeProtocol
     let logger: LoggerProtocol?
 
+    private var wallet: MetaAccountModel?
+
     init(
         viewModelFactory: SettingsViewModelFactoryProtocol,
         config: ApplicationConfigProtocol,
@@ -78,13 +80,19 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.privacyPolicyURL)
         }
     }
+
+    func handleWalletAction() {
+        guard let wallet = wallet else { return }
+        wireframe.showAccountDetails(for: wallet.identifier, from: view)
+    }
 }
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {
-    func didReceive(accountId: AccountId) {
-        if let icon = viewModelFactory.createWalletIcon(for: accountId) {
+    func didReceive(wallet: MetaAccountModel) {
+        if let icon = viewModelFactory.createWalletIcon(for: wallet.substrateAccountId) {
             view?.setWalletIcon(icon)
         }
+        self.wallet = wallet
     }
 
     func didReceiveUserDataProvider(error: Error) {

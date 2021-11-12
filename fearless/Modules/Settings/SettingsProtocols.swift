@@ -10,6 +10,7 @@ protocol SettingsPresenterProtocol: AnyObject {
     var appNameText: String { get }
     func setup()
     func actionRow(_ row: SettingsRow)
+    func handleWalletAction()
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
@@ -26,7 +27,7 @@ protocol SettingsInteractorInputProtocol: AnyObject {
 }
 
 protocol SettingsInteractorOutputProtocol: AnyObject {
-    func didReceive(accountId: AccountId)
+    func didReceive(wallet: MetaAccountModel)
     func didReceiveUserDataProvider(error: Error)
 }
 

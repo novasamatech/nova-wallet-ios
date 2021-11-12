@@ -25,7 +25,7 @@ final class SettingsInteractor {
             guard let wallet = selectedWalletSettings.value else {
                 throw ProfileInteractorError.noSelectedAccount
             }
-            presenter?.didReceive(accountId: wallet.substrateAccountId)
+            presenter?.didReceive(wallet: wallet)
         } catch {
             presenter?.didReceiveUserDataProvider(error: error)
         }

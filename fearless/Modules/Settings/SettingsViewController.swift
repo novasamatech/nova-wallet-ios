@@ -19,7 +19,7 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
         applyLocalization()
         configureTableView()
-
+        rootView.headerView.walletButton.addTarget(self, action: #selector(handleButtonAction), for: .touchUpInside)
         presenter.setup()
     }
 
@@ -28,6 +28,11 @@ final class SettingsViewController: UIViewController, ViewHolder {
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(SettingsTableViewCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
+    }
+
+    @objc
+    private func handleButtonAction() {
+        presenter.handleWalletAction()
     }
 }
 
