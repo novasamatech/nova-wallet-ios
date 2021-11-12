@@ -42,8 +42,22 @@ extension SettingsViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithType(SettingsTableViewCell.self)!
-        let cellViewModel = sections[indexPath.section].1[indexPath.row]
+        let viewModels = sections[indexPath.section].1
+        let cellViewModel = viewModels[indexPath.row]
         cell.bind(viewModel: cellViewModel)
+
+        if viewModels.count > 1 {
+            if indexPath.row == viewModels.count - 1 {
+                cell.roundView.roundingCorners = [.bottomLeft, .bottomRight]
+            } else if indexPath.row == 0 {
+                cell.roundView.roundingCorners = [.topLeft, .topRight]
+            } else {
+                cell.roundView.roundingCorners = []
+            }
+        } else {
+            cell.roundView.roundingCorners = .allCorners
+        }
+
         return cell
     }
 
@@ -55,7 +69,7 @@ extension SettingsViewController: UITableViewDataSource {
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        56 // UITableView.automaticDimension
+        56
     }
 }
 

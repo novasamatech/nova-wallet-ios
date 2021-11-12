@@ -9,7 +9,6 @@ final class SettingsViewLayout: UIView {
         view.backgroundColor = R.color.colorBlack()
         view.separatorColor = R.color.colorDarkGray()
         view.tableFooterView = UIView()
-        view.alwaysBounceVertical = false
         return view
     }()
 

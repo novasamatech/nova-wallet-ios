@@ -18,7 +18,7 @@ final class SettingsTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let roundView: RoundedView = {
+    let roundView: RoundedView = {
         let view = RoundedView()
         view.fillColor = R.color.color0x1D1D20()!
         view.cornerRadius = 10
@@ -30,6 +30,7 @@ final class SettingsTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         selectionStyle = .none
+        separatorInset = .init(top: 0, left: 32, bottom: 0, right: 32)
         setupLayout()
     }
 
