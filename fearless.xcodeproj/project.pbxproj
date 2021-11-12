@@ -53,6 +53,7 @@
 		2A90206E273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */; };
 		2A902071273E72EA00F2D584 /* TransferConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A902070273E72EA00F2D584 /* TransferConstants.swift */; };
 		2A902073273E751E00F2D584 /* DummySelectedAssetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A902072273E751E00F2D584 /* DummySelectedAssetView.swift */; };
+		2A902075273E766400F2D584 /* NetworkFeeView+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A902074273E766400F2D584 /* NetworkFeeView+Protocol.swift */; };
 		2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */; };
 		2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */; };
 		2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */; };
@@ -1770,6 +1771,7 @@
 		2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkFeeConfirmView+Protocol.swift"; sourceTree = "<group>"; };
 		2A902070273E72EA00F2D584 /* TransferConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConstants.swift; sourceTree = "<group>"; };
 		2A902072273E751E00F2D584 /* DummySelectedAssetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DummySelectedAssetView.swift; sourceTree = "<group>"; };
+		2A902074273E766400F2D584 /* NetworkFeeView+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkFeeView+Protocol.swift"; sourceTree = "<group>"; };
 		2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingAPIService.swift; sourceTree = "<group>"; };
 		2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountChanged.swift; sourceTree = "<group>"; };
 		2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockType.swift; sourceTree = "<group>"; };
@@ -5931,6 +5933,7 @@
 				F43A596926D520E0005E973D /* EmptyStateViewCell.swift */,
 				F4B39C6A2732791900BB6E10 /* RadioButton.swift */,
 				2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */,
+				2A902074273E766400F2D584 /* NetworkFeeView+Protocol.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9575,6 +9578,7 @@
 				84FAB0672542D06B00319F74 /* WalletContactOperationFactory.swift in Sources */,
 				8423B0DE251A438F00B8687C /* AddConnectionError.swift in Sources */,
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
+				2A902075273E766400F2D584 /* NetworkFeeView+Protocol.swift in Sources */,
 				84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */,
 				84F30EEC25FFF40C00039D09 /* Nomination.swift in Sources */,
 				AE89720D25F12AF8008EC414 /* ValidatorInfoViewModelFactory.swift in Sources */,
