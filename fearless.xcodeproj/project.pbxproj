@@ -51,6 +51,7 @@
 		2A66CFAF25D10EDF0006E4C1 /* PhishingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */; };
 		2A84E87825D425750006FE9C /* AlertControllerFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A84E87725D425750006FE9C /* AlertControllerFactory.swift */; };
 		2A90206E273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */; };
+		2A902071273E72EA00F2D584 /* TransferConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A902070273E72EA00F2D584 /* TransferConstants.swift */; };
 		2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */; };
 		2AC7BC7E2731604C001D99B0 /* ChainAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */; };
 		2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */; };
@@ -1766,6 +1767,7 @@
 		2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingItem.swift; sourceTree = "<group>"; };
 		2A84E87725D425750006FE9C /* AlertControllerFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertControllerFactory.swift; sourceTree = "<group>"; };
 		2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkFeeConfirmView+Protocol.swift"; sourceTree = "<group>"; };
+		2A902070273E72EA00F2D584 /* TransferConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferConstants.swift; sourceTree = "<group>"; };
 		2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubPhishingAPIService.swift; sourceTree = "<group>"; };
 		2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountChanged.swift; sourceTree = "<group>"; };
 		2AC7BC7F27319FC7001D99B0 /* BalanceLockType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceLockType.swift; sourceTree = "<group>"; };
@@ -3757,6 +3759,14 @@
 				26635BD49FBF19DB1253906E /* NetworkInfoTests.swift */,
 			);
 			path = NetworkInfo;
+			sourceTree = "<group>";
+		};
+		2A90206F273E72DE00F2D584 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				2A902070273E72EA00F2D584 /* TransferConstants.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		2AB7A7FD25CD0E3E00767D87 /* GitHubPhishingService */ = {
@@ -5999,6 +6009,7 @@
 		849014FD24AB698B008F705E /* Wallet */ = {
 			isa = PBXGroup;
 			children = (
+				2A90206F273E72DE00F2D584 /* Model */,
 				84364D53252FAD5C00281F9A /* AccountDetails */,
 				8490150924AB8A3A008F705E /* AccountList */,
 				8494D8612524752500614D8F /* Commands */,
@@ -6015,12 +6026,12 @@
 				8490152824ABCFDA008F705E /* WalletCommandDecorator.swift */,
 				8490152A24ABD0A2008F705E /* WalletCommonConfigurator.swift */,
 				849014FE24AB69A4008F705E /* WalletContextFactory.swift */,
+				841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */,
 				8490150E24AB8A3A008F705E /* WalletEmptyStateDataSource.swift */,
 				8490150824AB8A3A008F705E /* WalletEmptyStateDataSource+Module.swift */,
 				8419378025442FEE00CFA50C /* WalletQRCoderFactory.swift */,
 				84FB1F642526879200E0242B /* WalletSingleProviderIdFactory.swift */,
 				8490152024ABC721008F705E /* WalletStaticImageViewModel.swift */,
-				841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */,
 			);
 			path = Wallet;
 			sourceTree = "<group>";
@@ -10032,6 +10043,7 @@
 				7D281FEA78E2E5F44990C184 /* AccountImportPresenter.swift in Sources */,
 				6C56AB4AE63AB2DC73DE98E0 /* AccountImportInteractor.swift in Sources */,
 				3AA2B9B1E34C88EF2671358D /* AccountImportViewController.swift in Sources */,
+				2A902071273E72EA00F2D584 /* TransferConstants.swift in Sources */,
 				F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */,
 				84F51072263BFBF5005D15AE /* SingleValueSubscriptionHandler.swift in Sources */,
 				501347BEA67CD30FE484358E /* AccountImportViewFactory.swift in Sources */,
