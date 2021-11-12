@@ -46,10 +46,12 @@ final class SettingsTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
+        let arrowIcon = UIImageView(image: R.image.iconChevronRight())
         let content = UIView.hStack(alignment: .center, spacing: 12, [
-            iconImageView, titleLabel, UIView(), subtitleLabel
+            iconImageView, titleLabel, UIView(), subtitleLabel, arrowIcon
         ])
         iconImageView.snp.makeConstraints { $0.size.equalTo(24) }
+        arrowIcon.snp.makeConstraints { $0.size.equalTo(16) }
 
         roundView.addSubview(content)
         content.snp.makeConstraints { make in
