@@ -99,7 +99,7 @@ extension SettingsViewController: Localizable {
         if isViewLoaded {
             rootView.headerView.titleLabel.text = R.string.localizable
                 .tabbarSettingsTitle(preferredLanguages: selectedLocale.rLanguages)
-            rootView.footerView.appNameLabel.text = "Nova Wallet v2.0"
+            rootView.footerView.appNameLabel.text = presenter.appNameText
         }
     }
 }

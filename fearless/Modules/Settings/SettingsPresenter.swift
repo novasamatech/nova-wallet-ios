@@ -44,6 +44,10 @@ final class SettingsPresenter {
 }
 
 extension SettingsPresenter: SettingsPresenterProtocol {
+    var appNameText: String {
+        "\(config.appName) \(config.version)"
+    }
+
     func setup() {
         updateView()
 

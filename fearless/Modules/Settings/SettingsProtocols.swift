@@ -5,6 +5,7 @@ protocol SettingsViewProtocol: ControllerBackedProtocol {
 }
 
 protocol SettingsPresenterProtocol: AnyObject {
+    var appNameText: String { get }
     func setup()
     func actionRow(_ row: SettingsRow)
 }
