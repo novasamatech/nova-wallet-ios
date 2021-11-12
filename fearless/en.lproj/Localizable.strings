@@ -546,3 +546,4 @@ will appear here";
 "wallet.account.locks.democracy" = "Democracy";
 "wallet.account.locks.elections" = "Elections";
 "wallet.balances.widget.title" = "Your balance";
+"common.max" = "max";
