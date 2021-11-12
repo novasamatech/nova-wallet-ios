@@ -26,9 +26,9 @@ extension SettingsRow {
         case .telegram:
             return R.string.localizable.aboutTelegram(preferredLanguages: locale.rLanguages)
         case .twitter:
-            return "Twitter"
+            return R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
         case .rateUs:
-            return "Rate us"
+            return R.string.localizable.settingsRateUs(preferredLanguages: locale.rLanguages)
         case .website:
             return R.string.localizable.aboutWebsite(preferredLanguages: locale.rLanguages)
         case .github:

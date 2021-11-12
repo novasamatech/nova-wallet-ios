@@ -9,18 +9,18 @@ enum SettingsSection {
 }
 
 extension SettingsSection {
-    func title(for _: Locale) -> String {
+    func title(for locale: Locale) -> String {
         switch self {
         case .general:
-            return "general".uppercased()
+            return R.string.localizable.settingsGeneral(preferredLanguages: locale.rLanguages).uppercased()
         case .preferences:
-            return "preferences".uppercased()
+            return R.string.localizable.settingsPreferences(preferredLanguages: locale.rLanguages).uppercased()
         case .security:
-            return "security".uppercased()
+            return R.string.localizable.settingsSecurity(preferredLanguages: locale.rLanguages).uppercased()
         case .community:
-            return "community".uppercased()
+            return R.string.localizable.settingsCommunity(preferredLanguages: locale.rLanguages).uppercased()
         case .about:
-            return "about".uppercased()
+            return R.string.localizable.aboutTitle(preferredLanguages: locale.rLanguages).uppercased()
         }
     }
 }
