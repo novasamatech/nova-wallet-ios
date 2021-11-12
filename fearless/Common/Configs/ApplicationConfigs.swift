@@ -6,6 +6,7 @@ protocol ApplicationConfigProtocol {
     var privacyPolicyURL: URL { get }
     var supportEmail: String { get }
     var websiteURL: URL { get }
+    var appStoreURL: URL { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
@@ -41,6 +42,10 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var websiteURL: URL {
         URL(string: "https://novawallet.io")!
+    }
+
+    var appStoreURL: URL {
+        URL(string: "https://apps.apple.com/us/app/nova-wallet-polkadot-kusama/id1591993285")!
     }
 
     var socialURL: URL {

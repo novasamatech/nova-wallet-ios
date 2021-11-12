@@ -46,7 +46,7 @@ final class SettingsPresenter {
 
 extension SettingsPresenter: SettingsPresenterProtocol {
     var appNameText: String {
-        "\(config.appName) \(config.version)"
+        "\(config.appName) v\(config.version)"
     }
 
     func setup() {
@@ -68,8 +68,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         case .twitter:
             show(url: config.twitterURL)
         case .rateUs:
-            // TODO:
-            show(url: config.websiteURL)
+            show(url: config.appStoreURL)
         case .website:
             show(url: config.websiteURL)
         case .github:
