@@ -556,7 +556,7 @@
 		8467FD3E24EAD66F005D486C /* validEd25519Keystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */; };
 		8467FD3F24EAD66F005D486C /* validEcdsaKeystore.json in Resources */ = {isa = PBXBuildFile; fileRef = 8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */; };
 		8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4024ED3C72005D486C /* AlignableContentControl.swift */; };
-		8467FD4C24EEA081005D486C /* ProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4B24EEA081005D486C /* ProfileTests.swift */; };
+		8467FD4C24EEA081005D486C /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4B24EEA081005D486C /* SettingsTests.swift */; };
 		8467FD5124EFD11E005D486C /* UserDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */; };
 		8467FD5324EFD210005D486C /* UserDataStorageFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5224EFD210005D486C /* UserDataStorageFacade.swift */; };
 		8467FD5524EFD254005D486C /* StorageFacadeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467FD5424EFD254005D486C /* StorageFacadeProtocol.swift */; };
@@ -2263,7 +2263,7 @@
 		8467FD3C24EAD66F005D486C /* validEd25519Keystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEd25519Keystore.json; sourceTree = "<group>"; };
 		8467FD3D24EAD66F005D486C /* validEcdsaKeystore.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = validEcdsaKeystore.json; sourceTree = "<group>"; };
 		8467FD4024ED3C72005D486C /* AlignableContentControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignableContentControl.swift; sourceTree = "<group>"; };
-		8467FD4B24EEA081005D486C /* ProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileTests.swift; sourceTree = "<group>"; };
+		8467FD4B24EEA081005D486C /* SettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTests.swift; sourceTree = "<group>"; };
 		8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = UserDataModel.xcdatamodel; sourceTree = "<group>"; };
 		8467FD5224EFD210005D486C /* UserDataStorageFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataStorageFacade.swift; sourceTree = "<group>"; };
 		8467FD5424EFD254005D486C /* StorageFacadeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageFacadeProtocol.swift; sourceTree = "<group>"; };
@@ -3942,7 +3942,7 @@
 				8D1ECC1A61E3F7E33FC44649 /* NetworkManagement */,
 				842D1E9124D20CB400C30A7A /* OnboardingMain */,
 				846CA43124E3C6AA004F1B14 /* Pincode */,
-				8467FD4A24EEA06F005D486C /* Profile */,
+				8467FD4A24EEA06F005D486C /* Settings */,
 				846CA43524E3DB4D004F1B14 /* Root */,
 				84F43BAE25DEF65D00AEDA56 /* Staking */,
 				3DD9FDD642A97C4CA267604A /* UsernameSetup */,
@@ -5049,12 +5049,12 @@
 			path = Helper;
 			sourceTree = "<group>";
 		};
-		8467FD4A24EEA06F005D486C /* Profile */ = {
+		8467FD4A24EEA06F005D486C /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				8467FD4B24EEA081005D486C /* ProfileTests.swift */,
+				8467FD4B24EEA081005D486C /* SettingsTests.swift */,
 			);
-			path = Profile;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		8467FD4E24EFD0EC005D486C /* Storage */ = {
@@ -10520,7 +10520,7 @@
 				84F81318265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift in Sources */,
 				846CA43324E3C6C3004F1B14 /* PincodeSetupTests.swift in Sources */,
 				A76B05966CE772DD4B822A3C /* AccountCreateTests.swift in Sources */,
-				8467FD4C24EEA081005D486C /* ProfileTests.swift in Sources */,
+				8467FD4C24EEA081005D486C /* SettingsTests.swift in Sources */,
 				8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */,
 				847CD46626416D0900E1542F /* SlashesOperationFactoryStub.swift in Sources */,
 				84F4388525DA4F2A00AEDA56 /* NetworkMockManager.swift in Sources */,
