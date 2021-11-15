@@ -12,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WalletBaseAmountView" customModule="fearless" customModuleProvider="target">
             <connections>
-                <outlet property="animatedTextField" destination="Da6-qJ-5bo" id="U2y-p6-XW4"/>
+                <outlet property="amountInputView" destination="Da6-qJ-5bo" id="D1L-sD-XHd"/>
                 <outlet property="borderView" destination="UAl-FZ-pd1" id="4Sa-Cm-Hhs"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="hpj-dq-wPw"/>
                 <outlet property="fieldBackgroundView" destination="frw-fd-iMq" id="gLT-y7-Acv"/>
@@ -45,7 +45,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="frw-fd-iMq" customClass="TriangularedView" customModule="fearless" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="16" width="375" height="52"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Da6-qJ-5bo" customClass="AnimatedTextField" customModule="SoraUI">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Da6-qJ-5bo" customClass="AmountInputView" customModule="fearless" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="52"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>

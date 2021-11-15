@@ -127,5 +127,6 @@ final class TransferConfigurator {
             .with(accessoryViewFactory: WalletSingleActionAccessoryFactory.self)
             .with(operationDefinitionFactory: definitionFactory)
             .with(resultValidator: TransferValidator())
+            .with(accessoryOverlayMode: .overlay)
     }
 }
