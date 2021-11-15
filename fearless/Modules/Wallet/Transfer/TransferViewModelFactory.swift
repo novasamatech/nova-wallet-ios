@@ -8,18 +8,15 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
     let explorers: [ChainModel.Explorer]?
     let assets: [WalletAsset]
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     init(
         assets: [WalletAsset],
         explorers: [ChainModel.Explorer]?,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
         self.assets = assets
         self.explorers = explorers
-        self.amountFormatterFactory = amountFormatterFactory
         self.balanceViewModelFactory = balanceViewModelFactory
     }
 
@@ -146,10 +143,8 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             return nil
         }
 
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset).value(for: locale)
-
         let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
-        let balance = formatter.stringFromDecimal(balanceContext.available) ?? ""
+        let balance = balanceViewModelFactory.amountFromValue(balanceContext.available).value(for: locale)
 
         let amountInputViewModel = balanceViewModelFactory.createBalanceInputViewModel(
             inputState.amount

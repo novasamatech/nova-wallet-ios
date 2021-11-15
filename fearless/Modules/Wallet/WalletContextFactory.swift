@@ -160,7 +160,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
-        // FIXME: NOVA-3277 Remove amount formatter factory
         let amountFormatterFactory = AmountFormatterFactory()
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
@@ -190,7 +189,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let transferConfigurator = TransferConfigurator(
             assets: accountSettings.assets,
             explorers: chain.explorers,
-            amountFormatterFactory: amountFormatterFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager
         )
@@ -198,8 +196,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         transferConfigurator.configure(builder: builder.transferModuleBuilder)
 
         let confirmConfigurator = TransferConfirmConfigurator(
+            chainAccount: chainAccountResponse,
             chainAsset: chainAsset,
-            amountFormatterFactory: assetBalanceFormatterFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            localizationManager: localizationManager
         )
 
         confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)

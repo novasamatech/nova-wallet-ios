@@ -94,7 +94,6 @@ final class TransferConfigurator {
     init(
         assets: [WalletAsset],
         explorers: [ChainModel.Explorer]?,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
 
@@ -102,7 +101,6 @@ final class TransferConfigurator {
         viewModelFactory = TransferViewModelFactory(
             assets: assets,
             explorers: explorers,
-            amountFormatterFactory: amountFormatterFactory,
             balanceViewModelFactory: balanceViewModelFactory
         )
         self.localizationManager = localizationManager
