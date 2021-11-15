@@ -6,16 +6,16 @@ import SubstrateSdk
 final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
+    let chainAsset: ChainAsset
     let explorers: [ChainModel.Explorer]?
-    let assets: [WalletAsset]
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     init(
-        assets: [WalletAsset],
+        chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
-        self.assets = assets
+        self.chainAsset = chainAsset
         self.explorers = explorers
         self.balanceViewModelFactory = balanceViewModelFactory
     }
@@ -67,16 +67,10 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
     func createAssetSelectionTitle(
         _: TransferInputState,
-        payload: TransferPayload,
-        locale: Locale
+        payload _: TransferPayload,
+        locale _: Locale
     ) throws -> String? {
-        guard let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId })
-        else {
-            return nil
-        }
-
-        return asset.name.value(for: locale)
+        nil
     }
 
     func createReceiverViewModel(
@@ -133,15 +127,10 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
     func createAmountViewModel(
         _ inputState: TransferInputState,
-        payload: TransferPayload,
+        payload _: TransferPayload,
         locale: Locale
     ) throws -> AmountInputViewModelProtocol? {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId })
-        else {
-            return nil
-        }
+        let assetInfo = chainAsset.assetDisplayInfo
 
         let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
         let balance = balanceViewModelFactory.amountFromValue(balanceContext.available).value(for: locale)
@@ -154,11 +143,13 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let priceData = getPriceDataFrom(inputState)
 
+        let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
+
         let viewModel: RichAmountInputViewModelProtocol = RichAmountInputViewModel(
             amountInputViewModel: amountInputViewModel,
             balanceViewModelFactory: balanceViewModelFactory,
-            symbol: asset.symbol,
-            icon: nil, // FIXME: NOVA-3277 Provide icon
+            symbol: assetInfo.symbol,
+            iconViewModel: iconViewModel,
             balance: balance,
             priceData: priceData,
             decimalBalance: balanceContext.available,

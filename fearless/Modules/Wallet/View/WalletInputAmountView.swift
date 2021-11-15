@@ -65,8 +65,8 @@ extension WalletInputAmountView: AmountInputViewProtocol {
         fieldBackgroundView.applyEnabledStyle()
 
         if let viewModel = inputViewModel as? RichAmountInputViewModelProtocol {
-            amountInputView.assetIcon = viewModel.icon
             amountInputView.symbol = viewModel.symbol
+            viewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
         }
 
         applyLocalization()

@@ -9,7 +9,7 @@ protocol RichAmountInputViewModelProtocol: AmountInputViewModelProtocol {
     var decimalBalance: Decimal? { get }
     var fee: Decimal? { get }
     var symbol: String { get }
-    var icon: UIImage? { get }
+    var iconViewModel: ImageViewModelProtocol? { get }
     var balance: String? { get }
 
     func didSelectPercentage(_ percentage: Float)
@@ -20,7 +20,7 @@ final class RichAmountInputViewModel: RichAmountInputViewModelProtocol {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     let symbol: String
-    let icon: UIImage?
+    let iconViewModel: ImageViewModelProtocol?
     let balance: String?
     let priceData: PriceData?
     let decimalBalance: Decimal?
@@ -67,7 +67,7 @@ final class RichAmountInputViewModel: RichAmountInputViewModelProtocol {
         amountInputViewModel: AmountInputViewModelProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         symbol: String,
-        icon: UIImage?,
+        iconViewModel: ImageViewModelProtocol?,
         balance: String?,
         priceData: PriceData?,
         decimalBalance: Decimal?,
@@ -77,7 +77,7 @@ final class RichAmountInputViewModel: RichAmountInputViewModelProtocol {
         self.amountInputViewModel = amountInputViewModel
         self.balanceViewModelFactory = balanceViewModelFactory
         self.symbol = symbol
-        self.icon = icon
+        self.iconViewModel = iconViewModel
         self.balance = balance
         self.priceData = priceData
         self.decimalBalance = decimalBalance

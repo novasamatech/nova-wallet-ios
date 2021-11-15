@@ -187,7 +187,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
         let transferConfigurator = TransferConfigurator(
-            assets: accountSettings.assets,
+            chainAsset: chainAsset,
             explorers: chain.explorers,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager

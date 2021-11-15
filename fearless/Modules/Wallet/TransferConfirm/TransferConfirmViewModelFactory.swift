@@ -28,7 +28,7 @@ final class TransferConfirmViewModelFactory {
         return PriceData(price: price.stringWithPointSeparator, usdDayChange: nil)
     }
 
-    func populateSender(
+    private func populateSender(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload _: ConfirmationPayload,
         locale: Locale
@@ -69,7 +69,7 @@ final class TransferConfirmViewModelFactory {
         viewModelList.append(WalletFormSeparatedViewModel(content: viewModel, borderType: [.none]))
     }
 
-    func populateReceiver(
+    private func populateReceiver(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
         locale: Locale
@@ -114,7 +114,7 @@ final class TransferConfirmViewModelFactory {
         viewModelList.append(WalletFormSeparatedViewModel(content: viewModel, borderType: [.bottom]))
     }
 
-    func populateSendingAmount(
+    private func populateSendingAmount(
         in viewModelList: inout [WalletFormViewBindingProtocol],
         payload: ConfirmationPayload,
         chainAsset: ChainAsset,
@@ -145,7 +145,6 @@ final class TransferConfirmViewModelFactory {
         let viewModel = RichAmountDisplayViewModel(
             title: title,
             amount: inputBalance.amount,
-            icon: nil,
             symbol: assetInfo.symbol,
             balance: displayBalance,
             price: inputBalance.price,

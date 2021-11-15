@@ -10,7 +10,6 @@ protocol RichAmountDisplayViewModelProtocol: WalletFormViewBindingProtocol,
 struct RichAmountDisplayViewModel: RichAmountDisplayViewModelProtocol {
     let title: String
     let amount: String
-    let icon: UIImage? // TODO: NOVA-3277 Remove
     let symbol: String
     let balance: String?
     let price: String?

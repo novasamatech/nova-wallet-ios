@@ -92,14 +92,14 @@ final class TransferConfigurator {
     let viewModelFactory: TransferViewModelFactory
 
     init(
-        assets: [WalletAsset],
+        chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
 
     ) {
         viewModelFactory = TransferViewModelFactory(
-            assets: assets,
+            chainAsset: chainAsset,
             explorers: explorers,
             balanceViewModelFactory: balanceViewModelFactory
         )
@@ -107,8 +107,9 @@ final class TransferConfigurator {
     }
 
     func configure(builder: TransferModuleBuilderProtocol) {
+        let assetSymbol = viewModelFactory.chainAsset.asset.symbol
         let title = LocalizableResource { locale in
-            R.string.localizable.walletSendTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.walletSendTokenTitle(assetSymbol, preferredLanguages: locale.rLanguages)
         }
 
         let definitionFactory = TransferDefinitionFactory(

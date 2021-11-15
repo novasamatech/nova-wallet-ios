@@ -30,8 +30,8 @@ extension WalletDisplayAmountView: WalletFormBordering {
 
         amountInputView.triangularedBackgroundView?.applyDisabledStyle()
 
-        amountInputView.assetIcon = viewModel.icon
         amountInputView.symbol = viewModel.symbol
+        viewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
 
         amountInputView.priceText = viewModel.price
         amountInputView.balanceText = viewModel.balance
