@@ -24,7 +24,7 @@ final class ControllerAccountViewLayout: UIView {
 
     let controllerHintView = UIFactory.default.createHintView()
 
-    let learnMoreView = UIFactory.default.createFearlessLearnMoreView()
+    let learnMoreView = UIFactory.default.createNovaLearnMoreView()
 
     let currentAccountIsControllerHint: HintView = {
         let hintView = HintView()

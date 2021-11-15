@@ -84,9 +84,9 @@ extension UIFactoryProtocol {
         createAccountView(for: .options, filled: false)
     }
 
-    func createFearlessLearnMoreView() -> LearnMoreView {
+    func createNovaLearnMoreView() -> LearnMoreView {
         let view = createLearnMoreView()
-        // view.iconView.image = R.image.iconFearlessSmall()
+        view.iconView.image = R.image.iconNovaSmall()
         return view
     }
 }
