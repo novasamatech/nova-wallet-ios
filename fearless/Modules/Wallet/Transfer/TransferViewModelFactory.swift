@@ -141,8 +141,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     ) throws -> AmountInputViewModelProtocol? {
         guard
             let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId }),
-            let assetId = WalletAssetId(rawValue: asset.identifier)
+            .first(where: { $0.identifier == payload.receiveInfo.assetId })
         else {
             return nil
         }
@@ -160,7 +159,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let priceData = getPriceDataFrom(inputState)
 
-        return RichAmountInputViewModel(
+        let viewModel: RichAmountInputViewModelProtocol = RichAmountInputViewModel(
             amountInputViewModel: amountInputViewModel,
             balanceViewModelFactory: balanceViewModelFactory,
             symbol: asset.symbol,
@@ -171,5 +170,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             fee: fee,
             limit: TransferConstants.maxAmount
         )
+
+        return viewModel
     }
 }

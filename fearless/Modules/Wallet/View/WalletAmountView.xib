@@ -12,10 +12,10 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WalletBaseAmountView" customModule="fearless" customModuleProvider="target">
             <connections>
-                <outlet property="amountInputView" destination="Da6-qJ-5bo" id="D1L-sD-XHd"/>
-                <outlet property="borderView" destination="UAl-FZ-pd1" id="4Sa-Cm-Hhs"/>
-                <outlet property="contentView" destination="iN0-l3-epB" id="hpj-dq-wPw"/>
-                <outlet property="fieldBackgroundView" destination="frw-fd-iMq" id="gLT-y7-Acv"/>
+                <outlet property="amountInputView" destination="Da6-qJ-5bo" id="vYh-PO-aE2"/>
+                <outlet property="borderView" destination="UAl-FZ-pd1" id="KEl-9o-evf"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="kKN-PM-Mn1"/>
+                <outlet property="fieldBackgroundView" destination="frw-fd-iMq" id="dNo-FE-c5x"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
