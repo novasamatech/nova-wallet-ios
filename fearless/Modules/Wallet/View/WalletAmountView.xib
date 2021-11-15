@@ -43,10 +43,10 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="frw-fd-iMq" customClass="TriangularedView" customModule="fearless" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="16" width="375" height="52"/>
+                    <rect key="frame" x="0.0" y="6" width="375" height="72"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Da6-qJ-5bo" customClass="AmountInputView" customModule="fearless" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="52"/>
+                            <rect key="frame" x="0.0" y="0.0" width="375" height="72"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_topInset">
@@ -95,7 +95,7 @@
                         <constraint firstAttribute="trailing" secondItem="Da6-qJ-5bo" secondAttribute="trailing" id="B8a-GB-JaG"/>
                         <constraint firstAttribute="bottom" secondItem="Da6-qJ-5bo" secondAttribute="bottom" id="JUw-ak-wl9"/>
                         <constraint firstItem="Da6-qJ-5bo" firstAttribute="leading" secondItem="frw-fd-iMq" secondAttribute="leading" id="VSo-J4-5yO"/>
-                        <constraint firstAttribute="height" constant="52" id="vEE-ag-HGN"/>
+                        <constraint firstAttribute="height" constant="72" id="vEE-ag-HGN"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="sideLength">
