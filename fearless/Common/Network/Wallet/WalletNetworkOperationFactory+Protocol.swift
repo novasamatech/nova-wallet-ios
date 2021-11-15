@@ -37,6 +37,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let chainAssetId = ChainAssetId(walletId: info.assetId),
             let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
             let chain = chains[chainAssetId.chainId],
+            let assetModel = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+            let priceId = assetModel.priceId,
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -81,13 +83,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
 
-        let priceOperation: CompoundOperationWrapper<PriceData?> = {
-            if let assetId = WalletAssetId(rawValue: asset.identifier) {
-                return CoingeckoPriceSource(assetId: assetId).fetchOperation()
-            } else {
-                return CompoundOperationWrapper.createWithResult(nil)
-            }
-        }()
+        let priceOperation: CompoundOperationWrapper<PriceData?> =
+            CoingeckoPriceSource(priceId: priceId).fetchOperation()
 
         let mapOperation: ClosureOperation<TransferMetaData?> = ClosureOperation {
             let paymentInfo = try infoWrapper.targetOperation.extractNoCancellableResultData()
