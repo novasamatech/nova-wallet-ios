@@ -1,6 +1,13 @@
 import UIKit
+import SoraUI
 
 final class CrowdloanTableViewCell: UITableViewCell {
+    private let backgroundBlurView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        view.isUserInteractionEnabled = false
+        return view
+    }()
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
@@ -110,6 +117,14 @@ final class CrowdloanTableViewCell: UITableViewCell {
         )
     }
 
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        backgroundBlurView.overlayView.fillColor = highlighted ?
+            R.color.colorAccent()!.withAlphaComponent(0.3)
+            : .clear
+    }
+
     private func setupLayout() {
         let content = UIView.vStack(
             spacing: 8,
@@ -142,16 +157,14 @@ final class CrowdloanTableViewCell: UITableViewCell {
         progressBackgroundView.addSubview(progressView)
         progressBackgroundView.snp.makeConstraints { $0.height.equalTo(5) }
 
-        let background = TriangularedBlurView()
-        background.isUserInteractionEnabled = false
-        contentView.addSubview(background)
-        background.snp.makeConstraints { make in
+        contentView.addSubview(backgroundBlurView)
+        backgroundBlurView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().inset(8)
             make.bottom.equalToSuperview()
         }
 
-        background.addSubview(content)
+        backgroundBlurView.addSubview(content)
         content.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.top.equalToSuperview().inset(12)
