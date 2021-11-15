@@ -15,7 +15,7 @@ final class StakingRewardDestSetupLayout: UIView {
 
     let networkFeeView = UIFactory.default.createNetworkFeeView()
     let actionButton: TriangularedButton = UIFactory.default.createMainActionButton()
-    let learnMoreView = UIFactory.default.createFearlessLearnMoreView()
+    let learnMoreView = UIFactory.default.createNovaLearnMoreView()
 
     var locale = Locale.current {
         didSet {
