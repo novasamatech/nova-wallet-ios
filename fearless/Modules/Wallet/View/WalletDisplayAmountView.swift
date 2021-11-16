@@ -24,6 +24,9 @@ extension WalletDisplayAmountView: WalletFormBordering {
     func bind(viewModel: RichAmountDisplayViewModel) {
         self.viewModel = viewModel
 
+        viewModel.iconViewModel?.cancel(on: amountInputView.iconView)
+        amountInputView.iconView.image = nil
+
         amountInputView.title = viewModel.title
         amountInputView.textField.text = viewModel.amount
         amountInputView.isUserInteractionEnabled = false
