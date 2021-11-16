@@ -73,34 +73,12 @@ final class CrowdloansViewModelFactory {
             }
         }()
 
-        let (progressText, progressValue, percentsText): (String, Double, String) = {
-            if
-                let raised = Decimal.fromSubstrateAmount(
-                    model.fundInfo.raised,
-                    precision: chainAsset.asset.assetPrecision
-                ),
-                let cap = Decimal.fromSubstrateAmount(
-                    model.fundInfo.cap,
-                    precision: chainAsset.asset.assetPrecision
-                ),
-                let raisedString = formatters.display.stringFromDecimal(raised),
-                let totalString = formatters.token.stringFromDecimal(cap) {
-                let text = R.string.localizable.crowdloanProgressFormat(
-                    raisedString,
-                    totalString,
-                    preferredLanguages: locale.rLanguages
-                )
-                let value: Double = {
-                    guard cap != 0 else { return 0 }
-                    return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
-                }()
-
-                let percents = percentFormatter.string(from: NSNumber(value: value)) ?? ""
-                return (text, value, percents)
-            } else {
-                return ("", 0.0, "")
-            }
-        }()
+        let (progressText, progressValue, percentsText) = progressValueAndText(
+            fundInfo: model.fundInfo,
+            precision: chainAsset.asset.assetPrecision,
+            formatters: formatters,
+            locale: locale
+        )
 
         let iconViewModel: ImageViewModelProtocol = {
             if let urlString = displayInfo?.icon, let url = URL(string: urlString) {
@@ -131,6 +109,40 @@ final class CrowdloansViewModelFactory {
         viewInfo: CrowdloansViewInfo
     ) -> Bool {
         viewInfo.contributions[crowdloan.fundInfo.trieIndex]?.balance != nil
+    }
+
+    private func progressValueAndText(
+        fundInfo: CrowdloanFunds,
+        precision: Int16,
+        formatters: Formatters,
+        locale: Locale
+    ) -> (String, Double, String) {
+        if
+            let raised = Decimal.fromSubstrateAmount(
+                fundInfo.raised,
+                precision: precision
+            ),
+            let cap = Decimal.fromSubstrateAmount(
+                fundInfo.cap,
+                precision: precision
+            ),
+            let raisedString = formatters.display.stringFromDecimal(raised),
+            let totalString = formatters.token.stringFromDecimal(cap) {
+            let text = R.string.localizable.crowdloanProgressFormat(
+                raisedString,
+                totalString,
+                preferredLanguages: locale.rLanguages
+            )
+            let value: Double = {
+                guard cap != 0 else { return 0 }
+                return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
+            }()
+
+            let percents = percentFormatter.string(from: NSNumber(value: value)) ?? ""
+            return (text, value, percents)
+        } else {
+            return ("", 0.0, "")
+        }
     }
 
     private func createActiveCrowdloanViewModel(
@@ -178,7 +190,8 @@ final class CrowdloansViewModelFactory {
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
             progressPercentsText: commonContent.progressPercentsText,
-            progressValue: commonContent.progressValue
+            progressValue: commonContent.progressValue,
+            isCompleted: false
         )
     }
 
@@ -199,26 +212,12 @@ final class CrowdloansViewModelFactory {
             return nil
         }
 
-        let progressPercentsText: String = {
-            if
-                let raised = Decimal.fromSubstrateAmount(
-                    model.fundInfo.raised,
-                    precision: chainAsset.asset.assetPrecision
-                ),
-                let cap = Decimal.fromSubstrateAmount(
-                    model.fundInfo.cap,
-                    precision: chainAsset.asset.assetPrecision
-                ) {
-                let value: Double = {
-                    guard cap != 0 else { return 0 }
-                    return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
-                }()
-
-                return percentFormatter.string(from: NSNumber(value: value)) ?? ""
-            } else {
-                return ""
-            }
-        }()
+        let (_, progressValue, percentsText) = progressValueAndText(
+            fundInfo: model.fundInfo,
+            precision: chainAsset.asset.assetPrecision,
+            formatters: formatters,
+            locale: locale
+        )
 
         return CrowdloanCellViewModel(
             paraId: model.paraId,
@@ -227,8 +226,9 @@ final class CrowdloansViewModelFactory {
             description: commonContent.details,
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
-            progressPercentsText: progressPercentsText,
-            progressValue: 0.0
+            progressPercentsText: percentsText,
+            progressValue: progressValue,
+            isCompleted: true
         )
     }
 
