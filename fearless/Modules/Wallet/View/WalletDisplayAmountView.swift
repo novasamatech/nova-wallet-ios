@@ -22,10 +22,10 @@ extension WalletDisplayAmountView: WalletFormBordering {
     }
 
     func bind(viewModel: RichAmountDisplayViewModel) {
-        self.viewModel = viewModel
-
-        viewModel.iconViewModel?.cancel(on: amountInputView.iconView)
+        self.viewModel?.iconViewModel?.cancel(on: amountInputView.iconView)
         amountInputView.iconView.image = nil
+
+        self.viewModel = viewModel
 
         amountInputView.title = viewModel.title
         amountInputView.textField.text = viewModel.amount
