@@ -101,6 +101,12 @@
 "profile.wallets.title" = "Кошельки";
 "profile.network.title" = "Сеть";
 "profile.pincode.change.title" = "Изменить PIN-код";
+"settings.twitter" = "Twitter";
+"settings.rate.us" = "Оцените приложение";
+"settings.general" = "Основные";
+"settings.preferences" = "Предпочтения";
+"settings.security" = "Безопасность";
+"settings.community" = "Сообщество";
 "common.invalid.hard.soft.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью символов, не включая /.";
 "common.invalid.hard.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' где 'hard' может быть любой последовательностью символов, не включая /.";
 "confirm.mnemonic.mismatch.error.title" = "Неверная мнемоника";
@@ -111,8 +117,8 @@
 "wallet.add.button.title" = "Добавить кошелёк";
 "account.add.already.exists.message" = "Аккаунт уже существует. Пожалуйста, попробуйте другой.";
 "about.website" = "Официальный сайт";
-"about.github" = "Исходный код на Github";
-"about.telegram" = "Присоединяйтесь к группе Telegram";
+"about.github" = "Github";
+"about.telegram" = "Telegram";
 "confirmation.skip.action" = "Пропустить";
 "account.info.title" = "Аккаунт";
 "account.info.name.title" = "Имя";

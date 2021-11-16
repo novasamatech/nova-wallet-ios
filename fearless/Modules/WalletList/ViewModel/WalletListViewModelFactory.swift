@@ -42,7 +42,7 @@ final class WalletListViewModelFactory {
         self.percentFormatter = percentFormatter
     }
 
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var iconGenerator = NovaIconGenerator()
 
     private func formatTotalPrice(from prices: [WalletListChainAccountPrice], locale: Locale) -> String {
         let totalPrice = prices.reduce(Decimal(0)) { result, item in

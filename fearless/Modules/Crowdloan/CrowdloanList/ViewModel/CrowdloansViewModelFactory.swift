@@ -199,6 +199,27 @@ final class CrowdloansViewModelFactory {
             return nil
         }
 
+        let progressPercentsText: String = {
+            if
+                let raised = Decimal.fromSubstrateAmount(
+                    model.fundInfo.raised,
+                    precision: chainAsset.asset.assetPrecision
+                ),
+                let cap = Decimal.fromSubstrateAmount(
+                    model.fundInfo.cap,
+                    precision: chainAsset.asset.assetPrecision
+                ) {
+                let value: Double = {
+                    guard cap != 0 else { return 0 }
+                    return Double(truncating: raised as NSNumber) / Double(truncating: cap as NSNumber)
+                }()
+
+                return percentFormatter.string(from: NSNumber(value: value)) ?? ""
+            } else {
+                return ""
+            }
+        }()
+
         return CrowdloanCellViewModel(
             paraId: model.paraId,
             title: commonContent.title,
@@ -206,7 +227,7 @@ final class CrowdloansViewModelFactory {
             description: commonContent.details,
             progress: commonContent.progressText,
             iconViewModel: commonContent.imageViewModel,
-            progressPercentsText: "100%",
+            progressPercentsText: progressPercentsText,
             progressValue: 0.0
         )
     }

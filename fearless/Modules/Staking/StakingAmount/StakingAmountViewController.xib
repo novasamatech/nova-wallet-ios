@@ -340,7 +340,7 @@
                                                 <userDefinedRuntimeAttribute type="color" keyPath="highlightedFillColor">
                                                     <color key="value" name="colorHighlightedAccent"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="image" keyPath="iconImage" value="iconFearlessSmall"/>
+                                                <userDefinedRuntimeAttribute type="image" keyPath="iconImage" value="iconNovaSmall"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Learn more about Payouts"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_layout">
                                                     <integer key="value" value="2"/>
@@ -460,8 +460,8 @@
     </objects>
     <resources>
         <image name="iconAboutArrow" width="16" height="16"/>
-        <image name="iconFearlessSmall" width="24" height="24"/>
         <image name="iconKsmSmallBg" width="24" height="24"/>
+        <image name="iconNovaSmall" width="18" height="18"/>
         <image name="listCheckmarkIcon" width="25" height="25"/>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
