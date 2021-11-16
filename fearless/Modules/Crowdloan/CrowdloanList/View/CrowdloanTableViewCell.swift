@@ -194,14 +194,22 @@ final class CrowdloanTableViewCell: UITableViewCell {
         progressValue = viewModel.progressValue
         setNeedsLayout()
 
-        if let time = viewModel.timeleft {
-            timeLabel.text = time
-            percentsLabel.textColor = R.color.colorCoral()
-            navigationImageView.isHidden = false
-        } else {
+        if viewModel.isCompleted {
             timeLabel.text = nil
             percentsLabel.textColor = R.color.colorTransparentText()
             navigationImageView.isHidden = true
+            progressView.backgroundColor = R.color.colorTransparentText()
+            progressLabel.textColor = R.color.colorTransparentText()
+            titleLabel.textColor = R.color.colorTransparentText()
+            iconImageView.tintColor = R.color.colorTransparentText()!
+        } else {
+            timeLabel.text = viewModel.timeleft
+            percentsLabel.textColor = R.color.colorCoral()
+            navigationImageView.isHidden = false
+            progressView.backgroundColor = R.color.colorCoral()
+            progressLabel.textColor = R.color.colorWhite()
+            titleLabel.textColor = R.color.colorWhite()
+            iconImageView.tintColor = R.color.colorWhite()!
         }
     }
 }
