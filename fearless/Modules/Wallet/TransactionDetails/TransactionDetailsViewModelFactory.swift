@@ -151,7 +151,7 @@ final class TransactionDetailsViewModelFactory {
                 continue
             }
 
-            let title = R.string.localizable.walletSendFeeTitle(preferredLanguages: locale.rLanguages)
+            let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
             let viewModel = WalletNewFormDetailsViewModel(
                 title: title,
