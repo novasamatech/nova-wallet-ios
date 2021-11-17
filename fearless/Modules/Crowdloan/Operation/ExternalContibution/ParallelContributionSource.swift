@@ -10,7 +10,7 @@ final class ParallelContributionSource: ExternalContributionSourceProtocol {
 
     func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
-            return BaseOperation.createWithError(CommonError.undefined) // TODO:
+            return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
         let url = Self.baseURL
