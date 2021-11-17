@@ -16,6 +16,7 @@ protocol CrowdloansViewModelFactoryProtocol {
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
+        externalContributionsCount: Int,
         locale: Locale
     ) -> CrowdloansViewModel
 }
@@ -343,6 +344,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         from crowdloans: [Crowdloan],
         viewInfo: CrowdloansViewInfo,
         chainAsset: ChainAssetDisplayInfo,
+        externalContributionsCount: Int,
         locale: Locale
     ) -> CrowdloansViewModel {
         let timeFormatter = TotalTimeFormatter()
@@ -373,13 +375,13 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
         let contributions = crowdloans
             .compactMap { hasContribution(in: $0, viewInfo: viewInfo) }
             .filter { $0 }
-
+        let contributionsCount = contributions.count + externalContributionsCount
         let contributionsTitle = R.string.localizable.crowdloanYouContributionsTitle(
             preferredLanguages: locale.rLanguages
         )
 
         let sections: [CrowdloansSection] =
-            (!contributions.isEmpty ?
+            (contributionsCount > 0 ?
                 [.yourContributions(contributionsTitle, contributions.count)]
                 : [])
             + crowdloansSections
