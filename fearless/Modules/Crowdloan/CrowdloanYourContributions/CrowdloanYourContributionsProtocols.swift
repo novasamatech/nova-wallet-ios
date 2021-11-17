@@ -18,8 +18,12 @@ protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
     ) -> CrowdloanYourContributionsViewModel
 }
 
-protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {}
+protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {}
+protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
+    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)
+}
 
 protocol CrowdloanYourContributionsWireframeProtocol: AnyObject {}

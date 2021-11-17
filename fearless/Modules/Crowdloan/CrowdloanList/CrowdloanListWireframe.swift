@@ -49,7 +49,7 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
             displayInfo: viewInfo.displayInfo,
             chainAsset: chainAsset
         )
-        guard let contibutions = CrowdloanYourContributionsViewFactory.createView(input: input)
+        guard let contibutions = CrowdloanYourContributionsViewFactory.createView(input: input, sharedState: state)
         else { return }
 
         contibutions.controller.hidesBottomBarWhenPushed = true
