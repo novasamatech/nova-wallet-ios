@@ -13,6 +13,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let settings: CrowdloanChainSettings
     let operationManager: OperationManagerProtocol
+    let customContrubutionSources: [ExternalContributionSourceProtocol]
     let logger: LoggerProtocol?
 
     private var blockNumberSubscriptionId: UUID?
@@ -38,6 +39,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         operationManager: OperationManagerProtocol,
+        customContrubutionSources: [ExternalContributionSourceProtocol],
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -49,6 +51,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.settings = settings
         self.operationManager = operationManager
+        self.customContrubutionSources = customContrubutionSources
         self.logger = logger
     }
 
@@ -97,6 +100,45 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                     } else {
                         self?.presenter.didReceiveContributions(result: .failure(error))
                     }
+                }
+            }
+        }
+
+        operationManager.enqueue(operations: [contributionsOperation], in: .transient)
+    }
+
+    private func provideCustomContributions(
+        chain: ChainModel
+    ) {
+        guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
+            presenter.didReceiveContributions(result: .failure(ChainAccountFetchingError.accountNotExists))
+            return
+        }
+
+        guard let accountAddress = try? accountResponse.accountId.toAddress(using: chain.chainFormat) else {
+            return
+        }
+
+        let contributionsOperation: BaseOperation<[CustomContribution]> =
+            OperationCombiningService(operationManager: operationManager) { [weak self] in
+                guard let self = self else {
+                    return []
+                }
+
+                return self.customContrubutionSources
+                    .filter { $0.supports(chain: chain) }
+                    .map { source in
+                        CompoundOperationWrapper(targetOperation: source.getContributions(accountAddress: accountAddress))
+                    }
+            }.longrunOperation()
+
+        contributionsOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let contributions = try contributionsOperation.extractNoCancellableResultData()
+                    print(contributions)
+                } catch {
+                    print(error)
                 }
             }
         }
@@ -307,6 +349,7 @@ extension CrowdloanListInteractor {
                         connection: connection,
                         runtimeService: runtimeService
                     )
+                    self?.provideCustomContributions(chain: chain)
                     self?.provideLeaseInfo(
                         for: crowdloans,
                         connection: connection,

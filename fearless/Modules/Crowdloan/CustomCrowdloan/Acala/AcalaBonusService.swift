@@ -15,6 +15,7 @@ final class AcalaBonusService {
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
     static let apiContribute = "/contribute"
+    static let apiContribution = "/contribution"
     static let apiTransfer = "/transfer"
 
     var selectedContributionMethod = AcalaContributionMethod.direct
@@ -315,5 +316,39 @@ private class AcalaRequestModifier: NetworkRequestModifierProtocol {
             forHTTPHeaderField: "Authorization"
         )
         return modifiedRequest
+    }
+}
+
+extension AcalaBonusService: ExternalContributionSourceProtocol {
+    func supports(chain: ChainModel) -> Bool {
+        chain.chainId == Chain.polkadot.genesisHash
+    }
+
+    func getContributions(accountAddress: AccountAddress) -> BaseOperation<CustomContribution> {
+        let url = Self.baseURL
+            .appendingPathComponent(Self.apiContribution)
+            .appendingPathComponent(accountAddress)
+
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.httpMethod = HttpMethod.get.rawValue
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<CustomContribution> { data in
+            let resultData = try JSONDecoder().decode(
+                AcalaContributionResponse.self,
+                from: data
+            )
+
+            guard let amount = BigUInt(resultData.proxyAmount) else {
+                throw CrowdloanBonusServiceError.internalError
+            }
+            return CustomContribution(amount: amount, paraId: 2000)
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        operation.requestModifier = requestModifier
+        return operation
     }
 }
