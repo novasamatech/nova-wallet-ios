@@ -13,7 +13,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let settings: CrowdloanChainSettings
     let operationManager: OperationManagerProtocol
-    let customContrubutionSources: [ExternalContributionSourceProtocol]
+    let externalContrubutionSources: [ExternalContributionSourceProtocol]
     let logger: LoggerProtocol?
 
     private var blockNumberSubscriptionId: UUID?
@@ -39,7 +39,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        customContrubutionSources: [ExternalContributionSourceProtocol],
+        externalContrubutionSources: [ExternalContributionSourceProtocol],
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
@@ -51,7 +51,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.settings = settings
         self.operationManager = operationManager
-        self.customContrubutionSources = customContrubutionSources
+        self.externalContrubutionSources = externalContrubutionSources
         self.logger = logger
     }
 
@@ -107,7 +107,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         operationManager.enqueue(operations: [contributionsOperation], in: .transient)
     }
 
-    private func provideCustomContributions(
+    private func fetchExternalContributions(
         chain: ChainModel
     ) {
         guard
@@ -123,7 +123,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                     return []
                 }
 
-                return self.customContrubutionSources
+                return self.externalContrubutionSources
                     .filter { $0.supports(chain: chain) }
                     .map { source -> CompoundOperationWrapper<[ExternalContribution]> in
                         CompoundOperationWrapper<[ExternalContribution]>(
@@ -349,7 +349,7 @@ extension CrowdloanListInteractor {
                         connection: connection,
                         runtimeService: runtimeService
                     )
-                    self?.provideCustomContributions(chain: chain)
+                    self?.fetchExternalContributions(chain: chain)
                     self?.provideLeaseInfo(
                         for: crowdloans,
                         connection: connection,

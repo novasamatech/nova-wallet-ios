@@ -66,7 +66,7 @@ struct CrowdloanListViewFactory {
             operationManager: operationManager
         )
 
-        let customContrubutionSources = ExternalContributionSourcesFactory.createExternalSources(sharedState: state)
+        let externalContrubutionSources = ExternalContributionSourcesFactory.createExternalSources(sharedState: state)
 
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedMetaAccount,
@@ -78,7 +78,7 @@ struct CrowdloanListViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             jsonDataProviderFactory: JsonDataProviderFactory.shared,
             operationManager: operationManager,
-            customContrubutionSources: customContrubutionSources,
+            externalContrubutionSources: externalContrubutionSources,
             logger: logger
         )
     }
