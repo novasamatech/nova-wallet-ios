@@ -4252,7 +4252,7 @@
 		8424308B265B17EC003E07EC /* Operation */ = {
 			isa = PBXGroup;
 			children = (
-				D9D163622744F5F400681C1F /* CustomContibution */,
+				D9D163622744F5F400681C1F /* ExternalContibution */,
 				8424308C265B1814003E07EC /* CrowdloanOperationFactory.swift */,
 				846A2605267C792000429A7F /* CrowdloanContributionResponse.swift */,
 			);
@@ -7904,13 +7904,13 @@
 			path = ReferralCrowdloan;
 			sourceTree = "<group>";
 		};
-		D9D163622744F5F400681C1F /* CustomContibution */ = {
+		D9D163622744F5F400681C1F /* ExternalContibution */ = {
 			isa = PBXGroup;
 			children = (
 				D9D163632744F60D00681C1F /* ExternalContribution.swift */,
 				D9D163652744F9BF00681C1F /* ExternalContributionSource.swift */,
 			);
-			path = CustomContibution;
+			path = ExternalContibution;
 			sourceTree = "<group>";
 		};
 		DD14136EDA92D17AC679E523 /* StakingRedeem */ = {
