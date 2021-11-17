@@ -110,16 +110,14 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func provideCustomContributions(
         chain: ChainModel
     ) {
-        guard let accountResponse = selectedMetaAccount.fetch(for: chain.accountRequest()) else {
+        guard
+            let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
+        else {
             presenter.didReceiveContributions(result: .failure(ChainAccountFetchingError.accountNotExists))
             return
         }
 
-        guard let accountAddress = try? accountResponse.accountId.toAddress(using: chain.chainFormat) else {
-            return
-        }
-
-        let contributionsOperation: BaseOperation<[ExternalContribution]> =
+        let contributionsOperation: BaseOperation<[[ExternalContribution]]> =
             OperationCombiningService(operationManager: operationManager) { [weak self] in
                 guard let self = self else {
                     return []
@@ -127,8 +125,10 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
                 return self.customContrubutionSources
                     .filter { $0.supports(chain: chain) }
-                    .map { source in
-                        CompoundOperationWrapper(targetOperation: source.getContributions(accountAddress: accountAddress))
+                    .map { source -> CompoundOperationWrapper<[ExternalContribution]> in
+                        CompoundOperationWrapper<[ExternalContribution]>(
+                            targetOperation: source.getContributions(accountId: accountId, chain: chain)
+                        )
                     }
             }.longrunOperation()
 
