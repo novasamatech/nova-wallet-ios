@@ -78,9 +78,13 @@ extension ConnectionPool: ConnectionPoolProtocol {
 
         clearUnusedConnections()
 
-        if let connection = connections[chain.chainId]?.target as? ChainConnection {
-            let ranking = chain.nodes.map { ConnectionRank(chainNode: $0) }
-            connection.set(ranking: ranking)
+        if let connection = connections[chain.chainId]?.target as? WebSocketEngine {
+            let newUrls = chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
+
+            if connection.urls != newUrls {
+                connection.changeUrls(newUrls)
+            }
+
             return connection
         }
 
@@ -102,6 +106,8 @@ extension ConnectionPool: ConnectionPoolProtocol {
 }
 
 extension ConnectionPool: WebSocketEngineDelegate {
+    func webSocketDidSwitchURL(_: AnyObject, newUrl _: URL) {}
+
     func webSocketDidChangeState(
         _ connection: AnyObject,
         from _: WebSocketEngine.State,

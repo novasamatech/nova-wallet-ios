@@ -17,11 +17,12 @@ final class ConnectionFactory {
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
-        guard let url = chain.nodes.sorted(by: { $0.order < $1.order }).first?.url else {
+        let urls = chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
+
+        guard let connection = WebSocketEngine(urls: urls, name: chain.name, logger: logger) else {
             throw JSONRPCEngineError.unknownError
         }
 
-        let connection = WebSocketEngine(url: url, logger: logger)
         connection.delegate = delegate
         return connection
     }
