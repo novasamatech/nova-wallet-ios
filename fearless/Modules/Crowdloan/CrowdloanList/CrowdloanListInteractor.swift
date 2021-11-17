@@ -135,10 +135,10 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         contributionsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let contributions = try contributionsOperation.extractNoCancellableResultData()
-                    print(contributions)
+                    let contributions = try contributionsOperation.extractNoCancellableResultData().flatMap { $0 }
+                    self?.presenter.didReceiveExternalContributions(result: .success(contributions))
                 } catch {
-                    print(error)
+                    self?.presenter.didReceiveExternalContributions(result: .failure(error))
                 }
             }
         }
