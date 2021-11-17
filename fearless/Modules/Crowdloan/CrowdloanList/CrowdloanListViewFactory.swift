@@ -98,6 +98,7 @@ struct CrowdloanListViewFactory {
             signingWrapper: signingWrapper,
             operationManager: operationManager
         )
+        let parallelSource = ParallelContributionSource()
 
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedMetaAccount,
@@ -109,7 +110,7 @@ struct CrowdloanListViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             jsonDataProviderFactory: JsonDataProviderFactory.shared,
             operationManager: operationManager,
-            customContrubutionSources: [acalaService],
+            customContrubutionSources: [acalaService, parallelSource],
             logger: logger
         )
     }

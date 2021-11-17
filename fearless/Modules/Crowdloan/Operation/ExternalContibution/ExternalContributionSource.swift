@@ -3,5 +3,5 @@ import RobinHood
 
 protocol ExternalContributionSourceProtocol {
     func supports(chain: ChainModel) -> Bool
-    func getContributions(accountAddress: AccountAddress) -> BaseOperation<ExternalContribution>
+    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]>
 }
