@@ -28,6 +28,7 @@ final class CrowdloanYourContributionsPresenter {
         let viewModel = viewModelFactory.createViewModel(
             for: input.crowdloans,
             contributions: input.contributions,
+            externalContributions: externalContributions,
             displayInfo: input.displayInfo,
             chainAsset: input.chainAsset,
             locale: view?.selectedLocale ?? .current
