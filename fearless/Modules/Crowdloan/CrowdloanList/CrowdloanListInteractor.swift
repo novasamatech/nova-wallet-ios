@@ -119,7 +119,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             return
         }
 
-        let contributionsOperation: BaseOperation<[CustomContribution]> =
+        let contributionsOperation: BaseOperation<[ExternalContribution]> =
             OperationCombiningService(operationManager: operationManager) { [weak self] in
                 guard let self = self else {
                     return []
