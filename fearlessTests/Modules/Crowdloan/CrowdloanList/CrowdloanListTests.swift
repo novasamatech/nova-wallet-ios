@@ -5,6 +5,7 @@ import SoraKeystore
 import SubstrateSdk
 import Cuckoo
 import BigInt
+import RobinHood
 
 class CrowdloanListTests: XCTestCase {
     static let currentBlockNumber: BlockNumber = 1337
@@ -26,6 +27,10 @@ class CrowdloanListTests: XCTestCase {
         )
     ]
 
+    let externalContributions: [ExternalContribution] = [
+        ExternalContribution(source: nil, amount: BigUInt(1000000), paraId: 2000)
+    ]
+    
     let endedCrowdloans: [Crowdloan] = [
         Crowdloan(
             paraId: 2001,
@@ -126,8 +131,17 @@ class CrowdloanListTests: XCTestCase {
 
         wait(for: [listCompletionExpectation, chainCompletionExpectation], timeout: 10)
 
+        let yourContributionsCount: Int = {
+            let yourContribution = actualViewModel!.sections[0]
+            if case let .yourContributions(_, count) = yourContribution {
+                return count
+            } else {
+                return 0
+            }
+        }()
+        
         let actualActiveParaIds: Set<ParaId> = {
-            let activeSection = actualViewModel!.sections[0]
+            let activeSection = actualViewModel!.sections[1]
             if case let .active(_, cellViewModels) = activeSection {
                 return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
                     result.insert(viewModel.paraId)
@@ -138,7 +152,7 @@ class CrowdloanListTests: XCTestCase {
         }()
 
         let actualCompletedParaIds: Set<ParaId> = {
-            let completed = actualViewModel!.sections[1]
+            let completed = actualViewModel!.sections[2]
             if case let .completed(_, cellViewModels) = completed {
                 return cellViewModels.reduce(into: Set<ParaId>()) { result, viewModel in
                     result.insert(viewModel.paraId)
@@ -150,6 +164,7 @@ class CrowdloanListTests: XCTestCase {
 
         XCTAssertEqual(expectedActiveParaIds, actualActiveParaIds)
         XCTAssertEqual(expectedCompletedParaIds, actualCompletedParaIds)
+        XCTAssertEqual(yourContributionsCount, externalContributions.count)
     }
 
     private func createPresenter(
@@ -235,6 +250,8 @@ class CrowdloanListTests: XCTestCase {
             ]
         )
 
+        let externalContrubutionSource = StubExternalContributionSource(externalContributions: externalContributions)
+        
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedAccount,
             settings: settings,
@@ -244,7 +261,20 @@ class CrowdloanListTests: XCTestCase {
             crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            externalContrubutionSources: [externalContrubutionSource]
         )
+    }
+}
+
+private struct StubExternalContributionSource: ExternalContributionSourceProtocol {
+    let externalContributions: [ExternalContribution]
+    
+    func supports(chain: ChainModel) -> Bool {
+        true
+    }
+    
+    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
+        BaseOperation.createWithResult(externalContributions)
     }
 }
