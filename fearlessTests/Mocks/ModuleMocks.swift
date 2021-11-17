@@ -12089,6 +12089,21 @@ import SoraFoundation
     
     
     
+     func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)  {
+        
+    return cuckoo_manager.call("didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveExternalContributions(result: result))
+        
+    }
+    
+    
+    
      func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)  {
         
     return cuckoo_manager.call("didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)",
@@ -12171,6 +12186,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveExternalContributions<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ExternalContribution], Error>)> where M1.MatchedType == Result<[ExternalContribution], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ExternalContribution], Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveLeaseInfo<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ParachainLeaseInfoDict, Error>)> where M1.MatchedType == Result<ParachainLeaseInfoDict, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<ParachainLeaseInfoDict, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)", parameterMatchers: matchers))
@@ -12239,6 +12259,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveExternalContributions<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[ExternalContribution], Error>), Void> where M1.MatchedType == Result<[ExternalContribution], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ExternalContribution], Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveLeaseInfo<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ParachainLeaseInfoDict, Error>), Void> where M1.MatchedType == Result<ParachainLeaseInfoDict, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<ParachainLeaseInfoDict, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -12286,6 +12312,10 @@ import SoraFoundation
     }
     
      func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
