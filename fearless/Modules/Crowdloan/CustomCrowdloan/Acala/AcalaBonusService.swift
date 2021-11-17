@@ -324,7 +324,7 @@ extension AcalaBonusService: ExternalContributionSourceProtocol {
         chain.chainId == Chain.polkadot.genesisHash
     }
 
-    func getContributions(accountAddress: AccountAddress) -> BaseOperation<CustomContribution> {
+    func getContributions(accountAddress: AccountAddress) -> BaseOperation<ExternalContribution> {
         let url = Self.baseURL
             .appendingPathComponent(Self.apiContribution)
             .appendingPathComponent(accountAddress)
@@ -335,16 +335,16 @@ extension AcalaBonusService: ExternalContributionSourceProtocol {
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<CustomContribution> { data in
+        let resultFactory = AnyNetworkResultFactory<ExternalContribution> { data in
             let resultData = try JSONDecoder().decode(
-                AcalaContributionResponse.self,
+                AcalaLiquidContributionResponse.self,
                 from: data
             )
 
             guard let amount = BigUInt(resultData.proxyAmount) else {
                 throw CrowdloanBonusServiceError.internalError
             }
-            return CustomContribution(amount: amount, paraId: 2000)
+            return ExternalContribution(amount: amount, paraId: 2000)
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
