@@ -100,7 +100,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let title: String = {
             guard let source = externalContribution.source else { return titlePrefix }
-            return "\(titlePrefix) (via \(source))"
+            return "\(titlePrefix) (via \(source))" // TODO
         }()
 
         return CrowdloanContributionViewModel(
