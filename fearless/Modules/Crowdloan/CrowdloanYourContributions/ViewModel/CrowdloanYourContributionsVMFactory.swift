@@ -58,7 +58,6 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             let title = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: model.paraId)),
             let contributed = contributions[model.fundInfo.trieIndex]?.balance,
             let contributedText = createContributedText(
-                model: model,
                 contributed: contributed,
                 chainAsset: chainAsset,
                 locale: locale
@@ -89,7 +88,6 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             let titlePrefix = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: contributedInParaId)),
             let crowdloan = crowdloans.first(where: { $0.paraId == contributedInParaId }),
             let contributedText = createContributedText(
-                model: crowdloan,
                 contributed: externalContribution.amount,
                 chainAsset: chainAsset,
                 locale: locale
@@ -100,7 +98,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let title: String = {
             guard let source = externalContribution.source else { return titlePrefix }
-            return "\(titlePrefix) (via \(source))" // TODO
+            return "\(titlePrefix) (via \(source))" // TODO:
         }()
 
         return CrowdloanContributionViewModel(
@@ -134,7 +132,6 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     }
 
     private func createContributedText(
-        model _: Crowdloan,
         contributed: BigUInt,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
