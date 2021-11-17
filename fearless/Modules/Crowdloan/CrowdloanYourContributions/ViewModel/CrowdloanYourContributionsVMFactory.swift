@@ -1,6 +1,7 @@
 import Foundation
 import UIKit.UIScreen
 import SubstrateSdk
+import BigInt
 
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
     let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
@@ -15,6 +16,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     func createViewModel(
         for crowdloans: [Crowdloan],
         contributions: CrowdloanContributionDict,
+        externalContributions: [ExternalContribution]?,
         displayInfo: CrowdloanDisplayInfoDict?,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
@@ -29,7 +31,17 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
             )
         }
 
-        return CrowdloanYourContributionsViewModel(contributions: contributions)
+        let externalContributions = (externalContributions ?? []).compactMap { externalContribution in
+            crowdloanExternalContribution(
+                externalContribution: externalContribution,
+                crowdloans: crowdloans,
+                displayInfo: displayInfo,
+                chainAsset: chainAsset,
+                locale: locale
+            )
+        }
+
+        return CrowdloanYourContributionsViewModel(contributions: contributions + externalContributions)
     }
 
     private func crowdloanCotribution(
@@ -44,9 +56,10 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         guard
             let title = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: model.paraId)),
-            let contributed = createContributedText(
+            let contributed = contributions[model.fundInfo.trieIndex]?.balance,
+            let contributedText = createContributedText(
                 model: model,
-                contributions: contributions,
+                contributed: contributed,
                 chainAsset: chainAsset,
                 locale: locale
             )
@@ -57,7 +70,43 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         return CrowdloanContributionViewModel(
             name: title,
             iconViewModel: iconViewModel,
-            contributed: contributed
+            contributed: contributedText
+        )
+    }
+
+    private func crowdloanExternalContribution(
+        externalContribution: ExternalContribution,
+        crowdloans: [Crowdloan],
+        displayInfo: CrowdloanDisplayInfoDict?,
+        chainAsset: ChainAssetDisplayInfo,
+        locale: Locale
+    ) -> CrowdloanContributionViewModel? {
+        let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
+        let contributedInParaId = externalContribution.paraId
+        let displayInfo = displayInfo?[contributedInParaId]
+
+        guard
+            let titlePrefix = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: contributedInParaId)),
+            let crowdloan = crowdloans.first(where: { $0.paraId == contributedInParaId }),
+            let contributedText = createContributedText(
+                model: crowdloan,
+                contributed: externalContribution.amount,
+                chainAsset: chainAsset,
+                locale: locale
+            )
+        else { return nil }
+
+        let iconViewModel = createIconViewModel(model: crowdloan, displayInfo: displayInfo, chainAsset: chainAsset)
+
+        let title: String = {
+            guard let source = externalContribution.source else { return titlePrefix }
+            return "\(titlePrefix) (via \(source))"
+        }()
+
+        return CrowdloanContributionViewModel(
+            name: title,
+            iconViewModel: iconViewModel,
+            contributed: contributedText
         )
     }
 
@@ -85,8 +134,8 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
     }
 
     private func createContributedText(
-        model: Crowdloan,
-        contributions: CrowdloanContributionDict,
+        model _: Crowdloan,
+        contributed: BigUInt,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
     ) -> String? {
@@ -95,9 +144,8 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         ).value(for: locale)
 
         guard
-            let contributionInPlank = contributions[model.fundInfo.trieIndex]?.balance,
             let contributionDecimal = Decimal.fromSubstrateAmount(
-                contributionInPlank,
+                contributed,
                 precision: chainAsset.asset.assetPrecision
             ),
             let contributed = tokenFormatter.stringFromDecimal(contributionDecimal)
