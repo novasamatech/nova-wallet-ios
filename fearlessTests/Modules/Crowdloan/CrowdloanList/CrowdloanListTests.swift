@@ -250,7 +250,9 @@ class CrowdloanListTests: XCTestCase {
             ]
         )
 
-        let externalContrubutionSource = StubExternalContributionSource(externalContributions: externalContributions)
+        let crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactoryStub(
+            externalContributions: externalContributions
+        )
         
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedAccount,
@@ -258,23 +260,11 @@ class CrowdloanListTests: XCTestCase {
             chainRegistry: chainRegistry,
             crowdloanOperationFactory: crowdloanOperationFactory,
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
+            crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory,
             crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
-            operationManager: OperationManagerFacade.sharedManager,
-            externalContrubutionSources: [externalContrubutionSource]
+            operationManager: OperationManagerFacade.sharedManager
         )
-    }
-}
-
-private struct StubExternalContributionSource: ExternalContributionSourceProtocol {
-    let externalContributions: [ExternalContribution]
-    
-    func supports(chain: ChainModel) -> Bool {
-        true
-    }
-    
-    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
-        BaseOperation.createWithResult(externalContributions)
     }
 }
