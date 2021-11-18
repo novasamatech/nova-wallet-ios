@@ -96,10 +96,11 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         let iconViewModel = createIconViewModel(model: crowdloan, displayInfo: displayInfo, chainAsset: chainAsset)
 
-        let title: String = {
-            guard let source = externalContribution.source else { return titlePrefix }
-            return "\(titlePrefix) (via \(source))" // TODO:
-        }()
+        let title: String = R.string.localizable.crowdloanCustomContribFormat(
+            titlePrefix,
+            externalContribution.source ?? "",
+            preferredLanguages: locale.rLanguages
+        )
 
         return CrowdloanContributionViewModel(
             name: title,
