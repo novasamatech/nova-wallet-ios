@@ -29,6 +29,8 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
                 moonbeamCoordinator?.start()
             case .acala:
                 showAcalaContributionSetup(from: view, paraId: crowdloan.paraId)
+            case .astar:
+                showAstarContributionSetup(from: view, paraId: crowdloan.paraId)
             default:
                 showContributionSetup(from: view, paraId: crowdloan.paraId)
             }
@@ -70,6 +72,18 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
 
     private func showAcalaContributionSetup(from view: ControllerBackedProtocol?, paraId: ParaId) {
         guard let setupView = AcalaContributionSetupViewFactory.createView(
+            for: paraId,
+            state: state
+        ) else {
+            return
+        }
+
+        setupView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(setupView.controller, animated: true)
+    }
+
+    private func showAstarContributionSetup(from view: ControllerBackedProtocol?, paraId: ParaId) {
+        guard let setupView = AstarContributionSetupViewFactory.createView(
             for: paraId,
             state: state
         ) else {
