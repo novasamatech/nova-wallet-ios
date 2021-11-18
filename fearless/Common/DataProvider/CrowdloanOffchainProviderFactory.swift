@@ -9,8 +9,6 @@ protocol CrowdloanOffchainProviderFactoryProtocol {
 }
 
 class CrowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol {
-    static let shared = CrowdloanOffchainProviderFactory(storageFacade: SubstrateDataStorageFacade.shared)
-
     private var providers: [String: WeakWrapper] = [:]
 
     let storageFacade: StorageFacadeProtocol
@@ -35,7 +33,7 @@ class CrowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
         let source = ExternalContributionDataProviderSource(
             accountId: accountId,
             chain: chain,
-            children: ExternalContributionSourcesFactory.createExternalSources()
+            children: ExternalContributionSourcesFactory.createExternalSources(for: chain.chainId)
         )
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]

@@ -72,7 +72,7 @@ struct CrowdloanListViewFactory {
             chainRegistry: chainRegistry,
             crowdloanOperationFactory: crowdloanOperationFactory,
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
-            crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactory.shared,
+            crowdloanOffchainProviderFactory: state.crowdloanOffchainProviderFactory,
             crowdloanLocalSubscriptionFactory: state.crowdloanLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             jsonDataProviderFactory: JsonDataProviderFactory.shared,

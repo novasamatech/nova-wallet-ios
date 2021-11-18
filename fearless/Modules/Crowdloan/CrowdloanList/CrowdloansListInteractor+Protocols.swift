@@ -89,17 +89,14 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
 extension CrowdloanListInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchainSubscriptionHandler {
     func handleExternalContributions(
         result: Result<[ExternalContribution]?, Error>,
-        chainId: ChainModel.Id,
-        accountId: AccountId
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
     ) {
         switch result {
         case let .success(maybeContributions):
-            if let contributions = maybeContributions {
-                presenter.didReceiveExternalContributions(result: .success(contributions))
-            }
+            presenter.didReceiveExternalContributions(result: .success(maybeContributions ?? []))
         case let .failure(error):
             presenter.didReceiveExternalContributions(result: .failure(error))
         }
-
     }
 }

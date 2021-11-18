@@ -5,10 +5,6 @@ import BigInt
 final class AcalaContributionSource: ExternalContributionSourceProtocol {
     static let apiContribution = "/contribution"
 
-    func supports(chain: ChainModel) -> Bool {
-        chain.chainId == Chain.polkadot.genesisHash
-    }
-
     func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
             return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)

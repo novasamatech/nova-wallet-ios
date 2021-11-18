@@ -4,10 +4,6 @@ import RobinHood
 final class ParallelContributionSource: ExternalContributionSourceProtocol {
     static let baseURL = URL(string: "https://auction-service-prod.parallel.fi/crowdloan/rewards")!
 
-    func supports(chain: ChainModel) -> Bool {
-        chain.chainId == Chain.polkadot.genesisHash
-    }
-
     func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
             return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)

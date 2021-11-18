@@ -7,60 +7,47 @@ final class CrowdloanYourContributionsInteractor {
     let chain: ChainModel
     let selectedMetaAccount: MetaAccountModel
     let operationManager: OperationManagerProtocol
-    let externalContrubutionSources: [ExternalContributionSourceProtocol]
+    let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
+
+    private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
     init(
         chain: ChainModel,
         selectedMetaAccount: MetaAccountModel,
         operationManager: OperationManagerProtocol,
-        externalContrubutionSources: [ExternalContributionSourceProtocol]
+        crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
     ) {
         self.chain = chain
         self.selectedMetaAccount = selectedMetaAccount
         self.operationManager = operationManager
-        self.externalContrubutionSources = externalContrubutionSources
-    }
-
-    private func fetchExternalContributions() {
-        guard
-            let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId
-        else {
-            presenter.didReceiveExternalContributions(result: .failure(ChainAccountFetchingError.accountNotExists))
-            return
-        }
-
-        let contributionsOperation: BaseOperation<[[ExternalContribution]]> =
-            OperationCombiningService(operationManager: operationManager) { [weak self] in
-                guard let self = self else {
-                    return []
-                }
-
-                return self.externalContrubutionSources
-                    .filter { $0.supports(chain: self.chain) }
-                    .map { source -> CompoundOperationWrapper<[ExternalContribution]> in
-                        CompoundOperationWrapper<[ExternalContribution]>(
-                            targetOperation: source.getContributions(accountId: accountId, chain: self.chain)
-                        )
-                    }
-            }.longrunOperation()
-
-        contributionsOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let contributions = try contributionsOperation.extractNoCancellableResultData().flatMap { $0 }
-                    self?.presenter.didReceiveExternalContributions(result: .success(contributions))
-                } catch {
-                    self?.presenter.didReceiveExternalContributions(result: .failure(error))
-                }
-            }
-        }
-
-        operationManager.enqueue(operations: [contributionsOperation], in: .transient)
+        self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
     }
 }
 
 extension CrowdloanYourContributionsInteractor: CrowdloanYourContributionsInteractorInputProtocol {
     func setup() {
-        fetchExternalContributions()
+        if let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId {
+            externalContributionsProvider = subscribeToExternalContributionsProvider(
+                for: accountId,
+                chain: chain
+            )
+        } else {
+            presenter.didReceiveExternalContributions(result: .failure(ChainAccountFetchingError.accountNotExists))
+        }
+    }
+}
+
+extension CrowdloanYourContributionsInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchainSubscriptionHandler {
+    func handleExternalContributions(
+        result: Result<[ExternalContribution]?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(maybeContributions):
+            presenter.didReceiveExternalContributions(result: .success(maybeContributions ?? []))
+        case let .failure(error):
+            presenter.didReceiveExternalContributions(result: .failure(error))
+        }
     }
 }
