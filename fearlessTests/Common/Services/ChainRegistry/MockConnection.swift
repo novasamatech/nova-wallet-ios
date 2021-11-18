@@ -9,17 +9,19 @@ final class MockConnection {
 }
 
 extension MockConnection: ChainConnection {
-    var ranking: [ConnectionRank] {
-        autobalancing.ranking
-    }
+    var urls: [URL] { autobalancing.urls }
 
-    func set(ranking: [ConnectionRank]) {
-        autobalancing.set(ranking: ranking)
+    func changeUrls(_ newUrls: [URL]) {
+        autobalancing.changeUrls(newUrls)
     }
 
     var state: WebSocketEngine.State {
         stateReporting.state
     }
+
+    func connect() {}
+
+    func disconnect() {}
 
     func callMethod<P, T>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16 where P : Encodable, T : Decodable {
         try internalConnection.callMethod(
