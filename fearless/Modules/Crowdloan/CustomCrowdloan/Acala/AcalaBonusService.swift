@@ -15,7 +15,6 @@ final class AcalaBonusService {
     static let apiReferral = "/referral"
     static let apiStatement = "/statement"
     static let apiContribute = "/contribute"
-    static let apiContribution = "/contribution"
     static let apiTransfer = "/transfer"
 
     var selectedContributionMethod = AcalaContributionMethod.direct
@@ -307,7 +306,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
     }
 }
 
-class AcalaRequestModifier: NetworkRequestModifierProtocol {
+private class AcalaRequestModifier: NetworkRequestModifierProtocol {
     func modify(request: URLRequest) throws -> URLRequest {
         let token = AcalaKeys.authToken
         var modifiedRequest = request
@@ -316,43 +315,5 @@ class AcalaRequestModifier: NetworkRequestModifierProtocol {
             forHTTPHeaderField: "Authorization"
         )
         return modifiedRequest
-    }
-}
-
-extension AcalaBonusService: ExternalContributionSourceProtocol {
-    func supports(chain: ChainModel) -> Bool {
-        chain.chainId == Chain.polkadot.genesisHash
-    }
-
-    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
-        guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
-            return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)
-        }
-
-        let url = Self.baseURL
-            .appendingPathComponent(Self.apiContribution)
-            .appendingPathComponent(accountAddress)
-
-        let requestFactory = BlockNetworkRequestFactory {
-            var request = URLRequest(url: url)
-            request.httpMethod = HttpMethod.get.rawValue
-            return request
-        }
-
-        let resultFactory = AnyNetworkResultFactory<[ExternalContribution]> { data in
-            let resultData = try JSONDecoder().decode(
-                AcalaLiquidContributionResponse.self,
-                from: data
-            )
-
-            guard let amount = BigUInt(resultData.proxyAmount) else {
-                throw CrowdloanBonusServiceError.internalError
-            }
-            return [ExternalContribution(source: "Liquid", amount: amount, paraId: 2000)]
-        }
-
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = requestModifier
-        return operation
     }
 }
