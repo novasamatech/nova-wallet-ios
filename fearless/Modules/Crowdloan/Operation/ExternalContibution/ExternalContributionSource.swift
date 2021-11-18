@@ -3,12 +3,15 @@ import RobinHood
 import SoraKeystore
 
 protocol ExternalContributionSourceProtocol {
-    func supports(chain: ChainModel) -> Bool
     func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]>
 }
 
 enum ExternalContributionSourcesFactory {
-    static func createExternalSources() -> [ExternalContributionSourceProtocol] {
-        [AcalaContributionSource(), ParallelContributionSource()]
+    static func createExternalSources(for chainId: ChainModel.Id) -> [ExternalContributionSourceProtocol] {
+        if chainId == Chain.polkadot.genesisHash {
+            return [AcalaContributionSource(), ParallelContributionSource()]
+        } else {
+            return []
+        }
     }
 }

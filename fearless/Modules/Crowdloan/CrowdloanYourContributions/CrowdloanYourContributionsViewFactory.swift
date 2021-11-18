@@ -14,7 +14,6 @@ enum CrowdloanYourContributionsViewFactory {
         input: CrowdloanYourContributionsViewInput,
         sharedState: CrowdloanSharedState
     ) -> CrowdloanYourContributionsViewProtocol? {
-        let externalContrubutionSources = ExternalContributionSourcesFactory.createExternalSources()
         guard
             let chain = sharedState.settings.value,
             let selectedMetaAccount = SelectedWalletSettings.shared.value
@@ -24,9 +23,11 @@ enum CrowdloanYourContributionsViewFactory {
             chain: chain,
             selectedMetaAccount: selectedMetaAccount,
             operationManager: OperationManagerFacade.sharedManager,
-            externalContrubutionSources: externalContrubutionSources
+            crowdloanOffchainProviderFactory: sharedState.crowdloanOffchainProviderFactory
         )
+
         let wireframe = CrowdloanYourContributionsWireframe()
+
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
             amountFormatterFactory: AssetBalanceFormatterFactory()
         )

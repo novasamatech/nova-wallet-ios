@@ -5,6 +5,7 @@ import RobinHood
 final class CrowdloanSharedState {
     let settings: CrowdloanChainSettings
     let crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol
+    let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol = ChainRegistryFacade.sharedRegistry,
@@ -26,5 +27,7 @@ final class CrowdloanSharedState {
             operationManager: operationManager,
             logger: logger
         )
+
+        crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactory(storageFacade: storageFacade)
     }
 }

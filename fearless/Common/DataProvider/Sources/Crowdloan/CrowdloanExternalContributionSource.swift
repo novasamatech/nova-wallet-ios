@@ -17,12 +17,8 @@ extension ExternalContributionDataProviderSource: SingleValueProviderSourceProto
     typealias Model = [ExternalContribution]
 
     func fetchOperation() -> CompoundOperationWrapper<Model?> {
-        let contributionOperations: [BaseOperation<[ExternalContribution]>] = children.compactMap { source in
-            guard source.supports(chain: chain) else {
-                return nil
-            }
-
-            return source.getContributions(accountId: accountId, chain: chain)
+        let contributionOperations: [BaseOperation<[ExternalContribution]>] = children.map { source in
+            source.getContributions(accountId: accountId, chain: chain)
         }
 
         guard !contributionOperations.isEmpty else {
