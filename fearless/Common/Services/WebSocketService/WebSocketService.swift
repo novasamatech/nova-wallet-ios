@@ -117,22 +117,13 @@ extension WebSocketService: ApplicationHandlerDelegate {
 }
 
 extension WebSocketService: WebSocketEngineDelegate {
+    func webSocketDidSwitchURL(_: AnyObject, newUrl _: URL) {}
+
     func webSocketDidChangeState(
         _: AnyObject,
         from _: WebSocketEngine.State,
-        to newState: WebSocketEngine.State
-    ) {
-        switch newState {
-        case let .connecting(attempt):
-            if attempt > 1 {
-                scheduleNetworkUnreachable()
-            }
-        case .connected:
-            scheduleNetworkReachable()
-        default:
-            break
-        }
-    }
+        to _: WebSocketEngine.State
+    ) {}
 
     private func scheduleNetworkReachable() {
         DispatchQueue.main.async {

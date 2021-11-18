@@ -2025,14 +2025,14 @@ import Foundation
     
     
     
-     var ranking: [ConnectionRank] {
+     var urls: [URL] {
         get {
-            return cuckoo_manager.getter("ranking",
+            return cuckoo_manager.getter("urls",
                 superclassCall:
                     
                     Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                     ,
-                defaultCall: __defaultImplStub!.ranking)
+                defaultCall: __defaultImplStub!.urls)
         }
         
     }
@@ -2043,16 +2043,16 @@ import Foundation
     
     
     
-     func set(ranking: [ConnectionRank])  {
+     func changeUrls(_ newUrls: [URL])  {
         
-    return cuckoo_manager.call("set(ranking: [ConnectionRank])",
-            parameters: (ranking),
-            escapingParameters: (ranking),
+    return cuckoo_manager.call("changeUrls(_: [URL])",
+            parameters: (newUrls),
+            escapingParameters: (newUrls),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.set(ranking: ranking))
+            defaultCall: __defaultImplStub!.changeUrls(newUrls))
         
     }
     
@@ -2065,14 +2065,14 @@ import Foundation
 	    }
 	    
 	    
-	    var ranking: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockConnectionAutobalancing, [ConnectionRank]> {
-	        return .init(manager: cuckoo_manager, name: "ranking")
+	    var urls: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockConnectionAutobalancing, [URL]> {
+	        return .init(manager: cuckoo_manager, name: "urls")
 	    }
 	    
 	    
-	    func set<M1: Cuckoo.Matchable>(ranking: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([ConnectionRank])> where M1.MatchedType == [ConnectionRank] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ConnectionRank])>] = [wrap(matchable: ranking) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionAutobalancing.self, method: "set(ranking: [ConnectionRank])", parameterMatchers: matchers))
+	    func changeUrls<M1: Cuckoo.Matchable>(_ newUrls: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([URL])> where M1.MatchedType == [URL] {
+	        let matchers: [Cuckoo.ParameterMatcher<([URL])>] = [wrap(matchable: newUrls) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionAutobalancing.self, method: "changeUrls(_: [URL])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -2090,16 +2090,16 @@ import Foundation
 	
 	    
 	    
-	    var ranking: Cuckoo.VerifyReadOnlyProperty<[ConnectionRank]> {
-	        return .init(manager: cuckoo_manager, name: "ranking", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    var urls: Cuckoo.VerifyReadOnlyProperty<[URL]> {
+	        return .init(manager: cuckoo_manager, name: "urls", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
 	
 	    
 	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(ranking: M1) -> Cuckoo.__DoNotUse<([ConnectionRank]), Void> where M1.MatchedType == [ConnectionRank] {
-	        let matchers: [Cuckoo.ParameterMatcher<([ConnectionRank])>] = [wrap(matchable: ranking) { $0 }]
-	        return cuckoo_manager.verify("set(ranking: [ConnectionRank])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func changeUrls<M1: Cuckoo.Matchable>(_ newUrls: M1) -> Cuckoo.__DoNotUse<([URL]), Void> where M1.MatchedType == [URL] {
+	        let matchers: [Cuckoo.ParameterMatcher<([URL])>] = [wrap(matchable: newUrls) { $0 }]
+	        return cuckoo_manager.verify("changeUrls(_: [URL])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -2108,9 +2108,9 @@ import Foundation
  class ConnectionAutobalancingStub: ConnectionAutobalancing {
     
     
-     var ranking: [ConnectionRank] {
+     var urls: [URL] {
         get {
-            return DefaultValueRegistry.defaultValue(for: ([ConnectionRank]).self)
+            return DefaultValueRegistry.defaultValue(for: ([URL]).self)
         }
         
     }
@@ -2119,7 +2119,7 @@ import Foundation
     
 
     
-     func set(ranking: [ConnectionRank])   {
+     func changeUrls(_ newUrls: [URL])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -2809,6 +2809,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func updateConnection(_ connection: ChainConnection, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("updateConnection(_: ChainConnection, chain: ChainModel)",
+            parameters: (connection, chain),
+            escapingParameters: (connection, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateConnection(connection, chain: chain))
+        
+    }
+    
 
 	 struct __StubbingProxy_ConnectionFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -2821,6 +2836,11 @@ import SubstrateSdk
 	    func createConnection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for chain: M1, delegate: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel, WebSocketEngineDelegate?), ChainConnection> where M1.MatchedType == ChainModel, M2.OptionalMatchedType == WebSocketEngineDelegate {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel, WebSocketEngineDelegate?)>] = [wrap(matchable: chain) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", parameterMatchers: matchers))
+	    }
+	    
+	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainConnection, ChainModel)> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockConnectionFactoryProtocol.self, method: "updateConnection(_: ChainConnection, chain: ChainModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -2845,6 +2865,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("createConnection(for: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func updateConnection<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ connection: M1, chain: M2) -> Cuckoo.__DoNotUse<(ChainConnection, ChainModel), Void> where M1.MatchedType == ChainConnection, M2.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainConnection, ChainModel)>] = [wrap(matchable: connection) { $0.0 }, wrap(matchable: chain) { $0.1 }]
+	        return cuckoo_manager.verify("updateConnection(_: ChainConnection, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -2856,6 +2882,10 @@ import SubstrateSdk
     
      func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection).self)
+    }
+    
+     func updateConnection(_ connection: ChainConnection, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
 }

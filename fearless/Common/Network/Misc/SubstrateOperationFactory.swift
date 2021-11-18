@@ -15,12 +15,12 @@ final class SubstrateOperationFactory: SubstrateOperationFactoryProtocol {
 
     func fetchChainOperation(_ url: URL) -> BaseOperation<String> {
         let engine = WebSocketEngine(
-            url: url,
+            urls: [url],
             reachabilityManager: nil,
             reconnectionStrategy: nil,
             logger: logger
         )
 
-        return JSONRPCListOperation(engine: engine, method: RPCMethod.chain)
+        return JSONRPCListOperation(engine: engine!, method: RPCMethod.chain)
     }
 }
