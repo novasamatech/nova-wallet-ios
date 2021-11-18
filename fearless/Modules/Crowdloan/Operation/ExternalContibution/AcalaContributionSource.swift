@@ -3,6 +3,7 @@ import RobinHood
 import BigInt
 
 final class AcalaContributionSource: ExternalContributionSourceProtocol {
+    static let baseUrl = URL(string: "https://crowdloan.aca-api.network")!
     static let apiContribution = "/contribution"
 
     func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
@@ -10,7 +11,7 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
             return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
-        let url = AcalaBonusService.baseURL
+        let url = Self.baseUrl
             .appendingPathComponent(Self.apiContribution)
             .appendingPathComponent(accountAddress)
 
@@ -33,7 +34,6 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
         }
 
         let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        operation.requestModifier = AcalaRequestModifier()
         return operation
     }
 }

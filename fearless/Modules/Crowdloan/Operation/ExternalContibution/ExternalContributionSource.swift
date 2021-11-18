@@ -9,7 +9,7 @@ protocol ExternalContributionSourceProtocol {
 enum ExternalContributionSourcesFactory {
     static func createExternalSources(for chainId: ChainModel.Id) -> [ExternalContributionSourceProtocol] {
         if chainId == Chain.polkadot.genesisHash {
-            return [AcalaContributionSource(), ParallelContributionSource()]
+            return [ParallelContributionSource(), AcalaContributionSource()]
         } else {
             return []
         }
