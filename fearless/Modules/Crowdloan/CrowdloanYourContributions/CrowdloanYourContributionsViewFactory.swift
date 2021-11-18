@@ -14,8 +14,7 @@ enum CrowdloanYourContributionsViewFactory {
         input: CrowdloanYourContributionsViewInput,
         sharedState: CrowdloanSharedState
     ) -> CrowdloanYourContributionsViewProtocol? {
-        let externalContrubutionSources = ExternalContributionSourcesFactory
-            .createExternalSources(sharedState: sharedState)
+        let externalContrubutionSources = ExternalContributionSourcesFactory.createExternalSources()
         guard
             let chain = sharedState.settings.value,
             let selectedMetaAccount = SelectedWalletSettings.shared.value

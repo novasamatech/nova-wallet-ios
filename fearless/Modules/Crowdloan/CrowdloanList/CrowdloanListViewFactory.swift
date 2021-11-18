@@ -66,19 +66,17 @@ struct CrowdloanListViewFactory {
             operationManager: operationManager
         )
 
-        let externalContrubutionSources = ExternalContributionSourcesFactory.createExternalSources(sharedState: state)
-
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedMetaAccount,
             settings: state.settings,
             chainRegistry: chainRegistry,
             crowdloanOperationFactory: crowdloanOperationFactory,
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
+            crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactory.shared,
             crowdloanLocalSubscriptionFactory: state.crowdloanLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             jsonDataProviderFactory: JsonDataProviderFactory.shared,
             operationManager: operationManager,
-            externalContrubutionSources: externalContrubutionSources,
             logger: logger
         )
     }
