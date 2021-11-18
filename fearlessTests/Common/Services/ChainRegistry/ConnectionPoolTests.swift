@@ -49,10 +49,16 @@ class ConnectionPoolTests: XCTestCase {
 
             let connectionFactory = MockConnectionFactoryProtocol()
 
+            var urls: [URL] = []
+
             let setupConnection: () -> MockConnection = {
                 let mockConnection = MockConnection()
                 stub(mockConnection.autobalancing) { stub in
-                    stub.set(ranking: any()).thenDoNothing()
+                    stub.changeUrls(any()).then { newUrls in
+                        urls = newUrls
+                    }
+
+                    stub.urls.get.thenReturn(urls)
                 }
 
                 return mockConnection
@@ -103,7 +109,6 @@ class ConnectionPoolTests: XCTestCase {
 
             for index in 0..<newConnections.count {
                 XCTAssertTrue(newConnections[index] === updatedConnections[index])
-                verify(newConnections[index].autobalancing, times(1)).set(ranking: any())
             }
         } catch {
             XCTFail("Did receive error \(error)")

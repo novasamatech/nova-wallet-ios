@@ -1,10 +1,9 @@
 import Foundation
 import SubstrateSdk
 
-typealias ChainConnection = JSONRPCEngine & ConnectionAutobalancing & ConnectionStateReporting
-
 protocol ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection
+    func updateConnection(_ connection: ChainConnection, chain: ChainModel)
 }
 
 final class ConnectionFactory {
@@ -17,7 +16,7 @@ final class ConnectionFactory {
 
 extension ConnectionFactory: ConnectionFactoryProtocol {
     func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection {
-        let urls = chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
+        let urls = extractNodeUrls(from: chain)
 
         guard let connection = WebSocketEngine(urls: urls, name: chain.name, logger: logger) else {
             throw JSONRPCEngineError.unknownError
@@ -25,5 +24,17 @@ extension ConnectionFactory: ConnectionFactoryProtocol {
 
         connection.delegate = delegate
         return connection
+    }
+
+    func updateConnection(_ connection: ChainConnection, chain: ChainModel) {
+        let newUrls = extractNodeUrls(from: chain)
+
+        if connection.urls != newUrls {
+            connection.changeUrls(newUrls)
+        }
+    }
+
+    private func extractNodeUrls(from chain: ChainModel) -> [URL] {
+        chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
     }
 }
