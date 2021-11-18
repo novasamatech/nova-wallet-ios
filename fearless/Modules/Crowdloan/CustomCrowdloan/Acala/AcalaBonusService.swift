@@ -307,7 +307,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
     }
 }
 
-private class AcalaRequestModifier: NetworkRequestModifierProtocol {
+class AcalaRequestModifier: NetworkRequestModifierProtocol {
     func modify(request: URLRequest) throws -> URLRequest {
         let token = AcalaKeys.authToken
         var modifiedRequest = request

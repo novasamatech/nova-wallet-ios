@@ -1,7 +1,7 @@
 import Foundation
 import BigInt
 
-struct ExternalContribution: Decodable {
+struct ExternalContribution: Codable, Equatable {
     let source: String?
     let amount: BigUInt
     let paraId: ParaId
