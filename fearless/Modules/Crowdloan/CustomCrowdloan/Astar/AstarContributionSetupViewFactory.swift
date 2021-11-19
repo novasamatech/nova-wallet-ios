@@ -33,7 +33,7 @@ struct AstarContributionSetupViewFactory {
 
         let astarService = AstarBonusService(
             paraId: paraId,
-            state: state,
+            chainFormat: chain.chainFormat,
             operationManager: OperationManagerFacade.sharedManager
         )
 

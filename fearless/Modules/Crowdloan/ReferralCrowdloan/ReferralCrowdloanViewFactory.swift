@@ -159,7 +159,7 @@ struct ReferralCrowdloanViewFactory {
             } else {
                 return AstarBonusService(
                     paraId: paraId,
-                    state: state,
+                    chainFormat: state.settings.value.chainFormat,
                     operationManager: OperationManagerFacade.sharedManager
                 )
             }
