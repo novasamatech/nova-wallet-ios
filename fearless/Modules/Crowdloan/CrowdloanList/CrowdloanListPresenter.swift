@@ -17,6 +17,7 @@ final class CrowdloanListPresenter {
     private var blockDurationResult: Result<BlockTime, Error>?
     private var leasingPeriodResult: Result<LeasingPeriod, Error>?
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
+    private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
 
     init(
@@ -146,13 +147,14 @@ final class CrowdloanListPresenter {
             }
 
             let viewInfo = try viewInfoResult.get()
-
             let chainAsset = ChainAssetDisplayInfo(asset: asset.displayInfo, chain: chain.chainFormat)
+            let externalContributionsCount = externalContributions?.count ?? 0
 
             let viewModel = viewModelFactory.createViewModel(
                 from: crowdloans,
                 viewInfo: viewInfo,
                 chainAsset: chainAsset,
+                externalContributionsCount: externalContributionsCount,
                 locale: selectedLocale
             )
 
@@ -203,7 +205,6 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func putOffline() {
-        view?.didStopLoading()
         interactor.putOffline()
     }
 
@@ -286,6 +287,19 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
 
         contributionsResult = result
         updateListView()
+    }
+
+    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>) {
+        switch result {
+        case let .success(contributions):
+            let positiveContributions = contributions.filter { $0.amount > 0 }
+            externalContributions = positiveContributions
+            if !positiveContributions.isEmpty {
+                updateListView()
+            }
+        case let .failure(error):
+            logger?.error("Did receive external contributions error: \(error)")
+        }
     }
 
     func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>) {

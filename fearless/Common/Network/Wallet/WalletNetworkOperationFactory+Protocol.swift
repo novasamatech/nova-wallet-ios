@@ -37,6 +37,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let chainAssetId = ChainAssetId(walletId: info.assetId),
             let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
             let chain = chains[chainAssetId.chainId],
+            let assetModel = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -81,14 +82,30 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
 
+        let priceOperation: CompoundOperationWrapper<PriceData?>
+        if let priceId = assetModel.priceId {
+            priceOperation = CoingeckoPriceSource(priceId: priceId).fetchOperation()
+        } else {
+            priceOperation = CompoundOperationWrapper.createWithResult(nil)
+        }
+
         let mapOperation: ClosureOperation<TransferMetaData?> = ClosureOperation {
             let paymentInfo = try infoWrapper.targetOperation.extractNoCancellableResultData()
+            let priceData = try priceOperation.targetOperation.extractNoCancellableResultData()
 
             guard let fee = BigUInt(paymentInfo.fee),
                   let decimalFee = Decimal.fromSubstrateAmount(fee, precision: asset.precision)
             else {
                 return nil
             }
+
+            let price: Decimal = {
+                if let priceData = priceData {
+                    return Decimal(string: priceData.price) ?? .zero
+                } else {
+                    return .zero
+                }
+            }()
 
             let amount = AmountDecimal(value: decimalFee)
 
@@ -103,7 +120,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled) {
                 let context = TransferMetadataContext(
                     data: receiverInfo.data,
-                    precision: asset.precision
+                    precision: asset.precision,
+                    price: price
                 ).toContext()
                 return TransferMetaData(feeDescriptions: [feeDescription], context: context)
             } else {
@@ -111,7 +129,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             }
         }
 
-        let dependencies = compoundReceiver.allOperations + infoWrapper.allOperations
+        let dependencies = compoundReceiver.allOperations + infoWrapper.allOperations + priceOperation.allOperations
 
         dependencies.forEach { mapOperation.addDependency($0) }
 

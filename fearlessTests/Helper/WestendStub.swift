@@ -36,10 +36,7 @@ struct WestendStub {
                                  miscFrozen: BigUInt(0),
                                  feeFrozen: BigUInt(0))
 
-        let info = AccountInfo(nonce: 1,
-                                 consumers: 0,
-                                 providers: 0,
-                                 data: data)
+        let info = AccountInfo(nonce: 1, data: data)
 
         return DecodedAccountInfo(identifier: "5EJQtTE1ZS9cBdqiuUcjQtieNLRVjk7Pyo6Bfv8Ff6e7pnr6",
                                   item: info)

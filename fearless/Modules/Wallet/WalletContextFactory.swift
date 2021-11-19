@@ -163,6 +163,13 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let amountFormatterFactory = AmountFormatterFactory()
         let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
 
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: asset.displayInfo(with: chain.icon),
+            priceAssetInfo: AssetBalanceDisplayInfo.usd(),
+            formatterFactory: assetBalanceFormatterFactory,
+            limit: TransferConstants.maxAmount
+        )
+
         TransactionHistoryConfigurator(
             chainFormat: chain.chainFormat,
             amountFormatterFactory: amountFormatterFactory,
@@ -180,17 +187,19 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
         let transferConfigurator = TransferConfigurator(
-            assets: accountSettings.assets,
+            chainAsset: chainAsset,
             explorers: chain.explorers,
-            amountFormatterFactory: amountFormatterFactory,
+            balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager
         )
 
         transferConfigurator.configure(builder: builder.transferModuleBuilder)
 
         let confirmConfigurator = TransferConfirmConfigurator(
+            chainAccount: chainAccountResponse,
             chainAsset: chainAsset,
-            amountFormatterFactory: assetBalanceFormatterFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            localizationManager: localizationManager
         )
 
         confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
