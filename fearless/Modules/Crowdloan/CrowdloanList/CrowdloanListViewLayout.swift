@@ -33,7 +33,10 @@ final class CrowdloanListViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        let height = headerView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        let height = headerView.systemLayoutSizeFitting(
+            CGSize(width: bounds.size.width, height: UIView.layoutFittingExpandedSize.height)
+        ).height
+
         var headerFrame = headerView.frame
 
         // Comparison necessary to avoid infinite loop
