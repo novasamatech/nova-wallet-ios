@@ -6,6 +6,7 @@ final class CrowdloanYourContributionsViewLayout: UIView {
         view.backgroundColor = .clear
         view.tableFooterView = UIView()
         view.separatorStyle = .none
+        view.allowsSelection = false
         return view
     }()
 

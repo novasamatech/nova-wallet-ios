@@ -12,14 +12,19 @@ protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
         for crowdloans: [Crowdloan],
         contributions: CrowdloanContributionDict,
+        externalContributions: [ExternalContribution]?,
         displayInfo: CrowdloanDisplayInfoDict?,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel
 }
 
-protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {}
+protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {}
+protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
+    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)
+}
 
 protocol CrowdloanYourContributionsWireframeProtocol: AnyObject {}
