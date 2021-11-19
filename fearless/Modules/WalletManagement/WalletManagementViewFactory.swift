@@ -37,7 +37,7 @@ final class WalletManagementViewFactory: WalletManagementViewFactoryProtocol {
 
         let view = WalletManagementViewController(nib: R.nib.walletManagementViewController)
 
-        let iconGenerator = PolkadotIconGenerator()
+        let iconGenerator = NovaIconGenerator()
         let viewModelFactory = ManagedWalletViewModelFactory(iconGenerator: iconGenerator)
 
         let presenter = WalletManagementPresenter(

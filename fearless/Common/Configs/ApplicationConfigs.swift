@@ -6,9 +6,11 @@ protocol ApplicationConfigProtocol {
     var privacyPolicyURL: URL { get }
     var supportEmail: String { get }
     var websiteURL: URL { get }
+    var appStoreURL: URL { get }
     var socialURL: URL { get }
     var version: String { get }
     var opensourceURL: URL { get }
+    var twitterURL: URL { get }
     var appName: String { get }
     var logoURL: URL { get }
     var purchaseAppName: String { get }
@@ -42,8 +44,16 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         URL(string: "https://novawallet.io")!
     }
 
+    var appStoreURL: URL {
+        URL(string: "https://apps.apple.com/us/app/nova-wallet-polkadot-kusama/id1591993285")!
+    }
+
     var socialURL: URL {
         URL(string: "https://t.me/novawallet")!
+    }
+
+    var twitterURL: URL {
+        URL(string: "https://twitter.com/NovaWalletApp")!
     }
 
     // swiftlint:disable force_cast
@@ -94,9 +104,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v2/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v2/chains_dev.json")!
         #endif
     }
 

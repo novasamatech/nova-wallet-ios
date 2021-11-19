@@ -31,31 +31,45 @@ final class WalletQREncoder: WalletQREncoderProtocol {
 }
 
 final class WalletQRDecoder: WalletQRDecoderProtocol {
-    private let substrateDecoder: SubstrateQRDecoder
+    private let chainFormat: ChainFormat
     private let assets: [WalletAsset]
 
     init(chainFormat: ChainFormat, assets: [WalletAsset]) {
-        switch chainFormat {
-        case .ethereum:
-            substrateDecoder = SubstrateQRDecoder(addressFormat: .ethereum)
-        case let .substrate(type):
-            substrateDecoder = SubstrateQRDecoder(addressFormat: .substrate(type: type))
-        }
-
+        self.chainFormat = chainFormat
         self.assets = assets
     }
 
     func decode(data: Data) throws -> ReceiveInfo {
-        let info = try substrateDecoder.decode(data: data)
+        if SubstrateQR.isSubstrateQR(data: data) {
+            let substrateDecoder = SubstrateQRDecoder(
+                addressFormat: chainFormat.substrateQRAddressFormat
+            )
+            let info = try substrateDecoder.decode(data: data)
 
-        let accountId = try info.address.toAccountId()
+            let accountId = try info.address.toAccountId()
 
-        return ReceiveInfo(
-            accountId: accountId.toHex(),
-            assetId: assets.first?.identifier,
-            amount: nil,
-            details: nil
-        )
+            return ReceiveInfo(
+                accountId: accountId.toHex(),
+                assetId: assets.first?.identifier,
+                amount: nil,
+                details: nil
+            )
+        } else {
+            let addressDecoder = AddressQRDecoder(
+                addressFormat: chainFormat.substrateQRAddressFormat
+            )
+
+            let address = try addressDecoder.decode(data: data)
+
+            let accountId = try address.toAccountId(using: chainFormat)
+
+            return ReceiveInfo(
+                accountId: accountId.toHex(),
+                assetId: assets.first?.identifier,
+                amount: nil,
+                details: nil
+            )
+        }
     }
 }
 
@@ -90,5 +104,16 @@ final class WalletQRCoderFactory: WalletQRCoderFactoryProtocol {
 
     func createDecoder() -> WalletQRDecoderProtocol {
         WalletQRDecoder(chainFormat: chainFormat, assets: assets)
+    }
+}
+
+extension ChainFormat {
+    var substrateQRAddressFormat: QRAddressFormat {
+        switch self {
+        case .ethereum:
+            return .ethereum
+        case let .substrate(type):
+            return .substrate(type: type)
+        }
     }
 }

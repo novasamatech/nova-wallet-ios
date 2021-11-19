@@ -1,8 +1,11 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     func setup() {
+        applicationHandler.delegate = self
+
         guard let chain = settings.value else {
             presenter.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
@@ -83,5 +86,26 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
             logger?.debug("Did receive balance for accountId: \(accountId.toHex()))")
             presenter.didReceiveAccountInfo(result: result)
         }
+    }
+}
+
+extension CrowdloanListInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchainSubscriptionHandler {
+    func handleExternalContributions(
+        result: Result<[ExternalContribution]?, Error>,
+        chainId _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(maybeContributions):
+            presenter.didReceiveExternalContributions(result: .success(maybeContributions ?? []))
+        case let .failure(error):
+            presenter.didReceiveExternalContributions(result: .failure(error))
+        }
+    }
+}
+
+extension CrowdloanListInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        cancelCrowdloansOnchainRequests()
     }
 }

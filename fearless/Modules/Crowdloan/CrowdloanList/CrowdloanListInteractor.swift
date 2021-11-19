@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import SoraFoundation
 
 final class CrowdloanListInteractor: RuntimeConstantFetching {
     weak var presenter: CrowdloanListInteractorOutputProtocol!
@@ -7,19 +8,26 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     let selectedMetaAccount: MetaAccountModel
     let crowdloanOperationFactory: CrowdloanOperationFactoryProtocol
     let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
+    let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol
     let crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let settings: CrowdloanChainSettings
     let operationManager: OperationManagerProtocol
+    let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
 
     private var blockNumberSubscriptionId: UUID?
     private var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
     private var crowdloansRequest: CompoundOperationWrapper<[Crowdloan]>?
+    private var onchainContributionsOperation: Operation?
+    private var latestCrowdloanIndexes: [UInt32]?
+    private var leaseInfoWrapper: CompoundOperationWrapper<[ParachainLeaseInfo]>?
+    private var leaseInfoParaIds: [UInt32]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
+    private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
     deinit {
         if let subscriptionId = blockNumberSubscriptionId, let chain = settings.value {
@@ -34,30 +42,71 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         chainRegistry: ChainRegistryProtocol,
         crowdloanOperationFactory: CrowdloanOperationFactoryProtocol,
         crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol,
+        crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol,
         crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         operationManager: OperationManagerProtocol,
+        applicationHandler: ApplicationHandlerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
         self.crowdloanOperationFactory = crowdloanOperationFactory
         self.chainRegistry = chainRegistry
         self.jsonDataProviderFactory = jsonDataProviderFactory
+        self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
         self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
         self.crowdloanRemoteSubscriptionService = crowdloanRemoteSubscriptionService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.settings = settings
         self.operationManager = operationManager
+        self.applicationHandler = applicationHandler
         self.logger = logger
     }
 
-    private func provideContributions(
+    private func clearOnchainContributionRequest(_ shouldCancel: Bool) {
+        let operation = onchainContributionsOperation
+        onchainContributionsOperation = nil
+        latestCrowdloanIndexes = nil
+
+        if shouldCancel {
+            operation?.cancel()
+        }
+    }
+
+    private func clearLeaseInfoRequest(_ shouldCancel: Bool) {
+        let wrapper = leaseInfoWrapper
+        leaseInfoWrapper = nil
+        leaseInfoParaIds = nil
+
+        if shouldCancel {
+            wrapper?.cancel()
+        }
+    }
+
+    private func clearCrowdloansRequest(_ shouldCancel: Bool) {
+        let wrapper = crowdloansRequest
+        crowdloansRequest = nil
+
+        if shouldCancel {
+            wrapper?.cancel()
+        }
+    }
+
+    private func provideOnchainContributions(
         for crowdloans: [Crowdloan],
         chain: ChainModel,
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
+        let newCrowdloanIndexes = crowdloans.map(\.fundInfo.trieIndex)
+
+        guard latestCrowdloanIndexes != newCrowdloanIndexes else {
+            return
+        }
+
+        clearOnchainContributionRequest(true)
+
         guard !crowdloans.isEmpty else {
             presenter.didReceiveContributions(result: .success([:]))
             return
@@ -74,18 +123,24 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                     return []
                 }
 
-                return crowdloans.map { crowdloan in
+                return newCrowdloanIndexes.map { trieIndex in
                     strongSelf.crowdloanOperationFactory.fetchContributionOperation(
                         connection: connection,
                         runtimeService: runtimeService,
                         accountId: accountResponse.accountId,
-                        trieIndex: crowdloan.fundInfo.trieIndex
+                        trieIndex: trieIndex
                     )
                 }
             }.longrunOperation()
 
         contributionsOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                guard contributionsOperation === self?.onchainContributionsOperation else {
+                    return
+                }
+
+                self?.clearOnchainContributionRequest(false)
+
                 do {
                     let contributions = try contributionsOperation.extractNoCancellableResultData().toDict()
                     self?.presenter.didReceiveContributions(result: .success(contributions))
@@ -101,6 +156,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             }
         }
 
+        latestCrowdloanIndexes = newCrowdloanIndexes
+        onchainContributionsOperation = contributionsOperation
+
         operationManager.enqueue(operations: [contributionsOperation], in: .transient)
     }
 
@@ -109,21 +167,33 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
+        let newCrowdloanParaIds = crowdloans.map(\.paraId)
+
+        guard leaseInfoParaIds != newCrowdloanParaIds else {
+            return
+        }
+
+        clearLeaseInfoRequest(true)
+
         guard !crowdloans.isEmpty else {
             presenter.didReceiveLeaseInfo(result: .success([:]))
             return
         }
 
-        let paraIds = crowdloans.map(\.paraId)
-
         let queryWrapper = crowdloanOperationFactory.fetchLeaseInfoOperation(
             connection: connection,
             runtimeService: runtimeService,
-            paraIds: paraIds
+            paraIds: newCrowdloanParaIds
         )
 
         queryWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                guard self?.leaseInfoWrapper === queryWrapper else {
+                    return
+                }
+
+                self?.clearLeaseInfoRequest(false)
+
                 do {
                     let leaseInfo = try queryWrapper.targetOperation.extractNoCancellableResultData().toMap()
                     self?.presenter.didReceiveLeaseInfo(result: .success(leaseInfo))
@@ -138,6 +208,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                 }
             }
         }
+
+        leaseInfoWrapper = queryWrapper
+        leaseInfoParaIds = newCrowdloanParaIds
 
         operationManager.enqueue(operations: queryWrapper.allOperations, in: .transient)
     }
@@ -183,6 +256,10 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         accountInfoProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chain.chainId)
     }
 
+    private func subscribeToExternalContributions(for accountId: AccountId, chain: ChainModel) {
+        externalContributionsProvider = subscribeToExternalContributionsProvider(for: accountId, chain: chain)
+    }
+
     private func provideConstants(for chain: ChainModel) {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             let error = ChainRegistryError.runtimeMetadaUnavailable
@@ -214,6 +291,7 @@ extension CrowdloanListInteractor {
         presenter.didReceiveSelectedChain(result: .success(chain))
 
         subscribeToAccountInfo(for: accountId, chain: chain)
+        subscribeToExternalContributions(for: accountId, chain: chain)
 
         provideCrowdloans(for: chain)
 
@@ -224,6 +302,7 @@ extension CrowdloanListInteractor {
 
     func refresh(with chain: ChainModel) {
         displayInfoProvider?.refresh()
+        externalContributionsProvider?.refresh()
 
         provideCrowdloans(for: chain)
 
@@ -237,9 +316,15 @@ extension CrowdloanListInteractor {
 
         clear(singleValueProvider: &displayInfoProvider)
         clear(dataProvider: &accountInfoProvider)
+        clear(singleValueProvider: &externalContributionsProvider)
 
-        crowdloansRequest?.cancel()
-        crowdloansRequest = nil
+        cancelCrowdloansOnchainRequests()
+    }
+
+    func cancelCrowdloansOnchainRequests() {
+        clearCrowdloansRequest(true)
+        clearOnchainContributionRequest(true)
+        clearLeaseInfoRequest(true)
     }
 
     func handleSelectionChange(to chain: ChainModel) {
@@ -262,6 +347,8 @@ extension CrowdloanListInteractor {
         if blockNumberProvider == nil {
             blockNumberProvider = subscribeToBlockNumber(for: chain.chainId)
         }
+
+        externalContributionsProvider?.refresh()
     }
 
     func putOffline(with chain: ChainModel) {
@@ -297,16 +384,21 @@ extension CrowdloanListInteractor {
 
         crowdloanWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self?.crowdloansRequest = nil
+                guard self?.crowdloansRequest === crowdloanWrapper else {
+                    return
+                }
+
+                self?.clearCrowdloansRequest(false)
 
                 do {
                     let crowdloans = try crowdloanWrapper.targetOperation.extractNoCancellableResultData()
-                    self?.provideContributions(
+                    self?.provideOnchainContributions(
                         for: crowdloans,
                         chain: chain,
                         connection: connection,
                         runtimeService: runtimeService
                     )
+
                     self?.provideLeaseInfo(
                         for: crowdloans,
                         connection: connection,

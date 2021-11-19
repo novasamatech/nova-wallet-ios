@@ -9,7 +9,7 @@ final class TransferConfigurator {
             font: UIFont.p1Paragraph,
             color: R.color.colorWhite()!
         )
-        let contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0)
+        let contentInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
 
         return WalletContainingHeaderStyle(
             titleStyle: text,
@@ -92,25 +92,29 @@ final class TransferConfigurator {
     let viewModelFactory: TransferViewModelFactory
 
     init(
-        assets: [WalletAsset],
+        chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
+
     ) {
         viewModelFactory = TransferViewModelFactory(
-            assets: assets,
+            chainAsset: chainAsset,
             explorers: explorers,
-            amountFormatterFactory: amountFormatterFactory
+            balanceViewModelFactory: balanceViewModelFactory
         )
         self.localizationManager = localizationManager
     }
 
     func configure(builder: TransferModuleBuilderProtocol) {
+        let assetSymbol = viewModelFactory.chainAsset.asset.symbol
         let title = LocalizableResource { locale in
-            R.string.localizable.walletSendTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.walletSendTokenTitle(assetSymbol, preferredLanguages: locale.rLanguages)
         }
 
-        let definitionFactory = TransferDefinitionFactory(localizationManager: localizationManager)
+        let definitionFactory = TransferDefinitionFactory(
+            localizationManager: localizationManager
+        )
 
         builder
             .with(localizableTitle: title)
@@ -127,5 +131,6 @@ final class TransferConfigurator {
             .with(accessoryViewFactory: WalletSingleActionAccessoryFactory.self)
             .with(operationDefinitionFactory: definitionFactory)
             .with(resultValidator: TransferValidator())
+            .with(accessoryOverlayMode: .overlay)
     }
 }

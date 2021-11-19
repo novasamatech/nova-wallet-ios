@@ -8,7 +8,9 @@ enum AstarBonusServiceError: Error, ErrorContentConvertible {
         case .invalidReferral:
             return ErrorContent(
                 title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages),
-                message: R.string.localizable.crowdloanAstarInvalidReferralMessage(preferredLanguages: locale?.rLanguages)
+                message: R.string.localizable.crowdloanAstarInvalidReferralMessage(
+                    preferredLanguages: locale?.rLanguages
+                )
             )
         }
     }

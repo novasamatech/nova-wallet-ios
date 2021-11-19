@@ -6,43 +6,50 @@ import SubstrateSdk
 final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
+    let chainAsset: ChainAsset
     let explorers: [ChainModel.Explorer]?
-    let assets: [WalletAsset]
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
+    let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     init(
-        assets: [WalletAsset],
+        chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
-        amountFormatterFactory: NumberFormatterFactoryProtocol
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol
     ) {
-        self.assets = assets
+        self.chainAsset = chainAsset
         self.explorers = explorers
-        self.amountFormatterFactory = amountFormatterFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+    }
+
+    private func getPriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
+        let priceContext = TransferMetadataContext(context: inputState.metadata?.context ?? [:])
+        let price = priceContext.price
+
+        guard price > 0.0 else { return nil }
+
+        return PriceData(price: price.stringWithPointSeparator, usdDayChange: nil)
     }
 
     func createFeeViewModel(
-        _: TransferInputState,
+        _ inputState: TransferInputState,
         fee: Fee,
         payload _: TransferPayload,
         locale: Locale
     ) throws -> FeeViewModelProtocol? {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == fee.feeDescription.assetId })
-        else {
-            return nil
-        }
+        let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
-        let title = R.string.localizable.walletSendFeeTitle(preferredLanguages: locale.rLanguages)
+        let feeAmount = fee.feeDescription.parameters.first?.decimalValue ?? 0
 
-        let formatter = amountFormatterFactory.createFeeTokenFormatter(for: asset).value(for: locale)
+        let priceData = getPriceDataFrom(inputState)
+        let balance = balanceViewModelFactory.balanceFromPrice(
+            feeAmount,
+            priceData: priceData
+        ).value(for: locale)
 
-        let amount = formatter
-            .stringFromDecimal(fee.feeDescription.parameters.first?.decimalValue ?? 0) ?? ""
-
-        return FeeViewModel(
+        return FeePriceViewModel(
+            amount: balance.amount,
+            price: balance.price,
             title: title,
-            details: amount,
+            details: balance.amount,
             isLoading: false,
             allowsEditing: false
         )
@@ -58,79 +65,12 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         WalletOverridingResult(item: nil)
     }
 
-    func createSelectedAssetViewModel(
-        _ inputState: TransferInputState,
-        selectedAssetState: SelectedAssetState,
-        payload: TransferPayload,
-        locale: Locale
-    ) throws -> AssetSelectionViewModelProtocol? {
-        guard
-            let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId })
-        else {
-            return nil
-        }
-
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset).value(for: locale)
-
-        let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
-        let amount = formatter.stringFromDecimal(balanceContext.available) ?? ""
-
-        let subtitle = R.string.localizable
-            .walletSendAvailableBalance(preferredLanguages: locale.rLanguages)
-
-        let detailsCommand: WalletCommandProtocol?
-
-        if let context = inputState.balance?.context, let commandFactory = commandFactory {
-            let balanceContext = BalanceContext(context: context)
-            let transferring = inputState.amount ?? .zero
-            let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
-            let remaining = balanceContext.total - (transferring + fee)
-            let transferState = TransferExistentialState(
-                totalAmount: balanceContext.total,
-                availableAmount: balanceContext.available,
-                totalAfterTransfer: remaining,
-                existentialDeposit: balanceContext.minimalBalance
-            )
-
-            let amountFormatter = amountFormatterFactory.createDisplayFormatter(for: asset)
-
-            detailsCommand = ExistentialDepositInfoCommand(
-                transferState: transferState,
-                amountFormatter: amountFormatter,
-                commandFactory: commandFactory
-            )
-        } else {
-            detailsCommand = nil
-        }
-
-        let header = R.string.localizable.walletSendAssetTitle(preferredLanguages: locale.rLanguages)
-
-        let viewModel = WalletTokenViewModel(
-            header: header,
-            title: asset.name.value(for: locale),
-            subtitle: subtitle,
-            details: amount,
-            icon: nil, // fix icon
-            state: selectedAssetState,
-            detailsCommand: detailsCommand
-        )
-
-        return viewModel
-    }
-
     func createAssetSelectionTitle(
         _: TransferInputState,
-        payload: TransferPayload,
-        locale: Locale
+        payload _: TransferPayload,
+        locale _: Locale
     ) throws -> String? {
-        guard let asset = assets
-            .first(where: { $0.identifier == payload.receiveInfo.assetId })
-        else {
-            return nil
-        }
-
-        return asset.name.value(for: locale)
+        nil
     }
 
     func createReceiverViewModel(
@@ -139,9 +79,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         locale: Locale
     ) throws
         -> MultilineTitleIconViewModelProtocol? {
-        guard let commandFactory = commandFactory else {
-            return nil
-        }
+        guard let commandFactory = commandFactory else { return nil }
 
         let header = R.string.localizable
             .walletSendReceiverTitle(preferredLanguages: locale.rLanguages)
@@ -172,7 +110,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             mainIcon: icon,
             actionIcon: R.image.iconMore(),
             command: command,
-            enabled: false
+            enabled: true
         )
 
         return viewModel
@@ -185,5 +123,40 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     ) throws -> AccessoryViewModelProtocol? {
         let action = R.string.localizable.commonContinue(preferredLanguages: locale.rLanguages)
         return AccessoryViewModel(title: "", action: action)
+    }
+
+    func createAmountViewModel(
+        _ inputState: TransferInputState,
+        payload _: TransferPayload,
+        locale: Locale
+    ) throws -> AmountInputViewModelProtocol? {
+        let assetInfo = chainAsset.assetDisplayInfo
+
+        let balanceContext = BalanceContext(context: inputState.balance?.context ?? [:])
+        let balance = balanceViewModelFactory.amountFromValue(balanceContext.available).value(for: locale)
+
+        let amountInputViewModel = balanceViewModelFactory.createBalanceInputViewModel(
+            inputState.amount
+        ).value(for: locale)
+
+        let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
+
+        let priceData = getPriceDataFrom(inputState)
+
+        let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
+
+        let viewModel: RichAmountInputViewModelProtocol = RichAmountInputViewModel(
+            amountInputViewModel: amountInputViewModel,
+            balanceViewModelFactory: balanceViewModelFactory,
+            symbol: assetInfo.symbol,
+            iconViewModel: iconViewModel,
+            balance: balance,
+            priceData: priceData,
+            decimalBalance: balanceContext.available,
+            fee: fee,
+            limit: TransferConstants.maxAmount
+        )
+
+        return viewModel
     }
 }
