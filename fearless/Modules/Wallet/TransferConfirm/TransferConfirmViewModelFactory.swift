@@ -111,7 +111,7 @@ final class TransferConfirmViewModelFactory {
             enabled: true
         )
 
-        viewModelList.append(WalletFormSeparatedViewModel(content: viewModel, borderType: [.bottom]))
+        viewModelList.append(WalletFormSeparatedViewModel(content: viewModel, borderType: [.none]))
     }
 
     private func populateSendingAmount(
@@ -179,8 +179,8 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
 
         let amount = balanceViewModelFactory.amountFromValue(fee).value(for: locale)
 
-        let actionTitle = R.string.localizable.walletSendConfirmTitle(preferredLanguages: locale.rLanguages)
-        let title = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
+        let actionTitle = R.string.localizable.commonConfirm(preferredLanguages: locale.rLanguages)
+        let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
         let priceData = getPriceDataFrom(payload.transferInfo)
 
