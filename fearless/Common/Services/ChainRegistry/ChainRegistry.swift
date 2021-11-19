@@ -107,8 +107,10 @@ final class ChainRegistry {
                     setupRuntimeVersionSubscription(for: newChain, connection: connection)
                     availableChains.insert(newChain)
                 case let .update(updatedChain):
-                    _ = try connectionPool.setupConnection(for: updatedChain)
+                    let connection = try connectionPool.setupConnection(for: updatedChain)
                     _ = runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
+
+                    runtimeSyncService.register(chain: updatedChain, with: connection)
 
                     if let currentChain = availableChains.firstIndex(where: { $0.chainId == updatedChain.chainId }) {
                         availableChains.remove(at: currentChain)
