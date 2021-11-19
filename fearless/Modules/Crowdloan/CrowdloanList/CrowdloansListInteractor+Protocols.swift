@@ -1,8 +1,11 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     func setup() {
+        applicationHandler.delegate = self
+
         guard let chain = settings.value else {
             presenter.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
@@ -98,5 +101,11 @@ extension CrowdloanListInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchai
         case let .failure(error):
             presenter.didReceiveExternalContributions(result: .failure(error))
         }
+    }
+}
+
+extension CrowdloanListInteractor: ApplicationHandlerDelegate {
+    func didReceiveDidEnterBackground(notification _: Notification) {
+        cancelCrowdloansOnchainRequests()
     }
 }

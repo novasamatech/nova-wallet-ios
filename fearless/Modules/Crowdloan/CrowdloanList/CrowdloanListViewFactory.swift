@@ -77,6 +77,7 @@ struct CrowdloanListViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             jsonDataProviderFactory: JsonDataProviderFactory.shared,
             operationManager: operationManager,
+            applicationHandler: ApplicationHandler(),
             logger: logger
         )
     }
