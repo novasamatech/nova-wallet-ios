@@ -554,3 +554,4 @@ will appear here";
 "wallet.account.locks.elections" = "Elections";
 "wallet.balances.widget.title" = "Your balance";
 "common.max" = "max";
+"crowdloan.custom.contrib.format" = "%@ (via %@)";
