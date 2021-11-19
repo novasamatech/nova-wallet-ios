@@ -68,6 +68,10 @@ class ConnectionPoolTests: XCTestCase {
                 stub.createConnection(for: any(), delegate: any()).then { _, _ in
                     setupConnection()
                 }
+
+                stub.updateConnection(any(), chain: any()).then { connection, chain in
+                    connection.changeUrls(chain.nodes.map { $0.url })
+                }
             }
 
             let connectionPool = ConnectionPool(
