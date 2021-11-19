@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct CrowdloanYourContributionsViewInput {
     let crowdloans: [Crowdloan]
@@ -10,10 +11,23 @@ struct CrowdloanYourContributionsViewInput {
 
 enum CrowdloanYourContributionsViewFactory {
     static func createView(
-        input: CrowdloanYourContributionsViewInput
+        input: CrowdloanYourContributionsViewInput,
+        sharedState: CrowdloanSharedState
     ) -> CrowdloanYourContributionsViewProtocol? {
-        let interactor = CrowdloanYourContributionsInteractor()
+        guard
+            let chain = sharedState.settings.value,
+            let selectedMetaAccount = SelectedWalletSettings.shared.value
+        else { return nil }
+
+        let interactor = CrowdloanYourContributionsInteractor(
+            chain: chain,
+            selectedMetaAccount: selectedMetaAccount,
+            operationManager: OperationManagerFacade.sharedManager,
+            crowdloanOffchainProviderFactory: sharedState.crowdloanOffchainProviderFactory
+        )
+
         let wireframe = CrowdloanYourContributionsWireframe()
+
         let viewModelFactory = CrowdloanYourContributionsVMFactory(
             amountFormatterFactory: AssetBalanceFormatterFactory()
         )
