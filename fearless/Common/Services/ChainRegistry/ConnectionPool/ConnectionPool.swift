@@ -79,12 +79,7 @@ extension ConnectionPool: ConnectionPoolProtocol {
         clearUnusedConnections()
 
         if let connection = connections[chain.chainId]?.target as? ChainConnection {
-            let newUrls = chain.nodes.sorted(by: { $0.order < $1.order }).map(\.url)
-
-            if connection.urls != newUrls {
-                connection.changeUrls(newUrls)
-            }
-
+            connectionFactory.updateConnection(connection, chain: chain)
             return connection
         }
 

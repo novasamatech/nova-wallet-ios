@@ -15,25 +15,24 @@ final class AstarBonusService {
     private(set) var referralCode: String?
 
     let paraId: ParaId
-    let state: CrowdloanSharedState
+    let chainFormat: ChainFormat
     let operationManager: OperationManagerProtocol
 
     init(
         paraId: ParaId,
-        state: CrowdloanSharedState,
+        chainFormat: ChainFormat,
         operationManager: OperationManagerProtocol
     ) {
         self.paraId = paraId
-        self.state = state
+        self.chainFormat = chainFormat
         self.operationManager = operationManager
     }
 }
 
 extension AstarBonusService: CrowdloanBonusServiceProtocol {
     func save(referralCode: String, completion closure: @escaping (Result<Void, Error>) -> Void) {
-        let chain = state.settings.value!
         do {
-            _ = try referralCode.toAccountId(using: chain.chainFormat)
+            _ = try referralCode.toAccountId(using: chainFormat)
             self.referralCode = referralCode
             closure(.success(()))
         } catch {
@@ -52,10 +51,11 @@ extension AstarBonusService: CrowdloanBonusServiceProtocol {
         amount _: BigUInt,
         using builder: ExtrinsicBuilderProtocol
     ) throws -> ExtrinsicBuilderProtocol {
-        let chain = state.settings.value!
-        guard
-            let polkadotReferralAccountId = try? referralCode?.toAccountId(using: chain.chainFormat)
-        else {
+        guard let referralCode = referralCode else {
+            return builder
+        }
+
+        guard let polkadotReferralAccountId = try? referralCode.toAccountId(using: chainFormat) else {
             throw AstarBonusServiceError.invalidReferral
         }
 

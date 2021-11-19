@@ -152,6 +152,7 @@ class CrowdloanContributionConfirmPresenter {
             if
                 let displayInfo = displayInfo,
                 let flowString = displayInfo.customFlow,
+                let bonusRate = bonusRate,
                 let flow = CrowdloanFlow(rawValue: flowString),
                 flow.supportsAdditionalBonus {
                 return contributionViewModelFactory.createAdditionalBonusViewModel(

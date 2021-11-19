@@ -12,8 +12,8 @@ final class CrowdloanStatusSectionView: UITableViewHeaderFooterView {
 
     override init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
-        backgroundColor = .clear
         backgroundView = UIView()
+        backgroundView?.backgroundColor = .clear
         setupLayout()
     }
 
