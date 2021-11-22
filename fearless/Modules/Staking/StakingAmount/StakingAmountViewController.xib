@@ -255,7 +255,7 @@
                                                 <userDefinedRuntimeAttribute type="color" keyPath="amountTitleColor">
                                                     <color key="value" name="colorWhite"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="_priceFontName" value="PublicSans-Bold"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="_priceFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_priceFontSize">
                                                     <real key="value" value="12"/>
                                                 </userDefinedRuntimeAttribute>
