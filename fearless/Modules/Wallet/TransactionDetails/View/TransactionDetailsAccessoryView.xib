@@ -10,11 +10,11 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Bold.otf">
-            <string>sora-rc004-0417-Bold</string>
+        <array key="PublicSans-Bold.otf">
+            <string>PublicSans-Bold</string>
         </array>
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -28,14 +28,14 @@
                     <rect key="frame" x="16" y="0.0" width="382" height="48"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Total" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eUK-u1-QpA">
-                            <rect key="frame" x="0.0" y="15" width="290" height="18"/>
-                            <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="14"/>
+                            <rect key="frame" x="0.0" y="16" width="299" height="16"/>
+                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="14"/>
                             <color key="textColor" name="colorLightGray"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100.001 KSM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oj2-Mf-2Jx">
-                            <rect key="frame" x="290" y="15" width="92" height="18"/>
-                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                            <rect key="frame" x="299" y="16" width="83" height="16"/>
+                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                             <color key="textColor" name="colorWhite"/>
                             <nil key="highlightedColor"/>
                         </label>
@@ -87,7 +87,7 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>

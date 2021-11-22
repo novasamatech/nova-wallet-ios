@@ -10,8 +10,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -56,13 +56,13 @@
                         <constraints>
                             <constraint firstAttribute="height" constant="24" id="Mts-Zm-4tm"/>
                         </constraints>
-                        <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="24"/>
+                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="24"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What is Staking?" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bLR-dd-GkE" userLabel="Title Label">
-                        <rect key="frame" x="10" y="44" width="68" height="25.5"/>
-                        <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="10"/>
+                        <rect key="frame" x="10" y="44" width="68" height="23.5"/>
+                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="10"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>
                     </label>

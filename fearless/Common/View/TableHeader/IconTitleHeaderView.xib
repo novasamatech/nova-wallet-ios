@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19455"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -15,12 +15,12 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DCs-kK-mJZ" customClass="ImageWithTitleView" customModule="SoraUI">
-                    <rect key="frame" x="16" y="4.5" width="76" height="24"/>
+                    <rect key="frame" x="16" y="4.5" width="79" height="24"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="WESTEND"/>
                         <userDefinedRuntimeAttribute type="image" keyPath="iconImage" value="iconWestendSmallBg"/>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="10"/>
                         </userDefinedRuntimeAttribute>
@@ -49,7 +49,7 @@
     </objects>
     <designables>
         <designable name="DCs-kK-mJZ">
-            <size key="intrinsicContentSize" width="76" height="24"/>
+            <size key="intrinsicContentSize" width="79" height="24"/>
         </designable>
     </designables>
     <resources>

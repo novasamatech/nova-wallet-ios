@@ -53,7 +53,7 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -82,6 +82,11 @@
             <point key="canvasLocation" x="138" y="53"/>
         </view>
     </objects>
+    <designables>
+        <designable name="4oi-7B-XKE">
+            <size key="intrinsicContentSize" width="77" height="32.5"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

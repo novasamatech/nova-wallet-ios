@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -91,7 +91,7 @@
                             <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                                 <color key="value" name="colorWhite"/>
                             </userDefinedRuntimeAttribute>
-                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                             <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                 <real key="value" value="12"/>
                             </userDefinedRuntimeAttribute>
@@ -134,7 +134,7 @@
                             <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                                 <color key="value" name="colorWhite"/>
                             </userDefinedRuntimeAttribute>
-                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                             <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                 <real key="value" value="12"/>
                             </userDefinedRuntimeAttribute>
@@ -177,7 +177,7 @@
                             <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                                 <color key="value" name="colorWhite"/>
                             </userDefinedRuntimeAttribute>
-                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                            <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                             <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                 <real key="value" value="12"/>
                             </userDefinedRuntimeAttribute>
@@ -223,6 +223,17 @@
             <point key="canvasLocation" x="138" y="123"/>
         </collectionViewCell>
     </objects>
+    <designables>
+        <designable name="CUU-GF-oZf">
+            <size key="intrinsicContentSize" width="60" height="62.5"/>
+        </designable>
+        <designable name="Gbb-8e-YAc">
+            <size key="intrinsicContentSize" width="45" height="62.5"/>
+        </designable>
+        <designable name="sdA-VH-n2P">
+            <size key="intrinsicContentSize" width="40" height="62.5"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconBuy" width="24" height="24"/>
         <image name="iconReceive" width="24" height="24"/>

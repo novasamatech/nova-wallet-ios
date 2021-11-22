@@ -9,11 +9,11 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Bold.otf">
-            <string>sora-rc004-0417-Bold</string>
+        <array key="PublicSans-Bold.otf">
+            <string>PublicSans-Bold</string>
         </array>
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -36,43 +36,43 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Estimate your earning" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="myC-5u-uc4">
-                    <rect key="frame" x="16" y="15" width="343" height="9"/>
-                    <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="14"/>
+                    <rect key="frame" x="16" y="15" width="343" height="11.5"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="14"/>
                     <color key="textColor" name="colorWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="iAa-ON-VRL">
-                    <rect key="frame" x="16" y="40" width="343" height="38"/>
+                    <rect key="frame" x="16" y="42.5" width="343" height="35.5"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="AlB-bA-lr2">
-                            <rect key="frame" x="0.0" y="0.0" width="171.5" height="38"/>
+                            <rect key="frame" x="0.0" y="0.0" width="171.5" height="35.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Average APY" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wXY-dl-gyk">
-                                    <rect key="frame" x="0.0" y="0.0" width="77.5" height="15.5"/>
-                                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="14.5"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
                                     <color key="textColor" name="colorTransparentText"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="22.12%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mMF-Hw-2I9">
-                                    <rect key="frame" x="0.0" y="17.5" width="54.5" height="20.5"/>
-                                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="16"/>
+                                    <rect key="frame" x="0.0" y="16.5" width="53.5" height="19"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="16"/>
                                     <color key="textColor" name="colorGreen"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
                         </stackView>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Cx0-Hi-LXl">
-                            <rect key="frame" x="171.5" y="0.0" width="171.5" height="38"/>
+                            <rect key="frame" x="171.5" y="0.0" width="171.5" height="35.5"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Maximum APY" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4qK-Lp-HyQ">
-                                    <rect key="frame" x="0.0" y="0.0" width="86.5" height="13.5"/>
-                                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="81" height="12.5"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
                                     <color key="textColor" name="colorTransparentText"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="27.42%" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rCm-gO-r2G">
-                                    <rect key="frame" x="0.0" y="17.5" width="57.5" height="20.5"/>
-                                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="16"/>
+                                    <rect key="frame" x="0.0" y="16.5" width="55" height="19"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="16"/>
                                     <color key="textColor" name="colorGreen"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -100,7 +100,7 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -146,7 +146,7 @@
     </objects>
     <designables>
         <designable name="Pyb-Il-ysA">
-            <size key="intrinsicContentSize" width="109" height="34"/>
+            <size key="intrinsicContentSize" width="104" height="32.5"/>
         </designable>
     </designables>
     <resources>

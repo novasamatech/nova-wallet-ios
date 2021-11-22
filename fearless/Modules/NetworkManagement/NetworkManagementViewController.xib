@@ -67,7 +67,7 @@
                         <userDefinedRuntimeAttribute type="number" keyPath="_spacingBetweenItems">
                             <real key="value" value="12"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -104,7 +104,7 @@
     </objects>
     <designables>
         <designable name="Q7x-ZT-4hg">
-            <size key="intrinsicContentSize" width="119.5" height="18"/>
+            <size key="intrinsicContentSize" width="106.5" height="16.5"/>
         </designable>
     </designables>
     <resources>

@@ -47,16 +47,16 @@
                                 <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                     <real key="value" value="16"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                     <real key="value" value="12"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
                                     <real key="value" value="14"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
                                     <real key="value" value="14"/>
                                 </userDefinedRuntimeAttribute>
@@ -111,7 +111,7 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aza-85-hKb">
-                    <rect key="frame" x="16" y="86" width="382" height="45.666666666666657"/>
+                    <rect key="frame" x="16" y="86" width="382" height="42"/>
                     <string key="text">Example: Savings, Investments, Crowdloans, Staking.
 This nickname will be displayed only for you and stored locally on your mobile device. </string>
                     <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
@@ -138,7 +138,7 @@ This nickname will be displayed only for you and stored locally on your mobile d
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -167,9 +167,14 @@ This nickname will be displayed only for you and stored locally on your mobile d
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
+    <designables>
+        <designable name="21e-dk-cnQ">
+            <size key="intrinsicContentSize" width="48.333333333333336" height="32.666666666666671"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorBlack">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -178,7 +183,7 @@ This nickname will be displayed only for you and stored locally on your mobile d
             <color red="0.52941176470588236" green="0.52941176470588236" blue="0.52941176470588236" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorLightGray">
             <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

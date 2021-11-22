@@ -61,19 +61,11 @@
                                 <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                     <real key="value" value="16"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                     <real key="value" value="12"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="sora-rc004-0417-Regular"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
-                                    <real key="value" value="14"/>
-                                </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="sora-rc004-0417-Regular"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
-                                    <real key="value" value="14"/>
-                                </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
                                     <color key="value" name="colorLightGray"/>
                                 </userDefinedRuntimeAttribute>
@@ -137,6 +129,11 @@
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
+    <designables>
+        <designable name="Da6-qJ-5bo">
+            <size key="intrinsicContentSize" width="-1" height="65.5"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

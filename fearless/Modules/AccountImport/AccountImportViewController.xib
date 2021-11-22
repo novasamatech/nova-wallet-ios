@@ -10,8 +10,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -90,7 +90,7 @@
                                         <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
                                             <integer key="value" value="1"/>
                                         </userDefinedRuntimeAttribute>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>
@@ -98,7 +98,7 @@
                                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
                                             <color key="value" name="colorWhite"/>
                                         </userDefinedRuntimeAttribute>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
                                             <real key="value" value="14"/>
                                         </userDefinedRuntimeAttribute>
@@ -140,7 +140,7 @@
                                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedSubtitleColor">
                                             <color key="value" name="colorWhite"/>
                                         </userDefinedRuntimeAttribute>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                             <real key="value" value="12"/>
                                         </userDefinedRuntimeAttribute>
@@ -157,7 +157,7 @@
                                             <real key="value" value="16"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="string" keyPath="subtitle" value="{“address”:”Gerfdad...DJWIdjawIdjWd”}"/>
-                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
                                             <real key="value" value="14"/>
                                         </userDefinedRuntimeAttribute>
@@ -173,7 +173,7 @@
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="No network" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="phZ-8l-hZw">
                                             <rect key="frame" x="33" y="0.0" width="349" height="71"/>
-                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                                             <color key="textColor" name="colorLightGray"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -210,16 +210,16 @@
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                                             <real key="value" value="16"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                                             <real key="value" value="12"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
                                                             <real key="value" value="14"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
                                                             <real key="value" value="14"/>
                                                         </userDefinedRuntimeAttribute>
@@ -276,7 +276,7 @@
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sLp-RD-GEW">
                                             <rect key="frame" x="0.0" y="60" width="382" height="45.5"/>
                                             <string key="text">The name for this account and how it will appear under your addresses. With an on-chain identity, it can be made available to others.</string>
-                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
                                             <color key="textColor" name="colorWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -297,7 +297,7 @@
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mnemonic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y5W-Vv-VcJ">
                                             <rect key="frame" x="16" y="18" width="350" height="16.5"/>
-                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                                             <color key="textColor" name="colorLightGray"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -309,7 +309,7 @@
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="102" id="P4d-fH-Tln"/>
                                             </constraints>
                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                             <connections>
                                                 <outlet property="delegate" destination="-1" id="5ob-aa-7PN"/>
@@ -375,16 +375,16 @@
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                                     <real key="value" value="16"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                                     <real key="value" value="12"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="sora-rc004-0417-Regular"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
                                                     <real key="value" value="14"/>
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="sora-rc004-0417-Regular"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
                                                     <real key="value" value="14"/>
                                                 </userDefinedRuntimeAttribute>
@@ -458,7 +458,7 @@
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                                                             <color key="value" name="colorWhite"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                                             <real key="value" value="14"/>
                                                         </userDefinedRuntimeAttribute>
@@ -536,7 +536,7 @@
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
                                                             <integer key="value" value="1"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                                             <real key="value" value="12"/>
                                                         </userDefinedRuntimeAttribute>
@@ -544,7 +544,7 @@
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
                                                             <color key="value" name="colorWhite"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
                                                             <real key="value" value="14"/>
                                                         </userDefinedRuntimeAttribute>
@@ -555,8 +555,8 @@
                                                     <rect key="frame" x="0.0" y="68" width="380" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3bj-3p-BUu">
-                                                            <rect key="frame" x="16" y="8" width="319" height="14"/>
-                                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                                                            <rect key="frame" x="16" y="8" width="319" height="14.5"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
@@ -564,7 +564,7 @@
                                                             <rect key="frame" x="16" y="26" width="319" height="18"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
-                                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                             <connections>
                                                                 <action selector="actionTextFieldChanged:" destination="-1" eventType="editingChanged" id="oIC-Ao-Pcw"/>
@@ -644,7 +644,7 @@
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
                                                             <integer key="value" value="1"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                                                             <real key="value" value="12"/>
                                                         </userDefinedRuntimeAttribute>
@@ -652,7 +652,7 @@
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
                                                             <color key="value" name="colorWhite"/>
                                                         </userDefinedRuntimeAttribute>
-                                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                                                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
                                                             <real key="value" value="14"/>
                                                         </userDefinedRuntimeAttribute>
@@ -663,8 +663,8 @@
                                                     <rect key="frame" x="0.0" y="204" width="380" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nxr-Dt-va4">
-                                                            <rect key="frame" x="16" y="8" width="319" height="14"/>
-                                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                                                            <rect key="frame" x="16" y="8" width="319" height="14.5"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
@@ -672,7 +672,7 @@
                                                             <rect key="frame" x="16" y="26" width="319" height="18"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
-                                                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
                                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                             <connections>
                                                                 <action selector="actionTextFieldChanged:" destination="-1" eventType="editingChanged" id="cAg-go-C15"/>
@@ -764,7 +764,7 @@
                             <color key="value" name="colorHighlightedAccent"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -795,22 +795,22 @@
     </objects>
     <designables>
         <designable name="1zX-7F-5Jj">
-            <size key="intrinsicContentSize" width="43.5" height="32"/>
+            <size key="intrinsicContentSize" width="48.5" height="32.5"/>
         </designable>
         <designable name="4i7-A0-UyV">
-            <size key="intrinsicContentSize" width="272.5" height="48.5"/>
+            <size key="intrinsicContentSize" width="305" height="50"/>
         </designable>
         <designable name="7cN-eb-nyO">
             <size key="intrinsicContentSize" width="31" height="15"/>
         </designable>
         <designable name="KTG-lI-45a">
-            <size key="intrinsicContentSize" width="272.5" height="48.5"/>
+            <size key="intrinsicContentSize" width="305" height="50"/>
         </designable>
         <designable name="cVj-lI-0D8">
-            <size key="intrinsicContentSize" width="155" height="48.5"/>
+            <size key="intrinsicContentSize" width="163.5" height="50"/>
         </designable>
         <designable name="yiw-bM-wfH">
-            <size key="intrinsicContentSize" width="85" height="20"/>
+            <size key="intrinsicContentSize" width="93" height="20"/>
         </designable>
     </designables>
     <resources>
@@ -818,7 +818,7 @@
         <image name="iconDropDown" width="24" height="24"/>
         <image name="iconUpload" width="24" height="24"/>
         <namedColor name="colorAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorBlack">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -827,7 +827,7 @@
             <color red="0.52941176470588236" green="0.52941176470588236" blue="0.52941176470588236" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="0.5" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorLightGray">
             <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

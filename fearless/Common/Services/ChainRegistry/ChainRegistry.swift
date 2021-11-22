@@ -30,7 +30,7 @@ final class ChainRegistry {
     let commonTypesSyncService: CommonTypesSyncServiceProtocol
     let chainProvider: StreamableProvider<ChainModel>
     let specVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol
-    let processingQueue = DispatchQueue(label: "jp.co.soramitsu.chain.registry")
+    let processingQueue = DispatchQueue(label: "io.novafoundation.novawallet.chain.registry")
     let logger: LoggerProtocol?
 
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: SpecVersionSubscriptionProtocol] = [:]

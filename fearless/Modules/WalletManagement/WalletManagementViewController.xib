@@ -67,7 +67,7 @@
                         <userDefinedRuntimeAttribute type="number" keyPath="_spacingBetweenItems">
                             <real key="value" value="12"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Bold"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
                             <real key="value" value="14"/>
                         </userDefinedRuntimeAttribute>
@@ -107,12 +107,12 @@
     </objects>
     <designables>
         <designable name="VhF-jR-ils">
-            <size key="intrinsicContentSize" width="74.333333333333329" height="15.666666666666666"/>
+            <size key="intrinsicContentSize" width="85.666666666666671" height="16.666666666666668"/>
         </designable>
     </designables>
     <resources>
         <namedColor name="colorAccent">
-            <color red="0.25098039215686274" green="0.61568627450980395" blue="0.95294117647058818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorBlack">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
