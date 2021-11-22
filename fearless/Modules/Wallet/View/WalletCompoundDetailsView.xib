@@ -56,9 +56,9 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
                             <color key="value" name="colorLightGray"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="12"/>
+                            <integer key="value" value="13"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="To"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedTitleColor">
@@ -90,9 +90,9 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="subtitleColor">
                             <color key="value" name="colorWhite"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
@@ -116,6 +116,11 @@
             <point key="canvasLocation" x="139" y="149"/>
         </view>
     </objects>
+    <designables>
+        <designable name="Bh2-O9-y42">
+            <size key="intrinsicContentSize" width="15" height="15"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconCopy" width="24" height="24"/>
         <namedColor name="colorBlack">

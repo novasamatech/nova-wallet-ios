@@ -21,7 +21,7 @@ final class TransferConfigurator {
     private lazy var errorStyle: WalletContainingErrorStyle = {
         let error = WalletInlineErrorStyle(
             titleColor: UIColor(red: 0.942, green: 0, blue: 0.044, alpha: 1),
-            titleFont: R.font.soraRc0040417Regular(size: 12)!,
+            titleFont: R.font.publicSansRegular(size: 13)!,
             icon: R.image.iconWarning()!
         )
         let contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0)

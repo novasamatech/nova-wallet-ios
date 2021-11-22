@@ -108,7 +108,7 @@ private final class RemoteSerializer: CacheSerializer {
 }
 
 private final class SVGProcessor: ImageProcessor {
-    let identifier: String = "jp.co.soramitsu.fearless.kf.svg.processor"
+    let identifier: String = "io.novafoundation.novawallet.kf.svg.processor"
 
     let serializer: RemoteSerializer
 

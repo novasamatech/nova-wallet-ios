@@ -61,30 +61,13 @@
                                 <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                     <real key="value" value="16"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="12"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="sora-rc004-0417-Regular"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
-                                    <real key="value" value="14"/>
+                                    <integer key="value" value="13"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="sora-rc004-0417-Regular"/>
-                                <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
-                                    <real key="value" value="14"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
-                                    <color key="value" name="colorLightGray"/>
-                                </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
                                     <color key="value" name="colorLightGray"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="textColor">
-                                    <color key="value" name="colorWhite"/>
-                                </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="color" keyPath="cursorColor">
-                                    <color key="value" name="colorWhite"/>
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
@@ -137,6 +120,11 @@
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
+    <designables>
+        <designable name="Da6-qJ-5bo">
+            <size key="intrinsicContentSize" width="-1" height="66.5"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -146,9 +134,6 @@
         </namedColor>
         <namedColor name="colorLightGray">
             <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="colorWhite">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
