@@ -264,7 +264,7 @@
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="priceTitle" value="$433.65"/>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="incomeTitle" value="16.22% APY"/>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="_incomeFontName" value="PublicSans-Bold"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="_incomeFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_incomeFontSize">
                                                     <real key="value" value="12"/>
                                                 </userDefinedRuntimeAttribute>
