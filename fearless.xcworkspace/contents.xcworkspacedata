@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:fearless.xcodeproj">
+      location = "group:/Users/russel/Documents/Projects/Nova/nova-wallet/nova-wallet-ios/novawallet.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
