@@ -709,6 +709,10 @@
 		8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */; };
 		8489EDCE264DD4DA00FF997E /* RecommendationsComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */; };
 		848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */; };
+		848A837E274BB03F004493DD /* PublicSans-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837A274BB03E004493DD /* PublicSans-Bold.otf */; };
+		848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */; };
+		848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837C274BB03E004493DD /* PublicSans-ExtraBold.otf */; };
+		848A8381274BB03F004493DD /* PublicSans-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837D274BB03E004493DD /* PublicSans-Regular.otf */; };
 		848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848C3D0826248A3B005481C3 /* TransferCall.swift */; };
 		848DB993260638440055DDE7 /* rewardResponse.json in Resources */ = {isa = PBXBuildFile; fileRef = 848DB992260638440055DDE7 /* rewardResponse.json */; };
 		848DB998260639C70055DDE7 /* TotalRewardMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DB997260639C70055DDE7 /* TotalRewardMock.swift */; };
@@ -744,10 +748,6 @@
 		8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */; };
 		8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */; };
 		8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */; };
-		8490142224A93027008F705E /* sora-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8490141E24A93027008F705E /* sora-Regular.otf */; };
-		8490142324A93027008F705E /* sora-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8490141F24A93027008F705E /* sora-Bold.otf */; };
-		8490142424A93027008F705E /* sora-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8490142024A93027008F705E /* sora-ExtraBold.otf */; };
-		8490142524A93027008F705E /* sora-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8490142124A93027008F705E /* sora-SemiBold.otf */; };
 		8490142C24A935FE008F705E /* ErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142724A935FE008F705E /* ErrorPresentable.swift */; };
 		8490142D24A935FE008F705E /* WebPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142824A935FE008F705E /* WebPresentable.swift */; };
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
@@ -2430,6 +2430,10 @@
 		8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposing.swift; sourceTree = "<group>"; };
 		8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposerTests.swift; sourceTree = "<group>"; };
 		848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainProviderFactoryStub.swift; sourceTree = "<group>"; };
+		848A837A274BB03E004493DD /* PublicSans-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-Bold.otf"; sourceTree = "<group>"; };
+		848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-SemiBold.otf"; sourceTree = "<group>"; };
+		848A837C274BB03E004493DD /* PublicSans-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-ExtraBold.otf"; sourceTree = "<group>"; };
+		848A837D274BB03E004493DD /* PublicSans-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-Regular.otf"; sourceTree = "<group>"; };
 		848C3D0826248A3B005481C3 /* TransferCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferCall.swift; sourceTree = "<group>"; };
 		848DB992260638440055DDE7 /* rewardResponse.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = rewardResponse.json; sourceTree = "<group>"; };
 		848DB997260639C70055DDE7 /* TotalRewardMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalRewardMock.swift; sourceTree = "<group>"; };
@@ -2469,10 +2473,6 @@
 		8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewFactory.swift; sourceTree = "<group>"; };
 		8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainWireframe.swift; sourceTree = "<group>"; };
 		8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainProtocol.swift; sourceTree = "<group>"; };
-		8490141E24A93027008F705E /* sora-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sora-Regular.otf"; sourceTree = "<group>"; };
-		8490141F24A93027008F705E /* sora-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sora-Bold.otf"; sourceTree = "<group>"; };
-		8490142024A93027008F705E /* sora-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sora-ExtraBold.otf"; sourceTree = "<group>"; };
-		8490142124A93027008F705E /* sora-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "sora-SemiBold.otf"; sourceTree = "<group>"; };
 		8490142724A935FE008F705E /* ErrorPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorPresentable.swift; sourceTree = "<group>"; };
 		8490142824A935FE008F705E /* WebPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebPresentable.swift; sourceTree = "<group>"; };
 		8490142924A935FE008F705E /* LoadableViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadableViewProtocol.swift; sourceTree = "<group>"; };
@@ -5652,10 +5652,10 @@
 		8490141D24A93027008F705E /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				8490141E24A93027008F705E /* sora-Regular.otf */,
-				8490141F24A93027008F705E /* sora-Bold.otf */,
-				8490142024A93027008F705E /* sora-ExtraBold.otf */,
-				8490142124A93027008F705E /* sora-SemiBold.otf */,
+				848A837A274BB03E004493DD /* PublicSans-Bold.otf */,
+				848A837C274BB03E004493DD /* PublicSans-ExtraBold.otf */,
+				848A837D274BB03E004493DD /* PublicSans-Regular.otf */,
+				848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -8701,7 +8701,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8490142324A93027008F705E /* sora-Bold.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				8419377D25441D2F00CFA50C /* ReceiveHeaderView.xib in Resources */,
 				849013FC24A92A05008F705E /* fearless.release.xcconfig in Resources */,
@@ -8710,28 +8709,29 @@
 				84C07EDC24AF1924008FC35B /* InfoPlist.strings in Resources */,
 				AEFC6D622600A772000BD310 /* StoriesPreviewCollectionItem.xib in Resources */,
 				842876AC24AE049B00D91AD8 /* SelectionTitleTableViewCell.xib in Resources */,
+				848A837E274BB03F004493DD /* PublicSans-Bold.otf in Resources */,
 				849013B824A80986008F705E /* LaunchScreen.storyboard in Resources */,
 				842876AE24AE049B00D91AD8 /* SelectionListViewController.xib in Resources */,
 				849013FD24A92A05008F705E /* fearless.debug.xcconfig in Resources */,
 				84D8F16724D81CB100AF43E9 /* TitleWithSubtitleTableViewCell.xib in Resources */,
 				84D2F45A25EF0556008B914D /* RecommendedValidatorCell.xib in Resources */,
 				84452F7625D5E2B300F47EC5 /* runtime-default.json in Resources */,
+				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
 				8409C2662522110F0049B5C8 /* WalletAmountView.xib in Resources */,
 				84CD35792526554A0081BC0B /* WalletAssetCell.xib in Resources */,
 				84C07EEA24AF303D008FC35B /* WalletActionsCell.xib in Resources */,
 				84754C922511558200854599 /* ConnectionTableViewCell.xib in Resources */,
-				8490142224A93027008F705E /* sora-Regular.otf in Resources */,
 				8490141424A92F6D008F705E /* OnbordingMain.xib in Resources */,
 				AEF5058B261EF27B0098574D /* PurchaseProviderPickerTableViewCell.xib in Resources */,
 				849013B524A80986008F705E /* Assets.xcassets in Resources */,
+				848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */,
 				84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */,
 				84452F7525D5E2B300F47EC5 /* runtime-polkadot.json in Resources */,
 				84754C9E2513B46100854599 /* AccountPickerTableViewCell.xib in Resources */,
-				8490142424A93027008F705E /* sora-ExtraBold.otf in Resources */,
 				AE9EF282260B58250026910A /* StoriesViewController.xib in Resources */,
-				8490142524A93027008F705E /* sora-SemiBold.otf in Resources */,
 				84452F7425D5E2B300F47EC5 /* runtime-westend.json in Resources */,
 				846AF84A2525E24C00868F37 /* WalletTotalPriceCell.xib in Resources */,
+				848A8381274BB03F004493DD /* PublicSans-Regular.otf in Resources */,
 				84D97ED12521CA5200F07405 /* WalletTokenView.xib in Resources */,
 				849014B824AA87E3008F705E /* PinSetupViewController.xib in Resources */,
 				84D8F16924D821ED00AF43E9 /* IconWithTitleTableViewCell.xib in Resources */,
@@ -10740,7 +10740,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -10762,7 +10762,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -10784,7 +10784,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -10977,7 +10977,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -11002,7 +11002,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -11114,7 +11114,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -11220,7 +11220,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -11242,7 +11242,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = jp.co.soramitsu.fearlessIntegrationTests;
+				PRODUCT_BUNDLE_IDENTIFIER = io.nova.novawalletIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

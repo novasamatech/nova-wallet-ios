@@ -8,8 +8,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -51,9 +51,9 @@
                                 <userDefinedRuntimeAttribute type="color" keyPath="highlightedTitleColor">
                                     <color key="value" name="colorWhite"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="14"/>
+                                    <integer key="value" value="15"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="subtitle" value="GybH558hE9...8Biwzsi5nA"/>
                                 <userDefinedRuntimeAttribute type="color" keyPath="subtitleColor">
@@ -62,9 +62,9 @@
                                 <userDefinedRuntimeAttribute type="color" keyPath="highlightedSubtitleColor">
                                     <color key="value" name="colorLightGray"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
-                                    <real key="value" value="12"/>
+                                    <integer key="value" value="13"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_topInset">
                                     <real key="value" value="8"/>
@@ -119,7 +119,7 @@
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Show this QR code to sender" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumScaleFactor="0.80000000000000004" translatesAutoresizingMaskIntoConstraints="NO" id="OKV-7f-wo7">
                             <rect key="frame" x="31" y="21" width="351" height="18"/>
-                            <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="14"/>
+                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                             <color key="textColor" name="colorWhite"/>
                             <nil key="highlightedColor"/>
                         </label>

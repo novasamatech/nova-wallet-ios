@@ -10,8 +10,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Bold.otf">
-            <string>sora-rc004-0417-Bold</string>
+        <array key="PublicSans-Bold.otf">
+            <string>PublicSans-Bold</string>
         </array>
     </customFonts>
     <objects>
@@ -79,13 +79,13 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_subtitle" value="Kusama"/>
                         <userDefinedRuntimeAttribute type="image" keyPath="_subtitleIcon" value="iconKsmSmallBg"/>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="sora-rc004-0417-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="12"/>
+                            <integer key="value" value="13"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="sora-rc004-0417-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
                             <color key="value" name="colorWhite"/>
@@ -118,14 +118,14 @@
                     <rect key="frame" x="0.0" y="68" width="16" height="16"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FREE BALANCE:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KML-PQ-f24">
-                    <rect key="frame" x="21" y="71" width="76.5" height="12"/>
-                    <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="10"/>
+                    <rect key="frame" x="21" y="70.5" width="87.5" height="13"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="11"/>
                     <color key="textColor" name="colorWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="200.83" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5at-AO-l35">
-                    <rect key="frame" x="101.5" y="71" width="273.5" height="12"/>
-                    <fontDescription key="fontDescription" name="sora-rc004-0417-Bold" family="sora-rc004-0417" pointSize="10"/>
+                    <rect key="frame" x="112.5" y="70.5" width="262.5" height="13"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="11"/>
                     <color key="textColor" name="colorGreen"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -156,6 +156,14 @@
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
+    <designables>
+        <designable name="hqD-qj-6OL">
+            <size key="intrinsicContentSize" width="127" height="58.5"/>
+        </designable>
+        <designable name="wil-D8-nPO">
+            <size key="intrinsicContentSize" width="16" height="16"/>
+        </designable>
+    </designables>
     <resources>
         <image name="iconInfoSend" width="16" height="16"/>
         <image name="iconKsmSmallBg" width="24" height="24"/>
