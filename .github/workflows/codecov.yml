@@ -34,7 +34,7 @@
 #           platform: ${{ 'iOS Simulator' }}
 #           device: ${{ 'iPhone 11' }}
 #           os_version: ${{ '15.0' }}
-#         run: set -o pipefail && xcodebuild test -workspace fearless.xcworkspace -scheme fearless -destination "platform=$platform,name=$device,OS=$os_version" build test | xcpretty --test
+#         run: set -o pipefail && xcodebuild test -workspace novawallet.xcworkspace -scheme novawallet -destination "platform=$platform,name=$device,OS=$os_version" build test | xcpretty --test
 
 #       - name: Upload coverage to Codecov
 #         uses: codecov/codecov-action@v2
