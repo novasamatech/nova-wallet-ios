@@ -15,14 +15,14 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DCs-kK-mJZ" customClass="ImageWithTitleView" customModule="SoraUI">
-                    <rect key="frame" x="16" y="4.5" width="79" height="24"/>
+                    <rect key="frame" x="16" y="4.5" width="84" height="24"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="WESTEND"/>
                         <userDefinedRuntimeAttribute type="image" keyPath="iconImage" value="iconWestendSmallBg"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="10"/>
+                            <real key="value" value="11"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
                             <color key="value" name="colorWhite"/>
@@ -49,7 +49,7 @@
     </objects>
     <designables>
         <designable name="DCs-kK-mJZ">
-            <size key="intrinsicContentSize" width="79" height="24"/>
+            <size key="intrinsicContentSize" width="84" height="24"/>
         </designable>
     </designables>
     <resources>

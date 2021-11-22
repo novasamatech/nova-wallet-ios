@@ -43,8 +43,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="66"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Staking" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ypp-bS-mpc">
-                                            <rect key="frame" x="16" y="15.333333333333332" width="310" height="35.333333333333343"/>
-                                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="30"/>
+                                            <rect key="frame" x="16" y="14.666666666666668" width="310" height="36.666666666666657"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="31"/>
                                             <color key="textColor" name="colorWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>

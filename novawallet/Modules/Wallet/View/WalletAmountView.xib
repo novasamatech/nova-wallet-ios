@@ -63,7 +63,7 @@
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="12"/>
+                                    <integer key="value" value="13"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
                                 <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
@@ -122,7 +122,7 @@
     </objects>
     <designables>
         <designable name="Da6-qJ-5bo">
-            <size key="intrinsicContentSize" width="-1" height="65.5"/>
+            <size key="intrinsicContentSize" width="-1" height="66.5"/>
         </designable>
     </designables>
     <resources>

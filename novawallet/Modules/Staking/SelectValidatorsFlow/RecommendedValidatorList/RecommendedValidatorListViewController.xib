@@ -55,7 +55,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="YES"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
@@ -84,7 +84,7 @@
     </objects>
     <designables>
         <designable name="4oi-7B-XKE">
-            <size key="intrinsicContentSize" width="77" height="32.5"/>
+            <size key="intrinsicContentSize" width="81" height="34"/>
         </designable>
     </designables>
     <resources>

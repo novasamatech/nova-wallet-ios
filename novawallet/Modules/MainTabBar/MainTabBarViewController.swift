@@ -30,8 +30,14 @@ final class MainTabBarViewController: UITabBarController {
 
             appearance.shadowImage = UIImage()
 
-            let normalAttributes = [NSAttributedString.Key.foregroundColor: R.color.colorGray()!]
-            let selectedAttributes = [NSAttributedString.Key.foregroundColor: R.color.colorWhite()!]
+            let normalAttributes = [
+                NSAttributedString.Key.foregroundColor: R.color.colorGray()!,
+                NSAttributedString.Key.font: UIFont.capsTitle
+            ]
+            let selectedAttributes = [
+                NSAttributedString.Key.foregroundColor: R.color.colorWhite()!,
+                NSAttributedString.Key.font: UIFont.capsTitle
+            ]
 
             appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes

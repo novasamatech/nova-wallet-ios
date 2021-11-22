@@ -37,7 +37,7 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_sideLength">
                             <real key="value" value="10"/>
@@ -64,7 +64,7 @@
     </objects>
     <designables>
         <designable name="Y5f-Er-AXF">
-            <size key="intrinsicContentSize" width="48.5" height="32.5"/>
+            <size key="intrinsicContentSize" width="50.5" height="34"/>
         </designable>
     </designables>
     <resources>

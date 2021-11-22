@@ -10,8 +10,8 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="sora-Regular.otf">
-            <string>sora-rc004-0417-Regular</string>
+        <array key="PublicSans-Regular.otf">
+            <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
@@ -49,16 +49,16 @@
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="12"/>
+                                    <integer key="value" value="13"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_placeholderFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_placeholderFontSize">
-                                    <real key="value" value="14"/>
+                                    <integer key="value" value="15"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose name"/>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_textFontName" value="PublicSans-Regular"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_textFontSize">
-                                    <real key="value" value="14"/>
+                                    <integer key="value" value="15"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="color" keyPath="placeholderColor">
                                     <color key="value" name="colorLightGray"/>
@@ -111,10 +111,10 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aza-85-hKb">
-                    <rect key="frame" x="16" y="86" width="382" height="42"/>
+                    <rect key="frame" x="16" y="86" width="382" height="46"/>
                     <string key="text">Example: Savings, Investments, Crowdloans, Staking.
 This nickname will be displayed only for you and stored locally on your mobile device. </string>
-                    <fontDescription key="fontDescription" name="sora-rc004-0417-Regular" family="sora-rc004-0417" pointSize="12"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                     <color key="textColor" name="colorLightGray"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -140,7 +140,7 @@ This nickname will be displayed only for you and stored locally on your mobile d
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_sideLength">
                             <real key="value" value="10"/>
@@ -169,7 +169,7 @@ This nickname will be displayed only for you and stored locally on your mobile d
     </objects>
     <designables>
         <designable name="21e-dk-cnQ">
-            <size key="intrinsicContentSize" width="48.333333333333336" height="32.666666666666671"/>
+            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
         </designable>
     </designables>
     <resources>

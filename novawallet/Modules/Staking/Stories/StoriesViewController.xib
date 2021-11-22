@@ -71,16 +71,16 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="💰 What is Staking?" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X1J-zO-wC7" userLabel="Title Label">
-                    <rect key="frame" x="16" y="134" width="343" height="35.333333333333343"/>
-                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="30"/>
+                    <rect key="frame" x="16" y="134" width="343" height="36.666666666666657"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="31"/>
                     <color key="textColor" name="colorWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalCompressionResistancePriority="749" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.75" translatesAutoresizingMaskIntoConstraints="NO" id="6Q8-bt-QvQ" userLabel="Body Label">
-                    <rect key="frame" x="16" y="185.33333333333337" width="343" height="254"/>
+                    <rect key="frame" x="16" y="186.66666666666663" width="343" height="268"/>
                     <gestureRecognizers/>
                     <string key="text">Staking refers to the process of a Proof-of-Stake (PoS) token-holder locking a tokens in order to participate in the upkeep of the PoS network (e.g. validating transactions; composing new blocks). This increases the security and reliability of the network and is an alternative to mining in Proof-of-Work systems (e.g. Bitcoin). Token-holders who participate in staking are compensated through block rewards and transaction fees.</string>
-                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="18"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="19"/>
                     <color key="textColor" name="colorWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -108,7 +108,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="NO"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
@@ -153,7 +153,7 @@
     </objects>
     <designables>
         <designable name="LmP-ld-yUb">
-            <size key="intrinsicContentSize" width="91.666666666666671" height="32.666666666666671"/>
+            <size key="intrinsicContentSize" width="97" height="33.666666666666671"/>
         </designable>
     </designables>
     <resources>

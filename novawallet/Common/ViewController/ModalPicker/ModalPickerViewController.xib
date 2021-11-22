@@ -28,7 +28,7 @@
                     <rect key="frame" x="0.0" y="1" width="414" height="40"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XwS-f7-PDQ" customClass="ImageWithTitleView" customModule="SoraUI">
-                            <rect key="frame" x="16" y="1" width="138.66666666666666" height="21.333333333333332"/>
+                            <rect key="frame" x="16" y="1" width="146.33333333333334" height="22.333333333333332"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="string" keyPath="title" value="Choose network"/>
@@ -37,7 +37,7 @@
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="18"/>
+                                    <real key="value" value="19"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="number" keyPath="spacingBetweenLabelAndIcon">
                                     <real key="value" value="8"/>
@@ -101,7 +101,7 @@
     </objects>
     <designables>
         <designable name="XwS-f7-PDQ">
-            <size key="intrinsicContentSize" width="138.66666666666666" height="21.333333333333332"/>
+            <size key="intrinsicContentSize" width="146.33333333333334" height="22.333333333333332"/>
         </designable>
     </designables>
     <resources>

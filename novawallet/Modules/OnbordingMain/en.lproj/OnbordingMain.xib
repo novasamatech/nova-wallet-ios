@@ -50,7 +50,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_titleColor">
                             <color key="value" name="colorWhite"/>
@@ -123,7 +123,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_highlighted" value="NO"/>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="NO"/>
@@ -194,10 +194,10 @@
     </objects>
     <designables>
         <designable name="JKh-WT-j8k">
-            <size key="intrinsicContentSize" width="128" height="16.5"/>
+            <size key="intrinsicContentSize" width="135.5" height="18"/>
         </designable>
         <designable name="bcI-vv-wu7">
-            <size key="intrinsicContentSize" width="128" height="16.5"/>
+            <size key="intrinsicContentSize" width="135" height="18"/>
         </designable>
     </designables>
     <resources>

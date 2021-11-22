@@ -12,8 +12,8 @@ struct AssetStyleFactory: AssetCellStyleFactoryProtocol {
 
         let textColor = UIColor.white
         let subtitleColor = UIColor(white: 136.0 / 255.0, alpha: 1.0)
-        let headerFont = R.font.publicSansSemiBold(size: 18)!
-        let regularFont = R.font.publicSansRegular(size: 14)!
+        let headerFont = R.font.publicSansSemiBold(size: 19)!
+        let regularFont = R.font.publicSansRegular(size: 15)!
 
         let cardStyle = CardAssetStyle(
             backgroundColor: UIColor.black.withAlphaComponent(0.7),
