@@ -55,14 +55,14 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Kusama, Parity node" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7VE-TI-g2t">
-                        <rect key="frame" x="86" y="9" width="268" height="16"/>
-                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                        <rect key="frame" x="86" y="9" width="268" height="18"/>
+                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="wss://rpc.kusama.io" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RoV-Y4-Eed">
-                        <rect key="frame" x="86" y="27" width="268" height="14"/>
-                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
+                        <rect key="frame" x="86" y="25.5" width="268" height="15.5"/>
+                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                         <color key="textColor" name="colorLightGray"/>
                         <nil key="highlightedColor"/>
                     </label>

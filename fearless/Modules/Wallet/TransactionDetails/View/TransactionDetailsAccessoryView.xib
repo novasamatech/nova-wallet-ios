@@ -28,14 +28,14 @@
                     <rect key="frame" x="16" y="0.0" width="382" height="48"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Total" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eUK-u1-QpA">
-                            <rect key="frame" x="0.0" y="16" width="299" height="16"/>
-                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="14"/>
+                            <rect key="frame" x="0.0" y="15" width="293" height="18"/>
+                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="15"/>
                             <color key="textColor" name="colorLightGray"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="100.001 KSM" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oj2-Mf-2Jx">
-                            <rect key="frame" x="299" y="16" width="83" height="16"/>
-                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                            <rect key="frame" x="293" y="15" width="89" height="18"/>
+                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                             <color key="textColor" name="colorWhite"/>
                             <nil key="highlightedColor"/>
                         </label>
@@ -89,7 +89,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="title" value="GybH558hE9...8Biwzsi5nA"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedTitleColor">

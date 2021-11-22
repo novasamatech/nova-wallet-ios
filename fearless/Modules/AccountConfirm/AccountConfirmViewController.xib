@@ -39,7 +39,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="644"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oVw-Ru-zUO">
-                            <rect key="frame" x="16" y="0.0" width="382" height="381"/>
+                            <rect key="frame" x="16" y="0.0" width="382" height="382"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mbj-JZ-Ope" customClass="RoundedView" customModule="SoraUI">
                                     <rect key="frame" x="0.0" y="26" width="382" height="144"/>
@@ -64,13 +64,13 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose words in the right order" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h9t-43-ypk">
-                                    <rect key="frame" x="0.0" y="186" width="382" height="19"/>
-                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="16"/>
+                                    <rect key="frame" x="0.0" y="186" width="382" height="20"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="17"/>
                                     <color key="textColor" name="colorWhite"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iI2-ci-IkH" customClass="RoundedView" customModule="SoraUI">
-                                    <rect key="frame" x="0.0" y="221" width="382" height="144"/>
+                                    <rect key="frame" x="0.0" y="222" width="382" height="144"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="144" id="B42-zO-Mqd"/>
@@ -136,7 +136,7 @@
                                 <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="14"/>
+                                    <real key="value" value="15"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="NO"/>
                                 <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
@@ -174,7 +174,7 @@
     </objects>
     <designables>
         <designable name="02i-Et-cAL">
-            <size key="intrinsicContentSize" width="48.333333333333336" height="32.666666666666671"/>
+            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
         </designable>
     </designables>
     <resources>

@@ -56,8 +56,8 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Russel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QPI-de-wQ6">
-                        <rect key="frame" x="86" y="16" width="268" height="16"/>
-                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                        <rect key="frame" x="86" y="15" width="268" height="18"/>
+                        <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                         <color key="textColor" name="colorWhite"/>
                         <nil key="highlightedColor"/>
                     </label>

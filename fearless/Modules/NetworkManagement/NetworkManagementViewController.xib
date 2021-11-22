@@ -69,7 +69,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
                             <color key="value" name="colorAccent"/>
@@ -104,7 +104,7 @@
     </objects>
     <designables>
         <designable name="Q7x-ZT-4hg">
-            <size key="intrinsicContentSize" width="106.5" height="16.5"/>
+            <size key="intrinsicContentSize" width="114" height="18"/>
         </designable>
     </designables>
     <resources>

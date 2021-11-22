@@ -56,7 +56,7 @@
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Use non digital way to backup, such as writing it down on paper." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ihh-eg-GQw">
                                             <rect key="frame" x="40" y="16" width="303" height="68"/>
-                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                                             <color key="textColor" name="colorLightGray"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -90,7 +90,7 @@
                                                 </userDefinedRuntimeAttribute>
                                                 <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                                    <real key="value" value="14"/>
+                                                    <integer key="value" value="15"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
@@ -126,7 +126,7 @@
                                             <rect key="frame" x="1" y="16" width="341" height="256"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mz8-da-wtW" customClass="BorderedSubtitleActionView" customModule="fearless" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="0.0" width="341" height="54"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="341" height="52"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
@@ -156,7 +156,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                                            <real key="value" value="12"/>
+                                                            <integer key="value" value="13"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_subtitle" value="Schnorrkel | sr25519 (recommended)"/>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
@@ -164,25 +164,25 @@
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
-                                                            <real key="value" value="14"/>
+                                                            <integer key="value" value="15"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="image" keyPath="_indicatorIcon" value="iconDropDown"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TpH-WZ-8oM" customClass="TriangularedView" customModule="fearless" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="70" width="341" height="52"/>
+                                                    <rect key="frame" x="0.0" y="68" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i8u-Ig-8Iw">
-                                                            <rect key="frame" x="16" y="8" width="280" height="14.333333333333336"/>
-                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
+                                                            <rect key="frame" x="16" y="8" width="280" height="15.333333333333336"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="//hard/soft///password" textAlignment="natural" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="rzy-lG-JEs">
-                                                            <rect key="frame" x="16" y="25.666666666666686" width="280" height="18.333333333333329"/>
+                                                            <rect key="frame" x="16" y="24.666666666666686" width="280" height="19.333333333333329"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
-                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                             <connections>
                                                                 <action selector="actionTextFieldEditingChanged:" destination="-1" eventType="editingChanged" id="kyq-N7-1EE"/>
@@ -231,7 +231,7 @@
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6xr-Yz-lzZ" customClass="BorderedSubtitleActionView" customModule="fearless" customModuleProvider="target">
-                                                    <rect key="frame" x="0.0" y="138" width="341" height="50"/>
+                                                    <rect key="frame" x="0.0" y="136" width="341" height="52"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
@@ -261,7 +261,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                                            <real key="value" value="12"/>
+                                                            <integer key="value" value="13"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_subtitle" value="ECDSA | BTC/ETH compatible"/>
                                                         <userDefinedRuntimeAttribute type="color" keyPath="_subtitleColor">
@@ -269,7 +269,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="string" keyPath="_subtitleFontName" value="PublicSans-Regular"/>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="_subtitleFontSize">
-                                                            <real key="value" value="14"/>
+                                                            <integer key="value" value="15"/>
                                                         </userDefinedRuntimeAttribute>
                                                         <userDefinedRuntimeAttribute type="image" keyPath="_indicatorIcon" value="iconDropDown"/>
                                                     </userDefinedRuntimeAttributes>
@@ -278,16 +278,16 @@
                                                     <rect key="frame" x="0.0" y="204" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YqL-Qm-h1c">
-                                                            <rect key="frame" x="16" y="8" width="280" height="14.333333333333336"/>
-                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="12"/>
+                                                            <rect key="frame" x="16" y="8" width="280" height="15.333333333333336"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="//hard/soft///password" textAlignment="natural" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="ClA-PG-30V">
-                                                            <rect key="frame" x="16" y="25.666666666666686" width="280" height="18.333333333333329"/>
+                                                            <rect key="frame" x="16" y="24.666666666666686" width="280" height="19.333333333333329"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
-                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                                                            <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
                                                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
                                                             <connections>
                                                                 <action selector="actionTextFieldEditingChanged:" destination="-1" eventType="editingChanged" id="L5E-gu-7OV"/>
@@ -386,7 +386,7 @@
                         <userDefinedRuntimeAttribute type="string" keyPath="_title" value="Next"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <integer key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="boolean" keyPath="_changesContentOpacityWhenHighlighted" value="NO"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedTitleColor">
@@ -415,16 +415,16 @@
     </objects>
     <designables>
         <designable name="6xr-Yz-lzZ">
-            <size key="intrinsicContentSize" width="257" height="50"/>
+            <size key="intrinsicContentSize" width="271" height="52"/>
         </designable>
         <designable name="Mz8-da-wtW">
-            <size key="intrinsicContentSize" width="305" height="50"/>
+            <size key="intrinsicContentSize" width="322.33333333333331" height="52"/>
         </designable>
         <designable name="YBP-AM-Ejm">
-            <size key="intrinsicContentSize" width="48.333333333333336" height="32.666666666666671"/>
+            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
         </designable>
         <designable name="oE5-fi-Ix8">
-            <size key="intrinsicContentSize" width="92.666666666666671" height="20"/>
+            <size key="intrinsicContentSize" width="97.333333333333329" height="20"/>
         </designable>
     </designables>
     <resources>

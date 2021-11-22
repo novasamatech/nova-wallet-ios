@@ -69,7 +69,7 @@
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                            <real key="value" value="14"/>
+                            <real key="value" value="15"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
                             <color key="value" name="colorAccent"/>
@@ -107,7 +107,7 @@
     </objects>
     <designables>
         <designable name="VhF-jR-ils">
-            <size key="intrinsicContentSize" width="85.666666666666671" height="16.666666666666668"/>
+            <size key="intrinsicContentSize" width="92" height="17.666666666666668"/>
         </designable>
     </designables>
     <resources>
