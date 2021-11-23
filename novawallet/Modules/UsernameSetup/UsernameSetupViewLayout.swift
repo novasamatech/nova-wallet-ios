@@ -24,8 +24,20 @@ final class UsernameSetupViewLayout: UIView {
         return label
     }()
 
+    let containerView: TriangularedView = {
+        let view = TriangularedView()
+        view.sideLength = 10.0
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.strokeColor = R.color.colorGray()!
+        view.highlightedStrokeColor = R.color.colorGray()!
+        view.strokeWidth = 1.0
+        return view
+    }()
+
     let nameField: AnimatedTextField = {
         let textField = AnimatedTextField()
+        textField.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 6.0, right: 16.0)
         textField.titleFont = .h6Title
         textField.placeholderFont = .h5Title
         textField.textFont = .h5Title
@@ -65,10 +77,16 @@ final class UsernameSetupViewLayout: UIView {
             make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
         }
 
-        addSubview(nameField)
-        nameField.snp.makeConstraints { make in
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(subtitleLabel.snp.bottom).offset(32.0)
+            make.height.equalTo(UIConstants.triangularedViewHeight)
+        }
+
+        containerView.addSubview(nameField)
+        nameField.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         addSubview(captionLabel)
@@ -81,6 +99,7 @@ final class UsernameSetupViewLayout: UIView {
         proceedButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
     }
 }
