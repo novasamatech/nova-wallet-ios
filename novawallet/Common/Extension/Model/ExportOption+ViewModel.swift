@@ -1,6 +1,6 @@
 import Foundation
 
-extension ExportOption {
+extension SecretSource {
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
         case .mnemonic:

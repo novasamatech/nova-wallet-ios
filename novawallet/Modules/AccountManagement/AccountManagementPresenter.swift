@@ -340,7 +340,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     }
 
     func didReceive(
-        exportOptionsResult: Result<[ExportOption], Error>,
+        exportOptionsResult: Result<[SecretSource], Error>,
         metaAccount: MetaAccountModel,
         chain: ChainModel
     ) {

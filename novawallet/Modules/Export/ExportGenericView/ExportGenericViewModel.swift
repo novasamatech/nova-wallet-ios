@@ -7,7 +7,7 @@ protocol ExportGenericViewModelBinding {
 }
 
 protocol ExportGenericViewModelProtocol {
-    var option: ExportOption { get }
+    var option: SecretSource { get }
     var chain: ChainModel { get }
     var derivationPath: String? { get }
     var cryptoType: MultiassetCryptoType { get }
@@ -16,7 +16,7 @@ protocol ExportGenericViewModelProtocol {
 }
 
 struct ExportStringViewModel: ExportGenericViewModelProtocol {
-    let option: ExportOption
+    let option: SecretSource
 
     let chain: ChainModel
 
@@ -36,7 +36,7 @@ struct ExportStringViewModel: ExportGenericViewModelProtocol {
 }
 
 struct ExportMnemonicViewModel: ExportGenericViewModelProtocol {
-    let option: ExportOption
+    let option: SecretSource
 
     let chain: ChainModel
 
