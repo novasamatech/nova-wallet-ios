@@ -41,9 +41,12 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     var hasCloseItem: Bool = false
     var allowsSelection: Bool = true
 
+    var headerBorderType: BorderType = [.bottom]
+
     var viewModels: [LocalizableResource<T>] = []
     var separatorStyle: UITableViewCell.SeparatorStyle = .none
     var separatorColor: UIColor?
+    var separatorInset: UIEdgeInsets?
 
     weak var delegate: ModalPickerViewControllerDelegate?
     weak var presenter: ModalPresenterProtocol?
@@ -71,6 +74,10 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
             tableView.separatorColor = separatorColor
         }
 
+        if let separatorInset = separatorInset {
+            tableView.separatorInset = separatorInset
+        }
+
         headerHeightConstraint.constant = headerHeight
 
         if let icon = icon {
@@ -78,6 +85,8 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
         } else {
             headerView.spacingBetweenLabelAndIcon = 0
         }
+
+        headerBackgroundView.borderType = headerBorderType
 
         switch actionType {
         case .add:

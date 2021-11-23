@@ -29,6 +29,8 @@ final class SettingsTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
+
         selectionStyle = .none
         separatorInset = .init(top: 0, left: 32, bottom: 0, right: 32)
         setupLayout()
@@ -42,7 +44,7 @@ final class SettingsTableViewCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        roundView.fillColor = highlighted ? R.color.colorAccent()!.withAlphaComponent(0.3) : R.color.color0x1D1D20()!
+        roundView.fillColor = highlighted ? R.color.colorAccentSelected()! : R.color.color0x1D1D20()!
     }
 
     private func setupLayout() {
