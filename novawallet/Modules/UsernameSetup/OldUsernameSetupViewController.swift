@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class UsernameSetupViewController: UIViewController {
+final class OldUsernameSetupViewController: UIViewController {
     var presenter: UsernameSetupPresenterProtocol!
 
     @IBOutlet private var inputField: AnimatedTextField!
@@ -90,7 +90,7 @@ final class UsernameSetupViewController: UIViewController {
     }
 }
 
-extension UsernameSetupViewController: AnimatedTextFieldDelegate {
+extension OldUsernameSetupViewController: AnimatedTextFieldDelegate {
     func animatedTextField(
         _ textField: AnimatedTextField,
         shouldChangeCharactersIn range: NSRange,
@@ -116,7 +116,7 @@ extension UsernameSetupViewController: AnimatedTextFieldDelegate {
     }
 }
 
-extension UsernameSetupViewController: KeyboardViewAdoptable {
+extension OldUsernameSetupViewController: KeyboardViewAdoptable {
     var targetBottomConstraint: NSLayoutConstraint? { nextBottom }
 
     var shouldApplyKeyboardFrame: Bool { isFirstLayoutCompleted }
@@ -130,7 +130,7 @@ extension UsernameSetupViewController: KeyboardViewAdoptable {
     }
 }
 
-extension UsernameSetupViewController: UsernameSetupViewProtocol {
+extension OldUsernameSetupViewController: UsernameSetupViewProtocol {
     func setInput(viewModel: InputViewModelProtocol) {
         self.viewModel = viewModel
 
@@ -138,7 +138,7 @@ extension UsernameSetupViewController: UsernameSetupViewProtocol {
     }
 }
 
-extension UsernameSetupViewController: Localizable {
+extension OldUsernameSetupViewController: Localizable {
     private func setupLocalization() {
         let languages = localizationManager?.preferredLocalizations
 

@@ -27,7 +27,7 @@ final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
         for wireframe: UsernameSetupWireframeProtocol,
         interactor: UsernameSetupInteractor
     ) -> UsernameSetupViewProtocol? {
-        let view = UsernameSetupViewController(nib: R.nib.usernameSetupViewController)
+        let view = OldUsernameSetupViewController(nib: R.nib.usernameSetupViewController)
         let presenter = UsernameSetupPresenter()
 
         view.presenter = presenter

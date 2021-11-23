@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -15,7 +13,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UsernameSetupViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OldUsernameSetupViewController" customModule="fearless" customModuleProvider="target">
             <connections>
                 <outlet property="hintLabel" destination="aza-85-hKb" id="HWt-R8-abD"/>
                 <outlet property="inputField" destination="uF4-Wx-nXk" id="vFA-Q8-dZe"/>
@@ -111,7 +109,7 @@
                     </userDefinedRuntimeAttributes>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aza-85-hKb">
-                    <rect key="frame" x="16" y="86" width="382" height="46"/>
+                    <rect key="frame" x="16" y="86" width="382" height="45.5"/>
                     <string key="text">Example: Savings, Investments, Crowdloans, Staking.
 This nickname will be displayed only for you and stored locally on your mobile device. </string>
                     <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
@@ -167,11 +165,6 @@ This nickname will be displayed only for you and stored locally on your mobile d
             <point key="canvasLocation" x="139" y="133"/>
         </view>
     </objects>
-    <designables>
-        <designable name="21e-dk-cnQ">
-            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
-        </designable>
-    </designables>
     <resources>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
