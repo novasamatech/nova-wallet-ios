@@ -29,6 +29,8 @@ final class SettingsTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
+
         selectionStyle = .none
         separatorInset = .init(top: 0, left: 32, bottom: 0, right: 32)
         setupLayout()
