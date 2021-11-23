@@ -105,27 +105,6 @@ final class CrowdloanContributionViewModelFactory {
         return DisplayLeasingPeriod(leasingPeriod: leasingPeriodTitle, leasingEndDate: leasingEndDateTitle)
     }
 
-    private func createTimeLeft(
-        for crowdloan: Crowdloan,
-        metadata: CrowdloanMetadata,
-        locale: Locale
-    ) -> String {
-        let remainedTime = crowdloan.remainedTime(
-            at: metadata.blockNumber,
-            blockDuration: metadata.blockDuration
-        )
-
-        if remainedTime.daysFromSeconds > 0 {
-            return R.string.localizable.commonDaysFormat(
-                format: remainedTime.daysFromSeconds,
-                preferredLanguages: locale.rLanguages
-            )
-        } else {
-            let time = try? TotalTimeFormatter().string(from: remainedTime)
-            return time ?? ""
-        }
-    }
-
     private func createTitle(
         from crowdloan: Crowdloan,
         displayInfo: CrowdloanDisplayInfo?,
