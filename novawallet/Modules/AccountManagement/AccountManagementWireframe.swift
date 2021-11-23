@@ -47,7 +47,6 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         for wallet: MetaAccountModel,
         chain: ChainModel,
         options: [SecretSource],
-        locale: Locale?,
         from view: AccountManagementViewProtocol?
     ) {
         authorize(animated: true, cancellable: true) { [weak self] success in
@@ -56,7 +55,6 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
                     for: wallet,
                     chain: chain,
                     options: options,
-                    locale: locale,
                     from: view
                 )
             }
@@ -69,7 +67,6 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         for wallet: MetaAccountModel,
         chain: ChainModel,
         options: [SecretSource],
-        locale _: Locale?,
         from view: AccountManagementViewProtocol?
     ) {
         let handler: (Int) -> Void = { [weak self] selectedIndex in

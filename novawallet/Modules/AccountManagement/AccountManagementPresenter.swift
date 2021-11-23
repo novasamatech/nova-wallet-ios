@@ -350,7 +350,6 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                 for: metaAccount,
                 chain: chain,
                 options: options,
-                locale: selectedLocale,
                 from: view
             )
         case let .failure(error):
