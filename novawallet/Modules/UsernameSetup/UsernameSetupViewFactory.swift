@@ -27,17 +27,20 @@ final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
         for wireframe: UsernameSetupWireframeProtocol,
         interactor: UsernameSetupInteractor
     ) -> UsernameSetupViewProtocol? {
-        let view = OldUsernameSetupViewController(nib: R.nib.usernameSetupViewController)
+        let localizationManager = LocalizationManager.shared
         let presenter = UsernameSetupPresenter()
 
-        view.presenter = presenter
+        let view = UserNameSetupViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-        view.localizationManager = LocalizationManager.shared
-        presenter.localizationManager = LocalizationManager.shared
+        presenter.localizationManager = localizationManager
 
         return view
     }
