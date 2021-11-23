@@ -11,4 +11,4 @@ jobs:
         with:
           token: ${{ secrets.PAT_FOR_DISPATCH }}
           commands: test
-          repository: nova-wallet/nova-wallet-ios
+          repository: nova-wallet/slash-command-dispatch-processor
