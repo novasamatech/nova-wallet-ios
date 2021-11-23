@@ -1,6 +1,0 @@
-#include "../../Pods/Target Support Files/Pods-fearlessAll-fearless/Pods-fearlessAll-fearless.dev.xcconfig"
-
-OTHER_SWIFT_FLAGS = $(inherited) "-DF_DEV"
-
-APP_NAME = Nova Dev
-ICON_SUFFIX = Dev
