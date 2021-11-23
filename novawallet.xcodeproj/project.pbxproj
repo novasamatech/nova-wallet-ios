@@ -511,7 +511,6 @@
 		845E49832636C87B002F8C22 /* StakingManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845E49822636C87B002F8C22 /* StakingManageViewModel.swift */; };
 		845FC93426B09EDB0021EC48 /* RoundedButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */; };
 		846042C02666E2C800CFFCFC /* KaruraResultData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846042BF2666E2C800CFFCFC /* KaruraResultData.swift */; };
-		8460516D25536C4800A1F0B4 /* ExportOption+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460516C25536C4800A1F0B4 /* ExportOption+ViewModel.swift */; };
 		8460517225536E3F00A1F0B4 /* ExportGenericViewModelBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460517125536E3F00A1F0B4 /* ExportGenericViewModelBinder.swift */; };
 		8460519425546E7100A1F0B4 /* Chain+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460519325546E7100A1F0B4 /* Chain+ViewModel.swift */; };
 		8460E1132541DEDA00826F55 /* TransactionDetailsFormViewModelBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8460E1122541DEDA00826F55 /* TransactionDetailsFormViewModelBinder.swift */; };
@@ -2233,7 +2232,6 @@
 		845E49822636C87B002F8C22 /* StakingManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingManageViewModel.swift; sourceTree = "<group>"; };
 		845FC93326B09EDB0021EC48 /* RoundedButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedButton+Style.swift"; sourceTree = "<group>"; };
 		846042BF2666E2C800CFFCFC /* KaruraResultData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaruraResultData.swift; sourceTree = "<group>"; };
-		8460516C25536C4800A1F0B4 /* ExportOption+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExportOption+ViewModel.swift"; sourceTree = "<group>"; };
 		8460517125536E3F00A1F0B4 /* ExportGenericViewModelBinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericViewModelBinder.swift; sourceTree = "<group>"; };
 		8460519325546E7100A1F0B4 /* Chain+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Chain+ViewModel.swift"; sourceTree = "<group>"; };
 		8460E1122541DEDA00826F55 /* TransactionDetailsFormViewModelBinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailsFormViewModelBinder.swift; sourceTree = "<group>"; };
@@ -6737,7 +6735,6 @@
 				84CD356F252620FB0081BC0B /* CryptoType+Extrinsic.swift */,
 				84DF21AA25363C9F005454AE /* Chain+Info.swift */,
 				84DF21AC25363D28005454AE /* WalletAssetId+Chain.swift */,
-				8460516C25536C4800A1F0B4 /* ExportOption+ViewModel.swift */,
 				8460519325546E7100A1F0B4 /* Chain+ViewModel.swift */,
 				84A259F72555C8C9001E91BC /* CryptoType+Keystore.swift */,
 			);
@@ -10115,7 +10112,6 @@
 				84FAB06B2542F2C700319F74 /* ContactsViewModelFactory.swift in Sources */,
 				84FAB0782543791A00319F74 /* ContactContext.swift in Sources */,
 				AEE0C436272A8A79009F9AD5 /* AddChainAccount.swift in Sources */,
-				8460516D25536C4800A1F0B4 /* ExportOption+ViewModel.swift in Sources */,
 				84969734251CE9CD00C39524 /* ContactsConfigurator.swift in Sources */,
 				AE3983A5272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift in Sources */,
 				843461CF26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift in Sources */,
