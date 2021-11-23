@@ -46,8 +46,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     func showExportAccount(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        options: [ExportOption],
-        locale: Locale?,
+        options: [SecretSource],
         from view: AccountManagementViewProtocol?
     ) {
         authorize(animated: true, cancellable: true) { [weak self] success in
@@ -56,7 +55,6 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
                     for: wallet,
                     chain: chain,
                     options: options,
-                    locale: locale,
                     from: view
                 )
             }
@@ -68,46 +66,29 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
     private func performExportPresentation(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        options: [ExportOption],
-        locale: Locale?,
+        options: [SecretSource],
         from view: AccountManagementViewProtocol?
     ) {
-        let cancelTitle = R.string.localizable
-            .commonCancel(preferredLanguages: locale?.rLanguages)
-
-        let actions: [AlertPresentableAction] = options.map { option in
-            switch option {
-            case .mnemonic:
-                let title = R.string.localizable.importMnemonic(preferredLanguages: locale?.rLanguages)
-                return AlertPresentableAction(title: title) { [weak self] in
-                    self?.showMnemonicExport(for: wallet, chain: chain, from: view)
-                }
+        let handler: (Int) -> Void = { [weak self] selectedIndex in
+            switch options[selectedIndex] {
             case .keystore:
-                let title = R.string.localizable.importRecoveryJson(preferredLanguages: locale?.rLanguages)
-                return AlertPresentableAction(title: title) { [weak self] in
-                    self?.showKeystoreExport(for: wallet, chain: chain, from: view)
-                }
+                self?.showKeystoreExport(for: wallet, chain: chain, from: view)
             case .seed:
-                let title = R.string.localizable.importRawSeed(preferredLanguages: locale?.rLanguages)
-                return AlertPresentableAction(title: title) { [weak self] in
-                    self?.showSeedExport(for: wallet, chain: chain, from: view)
-                }
+                self?.showSeedExport(for: wallet, chain: chain, from: view)
+            case .mnemonic:
+                self?.showMnemonicExport(for: wallet, chain: chain, from: view)
             }
         }
 
-        let title = R.string.localizable.importSourcePickerTitle(preferredLanguages: locale?.rLanguages)
-        let alertViewModel = AlertPresentableViewModel(
-            title: title,
-            message: nil,
-            actions: actions,
-            closeAction: cancelTitle
-        )
+        guard let picker = ModalPickerFactory.createPickerListForExport(
+            options: options,
+            delegate: self,
+            context: ModalPickerClosureContext(handler: handler)
+        ) else {
+            return
+        }
 
-        present(
-            viewModel: alertViewModel,
-            style: .actionSheet,
-            from: view
-        )
+        view?.controller.present(picker, animated: true, completion: nil)
     }
 
     private func showMnemonicExport(
@@ -156,5 +137,15 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
             seedView.controller,
             animated: true
         )
+    }
+}
+
+extension AccountManagementWireframe: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let closureContext = context as? ModalPickerClosureContext else {
+            return
+        }
+
+        closureContext.process(selectedIndex: index)
     }
 }
