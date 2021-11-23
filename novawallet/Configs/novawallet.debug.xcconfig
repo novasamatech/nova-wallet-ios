@@ -1,0 +1,6 @@
+#include "../../Pods/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.debug.xcconfig"
+
+OTHER_SWIFT_FLAGS = $(inherited) "-DENABLE_UITUNNEL" "-DF_DEV"
+
+APP_NAME = Nova Dev
+ICON_SUFFIX = Dev
