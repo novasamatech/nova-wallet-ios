@@ -555,3 +555,6 @@ will appear here";
 "wallet.balances.widget.title" = "Your balance";
 "common.max" = "max";
 "crowdloan.custom.contrib.format" = "%@ (via %@)";
+"wallet.nickname.create.title" = "Create wallet nickname";
+"wallet.nickname.create.subtitle" = "This nickname will be displayed only for you and will be stored locally on your mobile device.";
+"wallet.nickname.create.caption" = "Example: Savings, Investments, Crowdloans, Staking.";
