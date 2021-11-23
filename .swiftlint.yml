@@ -2,5 +2,5 @@ excluded:
   - Pods
   - PrivatePods
   - R.generated.swift
-  - fearlessTests
-  - fearlessIntegrationTests
+  - novawalletTests
+  - novawalletIntegrationTests

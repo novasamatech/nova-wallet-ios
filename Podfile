@@ -1,6 +1,6 @@
 platform :ios, '11.0'
 
-abstract_target 'fearlessAll' do
+abstract_target 'novawalletAll' do
   use_frameworks!
 
   pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'd6614d299cef237a79bf4f0df028f6e60ee3625d'
@@ -20,7 +20,7 @@ abstract_target 'fearlessAll' do
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'Charts'
 
-  target 'fearlessTests' do
+  target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
@@ -35,9 +35,9 @@ abstract_target 'fearlessAll' do
 
   end
 
-  target 'fearlessIntegrationTests'
+  target 'novawalletIntegrationTests'
 
-  target 'fearless'
+  target 'novawallet'
 
 end
 

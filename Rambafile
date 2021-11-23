@@ -2,28 +2,28 @@
 company: Soramitsu
 
 ### Xcode project settings
-project_name: fearless
-xcodeproj_path: fearless.xcodeproj
+project_name: novawallet
+xcodeproj_path: novawallet.xcodeproj
 
 ### Code generation settings section
 # The main project target name
-project_target: fearless
+project_target: novawallet
 
 # The file path for new modules
-project_file_path: fearless/Modules/
+project_file_path: novawallet/Modules/
 
 # The Xcode group path to new modules
-project_group_path: fearless/Modules/
+project_group_path: novawallet/Modules/
 
 ### Tests generation settings section
 # The tests target name
-test_target: fearlessTests
+test_target: novawalletTests
 
 # The file path for new tests
-test_file_path: fearlessTests/Modules/
+test_file_path: novawalletTests/Modules/
 
 # The Xcode group path to new tests
-test_group_path: fearlessTests/Modules/
+test_group_path: novawalletTests/Modules/
 
 ### Dependencies settings section
 podfile_path: Podfile
