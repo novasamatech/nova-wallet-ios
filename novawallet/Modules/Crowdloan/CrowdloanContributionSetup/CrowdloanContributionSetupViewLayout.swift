@@ -38,16 +38,6 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
     let leasingPeriodView = TitleMultiValueView()
 
-    let crowdloanInfoTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()!
-        label.font = .h4Title
-        return label
-    }()
-
-    let raisedView = TitleMultiValueView()
-    let timeLeftVew = TitleValueView()
-
     private(set) var learnMoreView: LearnMoreView?
 
     let actionButton: TriangularedButton = {
@@ -119,11 +109,6 @@ class CrowdloanContributionSetupViewLayout: UIView {
         leasingPeriodView.valueTop.text = crowdloanViewModel.leasingPeriod
         leasingPeriodView.valueBottom.text = crowdloanViewModel.leasingCompletionDate
 
-        raisedView.valueTop.text = crowdloanViewModel.raisedProgress
-        raisedView.valueBottom.text = crowdloanViewModel.raisedPercentage
-
-        timeLeftVew.valueLabel.text = crowdloanViewModel.remainedTime
-
         if let learnMore = crowdloanViewModel.learnMore {
             createLearnMoreViewIfNeeded()
             learnMoreView?.bind(viewModel: learnMore)
@@ -162,11 +147,6 @@ class CrowdloanContributionSetupViewLayout: UIView {
 
         amountInputView.title = R.string.localizable
             .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
-
-        crowdloanInfoTitleLabel.text = R.string.localizable.crowdloanInfo(preferredLanguages: locale.rLanguages)
-
-        raisedView.titleLabel.text = R.string.localizable.crowdloanRaised(preferredLanguages: locale.rLanguages)
-        timeLeftVew.titleLabel.text = R.string.localizable.commonTimeLeft(preferredLanguages: locale.rLanguages)
 
         actionButton.imageWithTitleView?.title = R.string.localizable
             .commonContinue(preferredLanguages: locale.rLanguages)
@@ -226,23 +206,6 @@ class CrowdloanContributionSetupViewLayout: UIView {
         spacingView.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
             make.height.equalTo(24)
-        }
-
-        contentView.stackView.addArrangedSubview(crowdloanInfoTitleLabel)
-        crowdloanInfoTitleLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-
-        contentView.stackView.addArrangedSubview(raisedView)
-        raisedView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
-        }
-
-        contentView.stackView.addArrangedSubview(timeLeftVew)
-        timeLeftVew.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
         }
 
         addSubview(actionButton)
@@ -367,14 +330,28 @@ class CrowdloanContributionSetupViewLayout: UIView {
             return
         }
 
+        let maybeLastViewIndex: Int? = {
+            if let bonusView = bonusView {
+                return contentView.stackView.arrangedSubviews.firstIndex(
+                    of: bonusView
+                )
+            } else if let estimatedRewardView = estimatedRewardView {
+                return contentView.stackView.arrangedSubviews.firstIndex(
+                    of: estimatedRewardView
+                )
+            } else {
+                return contentView.stackView.arrangedSubviews.firstIndex(of: leasingPeriodView)
+            }
+        }()
+
         guard
-            let timeLeftIndex = contentView.stackView.arrangedSubviews.firstIndex(of: timeLeftVew) else {
+            let lastIndex = maybeLastViewIndex else {
             return
         }
 
         let view = UIFactory.default.createLearnMoreView()
 
-        contentView.stackView.insertArrangedSubview(view, at: timeLeftIndex + 1)
+        contentView.stackView.insertArrangedSubview(view, at: lastIndex + 1)
         view.snp.makeConstraints { make in
             make.width.equalTo(self)
             make.height.equalTo(48.0)
