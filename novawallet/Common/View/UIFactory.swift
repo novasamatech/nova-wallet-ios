@@ -2,25 +2,26 @@ import UIKit
 import SoraUI
 
 struct UIConstants {
-    static let actionBottomInset: CGFloat = 16.0
-    static let actionHeight: CGFloat = 52.0
-    static let mainAccessoryActionsSpacing: CGFloat = 16.0
-    static let horizontalInset: CGFloat = 16.0
-    static let triangularedViewHeight: CGFloat = 52.0
-    static let expandableViewHeight: CGFloat = 50.0
-    static let formSeparatorWidth: CGFloat = 0.5
-    static let triangularedIconLargeRadius: CGFloat = 12.0
-    static let triangularedIconSmallRadius: CGFloat = 9.0
-    static let smallAddressIconSize = CGSize(width: 18.0, height: 18.0)
-    static let normalAddressIconSize = CGSize(width: 32.0, height: 32.0)
     static let accessoryBarHeight: CGFloat = 44.0
     static let accessoryItemsSpacing: CGFloat = 12.0
+    static let actionBottomInset: CGFloat = 16.0
+    static let actionHeight: CGFloat = 52.0
     static let cellHeight: CGFloat = 48
-    static let tableHeaderHeight: CGFloat = 40.0
+    static let expandableViewHeight: CGFloat = 50.0
+    static let formSeparatorWidth: CGFloat = 0.5
+    static let horizontalInset: CGFloat = 16.0
+    static let mainAccessoryActionsSpacing: CGFloat = 16.0
+    static let networkFeeViewDefaultHeight = 132.0
+    static let normalAddressIconSize = CGSize(width: 32.0, height: 32.0)
     static let separatorHeight: CGFloat = 1 / UIScreen.main.scale
     static let skeletonBigRowSize = CGSize(width: 72.0, height: 12.0)
     static let skeletonSmallRowSize = CGSize(width: 57.0, height: 6.0)
-    static let networkFeeViewDefaultHeight = 132.0
+    static let smallAddressIconSize = CGSize(width: 18.0, height: 18.0)
+    static let tableHeaderHeight: CGFloat = 40.0
+    static let triangularedIconLargeRadius: CGFloat = 12.0
+    static let triangularedIconSmallRadius: CGFloat = 9.0
+    static let triangularedViewHeight: CGFloat = 52.0
+    static let verticalTitleInset: CGFloat = 8.0
 }
 
 enum AccountViewMode {

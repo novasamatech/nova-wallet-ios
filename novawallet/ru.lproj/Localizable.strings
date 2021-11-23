@@ -555,6 +555,9 @@
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
 "crowdloan.custom.contrib.format" = "%@ (через %@)";
+"wallet.nickname.create.title" = "Назовите кошелёк";
+"wallet.nickname.create.subtitle" = "Имя хранится только на вашем мобильном устройстве и показывается только вам.";
+"wallet.nickname.create.caption" = "Примеры: сбережения, инвестиции, краудлоуны, стейкинг.";
 "secret.type.keystore.title" = "JSON для восстановления";
 "secret.type.keystore.subtitle" = "JSON файл";
 "secret.type.seed.title" = "Сид";
