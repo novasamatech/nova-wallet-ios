@@ -15,7 +15,7 @@ class IconWithTitleSubtitleTableViewCell: UITableViewCell, ModalPickerCellProtoc
         backgroundColor = .clear
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorAccent()?.withAlphaComponent(0.3)
+        selectedBackgroundView?.backgroundColor = R.color.colorAccentSelected()
 
         setupLayout()
     }
