@@ -60,6 +60,7 @@ final class UsernameSetupViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = R.color.colorBlack()
         setupLayout()
     }
 
@@ -71,13 +72,14 @@ final class UsernameSetupViewLayout: UIView {
     private func setupLayout() {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(safeAreaLayoutGuide).inset(UIConstants.horizontalInset)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
         }
 
         addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(8.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
         }
 
         addSubview(containerView)
