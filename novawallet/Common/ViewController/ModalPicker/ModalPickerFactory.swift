@@ -34,7 +34,6 @@ enum ModalPickerFactory {
         viewController.separatorStyle = .singleLine
         viewController.separatorColor = R.color.colorDarkGray()
         viewController.cellHeight = 48.0
-        viewController.footerHeight = 4.0
 
         viewController.viewModels = options.map { option in
             LocalizableResource { locale in
