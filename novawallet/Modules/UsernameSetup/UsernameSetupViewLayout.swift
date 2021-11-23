@@ -14,7 +14,7 @@ final class UsernameSetupViewLayout: UIView {
     let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorGray()
+        label.textColor = R.color.colorLightGray()
         label.numberOfLines = 0
         return label
     }()
@@ -41,9 +41,9 @@ final class UsernameSetupViewLayout: UIView {
     let nameField: AnimatedTextField = {
         let textField = AnimatedTextField()
         textField.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 6.0, right: 16.0)
-        textField.titleFont = .h6Title
-        textField.placeholderFont = .h5Title
-        textField.textFont = .h5Title
+        textField.titleFont = .p2Paragraph
+        textField.placeholderFont = .p1Paragraph
+        textField.textFont = .p1Paragraph
         textField.titleColor = R.color.colorLightGray()!
         textField.placeholderColor = R.color.colorLightGray()!
         textField.textColor = R.color.colorWhite()

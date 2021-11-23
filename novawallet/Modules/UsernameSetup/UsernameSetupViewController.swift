@@ -41,6 +41,11 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        rootView.nameField.textField.becomeFirstResponder()
+    }
+
     // MARK: - Setup functions
 
     private func configureActions() {
