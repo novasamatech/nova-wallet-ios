@@ -53,11 +53,6 @@ final class CrowdloanContributionViewModelFactory {
         let leasingEndDate: String
     }
 
-    struct DisplayProgress {
-        let absoluteProgress: String
-        let percentageProgress: String
-    }
-
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
@@ -108,42 +103,6 @@ final class CrowdloanContributionViewModelFactory {
         }
 
         return DisplayLeasingPeriod(leasingPeriod: leasingPeriodTitle, leasingEndDate: leasingEndDateTitle)
-    }
-
-    private func createDisplayProgress(
-        from crowdloan: Crowdloan,
-        metadata _: CrowdloanMetadata,
-        locale: Locale
-    ) -> DisplayProgress {
-        let tokenFormatter = amountFormatterFactory.createTokenFormatter(for: assetInfo).value(for: locale)
-        let displayFormatter = amountFormatterFactory.createDisplayFormatter(for: assetInfo).value(for: locale)
-
-        let percentFormatter = NumberFormatter.percentSingle
-        percentFormatter.locale = locale
-
-        if
-            let raised = Decimal.fromSubstrateAmount(
-                crowdloan.fundInfo.raised,
-                precision: assetInfo.assetPrecision
-            ),
-            let cap = Decimal.fromSubstrateAmount(
-                crowdloan.fundInfo.cap,
-                precision: assetInfo.assetPrecision
-            ),
-            let raisedString = displayFormatter.stringFromDecimal(raised),
-            let totalString = tokenFormatter.stringFromDecimal(cap),
-            cap > 0,
-            let percentageString = percentFormatter.string(from: (raised / cap) as NSNumber) {
-            let absoluteProgress = R.string.localizable.crowdloanRaisedAmount(
-                raisedString,
-                totalString,
-                preferredLanguages: locale.rLanguages
-            )
-
-            return DisplayProgress(absoluteProgress: absoluteProgress, percentageProgress: percentageString)
-        } else {
-            return DisplayProgress(absoluteProgress: "", percentageProgress: "")
-        }
     }
 
     private func createTimeLeft(
@@ -206,10 +165,6 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
             locale: locale
         )
 
-        let displayProgress = createDisplayProgress(from: crowdloan, metadata: metadata, locale: locale)
-
-        let remainedTime = createTimeLeft(for: crowdloan, metadata: metadata, locale: locale)
-
         let title = createTitle(from: crowdloan, displayInfo: displayInfo, locale: locale)
 
         let learnMoreViewModel = displayInfo.map { createLearnMore(from: $0, locale: locale) }
@@ -218,9 +173,6 @@ extension CrowdloanContributionViewModelFactory: CrowdloanContributionViewModelF
             title: title,
             leasingPeriod: displayLeasingPeriod.leasingPeriod,
             leasingCompletionDate: displayLeasingPeriod.leasingEndDate,
-            raisedProgress: displayProgress.absoluteProgress,
-            raisedPercentage: displayProgress.percentageProgress,
-            remainedTime: remainedTime,
             learnMore: learnMoreViewModel
         )
     }
