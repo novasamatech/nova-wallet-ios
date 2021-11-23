@@ -31,7 +31,7 @@ protocol AccountManagementInteractorOutputProtocol: AnyObject {
     func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)
     func didSaveWalletName(_ result: Result<String, Error>)
     func didReceive(
-        exportOptionsResult: Result<[ExportOption], Error>,
+        exportOptionsResult: Result<[SecretSource], Error>,
         metaAccount: MetaAccountModel,
         chain: ChainModel
     )
@@ -55,8 +55,7 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showExportAccount(
         for wallet: MetaAccountModel,
         chain: ChainModel,
-        options: [ExportOption],
-        locale: Locale?,
+        options: [SecretSource],
         from view: AccountManagementViewProtocol?
     )
 }

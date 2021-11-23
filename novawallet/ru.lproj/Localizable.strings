@@ -555,3 +555,10 @@
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
 "crowdloan.custom.contrib.format" = "%@ (через %@)";
+"secret.type.keystore.title" = "JSON для восстановления";
+"secret.type.keystore.subtitle" = "JSON файл";
+"secret.type.seed.title" = "Сид";
+"secret.type.seed.subtitle" = "Шестнадцатеричная строка";
+"secret.type.mnemonic.title" = "Мнемоническая фраза";
+"secret.type.mnemonic.subtitle" = "фраза длиной 12, 15, 18, 21 или 24 слова";
+"secret.type.picker.title" = "Выберите ваш тип секрета";

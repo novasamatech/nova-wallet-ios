@@ -340,7 +340,7 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
     }
 
     func didReceive(
-        exportOptionsResult: Result<[ExportOption], Error>,
+        exportOptionsResult: Result<[SecretSource], Error>,
         metaAccount: MetaAccountModel,
         chain: ChainModel
     ) {
@@ -350,7 +350,6 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
                 for: metaAccount,
                 chain: chain,
                 options: options,
-                locale: selectedLocale,
                 from: view
             )
         case let .failure(error):
