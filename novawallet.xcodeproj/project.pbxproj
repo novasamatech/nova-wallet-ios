@@ -8659,7 +8659,7 @@
 			attributes = {
 				LastSwiftUpdateCheck = 1150;
 				LastUpgradeCheck = 1150;
-				ORGANIZATIONNAME = Soramitsu;
+				ORGANIZATIONNAME = "Nova Foundation";
 				TargetAttributes = {
 					8438E1CE24BFAAD2001BDB13 = {
 						CreatedOnToolsVersion = 11.5;
