@@ -15,14 +15,6 @@ final class UsernameSetupViewFactory: UsernameSetupViewFactoryProtocol {
         return createView(for: wireframe, interactor: interactor)
     }
 
-//    @available(iOS, obsoleted: 10, message: "Network selection functionality does not longer exist")
-    static func createViewForSwitch() -> UsernameSetupViewProtocol? {
-        let wireframe = SwitchAccount.UsernameSetupWireframe()
-        let interactor = UsernameSetupInteractor()
-
-        return createView(for: wireframe, interactor: interactor)
-    }
-
     private static func createView(
         for wireframe: UsernameSetupWireframeProtocol,
         interactor: UsernameSetupInteractor
