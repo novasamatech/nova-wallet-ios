@@ -56,7 +56,6 @@ protocol AccountManagementWireframeProtocol: AlertPresentable, ErrorPresentable,
         for wallet: MetaAccountModel,
         chain: ChainModel,
         options: [SecretSource],
-        locale: Locale?,
         from view: AccountManagementViewProtocol?
     )
 }
