@@ -90,7 +90,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
-          name: fearless.ipa
+          name: novawallet.ipa
           path: export
 
       - name: Upload artifact to Firebase App Distribution
@@ -99,5 +99,5 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: dev-team
-          file: export/fearless.ipa
+          file: export/novawallet.ipa
           releaseNotes: ${{ github.event.head_commit.message }}
