@@ -7,6 +7,7 @@ final class UsernameSetupViewLayout: UIView {
         let label = UILabel()
         label.font = .h2Title
         label.textColor = R.color.colorWhite()
+        label.numberOfLines = 0
         return label
     }()
 
@@ -14,6 +15,7 @@ final class UsernameSetupViewLayout: UIView {
         let label = UILabel()
         label.font = .p1Paragraph
         label.textColor = R.color.colorGray()
+        label.numberOfLines = 0
         return label
     }()
 
@@ -21,6 +23,7 @@ final class UsernameSetupViewLayout: UIView {
         let label = UILabel()
         label.font = .p2Paragraph
         label.textColor = R.color.colorLightGray()
+        label.numberOfLines = 0
         return label
     }()
 
@@ -80,7 +83,7 @@ final class UsernameSetupViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(32.0)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
