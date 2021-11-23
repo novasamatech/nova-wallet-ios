@@ -13,7 +13,7 @@ class PurchaseProviderPickerTableViewCell: UITableViewCell, ModalPickerCellProto
         super.awakeFromNib()
 
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = R.color.colorAccent()!.withAlphaComponent(0.3)
+        selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
         self.selectedBackgroundView = selectedBackgroundView
     }
 
