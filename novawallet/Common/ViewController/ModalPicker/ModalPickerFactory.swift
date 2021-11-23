@@ -10,6 +10,54 @@ enum AccountHeaderType {
 }
 
 enum ModalPickerFactory {
+    static func createPickerListForExport(
+        options: [SecretSource],
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !options.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<SecretTypeTableViewCell, IconWithTitleSubtitleViewModel>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.secretTypePickerTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.selectedIndex = NSNotFound
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.headerBorderType = .none
+        viewController.separatorStyle = .singleLine
+        viewController.separatorColor = R.color.colorDarkGray()
+        viewController.cellHeight = 48.0
+        viewController.footerHeight = 4.0
+
+        viewController.viewModels = options.map { option in
+            LocalizableResource { locale in
+                IconWithTitleSubtitleViewModel(
+                    title: option.titleForLocale(locale),
+                    subtitle: option.subtitleForLocale(locale),
+                    icon: option.icon
+                )
+            }
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(options.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
     static func createPickerForList(
         _ types: [MultiassetCryptoType],
         selectedType: MultiassetCryptoType?,
