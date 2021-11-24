@@ -8,7 +8,7 @@ final class AccountCreateViewFactory {
         model: UsernameSetupModel,
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
-        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
+        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
         let presenter = AccountCreatePresenter(usernameSetup: model)
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
@@ -32,7 +32,7 @@ final class AccountCreateViewFactory {
         isEthereumBased: Bool,
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
-        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
+        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
 
         let presenter = AddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,

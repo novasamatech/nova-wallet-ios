@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_9" orientation="portrait" appearance="dark"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -15,7 +13,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountCreateViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OldAccountCreateViewController" customModule="fearless" customModuleProvider="target">
             <connections>
                 <outlet property="advancedContainerView" destination="ufd-ci-pPo" id="gPp-JR-knR"/>
                 <outlet property="advancedControl" destination="oE5-fi-Ix8" id="oAe-gj-wwV"/>
@@ -43,7 +41,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j2J-jw-4dD">
-                    <rect key="frame" x="0.0" y="44" width="375" height="642"/>
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="720"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="nt2-2c-HuT">
                             <rect key="frame" x="16" y="0.0" width="343" height="450"/>
@@ -173,13 +171,13 @@
                                                     <rect key="frame" x="0.0" y="68" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i8u-Ig-8Iw">
-                                                            <rect key="frame" x="16" y="8" width="280" height="15.333333333333336"/>
+                                                            <rect key="frame" x="16" y="8" width="280" height="15.5"/>
                                                             <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="//hard/soft///password" textAlignment="natural" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="rzy-lG-JEs">
-                                                            <rect key="frame" x="16" y="24.666666666666686" width="280" height="19.333333333333329"/>
+                                                            <rect key="frame" x="16" y="25" width="280" height="19"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
                                                             <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
@@ -278,13 +276,13 @@
                                                     <rect key="frame" x="0.0" y="204" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YqL-Qm-h1c">
-                                                            <rect key="frame" x="16" y="8" width="280" height="15.333333333333336"/>
+                                                            <rect key="frame" x="16" y="8" width="280" height="15.5"/>
                                                             <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="13"/>
                                                             <color key="textColor" name="colorLightGray"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="//hard/soft///password" textAlignment="natural" minimumFontSize="14" translatesAutoresizingMaskIntoConstraints="NO" id="ClA-PG-30V">
-                                                            <rect key="frame" x="16" y="24.666666666666686" width="280" height="19.333333333333329"/>
+                                                            <rect key="frame" x="16" y="25" width="280" height="19"/>
                                                             <color key="tintColor" name="colorWhite"/>
                                                             <color key="textColor" name="colorWhite"/>
                                                             <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
@@ -368,7 +366,7 @@
                     </constraints>
                 </scrollView>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YBP-AM-Ejm" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
-                    <rect key="frame" x="16" y="710" width="343" height="52"/>
+                    <rect key="frame" x="16" y="744" width="343" height="52"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="52" id="Ekb-QS-0r6"/>
@@ -413,20 +411,6 @@
             <point key="canvasLocation" x="137.68115942028987" y="132.88043478260872"/>
         </view>
     </objects>
-    <designables>
-        <designable name="6xr-Yz-lzZ">
-            <size key="intrinsicContentSize" width="271" height="52"/>
-        </designable>
-        <designable name="Mz8-da-wtW">
-            <size key="intrinsicContentSize" width="322.33333333333331" height="52"/>
-        </designable>
-        <designable name="YBP-AM-Ejm">
-            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
-        </designable>
-        <designable name="oE5-fi-Ix8">
-            <size key="intrinsicContentSize" width="97.333333333333329" height="20"/>
-        </designable>
-    </designables>
     <resources>
         <image name="iconAlert" width="24" height="24"/>
         <image name="iconDropDown" width="24" height="24"/>
