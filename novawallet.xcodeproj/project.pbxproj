@@ -460,6 +460,7 @@
 		844DBC62274D1E29009F8351 /* SecretTypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC61274D1E29009F8351 /* SecretTypeTableViewCell.swift */; };
 		844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */; };
 		844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */; };
+		844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC68274E3422009F8351 /* AccountImportSeedView.swift */; };
 		844DD65525EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */; };
 		844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844E1E18266142080076AC59 /* BondedState+Status.swift */; };
 		844EFB5A265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */; };
@@ -2183,6 +2184,7 @@
 		844DBC61274D1E29009F8351 /* SecretTypeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretTypeTableViewCell.swift; sourceTree = "<group>"; };
 		844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerClosureContext.swift; sourceTree = "<group>"; };
 		844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMnemonicView.swift; sourceTree = "<group>"; };
+		844DBC68274E3422009F8351 /* AccountImportSeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportSeedView.swift; sourceTree = "<group>"; };
 		844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartViewModel.swift; sourceTree = "<group>"; };
 		844E1E18266142080076AC59 /* BondedState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BondedState+Status.swift"; sourceTree = "<group>"; };
 		844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionProtocols.swift; sourceTree = "<group>"; };
@@ -4814,6 +4816,7 @@
 			isa = PBXGroup;
 			children = (
 				844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */,
+				844DBC68274E3422009F8351 /* AccountImportSeedView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9126,6 +9129,7 @@
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
+				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
 				84FB1F69252694B600E0242B /* HistoryInfo.swift in Sources */,
 				84C74361251E4B5E009576C6 /* FeeType.swift in Sources */,
