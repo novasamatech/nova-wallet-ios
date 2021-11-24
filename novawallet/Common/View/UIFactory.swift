@@ -39,6 +39,7 @@ protocol UIFactoryProtocol {
     func createExpandableActionControl() -> ExpandableActionControl
     func createTitledMnemonicView(_ title: String?, icon: UIImage?) -> TitledMnemonicView
     func createMultilinedTriangularedView() -> MultilineTriangularedView
+    func createRoundedBackgroundView() -> RoundedView
     func createSeparatorView() -> UIView
     func createBorderedContainerView() -> BorderedContainerView
     func createActionsAccessoryView(
@@ -529,6 +530,17 @@ final class UIFactory: UIFactoryProtocol {
         view.actionImage = R.image.iconHorMore()
         view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 8.0, right: 16.0)
         view.iconRadius = 16.0
+        return view
+    }
+
+    func createRoundedBackgroundView() -> RoundedView {
+        let view = RoundedView()
+        view.cornerRadius = 12.0
+        view.strokeColor = R.color.colorTransparentText()!
+        view.highlightedStrokeColor = R.color.colorTransparentText()!
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.strokeWidth = 1.0
         return view
     }
 }
