@@ -3,7 +3,7 @@ import Foundation
 extension SwitchAccount {
     final class AccountCreateWireframe: AccountCreateWireframeProtocol {
         func confirm(
-            from view: AccountCreateViewProtocol?,
+            from view: OldAccountCreateViewProtocol?,
             request: MetaAccountCreationRequest,
             metadata: MetaAccountCreationMetadata
         ) {
@@ -19,7 +19,7 @@ extension SwitchAccount {
         }
 
         func presentCryptoTypeSelection(
-            from view: AccountCreateViewProtocol?,
+            from view: OldAccountCreateViewProtocol?,
             availableTypes: [MultiassetCryptoType],
             selectedType: MultiassetCryptoType,
             delegate: ModalPickerViewControllerDelegate?,

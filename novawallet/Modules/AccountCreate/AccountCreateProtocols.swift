@@ -1,7 +1,7 @@
 import IrohaCrypto
 import SoraFoundation
 
-protocol AccountCreateViewProtocol: ControllerBackedProtocol {
+protocol OldAccountCreateViewProtocol: ControllerBackedProtocol {
     func set(mnemonic: [String])
     func setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)
     func setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)
@@ -32,13 +32,13 @@ protocol AccountCreateInteractorOutputProtocol: AnyObject {
 
 protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
     func confirm(
-        from view: AccountCreateViewProtocol?,
+        from view: OldAccountCreateViewProtocol?,
         request: MetaAccountCreationRequest,
         metadata: MetaAccountCreationMetadata
     )
 
     func presentCryptoTypeSelection(
-        from view: AccountCreateViewProtocol?,
+        from view: OldAccountCreateViewProtocol?,
         availableTypes: [MultiassetCryptoType],
         selectedType: MultiassetCryptoType,
         delegate: ModalPickerViewControllerDelegate?,
@@ -46,7 +46,7 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
     )
 
     func confirm(
-        from view: AccountCreateViewProtocol?,
+        from view: OldAccountCreateViewProtocol?,
         request: ChainAccountImportMnemonicRequest,
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id
@@ -55,13 +55,13 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
 
 extension AccountCreateWireframeProtocol {
     func confirm(
-        from _: AccountCreateViewProtocol?,
+        from _: OldAccountCreateViewProtocol?,
         request _: MetaAccountCreationRequest,
         metadata _: MetaAccountCreationMetadata
     ) {}
 
     func confirm(
-        from _: AccountCreateViewProtocol?,
+        from _: OldAccountCreateViewProtocol?,
         request _: ChainAccountImportMnemonicRequest,
         metaAccountModel _: MetaAccountModel,
         chainModelId _: ChainModel.Id
@@ -69,13 +69,13 @@ extension AccountCreateWireframeProtocol {
 }
 
 protocol AccountCreateViewFactoryProtocol: AnyObject {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForOnboarding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
+    static func createViewForAdding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
+    static func createViewForSwitch(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
 
     static func createViewForReplaceChainAccount(
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool
-    ) -> AccountCreateViewProtocol?
+    ) -> OldAccountCreateViewProtocol?
 }

@@ -234,7 +234,7 @@ final class OldAccountCreateViewController: UIViewController {
 
 // MARK: - AccountCreateViewProtocol
 
-extension OldAccountCreateViewController: AccountCreateViewProtocol {
+extension OldAccountCreateViewController: OldAccountCreateViewProtocol {
     func set(mnemonic: [String]) {
         setupMnemonicViewIfNeeded()
 

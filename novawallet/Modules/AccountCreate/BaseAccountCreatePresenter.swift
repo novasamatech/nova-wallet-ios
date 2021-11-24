@@ -3,7 +3,7 @@ import IrohaCrypto
 import SoraFoundation
 
 class BaseAccountCreatePresenter {
-    weak var view: AccountCreateViewProtocol?
+    weak var view: OldAccountCreateViewProtocol?
     var wireframe: AccountCreateWireframeProtocol!
     var interactor: AccountCreateInteractorInputProtocol!
 

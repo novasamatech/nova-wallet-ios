@@ -4,7 +4,7 @@ import IrohaCrypto
 extension AddChainAccount {
     final class AccountCreateWireframe: AccountCreateWireframeProtocol {
         func confirm(
-            from view: AccountCreateViewProtocol?,
+            from view: OldAccountCreateViewProtocol?,
             request: ChainAccountImportMnemonicRequest,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id
@@ -24,7 +24,7 @@ extension AddChainAccount {
         }
 
         func presentCryptoTypeSelection(
-            from view: AccountCreateViewProtocol?,
+            from view: OldAccountCreateViewProtocol?,
             availableTypes: [MultiassetCryptoType],
             selectedType: MultiassetCryptoType,
             delegate: ModalPickerViewControllerDelegate?,

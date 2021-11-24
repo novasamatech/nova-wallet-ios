@@ -7,7 +7,7 @@ final class AccountCreateViewFactory {
     private static func createViewForUsername(
         model: UsernameSetupModel,
         wireframe: AccountCreateWireframeProtocol
-    ) -> AccountCreateViewProtocol? {
+    ) -> OldAccountCreateViewProtocol? {
         let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
         let presenter = AccountCreatePresenter(usernameSetup: model)
 
@@ -31,7 +31,7 @@ final class AccountCreateViewFactory {
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool,
         wireframe: AccountCreateWireframeProtocol
-    ) -> AccountCreateViewProtocol? {
+    ) -> OldAccountCreateViewProtocol? {
         let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
 
         let presenter = AddChainAccount.AccountCreatePresenter(
@@ -59,7 +59,7 @@ final class AccountCreateViewFactory {
 // MARK: - AccountCreateViewFactoryProtocol
 
 extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForOnboarding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
         let wireframe = AccountCreateWireframe()
 
         return createViewForUsername(
@@ -68,7 +68,7 @@ extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         )
     }
 
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForAdding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
         let wireframe = AddAccount.AccountCreateWireframe()
 
         return createViewForUsername(
@@ -77,7 +77,7 @@ extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         )
     }
 
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForSwitch(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
         let wireframe = SwitchAccount.AccountCreateWireframe()
         return createViewForUsername(model: model, wireframe: wireframe)
     }
@@ -86,7 +86,7 @@ extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool
-    ) -> AccountCreateViewProtocol? {
+    ) -> OldAccountCreateViewProtocol? {
         let wireframe = AddChainAccount.AccountCreateWireframe()
 
         return createViewForReplace(
