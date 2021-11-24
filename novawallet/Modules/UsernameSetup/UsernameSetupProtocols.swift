@@ -22,6 +22,5 @@ protocol UsernameSetupWireframeProtocol: AlertPresentable, NetworkTypeSelectionP
 protocol UsernameSetupViewFactoryProtocol: AnyObject {
     static func createViewForOnboarding() -> UsernameSetupViewProtocol?
     static func createViewForAdding() -> UsernameSetupViewProtocol?
-    // TODO: Remove method completely
-//    static func createViewForSwitch() -> UsernameSetupViewProtocol?
+    static func createViewForSwitch() -> UsernameSetupViewProtocol?
 }

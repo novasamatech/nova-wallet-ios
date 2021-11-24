@@ -1,23 +1,40 @@
+import Foundation
 import UIKit
 import SoraFoundation
 import SoraUI
 
-final class UsernameSetupViewController: UIViewController {
-    var presenter: UsernameSetupPresenterProtocol!
+final class UserNameSetupViewController: UIViewController, ViewHolder {
+    typealias RootViewType = UsernameSetupViewLayout
 
-    @IBOutlet private var inputField: AnimatedTextField!
-    @IBOutlet private var hintLabel: UILabel!
-    @IBOutlet private var nextButton: TriangularedButton!
-
-    @IBOutlet private var nextBottom: NSLayoutConstraint!
-
-    private var isFirstLayoutCompleted: Bool = false
+    let presenter: UsernameSetupPresenterProtocol
 
     private var viewModel: InputViewModelProtocol?
+    private var isFirstLayoutCompleted: Bool = false
+
+    // MARK: - Lifecycle
+
+    init(
+        presenter: UsernameSetupPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol?
+    ) {
+        self.presenter = presenter
+        super.init(nibName: nil, bundle: nil)
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = UsernameSetupViewLayout()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configureActions()
         configureTextField()
         setupLocalization()
 
@@ -26,42 +43,31 @@ final class UsernameSetupViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        if keyboardHandler == nil {
-            setupKeyboardHandler()
-
-            inputField.becomeFirstResponder()
-        }
+        rootView.nameField.textField.becomeFirstResponder()
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+    // MARK: - Setup functions
 
-        clearKeyboardHandler()
-    }
+    private func configureActions() {
+        rootView.nameField.addTarget(
+            self, action: #selector(textFieldDidChange(_:)),
+            for: .editingChanged
+        )
 
-    override func viewDidLayoutSubviews() {
-        guard !isFirstLayoutCompleted else {
-            return
-        }
-
-        isFirstLayoutCompleted = true
-
-        if currentKeyboardFrame != nil {
-            applyCurrentKeyboardFrame()
-        }
-
-        super.viewDidLayoutSubviews()
+        rootView.proceedButton.addTarget(
+            self, action: #selector(actionNext),
+            for: .touchUpInside
+        )
     }
 
     private func configureTextField() {
-        inputField.textField.returnKeyType = .done
-        inputField.textField.textContentType = .nickname
-        inputField.textField.autocapitalizationType = .none
-        inputField.textField.autocorrectionType = .no
-        inputField.textField.spellCheckingType = .no
+        rootView.nameField.textField.returnKeyType = .done
+        rootView.nameField.textField.textContentType = .nickname
+        rootView.nameField.textField.autocapitalizationType = .sentences
+        rootView.nameField.textField.autocorrectionType = .no
+        rootView.nameField.textField.spellCheckingType = .no
 
-        inputField.delegate = self
+        rootView.nameField.delegate = self
     }
 
     private func updateActionButton() {
@@ -70,12 +76,28 @@ final class UsernameSetupViewController: UIViewController {
         }
 
         let isEnabled = viewModel.inputHandler.completed
-        nextButton.set(enabled: isEnabled)
+        rootView.proceedButton.set(enabled: isEnabled)
     }
 
-    // MARK: Private
+    private func setupLocalization() {
+        let languages = localizationManager?.preferredLocalizations
 
-    @IBAction private func textFieldDidChange(_ sender: UITextField) {
+        rootView.titleLabel.text = R.string.localizable.walletNicknameCreateTitle(preferredLanguages: languages)
+
+        rootView.subtitleLabel.text = R.string.localizable.walletNicknameCreateSubtitle(preferredLanguages: languages)
+
+        rootView.captionLabel.text = R.string.localizable.walletNicknameCreateCaption(preferredLanguages: languages)
+
+        rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle(preferredLanguages: languages)
+
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .commonNext(preferredLanguages: languages)
+        rootView.proceedButton.invalidateLayout()
+    }
+
+    // MARK: - Actions
+
+    @objc private func textFieldDidChange(_ sender: UITextField) {
         if viewModel?.inputHandler.value != sender.text {
             sender.text = viewModel?.inputHandler.value
         }
@@ -83,14 +105,15 @@ final class UsernameSetupViewController: UIViewController {
         updateActionButton()
     }
 
-    @IBAction private func actionNext() {
-        inputField.resignFirstResponder()
-
+    @objc private func actionNext() {
+        rootView.nameField.resignFirstResponder()
         presenter.proceed()
     }
 }
 
-extension UsernameSetupViewController: AnimatedTextFieldDelegate {
+// MARK: - AnimatedTextFieldDelegate
+
+extension UserNameSetupViewController: AnimatedTextFieldDelegate {
     func animatedTextField(
         _ textField: AnimatedTextField,
         shouldChangeCharactersIn range: NSRange,
@@ -111,48 +134,22 @@ extension UsernameSetupViewController: AnimatedTextFieldDelegate {
 
     func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
         textField.resignFirstResponder()
-
         return false
     }
 }
 
-extension UsernameSetupViewController: KeyboardViewAdoptable {
-    var targetBottomConstraint: NSLayoutConstraint? { nextBottom }
+// MARK: - UsernameSetupViewProtocol
 
-    var shouldApplyKeyboardFrame: Bool { isFirstLayoutCompleted }
-
-    func offsetFromKeyboardWithInset(_ bottomInset: CGFloat) -> CGFloat {
-        if bottomInset > 0.0 {
-            return -view.safeAreaInsets.bottom + 24
-        } else {
-            return 24
-        }
-    }
-}
-
-extension UsernameSetupViewController: UsernameSetupViewProtocol {
+extension UserNameSetupViewController: UsernameSetupViewProtocol {
     func setInput(viewModel: InputViewModelProtocol) {
         self.viewModel = viewModel
-
         updateActionButton()
     }
 }
 
-extension UsernameSetupViewController: Localizable {
-    private func setupLocalization() {
-        let languages = localizationManager?.preferredLocalizations
+// MARK: - Localizable
 
-        title = R.string.localizable.walletUsernameSetupTitle(preferredLanguages: languages)
-
-        nextButton.imageWithTitleView?.title = R.string.localizable
-            .commonNext(preferredLanguages: languages)
-        nextButton.invalidateLayout()
-
-        hintLabel.text = R.string.localizable.walletUsernameSetupHint(preferredLanguages: languages)
-
-        inputField.title = R.string.localizable.walletUsernameSetupChooseTitle(preferredLanguages: languages)
-    }
-
+extension UserNameSetupViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()

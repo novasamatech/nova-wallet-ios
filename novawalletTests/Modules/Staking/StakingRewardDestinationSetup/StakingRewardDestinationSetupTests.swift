@@ -1,11 +1,3 @@
-//
-//  StakingRewardDestinationSetupTests.swift
-//  fearlessTests
-//
-//  Created by Ruslan Rezin on 18.05.2021.
-//  Copyright © 2021 Soramitsu. All rights reserved.
-//
-
 import XCTest
 @testable import novawallet
 import Cuckoo

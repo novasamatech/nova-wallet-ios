@@ -190,7 +190,7 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
 
             let accountId = metaAccount.fetchChainAccountId(for: chain.accountRequest())
 
-            var options: [ExportOption] = [.keystore]
+            var options: [SecretSource] = []
 
             let entropyTag = KeystoreTagV2.entropyTagForMetaId(
                 metaAccount.metaId,
@@ -207,6 +207,8 @@ extension AccountManagementInteractor: AccountManagementInteractorInputProtocol 
             if hasSeed || accountResponse.cryptoType.supportsSeedFromSecretKey {
                 options.append(.seed)
             }
+
+            options.append(.keystore)
 
             presenter?.didReceive(
                 exportOptionsResult: .success(options),

@@ -121,7 +121,7 @@ final class CrowdloanTableViewCell: UITableViewCell {
         super.setHighlighted(highlighted, animated: animated)
 
         backgroundBlurView.overlayView.fillColor = highlighted ?
-            R.color.colorAccent()!.withAlphaComponent(0.3)
+            R.color.colorAccentSelected()!
             : .clear
     }
 
