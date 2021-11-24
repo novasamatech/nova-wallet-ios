@@ -459,6 +459,7 @@
 		844DBC60274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC5F274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift */; };
 		844DBC62274D1E29009F8351 /* SecretTypeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC61274D1E29009F8351 /* SecretTypeTableViewCell.swift */; };
 		844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */; };
+		844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */; };
 		844DD65525EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */; };
 		844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844E1E18266142080076AC59 /* BondedState+Status.swift */; };
 		844EFB5A265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */; };
@@ -2181,6 +2182,7 @@
 		844DBC5F274D1B3E009F8351 /* IconWithTitleSubtitleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconWithTitleSubtitleViewModel.swift; sourceTree = "<group>"; };
 		844DBC61274D1E29009F8351 /* SecretTypeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretTypeTableViewCell.swift; sourceTree = "<group>"; };
 		844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerClosureContext.swift; sourceTree = "<group>"; };
+		844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMnemonicView.swift; sourceTree = "<group>"; };
 		844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartViewModel.swift; sourceTree = "<group>"; };
 		844E1E18266142080076AC59 /* BondedState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BondedState+Status.swift"; sourceTree = "<group>"; };
 		844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionProtocols.swift; sourceTree = "<group>"; };
@@ -4806,6 +4808,14 @@
 				848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */,
 			);
 			path = DataProviders;
+			sourceTree = "<group>";
+		};
+		844DBC65274E2B45009F8351 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		844DD65325EAF31100B1DA97 /* ViewModel */ = {
@@ -7800,6 +7810,7 @@
 		BF6F50DD15230CADAC713359 /* AccountImport */ = {
 			isa = PBXGroup;
 			children = (
+				844DBC65274E2B45009F8351 /* View */,
 				843C49D924DF371F00B71DDA /* Model */,
 				B29514E516CEAAB159851D95 /* AccountImportProtocols.swift */,
 				85F45A5C6145F863760F4409 /* AccountImportWireframe.swift */,
@@ -10238,6 +10249,7 @@
 				845B822126EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift in Sources */,
 				8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */,
 				F48220F8DA16EB51313B5D56 /* ExportMnemonicConfirmWireframe.swift in Sources */,
+				844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */,
 				6D6C6FD2F13603BCE83CFC65 /* ExportMnemonicConfirmInteractor.swift in Sources */,
 				0CA307BC2F570941CD22C9AA /* ExportMnemonicConfirmViewFactory.swift in Sources */,
 				844CB57A26FA706C00396E13 /* ChainAssetDisplayInfo.swift in Sources */,
