@@ -1,8 +1,8 @@
 name: Build and Test on PR
 
 on:
-  repository_dispatch:
-    types: [test-command]
+  pull_request_target:
+    types: [labeled]
   # pull_request:
   #   branches: [ develop ]
 
