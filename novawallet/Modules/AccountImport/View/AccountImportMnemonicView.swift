@@ -1,11 +1,13 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
-final class AccountImportMnemonicView: UIView {
+final class AccountImportMnemonicView: AccountImportBaseView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .h2Title
+        label.numberOfLines = 0
         return label
     }()
 
@@ -13,6 +15,7 @@ final class AccountImportMnemonicView: UIView {
         let label = UILabel()
         label.textColor = R.color.colorLightGray()
         label.font = .p1Paragraph
+        label.numberOfLines = 0
         return label
     }()
 
@@ -37,6 +40,7 @@ final class AccountImportMnemonicView: UIView {
         let label = UILabel()
         label.textColor = R.color.colorLightGray()
         label.font = .p2Paragraph
+        label.numberOfLines = 0
         return label
     }()
 
@@ -45,6 +49,8 @@ final class AccountImportMnemonicView: UIView {
         button.applyDefaultStyle()
         return button
     }()
+
+    private(set) var sourceViewModel: InputViewModelProtocol?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,6 +63,18 @@ final class AccountImportMnemonicView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bindSource(viewModel: InputViewModelProtocol) {
+        sourceViewModel = viewModel
+        mnemonicTextView.text = viewModel.inputHandler.value
+    }
+
+    override func setupLocalization() {
+        titleLabel.text = "Enter the words in the right order"
+        subtitleLabel.text = "Write words separately with one space, no commas or other signs."
+        mnemonicTitleLabel.text = "Mnemonic Passphrase"
+        hintLabel.text = "Typically 12-word phrase (but may be 15, 18, 21 or 24)"
     }
 
     private func setupLayout() {

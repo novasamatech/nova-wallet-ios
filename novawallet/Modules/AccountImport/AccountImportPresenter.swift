@@ -4,7 +4,6 @@ import SoraFoundation
 final class AccountImportPresenter: BaseAccountImportPresenter {
     override func processProceed() {
         guard
-            let selectedSourceType = selectedSourceType,
             let selectedCryptoType = selectedSubstrateCryptoType,
             let sourceViewModel = sourceViewModel,
             let usernameViewModel = usernameViewModel
@@ -84,11 +83,7 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     }
 
     override func getVisibilitySettings() -> AccountImportVisibility {
-        guard let sourceType = selectedSourceType else {
-            return .walletMnemonic
-        }
-
-        switch sourceType {
+        switch selectedSourceType {
         case .mnemonic:
             return .walletMnemonic
         case .seed:

@@ -365,7 +365,7 @@ extension AccountImportViewController: AccountImportViewProtocol {
         title = newTitle
     }
 
-    func setSource(type: AccountImportSource) {
+    func setSource(type: SecretSource) {
         let settings = presenter.provideVisibilitySettings()
         updateVisibility(settings)
 

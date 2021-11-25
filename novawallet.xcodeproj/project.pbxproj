@@ -402,9 +402,7 @@
 		843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843B1D79263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift */; };
 		843C49D824DD98CC00B71DDA /* DerivationPathConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */; };
 		843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49DA24DF373000B71DDA /* AccountImportRequest.swift */; };
-		843C49DD24DF397800B71DDA /* AccountImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49DC24DF397800B71DDA /* AccountImportSource.swift */; };
 		843C49DF24DF3CB300B71DDA /* AccountImportMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49DE24DF3CB300B71DDA /* AccountImportMetadata.swift */; };
-		843C49E124DFFC9500B71DDA /* AccountImportSource+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49E024DFFC9500B71DDA /* AccountImportSource+ViewModel.swift */; };
 		843EC7A82701F63600C7DC7E /* PriceProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */; };
 		843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */; };
 		843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */; };
@@ -461,6 +459,10 @@
 		844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */; };
 		844DBC67274E2B6E009F8351 /* AccountImportMnemonicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */; };
 		844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC68274E3422009F8351 /* AccountImportSeedView.swift */; };
+		844DBC6B274E3D6B009F8351 /* AccountImportKeystoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC6A274E3D6B009F8351 /* AccountImportKeystoreView.swift */; };
+		844DBC6D274E5325009F8351 /* AccountImportViewController1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC6C274E5325009F8351 /* AccountImportViewController1.swift */; };
+		844DBC6F274E702C009F8351 /* AccountImportBaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC6E274E702C009F8351 /* AccountImportBaseView.swift */; };
+		844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */; };
 		844DD65525EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */; };
 		844E1E19266142080076AC59 /* BondedState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844E1E18266142080076AC59 /* BondedState+Status.swift */; };
 		844EFB5A265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */; };
@@ -2124,9 +2126,7 @@
 		843B1D79263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmLayout.swift; sourceTree = "<group>"; };
 		843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationPathConstants.swift; sourceTree = "<group>"; };
 		843C49DA24DF373000B71DDA /* AccountImportRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportRequest.swift; sourceTree = "<group>"; };
-		843C49DC24DF397800B71DDA /* AccountImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportSource.swift; sourceTree = "<group>"; };
 		843C49DE24DF3CB300B71DDA /* AccountImportMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMetadata.swift; sourceTree = "<group>"; };
-		843C49E024DFFC9500B71DDA /* AccountImportSource+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountImportSource+ViewModel.swift"; sourceTree = "<group>"; };
 		843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceProviderFactoryStub.swift; sourceTree = "<group>"; };
 		843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonSingleProviderSource.swift; sourceTree = "<group>"; };
 		843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanDisplayInfo.swift; sourceTree = "<group>"; };
@@ -2185,6 +2185,10 @@
 		844DBC63274D2BD6009F8351 /* ModalPickerClosureContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerClosureContext.swift; sourceTree = "<group>"; };
 		844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMnemonicView.swift; sourceTree = "<group>"; };
 		844DBC68274E3422009F8351 /* AccountImportSeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportSeedView.swift; sourceTree = "<group>"; };
+		844DBC6A274E3D6B009F8351 /* AccountImportKeystoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportKeystoreView.swift; sourceTree = "<group>"; };
+		844DBC6C274E5325009F8351 /* AccountImportViewController1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportViewController1.swift; sourceTree = "<group>"; };
+		844DBC6E274E702C009F8351 /* AccountImportBaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportBaseView.swift; sourceTree = "<group>"; };
+		844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingMainBaseWireframe.swift; sourceTree = "<group>"; };
 		844DD65425EAF32D00B1DA97 /* SelectValidatorsStartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsStartViewModel.swift; sourceTree = "<group>"; };
 		844E1E18266142080076AC59 /* BondedState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BondedState+Status.swift"; sourceTree = "<group>"; };
 		844EFB59265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionProtocols.swift; sourceTree = "<group>"; };
@@ -4817,6 +4821,8 @@
 			children = (
 				844DBC66274E2B6E009F8351 /* AccountImportMnemonicView.swift */,
 				844DBC68274E3422009F8351 /* AccountImportSeedView.swift */,
+				844DBC6A274E3D6B009F8351 /* AccountImportKeystoreView.swift */,
+				844DBC6E274E702C009F8351 /* AccountImportBaseView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -5582,7 +5588,6 @@
 				8424A8C6262EC0E50091BFB1 /* PayoutInfo.swift */,
 				842876B024AE059700D91AD8 /* AboutData.swift */,
 				84113B6B255B2835009BD21A /* AccountCreateError.swift */,
-				843C49DC24DF397800B71DDA /* AccountImportSource.swift */,
 				84DA3B1524C81ECE00B5E27F /* AccountItem.swift */,
 				8423B0DF251A759000B8687C /* Chain.swift */,
 				8463A72C25E3A8E1003B8160 /* ChainStorageDecodedItem.swift */,
@@ -5656,6 +5661,7 @@
 				8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */,
 				8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */,
 				8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */,
+				844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */,
 			);
 			path = OnbordingMain;
 			sourceTree = "<group>";
@@ -6741,7 +6747,6 @@
 				84DA3B1824C8200E00B5E27F /* ConnectionItem+Default.swift */,
 				84D8F16E24D8451F00AF43E9 /* CryptoType+ViewModel.swift */,
 				84D8F17024D856D300AF43E9 /* SNAddressType+ViewModel.swift */,
-				843C49E024DFFC9500B71DDA /* AccountImportSource+ViewModel.swift */,
 				84A2C90124E07E440020D3B7 /* CryptoType+Utils.swift */,
 				84754C992513871300854599 /* SNAddressType+Codable.swift */,
 				8423B0E3251A774700B8687C /* SNAddressType+Chain.swift */,
@@ -7824,6 +7829,7 @@
 				E1E60EF37AC0A7646ED8FE64 /* AccountImportViewFactory.swift */,
 				84EBC53B24F6401F00459D15 /* BaseAccountImportInteractor.swift */,
 				AE3983A1272C08AD00BC8A85 /* BaseAccountImportPresenter.swift */,
+				844DBC6C274E5325009F8351 /* AccountImportViewController1.swift */,
 			);
 			path = AccountImport;
 			sourceTree = "<group>";
@@ -9090,6 +9096,7 @@
 				84FD3DC02541B10B00A234E3 /* TransactionDetailsViewModelFactory.swift in Sources */,
 				F4CE0FC727344F600094CD8A /* AcalaContributionConfirmProtocols.swift in Sources */,
 				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
+				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
 				F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */,
@@ -9138,7 +9145,6 @@
 				84DD5F77263DFD9C00425ACF /* WarningConditionViolation.swift in Sources */,
 				84D2F45425EF044B008B914D /* RecommendedValidatorListViewModel.swift in Sources */,
 				84FD3DB52540ED0900A234E3 /* Block.swift in Sources */,
-				843C49DD24DF397800B71DDA /* AccountImportSource.swift in Sources */,
 				8494D86B25247F9600614D8F /* Decimal+String.swift in Sources */,
 				843910AA253E3BAA00E3C217 /* WebSocketSubscriptionProtocols.swift in Sources */,
 				84873B0926029CBD000A83EE /* StakingStateViewModelFactory.swift in Sources */,
@@ -9158,6 +9164,7 @@
 				F4F65C2E26D8B7F7002EE838 /* FWXAxisChartLegendView.swift in Sources */,
 				F47BBD8B263189DB0087DA11 /* StakingBalanceAction.swift in Sources */,
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
+				844DBC6B274E3D6B009F8351 /* AccountImportKeystoreView.swift in Sources */,
 				8490151F24ABC61F008F705E /* WalletAssetViewModelFactory.swift in Sources */,
 				842876A524AE049B00D91AD8 /* SelectableTitleListViewModel.swift in Sources */,
 				847C96302553426D002D288F /* ExportGenericViewModel.swift in Sources */,
@@ -9225,7 +9232,6 @@
 				84B018B026E0450F00C75E28 /* ValidatorStateView.swift in Sources */,
 				AEE0C43A272A8B1F009F9AD5 /* AddChainAccount+AccountCreateWireframe.swift in Sources */,
 				84563CFF24EFE07E0055591D /* Storage+Identifiable.swift in Sources */,
-				843C49E124DFFC9500B71DDA /* AccountImportSource+ViewModel.swift in Sources */,
 				84038FF226FFBE1900C73F3F /* JsonLocalSubscriptionHandler.swift in Sources */,
 				842898D1265A955A002D5D65 /* ImageViewModel.swift in Sources */,
 				8490145324A93FD1008F705E /* FearlessLoadingViewFactory.swift in Sources */,
@@ -9243,6 +9249,7 @@
 				841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */,
 				84452F9325D5EE7300F47EC5 /* DataOperationFactory.swift in Sources */,
 				F43A597026D535E2005E973D /* AnalyticsPresenterBaseProtocols.swift in Sources */,
+				844DBC6F274E702C009F8351 /* AccountImportBaseView.swift in Sources */,
 				8490151824AB8C6D008F705E /* WalletCommonStyleConfigurator.swift in Sources */,
 				849E0CD025CFDDB700B33506 /* StorageUpdateData+Decoding.swift in Sources */,
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
@@ -9519,6 +9526,7 @@
 				84B64E412704569D00914E88 /* StakingLocalSubscriptionHandler.swift in Sources */,
 				848FFE9525E6DF2200652AA5 /* PagedKeysRequest.swift in Sources */,
 				8428766B24ADF51D00D91AD8 /* UIViewController+Modal.swift in Sources */,
+				844DBC6D274E5325009F8351 /* AccountImportViewController1.swift in Sources */,
 				84F30E9725FD3C5300039D09 /* EventEmittingStorageSubscription.swift in Sources */,
 				8494D85E25246E9A00614D8F /* WalletTokenViewModel.swift in Sources */,
 				AEAC68FE26EA3C2A00346599 /* CoingeckoPriceSource.swift in Sources */,
