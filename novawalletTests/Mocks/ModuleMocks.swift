@@ -2448,9 +2448,9 @@ import SoraFoundation
 
 
 
- class MockAccountCreatePresenterProtocol: AccountCreatePresenterProtocol, Cuckoo.ProtocolMock {
+ class MockAccountCreatePresenterProtocol: OldAccountCreatePresenterProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AccountCreatePresenterProtocol
+     typealias MocksType = OldAccountCreatePresenterProtocol
     
      typealias Stubbing = __StubbingProxy_AccountCreatePresenterProtocol
      typealias Verification = __VerificationProxy_AccountCreatePresenterProtocol
@@ -2458,9 +2458,9 @@ import SoraFoundation
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AccountCreatePresenterProtocol?
+    private var __defaultImplStub: OldAccountCreatePresenterProtocol?
 
-     func enableDefaultImplementation(_ stub: AccountCreatePresenterProtocol) {
+     func enableDefaultImplementation(_ stub: OldAccountCreatePresenterProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -2629,7 +2629,7 @@ import SoraFoundation
 	}
 }
 
- class AccountCreatePresenterProtocolStub: AccountCreatePresenterProtocol {
+ class AccountCreatePresenterProtocolStub: OldAccountCreatePresenterProtocol {
     
 
     

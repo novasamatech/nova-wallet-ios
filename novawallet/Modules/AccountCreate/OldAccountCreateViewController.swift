@@ -3,7 +3,7 @@ import SoraFoundation
 import SoraUI
 
 final class OldAccountCreateViewController: UIViewController {
-    var presenter: AccountCreatePresenterProtocol!
+    var presenter: OldAccountCreatePresenterProtocol!
 
     @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var stackView: UIStackView!

@@ -2,7 +2,8 @@ import UIKit
 import IrohaCrypto
 import SoraFoundation
 
-final class AccountCreatePresenter: BaseAccountCreatePresenter {
+// TODO: Reefactor (rename + restruct)
+final class AccountCreatePresenter: {
     let usernameSetup: UsernameSetupModel
 
     init(usernameSetup: UsernameSetupModel) {

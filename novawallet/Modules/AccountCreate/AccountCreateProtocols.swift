@@ -19,6 +19,13 @@ protocol AccountCreateViewProtocol: ControllerBackedProtocol {
 
 protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
+    func activateAdvanced()
+    func proceed()
+}
+
+// TODO: Remove
+protocol OldAccountCreatePresenterProtocol: AnyObject {
+    func setup()
     func selectCryptoType()
     func activateInfo()
     func validate()

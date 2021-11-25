@@ -1,6 +1,6 @@
 import SwiftUI
-extension AddChainAccount {
-    final class AccountCreatePresenter: BaseAccountCreatePresenter {
+extension OldAddChainAccount {
+    final class AccountCreatePresenter: OldBaseAccountCreatePresenter {
         let metaAccountModel: MetaAccountModel
         let chainModelId: ChainModel.Id
         let isEthereumBased: Bool

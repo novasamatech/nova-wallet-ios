@@ -34,7 +34,7 @@ final class AccountCreateViewFactory {
     ) -> OldAccountCreateViewProtocol? {
         let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
 
-        let presenter = AddChainAccount.AccountCreatePresenter(
+        let presenter = OldAddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
             isEthereumBased: isEthereumBased
@@ -87,7 +87,7 @@ extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool
     ) -> OldAccountCreateViewProtocol? {
-        let wireframe = AddChainAccount.AccountCreateWireframe()
+        let wireframe = OldAddChainAccount.AccountCreateWireframe()
 
         return createViewForReplace(
             metaAccountModel: metaAccountModel,

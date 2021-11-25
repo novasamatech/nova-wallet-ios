@@ -1,7 +1,7 @@
 import Foundation
 import IrohaCrypto
 
-extension AddChainAccount {
+extension OldAddChainAccount {
     final class AccountCreateWireframe: AccountCreateWireframeProtocol {
         func confirm(
             from view: OldAccountCreateViewProtocol?,

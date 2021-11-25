@@ -5,12 +5,12 @@ import SoraFoundation
 final class AccountCreateViewController: UIViewController, ViewHolder {
     typealias RootViewType = AccountCreateViewLayout
 
-    let presenter: AccountCreatePresenterProtocol
+    let presenter: OldAccountCreatePresenterProtocol
 
     // MARK: - Lifecycle
 
     init(
-        presenter: AccountCreatePresenterProtocol,
+        presenter: OldAccountCreatePresenterProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter

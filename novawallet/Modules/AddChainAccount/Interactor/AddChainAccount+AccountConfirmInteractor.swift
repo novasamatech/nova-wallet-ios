@@ -3,7 +3,7 @@ import SoraKeystore
 import IrohaCrypto
 import RobinHood
 
-extension AddChainAccount {
+extension OldAddChainAccount {
     final class AccountConfirmInteractor: BaseChainAccountConfirmInteractor {
         private(set) var settings: SelectedWalletSettings
         let eventCenter: EventCenterProtocol
