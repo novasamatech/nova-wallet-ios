@@ -8,6 +8,7 @@ extension ImportChainAccount {
         let isEthereumBased: Bool
 
         init(
+            secretSource: SecretSource,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
             isEthereumBased: Bool
@@ -15,11 +16,12 @@ extension ImportChainAccount {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
+
+            super.init(secretSource: secretSource)
         }
 
         private func prooceedWithSubstrate() {
             guard
-                let selectedSourceType = selectedSourceType,
                 let selectedCryptoType = selectedSubstrateCryptoType,
                 let sourceViewModel = sourceViewModel
             else {
@@ -90,10 +92,7 @@ extension ImportChainAccount {
         }
 
         private func proceedWithEthereum() {
-            guard
-                let selectedSourceType = selectedSourceType,
-                let sourceViewModel = sourceViewModel
-            else {
+            guard let sourceViewModel = sourceViewModel else {
                 return
             }
 
@@ -174,11 +173,7 @@ extension ImportChainAccount {
         }
 
         override func getVisibilitySettings() -> AccountImportVisibility {
-            guard let sourceType = selectedSourceType else {
-                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
-            }
-
-            switch sourceType {
+            switch selectedSourceType {
             case .mnemonic:
                 return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
             case .seed:
