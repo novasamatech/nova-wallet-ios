@@ -1,4 +1,4 @@
-name: Create tag
+name: Bump app version from tag
 
 on:
   create:
@@ -6,8 +6,8 @@ on:
       - '*'
 
 jobs:
-  build:
-    name: Archive, export and upload to Firebase
+  update:
+    name: Update app version
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,8 @@ jobs:
       - name: Extract version from tag
         uses: damienaicheh/extract-version-from-tag-action@v1.0.0
 
-      - uses: hmanzur/actions-set-secret@v2.0.0
+      - name: Write app version to secrets
+        uses: hmanzur/actions-set-secret@v2.0.0
         with:
           name: 'IOS_APP_VERSION'
           value: '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'
