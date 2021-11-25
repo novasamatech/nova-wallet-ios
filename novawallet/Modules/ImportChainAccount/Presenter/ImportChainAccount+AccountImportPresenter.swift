@@ -159,17 +159,6 @@ extension ImportChainAccount {
             }
         }
 
-        override func getVisibilitySettings() -> AccountImportVisibility {
-            switch selectedSourceType {
-            case .mnemonic:
-                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
-            case .seed:
-                return isEthereumBased ? .ethereumChainSeed : .substrateChainSeed
-            case .keystore:
-                return isEthereumBased ? .ethereumChainJSON : .substrateChainJSON
-            }
-        }
-
         override func applyUsernameViewModel(_: String = "") {
             view?.setName(viewModel: nil)
         }

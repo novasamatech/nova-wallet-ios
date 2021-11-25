@@ -65,17 +65,6 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         }
     }
 
-    override func getVisibilitySettings() -> AccountImportVisibility {
-        switch selectedSourceType {
-        case .mnemonic:
-            return .walletMnemonic
-        case .seed:
-            return .walletSeed
-        case .keystore:
-            return .walletJSON
-        }
-    }
-
     override func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {}
 
     override func shouldUseEthereumSeed() -> Bool { false }

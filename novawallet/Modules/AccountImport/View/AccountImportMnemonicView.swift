@@ -9,6 +9,12 @@ protocol AccountImportMnemonicViewDelegate: AnyObject {
 final class AccountImportMnemonicView: AccountImportBaseView {
     weak var delegate: AccountImportMnemonicViewDelegate?
 
+    let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .clear
+        return view
+    }()
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
@@ -52,6 +58,9 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         view.textColor = R.color.colorWhite()
         view.tintColor = R.color.colorWhite()
         view.backgroundColor = .clear
+        view.isScrollEnabled = false
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
         return view
     }()
 
@@ -117,6 +126,39 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         updateProceedButton()
     }
 
+    override func updateOnKeyboardBottomInsetChange(_ newInset: CGFloat) {
+        let scrollViewOffset = bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, newInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let targetView: UIView?
+
+            if mnemonicTextView.isFirstResponder {
+                targetView = mnemonicBackgroundView
+            } else if usernameTextField.isFirstResponder {
+                targetView = usernameBackgroundView
+            } else {
+                targetView = nil
+            }
+
+            if let firstResponderView = targetView {
+                let fieldFrame = scrollView.convert(
+                    firstResponderView.frame,
+                    from: firstResponderView.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
+        }
+    }
+
+    override func updateOnAppear() {
+        mnemonicTextView.becomeFirstResponder()
+    }
+
     private func setupHandlers() {
         proceedButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
 
@@ -140,23 +182,42 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
     // swiftlint:disable function_body_length
     private func setupLayout() {
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        addSubview(proceedButton)
+        proceedButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(subtitleLabel)
+        addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
+        }
+
+        let contentView = UIView()
+        contentView.backgroundColor = .clear
+        scrollView.addSubview(contentView)
+
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalTo(self)
+        }
+
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(UIConstants.verticalTitleInset)
+        }
+
+        contentView.addSubview(subtitleLabel)
         subtitleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
         }
 
-        addSubview(mnemonicBackgroundView)
-        mnemonicBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
-        }
+        contentView.addSubview(mnemonicBackgroundView)
 
         mnemonicBackgroundView.addSubview(mnemonicTitleLabel)
         mnemonicTitleLabel.snp.makeConstraints { make in
@@ -166,19 +227,24 @@ final class AccountImportMnemonicView: AccountImportBaseView {
 
         mnemonicBackgroundView.addSubview(mnemonicTextView)
         mnemonicTextView.snp.makeConstraints { make in
-            make.top.equalTo(mnemonicTitleLabel.snp.bottom).offset(4.0)
-            make.leading.trailing.equalToSuperview().inset(9.0)
-            make.bottom.equalToSuperview().inset(16.0)
+            make.top.equalToSuperview().inset(20)
+            make.leading.trailing.equalToSuperview().inset(12.0)
             make.height.greaterThanOrEqualTo(72.0)
         }
 
-        addSubview(hintLabel)
+        mnemonicBackgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
+            make.height.equalTo(mnemonicTextView).offset(32.0)
+        }
+
+        contentView.addSubview(hintLabel)
         hintLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(mnemonicBackgroundView.snp.bottom).offset(12.0)
         }
 
-        addSubview(usernameBackgroundView)
+        contentView.addSubview(usernameBackgroundView)
         usernameBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(hintLabel.snp.bottom).offset(16.0)
@@ -190,17 +256,11 @@ final class AccountImportMnemonicView: AccountImportBaseView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(usernameHintLabel)
+        contentView.addSubview(usernameHintLabel)
         usernameHintLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(usernameBackgroundView.snp.bottom).offset(12.0)
-        }
-
-        addSubview(proceedButton)
-        proceedButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
+            make.bottom.equalTo(contentView)
         }
     }
 
