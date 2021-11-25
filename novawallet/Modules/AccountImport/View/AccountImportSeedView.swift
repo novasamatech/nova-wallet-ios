@@ -9,6 +9,12 @@ protocol AccountImportSeedViewDelegate: AnyObject {
 final class AccountImportSeedView: AccountImportBaseView {
     weak var delegate: AccountImportSeedViewDelegate?
 
+    let scrollView: UIScrollView = {
+        let view = UIScrollView()
+        view.backgroundColor = .clear
+        return view
+    }()
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
@@ -110,6 +116,39 @@ final class AccountImportSeedView: AccountImportBaseView {
         updateProceedButton()
     }
 
+    override func updateOnAppear() {
+        seedTextView.becomeFirstResponder()
+    }
+
+    override func updateOnKeyboardBottomInsetChange(_ newInset: CGFloat) {
+        let scrollViewOffset = bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, newInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let targetView: UIView?
+
+            if seedTextView.isFirstResponder {
+                targetView = seedBackgroundView
+            } else if usernameTextField.isFirstResponder {
+                targetView = usernameBackgroundView
+            } else {
+                targetView = nil
+            }
+
+            if let firstResponderView = targetView {
+                let fieldFrame = scrollView.convert(
+                    firstResponderView.frame,
+                    from: firstResponderView.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
+        }
+    }
+
     private func setupHandlers() {
         proceedButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
 
@@ -132,13 +171,36 @@ final class AccountImportSeedView: AccountImportBaseView {
     }
 
     private func setupLayout() {
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        addSubview(proceedButton)
+        proceedButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(seedBackgroundView)
+        addSubview(scrollView)
+        scrollView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
+        }
+
+        let contentView = UIView()
+        contentView.backgroundColor = .clear
+        scrollView.addSubview(contentView)
+
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.width.equalTo(self)
+        }
+
+        contentView.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(UIConstants.verticalTitleInset)
+        }
+
+        contentView.addSubview(seedBackgroundView)
 
         seedBackgroundView.addSubview(seedTitleLabel)
         seedTitleLabel.snp.makeConstraints { make in
@@ -166,7 +228,7 @@ final class AccountImportSeedView: AccountImportBaseView {
             make.height.equalTo(seedTextView).offset(32.0)
         }
 
-        addSubview(usernameBackgroundView)
+        contentView.addSubview(usernameBackgroundView)
         usernameBackgroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(seedBackgroundView.snp.bottom).offset(16.0)
@@ -178,17 +240,11 @@ final class AccountImportSeedView: AccountImportBaseView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(usernameHintLabel)
+        contentView.addSubview(usernameHintLabel)
         usernameHintLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(usernameBackgroundView.snp.bottom).offset(12.0)
-        }
-
-        addSubview(proceedButton)
-        proceedButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
+            make.bottom.equalToSuperview()
         }
     }
 

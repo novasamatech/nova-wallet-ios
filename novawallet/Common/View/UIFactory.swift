@@ -543,6 +543,7 @@ final class UIFactory: UIFactoryProtocol {
         view.fillColor = .clear
         view.highlightedFillColor = .clear
         view.strokeWidth = 1.0
+        view.shadowOpacity = 0.0
         return view
     }
 

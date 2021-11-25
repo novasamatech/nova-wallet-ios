@@ -327,32 +327,12 @@ final class AccountImportViewController: UIViewController {
         presenter.activateUpload()
     }
 
-    @objc private func actionOpenSourceType() {
-        if sourceTypeView.actionControl.isActivated {
-            presenter.selectSourceType()
-        }
-    }
+    @objc private func actionOpenSourceType() {}
 
-    @objc private func actionOpenCryptoType() {
-        if substrateCryptoTypeView.actionControl.isActivated {
-            presenter.selectCryptoType()
-        }
-    }
+    @objc private func actionOpenCryptoType() {}
 
     @IBAction private func actionNext() {
         presenter.proceed()
-    }
-
-    private func updateVisibility(_ settings: AccountImportVisibility) {
-        sourceTypeView.isHidden = !settings.contains(.sourceType)
-        usernameView.isHidden = !settings.contains(.walletName)
-        uploadView.isHidden = !settings.contains(.restoreJSON)
-        textContainerView.isHidden = !(settings.contains(.mnemonicText) || settings.contains(.seedText))
-        passwordView.isHidden = !settings.contains(.password)
-        substrateCryptoTypeView.isHidden = !settings.contains(.substrateCryptoType)
-        substrateDerivationPathView.isHidden = !settings.contains(.substrateDerivationPath)
-        ethereumCryptoTypeView.isHidden = !settings.contains(.ethereumCryptoType)
-        ethereumDerivationPathView.isHidden = !settings.contains(.ethereumDerivationPath)
     }
 }
 
@@ -364,9 +344,6 @@ extension AccountImportViewController: AccountImportViewProtocol {
     }
 
     func setSource(type: SecretSource) {
-        let settings = presenter.provideVisibilitySettings()
-        updateVisibility(settings)
-
         switch type {
         case .mnemonic:
             passwordTextField.text = nil
