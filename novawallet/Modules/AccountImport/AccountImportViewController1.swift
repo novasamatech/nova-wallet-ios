@@ -75,6 +75,7 @@ final class AccountImportViewController1: UIViewController {
             viewType = .seed(view: view)
         case .keystore:
             let view = AccountImportKeystoreView()
+            view.delegate = self
             viewType = .keystore(view: view)
         }
 
@@ -100,6 +101,16 @@ extension AccountImportViewController1: AccountImportMnemonicViewDelegate {
 extension AccountImportViewController1: AccountImportSeedViewDelegate {
     func accountImportSeedViewDidProceed(_: AccountImportSeedView) {
         presenter.proceed()
+    }
+}
+
+extension AccountImportViewController1: AccountImportKeystoreViewDelegate {
+    func accountImportKeystoreViewDidProceed(_: AccountImportKeystoreView) {
+        presenter.proceed()
+    }
+
+    func accountImportKeystoreViewDidUpload(_: AccountImportKeystoreView) {
+        presenter.activateUpload()
     }
 }
 
@@ -136,7 +147,7 @@ extension AccountImportViewController1: AccountImportViewProtocol {
         case let .seed(view):
             view.bindUsername(viewModel: viewModel)
         case let .keystore(view):
-            break
+            view.bindUsername(viewModel: viewModel)
         }
     }
 
