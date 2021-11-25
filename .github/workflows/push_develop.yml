@@ -1,8 +1,8 @@
 name: Distribute to Firebase
 
-on: [pull_request]
-  # push:
-  #   branches: [ develop ]
+on:
+  push:
+    branches: [ develop ]
 
 jobs:
   build:
