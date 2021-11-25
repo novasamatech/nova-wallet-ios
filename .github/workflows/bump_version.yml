@@ -1,0 +1,27 @@
+name: Create tag
+
+on:
+  create:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Archive, export and upload to Firebase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Mandatory to use the extract version from tag action
+
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.0.0
+
+      - uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          name: 'IOS_APP_VERSION'
+          value: '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'
+          repository: stepanLav/test_ios
+          token: ${{ secrets.WRITE_SECRET }}
