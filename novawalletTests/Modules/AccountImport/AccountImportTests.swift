@@ -41,7 +41,7 @@ class AccountImportTests: XCTestCase {
         let expectedUsername = "myname"
         let expetedMnemonic = "great fog follow obtain oyster raw patient extend use mirror fix balance blame sudden vessel"
 
-        let presenter = AccountImportPresenter()
+        let presenter = AccountImportPresenter(secretSource: .mnemonic)
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor
@@ -54,10 +54,6 @@ class AccountImportTests: XCTestCase {
         var usernameViewModel: InputViewModelProtocol?
 
         stub(view) { stub in
-            when(stub).didCompleteSourceTypeSelection().thenDoNothing()
-            when(stub).didCompleteCryptoTypeSelection().thenDoNothing()
-            when(stub).didValidateSubstrateDerivationPath(any()).thenDoNothing()
-            when(stub).didValidateEthereumDerivationPath(any()).thenDoNothing()
             when(stub).isSetup.get.thenReturn(false, true)
 
             when(stub).setSource(viewModel: any()).then { viewModel in
@@ -71,13 +67,8 @@ class AccountImportTests: XCTestCase {
 
                 setupExpectation.fulfill()
             }
-            
-            when(stub).setTitle(any()).thenDoNothing()
+
             when(stub).setSource(type: any()).thenDoNothing()
-            when(stub).setSelectedSubstrateCrypto(model: any()).thenDoNothing()
-            when(stub).setSelectedEthereumCrypto(model: any()).thenDoNothing()
-            when(stub).setSubstrateDerivationPath(viewModel: any()).thenDoNothing()
-            when(stub).setEthereumDerivationPath(viewModel: any()).thenDoNothing()
         }
 
         let expectation = XCTestExpectation()
