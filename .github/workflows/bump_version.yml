@@ -23,5 +23,5 @@ jobs:
         with:
           name: 'IOS_APP_VERSION'
           value: '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}'
-          repository: stepanLav/test_ios
-          token: ${{ secrets.WRITE_SECRET }}
+          repository: nova-wallet/nova-wallet-ios
+          token: ${{ secrets.WRITE_SECRET_PAT }}
