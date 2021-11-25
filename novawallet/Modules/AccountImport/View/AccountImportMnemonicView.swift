@@ -51,6 +51,7 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         view.font = .p1Paragraph
         view.textColor = R.color.colorWhite()
         view.tintColor = R.color.colorWhite()
+        view.backgroundColor = .clear
         return view
     }()
 

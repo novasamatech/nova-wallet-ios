@@ -71,6 +71,7 @@ final class AccountImportViewController1: UIViewController {
             viewType = .mnemonic(view: view)
         case .seed:
             let view = AccountImportSeedView()
+            view.delegate = self
             viewType = .seed(view: view)
         case .keystore:
             let view = AccountImportKeystoreView()
@@ -92,6 +93,12 @@ final class AccountImportViewController1: UIViewController {
 
 extension AccountImportViewController1: AccountImportMnemonicViewDelegate {
     func accountImportMnemonicViewDidProceed(_: AccountImportMnemonicView) {
+        presenter.proceed()
+    }
+}
+
+extension AccountImportViewController1: AccountImportSeedViewDelegate {
+    func accountImportSeedViewDidProceed(_: AccountImportSeedView) {
         presenter.proceed()
     }
 }
@@ -127,7 +134,7 @@ extension AccountImportViewController1: AccountImportViewProtocol {
         case let .mnemonic(view):
             view.bindUsername(viewModel: viewModel)
         case let .seed(view):
-            break
+            view.bindUsername(viewModel: viewModel)
         case let .keystore(view):
             break
         }
