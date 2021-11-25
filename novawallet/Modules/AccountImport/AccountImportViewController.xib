@@ -56,7 +56,7 @@
                     <rect key="frame" x="0.0" y="44" width="414" height="726"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="AwS-kl-7JJ">
-                            <rect key="frame" x="16" y="16" width="382" height="853"/>
+                            <rect key="frame" x="16" y="16" width="382" height="890.5"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cVj-lI-0D8" customClass="BorderedSubtitleActionView" customModule="novawallet" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="382" height="52"/>
@@ -293,7 +293,7 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WIx-3s-1tq" customClass="TriangularedView" customModule="novawallet" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="313" width="382" height="122"/>
+                                    <rect key="frame" x="0.0" y="313" width="382" height="159.5"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Mnemonic" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y5W-Vv-VcJ">
                                             <rect key="frame" x="16" y="18" width="350" height="18"/>
@@ -302,7 +302,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="couple raw spatial shop person process still manage hidden carpet expect moment mammal bright pumpkin" translatesAutoresizingMaskIntoConstraints="NO" id="Yrf-1J-bqb">
-                                            <rect key="frame" x="10" y="9" width="362" height="102"/>
+                                            <rect key="frame" x="10" y="9" width="362" height="139.5"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <color key="tintColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
@@ -357,7 +357,7 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GW5-f0-uHW" customClass="TriangularedView" customModule="novawallet" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="435" width="382" height="52"/>
+                                    <rect key="frame" x="0.0" y="472.5" width="382" height="52"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wwH-SE-Zsz" customClass="AnimatedTextField" customModule="SoraUI">
                                             <rect key="frame" x="0.0" y="0.0" width="382" height="52"/>
@@ -439,7 +439,7 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dh6-Hc-Mnh">
-                                    <rect key="frame" x="0.0" y="487" width="382" height="66"/>
+                                    <rect key="frame" x="0.0" y="524.5" width="382" height="66"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Htd-FP-vae" customClass="BorderedContainerView" customModule="SoraUI">
                                             <rect key="frame" x="0.0" y="16" width="382" height="50"/>
@@ -499,7 +499,7 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qTb-7f-Lmc">
-                                    <rect key="frame" x="0.0" y="553" width="382" height="300"/>
+                                    <rect key="frame" x="0.0" y="590.5" width="382" height="300"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="dd5-qc-QFk">
                                             <rect key="frame" x="1" y="16" width="380" height="256"/>
