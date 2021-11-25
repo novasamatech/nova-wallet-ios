@@ -2,32 +2,19 @@ import IrohaCrypto
 import SoraFoundation
 
 protocol AccountImportViewProtocol: ControllerBackedProtocol {
-    func setTitle(_ newTitle: String)
     func setSource(type: SecretSource)
     func setSource(viewModel: InputViewModelProtocol)
     func setName(viewModel: InputViewModelProtocol?)
     func setPassword(viewModel: InputViewModelProtocol)
-    func setSelectedSubstrateCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)
-    func setSelectedEthereumCrypto(model: SelectableViewModel<TitleWithSubtitleViewModel>)
-    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol)
-    func setEthereumDerivationPath(viewModel: InputViewModelProtocol)
     func setUploadWarning(message: String)
-
-    func didCompleteSourceTypeSelection()
-    func didCompleteCryptoTypeSelection()
-
-    func didValidateSubstrateDerivationPath(_ status: FieldStatus)
-    func didValidateEthereumDerivationPath(_ status: FieldStatus)
 }
 
 protocol AccountImportPresenterProtocol: AnyObject {
     func setup()
-    func updateTitle()
     func provideVisibilitySettings() -> AccountImportVisibility
     func selectSourceType()
     func selectCryptoType()
     func activateUpload()
-    func validateDerivationPath()
     func proceed()
 }
 

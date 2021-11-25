@@ -156,8 +156,6 @@ final class AccountImportViewController: UIViewController {
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
 
-        presenter.updateTitle()
-
         sourceTypeView.actionControl.contentView.titleLabel.text = R.string.localizable
             .importSourcePickerTitle(preferredLanguages: locale.rLanguages)
 
@@ -470,7 +468,6 @@ extension AccountImportViewController: AccountImportViewProtocol {
 extension AccountImportViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
-        presenter.validateDerivationPath()
 
         return false
     }
