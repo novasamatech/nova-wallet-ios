@@ -1,6 +1,7 @@
 import UIKit
 import SoraUI
 import SoraFoundation
+import SwiftUI
 
 protocol AccountImportKeystoreViewDelegate: AnyObject {
     func accountImportKeystoreViewDidProceed(_ view: AccountImportKeystoreView)
@@ -16,6 +17,14 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         label.font = .h2Title
         label.numberOfLines = 0
         return label
+    }()
+
+    let uploadWarningView: IconDetailsView = {
+        let view = IconDetailsView()
+        view.imageView.image = R.image.iconWarning()
+        view.detailsLabel.textColor = R.color.colorLightGray()
+        view.detailsLabel.font = .p1Paragraph
+        return view
     }()
 
     let uploadView: DetailsTriangularedView = {
@@ -99,6 +108,17 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         updateProceedButton()
     }
 
+    func setUploadWarning(message: String) {
+        uploadWarningView.isHidden = false
+        uploadWarningView.detailsLabel.text = message
+
+        setNeedsLayout()
+    }
+
+    func resetUploadWarning() {
+        uploadWarningView.isHidden = true
+    }
+
     func bindUsername(viewModel: InputViewModelProtocol?) {
         usernameViewModel = viewModel
         usernameTextField.text = viewModel?.inputHandler.value
@@ -171,12 +191,24 @@ final class AccountImportKeystoreView: AccountImportBaseView {
             make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
         }
 
-        addSubview(uploadView)
-        uploadView.snp.makeConstraints { make in
+        let uploadStackView = AccountImportKeystoreView.vStack(
+            alignment: .fill,
+            distribution: .fill,
+            spacing: 16.0,
+            [uploadWarningView, uploadView]
+        )
+
+        addSubview(uploadStackView)
+        uploadStackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(titleLabel.snp.bottom).offset(24.0)
+        }
+
+        uploadView.snp.makeConstraints { make in
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
+
+        uploadWarningView.isHidden = true
 
         addSubview(passwordBackroundView)
         passwordBackroundView.snp.makeConstraints { make in

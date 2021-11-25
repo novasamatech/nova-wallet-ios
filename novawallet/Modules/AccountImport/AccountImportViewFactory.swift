@@ -38,6 +38,7 @@ final class AccountImportViewFactory {
     }
 
     static func createViewForReplaceChainAccount(
+        secretSource: SecretSource,
         modelId: ChainModel.Id,
         isEthereumBased: Bool,
         in wallet: MetaAccountModel
@@ -49,7 +50,7 @@ final class AccountImportViewFactory {
         }
 
         let presenter = ImportChainAccount.AccountImportPresenter(
-            secretSource: .mnemonic,
+            secretSource: secretSource,
             metaAccountModel: wallet,
             chainModelId: modelId,
             isEthereumBased: isEthereumBased
