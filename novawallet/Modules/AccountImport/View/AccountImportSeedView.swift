@@ -1,11 +1,13 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
-final class AccountImportSeedView: UIView {
+final class AccountImportSeedView: AccountImportBaseView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .h2Title
+        label.numberOfLines = 0
         return label
     }()
 
@@ -39,6 +41,8 @@ final class AccountImportSeedView: UIView {
         return button
     }()
 
+    private(set) var sourceViewModel: InputViewModelProtocol?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -50,6 +54,16 @@ final class AccountImportSeedView: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bindSource(viewModel: InputViewModelProtocol) {
+        sourceViewModel = viewModel
+        seedTextView.text = viewModel.inputHandler.value
+    }
+
+    override func setupLocalization() {
+        titleLabel.text = "Enter your raw seed"
+        seedTitleLabel.text = "Raw seed"
     }
 
     private func setupLayout() {
