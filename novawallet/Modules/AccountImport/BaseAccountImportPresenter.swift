@@ -186,10 +186,6 @@ class BaseAccountImportPresenter {
         }
     }
 
-    internal func getVisibilitySettings() -> AccountImportVisibility {
-        fatalError("This function should be overriden")
-    }
-
     internal func processProceed() {
         fatalError("This function should be overriden")
     }
@@ -206,18 +202,6 @@ class BaseAccountImportPresenter {
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
         interactor.setup()
-    }
-
-    func provideVisibilitySettings() -> AccountImportVisibility {
-        getVisibilitySettings()
-    }
-
-    func selectSourceType() {
-        // TODO: Remove
-    }
-
-    func selectCryptoType() {
-        // TODO: Remove
     }
 
     func activateUpload() {

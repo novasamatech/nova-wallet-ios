@@ -11,9 +11,6 @@ protocol AccountImportViewProtocol: ControllerBackedProtocol {
 
 protocol AccountImportPresenterProtocol: AnyObject {
     func setup()
-    func provideVisibilitySettings() -> AccountImportVisibility
-    func selectSourceType()
-    func selectCryptoType()
     func activateUpload()
     func proceed()
 }

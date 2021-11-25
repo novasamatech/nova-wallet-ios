@@ -21,7 +21,11 @@ final class AccountImportViewController1: UIViewController {
 
     let presenter: AccountImportPresenterProtocol
 
+    var keyboardHandler: KeyboardHandler?
+
     private var viewType: ViewType?
+
+    private var isFirstAppear: Bool = true
 
     init(presenter: AccountImportPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -44,6 +48,30 @@ final class AccountImportViewController1: UIViewController {
         setupLocalization()
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if isFirstAppear {
+            isFirstAppear = false
+
+            viewType?.view.updateOnAppear()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupLocalization() {
@@ -163,5 +191,14 @@ extension AccountImportViewController1: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+extension AccountImportViewController1: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+
+        viewType?.view.updateOnKeyboardBottomInsetChange(bottomInset)
     }
 }

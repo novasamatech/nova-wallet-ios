@@ -10,4 +10,7 @@ class AccountImportBaseView: UIView {
     func setupLocalization() {
         fatalError("Must be implemeted by subsclass")
     }
+
+    func updateOnKeyboardBottomInsetChange(_: CGFloat) {}
+    func updateOnAppear() {}
 }
