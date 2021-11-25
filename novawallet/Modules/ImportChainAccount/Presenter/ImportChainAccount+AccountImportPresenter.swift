@@ -37,13 +37,7 @@ extension ImportChainAccount {
                 return
             }
 
-            if let viewModel = substrateDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateSubstrateDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
-
-                return
-            }
-            let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+            let substrateDerivationPath = self.substrateDerivationPath ?? ""
 
             switch selectedSourceType {
             case .mnemonic:
@@ -107,14 +101,7 @@ extension ImportChainAccount {
 
             let cryptoType: MultiassetCryptoType = .ethereumEcdsa
 
-            if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateEthereumDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: cryptoType)
-
-                return
-            }
-
-            let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+            let ethereumDerivationPathValue = self.ethereumDerivationPath ?? ""
             let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
                 DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
@@ -185,12 +172,6 @@ extension ImportChainAccount {
 
         override func applyUsernameViewModel(_: String = "") {
             view?.setName(viewModel: nil)
-        }
-
-        override func setViewTitle() {
-            let title = R.string.localizable
-                .importChainAccountTitle(preferredLanguages: selectedLocale.rLanguages)
-            view?.setTitle(title)
         }
 
         override func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {

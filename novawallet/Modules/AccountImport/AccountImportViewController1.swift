@@ -115,8 +115,6 @@ extension AccountImportViewController1: AccountImportKeystoreViewDelegate {
 }
 
 extension AccountImportViewController1: AccountImportViewProtocol {
-    func setTitle(_: String) {}
-
     func setSource(type: SecretSource) {
         setupView(for: type)
     }
@@ -157,23 +155,7 @@ extension AccountImportViewController1: AccountImportViewProtocol {
         }
     }
 
-    func setSelectedSubstrateCrypto(model _: SelectableViewModel<TitleWithSubtitleViewModel>) {}
-
-    func setSelectedEthereumCrypto(model _: SelectableViewModel<TitleWithSubtitleViewModel>) {}
-
-    func setSubstrateDerivationPath(viewModel _: InputViewModelProtocol) {}
-
-    func setEthereumDerivationPath(viewModel _: InputViewModelProtocol) {}
-
     func setUploadWarning(message _: String) {}
-
-    func didCompleteSourceTypeSelection() {}
-
-    func didCompleteCryptoTypeSelection() {}
-
-    func didValidateSubstrateDerivationPath(_: FieldStatus) {}
-
-    func didValidateEthereumDerivationPath(_: FieldStatus) {}
 }
 
 extension AccountImportViewController1: Localizable {

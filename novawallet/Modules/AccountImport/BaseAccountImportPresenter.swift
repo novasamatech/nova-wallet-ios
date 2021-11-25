@@ -28,8 +28,8 @@ class BaseAccountImportPresenter {
     private(set) var sourceViewModel: InputViewModelProtocol?
     private(set) var usernameViewModel: InputViewModelProtocol?
     private(set) var passwordViewModel: InputViewModelProtocol?
-    private(set) var substrateDerivationPathViewModel: InputViewModelProtocol?
-    private(set) var ethereumDerivationPathViewModel: InputViewModelProtocol?
+    private(set) var substrateDerivationPath: String?
+    private(set) var ethereumDerivationPath: String?
 
     private lazy var jsonDeserializer = JSONSerialization()
 
@@ -55,7 +55,6 @@ class BaseAccountImportPresenter {
         let username = preferredInfo?.username ?? ""
         applyUsernameViewModel(username)
         applyPasswordViewModel()
-        applyAdvanced(preferredInfo)
 
         if let preferredInfo = preferredInfo {
             showUploadWarningIfNeeded(preferredInfo)
@@ -153,131 +152,6 @@ class BaseAccountImportPresenter {
         }
     }
 
-    private func applyAdvanced(_ preferredInfo: MetaAccountImportPreferredInfo?) {
-        switch selectedSourceType {
-        case .mnemonic:
-            applyCryptoTypeViewModel(preferredInfo)
-            applySubstrateDerivationPathViewModel()
-            applyEthereumDerivationPathViewModel()
-        case .seed:
-            applyCryptoTypeViewModel(preferredInfo)
-            applySubstrateDerivationPathViewModel()
-            ethereumDerivationPathViewModel = nil
-        case .keystore:
-            applyCryptoTypeViewModel(preferredInfo)
-            substrateDerivationPathViewModel = nil
-            ethereumDerivationPathViewModel = nil
-        }
-    }
-
-    private func applyCryptoTypeViewModel(_ preferredInfo: MetaAccountImportPreferredInfo?) {
-        guard let cryptoType = selectedSubstrateCryptoType else { return }
-
-        let substrateViewModel = TitleWithSubtitleViewModel(
-            title: cryptoType.titleForLocale(selectedLocale),
-            subtitle: cryptoType.subtitleForLocale(selectedLocale)
-        )
-
-        let ethereumViewModel = TitleWithSubtitleViewModel(
-            title: selectedEthereumCryptoType.titleForLocale(selectedLocale),
-            subtitle: selectedEthereumCryptoType.subtitleForLocale(selectedLocale)
-        )
-
-        let selectable: Bool
-
-        if preferredInfo?.cryptoType != nil {
-            selectable = false
-        } else {
-            selectable = (metadata?.availableCryptoTypes.count ?? 0) > 1
-        }
-
-        view?.setSelectedSubstrateCrypto(model: SelectableViewModel(
-            underlyingViewModel: substrateViewModel,
-            selectable: selectable
-        ))
-
-        view?.setSelectedEthereumCrypto(model: SelectableViewModel(
-            underlyingViewModel: ethereumViewModel,
-            selectable: false
-        ))
-    }
-
-    private func applySubstrateDerivationPathViewModel() {
-        guard let cryptoType = selectedSubstrateCryptoType else {
-            return
-        }
-
-        let predicate: NSPredicate
-        let placeholder: String
-
-        if cryptoType == .sr25519 {
-            if selectedSourceType == .mnemonic {
-                predicate = NSPredicate.deriviationPathHardSoftPassword
-                placeholder = DerivationPathConstants.hardSoftPasswordPlaceholder
-            } else {
-                predicate = NSPredicate.deriviationPathHardSoft
-                placeholder = DerivationPathConstants.hardSoftPlaceholder
-            }
-        } else {
-            if selectedSourceType == .mnemonic {
-                predicate = NSPredicate.deriviationPathHardPassword
-                placeholder = DerivationPathConstants.hardPasswordPlaceholder
-            } else {
-                predicate = NSPredicate.deriviationPathHard
-                placeholder = DerivationPathConstants.hardPlaceholder
-            }
-        }
-
-        let inputHandling = InputHandler(required: false, predicate: predicate)
-
-        let viewModel = InputViewModel(
-            inputHandler: inputHandling,
-            placeholder: placeholder
-        )
-
-        substrateDerivationPathViewModel = viewModel
-
-        view?.setSubstrateDerivationPath(viewModel: viewModel)
-        view?.didValidateSubstrateDerivationPath(.none)
-    }
-
-    private func applyEthereumDerivationPathViewModel() {
-        let predicate = NSPredicate.deriviationPathHardSoftNumericPassword
-        let placeholder = DerivationPathConstants.hardSoftPasswordPlaceholder
-
-        let inputHandling = InputHandler(required: false, predicate: predicate)
-        let viewModel = InputViewModel(inputHandler: inputHandling, placeholder: placeholder)
-
-        ethereumDerivationPathViewModel = viewModel
-
-        view?.setEthereumDerivationPath(viewModel: viewModel)
-        view?.didValidateEthereumDerivationPath(.none)
-    }
-
-    internal func presentDerivationPathError(
-        sourceType: SecretSource,
-        cryptoType: MultiassetCryptoType
-    ) {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        let error: AccountCreationError
-
-        switch cryptoType {
-        case .sr25519:
-            error = sourceType == .mnemonic ?
-                .invalidDerivationHardSoftPassword : .invalidDerivationHardSoft
-
-        case .ed25519, .substrateEcdsa:
-            error = sourceType == .mnemonic ?
-                .invalidDerivationHardPassword : .invalidDerivationHard
-
-        case .ethereumEcdsa:
-            error = sourceType == .mnemonic ?
-                .invalidDerivationHardSoftNumericPassword : .invalidDerivationHardSoftNumeric
-        }
-
-        _ = wireframe.present(error: error, from: view, locale: locale)
-    }
-
     internal func validateSourceViewModel() -> Error? {
         guard let viewModel = sourceViewModel else {
             return nil
@@ -320,10 +194,6 @@ class BaseAccountImportPresenter {
         fatalError("This function should be overriden")
     }
 
-    internal func setViewTitle() {
-        fatalError("This function should be overriden")
-    }
-
     internal func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {
         fatalError("This function should be overriden")
     }
@@ -335,12 +205,7 @@ class BaseAccountImportPresenter {
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
     func setup() {
-        setViewTitle()
         interactor.setup()
-    }
-
-    func updateTitle() {
-        setViewTitle()
     }
 
     func provideVisibilitySettings() -> AccountImportVisibility {
@@ -376,35 +241,6 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
-    }
-
-    private func validateSubstrate() {
-        guard let viewModel = substrateDerivationPathViewModel,
-              let cryptoType = selectedSubstrateCryptoType
-        else { return }
-
-        if viewModel.inputHandler.completed {
-            view?.didValidateSubstrateDerivationPath(.valid)
-        } else {
-            view?.didValidateSubstrateDerivationPath(.invalid)
-            presentDerivationPathError(sourceType: selectedSourceType, cryptoType: cryptoType)
-        }
-    }
-
-    private func validateEthereum() {
-        guard let viewModel = ethereumDerivationPathViewModel else { return }
-
-        if viewModel.inputHandler.completed {
-            view?.didValidateEthereumDerivationPath(.valid)
-        } else {
-            view?.didValidateEthereumDerivationPath(.invalid)
-            presentDerivationPathError(sourceType: selectedSourceType, cryptoType: .ethereumEcdsa)
-        }
-    }
-
-    func validateDerivationPath() {
-        validateSubstrate()
-        validateEthereum()
     }
 
     func proceed() {

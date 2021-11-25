@@ -20,27 +20,10 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
             return
         }
 
-        var derivationPathCheckError = false
-        if let viewModel = substrateDerivationPathViewModel, !viewModel.inputHandler.completed {
-            derivationPathCheckError = true
-            view?.didValidateSubstrateDerivationPath(.invalid)
-            presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
-        }
-
-        if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-            view?.didValidateEthereumDerivationPath(.invalid)
-            if !derivationPathCheckError {
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: .ethereumEcdsa)
-                derivationPathCheckError = true
-            }
-        }
-
-        guard !derivationPathCheckError else { return }
-
         let username = usernameViewModel.inputHandler.value
-        let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+        let substrateDerivationPath = self.substrateDerivationPath ?? ""
 
-        let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+        let ethereumDerivationPathValue = self.ethereumDerivationPath ?? ""
         let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
             DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
@@ -91,12 +74,6 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
         case .keystore:
             return .walletJSON
         }
-    }
-
-    override func setViewTitle() {
-        let title = R.string.localizable
-            .importWalletTitle(preferredLanguages: selectedLocale.rLanguages)
-        view?.setTitle(title)
     }
 
     override func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {}
