@@ -67,19 +67,14 @@ final class AccountImportViewController1: UIViewController {
         switch source {
         case .mnemonic:
             let view = AccountImportMnemonicView()
+            view.delegate = self
             viewType = .mnemonic(view: view)
-
-            view.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
         case .seed:
             let view = AccountImportSeedView()
             viewType = .seed(view: view)
-
-            view.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
         case .keystore:
             let view = AccountImportKeystoreView()
             viewType = .keystore(view: view)
-
-            view.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
         }
 
         let importView = viewType.view
@@ -93,8 +88,10 @@ final class AccountImportViewController1: UIViewController {
 
         self.viewType = viewType
     }
+}
 
-    @objc private func actionNext() {
+extension AccountImportViewController1: AccountImportMnemonicViewDelegate {
+    func accountImportMnemonicViewDidProceed(_: AccountImportMnemonicView) {
         presenter.proceed()
     }
 }
@@ -121,7 +118,20 @@ extension AccountImportViewController1: AccountImportViewProtocol {
         }
     }
 
-    func setName(viewModel _: InputViewModelProtocol?) {}
+    func setName(viewModel: InputViewModelProtocol?) {
+        guard let viewType = viewType else {
+            return
+        }
+
+        switch viewType {
+        case let .mnemonic(view):
+            view.bindUsername(viewModel: viewModel)
+        case let .seed(view):
+            break
+        case let .keystore(view):
+            break
+        }
+    }
 
     func setPassword(viewModel: InputViewModelProtocol) {
         if case let .keystore(sourceView) = viewType {
