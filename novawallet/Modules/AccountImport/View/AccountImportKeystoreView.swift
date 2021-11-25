@@ -11,6 +11,19 @@ protocol AccountImportKeystoreViewDelegate: AnyObject {
 final class AccountImportKeystoreView: AccountImportBaseView {
     weak var delegate: AccountImportKeystoreViewDelegate?
 
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView()
+        view.stackView.alignment = .fill
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: UIConstants.verticalTitleInset,
+            left: UIConstants.horizontalInset,
+            bottom: 0.0,
+            right: UIConstants.horizontalInset
+        )
+        return view
+    }()
+
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
@@ -123,6 +136,10 @@ final class AccountImportKeystoreView: AccountImportBaseView {
         usernameViewModel = viewModel
         usernameTextField.text = viewModel?.inputHandler.value
 
+        let isHidden = viewModel == nil
+        usernameBackgroundView.isHidden = isHidden
+        usernameHintLabel.isHidden = isHidden
+
         updateProceedButton()
     }
 
@@ -185,35 +202,37 @@ final class AccountImportKeystoreView: AccountImportBaseView {
     }
 
     private func setupLayout() {
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
+        addSubview(proceedButton)
+        proceedButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).inset(UIConstants.verticalTitleInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        let uploadStackView = AccountImportKeystoreView.vStack(
-            alignment: .fill,
-            distribution: .fill,
-            spacing: 16.0,
-            [uploadWarningView, uploadView]
-        )
-
-        addSubview(uploadStackView)
-        uploadStackView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(24.0)
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
         }
 
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.setCustomSpacing(24.0, after: titleLabel)
+
+        containerView.stackView.addArrangedSubview(uploadWarningView)
+        containerView.stackView.setCustomSpacing(16.0, after: uploadWarningView)
+
+        containerView.stackView.addArrangedSubview(uploadView)
         uploadView.snp.makeConstraints { make in
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
         uploadWarningView.isHidden = true
 
-        addSubview(passwordBackroundView)
+        containerView.stackView.setCustomSpacing(16.0, after: uploadView)
+
+        containerView.stackView.addArrangedSubview(passwordBackroundView)
         passwordBackroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(uploadView.snp.bottom).offset(16.0)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
@@ -229,10 +248,10 @@ final class AccountImportKeystoreView: AccountImportBaseView {
             make.trailing.equalTo(eyeButton.snp.leading)
         }
 
-        addSubview(usernameBackgroundView)
+        containerView.stackView.setCustomSpacing(16.0, after: passwordBackroundView)
+
+        containerView.stackView.addArrangedSubview(usernameBackgroundView)
         usernameBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(passwordView.snp.bottom).offset(16.0)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
@@ -241,34 +260,29 @@ final class AccountImportKeystoreView: AccountImportBaseView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(usernameHintLabel)
-        usernameHintLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(usernameBackgroundView.snp.bottom).offset(12.0)
-        }
+        containerView.stackView.setCustomSpacing(12.0, after: usernameBackgroundView)
 
-        addSubview(proceedButton)
-        proceedButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
+        containerView.stackView.addArrangedSubview(usernameHintLabel)
     }
 
     private func updateProceedButton() {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, viewModel.inputHandler.value.isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Provide your Restore Json..."
         } else if let viewModel = passwordViewModel, viewModel.inputHandler.required,
                   (passwordView.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter password..."
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter wallet name..."
         } else {
             proceedButton.applyEnabledStyle()
+            proceedButton.isUserInteractionEnabled = true
             proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
                 preferredLanguages: locale?.rLanguages
             )

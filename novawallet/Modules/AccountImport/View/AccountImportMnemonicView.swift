@@ -1,6 +1,7 @@
 import UIKit
 import SoraUI
 import SoraFoundation
+import CommonWallet
 
 protocol AccountImportMnemonicViewDelegate: AnyObject {
     func accountImportMnemonicViewDidProceed(_ view: AccountImportMnemonicView)
@@ -9,9 +10,16 @@ protocol AccountImportMnemonicViewDelegate: AnyObject {
 final class AccountImportMnemonicView: AccountImportBaseView {
     weak var delegate: AccountImportMnemonicViewDelegate?
 
-    let scrollView: UIScrollView = {
-        let view = UIScrollView()
-        view.backgroundColor = .clear
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView()
+        view.stackView.alignment = .fill
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: UIConstants.verticalTitleInset,
+            left: UIConstants.horizontalInset,
+            bottom: 0.0,
+            right: UIConstants.horizontalInset
+        )
         return view
     }()
 
@@ -106,6 +114,10 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         usernameViewModel = viewModel
         usernameTextField.text = viewModel?.inputHandler.value
 
+        let isHidden = viewModel == nil
+        usernameBackgroundView.isHidden = isHidden
+        usernameHintLabel.isHidden = isHidden
+
         updateProceedButton()
     }
 
@@ -127,11 +139,11 @@ final class AccountImportMnemonicView: AccountImportBaseView {
     }
 
     override func updateOnKeyboardBottomInsetChange(_ newInset: CGFloat) {
-        let scrollViewOffset = bounds.height - scrollView.frame.maxY
+        let scrollViewOffset = bounds.height - containerView.frame.maxY
 
-        var contentInsets = scrollView.contentInset
+        var contentInsets = containerView.scrollView.contentInset
         contentInsets.bottom = max(0.0, newInset - scrollViewOffset)
-        scrollView.contentInset = contentInsets
+        containerView.scrollView.contentInset = contentInsets
 
         if contentInsets.bottom > 0.0 {
             let targetView: UIView?
@@ -145,12 +157,12 @@ final class AccountImportMnemonicView: AccountImportBaseView {
             }
 
             if let firstResponderView = targetView {
-                let fieldFrame = scrollView.convert(
+                let fieldFrame = containerView.scrollView.convert(
                     firstResponderView.frame,
                     from: firstResponderView.superview
                 )
 
-                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+                containerView.scrollView.scrollRectToVisible(fieldFrame, animated: true)
             }
         }
     }
@@ -180,7 +192,6 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         usernameTextField.addTarget(self, action: #selector(actionTextFieldChanged(_:)), for: .editingChanged)
     }
 
-    // swiftlint:disable function_body_length
     private func setupLayout() {
         addSubview(proceedButton)
         proceedButton.snp.makeConstraints { make in
@@ -189,35 +200,20 @@ final class AccountImportMnemonicView: AccountImportBaseView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
         }
 
-        let contentView = UIView()
-        contentView.backgroundColor = .clear
-        scrollView.addSubview(contentView)
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.setCustomSpacing(12.0, after: titleLabel)
 
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(self)
-        }
+        containerView.stackView.addArrangedSubview(subtitleLabel)
+        containerView.stackView.setCustomSpacing(24.0, after: subtitleLabel)
 
-        contentView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(UIConstants.verticalTitleInset)
-        }
-
-        contentView.addSubview(subtitleLabel)
-        subtitleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
-        }
-
-        contentView.addSubview(mnemonicBackgroundView)
+        containerView.stackView.addArrangedSubview(mnemonicBackgroundView)
 
         mnemonicBackgroundView.addSubview(mnemonicTitleLabel)
         mnemonicTitleLabel.snp.makeConstraints { make in
@@ -233,21 +229,16 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         }
 
         mnemonicBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
             make.height.equalTo(mnemonicTextView).offset(32.0)
         }
 
-        contentView.addSubview(hintLabel)
-        hintLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(mnemonicBackgroundView.snp.bottom).offset(12.0)
-        }
+        containerView.stackView.setCustomSpacing(12.0, after: mnemonicBackgroundView)
 
-        contentView.addSubview(usernameBackgroundView)
+        containerView.stackView.addArrangedSubview(hintLabel)
+        containerView.stackView.setCustomSpacing(16.0, after: hintLabel)
+
+        containerView.stackView.addArrangedSubview(usernameBackgroundView)
         usernameBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(hintLabel.snp.bottom).offset(16.0)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
@@ -256,24 +247,24 @@ final class AccountImportMnemonicView: AccountImportBaseView {
             make.edges.equalToSuperview()
         }
 
-        contentView.addSubview(usernameHintLabel)
-        usernameHintLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(usernameBackgroundView.snp.bottom).offset(12.0)
-            make.bottom.equalTo(contentView)
-        }
+        containerView.stackView.setCustomSpacing(12.0, after: usernameBackgroundView)
+
+        containerView.stackView.addArrangedSubview(usernameHintLabel)
     }
 
     private func updateProceedButton() {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, mnemonicTextView.text.isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter the words..."
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter wallet name..."
         } else {
             proceedButton.applyEnabledStyle()
+            proceedButton.isUserInteractionEnabled = true
             proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
                 preferredLanguages: locale?.rLanguages
             )

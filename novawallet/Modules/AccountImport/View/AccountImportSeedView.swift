@@ -9,9 +9,16 @@ protocol AccountImportSeedViewDelegate: AnyObject {
 final class AccountImportSeedView: AccountImportBaseView {
     weak var delegate: AccountImportSeedViewDelegate?
 
-    let scrollView: UIScrollView = {
-        let view = UIScrollView()
-        view.backgroundColor = .clear
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView()
+        view.stackView.alignment = .fill
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: UIConstants.verticalTitleInset,
+            left: UIConstants.horizontalInset,
+            bottom: 0.0,
+            right: UIConstants.horizontalInset
+        )
         return view
     }()
 
@@ -98,6 +105,10 @@ final class AccountImportSeedView: AccountImportBaseView {
         usernameViewModel = viewModel
         usernameTextField.text = viewModel?.inputHandler.value
 
+        let isHidden = viewModel == nil
+        usernameBackgroundView.isHidden = isHidden
+        usernameHintLabel.isHidden = isHidden
+
         updateProceedButton()
     }
 
@@ -121,11 +132,11 @@ final class AccountImportSeedView: AccountImportBaseView {
     }
 
     override func updateOnKeyboardBottomInsetChange(_ newInset: CGFloat) {
-        let scrollViewOffset = bounds.height - scrollView.frame.maxY
+        let scrollViewOffset = bounds.height - containerView.frame.maxY
 
-        var contentInsets = scrollView.contentInset
+        var contentInsets = containerView.scrollView.contentInset
         contentInsets.bottom = max(0.0, newInset - scrollViewOffset)
-        scrollView.contentInset = contentInsets
+        containerView.scrollView.contentInset = contentInsets
 
         if contentInsets.bottom > 0.0 {
             let targetView: UIView?
@@ -139,12 +150,12 @@ final class AccountImportSeedView: AccountImportBaseView {
             }
 
             if let firstResponderView = targetView {
-                let fieldFrame = scrollView.convert(
+                let fieldFrame = containerView.scrollView.convert(
                     firstResponderView.frame,
                     from: firstResponderView.superview
                 )
 
-                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+                containerView.scrollView.scrollRectToVisible(fieldFrame, animated: true)
             }
         }
     }
@@ -178,29 +189,17 @@ final class AccountImportSeedView: AccountImportBaseView {
             make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(scrollView)
-        scrollView.snp.makeConstraints { make in
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
             make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
         }
 
-        let contentView = UIView()
-        contentView.backgroundColor = .clear
-        scrollView.addSubview(contentView)
+        containerView.stackView.addArrangedSubview(titleLabel)
+        containerView.stackView.setCustomSpacing(24.0, after: titleLabel)
 
-        contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(self)
-        }
-
-        contentView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalToSuperview().inset(UIConstants.verticalTitleInset)
-        }
-
-        contentView.addSubview(seedBackgroundView)
+        containerView.stackView.addArrangedSubview(seedBackgroundView)
 
         seedBackgroundView.addSubview(seedTitleLabel)
         seedTitleLabel.snp.makeConstraints { make in
@@ -223,15 +222,13 @@ final class AccountImportSeedView: AccountImportBaseView {
         }
 
         seedBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(24.0)
             make.height.equalTo(seedTextView).offset(32.0)
         }
 
-        contentView.addSubview(usernameBackgroundView)
+        containerView.stackView.setCustomSpacing(16.0, after: seedBackgroundView)
+
+        containerView.stackView.addArrangedSubview(usernameBackgroundView)
         usernameBackgroundView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(seedBackgroundView.snp.bottom).offset(16.0)
             make.height.equalTo(UIConstants.triangularedViewHeight)
         }
 
@@ -240,24 +237,24 @@ final class AccountImportSeedView: AccountImportBaseView {
             make.edges.equalToSuperview()
         }
 
-        contentView.addSubview(usernameHintLabel)
-        usernameHintLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(usernameBackgroundView.snp.bottom).offset(12.0)
-            make.bottom.equalToSuperview()
-        }
+        containerView.stackView.setCustomSpacing(12.0, after: usernameBackgroundView)
+
+        containerView.stackView.addArrangedSubview(usernameHintLabel)
     }
 
     private func updateProceedButton() {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, seedTextView.text.isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter the raw seed..."
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
+            proceedButton.isUserInteractionEnabled = false
             proceedButton.imageWithTitleView?.title = "Enter wallet name..."
         } else {
             proceedButton.applyEnabledStyle()
+            proceedButton.isUserInteractionEnabled = true
             proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
                 preferredLanguages: locale?.rLanguages
             )
