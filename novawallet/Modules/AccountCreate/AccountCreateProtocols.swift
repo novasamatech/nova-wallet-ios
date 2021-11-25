@@ -13,6 +13,10 @@ protocol OldAccountCreateViewProtocol: ControllerBackedProtocol {
     func didValidateEthereumDerivationPath(_ status: FieldStatus)
 }
 
+protocol AccountCreateViewProtocol: ControllerBackedProtocol {
+    func set(mnemonic: [String])
+}
+
 protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
     func selectCryptoType()

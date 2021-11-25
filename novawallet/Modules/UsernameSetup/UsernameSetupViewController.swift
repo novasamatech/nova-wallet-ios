@@ -9,7 +9,6 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
     let presenter: UsernameSetupPresenterProtocol
 
     private var viewModel: InputViewModelProtocol?
-    private var isFirstLayoutCompleted: Bool = false
 
     // MARK: - Lifecycle
 
