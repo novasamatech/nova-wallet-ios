@@ -183,7 +183,11 @@ extension AccountImportViewController1: AccountImportViewProtocol {
         }
     }
 
-    func setUploadWarning(message _: String) {}
+    func setUploadWarning(message: String) {
+        if case let .keystore(sourceView) = viewType {
+            sourceView.setUploadWarning(message: message)
+        }
+    }
 }
 
 extension AccountImportViewController1: Localizable {

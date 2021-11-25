@@ -28,19 +28,27 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     ) {
-        guard let importAccountView = AccountImportViewFactory.createViewForReplaceChainAccount(
-            modelId: chainId,
-            isEthereumBased: isEthereumBased,
-            in: wallet
+        let options = SecretSource.allCases
+
+        let handler: (Int) -> Void = { [weak self] selectedIndex in
+            self?.presentImport(
+                from: view,
+                secretSource: options[selectedIndex],
+                wallet: wallet,
+                chainId: chainId,
+                isEthereumBased: isEthereumBased
+            )
+        }
+
+        guard let picker = ModalPickerFactory.createPickerListForExport(
+            options: options,
+            delegate: self,
+            context: ModalPickerClosureContext(handler: handler)
         ) else {
             return
         }
 
-        let controller = importAccountView.controller
-        controller.hidesBottomBarWhenPushed = true
-        if let navigationController = view?.controller.navigationController {
-            navigationController.pushViewController(controller, animated: true)
-        }
+        view?.controller.present(picker, animated: true, completion: nil)
     }
 
     func showExportAccount(
@@ -137,6 +145,29 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
             seedView.controller,
             animated: true
         )
+    }
+
+    private func presentImport(
+        from view: ControllerBackedProtocol?,
+        secretSource: SecretSource,
+        wallet: MetaAccountModel,
+        chainId: ChainModel.Id,
+        isEthereumBased: Bool
+    ) {
+        guard let importAccountView = AccountImportViewFactory.createViewForReplaceChainAccount(
+            secretSource: secretSource,
+            modelId: chainId,
+            isEthereumBased: isEthereumBased,
+            in: wallet
+        ) else {
+            return
+        }
+
+        let controller = importAccountView.controller
+        controller.hidesBottomBarWhenPushed = true
+        if let navigationController = view?.controller.navigationController {
+            navigationController.pushViewController(controller, animated: true)
+        }
     }
 }
 
