@@ -58,7 +58,7 @@ final class AccountImportViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let view = AccountImportViewController1(presenter: presenter, localizationManager: localizationManager)
+        let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
         let wireframe = ImportChainAccount.AccountImportWireframe()
 
         presenter.view = view
@@ -79,7 +79,7 @@ final class AccountImportViewFactory {
         let presenter = AccountImportPresenter(secretSource: secretSource)
         let localizationManager = LocalizationManager.shared
 
-        let view = AccountImportViewController1(presenter: presenter, localizationManager: localizationManager)
+        let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         presenter.interactor = interactor
