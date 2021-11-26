@@ -11,7 +11,7 @@ class OnboardingMainBaseWireframe {
             handler(options[index])
         }
 
-        guard let pickerView = ModalPickerFactory.createPickerListForExport(
+        guard let pickerView = ModalPickerFactory.createPickerListForSecretSource(
             options: options,
             delegate: self,
             context: ModalPickerClosureContext(handler: closureHandler)
