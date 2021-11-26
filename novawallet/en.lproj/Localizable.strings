@@ -577,3 +577,5 @@
 "wallet.import.keystore.title" = "Provide your Restore JSON";
 "wallet.import.no.json.title" = "Provide your Restore JSON...";
 "wallet.import.no.password" = "Enter password...";
+"account.import.ethereum.seed.placeholder_v2_2_0" = "128 hex symbols";
+"account.import.substrate.seed.placeholder_v2_2_0" = "64 hex symbols";

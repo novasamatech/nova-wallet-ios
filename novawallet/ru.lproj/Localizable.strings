@@ -574,3 +574,5 @@
 "wallet.import.keystore.title" = "Загрузите JSON для восстановления";
 "wallet.import.no.json.title" = "Загрузите JSON файл...";
 "wallet.import.no.password" = "Введите пароль...";
+"account.import.ethereum.seed.placeholder_v2_2_0" = "128 шест. символа";
+"account.import.substrate.seed.placeholder_v2_2_0" = "64 шест. символа";

@@ -92,7 +92,7 @@ class BaseAccountImportPresenter {
                 )
 
                 placeholder = R.string.localizable
-                    .accountImportEthereumSeedPlaceholder(preferredLanguages: locale.rLanguages)
+                    .accountImportEthereumSeedPlaceholder_v2_2_0(preferredLanguages: locale.rLanguages)
             } else {
                 inputHandler = InputHandler(
                     value: value,
@@ -100,7 +100,7 @@ class BaseAccountImportPresenter {
                     predicate: NSPredicate.substrateSeed
                 )
                 placeholder = R.string.localizable
-                    .accountImportSubstrateSeedPlaceholder(preferredLanguages: locale.rLanguages)
+                    .accountImportSubstrateSeedPlaceholder_v2_2_0(preferredLanguages: locale.rLanguages)
             }
 
             viewModel = InputViewModel(inputHandler: inputHandler, placeholder: placeholder)
