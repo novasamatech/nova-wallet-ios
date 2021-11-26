@@ -10,7 +10,7 @@ enum AccountHeaderType {
 }
 
 enum ModalPickerFactory {
-    static func createPickerListForExport(
+    static func createPickerListForSecretSource(
         options: [SecretSource],
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?

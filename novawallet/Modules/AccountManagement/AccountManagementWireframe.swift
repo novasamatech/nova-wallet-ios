@@ -40,7 +40,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
             )
         }
 
-        guard let picker = ModalPickerFactory.createPickerListForExport(
+        guard let picker = ModalPickerFactory.createPickerListForSecretSource(
             options: options,
             delegate: self,
             context: ModalPickerClosureContext(handler: handler)
@@ -88,7 +88,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
             }
         }
 
-        guard let picker = ModalPickerFactory.createPickerListForExport(
+        guard let picker = ModalPickerFactory.createPickerListForSecretSource(
             options: options,
             delegate: self,
             context: ModalPickerClosureContext(handler: handler)
