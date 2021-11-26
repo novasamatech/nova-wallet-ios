@@ -81,6 +81,8 @@ protocol UIFactoryProtocol {
     func createChainAssetSelectionView() -> DetailsTriangularedView
 
     func createAnimatedTextField() -> AnimatedTextField
+
+    func createBorderSubtitleActionView() -> BorderedSubtitleActionView
 }
 
 extension UIFactoryProtocol {
@@ -558,5 +560,21 @@ final class UIFactory: UIFactoryProtocol {
         textField.textColor = R.color.colorWhite()
         textField.cursorColor = R.color.colorWhite()!
         return textField
+    }
+
+    func createBorderSubtitleActionView() -> BorderedSubtitleActionView {
+        let view = BorderedSubtitleActionView()
+        view.fillColor = .clear
+        view.highlightedFillColor = R.color.colorAccentSelected()!
+        view.strokeColor = R.color.colorGray()!
+        view.highlightedStrokeColor = .clear
+        view.strokeWidth = 1.0
+        view.shadowOpacity = 0.0
+        view.actionControl.contentView.titleLabel.textColor = R.color.colorLightGray()
+        view.actionControl.contentView.titleLabel.font = .p2Paragraph
+        view.actionControl.contentView.subtitleLabelView.textColor = R.color.colorWhite()
+        view.actionControl.contentView.subtitleLabelView.font = .p1Paragraph
+        view.actionControl.layoutType = .flexible
+        return view
     }
 }
