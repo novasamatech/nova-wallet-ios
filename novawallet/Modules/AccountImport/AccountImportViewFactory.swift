@@ -28,13 +28,13 @@ final class AccountImportViewFactory {
         return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
-    static func createViewForSwitch() -> AccountImportViewProtocol? {
+    static func createViewForSwitch(for secretSource: SecretSource) -> AccountImportViewProtocol? {
         guard let interactor = createAddAccountImportInteractor() else {
             return nil
         }
 
         let wireframe = SwitchAccount.AccountImportWireframe()
-        return createView(for: .mnemonic, interactor: interactor, wireframe: wireframe)
+        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(
