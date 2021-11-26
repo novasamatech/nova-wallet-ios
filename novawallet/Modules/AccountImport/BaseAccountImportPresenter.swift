@@ -17,7 +17,7 @@ class BaseAccountImportPresenter {
     var wireframe: AccountImportWireframeProtocol!
     var interactor: AccountImportInteractorInputProtocol!
 
-    let selectedSourceType: SecretSource
+    private(set) var selectedSourceType: SecretSource
 
     private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
 
@@ -260,11 +260,7 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
     }
 
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
-        // TODO: check logic
-        guard selectedSourceType == .keystore else {
-            return
-        }
-
+        selectedSourceType = .keystore
         applySourceType(text, preferredInfo: preferredInfo)
     }
 }
