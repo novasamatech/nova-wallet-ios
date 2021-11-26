@@ -122,10 +122,12 @@ final class AccountImportMnemonicView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = "Enter the words in the right order"
-        subtitleLabel.text = "Write words separately with one space, no commas or other signs."
-        mnemonicTitleLabel.text = "Mnemonic Passphrase"
-        hintLabel.text = "Typically 12-word phrase (but may be 15, 18, 21 or 24)"
+        titleLabel.text = R.string.localizable.walletImportMnemonicTitle(preferredLanguages: locale?.rLanguages)
+        subtitleLabel.text = R.string.localizable.walletImportMnemonicSubtitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        mnemonicTitleLabel.text = R.string.localizable.importMnemonic(preferredLanguages: locale?.rLanguages)
+        hintLabel.text = R.string.localizable.walletImportMnemonicHint(preferredLanguages: locale?.rLanguages)
 
         usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle(
             preferredLanguages: locale?.rLanguages
@@ -256,12 +258,16 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, mnemonicTextView.text.isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = "Enter the words..."
+            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoMnemonicTitle(
+                preferredLanguages: locale?.rLanguages
+            )
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = "Enter wallet name..."
+            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoNameTitle(
+                preferredLanguages: locale?.rLanguages
+            )
         } else {
             proceedButton.applyEnabledStyle()
             proceedButton.isUserInteractionEnabled = true
