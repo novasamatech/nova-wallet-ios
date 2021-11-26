@@ -55,7 +55,7 @@
 "wallet.username.setup.hint" = "Примеры: Сбережения, Инвестиции, Краудлоуны, Стейкинг. Имя хранится только на вашем мобильном устройстве и показывается только вам.";
 "account.username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "wallet.username.setup.title" = "Создать кошелёк";
-"account.username.setup.title" = "";
+"account.username.setup.title" = "Create a new account";
 "common.no.screenshot.title" = "Не делайте скриншоты";
 "common.no.screenshot.message" = "Не делайте скриншоты, которые могут быть собраны сторонними вредоносными программами";
 "common.ok" = "OK";
@@ -113,6 +113,9 @@
 "wallet.add.button.title" = "Добавить кошелёк";
 "account.add.already.exists.message" = "Аккаунт уже существует. Пожалуйста, попробуйте другой.";
 "about.website" = "Сайт";
+"about.github" = "Github";
+"about.telegram" = "Telegram";
+"settings.twitter" = "Twitter";
 "settings.rate.us" = "Оцените приложение";
 "settings.general" = "Основные";
 "settings.preferences" = "Предпочтения";
@@ -128,7 +131,7 @@
 "connection.management.default.title" = "По умолчанию";
 "connection.management.custom.title" = "Добавленные";
 "account.delete.confirmation.title" = "Забыть аккаунт?";
-"wallet.delete.confirmation.title" = "";
+"wallet.delete.confirmation.title" = "Forget wallet?";
 "account.delete.confirmation.description" = "Прежде чем продолжить, убедитесь, что вы создали резервную копию своей учетной записи.";
 "wallet.delete.confirmation.description" = "Перед продолжением убедитесь, что вы создали резервную копию своего кошелька.";
 "account.delete.confirm" = "Забыть";

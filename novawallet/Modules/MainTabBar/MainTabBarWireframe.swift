@@ -17,7 +17,6 @@ final class MainTabBarWireframe: MainTabBarWireframeProtocol {
             return
         }
 
-        // TODO: check flow
         guard let importController = AccountImportViewFactory
             .createViewForAdding(for: .keystore)?.controller
         else {
