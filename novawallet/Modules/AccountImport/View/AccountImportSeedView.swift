@@ -113,8 +113,10 @@ final class AccountImportSeedView: AccountImportBaseView {
     }
 
     override func setupLocalization() {
-        titleLabel.text = "Enter your raw seed"
-        seedTitleLabel.text = "Raw seed"
+        titleLabel.text = R.string.localizable.walletImportSeedTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+        seedTitleLabel.text = R.string.localizable.importRawSeed(preferredLanguages: locale?.rLanguages)
 
         usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle(
             preferredLanguages: locale?.rLanguages
@@ -246,12 +248,16 @@ final class AccountImportSeedView: AccountImportBaseView {
         if let viewModel = sourceViewModel, viewModel.inputHandler.required, seedTextView.text.isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = "Enter the raw seed..."
+            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoSeedTitle(
+                preferredLanguages: locale?.rLanguages
+            )
         } else if let viewModel = usernameViewModel, viewModel.inputHandler.required,
                   (usernameTextField.text ?? "").isEmpty {
             proceedButton.applyDisabledStyle()
             proceedButton.isUserInteractionEnabled = false
-            proceedButton.imageWithTitleView?.title = "Enter wallet name..."
+            proceedButton.imageWithTitleView?.title = R.string.localizable.walletImportNoNameTitle(
+                preferredLanguages: locale?.rLanguages
+            )
         } else {
             proceedButton.applyEnabledStyle()
             proceedButton.isUserInteractionEnabled = true
