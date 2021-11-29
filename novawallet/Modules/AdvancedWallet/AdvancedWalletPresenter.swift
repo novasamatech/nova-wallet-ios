@@ -17,7 +17,7 @@ final class AdvancedWalletPresenter {
         switch settings {
         case let .substrate(settings):
             return settings.selectedCryptoType
-        case let .ethereum(derivationPath):
+        case .ethereum:
             return nil
         case let .combined(substrateSettings, _):
             return substrateSettings.selectedCryptoType
@@ -50,7 +50,9 @@ final class AdvancedWalletPresenter {
                 for: settings.selectedCryptoType,
                 availableCryptoTypes: settings.availableCryptoTypes
             )
+            applyDisabledEthereumCryptoType()
         case .ethereum:
+            applyDisabledSubstrateCryptoType()
             applyEthereumCryptoType()
         case let .combined(substrateSettings, _):
             applySubstrateCryptoType(

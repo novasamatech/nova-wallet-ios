@@ -144,7 +144,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
             let text = "\(viewModel.underlyingViewModel.title) | \(viewModel.underlyingViewModel.subtitle)"
             contentView?.subtitleLabelView.text = text
         } else {
-            rootView.substrateCryptoTypeView.isHidden = true
+            cryptoTypeView.isHidden = true
         }
     }
 
