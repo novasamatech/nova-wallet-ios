@@ -42,8 +42,15 @@ protocol AccountCreateInteractorOutputProtocol: AnyObject {
 }
 
 protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
+    // TODO: Remove
     func confirm(
         from view: OldAccountCreateViewProtocol?,
+        request: MetaAccountCreationRequest,
+        metadata: MetaAccountCreationMetadata
+    )
+
+    func confirm(
+        from view: AccountCreateViewProtocol?,
         request: MetaAccountCreationRequest,
         metadata: MetaAccountCreationMetadata
     )
@@ -56,8 +63,16 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         context: AnyObject?
     )
 
+    // TODO: Remove
     func confirm(
         from view: OldAccountCreateViewProtocol?,
+        request: ChainAccountImportMnemonicRequest,
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id
+    )
+
+    func confirm(
+        from view: AccountCreateViewProtocol?,
         request: ChainAccountImportMnemonicRequest,
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id
@@ -77,12 +92,25 @@ extension AccountCreateWireframeProtocol {
         metaAccountModel _: MetaAccountModel,
         chainModelId _: ChainModel.Id
     ) {}
+
+    func confirm(
+        from _: AccountCreateViewProtocol?,
+        request _: MetaAccountCreationRequest,
+        metadata _: MetaAccountCreationMetadata
+    ) {}
+
+    func confirm(
+        from _: AccountCreateViewProtocol?,
+        request _: ChainAccountImportMnemonicRequest,
+        metaAccountModel _: MetaAccountModel,
+        chainModelId _: ChainModel.Id
+    ) {}
 }
 
 protocol AccountCreateViewFactoryProtocol: AnyObject {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
-    static func createViewForAdding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
-    static func createViewForSwitch(model: UsernameSetupModel) -> OldAccountCreateViewProtocol?
+    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
 
     static func createViewForReplaceChainAccount(
         metaAccountModel: MetaAccountModel,

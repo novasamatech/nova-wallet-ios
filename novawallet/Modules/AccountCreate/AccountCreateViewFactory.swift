@@ -4,82 +4,76 @@ import SoraFoundation
 import SoraKeystore
 
 final class AccountCreateViewFactory {
-    private static func createViewForUsername(
-        model: UsernameSetupModel,
+    private static func createViewForWallet(
+        name: String,
         wireframe: AccountCreateWireframeProtocol
-    ) -> OldAccountCreateViewProtocol? {
-        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
-        let presenter = AccountCreatePresenter(usernameSetup: model)
+    ) -> AccountCreateViewProtocol? {
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = AccountCreatePresenter(walletName: name)
+
+        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
 
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
         presenter.localizationManager = localizationManager
 
         return view
     }
 
+    // TODO: Fix this
     private static func createViewForReplace(
-        metaAccountModel: MetaAccountModel,
-        chainModelId: ChainModel.Id,
-        isEthereumBased: Bool,
-        wireframe: AccountCreateWireframeProtocol
+        metaAccountModel _: MetaAccountModel,
+        chainModelId _: ChainModel.Id,
+        isEthereumBased _: Bool,
+        wireframe _: AccountCreateWireframeProtocol
     ) -> OldAccountCreateViewProtocol? {
-        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
-
-        let presenter = OldAddChainAccount.AccountCreatePresenter(
-            metaAccountModel: metaAccountModel,
-            chainModelId: chainModelId,
-            isEthereumBased: isEthereumBased
-        )
-
-        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
-
-        view.presenter = presenter
-        presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
-        interactor.presenter = presenter
-
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
-
-        return view
+        nil
+//        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
+//
+//        let presenter = OldAddChainAccount.AccountCreatePresenter(
+//            metaAccountModel: metaAccountModel,
+//            chainModelId: chainModelId,
+//            isEthereumBased: isEthereumBased
+//        )
+//
+//        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+//
+//        view.presenter = presenter
+//        presenter.view = view
+//        presenter.interactor = interactor
+//        presenter.wireframe = wireframe
+//        interactor.presenter = presenter
+//
+//        let localizationManager = LocalizationManager.shared
+//        view.localizationManager = localizationManager
+//        presenter.localizationManager = localizationManager
+//
+//        return view
     }
 }
 
 // MARK: - AccountCreateViewFactoryProtocol
 
 extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
+    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
         let wireframe = AccountCreateWireframe()
-
-        return createViewForUsername(
-            model: model,
-            wireframe: wireframe
-        )
+        return createViewForWallet(name: model.username, wireframe: wireframe)
     }
 
-    static func createViewForAdding(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
+    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
         let wireframe = AddAccount.AccountCreateWireframe()
-
-        return createViewForUsername(
-            model: model,
-            wireframe: wireframe
-        )
+        return createViewForWallet(name: model.username, wireframe: wireframe)
     }
 
-    static func createViewForSwitch(model: UsernameSetupModel) -> OldAccountCreateViewProtocol? {
+    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
         let wireframe = SwitchAccount.AccountCreateWireframe()
-        return createViewForUsername(model: model, wireframe: wireframe)
+        return createViewForWallet(name: model.username, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(

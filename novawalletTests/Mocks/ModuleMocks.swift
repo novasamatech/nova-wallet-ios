@@ -2083,19 +2083,19 @@ import IrohaCrypto
 import SoraFoundation
 
 
- class MockAccountCreateViewProtocol: AccountCreateViewProtocol, Cuckoo.ProtocolMock {
+ class MockOldAccountCreateViewProtocol: OldAccountCreateViewProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = AccountCreateViewProtocol
+     typealias MocksType = OldAccountCreateViewProtocol
     
-     typealias Stubbing = __StubbingProxy_AccountCreateViewProtocol
-     typealias Verification = __VerificationProxy_AccountCreateViewProtocol
+     typealias Stubbing = __StubbingProxy_OldAccountCreateViewProtocol
+     typealias Verification = __VerificationProxy_OldAccountCreateViewProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
     
-    private var __defaultImplStub: AccountCreateViewProtocol?
+    private var __defaultImplStub: OldAccountCreateViewProtocol?
 
-     func enableDefaultImplementation(_ stub: AccountCreateViewProtocol) {
+     func enableDefaultImplementation(_ stub: OldAccountCreateViewProtocol) {
         __defaultImplStub = stub
         cuckoo_manager.enableDefaultStubImplementation()
     }
@@ -2255,7 +2255,7 @@ import SoraFoundation
     }
     
 
-	 struct __StubbingProxy_AccountCreateViewProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_OldAccountCreateViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -2263,59 +2263,59 @@ import SoraFoundation
 	    }
 	    
 	    
-	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAccountCreateViewProtocol, Bool> {
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockOldAccountCreateViewProtocol, Bool> {
 	        return .init(manager: cuckoo_manager, name: "isSetup")
 	    }
 	    
 	    
-	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAccountCreateViewProtocol, UIViewController> {
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockOldAccountCreateViewProtocol, UIViewController> {
 	        return .init(manager: cuckoo_manager, name: "controller")
 	    }
 	    
 	    
 	    func set<M1: Cuckoo.Matchable>(mnemonic: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([String])> where M1.MatchedType == [String] {
 	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: mnemonic) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "set(mnemonic: [String])", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "set(mnemonic: [String])", parameterMatchers: matchers))
 	    }
 	    
 	    func setSelectedSubstrateCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TitleWithSubtitleViewModel)> where M1.MatchedType == TitleWithSubtitleViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func setSelectedEthereumCrypto<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(TitleWithSubtitleViewModel)> where M1.MatchedType == TitleWithSubtitleViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(TitleWithSubtitleViewModel)>] = [wrap(matchable: model) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func setSubstrateDerivationPath<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol?)> where M1.OptionalMatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol?)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setSubstrateDerivationPath(viewModel: InputViewModelProtocol?)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "setSubstrateDerivationPath(viewModel: InputViewModelProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func setEthereumDerivationPath<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol?)> where M1.OptionalMatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol?)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "setEthereumDerivationPath(viewModel: InputViewModelProtocol?)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "setEthereumDerivationPath(viewModel: InputViewModelProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func didCompleteCryptoTypeSelection() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "didCompleteCryptoTypeSelection()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "didCompleteCryptoTypeSelection()", parameterMatchers: matchers))
 	    }
 	    
 	    func didValidateSubstrateDerivationPath<M1: Cuckoo.Matchable>(_ status: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(FieldStatus)> where M1.MatchedType == FieldStatus {
 	        let matchers: [Cuckoo.ParameterMatcher<(FieldStatus)>] = [wrap(matchable: status) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "didValidateSubstrateDerivationPath(_: FieldStatus)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "didValidateSubstrateDerivationPath(_: FieldStatus)", parameterMatchers: matchers))
 	    }
 	    
 	    func didValidateEthereumDerivationPath<M1: Cuckoo.Matchable>(_ status: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(FieldStatus)> where M1.MatchedType == FieldStatus {
 	        let matchers: [Cuckoo.ParameterMatcher<(FieldStatus)>] = [wrap(matchable: status) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "didValidateEthereumDerivationPath(_: FieldStatus)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreateViewProtocol.self, method: "didValidateEthereumDerivationPath(_: FieldStatus)", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AccountCreateViewProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_OldAccountCreateViewProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -2390,7 +2390,7 @@ import SoraFoundation
 	}
 }
 
- class AccountCreateViewProtocolStub: AccountCreateViewProtocol {
+ class OldAccountCreateViewProtocolStub: OldAccountCreateViewProtocol {
     
     
      var isSetup: Bool {
@@ -2448,12 +2448,318 @@ import SoraFoundation
 
 
 
- class MockAccountCreatePresenterProtocol: OldAccountCreatePresenterProtocol, Cuckoo.ProtocolMock {
+ class MockAccountCreateViewProtocol: AccountCreateViewProtocol, Cuckoo.ProtocolMock {
     
-     typealias MocksType = OldAccountCreatePresenterProtocol
+     typealias MocksType = AccountCreateViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_AccountCreateViewProtocol
+     typealias Verification = __VerificationProxy_AccountCreateViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AccountCreateViewProtocol?
+
+     func enableDefaultImplementation(_ stub: AccountCreateViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func set(mnemonic: [String])  {
+        
+    return cuckoo_manager.call("set(mnemonic: [String])",
+            parameters: (mnemonic),
+            escapingParameters: (mnemonic),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.set(mnemonic: mnemonic))
+        
+    }
+    
+
+	 struct __StubbingProxy_AccountCreateViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAccountCreateViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAccountCreateViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func set<M1: Cuckoo.Matchable>(mnemonic: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([String])> where M1.MatchedType == [String] {
+	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: mnemonic) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateViewProtocol.self, method: "set(mnemonic: [String])", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AccountCreateViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func set<M1: Cuckoo.Matchable>(mnemonic: M1) -> Cuckoo.__DoNotUse<([String]), Void> where M1.MatchedType == [String] {
+	        let matchers: [Cuckoo.ParameterMatcher<([String])>] = [wrap(matchable: mnemonic) { $0 }]
+	        return cuckoo_manager.verify("set(mnemonic: [String])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AccountCreateViewProtocolStub: AccountCreateViewProtocol {
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+     func set(mnemonic: [String])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockAccountCreatePresenterProtocol: AccountCreatePresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AccountCreatePresenterProtocol
     
      typealias Stubbing = __StubbingProxy_AccountCreatePresenterProtocol
      typealias Verification = __VerificationProxy_AccountCreatePresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AccountCreatePresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: AccountCreatePresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func activateAdvanced()  {
+        
+    return cuckoo_manager.call("activateAdvanced()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateAdvanced())
+        
+    }
+    
+    
+    
+     func proceed()  {
+        
+    return cuckoo_manager.call("proceed()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.proceed())
+        
+    }
+    
+
+	 struct __StubbingProxy_AccountCreatePresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func activateAdvanced() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "activateAdvanced()", parameterMatchers: matchers))
+	    }
+	    
+	    func proceed() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "proceed()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AccountCreatePresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateAdvanced() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("activateAdvanced()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func proceed() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("proceed()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AccountCreatePresenterProtocolStub: AccountCreatePresenterProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func activateAdvanced()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func proceed()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockOldAccountCreatePresenterProtocol: OldAccountCreatePresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = OldAccountCreatePresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_OldAccountCreatePresenterProtocol
+     typealias Verification = __VerificationProxy_OldAccountCreatePresenterProtocol
 
      let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
 
@@ -2547,7 +2853,7 @@ import SoraFoundation
     }
     
 
-	 struct __StubbingProxy_AccountCreatePresenterProtocol: Cuckoo.StubbingProxy {
+	 struct __StubbingProxy_OldAccountCreatePresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	
 	     init(manager: Cuckoo.MockManager) {
@@ -2557,32 +2863,32 @@ import SoraFoundation
 	    
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreatePresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
 	    func selectCryptoType() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "selectCryptoType()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreatePresenterProtocol.self, method: "selectCryptoType()", parameterMatchers: matchers))
 	    }
 	    
 	    func activateInfo() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "activateInfo()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreatePresenterProtocol.self, method: "activateInfo()", parameterMatchers: matchers))
 	    }
 	    
 	    func validate() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "validate()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreatePresenterProtocol.self, method: "validate()", parameterMatchers: matchers))
 	    }
 	    
 	    func proceed() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreatePresenterProtocol.self, method: "proceed()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockOldAccountCreatePresenterProtocol.self, method: "proceed()", parameterMatchers: matchers))
 	    }
 	    
 	}
 
-	 struct __VerificationProxy_AccountCreatePresenterProtocol: Cuckoo.VerificationProxy {
+	 struct __VerificationProxy_OldAccountCreatePresenterProtocol: Cuckoo.VerificationProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
 	    private let callMatcher: Cuckoo.CallMatcher
 	    private let sourceLocation: Cuckoo.SourceLocation
@@ -2629,7 +2935,7 @@ import SoraFoundation
 	}
 }
 
- class AccountCreatePresenterProtocolStub: OldAccountCreatePresenterProtocol {
+ class OldAccountCreatePresenterProtocolStub: OldAccountCreatePresenterProtocol {
     
 
     
@@ -2896,6 +3202,21 @@ import SoraFoundation
     
     
     
+     func confirm(from view: OldAccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)  {
+        
+    return cuckoo_manager.call("confirm(from: OldAccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)",
+            parameters: (view, request, metadata),
+            escapingParameters: (view, request, metadata),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.confirm(from: view, request: request, metadata: metadata))
+        
+    }
+    
+    
+    
      func confirm(from view: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)  {
         
     return cuckoo_manager.call("confirm(from: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)",
@@ -2911,9 +3232,9 @@ import SoraFoundation
     
     
     
-     func presentCryptoTypeSelection(from view: AccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)  {
+     func presentCryptoTypeSelection(from view: OldAccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)  {
         
-    return cuckoo_manager.call("presentCryptoTypeSelection(from: AccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)",
+    return cuckoo_manager.call("presentCryptoTypeSelection(from: OldAccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)",
             parameters: (view, availableTypes, selectedType, delegate, context),
             escapingParameters: (view, availableTypes, selectedType, delegate, context),
             superclassCall:
@@ -2921,6 +3242,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.presentCryptoTypeSelection(from: view, availableTypes: availableTypes, selectedType: selectedType, delegate: delegate, context: context))
+        
+    }
+    
+    
+    
+     func confirm(from view: OldAccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)  {
+        
+    return cuckoo_manager.call("confirm(from: OldAccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)",
+            parameters: (view, request, metaAccountModel, chainModelId),
+            escapingParameters: (view, request, metaAccountModel, chainModelId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.confirm(from: view, request: request, metaAccountModel: metaAccountModel, chainModelId: chainModelId))
         
     }
     
@@ -2978,14 +3314,24 @@ import SoraFoundation
 	    }
 	    
 	    
+	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, metadata: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(OldAccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == MetaAccountCreationRequest, M3.MatchedType == MetaAccountCreationMetadata {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metadata) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateWireframeProtocol.self, method: "confirm(from: OldAccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)", parameterMatchers: matchers))
+	    }
+	    
 	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, metadata: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)> where M1.OptionalMatchedType == AccountCreateViewProtocol, M2.MatchedType == MetaAccountCreationRequest, M3.MatchedType == MetaAccountCreationMetadata {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metadata) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateWireframeProtocol.self, method: "confirm(from: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentCryptoTypeSelection<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(from view: M1, availableTypes: M2, selectedType: M3, delegate: M4, context: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)> where M1.OptionalMatchedType == AccountCreateViewProtocol, M2.MatchedType == [MultiassetCryptoType], M3.MatchedType == MultiassetCryptoType, M4.OptionalMatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: availableTypes) { $0.1 }, wrap(matchable: selectedType) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: context) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateWireframeProtocol.self, method: "presentCryptoTypeSelection(from: AccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)", parameterMatchers: matchers))
+	    func presentCryptoTypeSelection<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(from view: M1, availableTypes: M2, selectedType: M3, delegate: M4, context: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(OldAccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == [MultiassetCryptoType], M3.MatchedType == MultiassetCryptoType, M4.OptionalMatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: availableTypes) { $0.1 }, wrap(matchable: selectedType) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: context) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateWireframeProtocol.self, method: "presentCryptoTypeSelection(from: OldAccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)", parameterMatchers: matchers))
+	    }
+	    
+	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, metaAccountModel: M3, chainModelId: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(OldAccountCreateViewProtocol?, ChainAccountImportMnemonicRequest, MetaAccountModel, ChainModel.Id)> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == ChainAccountImportMnemonicRequest, M3.MatchedType == MetaAccountModel, M4.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, ChainAccountImportMnemonicRequest, MetaAccountModel, ChainModel.Id)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metaAccountModel) { $0.2 }, wrap(matchable: chainModelId) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountCreateWireframeProtocol.self, method: "confirm(from: OldAccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)", parameterMatchers: matchers))
 	    }
 	    
 	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, metaAccountModel: M3, chainModelId: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountCreateViewProtocol?, ChainAccountImportMnemonicRequest, MetaAccountModel, ChainModel.Id)> where M1.OptionalMatchedType == AccountCreateViewProtocol, M2.MatchedType == ChainAccountImportMnemonicRequest, M3.MatchedType == MetaAccountModel, M4.MatchedType == ChainModel.Id {
@@ -3020,15 +3366,27 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
+	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, metadata: M3) -> Cuckoo.__DoNotUse<(OldAccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata), Void> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == MetaAccountCreationRequest, M3.MatchedType == MetaAccountCreationMetadata {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metadata) { $0.2 }]
+	        return cuckoo_manager.verify("confirm(from: OldAccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, metadata: M3) -> Cuckoo.__DoNotUse<(AccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata), Void> where M1.OptionalMatchedType == AccountCreateViewProtocol, M2.MatchedType == MetaAccountCreationRequest, M3.MatchedType == MetaAccountCreationMetadata {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountCreateViewProtocol?, MetaAccountCreationRequest, MetaAccountCreationMetadata)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metadata) { $0.2 }]
 	        return cuckoo_manager.verify("confirm(from: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func presentCryptoTypeSelection<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(from view: M1, availableTypes: M2, selectedType: M3, delegate: M4, context: M5) -> Cuckoo.__DoNotUse<(AccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?), Void> where M1.OptionalMatchedType == AccountCreateViewProtocol, M2.MatchedType == [MultiassetCryptoType], M3.MatchedType == MultiassetCryptoType, M4.OptionalMatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: availableTypes) { $0.1 }, wrap(matchable: selectedType) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: context) { $0.4 }]
-	        return cuckoo_manager.verify("presentCryptoTypeSelection(from: AccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentCryptoTypeSelection<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable, M5: Cuckoo.OptionalMatchable>(from view: M1, availableTypes: M2, selectedType: M3, delegate: M4, context: M5) -> Cuckoo.__DoNotUse<(OldAccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?), Void> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == [MultiassetCryptoType], M3.MatchedType == MultiassetCryptoType, M4.OptionalMatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, [MultiassetCryptoType], MultiassetCryptoType, ModalPickerViewControllerDelegate?, AnyObject?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: availableTypes) { $0.1 }, wrap(matchable: selectedType) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: context) { $0.4 }]
+	        return cuckoo_manager.verify("presentCryptoTypeSelection(from: OldAccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func confirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, metaAccountModel: M3, chainModelId: M4) -> Cuckoo.__DoNotUse<(OldAccountCreateViewProtocol?, ChainAccountImportMnemonicRequest, MetaAccountModel, ChainModel.Id), Void> where M1.OptionalMatchedType == OldAccountCreateViewProtocol, M2.MatchedType == ChainAccountImportMnemonicRequest, M3.MatchedType == MetaAccountModel, M4.MatchedType == ChainModel.Id {
+	        let matchers: [Cuckoo.ParameterMatcher<(OldAccountCreateViewProtocol?, ChainAccountImportMnemonicRequest, MetaAccountModel, ChainModel.Id)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: metaAccountModel) { $0.2 }, wrap(matchable: chainModelId) { $0.3 }]
+	        return cuckoo_manager.verify("confirm(from: OldAccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -3058,11 +3416,19 @@ import SoraFoundation
     
 
     
+     func confirm(from view: OldAccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
      func confirm(from view: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func presentCryptoTypeSelection(from view: AccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)   {
+     func presentCryptoTypeSelection(from view: OldAccountCreateViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?, context: AnyObject?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func confirm(from view: OldAccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

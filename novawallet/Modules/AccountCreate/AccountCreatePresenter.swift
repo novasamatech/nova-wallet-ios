@@ -3,47 +3,28 @@ import IrohaCrypto
 import SoraFoundation
 
 // TODO: Reefactor (rename + restruct)
-final class AccountCreatePresenter: {
-    let usernameSetup: UsernameSetupModel
+final class AccountCreatePresenter: BaseAccountCreatePresenter {
+    let walletName: String
 
-    init(usernameSetup: UsernameSetupModel) {
-        self.usernameSetup = usernameSetup
+    init(walletName: String) {
+        self.walletName = walletName
     }
 
-    override func processProceed() {
+    func processProceed() {
         guard
-            let cryptoType = selectedSubstrateCryptoType,
-            let substrateViewModel = substrateDerivationPathViewModel,
-            let ethereumViewModel = ethereumDerivationPathViewModel,
             let metadata = metadata
         else {
             return
         }
 
-        var derivationPathCheckError = false
-        if !substrateViewModel.inputHandler.completed {
-            derivationPathCheckError = true
-            view?.didValidateSubstrateDerivationPath(.invalid)
-            presentDerivationPathError(cryptoType)
-        }
+        // TODO: Get real values
+        let cryptoType: MultiassetCryptoType = .sr25519
 
-        if !ethereumViewModel.inputHandler.completed {
-            view?.didValidateEthereumDerivationPath(.invalid)
-            if !derivationPathCheckError {
-                presentDerivationPathError(.ethereumEcdsa)
-                derivationPathCheckError = true
-            }
-        }
-
-        guard !derivationPathCheckError else { return }
-
-        let substrateDerivationPath = substrateViewModel.inputHandler.value
-
-        let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
-            DerivationPathConstants.defaultEthereum : ethereumViewModel.inputHandler.value
+        let substrateDerivationPath = ""
+        let ethereumDerivationPath = DerivationPathConstants.defaultEthereum
 
         let request = MetaAccountCreationRequest(
-            username: usernameSetup.username,
+            username: walletName,
             derivationPath: substrateDerivationPath,
             ethereumDerivationPath: ethereumDerivationPath,
             cryptoType: cryptoType
