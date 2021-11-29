@@ -33,13 +33,6 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        // TODO: Display alert
-        // presenter.displayMnemonicAlert()
-    }
-
     // MARK: - Setup functions
 
     private func setupNavigationItem() {
@@ -54,7 +47,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     }
 
     private func configureActions() {
-        // TODO: Fill
+        rootView.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -64,7 +57,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     // MARK: - Actions
 
     @objc private func openAdvanced() {
-        
+        // TODO: Fill
     }
     
     @objc private func displayMnemonic() {
@@ -87,12 +80,17 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
 extension AccountCreateViewController: AccountCreateViewProtocol {
     func set(mnemonic _: [String]) {
+        /* TODO:
+         1. Update mnemonic label to change its size
+         2. Make mnemonic text invisible
+         3. Display warning
+         */
+        
         /*
          setupMnemonicViewIfNeeded()
 
          mnemonicView?.bind(words: mnemonic, columnsCount: 2)
          */
-        // TODO: Fill
     }
 }
 
