@@ -1,10 +1,10 @@
 import Foundation
 import UIKit
 
-enum SecretSource {
-    case keystore
+enum SecretSource: CaseIterable {
     case mnemonic
     case seed
+    case keystore
 }
 
 extension SecretSource {

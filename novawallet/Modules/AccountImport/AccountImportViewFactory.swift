@@ -4,36 +4,41 @@ import SoraKeystore
 import RobinHood
 import IrohaCrypto
 
-final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
-    static func createViewForOnboarding() -> AccountImportViewProtocol? {
+final class AccountImportViewFactory {
+    static func createViewForOnboarding(for secretSource: SecretSource) -> AccountImportViewProtocol? {
         guard let interactor = createAccountImportInteractor() else {
             return nil
         }
 
         let wireframe = AccountImportWireframe()
-        return createView(for: interactor, wireframe: wireframe)
+        return createView(
+            for: secretSource,
+            interactor: interactor,
+            wireframe: wireframe
+        )
     }
 
-    static func createViewForAdding() -> AccountImportViewProtocol? {
+    static func createViewForAdding(for secretSource: SecretSource) -> AccountImportViewProtocol? {
         guard let interactor = createAddAccountImportInteractor() else {
             return nil
         }
 
         let wireframe = AddAccount.AccountImportWireframe()
 
-        return createView(for: interactor, wireframe: wireframe)
+        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
-    static func createViewForSwitch() -> AccountImportViewProtocol? {
+    static func createViewForSwitch(for secretSource: SecretSource) -> AccountImportViewProtocol? {
         guard let interactor = createAddAccountImportInteractor() else {
             return nil
         }
 
         let wireframe = SwitchAccount.AccountImportWireframe()
-        return createView(for: interactor, wireframe: wireframe)
+        return createView(for: secretSource, interactor: interactor, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(
+        secretSource: SecretSource,
         modelId: ChainModel.Id,
         isEthereumBased: Bool,
         in wallet: MetaAccountModel
@@ -44,42 +49,43 @@ final class AccountImportViewFactory: AccountImportViewFactoryProtocol {
             return nil
         }
 
-        let view = AccountImportViewController(nib: R.nib.accountImportViewController)
-        let wireframe = ImportChainAccount.AccountImportWireframe()
         let presenter = ImportChainAccount.AccountImportPresenter(
+            secretSource: secretSource,
             metaAccountModel: wallet,
             chainModelId: modelId,
             isEthereumBased: isEthereumBased
         )
 
-        view.presenter = presenter
+        let localizationManager = LocalizationManager.shared
+
+        let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
+        let wireframe = ImportChainAccount.AccountImportWireframe()
+
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
 
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
         presenter.localizationManager = localizationManager
 
         return view
     }
 
     private static func createView(
-        for interactor: BaseAccountImportInteractor,
+        for secretSource: SecretSource,
+        interactor: BaseAccountImportInteractor,
         wireframe: AccountImportWireframeProtocol
     ) -> AccountImportViewProtocol? {
-        let view = AccountImportViewController(nib: R.nib.accountImportViewController)
-        let presenter = AccountImportPresenter()
+        let presenter = AccountImportPresenter(secretSource: secretSource)
+        let localizationManager = LocalizationManager.shared
 
-        view.presenter = presenter
+        let view = AccountImportViewController(presenter: presenter, localizationManager: localizationManager)
+
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
 
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
         presenter.localizationManager = localizationManager
 
         return view

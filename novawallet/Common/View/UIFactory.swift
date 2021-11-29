@@ -39,6 +39,7 @@ protocol UIFactoryProtocol {
     func createExpandableActionControl() -> ExpandableActionControl
     func createTitledMnemonicView(_ title: String?, icon: UIImage?) -> TitledMnemonicView
     func createMultilinedTriangularedView() -> MultilineTriangularedView
+    func createRoundedBackgroundView() -> RoundedView
     func createSeparatorView() -> UIView
     func createBorderedContainerView() -> BorderedContainerView
     func createActionsAccessoryView(
@@ -78,6 +79,8 @@ protocol UIFactoryProtocol {
     func createInfoIndicatingView() -> ImageWithTitleView
 
     func createChainAssetSelectionView() -> DetailsTriangularedView
+
+    func createAnimatedTextField() -> AnimatedTextField
 }
 
 extension UIFactoryProtocol {
@@ -530,5 +533,30 @@ final class UIFactory: UIFactoryProtocol {
         view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 8.0, right: 16.0)
         view.iconRadius = 16.0
         return view
+    }
+
+    func createRoundedBackgroundView() -> RoundedView {
+        let view = RoundedView()
+        view.cornerRadius = 12.0
+        view.strokeColor = R.color.colorTransparentText()!
+        view.highlightedStrokeColor = R.color.colorTransparentText()!
+        view.fillColor = .clear
+        view.highlightedFillColor = .clear
+        view.strokeWidth = 1.0
+        view.shadowOpacity = 0.0
+        return view
+    }
+
+    func createAnimatedTextField() -> AnimatedTextField {
+        let textField = AnimatedTextField()
+        textField.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 6.0, right: 16.0)
+        textField.titleFont = .p2Paragraph
+        textField.placeholderFont = .p1Paragraph
+        textField.textFont = .p1Paragraph
+        textField.titleColor = R.color.colorLightGray()!
+        textField.placeholderColor = R.color.colorLightGray()!
+        textField.textColor = R.color.colorWhite()
+        textField.cursorColor = R.color.colorWhite()!
+        return textField
     }
 }
