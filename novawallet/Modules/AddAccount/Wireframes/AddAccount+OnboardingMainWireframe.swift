@@ -1,7 +1,7 @@
 import Foundation
 
 extension AddAccount {
-    final class OnboardingMainWireframe: OnboardingMainWireframeProtocol {
+    final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
         func showSignup(from view: OnboardingMainViewProtocol?) {
             guard let usernameSetup = UsernameSetupViewFactory.createViewForAdding() else {
                 return
@@ -13,14 +13,8 @@ extension AddAccount {
         }
 
         func showAccountRestore(from view: OnboardingMainViewProtocol?) {
-            guard let restorationController = AccountImportViewFactory
-                .createViewForAdding()?.controller
-            else {
-                return
-            }
-
-            if let navigationController = view?.controller.navigationController {
-                navigationController.pushViewController(restorationController, animated: true)
+            presentSecretTypeSelection(from: view) { [weak self] secretSource in
+                self?.presentAccountRestore(from: view, secretSource: secretSource)
             }
         }
 
@@ -30,6 +24,21 @@ extension AddAccount {
                 navigationController.topViewController == view?.controller,
                 navigationController.presentedViewController == nil {
                 showAccountRestore(from: view)
+            }
+        }
+
+        private func presentAccountRestore(
+            from view: OnboardingMainViewProtocol?,
+            secretSource: SecretSource
+        ) {
+            guard let restorationController = AccountImportViewFactory
+                .createViewForAdding(for: secretSource)?.controller
+            else {
+                return
+            }
+
+            if let navigationController = view?.controller.navigationController {
+                navigationController.pushViewController(restorationController, animated: true)
             }
         }
     }

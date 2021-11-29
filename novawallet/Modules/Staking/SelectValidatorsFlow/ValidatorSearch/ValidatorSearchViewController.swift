@@ -225,7 +225,7 @@ extension ValidatorSearchViewController: EmptyStateDataSource {
         } else {
             emptyView.image = R.image.iconStartSearch()
             emptyView.title = R.string.localizable
-                .commonSearchStartTitle(preferredLanguages: selectedLocale.rLanguages)
+                .commonSearchStartTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
         }
 
         emptyView.titleColor = R.color.colorLightGray()!

@@ -2,7 +2,7 @@ import Foundation
 
 // @available(iOS, obsoleted: 10, message: "Network selection functionality does not longer exist")
 extension SwitchAccount {
-    final class OnboardingMainWireframe: OnboardingMainWireframeProtocol {
+    final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMainWireframeProtocol {
         func showSignup(from view: OnboardingMainViewProtocol?) {
             guard let usernameSetup = UsernameSetupViewFactory.createViewForSwitch() else {
                 return
@@ -14,12 +14,8 @@ extension SwitchAccount {
         }
 
         func showAccountRestore(from view: OnboardingMainViewProtocol?) {
-            guard let restorationController = AccountImportViewFactory.createViewForSwitch()?.controller else {
-                return
-            }
-
-            if let navigationController = view?.controller.navigationController {
-                navigationController.pushViewController(restorationController, animated: true)
+            presentSecretTypeSelection(from: view) { [weak self] secretSource in
+                self?.presentAccountRestore(from: view, secretSource: secretSource)
             }
         }
 
@@ -29,6 +25,21 @@ extension SwitchAccount {
                 navigationController.topViewController == view?.controller,
                 navigationController.presentedViewController == nil {
                 showAccountRestore(from: view)
+            }
+        }
+
+        private func presentAccountRestore(
+            from view: OnboardingMainViewProtocol?,
+            secretSource: SecretSource
+        ) {
+            guard let restorationController = AccountImportViewFactory.createViewForSwitch(
+                for: secretSource
+            )?.controller else {
+                return
+            }
+
+            if let navigationController = view?.controller.navigationController {
+                navigationController.pushViewController(restorationController, animated: true)
             }
         }
     }
