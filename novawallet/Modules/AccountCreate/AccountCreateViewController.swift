@@ -43,14 +43,14 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     // MARK: - Setup functions
 
     private func setupNavigationItem() {
-//        let infoItem = UIBarButtonItem(
-//            image: R.image.iconInfo(),
-//            style: .plain,
-//            target: self,
-//            action: #selector(actionOpenInfo)
-//        )
-//        navigationItem.rightBarButtonItem = infoItem
-        // TODO: Fill
+        let advancedBarButtonItem = UIBarButtonItem(
+            image: R.image.iconOptions(),
+            style: .plain,
+            target: self,
+            action: #selector(openAdvanced)
+        )
+        
+        navigationItem.rightBarButtonItem = advancedBarButtonItem
     }
 
     private func configureActions() {
@@ -63,6 +63,10 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
     // MARK: - Actions
 
+    @objc private func openAdvanced() {
+        
+    }
+    
     @objc private func displayMnemonic() {
         // TODO: I understand action — display menmonic
         // presenter.proceedToMnemonic()

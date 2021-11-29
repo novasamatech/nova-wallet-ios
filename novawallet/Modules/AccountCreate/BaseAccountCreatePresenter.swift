@@ -13,8 +13,11 @@ class BaseAccountCreatePresenter {
 
 extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     func setup() {
-        // TODO: Setup interactor
         // Display warning
+        // If user agrees, setup interactor
+        // If not, dismiss everything
+        // TODO: Setup interactor
+        
     }
 
     func activateAdvanced() {
