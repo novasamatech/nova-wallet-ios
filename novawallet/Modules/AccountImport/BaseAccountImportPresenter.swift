@@ -29,7 +29,7 @@ class BaseAccountImportPresenter {
     private(set) var usernameViewModel: InputViewModelProtocol?
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
-    private(set) var ethereumDerivationPath: String?
+    private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
     private lazy var jsonDeserializer = JSONSerialization()
 
