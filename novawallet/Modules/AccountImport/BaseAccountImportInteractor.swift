@@ -58,8 +58,6 @@ class BaseAccountImportInteractor {
 
     private func provideMetadata() {
         let metadata = MetaAccountImportMetadata(
-            availableSources: AccountImportSource.allCases,
-            defaultSource: .mnemonic,
             availableCryptoTypes: availableCryptoTypes,
             defaultCryptoType: defaultCryptoType
         )

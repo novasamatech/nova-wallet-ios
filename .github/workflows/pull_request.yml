@@ -1,8 +1,10 @@
 name: Build and Test on PR
 
 on:
-  pull_request:
-    branches: [ develop ]
+  pull_request_target:
+    types: [labeled]
+  # pull_request:
+  #   branches: [ develop ]
 
 jobs:
   build:
@@ -16,6 +18,8 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: pull/${{ github.event.pull_request.id }}/head
 
       - name: Cache Cocoapods
         id: cache-cocoapods

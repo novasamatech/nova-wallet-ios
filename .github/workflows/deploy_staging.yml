@@ -1,8 +1,13 @@
-name: Build, Test and Deploy to Firebase
+name: Deploy to Staging
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        description: 'App version'
+        required: true
+  # release:
+  #   types: [published]
 
 jobs:
   build:
@@ -58,6 +63,14 @@ jobs:
           # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      - name: Bump version
+        uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
+        with:
+          info-plist-path: './novawallet/Info.plist'
+          bundle-short-version-string: ${{ github.event.inputs.appVersion }}
+          bundle-version: ${{github.run_number}}
+          print-file: true
 
       - name: Archive
         env:
