@@ -17,4 +17,17 @@ protocol AdvancedWalletPresenterProtocol: AnyObject {
     func apply()
 }
 
-protocol AdvancedWalletWireframeProtocol: AnyObject {}
+protocol AdvancedWalletWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func presentCryptoTypeSelection(
+        from view: AdvancedWalletViewProtocol?,
+        availableTypes: [MultiassetCryptoType],
+        selectedType: MultiassetCryptoType,
+        delegate: ModalPickerViewControllerDelegate?
+    )
+
+    func complete(from view: AdvancedWalletViewProtocol?)
+}
+
+protocol AdvancedWalletSettingsDelegate: AnyObject {
+    func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings)
+}

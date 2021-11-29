@@ -56,16 +56,7 @@ protocol AccountImportWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showAdvancedSettings(
         from view: AccountImportViewProtocol?,
         secretSource: SecretSource,
-        settings: AdvancedWalletSettings
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
     )
-}
-
-extension AccountImportWireframeProtocol {
-    func presentNetworkTypeSelection(
-        from _: AccountImportViewProtocol?,
-        availableTypes _: [Chain],
-        selectedType _: Chain,
-        delegate _: ModalPickerViewControllerDelegate?,
-        context _: AnyObject?
-    ) {}
 }
