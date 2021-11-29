@@ -243,7 +243,12 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
             return
         }
 
-        wireframe.showAdvancedSettings(from: view, secretSource: selectedSourceType, settings: settings)
+        wireframe.showAdvancedSettings(
+            from: view,
+            secretSource: selectedSourceType,
+            settings: settings,
+            delegate: self
+        )
     }
 
     func proceed() {
@@ -281,6 +286,22 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
         selectedSourceType = .keystore
         applySourceType(text, preferredInfo: preferredInfo)
+    }
+}
+
+extension BaseAccountImportPresenter: AdvancedWalletSettingsDelegate {
+    func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings) {
+        switch walletSettings {
+        case let .substrate(settings):
+            selectedSubstrateCryptoType = settings.selectedCryptoType
+            substrateDerivationPath = settings.derivationPath
+        case let .ethereum(derivationPath):
+            ethereumDerivationPath = derivationPath
+        case let .combined(substrateSettings, ethereumDerivationPath):
+            selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
+            substrateDerivationPath = substrateSettings.derivationPath
+            self.ethereumDerivationPath = ethereumDerivationPath
+        }
     }
 }
 
