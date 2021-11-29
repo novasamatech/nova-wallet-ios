@@ -1,12 +1,13 @@
 import Foundation
 
 struct AdvancedNetworkTypeSettings {
-    let cryptoType: MultiassetCryptoType
+    let availableCryptoTypes: [MultiassetCryptoType]
+    let selectedCryptoType: MultiassetCryptoType
     let derivationPath: String?
 }
 
 enum AdvancedWalletSettings {
     case substrate(settings: AdvancedNetworkTypeSettings)
-    case ethereum(settings: AdvancedNetworkTypeSettings)
-    case combined(substrate: AdvancedNetworkTypeSettings, ethereum: AdvancedNetworkTypeSettings)
+    case ethereum(derivationPath: String?)
+    case combined(substrateSettings: AdvancedNetworkTypeSettings, ethereumDerivationPath: String?)
 }
