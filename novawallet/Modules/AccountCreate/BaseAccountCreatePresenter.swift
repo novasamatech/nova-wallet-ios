@@ -17,7 +17,6 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
         // If user agrees, setup interactor
         // If not, dismiss everything
         // TODO: Setup interactor
-        
     }
 
     func activateAdvanced() {

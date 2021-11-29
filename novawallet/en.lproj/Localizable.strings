@@ -579,3 +579,6 @@
 "wallet.import.no.password" = "Enter password...";
 "account.import.ethereum.seed.placeholder_v2_2_0" = "128 hex symbols";
 "account.import.substrate.seed.placeholder_v2_2_0" = "64 hex symbols";
+"account.backup.mnemonic.title" = "Write down the phrase and store it in a safe place";
+"common.understand" = "I understand";
+"account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";

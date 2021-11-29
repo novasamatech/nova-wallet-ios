@@ -90,7 +90,7 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle(preferredLanguages: languages)
 
         rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .commonNext(preferredLanguages: languages)
+            .commonContinue(preferredLanguages: languages)
         rootView.proceedButton.invalidateLayout()
     }
 

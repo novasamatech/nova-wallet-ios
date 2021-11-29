@@ -33,6 +33,10 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func loadView() {
+        view = AccountCreateViewLayout()
+    }
+
     // MARK: - Setup functions
 
     private func setupNavigationItem() {
@@ -42,7 +46,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
             target: self,
             action: #selector(openAdvanced)
         )
-        
+
         navigationItem.rightBarButtonItem = advancedBarButtonItem
     }
 
@@ -51,7 +55,19 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        // TODO: Fill
+        rootView.titleLabel.text = R.string.localizable
+            .accountBackupMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.subtitleLabel.text = R.string.localizable
+            .accountCreateDetails_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.captionLabel.text = R.string.localizable
+            .accountBackupMnemonicCaption(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .commonContinue(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.proceedButton.invalidateLayout()
     }
 
     // MARK: - Actions
@@ -59,7 +75,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     @objc private func openAdvanced() {
         // TODO: Fill
     }
-    
+
     @objc private func displayMnemonic() {
         // TODO: I understand action — display menmonic
         // presenter.proceedToMnemonic()
@@ -85,7 +101,7 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
          2. Make mnemonic text invisible
          3. Display warning
          */
-        
+
         /*
          setupMnemonicViewIfNeeded()
 
