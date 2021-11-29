@@ -6,20 +6,35 @@ final class AdvancedWalletPresenter {
     let wireframe: AdvancedWalletWireframeProtocol
 
     let secretSource: SecretSource
-    let settings: AdvancedWalletSettings
+    private(set) var settings: AdvancedWalletSettings
 
     private(set) var substrateDerivationPathViewModel: InputViewModelProtocol?
     private(set) var ethereumDerivationPathViewModel: InputViewModelProtocol?
+
+    weak var delegate: AdvancedWalletSettingsDelegate?
+
+    private var substrateCryptoType: MultiassetCryptoType? {
+        switch settings {
+        case let .substrate(settings):
+            return settings.selectedCryptoType
+        case let .ethereum(derivationPath):
+            return nil
+        case let .combined(substrateSettings, _):
+            return substrateSettings.selectedCryptoType
+        }
+    }
 
     init(
         wireframe: AdvancedWalletWireframeProtocol,
         localizationManager: LocalizationManagerProtocol,
         secretSource: SecretSource,
-        settings: AdvancedWalletSettings
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
     ) {
         self.wireframe = wireframe
         self.secretSource = secretSource
         self.settings = settings
+        self.delegate = delegate
         self.localizationManager = localizationManager
     }
 
@@ -31,7 +46,10 @@ final class AdvancedWalletPresenter {
     private func applyCryptoTypeViewModel() {
         switch settings {
         case let .substrate(settings):
-            applySubstrateCryptoType(for: settings.selectedCryptoType, availableCryptoTypes: settings.availableCryptoTypes)
+            applySubstrateCryptoType(
+                for: settings.selectedCryptoType,
+                availableCryptoTypes: settings.availableCryptoTypes
+            )
         case .ethereum:
             applyEthereumCryptoType()
         case let .combined(substrateSettings, _):
@@ -57,7 +75,7 @@ final class AdvancedWalletPresenter {
             applyEthereumDerivationPathViewModel(path: path)
         case let .combined(substrateSettings, ethereumDerivationPath):
             let substratePath = substrateDerivationPathViewModel?.inputHandler.value ?? substrateSettings.derivationPath
-            let ethereumPath = substrateDerivationPathViewModel?.inputHandler.value ?? ethereumDerivationPath
+            let ethereumPath = ethereumDerivationPathViewModel?.inputHandler.value ?? ethereumDerivationPath
 
             applySubstrateDerivationPathViewModel(for: substratePath, cryptoType: substrateSettings.selectedCryptoType)
             applyEthereumDerivationPathViewModel(path: ethereumPath)
@@ -101,7 +119,7 @@ final class AdvancedWalletPresenter {
         view?.setEthreumCrypto(viewModel: nil)
     }
 
-    private func applySubstrateDerivationPathViewModel(for _: String?, cryptoType: MultiassetCryptoType) {
+    private func applySubstrateDerivationPathViewModel(for path: String?, cryptoType: MultiassetCryptoType) {
         let predicate: NSPredicate
         let placeholder: String
 
@@ -123,7 +141,7 @@ final class AdvancedWalletPresenter {
             }
         }
 
-        let inputHandling = InputHandler(required: false, predicate: predicate)
+        let inputHandling = InputHandler(value: path ?? "", required: false, predicate: predicate)
 
         let viewModel = InputViewModel(
             inputHandler: inputHandling,
@@ -156,6 +174,55 @@ final class AdvancedWalletPresenter {
         ethereumDerivationPathViewModel = nil
         view?.setEthereumDerivationPath(viewModel: nil)
     }
+
+    private func validate() -> Bool {
+        if !validateSubstrate() {
+            return false
+        }
+
+        return validateEthereum()
+    }
+
+    private func validateSubstrate() -> Bool {
+        guard let viewModel = substrateDerivationPathViewModel, let cryptoType = substrateCryptoType else {
+            return true
+        }
+
+        if !viewModel.inputHandler.completed {
+            presentDerivationPathError(cryptoType)
+            return false
+        } else {
+            return true
+        }
+    }
+
+    private func validateEthereum() -> Bool {
+        guard let viewModel = ethereumDerivationPathViewModel else { return true }
+
+        if !viewModel.inputHandler.completed {
+            presentDerivationPathError(.ethereumEcdsa)
+            return false
+        } else {
+            return true
+        }
+    }
+
+    internal func presentDerivationPathError(_ cryptoType: MultiassetCryptoType) {
+        let locale = localizationManager?.selectedLocale ?? Locale.current
+
+        let error: AccountCreationError
+
+        switch cryptoType {
+        case .sr25519:
+            error = .invalidDerivationHardSoftPassword
+        case .ed25519, .substrateEcdsa:
+            error = .invalidDerivationHardPassword
+        case .ethereumEcdsa:
+            error = .invalidDerivationHardSoftNumericPassword
+        }
+
+        _ = wireframe.present(error: error, from: view, locale: locale)
+    }
 }
 
 extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
@@ -163,11 +230,66 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
         applyAdvanced()
     }
 
-    func selectSubstrateCryptoType() {}
+    func selectSubstrateCryptoType() {
+        switch settings {
+        case let .substrate(settings):
+            wireframe.presentCryptoTypeSelection(
+                from: view,
+                availableTypes: settings.availableCryptoTypes,
+                selectedType: settings.selectedCryptoType,
+                delegate: self
+            )
+        case .ethereum:
+            break
+        case let .combined(substrateSettings, _):
+            wireframe.presentCryptoTypeSelection(
+                from: view,
+                availableTypes: substrateSettings.availableCryptoTypes,
+                selectedType: substrateSettings.selectedCryptoType,
+                delegate: self
+            )
+        }
+    }
 
-    func selectEthereumCryptoType() {}
+    func selectEthereumCryptoType() {
+        // current the model support only single crypto type for eth but view already supports selected
+    }
 
-    func apply() {}
+    func apply() {
+        if validate() {
+            let maybeNewSettings: AdvancedWalletSettings?
+
+            switch settings {
+            case let .substrate(settings):
+                let newNetworkSettings = AdvancedNetworkTypeSettings(
+                    availableCryptoTypes: settings.availableCryptoTypes,
+                    selectedCryptoType: settings.selectedCryptoType,
+                    derivationPath: substrateDerivationPathViewModel?.inputHandler.value
+                )
+
+                maybeNewSettings = .substrate(settings: newNetworkSettings)
+            case .ethereum:
+                maybeNewSettings = nil
+            case let .combined(substrateSettings, _):
+                let newSubstrateSettings = AdvancedNetworkTypeSettings(
+                    availableCryptoTypes: substrateSettings.availableCryptoTypes,
+                    selectedCryptoType: substrateSettings.selectedCryptoType,
+                    derivationPath: substrateDerivationPathViewModel?.inputHandler.value
+                )
+
+                maybeNewSettings = .combined(
+                    substrateSettings: newSubstrateSettings,
+                    ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value
+                )
+            }
+
+            if let newSettings = maybeNewSettings {
+                delegate?.didReceiveNewAdvanced(walletSettings: newSettings)
+            }
+
+            wireframe.complete(from: view)
+        }
+    }
 }
 
 extension AdvancedWalletPresenter: Localizable {
@@ -175,5 +297,49 @@ extension AdvancedWalletPresenter: Localizable {
         if let view = view, view.isSetup {
             applyAdvanced()
         }
+    }
+}
+
+extension AdvancedWalletPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context _: AnyObject?) {
+        let maybeNewSettings: AdvancedWalletSettings?
+
+        switch settings {
+        case let .substrate(settings):
+            let newNetworkSettings = AdvancedNetworkTypeSettings(
+                availableCryptoTypes: settings.availableCryptoTypes,
+                selectedCryptoType: settings.availableCryptoTypes[index],
+                derivationPath: substrateDerivationPathViewModel?.inputHandler.value
+            )
+
+            maybeNewSettings = .substrate(settings: newNetworkSettings)
+        case .ethereum:
+            maybeNewSettings = nil
+        case let .combined(substrateSettings, _):
+            let newSubstrateSettings = AdvancedNetworkTypeSettings(
+                availableCryptoTypes: substrateSettings.availableCryptoTypes,
+                selectedCryptoType: substrateSettings.availableCryptoTypes[index],
+                derivationPath: substrateDerivationPathViewModel?.inputHandler.value
+            )
+
+            maybeNewSettings = .combined(
+                substrateSettings: newSubstrateSettings,
+                ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value
+            )
+        }
+
+        guard let newSettings = maybeNewSettings else {
+            return
+        }
+
+        settings = newSettings
+
+        applyAdvanced()
+
+        view?.didCompleteCryptoTypeSelection()
+    }
+
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompleteCryptoTypeSelection()
     }
 }

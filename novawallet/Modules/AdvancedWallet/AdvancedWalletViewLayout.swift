@@ -16,26 +16,44 @@ final class AdvancedWalletViewLayout: UIView {
         return view
     }()
 
-    let substrateCryptoTypeView: BorderedSubtitleActionView = {
-        let view = UIFactory.default.createBorderSubtitleActionView()
-        view.actionControl.imageIndicator.image = R.image.iconDropDown()
-        return view
-    }()
+    let substrateCryptoTypeView: BorderedSubtitleActionView = UIFactory.default.createBorderSubtitleActionView()
 
     let substrateBackgroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
-    let substrateTextField: AnimatedTextField = UIFactory.default.createAnimatedTextField()
 
-    let ethereumCryptoTypeView: BorderedSubtitleActionView = {
-        let view = UIFactory.default.createBorderSubtitleActionView()
-        view.fillColor = R.color.colorDisabledBackground()!
-        view.highlightedFillColor = R.color.colorDisabledBackground()!
+    let substrateTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .p2Paragraph
+        label.textColor = R.color.colorLightGray()
+        return label
+    }()
+
+    let substrateTextField: UITextField = {
+        let view = UITextField()
+        view.font = .p1Paragraph
+        view.textColor = R.color.colorWhite()
+        view.tintColor = R.color.colorWhite()
         return view
     }()
 
-    let ethereumBackgroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
-    let ethereumTextField: AnimatedTextField = UIFactory.default.createAnimatedTextField()
+    let ethereumCryptoTypeView: BorderedSubtitleActionView = UIFactory.default.createBorderSubtitleActionView()
 
-    let proceedButton: TriangularedButton = {
+    let ethereumBackgroundView: RoundedView = UIFactory.default.createRoundedBackgroundView()
+    let ethereumTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .p2Paragraph
+        label.textColor = R.color.colorLightGray()
+        return label
+    }()
+
+    let ethereumTextField: UITextField = {
+        let view = UITextField()
+        view.font = .p1Paragraph
+        view.textColor = R.color.colorWhite()
+        view.tintColor = R.color.colorWhite()
+        return view
+    }()
+
+    let applyButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()
         return button
@@ -55,8 +73,8 @@ final class AdvancedWalletViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(proceedButton)
-        proceedButton.snp.makeConstraints { make in
+        addSubview(applyButton)
+        applyButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -66,21 +84,38 @@ final class AdvancedWalletViewLayout: UIView {
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
-            make.bottom.equalTo(proceedButton.snp.top).offset(-16.0)
+            make.bottom.equalTo(applyButton.snp.top).offset(-16.0)
         }
 
         containerView.stackView.addArrangedSubview(substrateCryptoTypeView)
         containerView.stackView.addArrangedSubview(substrateBackgroundView)
+
         substrateBackgroundView.addSubview(substrateTextField)
+
         substrateTextField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview().inset(8.0)
+        }
+
+        substrateBackgroundView.addSubview(substrateTitleLabel)
+        substrateTitleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(8.0)
         }
 
         containerView.stackView.addArrangedSubview(ethereumCryptoTypeView)
         containerView.stackView.addArrangedSubview(ethereumBackgroundView)
         ethereumBackgroundView.addSubview(ethereumTextField)
+
         ethereumTextField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview().inset(8.0)
+        }
+
+        ethereumBackgroundView.addSubview(ethereumTitleLabel)
+        ethereumTitleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.top.equalToSuperview().inset(8.0)
         }
 
         containerView.stackView.arrangedSubviews.forEach { view in

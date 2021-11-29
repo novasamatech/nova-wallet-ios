@@ -15,11 +15,13 @@ final class AccountImportWireframe: AccountImportWireframeProtocol {
     func showAdvancedSettings(
         from view: AccountImportViewProtocol?,
         secretSource: SecretSource,
-        settings: AdvancedWalletSettings
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
     ) {
         guard let advancedView = AdvancedWalletViewFactory.createView(
             for: secretSource,
-            advancedSettings: settings
+            advancedSettings: settings,
+            delegate: delegate
         ) else {
             return
         }

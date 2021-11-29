@@ -4,7 +4,8 @@ import SoraFoundation
 struct AdvancedWalletViewFactory {
     static func createView(
         for secretSource: SecretSource,
-        advancedSettings: AdvancedWalletSettings
+        advancedSettings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
     ) -> AdvancedWalletViewProtocol? {
         let wireframe = AdvancedWalletWireframe()
 
@@ -14,7 +15,8 @@ struct AdvancedWalletViewFactory {
             wireframe: wireframe,
             localizationManager: localizationManager,
             secretSource: secretSource,
-            settings: advancedSettings
+            settings: advancedSettings,
+            delegate: delegate
         )
 
         let view = AdvancedWalletViewController(presenter: presenter, localizationManager: localizationManager)
