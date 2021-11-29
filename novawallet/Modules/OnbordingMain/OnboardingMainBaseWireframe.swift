@@ -5,7 +5,7 @@ class OnboardingMainBaseWireframe {
         from view: OnboardingMainViewProtocol?,
         handler: @escaping (SecretSource) -> Void
     ) {
-        let options = SecretSource.allCases
+        let options = SecretSource.displayOptions
 
         let closureHandler: (Int) -> Void = { index in
             handler(options[index])
