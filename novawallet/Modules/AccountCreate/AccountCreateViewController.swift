@@ -61,6 +61,17 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         rootView.subtitleLabel.text = R.string.localizable
             .accountCreateDetails_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
 
+        // Font size and color
+        rootView.mnemonicFieldTitleLabel.text = R.string.localizable
+            .accountBackupMnemonicFieldTitle(preferredLanguages: selectedLocale.rLanguages)
+
+        // TODO: Remove
+        // Set numberOfLines = 0
+        // Set color
+        // Set truncating mode = none
+
+        rootView.mnemonicFieldContentLabel.text = "cancel furnance cash ribbon ready receive bachelor great cash fine boat acoustic"
+
         rootView.captionLabel.text = R.string.localizable
             .accountBackupMnemonicCaption(preferredLanguages: selectedLocale.rLanguages)
 

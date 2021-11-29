@@ -582,3 +582,4 @@
 "account.backup.mnemonic.title" = "Write down the phrase and store it in a safe place";
 "common.understand" = "I understand";
 "account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";
+"account.backup.mnemonic.field.title" = "Mnemonic Passphrase";
