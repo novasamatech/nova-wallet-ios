@@ -6,7 +6,6 @@ on:
       appVersion:
         description: 'App version'
         required: true
-        default: ${{ secrets.IOS_APP_VERSION }}
   # release:
   #   types: [published]
 
