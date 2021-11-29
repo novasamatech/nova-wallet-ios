@@ -31,7 +31,7 @@ struct MetaAccountImportMnemonicRequest {
     let mnemonic: String
     let username: String
     let derivationPath: String
-    let ethereumDerivationPath: String?
+    let ethereumDerivationPath: String
     let cryptoType: MultiassetCryptoType
 }
 

@@ -270,7 +270,7 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
                 maybeNewSettings = .substrate(settings: newNetworkSettings)
             case .ethereum:
                 maybeNewSettings = nil
-            case let .combined(substrateSettings, _):
+            case let .combined(substrateSettings, ethereumDerivationPath):
                 let newSubstrateSettings = AdvancedNetworkTypeSettings(
                     availableCryptoTypes: substrateSettings.availableCryptoTypes,
                     selectedCryptoType: substrateSettings.selectedCryptoType,
@@ -279,7 +279,8 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
 
                 maybeNewSettings = .combined(
                     substrateSettings: newSubstrateSettings,
-                    ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value
+                    ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value ??
+                        ethereumDerivationPath
                 )
             }
 
@@ -315,7 +316,7 @@ extension AdvancedWalletPresenter: ModalPickerViewControllerDelegate {
             maybeNewSettings = .substrate(settings: newNetworkSettings)
         case .ethereum:
             maybeNewSettings = nil
-        case let .combined(substrateSettings, _):
+        case let .combined(substrateSettings, ethereumDerivationPath):
             let newSubstrateSettings = AdvancedNetworkTypeSettings(
                 availableCryptoTypes: substrateSettings.availableCryptoTypes,
                 selectedCryptoType: substrateSettings.availableCryptoTypes[index],
@@ -324,7 +325,8 @@ extension AdvancedWalletPresenter: ModalPickerViewControllerDelegate {
 
             maybeNewSettings = .combined(
                 substrateSettings: newSubstrateSettings,
-                ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value
+                ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value ??
+                    ethereumDerivationPath
             )
         }
 
