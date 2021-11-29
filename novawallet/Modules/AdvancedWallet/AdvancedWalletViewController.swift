@@ -10,6 +10,8 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     private var substrateDerivationPathViewModel: InputViewModelProtocol?
     private var ethereumDerivationPathViewModel: InputViewModelProtocol?
 
+    var keyboardHandler: KeyboardHandler?
+
     init(presenter: AdvancedWalletPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -31,8 +33,24 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
 
         setupLocalization()
         setupHandlers()
+        setupTextField(rootView.substrateTextField)
+        setupTextField(rootView.ethereumTextField)
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupHandlers() {
@@ -65,6 +83,14 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
         )
 
         rootView.applyButton.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
+    }
+
+    private func setupTextField(_ textField: UITextField) {
+        textField.returnKeyType = .done
+        textField.textContentType = .none
+        textField.autocapitalizationType = .none
+        textField.autocorrectionType = .no
+        textField.spellCheckingType = .no
     }
 
     private func setupLocalization() {
@@ -212,7 +238,13 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         if let viewModel = viewModel {
             rootView.substrateBackgroundView.isHidden = false
 
-            rootView.substrateTextField.placeholder = viewModel.placeholder
+            rootView.substrateTextField.attributedPlaceholder = NSAttributedString(
+                string: viewModel.placeholder,
+                attributes: [
+                    .font: UIFont.p1Paragraph,
+                    .foregroundColor: R.color.colorDarkGray()!
+                ]
+            )
             rootView.substrateTextField.text = viewModel.inputHandler.value
         } else {
             rootView.substrateBackgroundView.isHidden = true
@@ -225,7 +257,13 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         if let viewModel = viewModel {
             rootView.ethereumBackgroundView.isHidden = false
 
-            rootView.ethereumTextField.placeholder = viewModel.placeholder
+            rootView.ethereumTextField.attributedPlaceholder = NSAttributedString(
+                string: viewModel.placeholder,
+                attributes: [
+                    .font: UIFont.p1Paragraph,
+                    .foregroundColor: R.color.colorDarkGray()!
+                ]
+            )
             rootView.ethereumTextField.text = viewModel.inputHandler.value
         } else {
             rootView.ethereumBackgroundView.isHidden = true
@@ -235,6 +273,38 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
     func didCompleteCryptoTypeSelection() {
         rootView.substrateCryptoTypeView.actionControl.imageIndicator.deactivate()
         rootView.ethereumCryptoTypeView.actionControl.imageIndicator.deactivate()
+    }
+}
+
+extension AdvancedWalletViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+
+        let scrollView = rootView.containerView.scrollView
+        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            if rootView.substrateTextField.isFirstResponder {
+                let fieldFrame = scrollView.convert(
+                    rootView.substrateTextField.frame,
+                    from: rootView.substrateTextField.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            } else if rootView.ethereumTextField.isFirstResponder {
+                let fieldFrame = scrollView.convert(
+                    rootView.ethereumTextField.frame,
+                    from: rootView.ethereumTextField.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
+        }
     }
 }
 

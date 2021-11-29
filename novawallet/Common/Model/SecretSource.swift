@@ -1,13 +1,15 @@
 import Foundation
 import UIKit
 
-enum SecretSource: CaseIterable {
+enum SecretSource {
     case mnemonic
     case seed
     case keystore
 }
 
 extension SecretSource {
+    static var displayOptions: [SecretSource] { [.mnemonic, .seed, .keystore] }
+
     func titleForLocale(_ locale: Locale?) -> String {
         switch self {
         case .keystore:
