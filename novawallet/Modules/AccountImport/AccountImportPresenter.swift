@@ -68,4 +68,21 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
     override func showUploadWarningIfNeeded(_: MetaAccountImportPreferredInfo) {}
 
     override func shouldUseEthereumSeed() -> Bool { false }
+
+    override func getAdvancedSettings() -> AdvancedWalletSettings? {
+        guard let metadata = metadata else {
+            return nil
+        }
+
+        let substrateSettings = AdvancedNetworkTypeSettings(
+            availableCryptoTypes: metadata.availableCryptoTypes,
+            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+            derivationPath: substrateDerivationPath
+        )
+
+        return .combined(
+            substrateSettings: substrateSettings,
+            ethereumDerivationPath: ethereumDerivationPath
+        )
+    }
 }
