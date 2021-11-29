@@ -8,6 +8,7 @@ extension ImportChainAccount {
         let isEthereumBased: Bool
 
         init(
+            secretSource: SecretSource,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
             isEthereumBased: Bool
@@ -15,11 +16,12 @@ extension ImportChainAccount {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
+
+            super.init(secretSource: secretSource)
         }
 
         private func prooceedWithSubstrate() {
             guard
-                let selectedSourceType = selectedSourceType,
                 let selectedCryptoType = selectedSubstrateCryptoType,
                 let sourceViewModel = sourceViewModel
             else {
@@ -35,13 +37,7 @@ extension ImportChainAccount {
                 return
             }
 
-            if let viewModel = substrateDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateSubstrateDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: selectedCryptoType)
-
-                return
-            }
-            let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
+            let substrateDerivationPath = self.substrateDerivationPath ?? ""
 
             switch selectedSourceType {
             case .mnemonic:
@@ -90,10 +86,7 @@ extension ImportChainAccount {
         }
 
         private func proceedWithEthereum() {
-            guard
-                let selectedSourceType = selectedSourceType,
-                let sourceViewModel = sourceViewModel
-            else {
+            guard let sourceViewModel = sourceViewModel else {
                 return
             }
 
@@ -108,14 +101,7 @@ extension ImportChainAccount {
 
             let cryptoType: MultiassetCryptoType = .ethereumEcdsa
 
-            if let viewModel = ethereumDerivationPathViewModel, !viewModel.inputHandler.completed {
-                view?.didValidateEthereumDerivationPath(.invalid)
-                presentDerivationPathError(sourceType: selectedSourceType, cryptoType: cryptoType)
-
-                return
-            }
-
-            let ethereumDerivationPathValue = ethereumDerivationPathViewModel?.inputHandler.value ?? ""
+            let ethereumDerivationPathValue = self.ethereumDerivationPath ?? ""
             let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
                 DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
 
@@ -173,39 +159,11 @@ extension ImportChainAccount {
             }
         }
 
-        override func getVisibilitySettings() -> AccountImportVisibility {
-            guard let sourceType = selectedSourceType else {
-                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
-            }
-
-            switch sourceType {
-            case .mnemonic:
-                return isEthereumBased ? .ethereumChainMnemonic : .substrateChainMnemonic
-            case .seed:
-                return isEthereumBased ? .ethereumChainSeed : .substrateChainSeed
-            case .keystore:
-                return isEthereumBased ? .ethereumChainJSON : .substrateChainJSON
-            }
-        }
-
         override func applyUsernameViewModel(_: String = "") {
             view?.setName(viewModel: nil)
         }
 
-        override func setViewTitle() {
-            let title = R.string.localizable
-                .importChainAccountTitle(preferredLanguages: selectedLocale.rLanguages)
-            view?.setTitle(title)
-        }
-
         override func showUploadWarningIfNeeded(_ preferredInfo: MetaAccountImportPreferredInfo) {
-            if preferredInfo.genesisHash == nil {
-                let locale = localizationManager?.selectedLocale
-                let message = R.string.localizable.accountImportJsonNoNetwork(preferredLanguages: locale?.rLanguages)
-                view?.setUploadWarning(message: message)
-                return
-            }
-
             if (try? Data(hexString: chainModelId)) != preferredInfo.genesisHash {
                 let message = R.string.localizable
                     .accountImportWrongNetwork(preferredLanguages: selectedLocale.rLanguages)

@@ -1,3 +1,7 @@
+"NSCameraUsageDescription" = "Камера используется для сканирования QR кода.";
+"NSFaceIDUsageDescription" = "Face ID используется для авторизации в приложении";
+"NSPhotoLibraryUsageDescription" = "Загрузить изображения из библиотеки";
+"NSPhotoLibraryAddUsageDescription" = "Вы можете сохранить запрос на перевод в виде QR кода";
 "common.close" = "Закрыть";
 "common.next" = "Далее";
 "common.cancel" = "Отмена";
@@ -15,8 +19,7 @@
 "onboarding.restore.chain.account" = "У меня уже есть аккаунт";
 "import.wallet.title" = "Импортировать кошелёк";
 "import.chain.account.title" = "Импортировать аккаунт";
-"onboarding.terms.and.conditions.1" = "Я подтверждаю, что прочитал и согласен с \
-Условиями использования и Политикой конфиденциальности";
+"onboarding.terms.and.conditions.1" = "Я подтверждаю, что прочитал и согласен с \nУсловиями использования и Политикой конфиденциальности";
 "onboarding.terms.and.conditions.2" = "Условиями использования";
 "onboarding.privacy.policy" = "Политикой конфиденциальности";
 "pincode.enter.pin.code" = "Введите PIN-код";
@@ -33,8 +36,7 @@
 "wallet.chain.management.title" = "Кошелёк";
 "tabbar.staking.title" = "Стейкинг";
 "tabbar.settings.title" = "Настройки";
-"wallet.empty.description" = "Входящие и исходящие \
-транзакции будут отображаться здесь";
+"wallet.empty.description" = "Ваши балансовые операции буду здесь";
 "profile.title" = "Настройки";
 "profile.about.title" = "О приложении";
 "profile.language.title" = "Язык";
@@ -50,10 +52,10 @@
 "onboarding.create.account" = "Создать аккаунт";
 "wallet.username.setup.choose.title" = "Имя кошелька";
 "account.username.setup.choose.title" = "Имя";
-"username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "wallet.username.setup.hint" = "Примеры: Сбережения, Инвестиции, Краудлоуны, Стейкинг. Имя хранится только на вашем мобильном устройстве и показывается только вам.";
-"username.setup.title" = "Создать аккаунт";
+"account.username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "wallet.username.setup.title" = "Создать кошелёк";
+"account.username.setup.title" = "Create a new account";
 "common.no.screenshot.title" = "Не делайте скриншоты";
 "common.no.screenshot.message" = "Не делайте скриншоты, которые могут быть собраны сторонними вредоносными программами";
 "common.ok" = "OK";
@@ -88,7 +90,7 @@
 "recover.json.hint" = "Вставьте json строку или загрузите файл…";
 "account.import.recovery.json.placeholder" = "Вставьте json";
 "account.import.substrate.seed.placeholder" = "Бинарный сид: 64 шестнадцатиричных символа";
-"account.import.ethereum.seed.placeholder" = "Бинарный сид: 128 шестнадцатиричных символа";
+"account.import.ethereum.seed.placeholder" = "Бинарный сид: 128 шестнадцатеричных символа";
 "import.mnemonic" = "Мнемоническая фраза";
 "account.import.invalid.seed" = "Seed неверный. Пожалуйста, убедитесь, что введенные данные содержат 64 hex символа.";
 "account.import.invalid.keystore" = "Неверный формат данных восстановления. Пожалуйста, удостоверьтесь, что данные соответствуют json формату.";
@@ -101,12 +103,6 @@
 "profile.wallets.title" = "Кошельки";
 "profile.network.title" = "Сеть";
 "profile.pincode.change.title" = "Изменить PIN-код";
-"settings.twitter" = "Twitter";
-"settings.rate.us" = "Оцените приложение";
-"settings.general" = "Основные";
-"settings.preferences" = "Предпочтения";
-"settings.security" = "Безопасность";
-"settings.community" = "Сообщество";
 "common.invalid.hard.soft.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью символов, не включая /.";
 "common.invalid.hard.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' где 'hard' может быть любой последовательностью символов, не включая /.";
 "confirm.mnemonic.mismatch.error.title" = "Неверная мнемоника";
@@ -116,9 +112,15 @@
 "accounts.add.account" = "Добавить аккаунт";
 "wallet.add.button.title" = "Добавить кошелёк";
 "account.add.already.exists.message" = "Аккаунт уже существует. Пожалуйста, попробуйте другой.";
-"about.website" = "Официальный сайт";
+"about.website" = "Сайт";
 "about.github" = "Github";
 "about.telegram" = "Telegram";
+"settings.twitter" = "Twitter";
+"settings.rate.us" = "Оцените приложение";
+"settings.general" = "Основные";
+"settings.preferences" = "Предпочтения";
+"settings.security" = "Безопасность";
+"settings.community" = "Сообщество";
 "confirmation.skip.action" = "Пропустить";
 "account.info.title" = "Аккаунт";
 "account.info.name.title" = "Имя";
@@ -129,7 +131,8 @@
 "connection.management.default.title" = "По умолчанию";
 "connection.management.custom.title" = "Добавленные";
 "account.delete.confirmation.title" = "Забыть аккаунт?";
-"account.delete.confirmation.title" = "Забыть кошелёк?";
+"wallet.delete.confirmation.title" = "Forget wallet?";
+"account.delete.confirmation.description" = "Прежде чем продолжить, убедитесь, что вы создали резервную копию своей учетной записи.";
 "wallet.delete.confirmation.description" = "Перед продолжением убедитесь, что вы создали резервную копию своего кошелька.";
 "account.delete.confirm" = "Забыть";
 "account.needed.title" = "Необходим аккаунт";
@@ -155,8 +158,7 @@
 "wallet.send.confirm.title" = "Подтвердить";
 "wallet.send.available.balance" = "Свободный баланс";
 "wallet.contacts.empty.title" = "Здесь появятся ваши аккаунты и контакты, которым вы отправляли переводы";
-"wallet.search.empty.title" = "Убедитесь, что адрес \
-из правильной сети";
+"wallet.search.empty.title" = "Убедитесь, что адрес \nиз правильной сети";
 "wallet.contacts.search.placeholder" = "Адрес аккаунта или имя аккаунта";
 "wallet.balance.available" = "Доступно";
 "wallet.transfer.total.title" = "Всего";
@@ -179,7 +181,7 @@
 "wallet.send.balance.details" = "Детали баланса";
 "wallet.send.balance.total" = "Общий баланс";
 "wallet.send.balance.total.after.transfer" = "Общий после перевода";
-"wallet.send.existential.warning" = "Ваш перевод удалит аккаунт, так как общий баланс станет ниже минимального.";
+"wallet.send.existential.warning" = "Ваша учетная запись будет удалена из сети после перевода, так как опустит общий баланс ниже минимального.";
 "common.warning" = "Предупреждение";
 "connection.delete.title" = "Удалить сеть?";
 "connection.delete.description" = "Подтвердите удаление %@.";
@@ -198,19 +200,13 @@
 "common.error.password.mismatch" = "Неверный пароль";
 "common.network" = "Сеть";
 "common.change.password" = "Сменить пароль";
-"export.mnemonic.with.dp.template" = "Сеть: %@\
-Мнемоника: %@\
-Путь деривации: %@";
-"export.mnemonic.without.dp.template" = "Сеть: %@\
-Мнемоника: %@";
+"export.mnemonic.with.dp.template" = "Сеть: %@\nМнемоника: %@\nПуть деривации: %@";
+"export.mnemonic.without.dp.template" = "Сеть: %@\nМнемоника: %@";
 "export.mnemonic.hint" = "Используйте нецифровой способ резервного копирования, например, записав последовательность мнемонических слов и путь их образования (если он установлен) на бумаге.";
 "common.confirm" = "Подтвердить";
 "common.confirmed" = "Подтверждено";
-"export.seed.without.dp.template" = "Сеть: %@\
-Сид: %@";
-"export.seed.with.dp.template" = "Сеть: %@\
-Сид: %@\
-Путь деривации: %@";
+"export.seed.without.dp.template" = "Сеть: %@\nСид: %@";
+"export.seed.with.dp.template" = "Сеть: %@\nСид: %@\nПуть деривации: %@";
 "common.changed" = "Изменено";
 "account.import.json.no.network" = "JSON не содержит информации о сети. Пожалуйста, укажите её в блоке дополнительных ниже.";
 "account.import.wrong.network" = "Сеть в JSON не совпадает с выбранной. Выбранная сеть будет использоваться для импорта аккаунта.";
@@ -355,15 +351,15 @@
 "staking.your.not.allocated.description" = "Другие, которые активны без вашего стейка.";
 "staking.your.inactive.description" = "Валидаторы, которые не были избраны в этой эре.";
 "tabbar.crowdloan.title" = "Краудлоуны";
-"crowdloan.list.section.format" = "Выберите парачейны для внесения своего вклада %@. Вы получите вознаграждение, если парачейн приобретет слот до конца аукциона.";
+"crowdloan.list.section.format" = "Выберите парачейн для внесения своих %@. Вы получите вложенные токены обратно в любом случае, и если парачейн выиграет слот вы получите награду после окончания аукциона";
 "crowdloan.you.contributions.title" = "Ваш вклад";
 "crowdloan.about.crowdloans" = "О краудлоунах";
 "crowdloan.progress.format" = "Собрано: %@ из %@";
 "crowdloan.active.section" = "Активные";
 "crowdloan.completed.section" = "Завершённые";
-"crowdloan.empty.message" = "Информация о краудлоунах \n появится здесь.";
+"crowdloan.empty.message" = "Краудлоуны скоро будут здесь";
 "common.time.left.format" = "%@ осталось";
-"common.existential.warning.message" = "Операция удалит учетную запись из хранилища блоков, так как это сделает общий баланс ниже минимального.";
+"common.existential.warning.message" = "Ваша учетная запись будет удалена из сети после операции, так как опустит общий баланс ниже минимального.";
 "common.existential.warning.title" = "Операция удалит аккаунт";
 "crowdloan.ended.message" = "Невозможно внести вклад в выбранный краудлоун, поскольку он уже завершён.";
 "crowdloan.ended.title" = "Краудлоун завершён";
@@ -385,9 +381,9 @@
 "crowdloan.reward" = "Примерное вознаграждение";
 "staking.bonded.inactive" = "Вы не номинируете и не валидируете";
 "crowdloan.terms.format" = "Я прочёл и соглашаюсь с %@";
+"crowdloan.terms.value" = "Условиями использования";
 "crowdloan.submit.agreement" = "Подтвердить согласие";
-"crowdloan.moonbeam.terms.description" = "Для участия вам необходимо предоставить своё согласие с Условиями использования и Политикой конфиденциальности он-чейн.
-Данная процедура выполняется единоразово и распространяется на все последующие взносы в краудлоан Moonbeam";
+"crowdloan.moonbeam.terms.description" = "Для участия вам необходимо предоставить своё согласие с Условиями использования и Политикой конфиденциальности он-чейн.\nДанная процедура выполняется единоразово и распространяется на все последующие взносы в краудлоун Moonbeam";
 "crowdloan.moonbeam.terms.title" = "Условия использования Moonbeam";
 "crowdloan.moonbeam.missing.account.title" = "Отсутствует аккаунт Moonbeam";
 "crowdloan.moonbeam.missing.account.message" = "Добавьте аккаунт Moonbeam в кошелек, чтобы участвовать в краудлоуне Moonbeam";
@@ -396,7 +392,6 @@
 "crowdloan.acala.direct" = "Напрямую";
 "crowdloan.acala.liquid" = "Liquid вклад";
 "crowdloan.acala.learn.more" = "Подробнее о различных вкладах в Acala";
-"crowdloan.terms.value" = "Условиями использования";
 "crowdloan.private.crowdloan.title" = "Приватный краудлоун";
 "crowdloan.private.crowdloan.message" = "Приватные краудлоуны пока не поддерживаются";
 "crowdloan.reward.destination.format" = "%@ назначение вознаграждений";
@@ -445,7 +440,7 @@
 "common.search" = "Поиск";
 "staking.validator.search.placeholder" = "Поиск по адресу или имени";
 "common.search.results.number" = "Результаты поиска: %li";
-"common.search.start.title" = "Здесь появятся результаты поиска";
+"common.search.start.title_v2_2_0" = "Здесь появятся результаты поиска";
 "staking.validator.search.empty.title" = "Поиск не дал результатов.\nПроверьте, что вы указали полный адрес аккаунта";
 "common.filter.sort.header" = "Сортировать по:";
 "staking.recommended.hint3.addition" = "хотя бы с одним контактом";
@@ -486,8 +481,7 @@
 "staking.hint.no.rewards" = "Во время вывода токены не приносят наград.";
 "staking.hint.redeem" = "После вывода токенов из стейкинга не забудьте их забрать.";
 "staking.hint.reward.bond.more" = "Ваши вознаграждения увеличатся со следующей эры.";
-"staking.hint.unbond.kills.stash" = "Nova wallet изменит назначение вознаграждений \
-на ваш аккаунт, чтобы избежать остатка в стейкинге.";
+"staking.hint.unbond.kills.stash" = "Nova wallet изменит назначение вознаграждений \nна ваш аккаунт, чтобы избежать остатка в стейкинге.";
 "staking.story.staking.title" = "Что такое стейкинг?";
 "staking.story.staking.page.1" = "Стейкинг — это один из способов пассивного дохода с помощью удержания токенов в сети. Вознаграждения за стейкинг выпускаются каждую эру (6 часов в Kusama и 24 часа в Polkadot). Вы можете стейкать неограниченное количество времени, и для вывода из стейкинга вам нужно будет подождать период вывода, после которого вы сможете забрать свои токены.";
 "staking.story.staking.page.2" = "Стейкинг играет ключевую роль в безопасности и надежности сети. Любой может запустить собственную ноду, но только тот, кто наберёт необходимое количество токенов в стейкинге, будет избран сетью для создания новых блоков и получения наград. Часто валидаторы не имеют необходимого количества токенов, поэтому номинаторы помогают им с помощью своих токенов.";
@@ -515,23 +509,17 @@
 "staking.common.event.id" = "Событие";
 "common.copy.id" = "Копировать идентификатор";
 "wallet.contacts.search.placeholder_v1.10" = "Поиск по адресу или имени";
-"wallet.contacts.empty.title_v1.10" = "Здесь появятся ваши\
-аккаунты и контакты, которым\
-вы отправляли переводы";
-"wallet.search.empty.title_v1.10.0" = "Неверный формат адреса.\
-Убедитесь, что адрес \
-соответствует сети";
+"wallet.contacts.empty.title_v1.10" = "Здесь появятся ваши\nаккаунты и контакты, которым\nвы отправляли переводы";
+"wallet.search.empty.title_v1.10.0" = "Неверный формат адреса.\nУбедитесь, что адрес \nсоответствует сети";
 "staking.analytics.period.7d" = "7д";
 "staking.analytics.period.30d" = "30д";
 "staking.analytics.period.1y" = "1г";
 "staking.analytics.period.all" = "все";
-"staking.analytics.rewards.empty.message" = "Здесь появятся\
-ваши вознаграждения";
-"staking.analytics.stake.empty.message" = "Здесь появятся ваши\
-изменения по стейку";
+"staking.analytics.rewards.empty.message" = "Здесь появятся\nваши вознаграждения";
+"staking.analytics.stake.empty.message" = "Здесь появятся ваши\nизменения по стейку";
 "common.details" = "Подробности";
 "staking.analytics.details.type" = "Тип";
-"staking.analytics.era.range" = "%d из %d эр";
+"staking.analytics.era.range" = "%li из %li эр";
 "staking.analytics.7days.rewards" = "Вознаграждения за 7 дней";
 "staking.analytics.avg" = "%@ сред.";
 "staking.analytics.staking.was.active" = "Стейкинг был активен";
@@ -539,25 +527,39 @@
 "common.choose.action" = "Выберите действие";
 "common.select.network" = "Выберите сеть";
 "common.select.asset" = "Выберите токен";
+"common.invalid.hard.soft.numeric.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Например, //44//60//0/0/0";
+"common.invalid.hard.soft.numeric.password.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Путь может оканчиваться ///'password'. Например, //44//60//0/0/0///mypass.";
 "chain.accounts.section.title.shared.secret" = "Аккаунты с общим секретом";
 "chain.accounts.section.title.custom.secret" = "Аккаунты с кастомным секретом";
 "account.actions.change.title" = "Изменить аккаунт";
 "account.not.found.caption" = "Аккаунт не найден";
 "account.not.found.actions.title" = "Аккаунт %@";
-"wallet.account.locks.vesting" = "Вестинг";
-"wallet.account.locks.democracy" = "Демократия";
-"wallet.account.locks.elections" = "Выборы";
 "account.create.option.title" = "Создать аккаунт";
 "account.import.option.title" = "Импортировать аккаунт";
 "account.actions.change.sheet.title" = "Изменить аккаунт %@";
-"common.invalid.hard.soft.numeric.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Например, //44//60//0/0/0";
-"common.invalid.hard.soft.numeric.password.message" = "Пожалуйста, удостоверьтесь, что введенная строка это комбинация //'hard' и /'soft' где 'hard' и 'soft' могут быть любой последовательностью цифр. Путь может оканчиваться ///'password'. Например, //44//60//0/0/0///mypass.";
+"wallet.account.locks.vesting" = "Вестинг";
+"wallet.account.locks.democracy" = "Демократия";
+"wallet.account.locks.elections" = "Выборы";
 "wallet.balances.widget.title" = "Ваш баланс";
 "common.max" = "макс.";
 "crowdloan.custom.contrib.format" = "%@ (через %@)";
+"username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
+"username.setup.title" = "Создать аккаунт";
 "wallet.nickname.create.title" = "Назовите кошелёк";
 "wallet.nickname.create.subtitle" = "Имя хранится только на вашем мобильном устройстве и показывается только вам.";
 "wallet.nickname.create.caption" = "Примеры: сбережения, инвестиции, краудлоуны, стейкинг.";
+"crowdloan.list.section.format_v2_2_0" = "Выберите парачейн для внесения своих %@. Вы получите вложенные токены обратно в любом случае, и если парачейн выиграет слот вы получите награду после окончания аукциона";
+"crowdloan.empty.message_v2_2_0" = "Краудлоуны скоро будут здесь";
+"wallet.send.existential.warning_v2_2_0" = "Ваша учетная запись будет удалена из сети после перевода, так как опустит общий баланс ниже минимального.";
+"common.existential.warning.message_v2_2_0" = "Ваша учетная запись будет удалена из сети после операции, так как опустит общий баланс ниже минимального.";
+"wallet.empty.description_v2_2_0" = "Ваши балансовые операции буду здесь";
+"wallet.nickname.create.subtitle_v2_2_0" = "Имя будет использоваться только в приложении. Вы сможете изменить его позже.";
+"wallet.nickname.create.caption_v2_2_0" = "Примеры имён: Инвестиции, Вклады, Мои Валидаторы.";
+"common.no.screenshot.title_v2_2_0" = "Внимание!";
+"common.no.screenshot.message_v2_2_0" = "Мы собираемся показать вашу мнемонику. Убедитесь, что никто не видит ваш экран и не делайте скриншотов - к ним могут получить доступ вредоносные программы";
+"export.mnemonic.hint_v2_2_0" = "Используйте безопасные способы резервного копирования, например, записав мнемонику и путь деривации(если он установлен) на бумаге.";
+"account.create.details_v2_2_0" = "Используйте безопасные способы резервного копирования, а не буфер обмена на вашем компьютере или мобильном устройстве.";
+"access.restore.phrase.error.message_v2_2_0" = "Ваша мнемоника недействительна, пожалуйста, проверьте еще раз порядок слов";
 "secret.type.keystore.title" = "JSON для восстановления";
 "secret.type.keystore.subtitle" = "JSON файл";
 "secret.type.seed.title" = "Сид";
@@ -565,3 +567,15 @@
 "secret.type.mnemonic.title" = "Мнемоническая фраза";
 "secret.type.mnemonic.subtitle" = "фраза длиной 12, 15, 18, 21 или 24 слова";
 "secret.type.picker.title" = "Выберите ваш тип секрета";
+"wallet.import.mnemonic.title" = "Введите слова в правильном порядке";
+"wallet.import.mnemonic.subtitle" = "Слова должны быть разделены пробелом";
+"wallet.import.mnemonic.hint" = "Зачастую 12 слов (но возможно импортирование 15, 18, 21 или 24)";
+"wallet.import.seed.title" = "Введите ваш сид";
+"wallet.import.no.mnemonic.title" = "Введите слова...";
+"wallet.import.no.name.title" = "Введите название кошелька...";
+"wallet.import.no.seed.title" = "Введите сид...";
+"wallet.import.keystore.title" = "Загрузите JSON для восстановления";
+"wallet.import.no.json.title" = "Загрузите JSON файл...";
+"wallet.import.no.password" = "Введите пароль...";
+"account.import.ethereum.seed.placeholder_v2_2_0" = "128 шест. символа";
+"account.import.substrate.seed.placeholder_v2_2_0" = "64 шест. символа";

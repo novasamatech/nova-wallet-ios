@@ -100,11 +100,10 @@ extension ValidatorInfoPresenter: ValidatorInfoPresenterProtocol {
 
     func presentAccountOptions() {
         if let view = view, let validatorInfo = try? validatorInfoResult?.get() {
-            // TODO: fix url
             wireframe.presentAccountOptions(
                 from: view,
                 address: validatorInfo.address,
-                chain: .westend,
+                explorers: explorers,
                 locale: selectedLocale
             )
         }
