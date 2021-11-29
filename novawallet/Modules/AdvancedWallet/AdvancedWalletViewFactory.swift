@@ -1,15 +1,23 @@
 import Foundation
+import SoraFoundation
 
 struct AdvancedWalletViewFactory {
-    static func createView() -> AdvancedWalletViewProtocol? {
+    static func createView(
+        for secretSource: SecretSource,
+        advancedSettings: AdvancedWalletSettings
+    ) -> AdvancedWalletViewProtocol? {
         let wireframe = AdvancedWalletWireframe()
 
-        let settings = AdvancedWalletSettings.ethereum(
-            settings: AdvancedNetworkTypeSettings(cryptoType: .sr25519, derivationPath: nil)
-        )
-        let presenter = AdvancedWalletPresenter(wireframe: wireframe, settings: settings)
+        let localizationManager = LocalizationManager.shared
 
-        let view = AdvancedWalletViewController(presenter: presenter)
+        let presenter = AdvancedWalletPresenter(
+            wireframe: wireframe,
+            localizationManager: localizationManager,
+            secretSource: secretSource,
+            settings: advancedSettings
+        )
+
+        let view = AdvancedWalletViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
 

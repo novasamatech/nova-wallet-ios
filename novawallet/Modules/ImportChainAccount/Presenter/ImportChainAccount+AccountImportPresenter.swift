@@ -173,5 +173,23 @@ extension ImportChainAccount {
         }
 
         override func shouldUseEthereumSeed() -> Bool { isEthereumBased }
+
+        override func getAdvancedSettings() -> AdvancedWalletSettings? {
+            if isEthereumBased {
+                return .ethereum(derivationPath: ethereumDerivationPath)
+            } else {
+                guard let metadata = metadata else {
+                    return nil
+                }
+
+                let substrateSettings = AdvancedNetworkTypeSettings(
+                    availableCryptoTypes: metadata.availableCryptoTypes,
+                    selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+                    derivationPath: substrateDerivationPath
+                )
+
+                return .substrate(settings: substrateSettings)
+            }
+        }
     }
 }

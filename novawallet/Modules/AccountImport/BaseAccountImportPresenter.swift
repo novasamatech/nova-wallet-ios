@@ -59,6 +59,13 @@ class BaseAccountImportPresenter {
         if let preferredInfo = preferredInfo {
             showUploadWarningIfNeeded(preferredInfo)
         }
+
+        switch selectedSourceType {
+        case .mnemonic, .seed:
+            view?.setShouldShowAdvancedSettings(true)
+        case .keystore:
+            view?.setShouldShowAdvancedSettings(false)
+        }
     }
 
     private func applySourceTextViewModel(_ value: String = "") {
@@ -197,6 +204,10 @@ class BaseAccountImportPresenter {
     internal func shouldUseEthereumSeed() -> Bool {
         fatalError("This function should be overriden")
     }
+
+    internal func getAdvancedSettings() -> AdvancedWalletSettings? {
+        fatalError("This function should be overriden")
+    }
 }
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
@@ -225,6 +236,14 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    func activateAdvancedSettings() {
+        guard let settings = getAdvancedSettings() else {
+            return
+        }
+
+        wireframe.showAdvancedSettings(from: view, secretSource: selectedSourceType, settings: settings)
     }
 
     func proceed() {
