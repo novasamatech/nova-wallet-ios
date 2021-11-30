@@ -60,6 +60,14 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Bump version
+        uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
+        with:
+          info-plist-path: './novawallet/Info.plist'
+          bundle-short-version-string: ${{ secrets.IOS_APP_VERSION }}
+          bundle-version: ${{github.run_number}}
+          print-file: true
+
       - name: Archive
         env:
           MOONPAY_PRODUCTION_SECRET: ${{ secrets.MOONPAY_PRODUCTION_SECRET }}
