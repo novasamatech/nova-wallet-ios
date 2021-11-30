@@ -28,6 +28,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
         setupNavigationItem()
         configureActions()
+        configureState()
         setupLocalization()
 
         presenter.setup()
@@ -54,6 +55,11 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         rootView.proceedButton.addTarget(self, action: #selector(actionNext), for: .touchUpInside)
     }
 
+    private func configureState() {
+        rootView.proceedButton.isEnabled = false
+        rootView.proceedButton.applyDisabledStyle()
+    }
+
     private func setupLocalization() {
         rootView.titleLabel.text = R.string.localizable
             .accountBackupMnemonicTitle(preferredLanguages: selectedLocale.rLanguages)
@@ -63,8 +69,6 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
 
         rootView.mnemonicFieldTitleLabel.text = R.string.localizable
             .accountBackupMnemonicFieldTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        rootView.mnemonicFieldContentLabel.text = "cancel furnance cash ribbon ready receive bachelor great cash fine boat acoustic"
 
         rootView.captionLabel.text = R.string.localizable
             .accountBackupMnemonicCaption(preferredLanguages: selectedLocale.rLanguages)
@@ -82,8 +86,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionNext() {
-//        presenter.proceed()
-        // TODO: Fill
+        presenter.proceed()
     }
 }
 
@@ -101,6 +104,9 @@ extension AccountCreateViewController: AccountCreateViewProtocol {
         UIView.transition(with: rootView.mnemonicFieldContentLabel, duration: 0.25, options: .transitionCrossDissolve) {
             self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorWhite()!
         }
+
+        rootView.proceedButton.isEnabled = true
+        rootView.proceedButton.applyEnabledStyle()
     }
 }
 
