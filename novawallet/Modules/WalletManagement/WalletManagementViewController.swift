@@ -96,7 +96,6 @@ final class WalletManagementViewController: UIViewController {
     }
 }
 
-// swiftlint:disable force_cast
 extension WalletManagementViewController: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         presenter.numberOfItems()
