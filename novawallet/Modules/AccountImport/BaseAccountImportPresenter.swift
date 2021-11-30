@@ -29,7 +29,7 @@ class BaseAccountImportPresenter {
     private(set) var usernameViewModel: InputViewModelProtocol?
     private(set) var passwordViewModel: InputViewModelProtocol?
     private(set) var substrateDerivationPath: String?
-    private(set) var ethereumDerivationPath: String?
+    private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
     private lazy var jsonDeserializer = JSONSerialization()
 
@@ -58,6 +58,13 @@ class BaseAccountImportPresenter {
 
         if let preferredInfo = preferredInfo {
             showUploadWarningIfNeeded(preferredInfo)
+        }
+
+        switch selectedSourceType {
+        case .mnemonic, .seed:
+            view?.setShouldShowAdvancedSettings(true)
+        case .keystore:
+            view?.setShouldShowAdvancedSettings(false)
         }
     }
 
@@ -197,6 +204,10 @@ class BaseAccountImportPresenter {
     internal func shouldUseEthereumSeed() -> Bool {
         fatalError("This function should be overriden")
     }
+
+    internal func getAdvancedSettings() -> AdvancedWalletSettings? {
+        fatalError("This function should be overriden")
+    }
 }
 
 extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
@@ -225,6 +236,19 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
         )
 
         wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
+
+    func activateAdvancedSettings() {
+        guard let settings = getAdvancedSettings() else {
+            return
+        }
+
+        wireframe.showAdvancedSettings(
+            from: view,
+            secretSource: selectedSourceType,
+            settings: settings,
+            delegate: self
+        )
     }
 
     func proceed() {
@@ -262,6 +286,22 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
         selectedSourceType = .keystore
         applySourceType(text, preferredInfo: preferredInfo)
+    }
+}
+
+extension BaseAccountImportPresenter: AdvancedWalletSettingsDelegate {
+    func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings) {
+        switch walletSettings {
+        case let .substrate(settings):
+            selectedSubstrateCryptoType = settings.selectedCryptoType
+            substrateDerivationPath = settings.derivationPath
+        case let .ethereum(derivationPath):
+            ethereumDerivationPath = derivationPath
+        case let .combined(substrateSettings, ethereumDerivationPath):
+            selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
+            substrateDerivationPath = substrateSettings.derivationPath
+            self.ethereumDerivationPath = ethereumDerivationPath
+        }
     }
 }
 

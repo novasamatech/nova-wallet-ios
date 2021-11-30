@@ -15,7 +15,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountCreateViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountCreateViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="advancedContainerView" destination="ufd-ci-pPo" id="gPp-JR-knR"/>
                 <outlet property="advancedControl" destination="oE5-fi-Ix8" id="oAe-gj-wwV"/>
@@ -42,10 +42,10 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j2J-jw-4dD">
+                <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j2J-jw-4dD">
                     <rect key="frame" x="0.0" y="44" width="375" height="642"/>
                     <subviews>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="nt2-2c-HuT">
+                        <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="nt2-2c-HuT">
                             <rect key="frame" x="16" y="0.0" width="343" height="450"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="43P-Ll-Had">
@@ -74,7 +74,7 @@
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cYH-wY-iJt" customClass="BorderedContainerView" customModule="SoraUI">
                                     <rect key="frame" x="0.0" y="100" width="343" height="50"/>
                                     <subviews>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oE5-fi-Ix8" customClass="ExpandableActionControl" customModule="fearless" customModuleProvider="target">
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oE5-fi-Ix8" customClass="ExpandableActionControl" customModule="novawallet" customModuleProvider="target">
                                             <rect key="frame" x="0.0" y="0.0" width="343" height="50"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <userDefinedRuntimeAttributes>
@@ -119,13 +119,13 @@
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                 </view>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ufd-ci-pPo">
+                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ufd-ci-pPo">
                                     <rect key="frame" x="0.0" y="150" width="343" height="300"/>
                                     <subviews>
-                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="1Ni-zn-Bh9">
+                                        <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="1Ni-zn-Bh9">
                                             <rect key="frame" x="1" y="16" width="341" height="256"/>
                                             <subviews>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mz8-da-wtW" customClass="BorderedSubtitleActionView" customModule="fearless" customModuleProvider="target">
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mz8-da-wtW" customClass="BorderedSubtitleActionView" customModule="novawallet" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="341" height="52"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <userDefinedRuntimeAttributes>
@@ -169,7 +169,7 @@
                                                         <userDefinedRuntimeAttribute type="image" keyPath="_indicatorIcon" value="iconDropDown"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TpH-WZ-8oM" customClass="TriangularedView" customModule="fearless" customModuleProvider="target">
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TpH-WZ-8oM" customClass="TriangularedView" customModule="novawallet" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="68" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i8u-Ig-8Iw">
@@ -230,7 +230,7 @@
                                                         </userDefinedRuntimeAttribute>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6xr-Yz-lzZ" customClass="BorderedSubtitleActionView" customModule="fearless" customModuleProvider="target">
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6xr-Yz-lzZ" customClass="BorderedSubtitleActionView" customModule="novawallet" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="136" width="341" height="52"/>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <userDefinedRuntimeAttributes>
@@ -274,7 +274,7 @@
                                                         <userDefinedRuntimeAttribute type="image" keyPath="_indicatorIcon" value="iconDropDown"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zry-Rv-c6Q" customClass="TriangularedView" customModule="fearless" customModuleProvider="target">
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zry-Rv-c6Q" customClass="TriangularedView" customModule="novawallet" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="204" width="341" height="52"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Secret derivation path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YqL-Qm-h1c">
@@ -367,7 +367,7 @@
                         <constraint firstItem="nt2-2c-HuT" firstAttribute="top" secondItem="j2J-jw-4dD" secondAttribute="top" id="gmQ-sX-Pdw"/>
                     </constraints>
                 </scrollView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YBP-AM-Ejm" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="YBP-AM-Ejm" customClass="TriangularedButton" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="16" y="710" width="343" height="52"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
@@ -413,20 +413,6 @@
             <point key="canvasLocation" x="137.68115942028987" y="132.88043478260872"/>
         </view>
     </objects>
-    <designables>
-        <designable name="6xr-Yz-lzZ">
-            <size key="intrinsicContentSize" width="271" height="52"/>
-        </designable>
-        <designable name="Mz8-da-wtW">
-            <size key="intrinsicContentSize" width="322.33333333333331" height="52"/>
-        </designable>
-        <designable name="YBP-AM-Ejm">
-            <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
-        </designable>
-        <designable name="oE5-fi-Ix8">
-            <size key="intrinsicContentSize" width="97.333333333333329" height="20"/>
-        </designable>
-    </designables>
     <resources>
         <image name="iconAlert" width="24" height="24"/>
         <image name="iconDropDown" width="24" height="24"/>
