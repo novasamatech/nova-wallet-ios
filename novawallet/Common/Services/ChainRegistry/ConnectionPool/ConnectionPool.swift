@@ -150,7 +150,7 @@ extension ConnectionPool: ApplicationHandlerDelegate {
                 return
             }
 
-            connection.disconnect()
+            connection.disconnect(true)
         }
     }
 }
