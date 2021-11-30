@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: pull/${{ github.event.pull_request.id }}/head
+          ref: ${{ github.event.pull_request_target.head.sha }}
 
       - name: Cache Cocoapods
         id: cache-cocoapods
