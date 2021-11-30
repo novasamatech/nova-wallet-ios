@@ -77,7 +77,6 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
-    // swiftlint:disable function_body_length
     func allSelectedOperation(
         by nomination: Nomination,
         nominatorAddress: AccountAddress

@@ -107,12 +107,6 @@ final class WalletAssetViewModelFactory: AccountListViewModelFactoryProtocol {
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) -> AssetViewModelProtocol? {
-        // TODO: fix address for icon
-        guard
-            let address = try? metaAccount.substrateAccountId.toAddress(using: .substrate(42)) else {
-            return nil
-        }
-
         let style = assetCellStyleFactory.createCellStyle(for: asset)
 
         let priceFormater = amountFormatterFactory.createTokenFormatter(for: priceAsset)
@@ -128,7 +122,7 @@ final class WalletAssetViewModelFactory: AccountListViewModelFactoryProtocol {
         }
 
         let iconGenerator = PolkadotIconGenerator()
-        let icon = (try? iconGenerator.generateFromAddress(address))?
+        let icon = (try? iconGenerator.generateFromAccountId(metaAccount.substrateAccountId))?
             .imageWithFillColor(
                 R.color.colorWhite()!,
                 size: CGSize(width: 40.0, height: 40.0),
