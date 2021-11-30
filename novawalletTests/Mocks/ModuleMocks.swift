@@ -14516,9 +14516,9 @@ import SoraFoundation
     
     
     
-     func set(viewModel: ExportGenericViewModelProtocol)  {
+     func set(viewModel: ExportGenericViewModel)  {
         
-    return cuckoo_manager.call("set(viewModel: ExportGenericViewModelProtocol)",
+    return cuckoo_manager.call("set(viewModel: ExportGenericViewModel)",
             parameters: (viewModel),
             escapingParameters: (viewModel),
             superclassCall:
@@ -14548,9 +14548,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func set<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewModelProtocol)> where M1.MatchedType == ExportGenericViewModelProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericViewProtocol.self, method: "set(viewModel: ExportGenericViewModelProtocol)", parameterMatchers: matchers))
+	    func set<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewModel)> where M1.MatchedType == ExportGenericViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericViewProtocol.self, method: "set(viewModel: ExportGenericViewModel)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14580,9 +14580,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(ExportGenericViewModelProtocol), Void> where M1.MatchedType == ExportGenericViewModelProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("set(viewModel: ExportGenericViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func set<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(ExportGenericViewModel), Void> where M1.MatchedType == ExportGenericViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("set(viewModel: ExportGenericViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -14610,7 +14610,7 @@ import SoraFoundation
     
 
     
-     func set(viewModel: ExportGenericViewModelProtocol)   {
+     func set(viewModel: ExportGenericViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14673,16 +14673,16 @@ import SoraFoundation
     
     
     
-     func activateAccessoryOption()  {
+     func activateAdvancedSettings()  {
         
-    return cuckoo_manager.call("activateAccessoryOption()",
+    return cuckoo_manager.call("activateAdvancedSettings()",
             parameters: (),
             escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.activateAccessoryOption())
+            defaultCall: __defaultImplStub!.activateAdvancedSettings())
         
     }
     
@@ -14705,9 +14705,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericPresenterProtocol.self, method: "activateExport()", parameterMatchers: matchers))
 	    }
 	    
-	    func activateAccessoryOption() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	    func activateAdvancedSettings() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericPresenterProtocol.self, method: "activateAccessoryOption()", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericPresenterProtocol.self, method: "activateAdvancedSettings()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14739,9 +14739,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func activateAccessoryOption() -> Cuckoo.__DoNotUse<(), Void> {
+	    func activateAdvancedSettings() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("activateAccessoryOption()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("activateAdvancedSettings()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -14761,7 +14761,7 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func activateAccessoryOption()   {
+     func activateAdvancedSettings()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14804,6 +14804,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.close(view: view))
+        
+    }
+    
+    
+    
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)  {
+        
+    return cuckoo_manager.call("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)",
+            parameters: (view, secretSource, settings),
+            escapingParameters: (view, secretSource, settings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showAdvancedSettings(from: view, secretSource: secretSource, settings: settings))
         
     }
     
@@ -14866,6 +14881,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericWireframeProtocol.self, method: "close(view: ExportGenericViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericWireframeProtocol.self, method: "showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockExportGenericWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -14904,6 +14924,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.__DoNotUse<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings), Void> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return cuckoo_manager.verify("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -14931,6 +14957,10 @@ import SoraFoundation
 
     
      func close(view: ExportGenericViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15192,6 +15222,21 @@ import IrohaCrypto
     
     
     
+     func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)  {
+        
+    return cuckoo_manager.call("openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)",
+            parameters: (mnemonic, view),
+            escapingParameters: (mnemonic, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.openConfirmationForMnemonic(mnemonic, from: view))
+        
+    }
+    
+    
+    
      func close(view: ExportGenericViewProtocol?)  {
         
     return cuckoo_manager.call("close(view: ExportGenericViewProtocol?)",
@@ -15207,16 +15252,16 @@ import IrohaCrypto
     
     
     
-     func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)  {
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)  {
         
-    return cuckoo_manager.call("openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)",
-            parameters: (mnemonic, view),
-            escapingParameters: (mnemonic, view),
+    return cuckoo_manager.call("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)",
+            parameters: (view, secretSource, settings),
+            escapingParameters: (view, secretSource, settings),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.openConfirmationForMnemonic(mnemonic, from: view))
+            defaultCall: __defaultImplStub!.showAdvancedSettings(from: view, secretSource: secretSource, settings: settings))
         
     }
     
@@ -15274,14 +15319,19 @@ import IrohaCrypto
 	    }
 	    
 	    
+	    func openConfirmationForMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(_ mnemonic: M1, from view: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(IRMnemonicProtocol, ExportGenericViewProtocol?)> where M1.MatchedType == IRMnemonicProtocol, M2.OptionalMatchedType == ExportGenericViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(IRMnemonicProtocol, ExportGenericViewProtocol?)>] = [wrap(matchable: mnemonic) { $0.0 }, wrap(matchable: view) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicWireframeProtocol.self, method: "openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewProtocol?)> where M1.OptionalMatchedType == ExportGenericViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicWireframeProtocol.self, method: "close(view: ExportGenericViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func openConfirmationForMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(_ mnemonic: M1, from view: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(IRMnemonicProtocol, ExportGenericViewProtocol?)> where M1.MatchedType == IRMnemonicProtocol, M2.OptionalMatchedType == ExportGenericViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(IRMnemonicProtocol, ExportGenericViewProtocol?)>] = [wrap(matchable: mnemonic) { $0.0 }, wrap(matchable: view) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicWireframeProtocol.self, method: "openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)", parameterMatchers: matchers))
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportMnemonicWireframeProtocol.self, method: "showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -15316,15 +15366,21 @@ import IrohaCrypto
 	
 	    
 	    @discardableResult
+	    func openConfirmationForMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(_ mnemonic: M1, from view: M2) -> Cuckoo.__DoNotUse<(IRMnemonicProtocol, ExportGenericViewProtocol?), Void> where M1.MatchedType == IRMnemonicProtocol, M2.OptionalMatchedType == ExportGenericViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(IRMnemonicProtocol, ExportGenericViewProtocol?)>] = [wrap(matchable: mnemonic) { $0.0 }, wrap(matchable: view) { $0.1 }]
+	        return cuckoo_manager.verify("openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(ExportGenericViewProtocol?), Void> where M1.OptionalMatchedType == ExportGenericViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("close(view: ExportGenericViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func openConfirmationForMnemonic<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(_ mnemonic: M1, from view: M2) -> Cuckoo.__DoNotUse<(IRMnemonicProtocol, ExportGenericViewProtocol?), Void> where M1.MatchedType == IRMnemonicProtocol, M2.OptionalMatchedType == ExportGenericViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(IRMnemonicProtocol, ExportGenericViewProtocol?)>] = [wrap(matchable: mnemonic) { $0.0 }, wrap(matchable: view) { $0.1 }]
-	        return cuckoo_manager.verify("openConfirmationForMnemonic(_: IRMnemonicProtocol, from: ExportGenericViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.__DoNotUse<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings), Void> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return cuckoo_manager.verify("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15354,11 +15410,15 @@ import IrohaCrypto
     
 
     
+     func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
      func close(view: ExportGenericViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)   {
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15423,16 +15483,16 @@ import Foundation
     
     
     
-     func showChangePassword(from view: ExportGenericViewProtocol?)  {
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)  {
         
-    return cuckoo_manager.call("showChangePassword(from: ExportGenericViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
+    return cuckoo_manager.call("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)",
+            parameters: (view, secretSource, settings),
+            escapingParameters: (view, secretSource, settings),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showChangePassword(from: view))
+            defaultCall: __defaultImplStub!.showAdvancedSettings(from: view, secretSource: secretSource, settings: settings))
         
     }
     
@@ -15495,9 +15555,9 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockExportRestoreJsonWireframeProtocol.self, method: "close(view: ExportGenericViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func showChangePassword<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewProtocol?)> where M1.OptionalMatchedType == ExportGenericViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockExportRestoreJsonWireframeProtocol.self, method: "showChangePassword(from: ExportGenericViewProtocol?)", parameterMatchers: matchers))
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockExportRestoreJsonWireframeProtocol.self, method: "showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -15538,9 +15598,9 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func showChangePassword<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(ExportGenericViewProtocol?), Void> where M1.OptionalMatchedType == ExportGenericViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("showChangePassword(from: ExportGenericViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.__DoNotUse<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings), Void> where M1.OptionalMatchedType == ExportGenericViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(ExportGenericViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return cuckoo_manager.verify("showAdvancedSettings(from: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15574,7 +15634,7 @@ import Foundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func showChangePassword(from view: ExportGenericViewProtocol?)   {
+     func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
