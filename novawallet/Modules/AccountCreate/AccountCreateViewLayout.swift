@@ -46,7 +46,7 @@ final class AccountCreateViewLayout: UIView {
     let mnemonicFieldContentLabel: UILabel = {
         let label = UILabel()
         label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
+        label.textColor = .clear
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         return label

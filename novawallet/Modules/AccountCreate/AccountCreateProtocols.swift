@@ -15,11 +15,13 @@ protocol OldAccountCreateViewProtocol: ControllerBackedProtocol {
 
 protocol AccountCreateViewProtocol: ControllerBackedProtocol {
     func set(mnemonic: [String])
+    func displayMnemonic()
 }
 
 protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
     func activateAdvanced()
+    func prepareToDisplayMnemonic()
     func proceed()
 }
 

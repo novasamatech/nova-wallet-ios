@@ -61,14 +61,8 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         rootView.subtitleLabel.text = R.string.localizable
             .accountCreateDetails_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
 
-        // Font size and color
         rootView.mnemonicFieldTitleLabel.text = R.string.localizable
             .accountBackupMnemonicFieldTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        // TODO: Remove
-        // Set numberOfLines = 0
-        // Set color
-        // Set truncating mode = none
 
         rootView.mnemonicFieldContentLabel.text = "cancel furnance cash ribbon ready receive bachelor great cash fine boat acoustic"
 
@@ -87,37 +81,26 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
         // TODO: Fill
     }
 
-    @objc private func displayMnemonic() {
-        // TODO: I understand action — display menmonic
-        // presenter.proceedToMnemonic()
-    }
-
     @objc private func actionNext() {
 //        presenter.proceed()
         // TODO: Fill
-    }
-
-    @objc private func actionCancel() {
-        // TODO: Cancel action
-        // presenter.cancel()
     }
 }
 
 // MARK: - AccountCreateViewProtocol
 
 extension AccountCreateViewController: AccountCreateViewProtocol {
-    func set(mnemonic _: [String]) {
-        /* TODO:
-         1. Update mnemonic label to change its size
-         2. Make mnemonic text invisible
-         3. Display warning
-         */
+    func set(mnemonic: [String]) {
+        rootView.mnemonicFieldContentLabel.textColor = .clear
+        rootView.mnemonicFieldContentLabel.text = mnemonic.joined(separator: " ")
 
-        /*
-         setupMnemonicViewIfNeeded()
+        presenter.prepareToDisplayMnemonic()
+    }
 
-         mnemonicView?.bind(words: mnemonic, columnsCount: 2)
-         */
+    func displayMnemonic() {
+        UIView.transition(with: rootView.mnemonicFieldContentLabel, duration: 0.25, options: .transitionCrossDissolve) {
+            self.rootView.mnemonicFieldContentLabel.textColor = R.color.colorWhite()!
+        }
     }
 }
 

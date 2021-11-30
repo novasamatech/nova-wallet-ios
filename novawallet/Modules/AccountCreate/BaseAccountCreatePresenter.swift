@@ -13,10 +13,53 @@ class BaseAccountCreatePresenter {
 
 extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     func setup() {
-        // Display warning
-        // If user agrees, setup interactor
-        // If not, dismiss everything
-        // TODO: Setup interactor
+        interactor.setup()
+    }
+
+    func prepareToDisplayMnemonic() {
+        let alertTitle = R.string.localizable
+            .commonNoScreenshotTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+        let alertMessage = R.string.localizable
+            .commonNoScreenshotMessage_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+        let proceedTitle = R.string.localizable
+            .commonUnderstand(preferredLanguages: selectedLocale.rLanguages)
+        let cancelTitle = R.string.localizable
+            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+
+        let proceedClosure = {
+            self.view?.displayMnemonic()
+            return
+        }
+
+        let cancelClosure = {
+            self.view?.controller.navigationController?.popViewController(animated: true)
+            return
+        }
+
+        let proceedAction = AlertPresentableAction(
+            title: proceedTitle,
+            style: .normal,
+            handler: proceedClosure
+        )
+
+        let cancelAction = AlertPresentableAction(
+            title: cancelTitle,
+            style: .destructive,
+            handler: cancelClosure
+        )
+
+        let viewModel = AlertPresentableViewModel(
+            title: alertTitle,
+            message: alertMessage,
+            actions: [cancelAction, proceedAction],
+            closeAction: nil
+        )
+
+        wireframe.present(
+            viewModel: viewModel,
+            style: .alert,
+            from: view
+        )
     }
 
     func activateAdvanced() {
@@ -48,8 +91,8 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
 }
 
 extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
-    func didReceive(metadata _: MetaAccountCreationMetadata) {
-        // TODO: Implement
+    func didReceive(metadata: MetaAccountCreationMetadata) {
+        view?.set(mnemonic: metadata.mnemonic)
     }
 
     func didReceiveMnemonicGeneration(error _: Error) {
@@ -65,10 +108,5 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
 // MARK: - Localizable
 
 extension BaseAccountCreatePresenter: Localizable {
-    func applyLocalization() {
-        if let view = view, view.isSetup {
-//            applyCryptoTypeViewModel()
-            // TODO: Do something or remove conformancee?
-        }
-    }
+    func applyLocalization() {}
 }
