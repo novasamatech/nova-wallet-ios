@@ -2,24 +2,19 @@ import Foundation
 
 final class ExportRestoreJsonPresenter {
     weak var view: ExportGenericViewProtocol?
-    var wireframe: ExportRestoreJsonWireframeProtocol!
+    let wireframe: ExportRestoreJsonWireframeProtocol
 
     let model: RestoreJson
 
-    init(model: RestoreJson) {
+    init(wireframe: ExportRestoreJsonWireframeProtocol, model: RestoreJson) {
+        self.wireframe = wireframe
         self.model = model
     }
 }
 
 extension ExportRestoreJsonPresenter: ExportGenericPresenterProtocol {
     func setup() {
-        let viewModel = ExportStringViewModel(
-            option: .keystore,
-            chain: model.chain,
-            derivationPath: nil,
-            cryptoType: model.cryptoType,
-            data: model.data
-        )
+        let viewModel = ExportGenericViewModel(sourceDetails: model.data)
         view?.set(viewModel: viewModel)
     }
 
@@ -34,7 +29,5 @@ extension ExportRestoreJsonPresenter: ExportGenericPresenterProtocol {
         }
     }
 
-    func activateAccessoryOption() {
-        wireframe.showChangePassword(from: view)
-    }
+    func activateAdvancedSettings() {}
 }

@@ -3,29 +3,26 @@ import SoraFoundation
 
 final class ExportRestoreJsonViewFactory: ExportRestoreJsonViewFactoryProtocol {
     static func createView(with model: RestoreJson) -> ExportGenericViewProtocol? {
-        let accessoryActionTitle = LocalizableResource { locale in
-            R.string.localizable.commonChangePassword(preferredLanguages: locale.rLanguages)
-        }
+        let wireframe = ExportRestoreJsonWireframe()
+        let presenter = ExportRestoreJsonPresenter(wireframe: wireframe, model: model)
 
-        let mainActionTitle = LocalizableResource { locale in
-            R.string.localizable.accountExportAction(preferredLanguages: locale.rLanguages)
-        }
-
-        let uiFactory = UIFactory()
         let view = ExportGenericViewController(
-            uiFactory: uiFactory,
-            binder: ExportGenericViewModelBinder(uiFactory: uiFactory),
-            mainTitle: mainActionTitle,
-            accessoryTitle: accessoryActionTitle
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared,
+            exportTitle: LocalizableResource { _ in "Save your secret and store it in a safe place" },
+            exportSubtitle: nil,
+            exportHint: nil,
+            sourceTitle: LocalizableResource { locale in
+                R.string.localizable.importRecoveryJson(preferredLanguages: locale.rLanguages)
+            },
+            sourceHint: nil,
+            actionTitle: LocalizableResource { locale in
+                R.string.localizable.accountExportAction(preferredLanguages: locale.rLanguages)
+            },
+            isSourceMultiline: false
         )
 
-        let presenter = ExportRestoreJsonPresenter(model: model)
-        presenter.wireframe = ExportRestoreJsonWireframe()
         presenter.view = view
-
-        view.presenter = presenter
-
-        view.localizationManager = LocalizationManager.shared
 
         return view
     }
