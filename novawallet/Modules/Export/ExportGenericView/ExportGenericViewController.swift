@@ -100,7 +100,9 @@ final class ExportGenericViewController: UIViewController, ImportantViewProtocol
         navigationItem.rightBarButtonItem = advancedItem
     }
 
-    @objc private func actionAdvancedSettings() {}
+    @objc private func actionAdvancedSettings() {
+        presenter.activateAdvancedSettings()
+    }
 
     @objc private func actionMain() {
         presenter.activateExport()
