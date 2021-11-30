@@ -3,6 +3,7 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
 
     init(walletName: String) {
         self.walletName = walletName
+        super.init()
     }
 
     override func processProceed() {
@@ -18,5 +19,22 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
         )
 
         wireframe.confirm(from: view, request: request, metadata: metadata)
+    }
+
+    override func getAdvancedSettings() -> AdvancedWalletSettings? {
+        guard let metadata = metadata else {
+            return nil
+        }
+
+        let substrateSettings = AdvancedNetworkTypeSettings(
+            availableCryptoTypes: metadata.availableCryptoTypes,
+            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+            derivationPath: substrateDerivationPath
+        )
+
+        return .combined(
+            substrateSettings: substrateSettings,
+            ethereumDerivationPath: ethereumDerivationPath
+        )
     }
 }

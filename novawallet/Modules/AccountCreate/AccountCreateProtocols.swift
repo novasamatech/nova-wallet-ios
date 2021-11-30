@@ -64,6 +64,7 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         metadata: MetaAccountCreationMetadata
     )
 
+    // TODO: Remove
     func presentCryptoTypeSelection(
         from view: OldAccountCreateViewProtocol?,
         availableTypes: [MultiassetCryptoType],
@@ -89,6 +90,25 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
 }
 
 extension AccountCreateWireframeProtocol {
+    func showAdvancedSettings(
+        from view: AccountCreateViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
+    ) {
+        guard let advancedView = AdvancedWalletViewFactory.createView(
+            for: secretSource,
+            advancedSettings: settings,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: advancedView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
     func confirm(
         from _: OldAccountCreateViewProtocol?,
         request _: MetaAccountCreationRequest,
@@ -113,6 +133,15 @@ extension AccountCreateWireframeProtocol {
         request _: ChainAccountImportMnemonicRequest,
         metaAccountModel _: MetaAccountModel,
         chainModelId _: ChainModel.Id
+    ) {}
+
+    // TODO: Remove
+    func presentCryptoTypeSelection(
+        from _: OldAccountCreateViewProtocol?,
+        availableTypes _: [MultiassetCryptoType],
+        selectedType _: MultiassetCryptoType,
+        delegate _: ModalPickerViewControllerDelegate?,
+        context _: AnyObject?
     ) {}
 }
 
@@ -125,5 +154,5 @@ protocol AccountCreateViewFactoryProtocol: AnyObject {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool
-    ) -> OldAccountCreateViewProtocol?
+    ) -> AccountCreateViewProtocol?
 }

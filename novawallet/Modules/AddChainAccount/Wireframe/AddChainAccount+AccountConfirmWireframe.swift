@@ -1,6 +1,6 @@
 import Foundation
 
-extension OldAddChainAccount {
+extension AddChainAccount {
     final class AccountConfirmWireframe: AccountConfirmWireframeProtocol {
         func proceed(from view: AccountConfirmViewProtocol?) {
             guard let navigationController = view?.controller.navigationController else {

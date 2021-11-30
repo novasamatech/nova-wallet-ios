@@ -65,7 +65,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
             return nil
         }
 
-        let wireframe = OldAddChainAccount.AccountConfirmWireframe()
+        let wireframe = AddChainAccount.AccountConfirmWireframe()
         return createView(for: interactor, wireframe: wireframe)
     }
 
@@ -194,7 +194,7 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
         let accountRepository = accountRepositoryFactory.createMetaAccountRepository(for: nil, sortDescriptors: [])
 
-        let interactor = OldAddChainAccount
+        let interactor = AddChainAccount
             .AccountConfirmInteractor(
                 metaAccountModel: metaAccountModel,
                 request: request,

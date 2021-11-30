@@ -11,7 +11,7 @@ class BaseAccountCreatePresenter {
     private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
     private(set) var substrateDerivationPath: String = ""
 
-    private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
+    internal let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
     private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
     // MARK: - Private functions
@@ -66,24 +66,11 @@ class BaseAccountCreatePresenter {
         )
     }
 
-    private func getAdvancedSettings() -> AdvancedWalletSettings? {
-        guard let metadata = metadata else {
-            return nil
-        }
-
-        let substrateSettings = AdvancedNetworkTypeSettings(
-            availableCryptoTypes: metadata.availableCryptoTypes,
-            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
-            derivationPath: substrateDerivationPath
-        )
-
-        return .combined(
-            substrateSettings: substrateSettings,
-            ethereumDerivationPath: ethereumDerivationPath
-        )
-    }
-
     // MARK: - Processing
+
+    internal func getAdvancedSettings() -> AdvancedWalletSettings? {
+        fatalError("This function should be overriden")
+    }
 
     internal func processProceed() {
         fatalError("This function should be overriden")
@@ -149,13 +136,19 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
 
 extension BaseAccountCreatePresenter: AdvancedWalletSettingsDelegate {
     func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings) {
-        guard case let .combined(substrateSettings, ethereumDerivationPath) = walletSettings else {
-            return
-        }
+        switch walletSettings {
+        case let .substrate(settings):
+            selectedSubstrateCryptoType = settings.selectedCryptoType
+            substrateDerivationPath = settings.derivationPath ?? ""
 
-        selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
-        substrateDerivationPath = substrateSettings.derivationPath ?? ""
-        self.ethereumDerivationPath = ethereumDerivationPath
+        case let .ethereum(derivationPath):
+            ethereumDerivationPath = derivationPath
+
+        case let .combined(substrateSettings, ethereumDerivationPath):
+            selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
+            substrateDerivationPath = substrateSettings.derivationPath ?? ""
+            self.ethereumDerivationPath = ethereumDerivationPath
+        }
     }
 }
 

@@ -26,35 +26,33 @@ final class AccountCreateViewFactory {
         return view
     }
 
-    // TODO: Fix this
     private static func createViewForReplace(
-        metaAccountModel _: MetaAccountModel,
-        chainModelId _: ChainModel.Id,
-        isEthereumBased _: Bool,
-        wireframe _: AccountCreateWireframeProtocol
-    ) -> OldAccountCreateViewProtocol? {
-        nil
-//        let view = OldAccountCreateViewController(nib: R.nib.accountCreateViewController)
-//
-//        let presenter = OldAddChainAccount.AccountCreatePresenter(
-//            metaAccountModel: metaAccountModel,
-//            chainModelId: chainModelId,
-//            isEthereumBased: isEthereumBased
-//        )
-//
-//        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
-//
-//        view.presenter = presenter
-//        presenter.view = view
-//        presenter.interactor = interactor
-//        presenter.wireframe = wireframe
-//        interactor.presenter = presenter
-//
-//        let localizationManager = LocalizationManager.shared
-//        view.localizationManager = localizationManager
-//        presenter.localizationManager = localizationManager
-//
-//        return view
+        metaAccountModel: MetaAccountModel,
+        chainModelId: ChainModel.Id,
+        isEthereumBased: Bool,
+        wireframe: AccountCreateWireframeProtocol
+    ) -> AccountCreateViewProtocol? {
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = AddChainAccount.AccountCreatePresenter(
+            metaAccountModel: metaAccountModel,
+            chainModelId: chainModelId,
+            isEthereumBased: isEthereumBased
+        )
+
+        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
+
+        let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
+
+        presenter.view = view
+        presenter.interactor = interactor
+        presenter.wireframe = wireframe
+        interactor.presenter = presenter
+
+        view.localizationManager = localizationManager
+        presenter.localizationManager = localizationManager
+
+        return view
     }
 }
 
@@ -80,8 +78,8 @@ extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id,
         isEthereumBased: Bool
-    ) -> OldAccountCreateViewProtocol? {
-        let wireframe = OldAddChainAccount.AccountCreateWireframe()
+    ) -> AccountCreateViewProtocol? {
+        let wireframe = AddChainAccount.AccountCreateWireframe()
 
         return createViewForReplace(
             metaAccountModel: metaAccountModel,

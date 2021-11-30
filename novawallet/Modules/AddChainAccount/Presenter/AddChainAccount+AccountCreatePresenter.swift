@@ -1,6 +1,5 @@
-import SwiftUI
-extension OldAddChainAccount {
-    final class AccountCreatePresenter: OldBaseAccountCreatePresenter {
+extension AddChainAccount {
+    final class AccountCreatePresenter: BaseAccountCreatePresenter {
         let metaAccountModel: MetaAccountModel
         let chainModelId: ChainModel.Id
         let isEthereumBased: Bool
@@ -15,78 +14,55 @@ extension OldAddChainAccount {
             self.isEthereumBased = isEthereumBased
 
             super.init()
-
-            displaySubstrate = !isEthereumBased
-            displayEthereum = isEthereumBased
         }
 
-        private func prooceedWithSubstrate() {
-            guard
-                let cryptoType = selectedSubstrateCryptoType,
-                let substrateViewModel = substrateDerivationPathViewModel,
-                let metadata = metadata
-            else {
-                return
+        private func getRequest(with mnemonic: String) -> ChainAccountImportMnemonicRequest? {
+            if isEthereumBased {
+                return ChainAccountImportMnemonicRequest(
+                    mnemonic: mnemonic,
+                    derivationPath: ethereumDerivationPath,
+                    cryptoType: selectedEthereumCryptoType
+                )
+
+            } else {
+                guard let cryptoType = selectedSubstrateCryptoType else { return nil }
+
+                return ChainAccountImportMnemonicRequest(
+                    mnemonic: mnemonic,
+                    derivationPath: substrateDerivationPath,
+                    cryptoType: cryptoType
+                )
             }
-
-            guard substrateViewModel.inputHandler.completed else {
-                view?.didValidateSubstrateDerivationPath(.invalid)
-                presentDerivationPathError(cryptoType)
-                return
-            }
-
-            let substrateDerivationPath = substrateDerivationPathViewModel?.inputHandler.value ?? ""
-
-            let request = ChainAccountImportMnemonicRequest(
-                mnemonic: metadata.mnemonic.joined(separator: " "),
-                derivationPath: substrateDerivationPath,
-                cryptoType: cryptoType
-            )
-
-            wireframe.confirm(
-                from: view,
-                request: request,
-                metaAccountModel: metaAccountModel,
-                chainModelId: chainModelId
-            )
         }
 
-        private func proceedWithEthereum() {
-            guard
-                let ethereumViewModel = ethereumDerivationPathViewModel,
-                let metadata = metadata
-            else {
-                return
-            }
-
-            guard ethereumViewModel.inputHandler.completed else {
-                view?.didValidateEthereumDerivationPath(.invalid)
-                presentDerivationPathError(.ethereumEcdsa)
-                return
-            }
-
-            let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
-                DerivationPathConstants.defaultEthereum : ethereumViewModel.inputHandler.value
-
-            let request = ChainAccountImportMnemonicRequest(
-                mnemonic: metadata.mnemonic.joined(separator: " "),
-                derivationPath: ethereumDerivationPath,
-                cryptoType: .ethereumEcdsa
-            )
-
-            wireframe.confirm(
-                from: view,
-                request: request,
-                metaAccountModel: metaAccountModel,
-                chainModelId: chainModelId
-            )
-        }
+        // MARK: - Overrides
 
         override func processProceed() {
+            guard let mnemonic = metadata?.mnemonic.joined(separator: " "),
+                  let request = getRequest(with: mnemonic) else { return }
+
+            wireframe.confirm(
+                from: view,
+                request: request,
+                metaAccountModel: metaAccountModel,
+                chainModelId: chainModelId
+            )
+        }
+
+        override func getAdvancedSettings() -> AdvancedWalletSettings? {
+            guard let metadata = metadata else { return nil }
+
             if isEthereumBased {
-                proceedWithEthereum()
+                return .ethereum(derivationPath: ethereumDerivationPath)
+
             } else {
-                prooceedWithSubstrate()
+                let substrateSettings = AdvancedNetworkTypeSettings(
+                    availableCryptoTypes: metadata.availableCryptoTypes,
+                    selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+                    derivationPath: substrateDerivationPath
+                )
+
+                return .substrate(settings: substrateSettings)
             }
         }
     }
