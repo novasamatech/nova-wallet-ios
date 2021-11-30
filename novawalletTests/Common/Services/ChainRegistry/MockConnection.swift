@@ -21,7 +21,7 @@ extension MockConnection: ChainConnection {
 
     func connect() {}
 
-    func disconnect() {}
+    func disconnect(_ force: Bool) {}
 
     func callMethod<P, T>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16 where P : Encodable, T : Decodable {
         try internalConnection.callMethod(
