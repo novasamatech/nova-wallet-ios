@@ -29,5 +29,21 @@ extension ExportRestoreJsonPresenter: ExportGenericPresenterProtocol {
         }
     }
 
-    func activateAdvancedSettings() {}
+    func activateAdvancedSettings() {
+        let advancedSettings: AdvancedWalletSettings
+
+        if model.chain.isEthereumBased {
+            advancedSettings = AdvancedWalletSettings.ethereum(derivationPath: nil)
+        } else {
+            let networkSettings = AdvancedNetworkTypeSettings(
+                availableCryptoTypes: [model.cryptoType],
+                selectedCryptoType: model.cryptoType,
+                derivationPath: nil
+            )
+
+            advancedSettings = AdvancedWalletSettings.substrate(settings: networkSettings)
+        }
+
+        wireframe.showAdvancedSettings(from: view, secretSource: .keystore, settings: advancedSettings)
+    }
 }

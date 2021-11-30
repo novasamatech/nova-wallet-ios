@@ -6,14 +6,20 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     typealias RootViewType = AdvancedWalletViewLayout
 
     let presenter: AdvancedWalletPresenterProtocol
+    let readonly: Bool
 
     private var substrateDerivationPathViewModel: InputViewModelProtocol?
     private var ethereumDerivationPathViewModel: InputViewModelProtocol?
 
     var keyboardHandler: KeyboardHandler?
 
-    init(presenter: AdvancedWalletPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: AdvancedWalletPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        readonly: Bool
+    ) {
         self.presenter = presenter
+        self.readonly = readonly
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -119,6 +125,16 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func applyDerivationPathStyle(_ isEnabled: Bool, to derivationPathView: RoundedView) {
+        derivationPathView.isUserInteractionEnabled = isEnabled
+
+        if isEnabled {
+            derivationPathView.applyEnabledBackgroundStyle()
+        } else {
+            derivationPathView.applyDisabledBackgroundStyle()
+        }
+    }
+
     private func applyCryptoTypeStyle(_ isEnabled: Bool, to actionView: BorderedSubtitleActionView) {
         if isEnabled {
             actionView.applyEnabledStyle()
@@ -137,7 +153,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     ) {
         if let viewModel = viewModel {
             cryptoTypeView.isHidden = false
-            applyCryptoTypeStyle(viewModel.selectable, to: cryptoTypeView)
+            applyCryptoTypeStyle(viewModel.selectable && !readonly, to: cryptoTypeView)
 
             let contentView = cryptoTypeView.actionControl.contentView
 
@@ -236,7 +252,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         substrateDerivationPathViewModel = viewModel
 
         if let viewModel = viewModel {
-            rootView.substrateBackgroundView.isHidden = false
+            let shouldHideReadonly = readonly && viewModel.inputHandler.value.isEmpty
+            rootView.substrateBackgroundView.isHidden = shouldHideReadonly
 
             rootView.substrateTextField.attributedPlaceholder = NSAttributedString(
                 string: viewModel.placeholder,
@@ -246,6 +263,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 ]
             )
             rootView.substrateTextField.text = viewModel.inputHandler.value
+
+            applyDerivationPathStyle(!readonly, to: rootView.substrateBackgroundView)
         } else {
             rootView.substrateBackgroundView.isHidden = true
         }
@@ -255,7 +274,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         ethereumDerivationPathViewModel = viewModel
 
         if let viewModel = viewModel {
-            rootView.ethereumBackgroundView.isHidden = false
+            let shouldHideReadonly = readonly && viewModel.inputHandler.value.isEmpty
+            rootView.ethereumBackgroundView.isHidden = shouldHideReadonly
 
             rootView.ethereumTextField.attributedPlaceholder = NSAttributedString(
                 string: viewModel.placeholder,
@@ -265,6 +285,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 ]
             )
             rootView.ethereumTextField.text = viewModel.inputHandler.value
+
+            applyDerivationPathStyle(!readonly, to: rootView.ethereumBackgroundView)
         } else {
             rootView.ethereumBackgroundView.isHidden = true
         }

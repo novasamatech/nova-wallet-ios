@@ -33,7 +33,31 @@ extension ExportMnemonicPresenter: ExportGenericPresenterProtocol {
         wireframe.openConfirmationForMnemonic(exportData.mnemonic, from: view)
     }
 
-    func activateAdvancedSettings() {}
+    func activateAdvancedSettings() {
+        guard let exportData = exportData, let accountResponse = exportData.metaAccount.fetch(
+            for: exportData.chain.accountRequest()
+        ) else {
+            return
+        }
+
+        let advancedSettings: AdvancedWalletSettings
+
+        if exportData.chain.isEthereumBased {
+            advancedSettings = AdvancedWalletSettings.ethereum(
+                derivationPath: exportData.derivationPath
+            )
+        } else {
+            let networkSettings = AdvancedNetworkTypeSettings(
+                availableCryptoTypes: [accountResponse.cryptoType],
+                selectedCryptoType: accountResponse.cryptoType,
+                derivationPath: exportData.derivationPath
+            )
+
+            advancedSettings = AdvancedWalletSettings.substrate(settings: networkSettings)
+        }
+
+        wireframe.showAdvancedSettings(from: view, secretSource: .mnemonic, settings: advancedSettings)
+    }
 }
 
 extension ExportMnemonicPresenter: ExportMnemonicInteractorOutputProtocol {
