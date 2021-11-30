@@ -12,7 +12,7 @@ struct AccountCreationRequest {
 struct MetaAccountCreationRequest {
     let username: String
     let derivationPath: String
-    let ethereumDerivationPath: String?
+    let ethereumDerivationPath: String
     let cryptoType: MultiassetCryptoType
 }
 

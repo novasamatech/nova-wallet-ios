@@ -28,7 +28,7 @@ final class AccountManagementWireframe: AccountManagementWireframeProtocol, Auth
         chainId: ChainModel.Id,
         isEthereumBased: Bool
     ) {
-        let options = SecretSource.allCases
+        let options = SecretSource.displayOptions
 
         let handler: (Int) -> Void = { [weak self] selectedIndex in
             self?.presentImport(

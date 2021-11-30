@@ -82,6 +82,25 @@ final class AccountImportViewController: UIViewController {
         viewType.view.locale = selectedLocale
     }
 
+    private func setupAdvancedButton() {
+        guard navigationItem.rightBarButtonItem == nil else {
+            return
+        }
+
+        let buttonItem = UIBarButtonItem(
+            image: R.image.iconAdvancedSettings(),
+            style: .plain,
+            target: self,
+            action: #selector(actionAdvancedSettings)
+        )
+
+        navigationItem.rightBarButtonItem = buttonItem
+    }
+
+    private func clearAdvancedButton() {
+        navigationItem.rightBarButtonItem = nil
+    }
+
     private func clearView() {
         viewType?.view.removeFromSuperview()
         viewType = nil
@@ -117,6 +136,10 @@ final class AccountImportViewController: UIViewController {
         importView.locale = selectedLocale
 
         self.viewType = viewType
+    }
+
+    @objc private func actionAdvancedSettings() {
+        presenter.activateAdvancedSettings()
     }
 }
 
@@ -186,6 +209,14 @@ extension AccountImportViewController: AccountImportViewProtocol {
     func setUploadWarning(message: String) {
         if case let .keystore(sourceView) = viewType {
             sourceView.setUploadWarning(message: message)
+        }
+    }
+
+    func setShouldShowAdvancedSettings(_ shouldShow: Bool) {
+        if shouldShow {
+            setupAdvancedButton()
+        } else {
+            clearAdvancedButton()
         }
     }
 }
