@@ -39,7 +39,7 @@ protocol UIFactoryProtocol {
     func createExpandableActionControl() -> ExpandableActionControl
     func createTitledMnemonicView(_ title: String?, icon: UIImage?) -> TitledMnemonicView
     func createMultilinedTriangularedView() -> MultilineTriangularedView
-    func createRoundedBackgroundView() -> RoundedView
+    func createRoundedBackgroundView(filled: Bool) -> RoundedView
     func createSeparatorView() -> UIView
     func createBorderedContainerView() -> BorderedContainerView
     func createActionsAccessoryView(
@@ -94,6 +94,10 @@ extension UIFactoryProtocol {
         let view = createLearnMoreView()
         view.iconView.image = R.image.iconNovaSmall()
         return view
+    }
+
+    func createRoundedBackgroundView() -> RoundedView {
+        createRoundedBackgroundView(filled: false)
     }
 }
 
@@ -537,13 +541,22 @@ final class UIFactory: UIFactoryProtocol {
         return view
     }
 
-    func createRoundedBackgroundView() -> RoundedView {
+    func createRoundedBackgroundView(filled: Bool) -> RoundedView {
         let view = RoundedView()
         view.cornerRadius = 12.0
-        view.strokeColor = R.color.colorTransparentText()!
-        view.highlightedStrokeColor = R.color.colorTransparentText()!
-        view.fillColor = .clear
-        view.highlightedFillColor = .clear
+
+        if filled {
+            view.strokeColor = .clear
+            view.highlightedStrokeColor = .clear
+            view.fillColor = R.color.colorDarkGray()!
+            view.highlightedFillColor = R.color.colorDarkGray()!
+        } else {
+            view.strokeColor = R.color.colorTransparentText()!
+            view.highlightedStrokeColor = R.color.colorTransparentText()!
+            view.fillColor = .clear
+            view.highlightedFillColor = .clear
+        }
+
         view.strokeWidth = 1.0
         view.shadowOpacity = 0.0
         return view

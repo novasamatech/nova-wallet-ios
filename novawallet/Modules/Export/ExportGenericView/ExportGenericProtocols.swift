@@ -2,13 +2,13 @@ import Foundation
 import SoraFoundation
 
 protocol ExportGenericViewProtocol: ControllerBackedProtocol {
-    func set(viewModel: ExportGenericViewModelProtocol)
+    func set(viewModel: ExportGenericViewModel)
 }
 
 protocol ExportGenericPresenterProtocol {
     func setup()
     func activateExport()
-    func activateAccessoryOption()
+    func activateAdvancedSettings()
 }
 
 extension ExportGenericPresenterProtocol {
