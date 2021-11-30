@@ -82,7 +82,7 @@ final class AccountCreateViewController: UIViewController, ViewHolder {
     // MARK: - Actions
 
     @objc private func openAdvanced() {
-        // TODO: Fill
+        presenter.activateAdvanced()
     }
 
     @objc private func actionNext() {

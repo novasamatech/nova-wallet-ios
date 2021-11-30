@@ -51,6 +51,13 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         metadata: MetaAccountCreationMetadata
     )
 
+    func showAdvancedSettings(
+        from view: AccountCreateViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
+    )
+
     func confirm(
         from view: AccountCreateViewProtocol?,
         request: MetaAccountCreationRequest,

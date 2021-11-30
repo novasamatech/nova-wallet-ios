@@ -11,11 +11,7 @@ final class AccountCreatePresenter: BaseAccountCreatePresenter {
     }
 
     func processProceed() {
-        guard
-            let metadata = metadata
-        else {
-            return
-        }
+        guard let metadata = metadata else { return }
 
         // TODO: Get real values
         let cryptoType: MultiassetCryptoType = .sr25519
