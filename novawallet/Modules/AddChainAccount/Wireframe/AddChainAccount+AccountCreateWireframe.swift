@@ -4,7 +4,7 @@ import IrohaCrypto
 extension AddChainAccount {
     final class AccountCreateWireframe: AccountCreateWireframeProtocol {
         func confirm(
-            from view: OldAccountCreateViewProtocol?,
+            from view: AccountCreateViewProtocol?,
             request: ChainAccountImportMnemonicRequest,
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id
