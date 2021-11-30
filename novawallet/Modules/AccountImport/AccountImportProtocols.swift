@@ -7,11 +7,13 @@ protocol AccountImportViewProtocol: ControllerBackedProtocol {
     func setName(viewModel: InputViewModelProtocol?)
     func setPassword(viewModel: InputViewModelProtocol)
     func setUploadWarning(message: String)
+    func setShouldShowAdvancedSettings(_ shouldShow: Bool)
 }
 
 protocol AccountImportPresenterProtocol: AnyObject {
     func setup()
     func activateUpload()
+    func activateAdvancedSettings()
     func proceed()
 }
 
@@ -51,14 +53,10 @@ protocol AccountImportInteractorOutputProtocol: AnyObject {
 
 protocol AccountImportWireframeProtocol: AlertPresentable, ErrorPresentable {
     func proceed(from view: AccountImportViewProtocol?)
-}
-
-extension AccountImportWireframeProtocol {
-    func presentNetworkTypeSelection(
-        from _: AccountImportViewProtocol?,
-        availableTypes _: [Chain],
-        selectedType _: Chain,
-        delegate _: ModalPickerViewControllerDelegate?,
-        context _: AnyObject?
-    ) {}
+    func showAdvancedSettings(
+        from view: AccountImportViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
+    )
 }
