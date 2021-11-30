@@ -9,14 +9,10 @@ class BaseAccountCreatePresenter {
     private(set) var metadata: MetaAccountCreationMetadata?
 
     private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
-    private(set) var substrateDerivationPath: String?
+    private(set) var substrateDerivationPath: String = ""
 
     private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
     private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
-
-//    private(set) var sourceViewModel: InputViewModelProtocol?
-//    private(set) var usernameViewModel: InputViewModelProtocol?
-//    private(set) var passwordViewModel: InputViewModelProtocol?
 
     // MARK: - Private functions
 
@@ -86,7 +82,15 @@ class BaseAccountCreatePresenter {
             ethereumDerivationPath: ethereumDerivationPath
         )
     }
+
+    // MARK: - Processing
+
+    internal func processProceed() {
+        fatalError("This function should be overriden")
+    }
 }
+
+// MARK: - AccountCreatePresenterProtocol
 
 extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     func setup() {
@@ -117,37 +121,27 @@ extension BaseAccountCreatePresenter: AccountCreatePresenterProtocol {
     }
 
     func proceed() {
-//        guard
-//            let metadata = metadata
-//        else {
-//            return
-//        }
-//
-//        // TODO: Get real values
-//        let cryptoType: MultiassetCryptoType = .sr25519
-//
-//        let substrateDerivationPath = ""
-//        let ethereumDerivationPath = DerivationPathConstants.defaultEthereum
-//
-//        let request = MetaAccountCreationRequest(
-//            username: walletName,
-//            derivationPath: substrateDerivationPath,
-//            ethereumDerivationPath: ethereumDerivationPath,
-//            cryptoType: cryptoType
-//        )
-//
-//        wireframe.confirm(from: view, request: request, metadata: metadata)
+        processProceed()
     }
 }
+
+// MARK: - AccountCreateInteractorOutputProtocol
 
 extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
     func didReceive(metadata: MetaAccountCreationMetadata) {
         self.metadata = metadata
+        selectedSubstrateCryptoType = metadata.defaultCryptoType
         view?.set(mnemonic: metadata.mnemonic)
     }
 
-    func didReceiveMnemonicGeneration(error _: Error) {
-        // TODO: Implement
+    func didReceiveMnemonicGeneration(error: Error) {
+        let locale = localizationManager?.selectedLocale ?? Locale.current
+
+        guard !wireframe.present(error: error, from: view, locale: locale) else {
+            return
+        }
+
+        _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
     }
 }
 
@@ -160,7 +154,7 @@ extension BaseAccountCreatePresenter: AdvancedWalletSettingsDelegate {
         }
 
         selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
-        substrateDerivationPath = substrateSettings.derivationPath
+        substrateDerivationPath = substrateSettings.derivationPath ?? ""
         self.ethereumDerivationPath = ethereumDerivationPath
     }
 }

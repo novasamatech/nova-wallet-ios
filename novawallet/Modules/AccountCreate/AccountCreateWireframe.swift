@@ -3,7 +3,7 @@ import IrohaCrypto
 
 final class AccountCreateWireframe: AccountCreateWireframeProtocol {
     func confirm(
-        from view: OldAccountCreateViewProtocol?,
+        from view: AccountCreateViewProtocol?,
         request: MetaAccountCreationRequest,
         metadata: MetaAccountCreationMetadata
     ) {
