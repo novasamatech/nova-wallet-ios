@@ -1,7 +1,7 @@
 name: Bump app version from tag
 
 on:
-  create:
+  push:
     tags:
       - '*'
 
