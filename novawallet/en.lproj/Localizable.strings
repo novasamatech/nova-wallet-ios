@@ -583,3 +583,4 @@
 "common.understand" = "I understand";
 "account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";
 "account.backup.mnemonic.field.title" = "Mnemonic Passphrase";
+"wallet.create.button.title.disabled_v2_2_0" = "Enter a nickname...";

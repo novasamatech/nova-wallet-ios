@@ -50714,16 +50714,16 @@ import SoraFoundation
     
     
     
-     func proceed(from view: UsernameSetupViewProtocol?, model: UsernameSetupModel)  {
+     func proceed(from view: UsernameSetupViewProtocol?, walletName: String)  {
         
-    return cuckoo_manager.call("proceed(from: UsernameSetupViewProtocol?, model: UsernameSetupModel)",
-            parameters: (view, model),
-            escapingParameters: (view, model),
+    return cuckoo_manager.call("proceed(from: UsernameSetupViewProtocol?, walletName: String)",
+            parameters: (view, walletName),
+            escapingParameters: (view, walletName),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.proceed(from: view, model: model))
+            defaultCall: __defaultImplStub!.proceed(from: view, walletName: walletName))
         
     }
     
@@ -50766,9 +50766,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func proceed<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, model: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(UsernameSetupViewProtocol?, UsernameSetupModel)> where M1.OptionalMatchedType == UsernameSetupViewProtocol, M2.MatchedType == UsernameSetupModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(UsernameSetupViewProtocol?, UsernameSetupModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: model) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockUsernameSetupWireframeProtocol.self, method: "proceed(from: UsernameSetupViewProtocol?, model: UsernameSetupModel)", parameterMatchers: matchers))
+	    func proceed<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, walletName: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(UsernameSetupViewProtocol?, String)> where M1.OptionalMatchedType == UsernameSetupViewProtocol, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(UsernameSetupViewProtocol?, String)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: walletName) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockUsernameSetupWireframeProtocol.self, method: "proceed(from: UsernameSetupViewProtocol?, walletName: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -50798,9 +50798,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func proceed<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, model: M2) -> Cuckoo.__DoNotUse<(UsernameSetupViewProtocol?, UsernameSetupModel), Void> where M1.OptionalMatchedType == UsernameSetupViewProtocol, M2.MatchedType == UsernameSetupModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(UsernameSetupViewProtocol?, UsernameSetupModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: model) { $0.1 }]
-	        return cuckoo_manager.verify("proceed(from: UsernameSetupViewProtocol?, model: UsernameSetupModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func proceed<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, walletName: M2) -> Cuckoo.__DoNotUse<(UsernameSetupViewProtocol?, String), Void> where M1.OptionalMatchedType == UsernameSetupViewProtocol, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(UsernameSetupViewProtocol?, String)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: walletName) { $0.1 }]
+	        return cuckoo_manager.verify("proceed(from: UsernameSetupViewProtocol?, walletName: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -50824,7 +50824,7 @@ import SoraFoundation
     
 
     
-     func proceed(from view: UsernameSetupViewProtocol?, model: UsernameSetupModel)   {
+     func proceed(from view: UsernameSetupViewProtocol?, walletName: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -10,6 +10,8 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
     private var viewModel: InputViewModelProtocol?
 
+    var keyboardHandler: KeyboardHandler?
+
     // MARK: - Lifecycle
 
     init(
@@ -42,7 +44,18 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+
         rootView.nameField.textField.becomeFirstResponder()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     // MARK: - Setup functions
@@ -76,10 +89,21 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
         let isEnabled = viewModel.inputHandler.completed
         rootView.proceedButton.set(enabled: isEnabled)
+        _ = isEnabled ? setActionButtonEnabledTitle() : setActionButtonDisabledTitle()
+    }
+
+    private func setActionButtonEnabledTitle() {
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .commonContinue(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    private func setActionButtonDisabledTitle() {
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .walletCreateButtonTitleDisabled_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupLocalization() {
-        let languages = localizationManager?.preferredLocalizations
+        let languages = selectedLocale.rLanguages
 
         rootView.titleLabel.text = R.string.localizable.walletNicknameCreateTitle(preferredLanguages: languages)
 
@@ -154,5 +178,16 @@ extension UserNameSetupViewController: Localizable {
             setupLocalization()
             view.setNeedsLayout()
         }
+    }
+}
+
+// MARK: - KeyboardAdoptable
+
+extension UserNameSetupViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+
+        rootView.updateOnKeyboardBottomInsetChange(bottomInset)
     }
 }

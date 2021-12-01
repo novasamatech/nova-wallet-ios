@@ -583,3 +583,4 @@
 "common.understand" = "Понятно";
 "account.backup.mnemonic.caption" = "Пожалуйста, убедитесь, что ваша фраза записана корректно и разборчиво.";
 "account.backup.mnemonic.field.title" = "Мнемоническая фраза";
+"wallet.create.button.title.disabled_v2_2_0" = "Введите имя...";
