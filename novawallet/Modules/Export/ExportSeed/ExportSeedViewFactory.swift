@@ -8,20 +8,6 @@ final class ExportSeedViewFactory {
         _ metaAccount: MetaAccountModel,
         chain: ChainModel
     ) -> ExportGenericViewProtocol? {
-        let uiFactory = UIFactory()
-        let view = ExportGenericViewController(
-            uiFactory: uiFactory,
-            binder: ExportGenericViewModelBinder(uiFactory: uiFactory),
-            mainTitle: nil,
-            accessoryTitle: nil
-        )
-
-        let localizationManager = LocalizationManager.shared
-
-        let presenter = ExportSeedPresenter(
-            localizationManager: localizationManager
-        )
-
         let keychain = Keychain()
 
         let interactor = ExportSeedInteractor(
@@ -30,12 +16,48 @@ final class ExportSeedViewFactory {
             keystore: keychain,
             operationManager: OperationManagerFacade.sharedManager
         )
+
         let wireframe = ExportSeedWireframe()
 
-        view.presenter = presenter
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ExportSeedPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
+
+        let view = ExportGenericViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            exportTitle: LocalizableResource { locale in
+                R.string.localizable.exportSeedTitle(preferredLanguages: locale.rLanguages)
+            },
+            exportSubtitle: LocalizableResource { locale in
+                R.string.localizable.accountCreateDetails(preferredLanguages: locale.rLanguages)
+            },
+            exportHint: LocalizableResource { locale in
+                R.string.localizable.exportSeedHint(preferredLanguages: locale.rLanguages)
+            },
+            sourceTitle: LocalizableResource { locale in
+                R.string.localizable.importRawSeed(preferredLanguages: locale.rLanguages)
+            },
+            sourceHint: LocalizableResource { locale in
+                if chain.isEthereumBased {
+                    return R.string.localizable.accountImportEthereumSeedPlaceholder_v2_2_0(
+                        preferredLanguages: locale.rLanguages
+                    )
+                } else {
+                    return R.string.localizable.accountImportSubstrateSeedPlaceholder_v2_2_0(
+                        preferredLanguages: locale.rLanguages
+                    )
+                }
+            },
+            actionTitle: nil,
+            isSourceMultiline: true
+        )
+
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         view.localizationManager = localizationManager

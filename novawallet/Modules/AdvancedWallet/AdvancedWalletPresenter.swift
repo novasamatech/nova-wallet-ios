@@ -29,7 +29,7 @@ final class AdvancedWalletPresenter {
         localizationManager: LocalizationManagerProtocol,
         secretSource: SecretSource,
         settings: AdvancedWalletSettings,
-        delegate: AdvancedWalletSettingsDelegate
+        delegate: AdvancedWalletSettingsDelegate?
     ) {
         self.wireframe = wireframe
         self.secretSource = secretSource
