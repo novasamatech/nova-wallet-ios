@@ -28,13 +28,7 @@ final class AccountCreateViewLayout: UIView {
         return label
     }()
 
-    let mnemonicBackroundView: RoundedView = {
-        let view = UIFactory.default.createRoundedBackgroundView()
-        view.strokeWidth = 0
-        view.fillColor = R.color.colorDisabledBackground()!
-        view.highlightedFillColor = R.color.colorDisabledBackground()!
-        return view
-    }()
+    let mnemonicBackroundView: RoundedView = UIFactory.default.createRoundedBackgroundView(filled: true)
 
     let mnemonicFieldTitleLabel: UILabel = {
         let label = UILabel()

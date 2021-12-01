@@ -142,12 +142,12 @@ extension BaseAccountCreatePresenter: AdvancedWalletSettingsDelegate {
             substrateDerivationPath = settings.derivationPath ?? ""
 
         case let .ethereum(derivationPath):
-            ethereumDerivationPath = derivationPath
+            ethereumDerivationPath = derivationPath ?? ""
 
         case let .combined(substrateSettings, ethereumDerivationPath):
             selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
             substrateDerivationPath = substrateSettings.derivationPath ?? ""
-            self.ethereumDerivationPath = ethereumDerivationPath
+            self.ethereumDerivationPath = ethereumDerivationPath ?? ""
         }
     }
 }
