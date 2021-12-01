@@ -13629,21 +13629,6 @@ import SoraFoundation
         
     }
     
-    
-    
-     func set(error: AccountExportPasswordError)  {
-        
-    return cuckoo_manager.call("set(error: AccountExportPasswordError)",
-            parameters: (error),
-            escapingParameters: (error),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.set(error: error))
-        
-    }
-    
 
 	 struct __StubbingProxy_AccountExportPasswordViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -13671,11 +13656,6 @@ import SoraFoundation
 	    func setPasswordConfirmationViewModel<M1: Cuckoo.Matchable>(_ viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(InputViewModelProtocol)> where M1.MatchedType == InputViewModelProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(InputViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountExportPasswordViewProtocol.self, method: "setPasswordConfirmationViewModel(_: InputViewModelProtocol)", parameterMatchers: matchers))
-	    }
-	    
-	    func set<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountExportPasswordError)> where M1.MatchedType == AccountExportPasswordError {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountExportPasswordError)>] = [wrap(matchable: error) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountExportPasswordViewProtocol.self, method: "set(error: AccountExportPasswordError)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -13716,12 +13696,6 @@ import SoraFoundation
 	        return cuckoo_manager.verify("setPasswordConfirmationViewModel(_: InputViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-	    @discardableResult
-	    func set<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.__DoNotUse<(AccountExportPasswordError), Void> where M1.MatchedType == AccountExportPasswordError {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountExportPasswordError)>] = [wrap(matchable: error) { $0 }]
-	        return cuckoo_manager.verify("set(error: AccountExportPasswordError)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	}
 }
 
@@ -13752,10 +13726,6 @@ import SoraFoundation
     }
     
      func setPasswordConfirmationViewModel(_ viewModel: InputViewModelProtocol)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func set(error: AccountExportPasswordError)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

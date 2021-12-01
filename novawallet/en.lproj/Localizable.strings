@@ -593,3 +593,6 @@
 "crowdloan.completed.section" = "Completed";
 "staking.title" = "Staking";
 "export.mnemonic.check.hint" = "Please, make sure to write down your phrase correctly \nand legibly";
+"export.password.title" = "Set a new password";
+"export.password.proceed.set.title" = "Set password...";
+"export.password.proceed.confirm.title" = "Confirm password...";

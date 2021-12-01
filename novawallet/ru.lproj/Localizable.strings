@@ -593,3 +593,6 @@
 "crowdloan.completed.section" = "Завершённые";
 "staking.title" = "Стейкинг";
 "export.mnemonic.check.hint" = "Пожалуйста, убедитесь, что ваш сид записан корректно и разборчиво";
+"export.password.title" = "Установите пароль";
+"export.password.proceed.set.title" = "Установите пароль...";
+"export.password.proceed.confirm.title" = "Подтвердите пароль...";
