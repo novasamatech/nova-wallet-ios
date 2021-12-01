@@ -26,11 +26,6 @@ class AccountExportPasswordTests: XCTestCase {
         let view = MockAccountExportPasswordViewProtocol()
         let wireframe = MockAccountExportPasswordWireframeProtocol()
 
-        let presenter = AccountExportPasswordPresenter(localizationManager: LocalizationManager.shared)
-
-        presenter.view = view
-        presenter.wireframe = wireframe
-
         let exportWrapper = KeystoreExportWrapper(keystore: keychain)
         let interactor = AccountExportPasswordInteractor(
             metaAccount: metaAccount,
@@ -38,7 +33,14 @@ class AccountExportPasswordTests: XCTestCase {
             exportJsonWrapper: exportWrapper,
             operationManager: OperationManagerFacade.sharedManager
         )
-        presenter.interactor = interactor
+
+        let presenter = AccountExportPasswordPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
+
+        presenter.view = view
         interactor.presenter = presenter
 
         var inputViewModel: InputViewModelProtocol?
@@ -52,8 +54,6 @@ class AccountExportPasswordTests: XCTestCase {
             when(stub).setPasswordConfirmationViewModel(any()).then { viewModel in
                 confirmationViewModel = viewModel
             }
-
-            when(stub).set(error: any()).thenDoNothing()
         }
 
         let expectation = XCTestExpectation()
