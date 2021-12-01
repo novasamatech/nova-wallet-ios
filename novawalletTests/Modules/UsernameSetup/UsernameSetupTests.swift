@@ -19,10 +19,10 @@ class UsernameSetupTests: XCTestCase {
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-        let expectedModel = UsernameSetupModel(username: "test name")
+        let expectedName = "test name"
 
         var receivedViewModel: InputViewModelProtocol?
-        var resultModel: UsernameSetupModel?
+        var resultName: String?
 
         let inputViewModelExpectation = XCTestExpectation()
         let proceedExpectation = XCTestExpectation()
@@ -35,8 +35,8 @@ class UsernameSetupTests: XCTestCase {
         }
 
         stub(wireframe) { stub in
-            when(stub).proceed(from: any(), model: any()).then { (_, model) in
-                resultModel = model
+            when(stub).proceed(from: any(), walletName: any()).then { (_, walletName) in
+                resultName = walletName
 
                 proceedExpectation.fulfill()
             }
@@ -65,7 +65,7 @@ class UsernameSetupTests: XCTestCase {
         guard
             let accepted = receivedViewModel?.inputHandler
                 .didReceiveReplacement(
-                    expectedModel.username,
+                    expectedName,
                     for: NSRange(location: 0, length: 0)
                 ), accepted else {
             XCTFail("Unexpected empty view model")
@@ -78,6 +78,6 @@ class UsernameSetupTests: XCTestCase {
 
         wait(for: [proceedExpectation], timeout: Constants.defaultExpectationDuration)
 
-        XCTAssertEqual(expectedModel, resultModel)
+        XCTAssertEqual(expectedName, resultName)
     }
 }
