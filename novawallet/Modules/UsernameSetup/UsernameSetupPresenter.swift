@@ -6,8 +6,6 @@ final class UsernameSetupPresenter: UsernameSetupInteractorOutputProtocol {
     var wireframe: UsernameSetupWireframeProtocol!
     var interactor: UsernameSetupInteractorInputProtocol!
 
-    private var metadata: UsernameSetupMetadata?
-
     private var viewModel: InputViewModelProtocol = {
         let inputHandling = InputHandler(
             predicate: NSPredicate.notEmpty,
