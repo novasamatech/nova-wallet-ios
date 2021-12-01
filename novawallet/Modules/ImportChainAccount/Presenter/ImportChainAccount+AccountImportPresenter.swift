@@ -20,7 +20,7 @@ extension ImportChainAccount {
             super.init(secretSource: secretSource)
         }
 
-        private func prooceedWithSubstrate() {
+        private func proceedWithSubstrate() {
             guard
                 let selectedCryptoType = selectedSubstrateCryptoType,
                 let sourceViewModel = sourceViewModel
@@ -101,9 +101,7 @@ extension ImportChainAccount {
 
             let cryptoType: MultiassetCryptoType = .ethereumEcdsa
 
-            let ethereumDerivationPathValue = self.ethereumDerivationPath ?? ""
-            let ethereumDerivationPath = ethereumDerivationPathValue.isEmpty ?
-                DerivationPathConstants.defaultEthereum : ethereumDerivationPathValue
+            let ethereumDerivationPath = self.ethereumDerivationPath ?? ""
 
             switch selectedSourceType {
             case .mnemonic:
@@ -155,7 +153,7 @@ extension ImportChainAccount {
             if isEthereumBased {
                 proceedWithEthereum()
             } else {
-                prooceedWithSubstrate()
+                proceedWithSubstrate()
             }
         }
 

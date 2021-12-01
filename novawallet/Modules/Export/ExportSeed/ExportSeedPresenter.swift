@@ -3,48 +3,20 @@ import SoraFoundation
 
 final class ExportSeedPresenter {
     weak var view: ExportGenericViewProtocol?
-    var wireframe: ExportSeedWireframeProtocol!
-    var interactor: ExportSeedInteractorInputProtocol!
-
+    let wireframe: ExportSeedWireframeProtocol
+    let interactor: ExportSeedInteractorInputProtocol
     let localizationManager: LocalizationManager
 
-    private(set) var exportViewModel: ExportStringViewModel?
+    private(set) var exportData: ExportSeedData?
 
-    init(localizationManager: LocalizationManager) {
+    init(
+        interactor: ExportSeedInteractorInputProtocol,
+        wireframe: ExportSeedWireframeProtocol,
+        localizationManager: LocalizationManager
+    ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
         self.localizationManager = localizationManager
-    }
-
-    private func share() {
-        guard let viewModel = exportViewModel else {
-            return
-        }
-
-        let text: String
-
-        let locale = localizationManager.selectedLocale
-
-        if let derivationPath = viewModel.derivationPath {
-            text = R.string.localizable
-                .exportSeedWithDpTemplate(
-                    viewModel.chain.name,
-                    viewModel.data,
-                    derivationPath,
-                    preferredLanguages: locale.rLanguages
-                )
-        } else {
-            text = R.string.localizable
-                .exportSeedWithoutDpTemplate(
-                    viewModel.chain.name,
-                    viewModel.data,
-                    preferredLanguages: locale.rLanguages
-                )
-        }
-
-        wireframe.share(source: TextSharingSource(message: text), from: view) { [weak self] completed in
-            if completed {
-                self?.wireframe.close(view: self?.view)
-            }
-        }
     }
 }
 
@@ -53,46 +25,42 @@ extension ExportSeedPresenter: ExportGenericPresenterProtocol {
         interactor.fetchExportData()
     }
 
-    func activateExport() {
-        let locale = localizationManager.selectedLocale
+    func activateExport() {}
 
-        let title = R.string.localizable.accountExportWarningTitle(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.accountExportWarningMessage(preferredLanguages: locale.rLanguages)
-
-        let exportTitle = R.string.localizable.accountExportAction(preferredLanguages: locale.rLanguages)
-        let exportAction = AlertPresentableAction(title: exportTitle) { [weak self] in
-            self?.share()
+    func activateAdvancedSettings() {
+        guard let exportData = exportData, let accountResponse = exportData.metaAccount.fetch(
+            for: exportData.chain.accountRequest()
+        ) else {
+            return
         }
 
-        let cancelTitle = R.string.localizable.commonCancel(preferredLanguages: locale.rLanguages)
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [exportAction],
-            closeAction: cancelTitle
-        )
+        let advancedSettings: AdvancedWalletSettings
 
-        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+        if exportData.chain.isEthereumBased {
+            advancedSettings = AdvancedWalletSettings.ethereum(
+                derivationPath: exportData.derivationPath
+            )
+        } else {
+            let networkSettings = AdvancedNetworkTypeSettings(
+                availableCryptoTypes: [accountResponse.cryptoType],
+                selectedCryptoType: accountResponse.cryptoType,
+                derivationPath: exportData.derivationPath
+            )
+
+            advancedSettings = AdvancedWalletSettings.substrate(settings: networkSettings)
+        }
+
+        wireframe.showAdvancedSettings(from: view, secretSource: .seed, settings: advancedSettings)
     }
 }
 
 extension ExportSeedPresenter: ExportSeedInteractorOutputProtocol {
     func didReceive(exportData: ExportSeedData) {
-        guard let cryptoType = exportData.metaAccount.fetch(
-            for: exportData.chain.accountRequest()
-        )?.cryptoType else {
-            return
-        }
+        self.exportData = exportData
 
-        let viewModel = ExportStringViewModel(
-            option: .seed,
-            chain: exportData.chain,
-            derivationPath: exportData.derivationPath,
-            cryptoType: cryptoType,
-            data: exportData.seed.toHex(includePrefix: true)
+        let viewModel = ExportGenericViewModel(
+            sourceDetails: exportData.seed.toHex(includePrefix: true)
         )
-
-        exportViewModel = viewModel
 
         view?.set(viewModel: viewModel)
     }

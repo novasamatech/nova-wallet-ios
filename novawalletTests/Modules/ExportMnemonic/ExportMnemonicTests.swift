@@ -41,19 +41,13 @@ class ExportMnemonicTests: XCTestCase {
 
         let wireframe = MockExportMnemonicWireframeProtocol()
 
-        let sharingExpectation = XCTestExpectation()
+        let completionExpectation = XCTestExpectation()
 
         stub(wireframe) { stub in
-            when(stub).present(viewModel: any(), style: any(), from: any()).then { (viewModel, _, _) in
-                viewModel.actions.first?.handler?()
-            }
-
-            when(stub).share(source: any(), from: any(), with: any()).then { _ in
-                sharingExpectation.fulfill()
+            when(stub).openConfirmationForMnemonic(any(), from: any()).then { _ in
+                completionExpectation.fulfill()
             }
         }
-
-        let presenter = ExportMnemonicPresenter(localizationManager: LocalizationManager.shared)
 
         let interactor = ExportMnemonicInteractor(
             metaAccount: metaAccount,
@@ -62,10 +56,13 @@ class ExportMnemonicTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
+        let presenter = ExportMnemonicPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: LocalizationManager.shared
+        )
 
+        presenter.view = view
         interactor.presenter = presenter
 
         presenter.setup()
@@ -80,7 +77,7 @@ class ExportMnemonicTests: XCTestCase {
 
         // then
 
-        wait(for: [sharingExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(for: [completionExpectation], timeout: Constants.defaultExpectationDuration)
 
         XCTAssertEqual(metaAccount, presenter.exportData?.metaAccount)
         XCTAssertEqual(chain, presenter.exportData?.chain)
