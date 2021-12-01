@@ -10,11 +10,6 @@ final class AccountExportPasswordViewFactory {
     ) -> AccountExportPasswordViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let view = AccountExportPasswordViewController(nib: R.nib.accountExportPasswordViewController)
-        let presenter = AccountExportPasswordPresenter(
-            localizationManager: localizationManager
-        )
-
         let exportJsonWrapper = KeystoreExportWrapper(keystore: Keychain())
 
         let interactor = AccountExportPasswordInteractor(
@@ -23,15 +18,22 @@ final class AccountExportPasswordViewFactory {
             exportJsonWrapper: exportJsonWrapper,
             operationManager: OperationManagerFacade.sharedManager
         )
+
         let wireframe = AccountExportPasswordWireframe()
 
-        view.presenter = presenter
-        presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
-        interactor.presenter = presenter
+        let presenter = AccountExportPasswordPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
 
-        view.localizationManager = localizationManager
+        let view = AccountExportPasswordViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
+
+        presenter.view = view
+        interactor.presenter = presenter
 
         return view
     }

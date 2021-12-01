@@ -3,8 +3,8 @@ import SoraFoundation
 
 final class AccountExportPasswordPresenter {
     weak var view: AccountExportPasswordViewProtocol?
-    var wireframe: AccountExportPasswordWireframeProtocol!
-    var interactor: AccountExportPasswordInteractorInputProtocol!
+    let wireframe: AccountExportPasswordWireframeProtocol
+    let interactor: AccountExportPasswordInteractorInputProtocol
 
     private let passwordInputViewModel = {
         InputViewModel(inputHandler: InputHandler(predicate: NSPredicate.notEmpty))
@@ -16,7 +16,13 @@ final class AccountExportPasswordPresenter {
 
     let localizationManager: LocalizationManagerProtocol
 
-    init(localizationManager: LocalizationManagerProtocol) {
+    init(
+        interactor: AccountExportPasswordInteractorInputProtocol,
+        wireframe: AccountExportPasswordWireframeProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
         self.localizationManager = localizationManager
     }
 }
@@ -31,7 +37,11 @@ extension AccountExportPasswordPresenter: AccountExportPasswordPresenterProtocol
         let password = passwordInputViewModel.inputHandler.normalizedValue
 
         guard password == confirmationViewModel.inputHandler.normalizedValue else {
-            view?.set(error: .passwordMismatch)
+            _ = wireframe.present(
+                error: AccountExportPasswordError.passwordMismatch,
+                from: view,
+                locale: localizationManager.selectedLocale
+            )
             return
         }
 
