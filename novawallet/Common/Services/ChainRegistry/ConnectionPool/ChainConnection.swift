@@ -3,7 +3,7 @@ import SubstrateSdk
 
 protocol ChainConnection: JSONRPCEngine & ConnectionAutobalancing & ConnectionStateReporting {
     func connect()
-    func disconnect()
+    func disconnect(_ force: Bool)
 }
 
 extension WebSocketEngine: ChainConnection {
@@ -11,7 +11,7 @@ extension WebSocketEngine: ChainConnection {
         connectIfNeeded()
     }
 
-    func disconnect() {
-        disconnectIfNeeded()
+    func disconnect(_ force: Bool) {
+        disconnectIfNeeded(force)
     }
 }
