@@ -9,7 +9,9 @@ final class ExportRestoreJsonViewFactory: ExportRestoreJsonViewFactoryProtocol {
         let view = ExportGenericViewController(
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
-            exportTitle: LocalizableResource { _ in "Save your secret and store it in a safe place" },
+            exportTitle: LocalizableResource { locale in
+                R.string.localizable.exportRestoreJsonTitle(preferredLanguages: locale.rLanguages)
+            },
             exportSubtitle: nil,
             exportHint: nil,
             sourceTitle: LocalizableResource { locale in

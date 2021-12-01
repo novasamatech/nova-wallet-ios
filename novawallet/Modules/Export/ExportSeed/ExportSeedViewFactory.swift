@@ -30,12 +30,14 @@ final class ExportSeedViewFactory {
         let view = ExportGenericViewController(
             presenter: presenter,
             localizationManager: localizationManager,
-            exportTitle: LocalizableResource { _ in "Write down your secret and store it in a safe place" },
+            exportTitle: LocalizableResource { locale in
+                R.string.localizable.exportSeedTitle(preferredLanguages: locale.rLanguages)
+            },
             exportSubtitle: LocalizableResource { locale in
                 R.string.localizable.accountCreateDetails(preferredLanguages: locale.rLanguages)
             },
-            exportHint: LocalizableResource { _ in
-                "Please make sure to write down your secret correctly and legibly."
+            exportHint: LocalizableResource { locale in
+                R.string.localizable.exportSeedHint(preferredLanguages: locale.rLanguages)
             },
             sourceTitle: LocalizableResource { locale in
                 R.string.localizable.importRawSeed(preferredLanguages: locale.rLanguages)
