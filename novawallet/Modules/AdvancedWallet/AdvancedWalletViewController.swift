@@ -6,14 +6,20 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     typealias RootViewType = AdvancedWalletViewLayout
 
     let presenter: AdvancedWalletPresenterProtocol
+    let readonly: Bool
 
     private var substrateDerivationPathViewModel: InputViewModelProtocol?
     private var ethereumDerivationPathViewModel: InputViewModelProtocol?
 
     var keyboardHandler: KeyboardHandler?
 
-    init(presenter: AdvancedWalletPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: AdvancedWalletPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        readonly: Bool
+    ) {
         self.presenter = presenter
+        self.readonly = readonly
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -26,6 +32,10 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
 
     override func loadView() {
         view = AdvancedWalletViewLayout()
+
+        if !readonly {
+            rootView.setupApplyButton()
+        }
     }
 
     override func viewDidLoad() {
@@ -82,7 +92,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
-        rootView.applyButton.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
+        rootView.applyButton?.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
     }
 
     private func setupTextField(_ textField: UITextField) {
@@ -114,9 +124,21 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        if let applyButton = rootView.applyButton {
+            applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+    }
+
+    private func applyDerivationPathStyle(_ isEnabled: Bool, to derivationPathView: RoundedView) {
+        derivationPathView.isUserInteractionEnabled = isEnabled
+
+        if isEnabled {
+            derivationPathView.applyEnabledBackgroundStyle()
+        } else {
+            derivationPathView.applyDisabledBackgroundStyle()
+        }
     }
 
     private func applyCryptoTypeStyle(_ isEnabled: Bool, to actionView: BorderedSubtitleActionView) {
@@ -137,7 +159,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     ) {
         if let viewModel = viewModel {
             cryptoTypeView.isHidden = false
-            applyCryptoTypeStyle(viewModel.selectable, to: cryptoTypeView)
+            applyCryptoTypeStyle(viewModel.selectable && !readonly, to: cryptoTypeView)
 
             let contentView = cryptoTypeView.actionControl.contentView
 
@@ -155,21 +177,25 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     }
 
     private func updateApplyButton() {
+        guard let applyButton = rootView.applyButton else {
+            return
+        }
+
         if
             let viewModel = substrateDerivationPathViewModel,
             viewModel.inputHandler.required,
             (rootView.substrateTextField.text ?? "").isEmpty {
-            rootView.applyButton.applyDisabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = false
+            applyButton.applyDisabledStyle()
+            applyButton.isUserInteractionEnabled = false
         } else if
             let viewModel = ethereumDerivationPathViewModel,
             viewModel.inputHandler.required,
             (rootView.ethereumTextField.text ?? "").isEmpty {
-            rootView.applyButton.applyDisabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = false
+            applyButton.applyDisabledStyle()
+            applyButton.isUserInteractionEnabled = false
         } else {
-            rootView.applyButton.applyEnabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = true
+            applyButton.applyEnabledStyle()
+            applyButton.isUserInteractionEnabled = true
         }
     }
 
@@ -236,7 +262,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         substrateDerivationPathViewModel = viewModel
 
         if let viewModel = viewModel {
-            rootView.substrateBackgroundView.isHidden = false
+            let shouldHideReadonly = readonly && viewModel.inputHandler.value.isEmpty
+            rootView.substrateBackgroundView.isHidden = shouldHideReadonly
 
             rootView.substrateTextField.attributedPlaceholder = NSAttributedString(
                 string: viewModel.placeholder,
@@ -246,6 +273,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 ]
             )
             rootView.substrateTextField.text = viewModel.inputHandler.value
+
+            applyDerivationPathStyle(!readonly, to: rootView.substrateBackgroundView)
         } else {
             rootView.substrateBackgroundView.isHidden = true
         }
@@ -255,7 +284,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
         ethereumDerivationPathViewModel = viewModel
 
         if let viewModel = viewModel {
-            rootView.ethereumBackgroundView.isHidden = false
+            let shouldHideReadonly = readonly && viewModel.inputHandler.value.isEmpty
+            rootView.ethereumBackgroundView.isHidden = shouldHideReadonly
 
             rootView.ethereumTextField.attributedPlaceholder = NSAttributedString(
                 string: viewModel.placeholder,
@@ -265,6 +295,8 @@ extension AdvancedWalletViewController: AdvancedWalletViewProtocol {
                 ]
             )
             rootView.ethereumTextField.text = viewModel.inputHandler.value
+
+            applyDerivationPathStyle(!readonly, to: rootView.ethereumBackgroundView)
         } else {
             rootView.ethereumBackgroundView.isHidden = true
         }

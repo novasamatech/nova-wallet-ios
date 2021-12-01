@@ -8,24 +8,6 @@ final class ExportMnemonicViewFactory {
         _ metaAccount: MetaAccountModel,
         chain: ChainModel
     ) -> ExportGenericViewProtocol? {
-        let accessoryActionTitle = LocalizableResource { locale in
-            R.string.localizable.accountConfirmationTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        let uiFactory = UIFactory()
-        let view = ExportGenericViewController(
-            uiFactory: uiFactory,
-            binder: ExportGenericViewModelBinder(uiFactory: uiFactory),
-            mainTitle: nil,
-            accessoryTitle: accessoryActionTitle
-        )
-
-        let localizationManager = LocalizationManager.shared
-
-        let presenter = ExportMnemonicPresenter(
-            localizationManager: localizationManager
-        )
-
         let keychain = Keychain()
 
         let interactor = ExportMnemonicInteractor(
@@ -34,12 +16,40 @@ final class ExportMnemonicViewFactory {
             keystore: keychain,
             operationManager: OperationManagerFacade.sharedManager
         )
+
         let wireframe = ExportMnemonicWireframe()
 
-        view.presenter = presenter
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = ExportMnemonicPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            localizationManager: localizationManager
+        )
+
+        let view = ExportGenericViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            exportTitle: LocalizableResource { locale in
+                R.string.localizable.accountBackupMnemonicTitle(preferredLanguages: locale.rLanguages)
+            },
+            exportSubtitle: LocalizableResource { locale in
+                R.string.localizable.accountCreateDetails(preferredLanguages: locale.rLanguages)
+            },
+            exportHint: LocalizableResource { locale in
+                R.string.localizable.exportMnemonicCheckHint(preferredLanguages: locale.rLanguages)
+            },
+            sourceTitle: LocalizableResource { locale in
+                R.string.localizable.importMnemonic(preferredLanguages: locale.rLanguages)
+            },
+            sourceHint: nil,
+            actionTitle: LocalizableResource { locale in
+                R.string.localizable.accountConfirmationTitle(preferredLanguages: locale.rLanguages)
+            },
+            isSourceMultiline: true
+        )
+
         presenter.view = view
-        presenter.interactor = interactor
-        presenter.wireframe = wireframe
         interactor.presenter = presenter
 
         view.localizationManager = localizationManager
