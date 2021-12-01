@@ -32,6 +32,10 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
 
     override func loadView() {
         view = AdvancedWalletViewLayout()
+
+        if !readonly {
+            rootView.setupApplyButton()
+        }
     }
 
     override func viewDidLoad() {
@@ -88,7 +92,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
-        rootView.applyButton.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
+        rootView.applyButton?.addTarget(self, action: #selector(actionApply), for: .touchUpInside)
     }
 
     private func setupTextField(_ textField: UITextField) {
@@ -120,9 +124,11 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
-            preferredLanguages: selectedLocale.rLanguages
-        )
+        if let applyButton = rootView.applyButton {
+            applyButton.imageWithTitleView?.title = R.string.localizable.commonApply(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
     }
 
     private func applyDerivationPathStyle(_ isEnabled: Bool, to derivationPathView: RoundedView) {
@@ -171,21 +177,25 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     }
 
     private func updateApplyButton() {
+        guard let applyButton = rootView.applyButton else {
+            return
+        }
+
         if
             let viewModel = substrateDerivationPathViewModel,
             viewModel.inputHandler.required,
             (rootView.substrateTextField.text ?? "").isEmpty {
-            rootView.applyButton.applyDisabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = false
+            applyButton.applyDisabledStyle()
+            applyButton.isUserInteractionEnabled = false
         } else if
             let viewModel = ethereumDerivationPathViewModel,
             viewModel.inputHandler.required,
             (rootView.ethereumTextField.text ?? "").isEmpty {
-            rootView.applyButton.applyDisabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = false
+            applyButton.applyDisabledStyle()
+            applyButton.isUserInteractionEnabled = false
         } else {
-            rootView.applyButton.applyEnabledStyle()
-            rootView.applyButton.isUserInteractionEnabled = true
+            applyButton.applyEnabledStyle()
+            applyButton.isUserInteractionEnabled = true
         }
     }
 
