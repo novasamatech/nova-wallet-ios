@@ -79,9 +79,9 @@ extension AccountCreateWireframeProtocol {
 }
 
 protocol AccountCreateViewFactoryProtocol: AnyObject {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForOnboarding(walletName: String) -> AccountCreateViewProtocol?
+    static func createViewForAdding(walletName: String) -> AccountCreateViewProtocol?
+    static func createViewForSwitch(walletName: String) -> AccountCreateViewProtocol?
 
     static func createViewForReplaceChainAccount(
         metaAccountModel: MetaAccountModel,

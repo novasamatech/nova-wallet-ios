@@ -24,25 +24,8 @@ extension UsernameSetupPresenter: UsernameSetupPresenterProtocol {
     }
 
     func proceed() {
-        let username = viewModel.inputHandler.value
-
-        let rLanguages = localizationManager?.selectedLocale.rLanguages
-        let actionTitle = R.string.localizable.commonOk(preferredLanguages: rLanguages)
-        let action = AlertPresentableAction(title: actionTitle) { [weak self] in
-            let model = UsernameSetupModel(username: username)
-            self?.wireframe.proceed(from: self?.view, model: model)
-        }
-
-        let title = R.string.localizable.commonNoScreenshotTitle(preferredLanguages: rLanguages)
-        let message = R.string.localizable.commonNoScreenshotMessage(preferredLanguages: rLanguages)
-        let viewModel = AlertPresentableViewModel(
-            title: title,
-            message: message,
-            actions: [action],
-            closeAction: nil
-        )
-
-        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+        let walletName = viewModel.inputHandler.value
+        wireframe.proceed(from: view, walletName: walletName)
     }
 }
 

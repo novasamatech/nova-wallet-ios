@@ -59,19 +59,19 @@ final class AccountCreateViewFactory {
 // MARK: - AccountCreateViewFactoryProtocol
 
 extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForOnboarding(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = AccountCreateWireframe()
-        return createViewForWallet(name: model.username, wireframe: wireframe)
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForAdding(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = AddAccount.AccountCreateWireframe()
-        return createViewForWallet(name: model.username, wireframe: wireframe)
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForSwitch(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = SwitchAccount.AccountCreateWireframe()
-        return createViewForWallet(name: model.username, wireframe: wireframe)
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(
