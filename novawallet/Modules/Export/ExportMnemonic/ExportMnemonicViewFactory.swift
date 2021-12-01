@@ -30,14 +30,14 @@ final class ExportMnemonicViewFactory {
         let view = ExportGenericViewController(
             presenter: presenter,
             localizationManager: localizationManager,
-            exportTitle: LocalizableResource { _ in
-                "Write down the phrase and store it in a safe place"
+            exportTitle: LocalizableResource { locale in
+                R.string.localizable.accountBackupMnemonicTitle(preferredLanguages: locale.rLanguages)
             },
             exportSubtitle: LocalizableResource { locale in
                 R.string.localizable.accountCreateDetails(preferredLanguages: locale.rLanguages)
             },
-            exportHint: LocalizableResource { _ in
-                "Please, make sure to write down your phrase correctly and legibly."
+            exportHint: LocalizableResource { locale in
+                R.string.localizable.exportMnemonicCheckHint(preferredLanguages: locale.rLanguages)
             },
             sourceTitle: LocalizableResource { locale in
                 R.string.localizable.importMnemonic(preferredLanguages: locale.rLanguages)
