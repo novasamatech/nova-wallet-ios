@@ -31,8 +31,8 @@ final class AccountCreateViewLayout: UIView {
     let mnemonicBackroundView: RoundedView = {
         let view = UIFactory.default.createRoundedBackgroundView()
         view.strokeWidth = 0
-        view.fillColor = R.color.colorTransparent16()!
-        view.highlightedFillColor = R.color.colorTransparent16()!
+        view.fillColor = R.color.colorDisabledBackground()!
+        view.highlightedFillColor = R.color.colorDisabledBackground()!
         return view
     }()
 
