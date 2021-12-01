@@ -53,11 +53,7 @@ final class AdvancedWalletViewLayout: UIView {
         return view
     }()
 
-    let applyButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    private(set) var applyButton: TriangularedButton?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -72,19 +68,31 @@ final class AdvancedWalletViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
-        addSubview(applyButton)
-        applyButton.snp.makeConstraints { make in
+    func setupApplyButton() {
+        guard applyButton == nil else {
+            return
+        }
+
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        applyButton = button
+
+        addSubview(button)
+        button.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
+        containerView.scrollBottomOffset = UIConstants.actionBottomInset + UIConstants.actionHeight + 16.0
+    }
+
+    private func setupLayout() {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
-            make.bottom.equalTo(applyButton.snp.top).offset(-16.0)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
 
         containerView.stackView.addArrangedSubview(substrateCryptoTypeView)
