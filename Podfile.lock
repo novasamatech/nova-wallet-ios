@@ -122,7 +122,7 @@ PODS:
 
 DEPENDENCIES:
   - Charts
-  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `51ca416341e28a69885cfae514346cc5b1672a2b`)
+  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `0ac255007aa78e77c7572b86599d993d7f4f2def`)
   - Cuckoo
   - FireMock
   - Kingfisher
@@ -170,7 +170,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonWallet:
-    :commit: 51ca416341e28a69885cfae514346cc5b1672a2b
+    :commit: 0ac255007aa78e77c7572b86599d993d7f4f2def
     :git: https://github.com/ERussel/Capital-iOS.git
   SubstrateSdk:
     :commit: 1443ece967d1c6b7bb9a7a9636f6fe7ab34531ff
@@ -181,7 +181,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonWallet:
-    :commit: 51ca416341e28a69885cfae514346cc5b1672a2b
+    :commit: 0ac255007aa78e77c7572b86599d993d7f4f2def
     :git: https://github.com/ERussel/Capital-iOS.git
   SubstrateSdk:
     :commit: 1443ece967d1c6b7bb9a7a9636f6fe7ab34531ff
@@ -220,6 +220,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: d11f8f6d9c60cf8c0043605b09a945925ce91177
+PODFILE CHECKSUM: cf5cb5aca8c3779492c0764d5c4934c00361be4d
 
 COCOAPODS: 1.11.2
