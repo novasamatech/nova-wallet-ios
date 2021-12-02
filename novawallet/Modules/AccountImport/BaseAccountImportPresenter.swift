@@ -19,11 +19,9 @@ class BaseAccountImportPresenter {
 
     private(set) var selectedSourceType: SecretSource
 
-    private let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
-
     private(set) var metadata: MetaAccountImportMetadata?
 
-    private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
+    private(set) var selectedCryptoType: MultiassetCryptoType?
 
     private(set) var sourceViewModel: InputViewModelProtocol?
     private(set) var usernameViewModel: InputViewModelProtocol?
@@ -31,21 +29,18 @@ class BaseAccountImportPresenter {
     private(set) var substrateDerivationPath: String?
     private(set) var ethereumDerivationPath: String? = DerivationPathConstants.defaultEthereum
 
-    private lazy var jsonDeserializer = JSONSerialization()
-
     init(secretSource: SecretSource) {
         selectedSourceType = secretSource
     }
 
-    private func applySourceType(_ value: String = "", preferredInfo: MetaAccountImportPreferredInfo? = nil) {
-        guard let metadata = metadata else {
-            return
-        }
-
+    private func applySourceType(
+        _ value: String = "",
+        preferredInfo: MetaAccountImportPreferredInfo? = nil
+    ) {
         if let preferredInfo = preferredInfo {
-            selectedSubstrateCryptoType = preferredInfo.cryptoType
+            selectedCryptoType = preferredInfo.cryptoType
         } else {
-            selectedSubstrateCryptoType = selectedSubstrateCryptoType ?? metadata.defaultCryptoType
+            selectedCryptoType = selectedCryptoType ?? metadata?.defaultCryptoType
         }
 
         view?.setSource(type: selectedSourceType)
@@ -64,7 +59,8 @@ class BaseAccountImportPresenter {
         case .mnemonic, .seed:
             view?.setShouldShowAdvancedSettings(true)
         case .keystore:
-            view?.setShouldShowAdvancedSettings(false)
+            let shouldShowReadonlySettings = preferredInfo != nil
+            view?.setShouldShowAdvancedSettings(shouldShowReadonlySettings)
         }
     }
 
@@ -243,12 +239,21 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
             return
         }
 
-        wireframe.showAdvancedSettings(
-            from: view,
-            secretSource: selectedSourceType,
-            settings: settings,
-            delegate: self
-        )
+        switch selectedSourceType {
+        case .mnemonic, .seed:
+            wireframe.showModifiableAdvancedSettings(
+                from: view,
+                secretSource: selectedSourceType,
+                settings: settings,
+                delegate: self
+            )
+        case .keystore:
+            wireframe.showReadonlyAdvancedSettings(
+                from: view,
+                secretSource: selectedSourceType,
+                settings: settings
+            )
+        }
     }
 
     func proceed() {
@@ -259,8 +264,6 @@ extension BaseAccountImportPresenter: AccountImportPresenterProtocol {
 extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
     func didReceiveAccountImport(metadata: MetaAccountImportMetadata) {
         self.metadata = metadata
-
-        selectedSubstrateCryptoType = metadata.defaultCryptoType
 
         applySourceType()
     }
@@ -285,6 +288,7 @@ extension BaseAccountImportPresenter: AccountImportInteractorOutputProtocol {
 
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?) {
         selectedSourceType = .keystore
+
         applySourceType(text, preferredInfo: preferredInfo)
     }
 }
@@ -293,12 +297,12 @@ extension BaseAccountImportPresenter: AdvancedWalletSettingsDelegate {
     func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings) {
         switch walletSettings {
         case let .substrate(settings):
-            selectedSubstrateCryptoType = settings.selectedCryptoType
+            selectedCryptoType = settings.selectedCryptoType
             substrateDerivationPath = settings.derivationPath
         case let .ethereum(derivationPath):
             ethereumDerivationPath = derivationPath
         case let .combined(substrateSettings, ethereumDerivationPath):
-            selectedSubstrateCryptoType = substrateSettings.selectedCryptoType
+            selectedCryptoType = substrateSettings.selectedCryptoType
             substrateDerivationPath = substrateSettings.derivationPath
             self.ethereumDerivationPath = ethereumDerivationPath
         }

@@ -64,21 +64,19 @@ final class AccountExportPasswordViewController: UIViewController, ImportantView
     }
 
     private func setupLocalization() {
-        let locale = selectedLocale
-
         rootView.titleLabel.text = R.string.localizable.exportPasswordTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
 
         rootView.subtitleLabel.text = R.string.localizable.accountExportJsonHint(
-            preferredLanguages: locale.rLanguages
+            preferredLanguages: selectedLocale.rLanguages
         )
 
         rootView.setPasswordView.title = R.string.localizable
-            .commonSetPassword(preferredLanguages: locale.rLanguages)
+            .commonSetPassword(preferredLanguages: selectedLocale.rLanguages)
 
         rootView.confirmPasswordView.title = R.string.localizable
-            .commonConfirmPassword(preferredLanguages: locale.rLanguages)
+            .commonConfirmPassword(preferredLanguages: selectedLocale.rLanguages)
 
         updateNextButton()
     }
