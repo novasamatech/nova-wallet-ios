@@ -51,12 +51,21 @@ protocol AccountImportInteractorOutputProtocol: AnyObject {
     func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)
 }
 
-protocol AccountImportWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func proceed(from view: AccountImportViewProtocol?)
-    func showAdvancedSettings(
+protocol BaseAccountImportWireframeProtocol {
+    func showModifiableAdvancedSettings(
         from view: AccountImportViewProtocol?,
         secretSource: SecretSource,
         settings: AdvancedWalletSettings,
         delegate: AdvancedWalletSettingsDelegate
     )
+
+    func showReadonlyAdvancedSettings(
+        from view: AccountImportViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings
+    )
+}
+
+protocol AccountImportWireframeProtocol: BaseAccountImportWireframeProtocol, AlertPresentable, ErrorPresentable {
+    func proceed(from view: AccountImportViewProtocol?)
 }
