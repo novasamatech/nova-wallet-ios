@@ -4056,6 +4056,127 @@ import SoraFoundation
 
 
 
+ class MockBaseAccountImportWireframeProtocol: BaseAccountImportWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = BaseAccountImportWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_BaseAccountImportWireframeProtocol
+     typealias Verification = __VerificationProxy_BaseAccountImportWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: BaseAccountImportWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: BaseAccountImportWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)  {
+        
+    return cuckoo_manager.call("showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)",
+            parameters: (view, secretSource, settings, delegate),
+            escapingParameters: (view, secretSource, settings, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showModifiableAdvancedSettings(from: view, secretSource: secretSource, settings: settings, delegate: delegate))
+        
+    }
+    
+    
+    
+     func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)  {
+        
+    return cuckoo_manager.call("showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)",
+            parameters: (view, secretSource, settings),
+            escapingParameters: (view, secretSource, settings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showReadonlyAdvancedSettings(from: view, secretSource: secretSource, settings: settings))
+        
+    }
+    
+
+	 struct __StubbingProxy_BaseAccountImportWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func showModifiableAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockBaseAccountImportWireframeProtocol.self, method: "showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func showReadonlyAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockBaseAccountImportWireframeProtocol.self, method: "showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_BaseAccountImportWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func showModifiableAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.__DoNotUse<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate), Void> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return cuckoo_manager.verify("showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showReadonlyAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.__DoNotUse<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings), Void> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return cuckoo_manager.verify("showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class BaseAccountImportWireframeProtocolStub: BaseAccountImportWireframeProtocol {
+    
+
+    
+
+    
+     func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
  class MockAccountImportWireframeProtocol: AccountImportWireframeProtocol, Cuckoo.ProtocolMock {
     
      typealias MocksType = AccountImportWireframeProtocol
@@ -4096,16 +4217,31 @@ import SoraFoundation
     
     
     
-     func showAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)  {
+     func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)  {
         
-    return cuckoo_manager.call("showAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)",
+    return cuckoo_manager.call("showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)",
             parameters: (view, secretSource, settings, delegate),
             escapingParameters: (view, secretSource, settings, delegate),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showAdvancedSettings(from: view, secretSource: secretSource, settings: settings, delegate: delegate))
+            defaultCall: __defaultImplStub!.showModifiableAdvancedSettings(from: view, secretSource: secretSource, settings: settings, delegate: delegate))
+        
+    }
+    
+    
+    
+     func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)  {
+        
+    return cuckoo_manager.call("showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)",
+            parameters: (view, secretSource, settings),
+            escapingParameters: (view, secretSource, settings),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showReadonlyAdvancedSettings(from: view, secretSource: secretSource, settings: settings))
         
     }
     
@@ -4153,9 +4289,14 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportWireframeProtocol.self, method: "proceed(from: AccountImportViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
+	    func showModifiableAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportWireframeProtocol.self, method: "showAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", parameterMatchers: matchers))
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportWireframeProtocol.self, method: "showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func showReadonlyAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountImportWireframeProtocol.self, method: "showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -4191,9 +4332,15 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func showAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.__DoNotUse<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate), Void> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
+	    func showModifiableAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3, delegate: M4) -> Cuckoo.__DoNotUse<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate), Void> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings, M4.MatchedType == AdvancedWalletSettingsDelegate {
 	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings, AdvancedWalletSettingsDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
-	        return cuckoo_manager.verify("showAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	        return cuckoo_manager.verify("showModifiableAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showReadonlyAdvancedSettings<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, secretSource: M2, settings: M3) -> Cuckoo.__DoNotUse<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings), Void> where M1.OptionalMatchedType == AccountImportViewProtocol, M2.MatchedType == SecretSource, M3.MatchedType == AdvancedWalletSettings {
+	        let matchers: [Cuckoo.ParameterMatcher<(AccountImportViewProtocol?, SecretSource, AdvancedWalletSettings)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: secretSource) { $0.1 }, wrap(matchable: settings) { $0.2 }]
+	        return cuckoo_manager.verify("showReadonlyAdvancedSettings(from: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -4221,7 +4368,11 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func showAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
+     func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

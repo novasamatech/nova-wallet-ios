@@ -221,10 +221,8 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
                 cryptoType: request.cryptoType
             )
 
-            let ethereumDerivationPath = request.ethereumDerivationPath ?? DerivationPathConstants.defaultEthereum
-
             let ethereumJunctionResult = try getJunctionResult(
-                from: ethereumDerivationPath,
+                from: request.ethereumDerivationPath,
                 ethereumBased: true
             )
 
@@ -254,7 +252,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
             try saveSeed(seedResult.seed.miniSeed, metaId: metaId, ethereumBased: false)
 
             try saveSecretKey(ethereumSecretKey, metaId: metaId, ethereumBased: true)
-            try saveDerivationPath(ethereumDerivationPath, metaId: metaId, ethereumBased: true)
+            try saveDerivationPath(request.ethereumDerivationPath, metaId: metaId, ethereumBased: true)
             try saveSeed(ethereumSeedResult.seed, metaId: metaId, ethereumBased: true)
 
             try saveEntropy(mnemonic.entropy(), metaId: metaId)
@@ -396,7 +394,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
             )
 
             try saveSeed(seed, metaId: metaId, accountId: accountId, ethereumBased: ethereumBased)
-            try saveEntropy(seedResult.mnemonic.entropy(), metaId: metaId)
+            try saveEntropy(seedResult.mnemonic.entropy(), metaId: metaId, accountId: accountId)
 
             let chainAccount = ChainAccountModel(
                 chainId: chainId,
