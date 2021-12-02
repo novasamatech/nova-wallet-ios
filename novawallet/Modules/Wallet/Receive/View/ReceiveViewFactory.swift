@@ -5,8 +5,9 @@ import SubstrateSdk
 import SoraKeystore
 
 final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
-    let accountViewModel: ReceiveAccountViewModelProtocol
-    let chainFormat: ChainFormat
+    let accountId: AccountId
+    let chain: ChainModel
+    let assetInfo: AssetBalanceDisplayInfo
     let explorers: [ChainModel.Explorer]?
     let localizationManager: LocalizationManagerProtocol
 
@@ -15,37 +16,35 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     init(
-        accountViewModel: ReceiveAccountViewModelProtocol,
-        chainFormat: ChainFormat,
+        accountId: AccountId,
+        chain: ChainModel,
+        assetInfo: AssetBalanceDisplayInfo,
         explorers: [ChainModel.Explorer]?,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.accountViewModel = accountViewModel
-        self.chainFormat = chainFormat
+        self.accountId = accountId
+        self.chain = chain
+        self.assetInfo = assetInfo
         self.explorers = explorers
         self.localizationManager = localizationManager
     }
 
     func createHeaderView() -> UIView? {
-        let address = accountViewModel.address
-        guard let accountId = try? address.toAccountId(using: chainFormat) else {
+        guard
+            let accountIcon = try? PolkadotIconGenerator().generateFromAccountId(accountId),
+            let address = try? accountId.toAddress(using: chain.chainFormat) else {
             return nil
         }
 
-        let username = accountViewModel.displayName
+        let accountViewModel = ChainAccountViewModel(
+            networkName: chain.name,
+            address: address,
+            accountIcon: accountIcon,
+            networkIconViewModel: RemoteImageViewModel(url: assetInfo.icon ?? chain.icon)
+        )
 
-        let icon = try? iconGenerator.generateFromAccountId(accountId)
-            .imageWithFillColor(
-                R.color.colorWhite()!,
-                size: CGSize(width: 32.0, height: 32.0),
-                contentScale: UIScreen.main.scale
-            )
-
-        let receiveView = R.nib.receiveHeaderView(owner: nil)
-        receiveView?.accountView.title = username
-        receiveView?.accountView.subtitle = address
-        receiveView?.accountView.iconImage = icon
-        receiveView?.accountView.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
+        let receiveView = ReceiveHeaderView()
+        receiveView.accountControl.chainAccountView.bind(viewModel: accountViewModel)
 
         let locale = localizationManager.selectedLocale
 
@@ -56,12 +55,14 @@ final class ReceiveViewFactory: ReceiveViewFactoryProtocol {
                 commandFactory: commandFactory,
                 locale: locale
             )
-            receiveView?.actionCommand = command
+            receiveView.actionCommand = command
         }
 
-        let infoTitle = R.string.localizable
-            .walletReceiveDescription(preferredLanguages: locale.rLanguages)
-        receiveView?.infoLabel.text = infoTitle
+        let infoTitle = R.string.localizable.walletReceiveDescription_v2_2_0(
+            preferredLanguages: locale.rLanguages
+        )
+
+        receiveView.infoLabel.text = infoTitle
 
         return receiveView
     }
