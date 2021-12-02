@@ -48,13 +48,15 @@ final class ReceiveConfigurator: AdaptiveDesignable {
     }
 
     func configure(builder: ReceiveAmountModuleBuilderProtocol) {
-        let margin: CGFloat = 24.0
+        let margin: CGFloat = 36.0
         let qrSize: CGFloat = 280.0 * designScaleRatio.width + 2.0 * margin
         let style = ReceiveStyle(
             qrBackgroundColor: .clear,
             qrMode: .scaleAspectFit,
             qrSize: CGSize(width: qrSize, height: qrSize),
-            qrMargin: margin
+            qrMargin: margin,
+            qrBorderWidth: 4.0,
+            qrBorderRadius: 12.0
         )
 
         let symbol = assetInfo.symbol.uppercased()
