@@ -15,4 +15,11 @@ extension RoundedView {
         fillColor = .clear
         highlightedFillColor = .clear
     }
+
+    func applyControlBackgroundStyle() {
+        strokeColor = R.color.colorTransparentText()!
+        highlightedStrokeColor = .clear
+        fillColor = .clear
+        highlightedFillColor = R.color.colorAccentSelected()!
+    }
 }
