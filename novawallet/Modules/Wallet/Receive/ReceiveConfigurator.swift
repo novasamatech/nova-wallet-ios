@@ -43,6 +43,8 @@ final class ReceiveConfigurator: AdaptiveDesignable {
             assetInfo: assetInfo,
             localizationManager: localizationManager
         )
+
+        receiveFactory.designScaleRatio = designScaleRatio
     }
 
     func configure(builder: ReceiveAmountModuleBuilderProtocol) {
