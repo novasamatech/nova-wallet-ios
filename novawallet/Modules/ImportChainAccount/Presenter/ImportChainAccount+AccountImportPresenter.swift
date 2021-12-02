@@ -22,9 +22,26 @@ extension ImportChainAccount {
 
         private func proceedWithSubstrate() {
             guard
-                let selectedCryptoType = selectedSubstrateCryptoType,
+                let selectedCryptoType = selectedCryptoType,
                 let sourceViewModel = sourceViewModel
             else {
+                return
+            }
+
+            guard selectedCryptoType != .ethereumEcdsa else {
+                // we don't support ethereum crypto for substrate accounts
+
+                wireframe.present(
+                    message: R.string.localizable.importJsonUnsupportedSubstrateCryptoMessage(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    title: R.string.localizable.commonErrorGeneralTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                    from: view
+                )
+
                 return
             }
 
@@ -86,7 +103,26 @@ extension ImportChainAccount {
         }
 
         private func proceedWithEthereum() {
-            guard let sourceViewModel = sourceViewModel else {
+            guard
+                let selectedCryptoType = selectedCryptoType,
+                let sourceViewModel = sourceViewModel else {
+                return
+            }
+
+            guard selectedCryptoType == .ethereumEcdsa else {
+                // we don't support substrate crypto for ethereum wallets
+
+                wireframe.present(
+                    message: R.string.localizable.importJsonUnsupportedEthereumCryptoMessage(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    title: R.string.localizable.commonErrorGeneralTitle(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                    from: view
+                )
+
                 return
             }
 
@@ -99,8 +135,6 @@ extension ImportChainAccount {
                 return
             }
 
-            let cryptoType: MultiassetCryptoType = .ethereumEcdsa
-
             let ethereumDerivationPath = self.ethereumDerivationPath ?? ""
 
             switch selectedSourceType {
@@ -109,7 +143,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportMnemonicRequest(
                     mnemonic: mnemonic,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: cryptoType
+                    cryptoType: selectedCryptoType
                 )
 
                 interactor.importAccountWithMnemonic(
@@ -123,7 +157,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportSeedRequest(
                     seed: seed,
                     derivationPath: ethereumDerivationPath,
-                    cryptoType: cryptoType
+                    cryptoType: selectedCryptoType
                 )
 
                 interactor.importAccountWithSeed(
@@ -138,7 +172,7 @@ extension ImportChainAccount {
                 let request = ChainAccountImportKeystoreRequest(
                     keystore: keystore,
                     password: password,
-                    cryptoType: cryptoType
+                    cryptoType: selectedCryptoType
                 )
 
                 interactor.importAccountWithKeystore(
@@ -182,7 +216,7 @@ extension ImportChainAccount {
 
                 let substrateSettings = AdvancedNetworkTypeSettings(
                     availableCryptoTypes: metadata.availableCryptoTypes,
-                    selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+                    selectedCryptoType: selectedCryptoType ?? metadata.defaultCryptoType,
                     derivationPath: substrateDerivationPath
                 )
 
