@@ -1,8 +1,9 @@
 import Foundation
 import CommonWallet
 import UIKit
+import SoraUI
 
-final class ReceiveHeaderView: UIView {
+final class ReceiveHeaderView: UIView, AdaptiveDesignable {
     let accountControl = ChainAccountControl()
 
     let infoLabel: UILabel = {
@@ -17,7 +18,7 @@ final class ReceiveHeaderView: UIView {
     var actionCommand: WalletCommandProtocol?
 
     override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 132.0)
+        CGSize(width: UIView.noIntrinsicMetric, height: 86 + 46 * designScaleRatio.width)
     }
 
     override init(frame: CGRect) {
@@ -45,7 +46,7 @@ final class ReceiveHeaderView: UIView {
 
         addSubview(infoLabel)
         infoLabel.snp.makeConstraints { make in
-            make.top.equalTo(accountControl.snp.bottom).offset(46.0)
+            make.top.equalTo(accountControl.snp.bottom).offset(46.0 * designScaleRatio.width)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
     }
