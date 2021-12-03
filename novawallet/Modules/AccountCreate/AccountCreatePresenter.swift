@@ -1,53 +1,44 @@
-import UIKit
-import IrohaCrypto
 import SoraFoundation
-
 final class AccountCreatePresenter: BaseAccountCreatePresenter {
-    let usernameSetup: UsernameSetupModel
+    let walletName: String
 
-    init(usernameSetup: UsernameSetupModel) {
-        self.usernameSetup = usernameSetup
+    init(
+        walletName: String,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.walletName = walletName
+        super.init(localizationManager: localizationManager)
     }
 
     override func processProceed() {
-        guard
-            let cryptoType = selectedSubstrateCryptoType,
-            let substrateViewModel = substrateDerivationPathViewModel,
-            let ethereumViewModel = ethereumDerivationPathViewModel,
-            let metadata = metadata
-        else {
-            return
-        }
-
-        var derivationPathCheckError = false
-        if !substrateViewModel.inputHandler.completed {
-            derivationPathCheckError = true
-            view?.didValidateSubstrateDerivationPath(.invalid)
-            presentDerivationPathError(cryptoType)
-        }
-
-        if !ethereumViewModel.inputHandler.completed {
-            view?.didValidateEthereumDerivationPath(.invalid)
-            if !derivationPathCheckError {
-                presentDerivationPathError(.ethereumEcdsa)
-                derivationPathCheckError = true
-            }
-        }
-
-        guard !derivationPathCheckError else { return }
-
-        let substrateDerivationPath = substrateViewModel.inputHandler.value
-
-        let ethereumDerivationPath = ethereumViewModel.inputHandler.value.isEmpty ?
-            DerivationPathConstants.defaultEthereum : ethereumViewModel.inputHandler.value
+        guard let metadata = metadata,
+              let substrateCryptoType = selectedSubstrateCryptoType
+        else { return }
 
         let request = MetaAccountCreationRequest(
-            username: usernameSetup.username,
+            username: walletName,
             derivationPath: substrateDerivationPath,
             ethereumDerivationPath: ethereumDerivationPath,
-            cryptoType: cryptoType
+            cryptoType: substrateCryptoType
         )
 
         wireframe.confirm(from: view, request: request, metadata: metadata)
+    }
+
+    override func getAdvancedSettings() -> AdvancedWalletSettings? {
+        guard let metadata = metadata else {
+            return nil
+        }
+
+        let substrateSettings = AdvancedNetworkTypeSettings(
+            availableCryptoTypes: metadata.availableCryptoTypes,
+            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+            derivationPath: substrateDerivationPath
+        )
+
+        return .combined(
+            substrateSettings: substrateSettings,
+            ethereumDerivationPath: ethereumDerivationPath
+        )
     }
 }

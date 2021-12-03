@@ -17,27 +17,4 @@ final class AccountCreateWireframe: AccountCreateWireframeProtocol {
             navigationController.pushViewController(accountConfirmation, animated: true)
         }
     }
-
-    func presentCryptoTypeSelection(
-        from view: AccountCreateViewProtocol?,
-        availableTypes: [MultiassetCryptoType],
-        selectedType: MultiassetCryptoType,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) {
-        guard let modalPicker = ModalPickerFactory.createPickerForList(
-            availableTypes,
-            selectedType: selectedType,
-            delegate: delegate,
-            context: context
-        ) else {
-            return
-        }
-
-        view?.controller.navigationController?.present(
-            modalPicker,
-            animated: true,
-            completion: nil
-        )
-    }
 }
