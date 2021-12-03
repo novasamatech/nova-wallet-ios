@@ -44,18 +44,7 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        if keyboardHandler == nil {
-            setupKeyboardHandler()
-        }
-
         rootView.nameField.textField.becomeFirstResponder()
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        clearKeyboardHandler()
     }
 
     // MARK: - Setup functions
@@ -157,6 +146,7 @@ extension UserNameSetupViewController: AnimatedTextFieldDelegate {
 
     func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
         textField.resignFirstResponder()
+        presenter.proceed()
         return false
     }
 }
@@ -178,16 +168,5 @@ extension UserNameSetupViewController: Localizable {
             setupLocalization()
             view.setNeedsLayout()
         }
-    }
-}
-
-// MARK: - KeyboardAdoptable
-
-extension UserNameSetupViewController: KeyboardAdoptable {
-    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
-        let localKeyboardFrame = view.convert(frame, from: nil)
-        let bottomInset = view.bounds.height - localKeyboardFrame.minY
-
-        rootView.updateOnKeyboardBottomInsetChange(bottomInset)
     }
 }

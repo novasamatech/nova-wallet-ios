@@ -48,6 +48,7 @@ final class UsernameSetupViewLayout: UIView {
         textField.placeholderColor = R.color.colorLightGray()!
         textField.textColor = R.color.colorWhite()
         textField.cursorColor = R.color.colorWhite()!
+        textField.textField.enablesReturnKeyAutomatically = true
         return textField
     }()
 
@@ -106,22 +107,5 @@ final class UsernameSetupViewLayout: UIView {
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
-    }
-
-    func updateOnKeyboardBottomInsetChange(_ bottomInset: CGFloat) {
-        proceedButton.snp.remakeConstraints { make in
-            let newBottomInset = UIConstants.actionBottomInset + bottomInset
-
-            if bottomInset == 0 {
-                make.bottom.equalTo(safeAreaLayoutGuide).inset(newBottomInset)
-            } else {
-                make.bottom.equalToSuperview().inset(newBottomInset)
-            }
-
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        containerView.setNeedsLayout()
     }
 }
