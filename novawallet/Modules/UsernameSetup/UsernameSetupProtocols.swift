@@ -16,7 +16,7 @@ protocol UsernameSetupInteractorInputProtocol: AnyObject {
 protocol UsernameSetupInteractorOutputProtocol: AnyObject {}
 
 protocol UsernameSetupWireframeProtocol: AlertPresentable, NetworkTypeSelectionPresentable {
-    func proceed(from view: UsernameSetupViewProtocol?, model: UsernameSetupModel)
+    func proceed(from view: UsernameSetupViewProtocol?, walletName: String)
 }
 
 protocol UsernameSetupViewFactoryProtocol: AnyObject {

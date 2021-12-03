@@ -3,21 +3,13 @@ import SoraFoundation
 
 protocol AccountCreateViewProtocol: ControllerBackedProtocol {
     func set(mnemonic: [String])
-    func setSelectedSubstrateCrypto(model: TitleWithSubtitleViewModel)
-    func setSelectedEthereumCrypto(model: TitleWithSubtitleViewModel)
-    func setSubstrateDerivationPath(viewModel: InputViewModelProtocol?)
-    func setEthereumDerivationPath(viewModel: InputViewModelProtocol?)
-
-    func didCompleteCryptoTypeSelection()
-    func didValidateSubstrateDerivationPath(_ status: FieldStatus)
-    func didValidateEthereumDerivationPath(_ status: FieldStatus)
+    func displayMnemonic()
 }
 
 protocol AccountCreatePresenterProtocol: AnyObject {
     func setup()
-    func selectCryptoType()
-    func activateInfo()
-    func validate()
+    func activateAdvanced()
+    func prepareToDisplayMnemonic()
     func proceed()
 }
 
@@ -31,18 +23,17 @@ protocol AccountCreateInteractorOutputProtocol: AnyObject {
 }
 
 protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showAdvancedSettings(
+        from view: AccountCreateViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
+    )
+
     func confirm(
         from view: AccountCreateViewProtocol?,
         request: MetaAccountCreationRequest,
         metadata: MetaAccountCreationMetadata
-    )
-
-    func presentCryptoTypeSelection(
-        from view: AccountCreateViewProtocol?,
-        availableTypes: [MultiassetCryptoType],
-        selectedType: MultiassetCryptoType,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
     )
 
     func confirm(
@@ -51,9 +42,30 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id
     )
+
+    func cancelFlow(from view: AccountCreateViewProtocol?)
 }
 
 extension AccountCreateWireframeProtocol {
+    func showAdvancedSettings(
+        from view: AccountCreateViewProtocol?,
+        secretSource: SecretSource,
+        settings: AdvancedWalletSettings,
+        delegate: AdvancedWalletSettingsDelegate
+    ) {
+        guard let advancedView = AdvancedWalletViewFactory.createView(
+            for: secretSource,
+            advancedSettings: settings,
+            delegate: delegate
+        ) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: advancedView.controller)
+
+        view?.controller.present(navigationController, animated: true)
+    }
+
     func confirm(
         from _: AccountCreateViewProtocol?,
         request _: MetaAccountCreationRequest,
@@ -66,12 +78,17 @@ extension AccountCreateWireframeProtocol {
         metaAccountModel _: MetaAccountModel,
         chainModelId _: ChainModel.Id
     ) {}
+
+    func cancelFlow(from view: AccountCreateViewProtocol?) {
+        guard let view = view else { return }
+        view.controller.navigationController?.popViewController(animated: true)
+    }
 }
 
 protocol AccountCreateViewFactoryProtocol: AnyObject {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol?
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol?
+    static func createViewForOnboarding(walletName: String) -> AccountCreateViewProtocol?
+    static func createViewForAdding(walletName: String) -> AccountCreateViewProtocol?
+    static func createViewForSwitch(walletName: String) -> AccountCreateViewProtocol?
 
     static func createViewForReplaceChainAccount(
         metaAccountModel: MetaAccountModel,

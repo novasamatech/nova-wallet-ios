@@ -1,8 +1,9 @@
+import Foundation
 import UIKit
-import SnapKit
 import SoraUI
+import Starscream
 
-final class UsernameSetupViewLayout: UIView {
+final class AccountCreateViewLayout: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .h2Title
@@ -27,29 +28,22 @@ final class UsernameSetupViewLayout: UIView {
         return label
     }()
 
-    let containerView: TriangularedView = {
-        let view = TriangularedView()
-        view.sideLength = 10.0
-        view.fillColor = .clear
-        view.highlightedFillColor = .clear
-        view.strokeColor = R.color.colorGray()!
-        view.highlightedStrokeColor = R.color.colorGray()!
-        view.strokeWidth = 1.0
-        return view
+    let mnemonicBackroundView: RoundedView = UIFactory.default.createRoundedBackgroundView(filled: true)
+
+    let mnemonicFieldTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .p2Paragraph
+        label.textColor = R.color.colorLightGray()
+        return label
     }()
 
-    let nameField: AnimatedTextField = {
-        let textField = AnimatedTextField()
-        textField.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 6.0, right: 16.0)
-        textField.titleFont = .p2Paragraph
-        textField.placeholderFont = .p1Paragraph
-        textField.textFont = .p1Paragraph
-        textField.titleColor = R.color.colorLightGray()!
-        textField.placeholderColor = R.color.colorLightGray()!
-        textField.textColor = R.color.colorWhite()
-        textField.cursorColor = R.color.colorWhite()!
-        textField.textField.enablesReturnKeyAutomatically = true
-        return textField
+    let mnemonicFieldContentLabel: UILabel = {
+        let label = UILabel()
+        label.font = .p1Paragraph
+        label.textColor = .clear
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
     }()
 
     let proceedButton: TriangularedButton = {
@@ -83,22 +77,30 @@ final class UsernameSetupViewLayout: UIView {
             make.top.equalTo(titleLabel.snp.bottom).offset(12.0)
         }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
+        addSubview(mnemonicBackroundView)
+        mnemonicBackroundView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
-            make.height.equalTo(UIConstants.triangularedViewHeight)
+            make.top.equalTo(subtitleLabel.snp.bottom).offset(20.0)
+            make.height.greaterThanOrEqualTo(UIConstants.triangularedViewHeight)
         }
 
-        containerView.addSubview(nameField)
-        nameField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        addSubview(mnemonicFieldTitleLabel)
+        mnemonicFieldTitleLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(mnemonicBackroundView).inset(UIConstants.horizontalInset)
+            make.top.equalTo(mnemonicBackroundView.snp.top).offset(UIConstants.verticalTitleInset)
+        }
+
+        addSubview(mnemonicFieldContentLabel)
+        mnemonicFieldContentLabel.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(mnemonicBackroundView).inset(UIConstants.horizontalInset)
+            make.top.equalTo(mnemonicFieldTitleLabel.snp.bottom).offset(1.0)
+            make.bottom.equalTo(mnemonicBackroundView.snp.bottom).inset(12.0)
         }
 
         addSubview(captionLabel)
         captionLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(nameField.snp.bottom).offset(12.0)
+            make.top.equalTo(mnemonicBackroundView.snp.bottom).offset(12.0)
         }
 
         addSubview(proceedButton)
