@@ -48,6 +48,7 @@ final class UsernameSetupViewLayout: UIView {
         textField.placeholderColor = R.color.colorLightGray()!
         textField.textColor = R.color.colorWhite()
         textField.cursorColor = R.color.colorWhite()!
+        textField.textField.enablesReturnKeyAutomatically = true
         return textField
     }()
 

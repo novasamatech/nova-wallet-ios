@@ -4,7 +4,7 @@ final class ValidatorListFilterSortCell: UITableViewCell {
     let selectionImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = R.color.colorWhite()
-        imageView.image = R.image.listCheckmarkIcon()
+        imageView.image = R.image.iconCheckmark()
         return imageView
     }()
 

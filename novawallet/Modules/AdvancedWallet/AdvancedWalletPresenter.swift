@@ -254,12 +254,12 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
     }
 
     func selectEthereumCryptoType() {
-        // current the model support only single crypto type for eth but view already supports selected
+        // the current model supports only single crypto type for eth but view already supports selected
     }
 
     func apply() {
         if validate() {
-            let maybeNewSettings: AdvancedWalletSettings?
+            let newSettings: AdvancedWalletSettings
 
             switch settings {
             case let .substrate(settings):
@@ -269,9 +269,13 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
                     derivationPath: substrateDerivationPathViewModel?.inputHandler.value
                 )
 
-                maybeNewSettings = .substrate(settings: newNetworkSettings)
-            case .ethereum:
-                maybeNewSettings = nil
+                newSettings = .substrate(settings: newNetworkSettings)
+
+            case let .ethereum(ethereumDerivationPath):
+                let derivationPath = ethereumDerivationPathViewModel?.inputHandler.value ??
+                    ethereumDerivationPath
+                newSettings = .ethereum(derivationPath: derivationPath)
+
             case let .combined(substrateSettings, ethereumDerivationPath):
                 let newSubstrateSettings = AdvancedNetworkTypeSettings(
                     availableCryptoTypes: substrateSettings.availableCryptoTypes,
@@ -279,16 +283,14 @@ extension AdvancedWalletPresenter: AdvancedWalletPresenterProtocol {
                     derivationPath: substrateDerivationPathViewModel?.inputHandler.value
                 )
 
-                maybeNewSettings = .combined(
+                newSettings = .combined(
                     substrateSettings: newSubstrateSettings,
                     ethereumDerivationPath: ethereumDerivationPathViewModel?.inputHandler.value ??
                         ethereumDerivationPath
                 )
             }
 
-            if let newSettings = maybeNewSettings {
-                delegate?.didReceiveNewAdvanced(walletSettings: newSettings)
-            }
+            delegate?.didReceiveNewAdvanced(walletSettings: newSettings)
 
             wireframe.complete(from: view)
         }

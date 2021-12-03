@@ -9,7 +9,8 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
     let presenter: UsernameSetupPresenterProtocol
 
     private var viewModel: InputViewModelProtocol?
-    private var isFirstLayoutCompleted: Bool = false
+
+    var keyboardHandler: KeyboardHandler?
 
     // MARK: - Lifecycle
 
@@ -77,10 +78,21 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
         let isEnabled = viewModel.inputHandler.completed
         rootView.proceedButton.set(enabled: isEnabled)
+        _ = isEnabled ? setActionButtonEnabledTitle() : setActionButtonDisabledTitle()
+    }
+
+    private func setActionButtonEnabledTitle() {
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .commonContinue(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    private func setActionButtonDisabledTitle() {
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
+            .walletCreateButtonTitleDisabled_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
     }
 
     private func setupLocalization() {
-        let languages = localizationManager?.preferredLocalizations
+        let languages = selectedLocale.rLanguages
 
         rootView.titleLabel.text = R.string.localizable.walletNicknameCreateTitle(preferredLanguages: languages)
 
@@ -91,7 +103,7 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
         rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle(preferredLanguages: languages)
 
         rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
-            .commonNext(preferredLanguages: languages)
+            .commonContinue(preferredLanguages: languages)
         rootView.proceedButton.invalidateLayout()
     }
 
@@ -134,6 +146,7 @@ extension UserNameSetupViewController: AnimatedTextFieldDelegate {
 
     func animatedTextFieldShouldReturn(_ textField: AnimatedTextField) -> Bool {
         textField.resignFirstResponder()
+        presenter.proceed()
         return false
     }
 }
