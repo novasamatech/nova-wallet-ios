@@ -144,7 +144,7 @@ final class AdvancedWalletViewController: UIViewController, ViewHolder {
     private func applyCryptoTypeStyle(_ isEnabled: Bool, to actionView: BorderedSubtitleActionView) {
         if isEnabled {
             actionView.applyEnabledStyle()
-            actionView.actionControl.imageIndicator.image = R.image.iconDropDown()
+            actionView.actionControl.imageIndicator.image = R.image.iconSmallArrowDown()
             actionView.isUserInteractionEnabled = true
         } else {
             actionView.applyDisabledStyle()
