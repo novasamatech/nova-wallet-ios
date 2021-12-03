@@ -89,7 +89,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func createWalletController(
         for localizationManager: LocalizationManagerProtocol
     ) -> UIViewController? {
-        guard let view = WalletListViewFactory.createView() else {
+        guard let viewController = WalletListViewFactory.createView()?.controller else {
             return nil
         }
 
@@ -103,13 +103,18 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             .withRenderingMode(.alwaysOriginal)
         let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
             .withRenderingMode(.alwaysOriginal)
-        view.controller.tabBarItem = createTabBarItem(
+        viewController.tabBarItem = createTabBarItem(
             title: currentTitle,
             normalImage: normalIcon,
             selectedImage: selectedIcon
         )
 
-        let navigationController = FearlessNavigationController(rootViewController: view.controller)
+        localizationManager.addObserver(with: viewController) { [weak viewController] _, _ in
+            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+            viewController?.tabBarItem.title = currentTitle
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: viewController)
 
         return navigationController
     }

@@ -566,6 +566,12 @@
 "account.import.ethereum.seed.placeholder_v2_2_0" = "128 hex symbols";
 "account.import.substrate.seed.placeholder_v2_2_0" = "64 hex symbols";
 "common.invalid.path.title_v2_2_0" = "Invalid derivation path";
+"common.invalid.path.with.soft.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
+"common.invalid.path.without.soft.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
+"common.invalid.hard.soft.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
+"common.invalid.hard.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
+"common.invalid.hard.soft.numeric.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
+"common.invalid.hard.soft.numeric.password.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure";
 "wallet.nickname.create.caption_v2_2_0" = "Name examples: Main account, My validator, Dotsama crowdloans, etc.";
 "account.create.details_v2_2_0" = "Do not use clipboard or screenshots on your mobile device, try to find secure methods for backup (e.g. paper)";
 "crowdloan.list.section.format_v2_2_0" = "Choose parachains to contribute your %@. You'll get back your contributed tokens, and if parachain wins a slot, you'll receive rewards after the end of the auction";
@@ -576,6 +582,7 @@
 "common.understand" = "I understand";
 "account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";
 "account.backup.mnemonic.field.title" = "Mnemonic Passphrase";
+"wallet.create.button.title.disabled_v2_2_0" = "Enter a nickname...";
 "export.seed.hint" = "Please, make sure to write down your secret correctly and legibly";
 "export.seed.title" = "Write down your seed and store it in a safe place";
 "export.restore.json.title" = "Save your json and store it in a safe place";
@@ -596,3 +603,6 @@
 "connection.error.message_v2_2_0" = "Please, check your connection or try again later.";
 "common.invalid.derivation.path.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure.";
 "onboarding.terms.and.conditions.1_v2_2_0" = "By continuing, you agree to our \nTerms and Conditions and Privacy Policy";
+"wallet.receive.description_v2_2_0" = "Let sender scan this QR code";
+"wallet.receive.title.format" = "Receive %@";
+"wallet.receive.share.title" = "Share QR code";
