@@ -3,7 +3,7 @@ import UIKit
 final class SelectionIconDetailsTableViewCell: UITableViewCell {
     let checkmarkImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.listCheckmarkIcon()
+        imageView.image = R.image.iconCheckmark()
         imageView.tintColor = R.color.colorWhite()
         return imageView
     }()

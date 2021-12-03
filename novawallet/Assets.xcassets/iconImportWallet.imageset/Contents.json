@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "iconImportWallet.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
