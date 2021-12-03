@@ -35,7 +35,7 @@ final class MainTabBarViewController: UITabBarController {
                 NSAttributedString.Key.font: UIFont.capsTitle
             ]
             let selectedAttributes = [
-                NSAttributedString.Key.foregroundColor: R.color.colorWhite()!,
+                NSAttributedString.Key.foregroundColor: R.color.colorAccent()!,
                 NSAttributedString.Key.font: UIFont.capsTitle
             ]
 

@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnboardingMainViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="OnboardingMainViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="logoView" destination="0Nf-e6-35C" id="tec-Ux-Fnk"/>
                 <outlet property="restoreBottomConstraint" destination="m1H-rG-MTz" id="bI7-l2-gza"/>
@@ -34,7 +34,7 @@
                     <rect key="frame" x="97" y="40.5" width="181" height="345.5"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKh-WT-j8k" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JKh-WT-j8k" customClass="TriangularedButton" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="16" y="442.5" width="343" height="52"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -91,7 +91,7 @@
                         <action selector="actionSignupWithSender:" destination="-1" eventType="touchUpInside" id="TJA-qA-tUz"/>
                     </connections>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bcI-vv-wu7" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bcI-vv-wu7" customClass="TriangularedButton" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="16" y="508.5" width="343" height="52"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -139,7 +139,7 @@
                         <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                             <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconUploadNova"/>
+                        <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconImportWallet"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_layoutType">
                             <integer key="value" value="1"/>
                         </userDefinedRuntimeAttribute>
@@ -192,17 +192,9 @@
             </connections>
         </tapGestureRecognizer>
     </objects>
-    <designables>
-        <designable name="JKh-WT-j8k">
-            <size key="intrinsicContentSize" width="135.5" height="18"/>
-        </designable>
-        <designable name="bcI-vv-wu7">
-            <size key="intrinsicContentSize" width="135" height="18"/>
-        </designable>
-    </designables>
     <resources>
+        <image name="iconImportWallet" width="24" height="24"/>
         <image name="iconPlusFilled" width="16" height="16"/>
-        <image name="iconUploadNova" width="16" height="16"/>
         <image name="logo" width="246" height="345.5"/>
         <image name="novabg-splash" width="375" height="812"/>
         <namedColor name="colorAccent">

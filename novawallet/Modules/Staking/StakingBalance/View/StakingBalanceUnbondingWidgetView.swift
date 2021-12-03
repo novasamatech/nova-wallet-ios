@@ -19,7 +19,7 @@ final class StakingBalanceUnbondingWidgetView: UIView {
 
     let moreButton: UIButton = {
         let button = UIButton()
-        button.setImage(R.image.iconHorMore(), for: .normal)
+        button.setImage(R.image.iconMore(), for: .normal)
         return button
     }()
 

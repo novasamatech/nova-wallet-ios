@@ -198,7 +198,7 @@
                                                 <userDefinedRuntimeAttribute type="color" keyPath="incomeColor">
                                                     <color key="value" name="colorGreen"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="image" keyPath="_selectionIcon" value="listCheckmarkIcon"/>
+                                                <userDefinedRuntimeAttribute type="image" keyPath="_selectionIcon" value="iconCheckmark"/>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_topInset">
                                                     <real key="value" value="8"/>
                                                 </userDefinedRuntimeAttribute>
@@ -283,7 +283,7 @@
                                                 <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                                     <real key="value" value="16"/>
                                                 </userDefinedRuntimeAttribute>
-                                                <userDefinedRuntimeAttribute type="image" keyPath="_selectionIcon" value="listCheckmarkIcon"/>
+                                                <userDefinedRuntimeAttribute type="image" keyPath="_selectionIcon" value="iconCheckmark"/>
                                                 <userDefinedRuntimeAttribute type="boolean" keyPath="_isSelected" value="NO"/>
                                             </userDefinedRuntimeAttributes>
                                             <connections>
@@ -460,9 +460,9 @@
     </objects>
     <resources>
         <image name="iconAboutArrow" width="16" height="16"/>
+        <image name="iconCheckmark" width="24" height="24"/>
         <image name="iconKsmSmallBg" width="24" height="24"/>
         <image name="iconNovaSmall" width="18" height="18"/>
-        <image name="listCheckmarkIcon" width="25" height="25"/>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
