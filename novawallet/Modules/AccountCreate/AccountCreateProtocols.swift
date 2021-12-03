@@ -42,6 +42,8 @@ protocol AccountCreateWireframeProtocol: AlertPresentable, ErrorPresentable {
         metaAccountModel: MetaAccountModel,
         chainModelId: ChainModel.Id
     )
+
+    func cancelFlow(from view: AccountCreateViewProtocol?)
 }
 
 extension AccountCreateWireframeProtocol {
@@ -76,6 +78,11 @@ extension AccountCreateWireframeProtocol {
         metaAccountModel _: MetaAccountModel,
         chainModelId _: ChainModel.Id
     ) {}
+
+    func cancelFlow(from view: AccountCreateViewProtocol?) {
+        guard let view = view else { return }
+        view.controller.navigationController?.popViewController(animated: true)
+    }
 }
 
 protocol AccountCreateViewFactoryProtocol: AnyObject {

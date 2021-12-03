@@ -21,7 +21,7 @@ class BaseAccountCreatePresenter {
             .commonCancel(preferredLanguages: selectedLocale.rLanguages)
 
         let cancelClosure = {
-            self.view?.controller.navigationController?.popViewController(animated: true)
+            self.wireframe.cancelFlow(from: self.view)
             return
         }
 
