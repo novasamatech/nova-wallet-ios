@@ -17,7 +17,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="accountCellId" rowHeight="48" id="O09-rG-pmb" customClass="AccountTableViewCell" customModule="fearless" customModuleProvider="target">
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="accountCellId" rowHeight="48" id="O09-rG-pmb" customClass="AccountTableViewCell" customModule="novawallet" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
             <autoresizingMask key="autoresizingMask"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="O09-rG-pmb" id="n0Q-Qn-c6Q">
@@ -103,7 +103,7 @@
                                 </subviews>
                             </stackView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tC2-y9-sqp" customClass="RoundedButton" customModule="SoraUI">
-                                <rect key="frame" x="342" y="12" width="40" height="24"/>
+                                <rect key="frame" x="342" y="0.0" width="40" height="48"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="1YJ-bu-IIL"/>
@@ -164,11 +164,6 @@
             <point key="canvasLocation" x="139" y="133"/>
         </tableViewCell>
     </objects>
-    <designables>
-        <designable name="tC2-y9-sqp">
-            <size key="intrinsicContentSize" width="32" height="24"/>
-        </designable>
-    </designables>
     <resources>
         <image name="iconHorMore" width="24" height="24"/>
         <image name="iconKsmAsset" width="48" height="48"/>

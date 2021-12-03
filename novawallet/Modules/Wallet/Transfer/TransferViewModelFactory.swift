@@ -77,8 +77,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         _: TransferInputState,
         payload: TransferPayload,
         locale: Locale
-    ) throws
-        -> MultilineTitleIconViewModelProtocol? {
+    ) throws -> MultilineTitleIconViewModelProtocol? {
         guard let commandFactory = commandFactory else { return nil }
 
         let header = R.string.localizable
@@ -86,19 +85,19 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let icon: UIImage?
 
-        if let accountId = try? payload.receiverName.toAccountId() {
-            let iconGenerator = PolkadotIconGenerator()
-            icon = try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
-        } else {
-            icon = nil
-        }
+        let accountId = try Data(hexString: payload.receiveInfo.accountId)
+
+        let iconGenerator = PolkadotIconGenerator()
+        icon = try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
+            R.color.colorWhite()!,
+            size: UIConstants.smallAddressIconSize,
+            contentScale: UIScreen.main.scale
+        )
+
+        let address = try accountId.toAddress(using: chainAsset.chain.chainFormat)
 
         let command = WalletAccountOpenCommand(
-            address: payload.receiverName,
+            address: address,
             explorers: explorers,
             commandFactory: commandFactory,
             locale: locale
@@ -106,7 +105,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let viewModel = WalletCompoundDetailsViewModel(
             title: header,
-            details: payload.receiverName,
+            details: address,
             mainIcon: icon,
             actionIcon: R.image.iconMore(),
             command: command,
