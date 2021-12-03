@@ -4,10 +4,27 @@ import SoraFoundation
 final class AccountImportPresenter: BaseAccountImportPresenter {
     override func processProceed() {
         guard
-            let selectedCryptoType = selectedSubstrateCryptoType,
+            let selectedCryptoType = selectedCryptoType,
             let sourceViewModel = sourceViewModel,
             let usernameViewModel = usernameViewModel
         else {
+            return
+        }
+
+        guard selectedCryptoType != .ethereumEcdsa else {
+            // we don't support ethereum crypto for wallets
+
+            wireframe.present(
+                message: R.string.localizable.importJsonUnsupportedSubstrateCryptoMessage(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                title: R.string.localizable.commonErrorGeneralTitle(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                from: view
+            )
+
             return
         }
 
@@ -73,13 +90,18 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
 
         let substrateSettings = AdvancedNetworkTypeSettings(
             availableCryptoTypes: metadata.availableCryptoTypes,
-            selectedCryptoType: selectedSubstrateCryptoType ?? metadata.defaultCryptoType,
+            selectedCryptoType: selectedCryptoType ?? metadata.defaultCryptoType,
             derivationPath: substrateDerivationPath
         )
 
-        return .combined(
-            substrateSettings: substrateSettings,
-            ethereumDerivationPath: ethereumDerivationPath
-        )
+        switch selectedSourceType {
+        case .mnemonic:
+            return .combined(
+                substrateSettings: substrateSettings,
+                ethereumDerivationPath: ethereumDerivationPath
+            )
+        case .seed, .keystore:
+            return .substrate(settings: substrateSettings)
+        }
     }
 }
