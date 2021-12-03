@@ -74,29 +74,25 @@ final class TransferConfirmViewModelFactory {
         payload: ConfirmationPayload,
         locale: Locale
     ) {
-        guard let commandFactory = commandFactory else {
+        guard
+            let commandFactory = commandFactory,
+            let accountId = try? Data(hexString: payload.transferInfo.destination),
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return
         }
 
         let headerTitle = R.string.localizable
             .walletSendReceiverTitle(preferredLanguages: locale.rLanguages)
 
-        let icon: UIImage?
-
-        if let accountId = try? payload.receiverName.toAccountId() {
-            let iconGenerator = PolkadotIconGenerator()
-            icon = try? iconGenerator.generateFromAccountId(accountId)
-                .imageWithFillColor(
-                    R.color.colorWhite()!,
-                    size: UIConstants.smallAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
-        } else {
-            icon = nil
-        }
+        let iconGenerator = PolkadotIconGenerator()
+        let icon = try? iconGenerator.generateFromAccountId(accountId).imageWithFillColor(
+            R.color.colorWhite()!,
+            size: UIConstants.smallAddressIconSize,
+            contentScale: UIScreen.main.scale
+        )
 
         let command = WalletAccountOpenCommand(
-            address: payload.receiverName,
+            address: address,
             explorers: chainAsset.chain.explorers,
             commandFactory: commandFactory,
             locale: locale
@@ -104,7 +100,7 @@ final class TransferConfirmViewModelFactory {
 
         let viewModel = WalletCompoundDetailsViewModel(
             title: headerTitle,
-            details: payload.receiverName,
+            details: address,
             mainIcon: icon,
             actionIcon: R.image.iconMore(),
             command: command,
@@ -177,28 +173,17 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
             .map(\.value.decimalValue)
             .reduce(0.0, +)
 
-        let amount = balanceViewModelFactory.amountFromValue(fee).value(for: locale)
-
         let actionTitle = R.string.localizable.commonConfirm(preferredLanguages: locale.rLanguages)
         let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
         let priceData = getPriceDataFrom(payload.transferInfo)
 
-        let price: String? = {
-            guard let amount = Decimal(string: amount),
-                  let priceData = priceData
-            else { return nil }
-
-            return balanceViewModelFactory.balanceFromPrice(
-                amount,
-                priceData: priceData
-            ).value(for: locale).price ?? nil
-        }()
+        let balanceData = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData).value(for: locale)
 
         return ExtrinisicConfirmViewModel(
             title: title,
-            amount: amount,
-            price: price,
+            amount: balanceData.amount,
+            price: balanceData.price,
             icon: nil,
             action: actionTitle,
             numberOfLines: 1,
