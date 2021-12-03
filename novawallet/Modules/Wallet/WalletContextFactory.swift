@@ -205,10 +205,9 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
 
         let receiveConfigurator = ReceiveConfigurator(
-            displayName: metaAccount.name,
-            address: address,
-            chainFormat: chain.chainFormat,
-            assets: [walletAsset],
+            accountId: accountId,
+            chain: chain,
+            assetInfo: asset.displayInfo(with: chain.icon),
             explorers: chain.explorers,
             localizationManager: localizationManager
         )
