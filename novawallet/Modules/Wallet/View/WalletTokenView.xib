@@ -15,7 +15,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WalletBaseTokenView" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WalletBaseTokenView" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="balanceDetails" destination="5at-AO-l35" id="hpA-0f-cU2"/>
                 <outlet property="balanceTitle" destination="KML-PQ-f24" id="Y1b-vV-qbm"/>
@@ -48,7 +48,7 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hqD-qj-6OL" customClass="BorderedSubtitleActionView" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hqD-qj-6OL" customClass="BorderedSubtitleActionView" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="52"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -114,7 +114,7 @@
                         <action selector="actionBalance" destination="-1" eventType="touchUpInside" id="ArQ-fK-Cp9"/>
                     </connections>
                 </view>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconInfoSend" translatesAutoresizingMaskIntoConstraints="NO" id="FWi-c4-2Ja">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconInfoFilled" translatesAutoresizingMaskIntoConstraints="NO" id="FWi-c4-2Ja">
                     <rect key="frame" x="0.0" y="68" width="16" height="16"/>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FREE BALANCE:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KML-PQ-f24">
@@ -165,7 +165,7 @@
         </designable>
     </designables>
     <resources>
-        <image name="iconInfoSend" width="16" height="16"/>
+        <image name="iconInfoFilled" width="16" height="16"/>
         <image name="iconKsmSmallBg" width="24" height="24"/>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
