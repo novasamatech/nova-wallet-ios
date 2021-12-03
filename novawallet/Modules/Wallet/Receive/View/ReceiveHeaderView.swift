@@ -17,10 +17,6 @@ final class ReceiveHeaderView: UIView, AdaptiveDesignable {
 
     var actionCommand: WalletCommandProtocol?
 
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 86 + 46 * designScaleRatio.width)
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -48,6 +44,7 @@ final class ReceiveHeaderView: UIView, AdaptiveDesignable {
         infoLabel.snp.makeConstraints { make in
             make.top.equalTo(accountControl.snp.bottom).offset(46.0 * designScaleRatio.width)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview()
         }
     }
 
