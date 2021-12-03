@@ -4,24 +4,25 @@ import SoraFoundation
 import SoraKeystore
 
 final class AccountCreateViewFactory {
-    private static func createViewForUsername(
-        model: UsernameSetupModel,
+    private static func createViewForWallet(
+        name: String,
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
-        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
-        let presenter = AccountCreatePresenter(usernameSetup: model)
+        let localizationManager = LocalizationManager.shared
+
+        let presenter = AccountCreatePresenter(
+            walletName: name,
+            localizationManager: localizationManager
+        )
+
+        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        let localizationManager = LocalizationManager.shared
-        view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }
@@ -32,25 +33,25 @@ final class AccountCreateViewFactory {
         isEthereumBased: Bool,
         wireframe: AccountCreateWireframeProtocol
     ) -> AccountCreateViewProtocol? {
-        let view = AccountCreateViewController(nib: R.nib.accountCreateViewController)
+        let localizationManager = LocalizationManager.shared
 
         let presenter = AddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
-            isEthereumBased: isEthereumBased
+            isEthereumBased: isEthereumBased,
+            localizationManager: localizationManager
         )
+
+        let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
         let interactor = AccountCreateInteractor(mnemonicCreator: IRMnemonicCreator())
 
-        view.presenter = presenter
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
 
-        let localizationManager = LocalizationManager.shared
         view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }
@@ -59,27 +60,19 @@ final class AccountCreateViewFactory {
 // MARK: - AccountCreateViewFactoryProtocol
 
 extension AccountCreateViewFactory: AccountCreateViewFactoryProtocol {
-    static func createViewForOnboarding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForOnboarding(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = AccountCreateWireframe()
-
-        return createViewForUsername(
-            model: model,
-            wireframe: wireframe
-        )
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
-    static func createViewForAdding(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForAdding(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = AddAccount.AccountCreateWireframe()
-
-        return createViewForUsername(
-            model: model,
-            wireframe: wireframe
-        )
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
-    static func createViewForSwitch(model: UsernameSetupModel) -> AccountCreateViewProtocol? {
+    static func createViewForSwitch(walletName: String) -> AccountCreateViewProtocol? {
         let wireframe = SwitchAccount.AccountCreateWireframe()
-        return createViewForUsername(model: model, wireframe: wireframe)
+        return createViewForWallet(name: walletName, wireframe: wireframe)
     }
 
     static func createViewForReplaceChainAccount(

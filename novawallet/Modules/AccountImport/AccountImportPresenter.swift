@@ -39,7 +39,6 @@ final class AccountImportPresenter: BaseAccountImportPresenter {
 
         let username = usernameViewModel.inputHandler.value
         let substrateDerivationPath = self.substrateDerivationPath ?? ""
-
         let ethereumDerivationPath = self.ethereumDerivationPath ?? ""
 
         switch selectedSourceType {
