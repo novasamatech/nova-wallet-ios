@@ -603,3 +603,6 @@
 "connection.error.message_v2_2_0" = "Please, check your connection or try again later.";
 "common.invalid.derivation.path.message_v2_2_0" = "Your derivation path contains unsupported symbols or has incorrect structure.";
 "onboarding.terms.and.conditions.1_v2_2_0" = "By continuing, you agree to our \nTerms and Conditions and Privacy Policy";
+"wallet.receive.description_v2_2_0" = "Let sender scan this QR code";
+"wallet.receive.title.format" = "Receive %@";
+"wallet.receive.share.title" = "Share QR code";

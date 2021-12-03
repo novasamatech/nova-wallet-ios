@@ -4,30 +4,32 @@ import SoraFoundation
 import SoraKeystore
 
 final class AccountShareFactory: AccountShareFactoryProtocol {
-    let accountViewModel: ReceiveAccountViewModelProtocol
-    let assets: [WalletAsset]
+    let chain: ChainModel
+    let assetInfo: AssetBalanceDisplayInfo
     let localizationManager: LocalizationManagerProtocol
 
     init(
-        accountViewModel: ReceiveAccountViewModelProtocol,
-        assets: [WalletAsset],
+        chain: ChainModel,
+        assetInfo: AssetBalanceDisplayInfo,
         localizationManager: LocalizationManagerProtocol
     ) {
-        self.assets = assets
-        self.accountViewModel = accountViewModel
+        self.chain = chain
+        self.assetInfo = assetInfo
         self.localizationManager = localizationManager
     }
 
-    func createSources(for receiveInfo: ReceiveInfo, qrImage: UIImage) -> [Any] {
+    func createSources(for info: ReceiveInfo, qrImage: UIImage) -> [Any] {
+        guard
+            let accountId = try? Data(hexString: info.accountId),
+            let address = try? accountId.toAddress(using: chain.chainFormat) else {
+            return []
+        }
+
         let locale = localizationManager.selectedLocale
 
-        let asset = assets.first(where: { $0.identifier == receiveInfo.assetId }) ?? assets.first
-        let symbol = asset?.symbol ?? ""
-        let platform = asset?.platform?.value(for: locale) ?? ""
-
         let message = R.string.localizable
-            .walletReceiveShareMessage(platform, symbol, preferredLanguages: locale.rLanguages)
+            .walletReceiveShareMessage(chain.name, assetInfo.symbol, preferredLanguages: locale.rLanguages)
 
-        return [qrImage, message, accountViewModel.address]
+        return [qrImage, message, address]
     }
 }

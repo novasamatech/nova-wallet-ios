@@ -603,3 +603,6 @@
 "connection.error.message_v2_2_0" = "Пожалуйста, проверьте ваше подключение или повторите позднее.";
 "common.invalid.derivation.path.message_v2_2_0" = "Ваш путь деривации содержит неподдерживаемые символы или имеет некорректную структуру.";
 "onboarding.terms.and.conditions.1_v2_2_0" = "Продолжая вы соглашаетесь с нашими\nУсловиями использования и Политикой конфиденциальности";
+"wallet.receive.description_v2_2_0" = "Покажите QR код отправителю для сканирования";
+"wallet.receive.title.format" = "Получить %@";
+"wallet.receive.share.title" = "Поделиться";
