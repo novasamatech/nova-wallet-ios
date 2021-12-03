@@ -26,7 +26,7 @@ final class ChainAccountView: UIView {
 
     let actionIconView: UIImageView = {
         let view = UIImageView()
-        view.image = R.image.iconHorMore()
+        view.image = R.image.iconMore()
         return view
     }()
 

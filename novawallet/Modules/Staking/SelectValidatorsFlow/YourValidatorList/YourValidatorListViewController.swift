@@ -278,7 +278,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
         validatorsCount: Int,
         section: Int
     ) {
-        let icon = R.image.iconLightPending()!
+        let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
             R.string.localizable.stakingYourNotElectedFormat(
                 $0,
@@ -309,7 +309,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
         validatorsCount: Int,
         section: Int
     ) {
-        let icon = R.image.iconLightPending()!
+        let icon = R.image.iconPending()!
         let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
             R.string.localizable.stakingYourSelectedFormat(
                 $0,

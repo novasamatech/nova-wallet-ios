@@ -98,14 +98,18 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let icon = R.image.iconTabWallet()
-        let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
+
+        let commonIconImage = R.image.iconTabWallet()
+        let selectedIconImage = R.image.iconTabWalletFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorAccent()!)?
             .withRenderingMode(.alwaysOriginal)
+
         viewController.tabBarItem = createTabBarItem(
             title: currentTitle,
-            normalImage: normalIcon,
+            normalImage: commonIcon,
             selectedImage: selectedIcon
         )
 
@@ -129,14 +133,18 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let icon = R.image.iconTabStaking()
-        let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
+
+        let commonIconImage = R.image.iconTabStaking()
+        let selectedIconImage = R.image.iconTabStakingFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorAccent()!)?
             .withRenderingMode(.alwaysOriginal)
+
         viewController.tabBarItem = createTabBarItem(
             title: currentTitle,
-            normalImage: normalIcon,
+            normalImage: commonIcon,
             selectedImage: selectedIcon
         )
 
@@ -162,14 +170,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let icon = R.image.iconTabSettings()
-        let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
+        let commonIconImage = R.image.iconTabSettings()
+        let selectedIconImage = R.image.iconTabSettingsFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorAccent()!)?
             .withRenderingMode(.alwaysOriginal)
+
         navigationController.tabBarItem = createTabBarItem(
             title: currentTitle,
-            normalImage: normalIcon,
+            normalImage: commonIcon,
             selectedImage: selectedIcon
         )
 
@@ -196,14 +207,17 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
-        let icon = R.image.iconTabCrowloan()
-        let normalIcon = icon?.tinted(with: R.color.colorGray()!)?
+        let commonIconImage = R.image.iconTabCrowloan()
+        let selectedIconImage = R.image.iconTabCrowloanFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
             .withRenderingMode(.alwaysOriginal)
-        let selectedIcon = icon?.tinted(with: R.color.colorWhite()!)?
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorAccent()!)?
             .withRenderingMode(.alwaysOriginal)
+
         navigationController.tabBarItem = createTabBarItem(
             title: currentTitle,
-            normalImage: normalIcon,
+            normalImage: commonIcon,
             selectedImage: selectedIcon
         )
 
@@ -238,7 +252,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             NSAttributedString.Key.font: UIFont.capsTitle
         ]
         let selectedAttributes = [
-            NSAttributedString.Key.foregroundColor: R.color.colorWhite()!,
+            NSAttributedString.Key.foregroundColor: R.color.colorAccent()!,
             NSAttributedString.Key.font: UIFont.capsTitle
         ]
 

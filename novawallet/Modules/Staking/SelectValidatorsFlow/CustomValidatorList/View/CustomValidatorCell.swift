@@ -170,7 +170,7 @@ class CustomValidatorCell: UITableViewCell {
             detailsAuxLabel.isHidden = true
         }
 
-        selectionImageView.image = viewModel.isSelected ? R.image.listCheckmarkIcon() : nil
+        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckmark() : nil
     }
 
     func bind(viewModel: ValidatorSearchCellViewModel) {
@@ -193,7 +193,7 @@ class CustomValidatorCell: UITableViewCell {
 
         detailsAuxLabel.isHidden = true
 
-        selectionImageView.image = viewModel.isSelected ? R.image.listCheckmarkIcon() : nil
+        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckmark() : nil
     }
 
     private func clearStatusView() {

@@ -115,7 +115,7 @@
                                     <userDefinedRuntimeAttribute type="number" keyPath="_shadowOpacity">
                                         <real key="value" value="0.0"/>
                                     </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconHorMore"/>
+                                    <userDefinedRuntimeAttribute type="image" keyPath="_iconImage" value="iconMore"/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="_rightInset">
                                         <real key="value" value="8"/>
                                     </userDefinedRuntimeAttribute>
@@ -165,8 +165,8 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="iconHorMore" width="24" height="24"/>
         <image name="iconKsmAsset" width="48" height="48"/>
+        <image name="iconMore" width="24" height="24"/>
         <image name="iconWarning" width="16" height="16"/>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

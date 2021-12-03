@@ -510,7 +510,7 @@ final class UIFactory: UIFactoryProtocol {
         view.priceLabel.font = .p2Paragraph
         view.incomeLabel.font = .p2Paragraph
 
-        view.iconView.image = R.image.listCheckmarkIcon()!
+        view.iconView.image = R.image.iconCheckmark()!
         view.isSelected = false
 
         return view
@@ -535,7 +535,7 @@ final class UIFactory: UIFactoryProtocol {
         view.titleLabel.font = .p1Paragraph
         view.subtitleLabel?.textColor = R.color.colorLightGray()
         view.subtitleLabel?.font = .p2Paragraph
-        view.actionImage = R.image.iconHorMore()
+        view.actionImage = R.image.iconMore()
         view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 8.0, right: 16.0)
         view.iconRadius = 16.0
         return view
