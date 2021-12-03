@@ -33,7 +33,7 @@ class StakingStateView: UIView {
         return label
     }()
 
-    let iconMore = UIImageView(image: R.image.iconHorMore())
+    let iconMore = UIImageView(image: R.image.iconMore())
 
     let stakeTitleLabel: UILabel = {
         let label = UILabel()
