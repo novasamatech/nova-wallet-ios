@@ -6,6 +6,8 @@ class BaseAccountCreatePresenter {
     var wireframe: AccountCreateWireframeProtocol!
     var interactor: AccountCreateInteractorInputProtocol!
 
+    private let localizationManager: LocalizationManagerProtocol
+
     private(set) var metadata: MetaAccountCreationMetadata?
 
     private(set) var selectedSubstrateCryptoType: MultiassetCryptoType?
@@ -14,11 +16,15 @@ class BaseAccountCreatePresenter {
     internal let selectedEthereumCryptoType: MultiassetCryptoType = .ethereumEcdsa
     private(set) var ethereumDerivationPath: String = DerivationPathConstants.defaultEthereum
 
+    init(localizationManager: LocalizationManagerProtocol) {
+        self.localizationManager = localizationManager
+    }
+
     // MARK: - Private functions
 
     private func createCancelAction() -> AlertPresentableAction {
         let cancelTitle = R.string.localizable
-            .commonCancel(preferredLanguages: selectedLocale.rLanguages)
+            .commonCancel(preferredLanguages: localizationManager.selectedLocale.rLanguages)
 
         let cancelClosure = {
             self.wireframe.cancelFlow(from: self.view)
@@ -33,8 +39,10 @@ class BaseAccountCreatePresenter {
     }
 
     private func createProceedAction() -> AlertPresentableAction {
+        let locale = localizationManager.selectedLocale
+
         let proceedTitle = R.string.localizable
-            .commonUnderstand(preferredLanguages: selectedLocale.rLanguages)
+            .commonUnderstand(preferredLanguages: locale.rLanguages)
 
         let proceedClosure = {
             self.view?.displayMnemonic()
@@ -49,10 +57,12 @@ class BaseAccountCreatePresenter {
     }
 
     private func createWarningViewModel() -> AlertPresentableViewModel {
+        let locale = localizationManager.selectedLocale
+
         let alertTitle = R.string.localizable
-            .commonNoScreenshotTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            .commonNoScreenshotTitle_v2_2_0(preferredLanguages: locale.rLanguages)
         let alertMessage = R.string.localizable
-            .commonNoScreenshotMessage_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
+            .commonNoScreenshotMessage_v2_2_0(preferredLanguages: locale.rLanguages)
 
         let cancelAction = createCancelAction()
         let proceedAction = createProceedAction()
@@ -122,7 +132,7 @@ extension BaseAccountCreatePresenter: AccountCreateInteractorOutputProtocol {
     }
 
     func didReceiveMnemonicGeneration(error: Error) {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+        let locale = localizationManager.selectedLocale
 
         guard !wireframe.present(error: error, from: view, locale: locale) else {
             return
@@ -150,10 +160,4 @@ extension BaseAccountCreatePresenter: AdvancedWalletSettingsDelegate {
             self.ethereumDerivationPath = ethereumDerivationPath ?? ""
         }
     }
-}
-
-// MARK: - Localizable
-
-extension BaseAccountCreatePresenter: Localizable {
-    func applyLocalization() {}
 }

@@ -1,3 +1,4 @@
+import SoraFoundation
 extension AddChainAccount {
     final class AccountCreatePresenter: BaseAccountCreatePresenter {
         let metaAccountModel: MetaAccountModel
@@ -7,13 +8,14 @@ extension AddChainAccount {
         init(
             metaAccountModel: MetaAccountModel,
             chainModelId: ChainModel.Id,
-            isEthereumBased: Bool
+            isEthereumBased: Bool,
+            localizationManager: LocalizationManagerProtocol
         ) {
             self.metaAccountModel = metaAccountModel
             self.chainModelId = chainModelId
             self.isEthereumBased = isEthereumBased
 
-            super.init()
+            super.init(localizationManager: localizationManager)
         }
 
         private func getRequest(with mnemonic: String) -> ChainAccountImportMnemonicRequest? {

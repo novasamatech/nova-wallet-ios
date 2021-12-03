@@ -10,7 +10,10 @@ final class AccountCreateViewFactory {
     ) -> AccountCreateViewProtocol? {
         let localizationManager = LocalizationManager.shared
 
-        let presenter = AccountCreatePresenter(walletName: name)
+        let presenter = AccountCreatePresenter(
+            walletName: name,
+            localizationManager: localizationManager
+        )
 
         let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
 
@@ -20,8 +23,6 @@ final class AccountCreateViewFactory {
         presenter.interactor = interactor
         presenter.wireframe = wireframe
         interactor.presenter = presenter
-
-        presenter.localizationManager = localizationManager
 
         return view
     }
@@ -37,7 +38,8 @@ final class AccountCreateViewFactory {
         let presenter = AddChainAccount.AccountCreatePresenter(
             metaAccountModel: metaAccountModel,
             chainModelId: chainModelId,
-            isEthereumBased: isEthereumBased
+            isEthereumBased: isEthereumBased,
+            localizationManager: localizationManager
         )
 
         let view = AccountCreateViewController(presenter: presenter, localizationManager: localizationManager)
@@ -50,7 +52,6 @@ final class AccountCreateViewFactory {
         interactor.presenter = presenter
 
         view.localizationManager = localizationManager
-        presenter.localizationManager = localizationManager
 
         return view
     }

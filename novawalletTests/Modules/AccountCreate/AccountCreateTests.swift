@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import IrohaCrypto
+import SoraFoundation
 import Cuckoo
 
 class AccountCreateTests: XCTestCase {
@@ -15,7 +16,10 @@ class AccountCreateTests: XCTestCase {
         let interactor = AccountCreateInteractor(mnemonicCreator: mnemonicCreator)
 
         let name = "myname"
-        let presenter = AccountCreatePresenter(walletName: name)
+        let presenter = AccountCreatePresenter(
+            walletName: name,
+            localizationManager: LocalizationManager.shared
+        )
         presenter.view = view
         presenter.wireframe = wireframe
         presenter.interactor = interactor

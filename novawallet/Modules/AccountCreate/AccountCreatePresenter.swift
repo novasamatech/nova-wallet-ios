@@ -1,9 +1,13 @@
+import SoraFoundation
 final class AccountCreatePresenter: BaseAccountCreatePresenter {
     let walletName: String
 
-    init(walletName: String) {
+    init(
+        walletName: String,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.walletName = walletName
-        super.init()
+        super.init(localizationManager: localizationManager)
     }
 
     override func processProceed() {
