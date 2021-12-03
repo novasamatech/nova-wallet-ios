@@ -510,7 +510,7 @@ final class UIFactory: UIFactoryProtocol {
         view.priceLabel.font = .p2Paragraph
         view.incomeLabel.font = .p2Paragraph
 
-        view.iconView.image = R.image.listCheckmarkIcon()!
+        view.iconView.image = R.image.iconCheckmark()!
         view.isSelected = false
 
         return view
