@@ -10,12 +10,15 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
+        <array key="PublicSans-Bold.otf">
+            <string>PublicSans-Bold</string>
+        </array>
         <array key="PublicSans-Regular.otf">
             <string>PublicSans-Regular</string>
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountConfirmViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AccountConfirmViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="bottomPlaneHeight" destination="B42-zO-Mqd" id="06I-Ga-m1G"/>
                 <outlet property="bottomPlaneView" destination="iI2-ci-IkH" id="JVG-se-v1O"/>
@@ -25,6 +28,7 @@
                 <outlet property="detailsLabel" destination="h9t-43-ypk" id="leW-V7-KZ4"/>
                 <outlet property="nextButton" destination="02i-Et-cAL" id="kHI-2q-Dt1"/>
                 <outlet property="scrollView" destination="HJf-mV-DOB" id="Jgh-p8-d9V"/>
+                <outlet property="titleLabel" destination="bTa-BZ-BKT" id="p4T-9o-rL6"/>
                 <outlet property="topPlaneHeight" destination="Jif-RH-1ha" id="VWf-Rh-boR"/>
                 <outlet property="topPlaneView" destination="Mbj-JZ-Ope" id="9At-Mm-XYo"/>
                 <outlet property="view" destination="iN0-l3-epB" id="UGw-vC-vRl"/>
@@ -39,38 +43,49 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="644"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oVw-Ru-zUO">
-                            <rect key="frame" x="16" y="0.0" width="382" height="382"/>
+                            <rect key="frame" x="16" y="0.0" width="382" height="410.66666666666669"/>
                             <subviews>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mbj-JZ-Ope" customClass="RoundedView" customModule="SoraUI">
-                                    <rect key="frame" x="0.0" y="26" width="382" height="144"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let’s double check it" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bTa-BZ-BKT">
+                                    <rect key="frame" x="0.0" y="24" width="366" height="26"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="22"/>
+                                    <color key="textColor" name="colorWhite"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Select the words in the right order." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h9t-43-ypk">
+                                    <rect key="frame" x="0.0" y="57.999999999999993" width="366" height="16.666666666666664"/>
+                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="14"/>
+                                    <color key="textColor" name="colorLightGray"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Mbj-JZ-Ope" customClass="RoundedButton" customModule="SoraUI">
+                                    <rect key="frame" x="0.0" y="98.666666666666686" width="382" height="144"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="144" id="Jif-RH-1ha"/>
                                     </constraints>
                                     <userDefinedRuntimeAttributes>
-                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                            <real key="value" value="4"/>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="_fillColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="0.080000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
                                         </userDefinedRuntimeAttribute>
-                                        <userDefinedRuntimeAttribute type="boolean" keyPath="_topLeftRounded" value="YES"/>
-                                        <userDefinedRuntimeAttribute type="boolean" keyPath="_topRightRounded" value="YES"/>
-                                        <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomLeftRounded" value="YES"/>
-                                        <userDefinedRuntimeAttribute type="boolean" keyPath="_bottomRightRounded" value="YES"/>
-                                        <userDefinedRuntimeAttribute type="number" keyPath="shadowOpacity">
+                                        <userDefinedRuntimeAttribute type="color" keyPath="_highlightedFillColor">
+                                            <color key="value" name="colorAccentSelected"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="_strokeColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="0.080000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="_highlightedStrokeColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="0.080000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="_shadowOpacity">
                                             <real key="value" value="0.0"/>
                                         </userDefinedRuntimeAttribute>
-                                        <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
-                                            <color key="value" name="colorAlmostBlack"/>
-                                        </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="actionTapOnSubmitView" destination="-1" eventType="touchUpInside" id="Xeq-Tt-h1R"/>
+                                    </connections>
                                 </view>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Choose words in the right order" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h9t-43-ypk">
-                                    <rect key="frame" x="0.0" y="186" width="382" height="20"/>
-                                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="17"/>
-                                    <color key="textColor" name="colorWhite"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iI2-ci-IkH" customClass="RoundedView" customModule="SoraUI">
-                                    <rect key="frame" x="0.0" y="222" width="382" height="144"/>
+                                    <rect key="frame" x="0.0" y="250.66666666666663" width="382" height="144"/>
                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="144" id="B42-zO-Mqd"/>
@@ -87,22 +102,25 @@
                                             <real key="value" value="0.0"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
-                                            <color key="value" name="colorAlmostBlack"/>
+                                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstItem="Mbj-JZ-Ope" firstAttribute="top" secondItem="oVw-Ru-zUO" secondAttribute="top" constant="26" id="4lE-Q1-Sb2"/>
+                                <constraint firstItem="bTa-BZ-BKT" firstAttribute="top" secondItem="oVw-Ru-zUO" secondAttribute="top" constant="24" id="1da-Jb-E1Y"/>
+                                <constraint firstAttribute="trailing" secondItem="bTa-BZ-BKT" secondAttribute="trailing" constant="16" id="26K-WU-jNb"/>
+                                <constraint firstItem="iI2-ci-IkH" firstAttribute="top" secondItem="Mbj-JZ-Ope" secondAttribute="bottom" constant="8" id="AuU-Ui-VLR"/>
+                                <constraint firstItem="Mbj-JZ-Ope" firstAttribute="top" secondItem="h9t-43-ypk" secondAttribute="bottom" constant="24" id="EZ6-X7-Szw"/>
                                 <constraint firstItem="iI2-ci-IkH" firstAttribute="leading" secondItem="oVw-Ru-zUO" secondAttribute="leading" id="Nj0-TT-sNg"/>
                                 <constraint firstAttribute="trailing" secondItem="Mbj-JZ-Ope" secondAttribute="trailing" id="RcB-qA-IoZ"/>
+                                <constraint firstItem="bTa-BZ-BKT" firstAttribute="leading" secondItem="oVw-Ru-zUO" secondAttribute="leading" id="SCa-Qa-EA5"/>
                                 <constraint firstAttribute="bottom" secondItem="iI2-ci-IkH" secondAttribute="bottom" constant="16" id="Tqa-UI-sjX"/>
-                                <constraint firstItem="h9t-43-ypk" firstAttribute="top" secondItem="Mbj-JZ-Ope" secondAttribute="bottom" constant="16" id="YJ2-Ft-wPw"/>
+                                <constraint firstItem="h9t-43-ypk" firstAttribute="top" secondItem="bTa-BZ-BKT" secondAttribute="bottom" constant="8" id="gSC-Aj-eUS"/>
+                                <constraint firstAttribute="trailing" secondItem="h9t-43-ypk" secondAttribute="trailing" constant="16" id="k1G-l4-I1k"/>
                                 <constraint firstItem="Mbj-JZ-Ope" firstAttribute="leading" secondItem="oVw-Ru-zUO" secondAttribute="leading" id="kUY-ig-KOq"/>
-                                <constraint firstItem="h9t-43-ypk" firstAttribute="leading" secondItem="oVw-Ru-zUO" secondAttribute="leading" id="nQu-tp-6OM"/>
-                                <constraint firstAttribute="trailing" secondItem="h9t-43-ypk" secondAttribute="trailing" id="q9Q-XD-vq1"/>
-                                <constraint firstItem="iI2-ci-IkH" firstAttribute="top" secondItem="h9t-43-ypk" secondAttribute="bottom" constant="16" id="r6C-gn-7rF"/>
+                                <constraint firstItem="h9t-43-ypk" firstAttribute="leading" secondItem="oVw-Ru-zUO" secondAttribute="leading" id="n7v-2s-IP9"/>
                                 <constraint firstAttribute="trailing" secondItem="iI2-ci-IkH" secondAttribute="trailing" id="sJ2-G0-yHa"/>
                             </constraints>
                         </view>
@@ -117,7 +135,7 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="E2p-hu-yYu">
                     <rect key="frame" x="16" y="668" width="382" height="52"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="02i-Et-cAL" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="02i-Et-cAL" customClass="TriangularedButton" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="382" height="52"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <constraints>
@@ -176,19 +194,25 @@
         <designable name="02i-Et-cAL">
             <size key="intrinsicContentSize" width="50.666666666666664" height="33.666666666666671"/>
         </designable>
+        <designable name="Mbj-JZ-Ope">
+            <size key="intrinsicContentSize" width="16" height="16"/>
+        </designable>
     </designables>
     <resources>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
-        <namedColor name="colorAlmostBlack">
-            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="colorAccentSelected">
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorBlack">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorHighlightedAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="0.30000001192092896" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="colorLightGray">
+            <color red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
