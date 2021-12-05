@@ -14,7 +14,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StakingMainViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StakingMainViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="headerView" destination="rLo-pW-hSb" id="lp4-2s-KqU"/>
                 <outlet property="iconButton" destination="FbN-Vm-EC2" id="nYL-YX-z7j"/>
@@ -43,17 +43,17 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="66"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Staking" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ypp-bS-mpc">
-                                            <rect key="frame" x="16" y="14.666666666666668" width="310" height="36.666666666666657"/>
+                                            <rect key="frame" x="16" y="11.666666666666664" width="310" height="36.666666666666664"/>
                                             <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="31"/>
                                             <color key="textColor" name="colorWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FbN-Vm-EC2" customClass="RoundedButton" customModule="SoraUI">
-                                            <rect key="frame" x="342" y="0.0" width="72" height="66"/>
+                                            <rect key="frame" x="342" y="0.0" width="72" height="60"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="72" id="1uz-BP-bV1"/>
-                                                <constraint firstAttribute="height" constant="66" id="6Gb-jj-JYc"/>
+                                                <constraint firstAttribute="height" constant="60" id="6Gb-jj-JYc"/>
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="color" keyPath="_fillColor">
@@ -95,7 +95,7 @@
                                         <constraint firstItem="ypp-bS-mpc" firstAttribute="centerY" secondItem="FbN-Vm-EC2" secondAttribute="centerY" id="DSd-F1-b3Y"/>
                                         <constraint firstItem="FbN-Vm-EC2" firstAttribute="top" secondItem="rLo-pW-hSb" secondAttribute="top" id="FDD-Qq-LCv"/>
                                         <constraint firstItem="ypp-bS-mpc" firstAttribute="leading" secondItem="rLo-pW-hSb" secondAttribute="leading" constant="16" id="MyM-5F-qq3"/>
-                                        <constraint firstAttribute="bottom" secondItem="FbN-Vm-EC2" secondAttribute="bottom" id="QN8-oh-MvV"/>
+                                        <constraint firstAttribute="bottom" secondItem="FbN-Vm-EC2" secondAttribute="bottom" constant="6" id="QN8-oh-MvV"/>
                                         <constraint firstItem="FbN-Vm-EC2" firstAttribute="leading" secondItem="ypp-bS-mpc" secondAttribute="trailing" constant="16" id="fL5-YZ-feT"/>
                                         <constraint firstAttribute="trailing" secondItem="FbN-Vm-EC2" secondAttribute="trailing" id="jzL-Uf-kM9"/>
                                     </constraints>

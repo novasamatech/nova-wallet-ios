@@ -37,7 +37,7 @@ final class SettingsTableHeaderView: UIView {
 
         addSubview(content)
         content.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10)
+            make.top.equalToSuperview().inset(1)
             make.leading.trailing.equalToSuperview().inset(16)
             make.bottom.equalToSuperview()
         }

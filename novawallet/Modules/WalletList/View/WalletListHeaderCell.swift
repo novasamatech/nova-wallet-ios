@@ -57,13 +57,13 @@ final class WalletListHeaderCell: UITableViewCell {
         iconButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.size.equalTo(40.0)
-            make.centerY.equalToSuperview()
+            make.top.equalToSuperview().inset(10.0)
         }
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(12.0)
+            make.top.equalTo(3.0)
             make.trailing.equalTo(iconButton.snp.leading).offset(-8.0)
         }
 
@@ -71,7 +71,7 @@ final class WalletListHeaderCell: UITableViewCell {
         amountLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.equalTo(iconButton.snp.leading).offset(-8.0)
-            make.bottom.equalToSuperview().inset(8.0)
+            make.top.equalTo(titleLabel.snp.bottom)
         }
     }
 }
