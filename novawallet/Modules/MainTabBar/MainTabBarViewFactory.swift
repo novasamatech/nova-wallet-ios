@@ -99,7 +99,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         }
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarWalletTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.tabbarAssetsTitle(preferredLanguages: locale.rLanguages)
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
