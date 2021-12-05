@@ -64,6 +64,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
     private var contentWidth: CGFloat = 0.0
 
     private var pendingButtons: [WordButton] = []
+    private var pendingPlaceholders: [WordButton: ShapeView] = [:]
     private var submittedButtons: [WordButton] = []
     private var layouts: [WordButton: Layout] = [:]
     private var originalLayouts: [WordButton: Layout] = [:]
@@ -201,14 +202,18 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
 
         layoutButtons()
 
+        pendingPlaceholders = layoutPlaceholders()
+
         updateNextButton()
     }
 
     private func clearButtons() {
         pendingButtons.forEach { $0.removeFromSuperview() }
+        pendingPlaceholders.values.forEach { $0.removeFromSuperview() }
         submittedButtons.forEach { $0.removeFromSuperview() }
 
         pendingButtons = []
+        pendingPlaceholders = [:]
         submittedButtons = []
         layouts = [:]
         originalLayouts = [:]
@@ -349,6 +354,41 @@ extension AccountConfirmViewController {
         return rows
     }
 
+    private func layoutPlaceholders() -> [WordButton: ShapeView] {
+        layouts.reduce(into: [WordButton: ShapeView]()) { result, item in
+            let button = item.key
+            let layout = item.value
+
+            let shapeView = RoundedView()
+            shapeView.translatesAutoresizingMaskIntoConstraints = false
+            shapeView.alpha = 0.0
+
+            let shapeLayer = shapeView.layer as? CAShapeLayer
+            shapeLayer?.lineDashPattern = [5.0, 5.0]
+            shapeLayer?.lineDashPhase = 0.0
+            shapeView.fillColor = .clear
+            shapeView.strokeWidth = 1.0
+            shapeView.strokeColor = R.color.colorWhite16()!
+
+            button.superview?.insertSubview(shapeView, belowSubview: button)
+
+            shapeView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
+                constant: layout.leading.constant
+            ).isActive = true
+
+            shapeView.topAnchor.constraint(
+                equalTo: bottomPlaneView.topAnchor,
+                constant: layout.top.constant
+            ).isActive = true
+
+            shapeView.widthAnchor.constraint(equalToConstant: layout.width.constant).isActive = true
+            shapeView.heightAnchor.constraint(equalToConstant: layout.height.constant).isActive = true
+
+            result[button] = shapeView
+        }
+    }
+
     private func layoutRows(_ rows: [[WordButton]], on plane: UIView) -> (CGFloat, CGFloat) {
         var currentY = Constants.internalMargin
 
@@ -430,12 +470,15 @@ extension AccountConfirmViewController {
         button.isUserInteractionEnabled = true
         pendingButtons.append(button)
 
+        let placeholder = pendingPlaceholders[button]
+
         let currentLayout = layouts[button]
         layouts[button] = originalLayouts[button]
 
         let attributedTitle = createWordAttributedString(for: word)
 
         let animationBlock = {
+            placeholder?.alpha = 0.0
             button.controlContentView.attributedText = attributedTitle
             currentLayout?.leading.isActive = false
             currentLayout?.top.isActive = false
@@ -475,6 +518,8 @@ extension AccountConfirmViewController {
         button.isUserInteractionEnabled = false
         submittedButtons.append(button)
 
+        let placeholder = pendingPlaceholders[button]
+
         originalLayouts[button] = layouts[button]
 
         let attributedTitle = createIndexedWordAttributedString(
@@ -483,6 +528,7 @@ extension AccountConfirmViewController {
         )
 
         let animationBlock = {
+            placeholder?.alpha = 1.0
             button.controlContentView.attributedText = attributedTitle
             self.layoutSubmittedButtons()
 
