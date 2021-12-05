@@ -31,18 +31,17 @@ final class MainTabBarViewController: UITabBarController {
             appearance.shadowImage = UIImage()
 
             let normalAttributes = [
-                NSAttributedString.Key.foregroundColor: R.color.colorGray()!,
-                NSAttributedString.Key.font: UIFont.capsTitle
+                NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
+                NSAttributedString.Key.font: UIFont.p3Paragraph
             ]
             let selectedAttributes = [
-                NSAttributedString.Key.foregroundColor: R.color.colorAccent()!,
-                NSAttributedString.Key.font: UIFont.capsTitle
+                NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
+                NSAttributedString.Key.font: UIFont.p3Paragraph
             ]
 
             appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
             appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
-            appearance.backgroundImage = UIImage.background(from: R.color.colorAlmostBlack()!)
-            appearance.backgroundEffect = nil
+            appearance.backgroundEffect = UIBlurEffect(style: .dark)
 
             tabBar.standardAppearance = appearance
 
