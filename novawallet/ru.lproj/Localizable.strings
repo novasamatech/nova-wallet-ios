@@ -603,3 +603,4 @@
 "dapps.list.header.title" = "Исследуй";
 "dapp.decoration.title" = "Добро пожаловать\nна портал приложений";
 "dapps.decoration.subtitle" = "Подключайтесь к приложениям\nэкосистемы Полькадот & Кусама,\nиспользуя аккаунты из Nova Wallet";
+"tabbar.assets.title" = "Ассеты";
