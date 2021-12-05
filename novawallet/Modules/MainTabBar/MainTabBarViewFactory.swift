@@ -44,6 +44,10 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
+        guard let dappsController = createDappsController(for: localizationManager) else {
+            return nil
+        }
+
         guard let settingsController = createProfileController(for: localizationManager) else {
             return nil
         }
@@ -52,6 +56,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         view.viewControllers = [
             walletController,
             crowdloanController,
+            dappsController,
             stakingController,
             settingsController
         ]
@@ -209,6 +214,40 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
         let commonIconImage = R.image.iconTabCrowloan()
         let selectedIconImage = R.image.iconTabCrowloanFilled()
+
+        let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
+            .withRenderingMode(.alwaysOriginal)
+        let selectedIcon = selectedIconImage?.tinted(with: R.color.colorAccent()!)?
+            .withRenderingMode(.alwaysOriginal)
+
+        navigationController.tabBarItem = createTabBarItem(
+            title: currentTitle,
+            normalImage: commonIcon,
+            selectedImage: selectedIcon
+        )
+
+        localizationManager.addObserver(with: navigationController) { [weak navigationController] _, _ in
+            let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+            navigationController?.tabBarItem.title = currentTitle
+        }
+
+        return navigationController
+    }
+
+    static func createDappsController(for localizationManager: LocalizationManagerProtocol) -> UIViewController? {
+        guard let dappsView = DAppListViewFactory.createView() else {
+            return nil
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: dappsView.controller)
+
+        let localizableTitle = LocalizableResource { locale in
+            R.string.localizable.tabbarDappsTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)
+        let commonIconImage = R.image.iconTabDApps()
+        let selectedIconImage = R.image.iconTabDAppsFilled()
 
         let commonIcon = commonIconImage?.tinted(with: R.color.colorGray()!)?
             .withRenderingMode(.alwaysOriginal)
