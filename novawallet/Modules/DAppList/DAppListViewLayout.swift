@@ -15,7 +15,24 @@ final class DAppListViewLayout: UIView {
             bottom: 0.0,
             right: UIConstants.horizontalInset
         )
-        view.stackView.spacing = 16.0
+        return view
+    }()
+
+    let listHeaderTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()
+        label.font = .h3Title
+        return label
+    }()
+
+    let subIdControlView: ControlView<TriangularedBlurView, DAppContentView> = {
+        let backgroundView = TriangularedBlurView()
+        let contentView = DAppContentView()
+
+        let view = ControlView(backgroundView: backgroundView, contentView: contentView)
+        view.changesContentOpacityWhenHighlighted = true
+        view.contentInsets = UIEdgeInsets(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0)
+
         return view
     }()
 
@@ -37,8 +54,17 @@ final class DAppListViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide.snp.top)
+            make.top.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
         }
+
+        containerView.stackView.addArrangedSubview(headerView)
+
+        containerView.stackView.setCustomSpacing(24.0, after: headerView)
+
+        containerView.stackView.addArrangedSubview(listHeaderTitleLabel)
+        containerView.stackView.setCustomSpacing(16.0, after: listHeaderTitleLabel)
+
+        containerView.stackView.addArrangedSubview(subIdControlView)
     }
 }

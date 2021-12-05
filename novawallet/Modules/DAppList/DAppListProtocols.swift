@@ -1,11 +1,23 @@
-protocol DAppListViewProtocol: class {}
+import SubstrateSdk
 
-protocol DAppListPresenterProtocol: class {
+protocol DAppListViewProtocol: ControllerBackedProtocol {
+    func didReceiveAccount(icon: DrawableIcon)
+}
+
+protocol DAppListPresenterProtocol: AnyObject {
+    func setup()
+    func activateAccount()
+    func activateSubId()
+}
+
+protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
 }
 
-protocol DAppListInteractorInputProtocol: class {}
+protocol DAppListInteractorOutputProtocol: AnyObject {
+    func didReceive(accountIdResult: Result<AccountId, Error>)
+}
 
-protocol DAppListInteractorOutputProtocol: class {}
-
-protocol DAppListWireframeProtocol: class {}
+protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {
+    func showWalletSelection(from view: DAppListViewProtocol?)
+}
