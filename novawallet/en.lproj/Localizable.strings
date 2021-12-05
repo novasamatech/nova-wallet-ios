@@ -603,3 +603,4 @@
 "dapps.list.header.title" = "Explore";
 "dapp.decoration.title" = "Welcome\nto DApp portal";
 "dapps.decoration.subtitle" = "Connect to the Polkadot & Kusama\necosystem web applications using\naccounts in Nova Wallet";
+"tabbar.assets.title" = "Assets";
