@@ -20,7 +20,7 @@ extension AccountCreateError: ErrorContentConvertible {
                 .accessRestoreWordsErrorMessage(preferredLanguages: locale?.rLanguages)
         case .invalidMnemonicFormat:
             message = R.string.localizable
-                .accessRestorePhraseErrorMessage(preferredLanguages: locale?.rLanguages)
+                .accessRestorePhraseErrorMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
         case .invalidSeed:
             message = R.string.localizable
                 .accountImportInvalidSeed(preferredLanguages: locale?.rLanguages)

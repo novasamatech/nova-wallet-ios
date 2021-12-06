@@ -326,7 +326,7 @@ extension CrowdloansViewModelFactory: CrowdloansViewModelFactoryProtocol {
 
         let imageViewModel = RemoteImageViewModel(url: chain.icon)
 
-        let description = R.string.localizable.crowdloanListSectionFormat(
+        let description = R.string.localizable.crowdloanListSectionFormat_v2_2_0(
             displayInfo.symbol,
             preferredLanguages: locale.rLanguages
         )
