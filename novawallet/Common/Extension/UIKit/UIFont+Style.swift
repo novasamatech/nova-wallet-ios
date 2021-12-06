@@ -41,4 +41,6 @@ extension UIFont {
     static var p2Paragraph: UIFont { R.font.publicSansRegular(size: 13)! }
 
     static var p3Paragraph: UIFont { R.font.publicSansSemiBold(size: 11)! }
+
+    static var caption2: UIFont { R.font.publicSansRegular(size: 11)! }
 }

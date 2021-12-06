@@ -7,7 +7,6 @@ struct Identity: Decodable {
 }
 
 struct IdentityInfo: Decodable {
-    let additional: [IdentityAddition]
     let display: ChainData
     let legal: ChainData
     let web: ChainData
