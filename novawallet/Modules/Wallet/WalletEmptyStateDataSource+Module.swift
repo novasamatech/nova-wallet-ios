@@ -4,7 +4,7 @@ import SoraFoundation
 extension WalletEmptyStateDataSource {
     static var history: WalletEmptyStateDataSource {
         let title = LocalizableResource { locale in
-            R.string.localizable.walletEmptyDescription(preferredLanguages: locale.rLanguages)
+            R.string.localizable.walletEmptyDescription_v2_2_0(preferredLanguages: locale.rLanguages)
         }
 
         let image = R.image.iconEmptyHistory()
@@ -16,7 +16,7 @@ extension WalletEmptyStateDataSource {
 
     static var contacts: WalletEmptyStateDataSource {
         let title = LocalizableResource { locale in
-            R.string.localizable.walletContactsEmptyTitle_v110(preferredLanguages: locale.rLanguages)
+            R.string.localizable.commonSearchStartTitle_v2_2_0(preferredLanguages: locale.rLanguages)
         }
 
         let image = R.image.iconEmptyHistory()

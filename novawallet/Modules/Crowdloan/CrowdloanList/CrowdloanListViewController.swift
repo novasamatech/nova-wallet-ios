@@ -254,7 +254,7 @@ extension CrowdloanListViewController: EmptyStateDataSource {
             let emptyView = EmptyStateView()
             emptyView.image = R.image.iconEmptyHistory()
             emptyView.title = R.string.localizable
-                .crowdloanEmptyMessage(preferredLanguages: selectedLocale.rLanguages)
+                .crowdloanEmptyMessage_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
             emptyView.titleColor = R.color.colorLightGray()!
             emptyView.titleFont = .p2Paragraph
             return emptyView

@@ -26,7 +26,7 @@ extension ErrorPresentable where Self: AlertPresentable {
 
             if (error as NSError).domain == NSURLErrorDomain {
                 let title = R.string.localizable.connectionErrorTitle(preferredLanguages: locale?.rLanguages)
-                let message = R.string.localizable.connectionErrorMessage(preferredLanguages: locale?.rLanguages)
+                let message = R.string.localizable.connectionErrorMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
 
                 return ErrorContent(title: title, message: message)
             }
