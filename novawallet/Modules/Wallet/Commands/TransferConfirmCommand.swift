@@ -47,7 +47,7 @@ final class TransferConfirmCommand: WalletCommandDecoratorProtocol, WalletComman
         let locale = localizationManager.selectedLocale
 
         let title = R.string.localizable.commonWarning(preferredLanguages: locale.rLanguages)
-        let message = R.string.localizable.walletSendExistentialWarning(preferredLanguages: locale.rLanguages)
+        let message = R.string.localizable.walletSendExistentialWarning_v2_2_0(preferredLanguages: locale.rLanguages)
 
         let alertController = UIAlertController(
             title: title,
