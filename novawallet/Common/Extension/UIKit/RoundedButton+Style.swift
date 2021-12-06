@@ -25,4 +25,14 @@ extension RoundedButton {
 
         contentOpacityWhenDisabled = 1.0
     }
+
+    func applyIconStyle() {
+        roundedBackgroundView?.shadowOpacity = 0.0
+        roundedBackgroundView?.fillColor = .clear
+        roundedBackgroundView?.highlightedFillColor = .clear
+        roundedBackgroundView?.strokeColor = .clear
+        roundedBackgroundView?.highlightedStrokeColor = .clear
+
+        changesContentOpacityWhenHighlighted = true
+    }
 }
