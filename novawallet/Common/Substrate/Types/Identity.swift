@@ -15,8 +15,3 @@ struct IdentityInfo: Decodable {
     let image: ChainData
     let twitter: ChainData
 }
-
-struct IdentityAddition: Decodable {
-    let field: ChainData
-    let value: ChainData
-}
