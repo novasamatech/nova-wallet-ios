@@ -56,7 +56,7 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
         let title = R.string.localizable
             .commonExistentialWarningTitle(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable
-            .commonExistentialWarningMessage(preferredLanguages: locale?.rLanguages)
+            .commonExistentialWarningMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
 
         presentWarning(
             for: title,

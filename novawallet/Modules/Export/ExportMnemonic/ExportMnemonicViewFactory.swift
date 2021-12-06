@@ -34,7 +34,7 @@ final class ExportMnemonicViewFactory {
                 R.string.localizable.accountBackupMnemonicTitle(preferredLanguages: locale.rLanguages)
             },
             exportSubtitle: LocalizableResource { locale in
-                R.string.localizable.accountCreateDetails(preferredLanguages: locale.rLanguages)
+                R.string.localizable.accountCreateDetails_v2_2_0(preferredLanguages: locale.rLanguages)
             },
             exportHint: LocalizableResource { locale in
                 R.string.localizable.exportMnemonicCheckHint(preferredLanguages: locale.rLanguages)

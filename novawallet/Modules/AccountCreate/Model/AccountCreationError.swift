@@ -18,7 +18,7 @@ extension AccountCreationError: ErrorContentConvertible {
                 .commonErrorGeneralTitle(preferredLanguages: locale?.rLanguages)
         default:
             return R.string.localizable
-                .commonInvalidPathTitle(preferredLanguages: locale?.rLanguages)
+                .commonInvalidPathTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
         }
     }
 
@@ -27,24 +27,15 @@ extension AccountCreationError: ErrorContentConvertible {
         case .unsupportedNetwork:
             return R.string.localizable
                 .commonUnsupportedNetworkMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHardSoftNumericPassword:
+            
+        case .invalidDerivationHardSoftNumericPassword,
+                .invalidDerivationHardSoftPassword,
+                .invalidDerivationHardPassword,
+                .invalidDerivationHardSoftNumeric,
+                .invalidDerivationHardSoft,
+                .invalidDerivationHard:
             return R.string.localizable
-                .commonInvalidHardSoftNumericPasswordMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHardSoftPassword:
-            return R.string.localizable
-                .commonInvalidPathWithSoftMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHardPassword:
-            return R.string.localizable
-                .commonInvalidPathWithoutSoftMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHardSoftNumeric:
-            return R.string.localizable
-                .commonInvalidHardSoftNumericMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHardSoft:
-            return R.string.localizable
-                .commonInvalidHardSoftMessage(preferredLanguages: locale?.rLanguages)
-        case .invalidDerivationHard:
-            return R.string.localizable
-                .commonInvalidHardMessage(preferredLanguages: locale?.rLanguages)
+                .commonInvalidDerivationPathMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
         }
     }
 
