@@ -60,7 +60,7 @@ final class AccountManagementViewController: UIViewController {
         title = R.string.localizable.walletChainManagementTitle(preferredLanguages: locale?.rLanguages)
 
         walletNameTextField.title = R.string.localizable
-            .walletUsernameSetupChooseTitle(preferredLanguages: locale?.rLanguages)
+            .walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
     }
 
     // MARK: - Actions

@@ -129,11 +129,11 @@ final class AccountImportMnemonicView: AccountImportBaseView {
         mnemonicTitleLabel.text = R.string.localizable.importMnemonic(preferredLanguages: locale?.rLanguages)
         hintLabel.text = R.string.localizable.walletImportMnemonicHint(preferredLanguages: locale?.rLanguages)
 
-        usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle(
+        usernameTextField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
             preferredLanguages: locale?.rLanguages
         )
 
-        usernameHintLabel.text = R.string.localizable.walletNicknameCreateCaption(
+        usernameHintLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
             preferredLanguages: locale?.rLanguages
         )
 
