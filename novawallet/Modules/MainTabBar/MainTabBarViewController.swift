@@ -32,11 +32,11 @@ final class MainTabBarViewController: UITabBarController {
 
             let normalAttributes = [
                 NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
-                NSAttributedString.Key.font: UIFont.p3Paragraph
+                NSAttributedString.Key.font: UIFont.caption2
             ]
             let selectedAttributes = [
                 NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
-                NSAttributedString.Key.font: UIFont.p3Paragraph
+                NSAttributedString.Key.font: UIFont.caption2
             ]
 
             appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes

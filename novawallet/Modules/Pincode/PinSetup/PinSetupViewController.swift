@@ -121,6 +121,23 @@ class PinSetupViewController: UIViewController, AdaptiveDesignable, NavigationDe
 
         pinView.numpadView?.accessoryIcon = pinView.numpadView?.accessoryIcon?.tinted(with: R.color.colorWhite()!)
         pinView.numpadView?.backspaceIcon = pinView.numpadView?.backspaceIcon?.tinted(with: R.color.colorWhite()!)
+
+        let additionalButtonStyle = NumpadButtonStyle(
+            fillColor: .clear,
+            highlightedFillColor: R.color.colorAccentSelected()!
+        )
+
+        pinView.numpadView?.backspaceButtonStyle = additionalButtonStyle
+        pinView.numpadView?.accessoryButtonStyle = additionalButtonStyle
+
+        pinView.securedCharacterFieldsView?.style = SecuredCharacterFieldsView.Style(
+            normalFillColor: R.color.colorWhite16()!,
+            highlightedFillColor: R.color.colorAccent()!,
+            normalStrokeColor: .clear,
+            highlightedStrokeColor: .clear,
+            strokeWidth: 0.0,
+            fieldRadius: 6.0
+        )
     }
 
     private func setupLocalization() {
