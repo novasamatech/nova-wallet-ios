@@ -49,7 +49,7 @@ final class OnboardingMainViewController: UIViewController, AdaptiveDesignable {
             .onboardingRestoreWallet(preferredLanguages: locale?.rLanguages)
 
         let text = NSAttributedString(string: R.string.localizable
-            .onboardingTermsAndConditions1(preferredLanguages: locale?.rLanguages))
+            .onboardingTermsAndConditions1_v2_2_0(preferredLanguages: locale?.rLanguages))
         termsLabel.attributedText = text
     }
 
