@@ -604,3 +604,6 @@
 "dapp.decoration.title" = "Добро пожаловать\nна портал приложений";
 "dapps.decoration.subtitle" = "Подключайтесь к приложениям\nэкосистемы Полькадот & Кусама,\nиспользуя аккаунты из Nova Wallet";
 "tabbar.assets.title" = "Ассеты";
+"confirm.mnemonic.title" = "Давайте перепроверим";
+"confirm.mnemonic.subtitle" = "Выберите слова в правильном порядке";
+"confirm.mnemonic.select.word" = "Выберите слова...";

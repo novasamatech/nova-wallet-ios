@@ -604,3 +604,6 @@
 "dapp.decoration.title" = "Welcome\nto DApp portal";
 "dapps.decoration.subtitle" = "Connect to the Polkadot & Kusama\necosystem web applications using\naccounts in Nova Wallet";
 "tabbar.assets.title" = "Assets";
+"confirm.mnemonic.title" = "Let’s double check it";
+"confirm.mnemonic.subtitle" = "Select the words in the right order.";
+"confirm.mnemonic.select.word" = "Select the words...";

@@ -74,9 +74,12 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
         let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
-        view.skipButtonTitle = LocalizableResource { locale in
-            R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-        }
+
+        #if F_DEV
+            view.skipButtonTitle = LocalizableResource { locale in
+                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
+            }
+        #endif
 
         let presenter = AccountConfirmPresenter()
 
@@ -98,9 +101,12 @@ final class AccountConfirmViewFactory: AccountConfirmViewFactoryProtocol {
         wireframe: AccountConfirmWireframeProtocol
     ) -> AccountConfirmViewProtocol? {
         let view = AccountConfirmViewController(nib: R.nib.accountConfirmViewController)
-        view.skipButtonTitle = LocalizableResource { locale in
-            R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
-        }
+
+        #if F_DEV
+            view.skipButtonTitle = LocalizableResource { locale in
+                R.string.localizable.confirmationSkipAction(preferredLanguages: locale.rLanguages)
+            }
+        #endif
 
         let presenter = AccountConfirmPresenter()
 
