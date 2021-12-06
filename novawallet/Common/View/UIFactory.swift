@@ -22,6 +22,7 @@ struct UIConstants {
     static let triangularedIconSmallRadius: CGFloat = 9.0
     static let triangularedViewHeight: CGFloat = 52.0
     static let verticalTitleInset: CGFloat = 8.0
+    static let navigationAccountIconSize: CGFloat = 40.0
 }
 
 enum AccountViewMode {
