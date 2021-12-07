@@ -188,6 +188,12 @@ final class RewardEstimationView: LocalizableView {
     }
 
     private func applyWidgetViewModel() {
+        let tokenSymbol = widgetViewModel?.tokenSymbol ?? ""
+        titleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
+            tokenSymbol.uppercased(),
+            preferredLanguages: locale.rLanguages
+        )
+
         if let viewModel = widgetViewModel?.reward?.value(for: locale) {
             stopLoadingIfNeeded()
 
@@ -200,11 +206,6 @@ final class RewardEstimationView: LocalizableView {
 
     private func applyLocalization() {
         let languages = locale.rLanguages
-
-        titleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
-            "",
-            preferredLanguages: languages
-        )
 
         monthlyTitleLabel.text = R.string.localizable
             .stakingMonthPeriodTitle(preferredLanguages: languages)
