@@ -8,10 +8,44 @@ protocol NetworkInfoViewDelegate: AnyObject {
 }
 
 final class NetworkInfoView: UIView {
-    @IBOutlet var backgroundView: TriangularedBlurView!
-    @IBOutlet var networkInfoContainer: UIView!
-    @IBOutlet var titleControl: ActionTitleControl!
-    @IBOutlet var collectionView: UICollectionView!
+    let backgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        return view
+    }()
+
+    let networkInfoContainer: UIView = {
+        let view = UIView()
+        view.clipsToBounds = true
+        return view
+    }()
+
+    let titleControl: ActionTitleControl = {
+        let control = ActionTitleControl()
+        control.imageView.image = R.image.iconArrowUp()
+        control.imageView.tintColor = R.color.colorWhite()
+        control.identityIconAngle = 180
+        control.titleLabel.textColor = R.color.colorWhite()
+        control.titleLabel.font = .p1Paragraph
+        control.layoutType = .flexible
+        control.contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        control.horizontalSpacing = 0.0
+        control.iconDisplacement = 0.0
+        return control
+    }()
+
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .fill
+        return stackView
+    }()
+
+    let totalStakedView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applyBlurStyle()
+        return view
+    }()
 
     @IBOutlet var totalStakedTitleLabel: UILabel!
     @IBOutlet var totalStakedAmountLabel: UILabel!
