@@ -7,8 +7,8 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         self.state = state
     }
 
-    func showSetupAmount(from view: StakingMainViewProtocol?, amount: Decimal?) {
-        guard let amountView = StakingAmountViewFactory.createView(with: amount, stakingState: state) else {
+    func showSetupAmount(from view: StakingMainViewProtocol?) {
+        guard let amountView = StakingAmountViewFactory.createView(with: nil, stakingState: state) else {
             return
         }
 
@@ -60,7 +60,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(storiesView.controller, animated: true, completion: nil)
     }
 
-    // TODO: Remove
     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal) {
         let infoVew = ModalInfoFactory.createRewardDetails(for: maxReward, avgReward: avgReward)
 

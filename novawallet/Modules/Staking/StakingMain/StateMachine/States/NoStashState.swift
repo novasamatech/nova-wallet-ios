@@ -1,15 +1,10 @@
 import Foundation
 
 final class NoStashState: BaseStakingState {
-    private(set) var rewardEstimationAmount: Decimal?
-
     init(
         stateMachine: StakingStateMachineProtocol,
-        commonData: StakingStateCommonData,
-        rewardEstimationAmount: Decimal? = nil
+        commonData: StakingStateCommonData
     ) {
-        self.rewardEstimationAmount = rewardEstimationAmount
-
         super.init(stateMachine: stateMachine, commonData: commonData)
     }
 
@@ -35,11 +30,5 @@ final class NoStashState: BaseStakingState {
         } else {
             stateMachine?.transit(to: self)
         }
-    }
-
-    override func process(rewardEstimationAmount: Decimal?) {
-        self.rewardEstimationAmount = rewardEstimationAmount
-
-        stateMachine?.transit(to: self)
     }
 }
