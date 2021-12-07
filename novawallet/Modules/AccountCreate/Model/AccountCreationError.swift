@@ -27,13 +27,13 @@ extension AccountCreationError: ErrorContentConvertible {
         case .unsupportedNetwork:
             return R.string.localizable
                 .commonUnsupportedNetworkMessage(preferredLanguages: locale?.rLanguages)
-            
+
         case .invalidDerivationHardSoftNumericPassword,
-                .invalidDerivationHardSoftPassword,
-                .invalidDerivationHardPassword,
-                .invalidDerivationHardSoftNumeric,
-                .invalidDerivationHardSoft,
-                .invalidDerivationHard:
+             .invalidDerivationHardSoftPassword,
+             .invalidDerivationHardPassword,
+             .invalidDerivationHardSoftNumeric,
+             .invalidDerivationHardSoft,
+             .invalidDerivationHard:
             return R.string.localizable
                 .commonInvalidDerivationPathMessage_v2_2_0(preferredLanguages: locale?.rLanguages)
         }
