@@ -3,19 +3,15 @@ import Foundation
 final class BondedState: BaseStashNextState {
     private(set) var ledgerInfo: StakingLedger
 
-    private(set) var rewardEstimationAmount: Decimal?
-
     init(
         stateMachine: StakingStateMachineProtocol,
         commonData: StakingStateCommonData,
         stashItem: StashItem,
         ledgerInfo: StakingLedger,
         totalReward: TotalRewardItem?,
-        rewardEstimationAmount: Decimal? = nil,
         payee: RewardDestinationArg?
     ) {
         self.ledgerInfo = ledgerInfo
-        self.rewardEstimationAmount = rewardEstimationAmount
 
         super.init(
             stateMachine: stateMachine,
@@ -28,12 +24,6 @@ final class BondedState: BaseStashNextState {
 
     override func accept(visitor: StakingStateVisitorProtocol) {
         visitor.visit(state: self)
-    }
-
-    override func process(rewardEstimationAmount: Decimal?) {
-        self.rewardEstimationAmount = rewardEstimationAmount
-
-        stateMachine?.transit(to: self)
     }
 
     override func process(ledgerInfo: StakingLedger?) {
