@@ -372,15 +372,15 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     }
 
     func didReceive(priceError: Error) {
-        handle(error: priceError)
+        logger?.error("Price fetch failed with error: \(priceError)")
     }
 
     func didReceive(totalReward: TotalRewardItem) {
         stateMachine.state.process(totalReward: totalReward)
     }
 
-    func didReceive(totalReward: Error) {
-        handle(error: totalReward)
+    func didReceive(totalRewardError: Error) {
+        logger?.error("Total reward fetch failed with error: \(totalRewardError)")
     }
 
     func didReceive(accountInfo: AccountInfo?) {
