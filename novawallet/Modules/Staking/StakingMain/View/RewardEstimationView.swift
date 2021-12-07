@@ -4,28 +4,66 @@ import SoraFoundation
 import SoraUI
 
 protocol RewardEstimationViewDelegate: AnyObject {
-    func rewardEstimationView(_ view: RewardEstimationView, didChange amount: Decimal?) // TODO: Remove
-    func rewardEstimationView(_ view: RewardEstimationView, didSelect percentage: Float) // TODO: Remove
-    func rewardEstimationDidStartAction(_ view: RewardEstimationView) // TODO: What is it?
-    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView) // TODO: What is it?
+    func rewardEstimationDidStartAction(_ view: RewardEstimationView)
+    func rewardEstimationDidRequestInfo(_ view: RewardEstimationView)
 }
 
 final class RewardEstimationView: LocalizableView {
-    @IBOutlet var backgroundView: TriangularedBlurView!
+    let backgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        return view
+    }()
 
-    @IBOutlet var averageAPYTitleLabel: UILabel!
-    @IBOutlet var averageAPYValueLabel: UILabel!
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()
+        label.font = .p1Paragraph
+        return label
+    }()
 
-    @IBOutlet var maximumAPYTitleLabel: UILabel!
-    @IBOutlet var maximumAPYValueLabel: UILabel!
+    let monthlyTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorTransparentText()
+        label.font = .p2Paragraph
+        return label
+    }()
 
-    @IBOutlet var estimateWidgetTitleLabel: UILabel!
+    let monthlyValueLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorGreen()
+        label.font = .title2
+        return label
+    }()
 
-    @IBOutlet private var actionButton: TriangularedButton!
+    let yearlyTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorTransparentText()
+        label.font = .p2Paragraph
+        return label
+    }()
+
+    let yearlyValueLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorGreen()
+        label.font = .title2
+        return label
+    }()
+
+    let mainButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
+    }()
+
+    let infoButton: RoundedButton = {
+        let button = RoundedButton()
+        button.applyIconStyle()
+        button.imageWithTitleView?.iconImage = R.image.iconInfo()?.withRenderingMode(.alwaysTemplate)
+        button.tintColor = R.color.colorWhite48()!
+        return button
+    }()
 
     private var skeletonView: SkrullableView?
-
-    var amountFormatterFactory: AssetBalanceFormatterFactoryProtocol?
 
     var actionTitle: LocalizableResource<String> = LocalizableResource { locale in
         R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
@@ -37,8 +75,6 @@ final class RewardEstimationView: LocalizableView {
 
     weak var delegate: RewardEstimationViewDelegate?
 
-    var uiFactory: UIFactoryProtocol? // TODO: Remove
-
     var locale = Locale.current {
         didSet {
             applyLocalization()
@@ -49,13 +85,41 @@ final class RewardEstimationView: LocalizableView {
         }
     }
 
-    private var inputViewModel: AmountInputViewModelProtocol? // TODO: Remove
     private var widgetViewModel: StakingEstimationViewModel?
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        applyLocalization()
+        setupLayout()
+
+        mainButton.addTarget(
+            self,
+            action: #selector(actionMainTouchUpInside),
+            for: .touchUpInside
+        )
+
+        infoButton.addTarget(
+            self,
+            action: #selector(actionInfoTouchUpInside),
+            for: .touchUpInside
+        )
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 202.0)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView != nil {
+            setupSkeleton()
+        }
     }
 
     func bind(viewModel: StakingEstimationViewModel) {
@@ -63,20 +127,72 @@ final class RewardEstimationView: LocalizableView {
         applyWidgetViewModel()
     }
 
-    private func applyWidgetViewModel() {
-        if let viewModel = widgetViewModel?.assetBalance.value(for: locale) {
-            estimateWidgetTitleLabel.text = R.string.localizable
-                .stakingEstimateEarningTitle_v190(
-                    viewModel.symbol,
-                    preferredLanguages: locale.rLanguages
-                )
+    private func setupLayout() {
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
-        if let viewModel = widgetViewModel?.rewardViewModel?.value(for: locale) {
+        addSubview(infoButton)
+        infoButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.top.equalToSuperview()
+            make.width.equalTo(56.0)
+            make.height.equalTo(48.0)
+        }
+
+        addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16.0)
+            make.top.equalToSuperview().inset(14.0)
+        }
+
+        addSubview(mainButton)
+        mainButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview().inset(24.0)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        addSubview(monthlyTitleLabel)
+        monthlyTitleLabel.snp.makeConstraints { make in
+            make.leading.greaterThanOrEqualToSuperview().inset(16)
+            make.trailing.lessThanOrEqualTo(self.snp.centerX).offset(-16.0)
+            make.centerX.equalToSuperview().multipliedBy(0.5)
+            make.bottom.equalTo(mainButton.snp.top).offset(-24.0)
+        }
+
+        addSubview(yearlyTitleLabel)
+        yearlyTitleLabel.snp.makeConstraints { make in
+            make.leading.greaterThanOrEqualTo(self.snp.centerX).offset(16.0)
+            make.trailing.lessThanOrEqualToSuperview().offset(-16.0)
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+            make.bottom.equalTo(mainButton.snp.top).offset(-24.0)
+        }
+
+        addSubview(monthlyValueLabel)
+        monthlyValueLabel.snp.makeConstraints { make in
+            make.leading.greaterThanOrEqualToSuperview().inset(16)
+            make.trailing.lessThanOrEqualTo(self.snp.centerX).offset(-16.0)
+            make.centerX.equalToSuperview().multipliedBy(0.5)
+            make.bottom.equalTo(monthlyTitleLabel.snp.top)
+        }
+
+        addSubview(yearlyValueLabel)
+        yearlyValueLabel.snp.makeConstraints { make in
+            make.leading.greaterThanOrEqualTo(self.snp.centerX).offset(16.0)
+            make.trailing.lessThanOrEqualToSuperview().offset(-16.0)
+            make.centerX.equalToSuperview().multipliedBy(1.5)
+            make.bottom.equalTo(yearlyTitleLabel.snp.top)
+        }
+    }
+
+    private func applyWidgetViewModel() {
+        if let viewModel = widgetViewModel?.reward?.value(for: locale) {
             stopLoadingIfNeeded()
 
-            averageAPYValueLabel.text = viewModel.avgAPY.apy
-            maximumAPYValueLabel.text = viewModel.maxAPY.apy
+            monthlyValueLabel.text = viewModel.monthly
+            yearlyValueLabel.text = viewModel.yearly
         } else {
             startLoadingIfNeeded()
         }
@@ -85,24 +201,24 @@ final class RewardEstimationView: LocalizableView {
     private func applyLocalization() {
         let languages = locale.rLanguages
 
-        estimateWidgetTitleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
+        titleLabel.text = R.string.localizable.stakingEstimateEarningTitle_v190(
             "",
             preferredLanguages: languages
         )
 
-        averageAPYTitleLabel.text = R.string.localizable
-            .stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+        monthlyTitleLabel.text = R.string.localizable
+            .stakingMonthPeriodTitle(preferredLanguages: languages)
 
-        maximumAPYTitleLabel.text = R.string.localizable
-            .stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+        yearlyTitleLabel.text = R.string.localizable
+            .stakingYearPeriodTitle(preferredLanguages: languages)
 
         applyActionTitle()
     }
 
     private func applyActionTitle() {
         let title = actionTitle.value(for: locale)
-        actionButton.imageWithTitleView?.title = title
-        actionButton.invalidateLayout()
+        mainButton.imageWithTitleView?.title = title
+        mainButton.invalidateLayout()
     }
 
     func startLoadingIfNeeded() {
@@ -110,8 +226,8 @@ final class RewardEstimationView: LocalizableView {
             return
         }
 
-        averageAPYValueLabel.alpha = 0.0
-        maximumAPYValueLabel.alpha = 0.0
+        monthlyValueLabel.alpha = 0.0
+        yearlyValueLabel.alpha = 0.0
 
         setupSkeleton()
     }
@@ -125,54 +241,78 @@ final class RewardEstimationView: LocalizableView {
         skeletonView?.removeFromSuperview()
         skeletonView = nil
 
-        averageAPYValueLabel.alpha = 1.0
-        maximumAPYValueLabel.alpha = 1.0
+        monthlyValueLabel.alpha = 1.0
+        yearlyValueLabel.alpha = 1.0
     }
 
     private func setupSkeleton() {
         let spaceSize = frame.size
 
-        let skeletonView = Skrull(
+        guard spaceSize.width > 0, spaceSize.height > 0 else {
+            return
+        }
+
+        let builder = Skrull(
             size: spaceSize,
             decorations: [],
             skeletons: createSkeletons(for: spaceSize)
         )
-        .fillSkeletonStart(R.color.colorSkeletonStart()!)
-        .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-        .build()
 
-        skeletonView.frame = CGRect(origin: .zero, size: spaceSize)
-        skeletonView.autoresizingMask = []
-        insertSubview(skeletonView, aboveSubview: backgroundView)
+        let currentSkeletonView: SkrullableView?
 
-        self.skeletonView = skeletonView
+        if let skeletonView = skeletonView {
+            currentSkeletonView = skeletonView
+            builder.updateSkeletons(in: skeletonView)
+        } else {
+            let view = builder
+                .fillSkeletonStart(R.color.colorSkeletonStart()!)
+                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
+                .build()
+            view.autoresizingMask = []
+            insertSubview(view, aboveSubview: backgroundView)
 
-        skeletonView.startSkrulling()
+            skeletonView = view
+
+            view.startSkrulling()
+
+            currentSkeletonView = view
+        }
+
+        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
-        let smallRowSize = CGSize(width: 57.0, height: 6.0)
+
+        let offsetY = 6.0
+        let monthlyOffsetX = monthlyTitleLabel.intrinsicContentSize.width / 2.0 - bigRowSize.width / 2.0
+        let yearlyOffsetX = yearlyTitleLabel.intrinsicContentSize.width / 2.0 - bigRowSize.width / 2.0
 
         return [
             SingleSkeleton.createRow(
-                inPlaceOf: averageAPYValueLabel,
+                above: monthlyTitleLabel,
                 containerView: self,
                 spaceSize: spaceSize,
+                offset: CGPoint(x: monthlyOffsetX, y: offsetY),
                 size: bigRowSize
             ),
 
             SingleSkeleton.createRow(
-                inPlaceOf: maximumAPYValueLabel,
+                above: yearlyTitleLabel,
                 containerView: self,
                 spaceSize: spaceSize,
+                offset: CGPoint(x: yearlyOffsetX, y: offsetY),
                 size: bigRowSize
             )
         ]
     }
 
-    @IBAction private func actionTouchUpInside() {
+    @objc private func actionMainTouchUpInside() {
         delegate?.rewardEstimationDidStartAction(self)
+    }
+
+    @objc private func actionInfoTouchUpInside() {
+        delegate?.rewardEstimationDidRequestInfo(self)
     }
 }
 

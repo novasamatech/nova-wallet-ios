@@ -20,15 +20,6 @@ final class StakingMainPresenter {
         stateMachine.viewState { (state: BaseStakingState) in state.commonData.chainAsset }
     }
 
-    var amount: Decimal? {
-        if let amount = stateMachine
-            .viewState(using: { (state: NoStashState) in state.rewardEstimationAmount }) {
-            return amount
-        }
-
-        return stateMachine.viewState { (state: BondedState) in state.rewardEstimationAmount }
-    }
-
     var priceData: PriceData? {
         stateMachine.viewState { (state: BaseStakingState) in state.commonData.price }
     }
@@ -176,7 +167,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
                 locale: locale
             )
         ]).runValidation { [weak self] in
-            self?.wireframe.showSetupAmount(from: self?.view, amount: self?.amount)
+            self?.wireframe.showSetupAmount(from: self?.view)
         }
     }
 
@@ -261,32 +252,16 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         )
     }
 
-    // TODO: Remove
     func performRewardInfoAction() {
         guard let rewardCalculator = stateMachine
             .viewState(using: { (state: BaseStakingState) in state })?.commonData.calculatorEngine else {
             return
         }
 
-        // TODO: Use in view model generation
         let maxReward = rewardCalculator.calculateMaxReturn(isCompound: true, period: .year)
         let avgReward = rewardCalculator.calculateAvgReturn(isCompound: true, period: .year)
 
-        // TODO: Remove
         wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
-    }
-
-    // TODO: Remove
-    func updateAmount(_ newValue: Decimal) {
-        stateMachine.state.process(rewardEstimationAmount: newValue)
-    }
-
-    // TODO: Remove
-    func selectAmountPercentage(_ percentage: Float) {
-        if let balance = balance {
-            let newAmount = balance * Decimal(Double(percentage))
-            stateMachine.state.process(rewardEstimationAmount: newAmount)
-        }
     }
 
     func selectStory(at index: Int) {
@@ -372,15 +347,15 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     }
 
     func didReceive(priceError: Error) {
-        handle(error: priceError)
+        logger?.error("Price fetch failed with error: \(priceError)")
     }
 
     func didReceive(totalReward: TotalRewardItem) {
         stateMachine.state.process(totalReward: totalReward)
     }
 
-    func didReceive(totalReward: Error) {
-        handle(error: totalReward)
+    func didReceive(totalRewardError: Error) {
+        logger?.error("Total reward fetch failed with error: \(totalRewardError)")
     }
 
     func didReceive(accountInfo: AccountInfo?) {

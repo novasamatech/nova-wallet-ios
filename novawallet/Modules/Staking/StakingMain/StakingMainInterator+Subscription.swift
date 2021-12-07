@@ -251,7 +251,7 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
         case let .success(totalReward):
             presenter.didReceive(totalReward: totalReward)
         case let .failure(error):
-            presenter.didReceive(totalReward: error)
+            presenter.didReceive(totalRewardError: error)
         }
     }
 

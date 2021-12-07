@@ -253,11 +253,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
             return rewardView
         }
 
-        let stateView = setupView { R.nib.rewardEstimationView(owner: nil) }
+        let size = CGSize(width: 343, height: 202.0)
+        let stateView = setupView { RewardEstimationView(frame: CGRect(origin: .zero, size: size)) }
 
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
-        stateView?.uiFactory = uiFactory
-        stateView?.amountFormatterFactory = amountFormatterFactory
         stateView?.delegate = self
 
         return stateView
@@ -344,23 +343,12 @@ extension StakingMainViewController: Localizable {
 }
 
 extension StakingMainViewController: RewardEstimationViewDelegate {
-    // TODO: Remove
-    func rewardEstimationView(_: RewardEstimationView, didChange amount: Decimal?) {
-        presenter.updateAmount(amount ?? 0.0) // TODO: Remove
-    }
-
-    // TODO: Remove
-    func rewardEstimationView(_: RewardEstimationView, didSelect percentage: Float) {
-        presenter.selectAmountPercentage(percentage) // TODO: Remove
-    }
-
     func rewardEstimationDidStartAction(_: RewardEstimationView) {
         presenter.performMainAction()
     }
 
-    // TODO: Remove
     func rewardEstimationDidRequestInfo(_: RewardEstimationView) {
-        presenter.performRewardInfoAction() // TODO: Remove
+        presenter.performRewardInfoAction()
     }
 }
 

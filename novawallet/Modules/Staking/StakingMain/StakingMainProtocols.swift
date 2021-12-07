@@ -24,8 +24,6 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performBondMoreAction()
     func performRedeemAction()
     func performAnalyticsAction()
-    func updateAmount(_ newValue: Decimal)
-    func selectAmountPercentage(_ percentage: Float)
     func selectStory(at index: Int)
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
 }
@@ -41,7 +39,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceive(price: PriceData?)
     func didReceive(priceError: Error)
     func didReceive(totalReward: TotalRewardItem)
-    func didReceive(totalReward: Error)
+    func didReceive(totalRewardError: Error)
     func didReceive(accountInfo: AccountInfo?)
     func didReceive(balanceError: Error)
     func didReceive(calculator: RewardCalculatorEngineProtocol)
@@ -74,7 +72,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
-    func showSetupAmount(from view: StakingMainViewProtocol?, amount: Decimal?)
+    func showSetupAmount(from view: StakingMainViewProtocol?)
 
     func showManageStaking(
         from view: StakingMainViewProtocol?,
