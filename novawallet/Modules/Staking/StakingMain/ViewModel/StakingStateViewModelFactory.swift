@@ -183,120 +183,26 @@ final class StakingStateViewModelFactory {
         }
     }
 
-    private func createPeriodReward(
-        for chainAsset: ChainAsset,
-        commonData: StakingStateCommonData,
-        amount: Decimal?
-    ) throws -> LocalizableResource<PeriodRewardViewModel>? {
-        guard let calculator = commonData.calculatorEngine else {
-            return nil
-        }
-
-        let rewardViewModelFactory = getRewardViewModelFactory(for: chainAsset)
-
-        let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
-
-        let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
-
-        let avgAPY = calculator.calculateAvgReturn(isCompound: true, period: .year)
-        let maxAPY = calculator.calculateMaxReturn(isCompound: true, period: .year)
-
-        let avgViewModel = rewardViewModelFactory.createRewardViewModel(
-            reward: (amount ?? 0.0) * monthlyReturn,
-            targetReturn: monthlyReturn,
-            apy: avgAPY,
-            priceData: commonData.price
-        )
-
-        let maxViewModel = rewardViewModelFactory.createRewardViewModel(
-            reward: (amount ?? 0.0) * yearlyReturn,
-            targetReturn: yearlyReturn,
-            apy: maxAPY,
-            priceData: commonData.price
-        )
-
-        return LocalizableResource { locale in
-            PeriodRewardViewModel(
-                monthlyReward: avgViewModel.value(for: locale),
-                yearlyReward: maxViewModel.value(for: locale)
-            )
-        }
-    }
-
-    private func createAPYViewModel(
-        for chainAsset: ChainAsset,
-        commonData: StakingStateCommonData,
-        amount: Decimal?
-    ) throws -> LocalizableResource<APYViewModel>? {
-        guard let calculator = commonData.calculatorEngine else {
-            return nil
-        }
-
-        let rewardViewModelFactory = getRewardViewModelFactory(for: chainAsset)
-
-        let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
-
-        let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
-
-        let avgAPY = calculator.calculateAvgReturn(isCompound: true, period: .year)
-        let maxAPY = calculator.calculateMaxReturn(isCompound: true, period: .year)
-
-        let avgViewModel = rewardViewModelFactory.createRewardViewModel(
-            reward: (amount ?? 0.0) * monthlyReturn,
-            targetReturn: monthlyReturn,
-            apy: avgAPY,
-            priceData: commonData.price
-        )
-
-        let maxViewModel = rewardViewModelFactory.createRewardViewModel(
-            reward: (amount ?? 0.0) * yearlyReturn,
-            targetReturn: yearlyReturn,
-            apy: maxAPY,
-            priceData: commonData.price
-        )
-
-        return LocalizableResource { locale in
-            APYViewModel(
-                avgAPY: avgViewModel.value(for: locale),
-                maxAPY: maxViewModel.value(for: locale)
-            )
-        }
-    }
-
     private func createEstimationViewModel(
-        for chainAsset: ChainAsset,
-        commonData: StakingStateCommonData,
-        amount: Decimal?
-    )
-        throws -> StakingEstimationViewModel {
-        let balanceViewModelFactory = getBalanceViewModelFactory(for: chainAsset)
+        commonData: StakingStateCommonData
+    ) throws -> StakingEstimationViewModel {
+        guard let calculator = commonData.calculatorEngine else {
+            return StakingEstimationViewModel(reward: nil)
+        }
 
-        let balance = convertAmount(
-            commonData.accountInfo?.data.available,
-            for: chainAsset,
-            defaultValue: 0.0
-        )
+        let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
+        let yearlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .year)
 
-        let balanceViewModel = balanceViewModelFactory
-            .createAssetBalanceViewModel(
-                amount ?? 0.0,
-                balance: balance,
-                priceData: commonData.price
+        let percentageFormatter = NumberFormatter.percentBase.localizableResource()
+
+        let reward = LocalizableResource { locale in
+            PeriodRewardViewModel(
+                monthly: percentageFormatter.value(for: locale).stringFromDecimal(monthlyReturn) ?? "",
+                yearly: percentageFormatter.value(for: locale).stringFromDecimal(yearlyReturn) ?? ""
             )
+        }
 
-        let reward: LocalizableResource<APYViewModel>? = try createAPYViewModel(
-            for: chainAsset,
-            commonData: commonData,
-            amount: amount
-        )
-
-        return StakingEstimationViewModel(
-            assetBalance: balanceViewModel,
-            rewardViewModel: reward,
-            assetInfo: chainAsset.assetDisplayInfo,
-            inputLimit: StakingConstants.maxAmount,
-            amount: amount
-        )
+        return StakingEstimationViewModel(reward: reward)
     }
 }
 
@@ -325,11 +231,7 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         updateCacheForChainAsset(chainAsset)
 
         do {
-            let viewModel = try createEstimationViewModel(
-                for: chainAsset,
-                commonData: state.commonData,
-                amount: state.rewardEstimationAmount
-            )
+            let viewModel = try createEstimationViewModel(commonData: state.commonData)
 
             let alerts = stakingAlertsNoStashState(state)
             lastViewModel = .noStash(viewModel: viewModel, alerts: alerts)
