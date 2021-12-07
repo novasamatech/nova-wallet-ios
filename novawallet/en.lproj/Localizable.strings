@@ -538,6 +538,8 @@
 "username.setup.title" = "";
 "import.json.unsupported.ethereum.crypto.message" = "Cannot import account with Substrate secret into the network with Ethereum encryption";
 "import.json.unsupported.substrate.crypto.message" = "Cannot import account with Ethereum secret into the network with Substrate encryption";
+"staking.month.period.title" = "Monthly";
+"staking.year.period.title" = "Yearly";
 "wallet.nickname.create.title" = "Create wallet nickname";
 "wallet.nickname.create.subtitle" = "This nickname will be displayed only for you and stored locally on your mobile device.";
 "wallet.nickname.create.caption" = "Examples: Savings, Investments, Crowdloans, Staking.";
