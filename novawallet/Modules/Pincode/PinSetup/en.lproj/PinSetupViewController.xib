@@ -17,7 +17,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PinSetupViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PinSetupViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="navigationBar" destination="SYy-2D-F5q" id="4Mm-GD-NTm"/>
                 <outlet property="navigationBarTop" destination="Abv-ho-QLD" id="2kV-ae-Iec"/>
@@ -55,8 +55,8 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter pin code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dqY-VK-ps1">
-                    <rect key="frame" x="137.5" y="131.5" width="100" height="18"/>
-                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="15"/>
+                    <rect key="frame" x="121" y="126" width="133.5" height="23.5"/>
+                    <fontDescription key="fontDescription" name="PublicSans-Regular" family="Public Sans" pointSize="20"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -71,26 +71,26 @@
                             <integer key="value" value="6"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_fieldStrokeWidth">
-                            <real key="value" value="2"/>
+                            <real key="value" value="0.0"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="size" keyPath="_fieldSize">
-                            <size key="value" width="15" height="15"/>
+                            <size key="value" width="16" height="16"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_fieldSpacing">
-                            <real key="value" value="24"/>
+                            <real key="value" value="16"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_numpadRadius">
-                            <real key="value" value="36"/>
+                            <real key="value" value="40"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_numpadVerticalSpacing">
-                            <real key="value" value="15"/>
+                            <real key="value" value="20"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_numpadHorizontalSpacing">
-                            <real key="value" value="22"/>
+                            <real key="value" value="20"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="image" keyPath="_numpadBackspaceIcon" value="pinBackspace"/>
                         <userDefinedRuntimeAttribute type="color" keyPath="_numpadFillColor">
-                            <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="value" name="colorWhite8"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_numpadHighlightedFillColor">
                             <color key="value" name="colorHighlightedAccent"/>
@@ -101,12 +101,12 @@
                         <userDefinedRuntimeAttribute type="color" keyPath="_numpadHighlightedTitleColor">
                             <color key="value" white="1" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </userDefinedRuntimeAttribute>
-                        <userDefinedRuntimeAttribute type="string" keyPath="_numpadFontName" value="PublicSans-Regular"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="_numpadFontName" value="PublicSans-ExtraLight"/>
                         <userDefinedRuntimeAttribute type="number" keyPath="_numpadFontSize">
-                            <integer key="value" value="26"/>
+                            <real key="value" value="32"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_securedStrokeWidth">
-                            <real key="value" value="2"/>
+                            <real key="value" value="1"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_securedFieldRadius">
                             <real key="value" value="6"/>
@@ -118,7 +118,7 @@
                             <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="color" keyPath="_fieldFillColor">
-                            <color key="value" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <color key="value" name="colorAccent"/>
                         </userDefinedRuntimeAttribute>
                         <userDefinedRuntimeAttribute type="number" keyPath="_numpadShadowOpacity">
                             <real key="value" value="0.0"/>
@@ -160,6 +160,9 @@
     </designables>
     <resources>
         <image name="pinBackspace" width="23" height="21"/>
+        <namedColor name="colorAccent">
+            <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="colorBlack">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -168,6 +171,9 @@
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="colorWhite8">
+            <color red="1" green="1" blue="1" alpha="0.080000000000000002" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

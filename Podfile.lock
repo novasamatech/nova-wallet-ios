@@ -132,7 +132,7 @@ DEPENDENCIES:
   - SnapKit (~> 5.0.0)
   - SoraFoundation (~> 1.0.0)
   - SoraKeystore (~> 1.0.0)
-  - SoraUI (~> 1.10.3)
+  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
   - Sourcery (~> 1.4)
   - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `1443ece967d1c6b7bb9a7a9636f6fe7ab34531ff`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
@@ -159,7 +159,6 @@ SPEC REPOS:
     - SnapKit
     - SoraFoundation
     - SoraKeystore
-    - SoraUI
     - Sourcery
     - Starscream
     - SwiftFormat
@@ -172,6 +171,9 @@ EXTERNAL SOURCES:
   CommonWallet:
     :commit: e64218560a1749d352cf881ff73afaf20f9ce435
     :git: https://github.com/ERussel/Capital-iOS.git
+  SoraUI:
+    :commit: 5d364b42000925775361d2098276871e429bfc47
+    :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
     :commit: 1443ece967d1c6b7bb9a7a9636f6fe7ab34531ff
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
@@ -183,6 +185,9 @@ CHECKOUT OPTIONS:
   CommonWallet:
     :commit: e64218560a1749d352cf881ff73afaf20f9ce435
     :git: https://github.com/ERussel/Capital-iOS.git
+  SoraUI:
+    :commit: 5d364b42000925775361d2098276871e429bfc47
+    :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
     :commit: 1443ece967d1c6b7bb9a7a9636f6fe7ab34531ff
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
@@ -220,6 +225,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 5baeeb2f3f9d7737eb85f05ce1154444ea33dff0
+PODFILE CHECKSUM: 43062de8060d4d9460274592be83865850664905
 
 COCOAPODS: 1.11.2
