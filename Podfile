@@ -7,7 +7,7 @@ abstract_target 'novawalletAll' do
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
-  pod 'SoraUI', '~> 1.10.3'
+  pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :commit => '5d364b42000925775361d2098276871e429bfc47'
   pod 'RobinHood', '~> 2.6.0'
   pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'e64218560a1749d352cf881ff73afaf20f9ce435'
   pod 'SoraFoundation', '~> 1.0.0'
