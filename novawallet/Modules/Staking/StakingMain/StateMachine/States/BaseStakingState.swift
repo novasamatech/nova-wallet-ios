@@ -107,7 +107,6 @@ class BaseStakingState: StakingStateProtocol {
         stateMachine?.transit(to: self)
     }
 
-    func process(rewardEstimationAmount _: Decimal?) {}
     func process(stashItem _: StashItem?) {}
     func process(ledgerInfo _: StakingLedger?) {}
     func process(nomination _: Nomination?) {}

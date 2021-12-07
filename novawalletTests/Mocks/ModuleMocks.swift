@@ -36296,36 +36296,6 @@ import SoraFoundation
     
     
     
-     func updateAmount(_ newValue: Decimal)  {
-        
-    return cuckoo_manager.call("updateAmount(_: Decimal)",
-            parameters: (newValue),
-            escapingParameters: (newValue),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.updateAmount(newValue))
-        
-    }
-    
-    
-    
-     func selectAmountPercentage(_ percentage: Float)  {
-        
-    return cuckoo_manager.call("selectAmountPercentage(_: Float)",
-            parameters: (percentage),
-            escapingParameters: (percentage),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.selectAmountPercentage(percentage))
-        
-    }
-    
-    
-    
      func selectStory(at index: Int)  {
         
     return cuckoo_manager.call("selectStory(at: Int)",
@@ -36426,16 +36396,6 @@ import SoraFoundation
 	    func performAnalyticsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performAnalyticsAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func updateAmount<M1: Cuckoo.Matchable>(_ newValue: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Decimal)> where M1.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(Decimal)>] = [wrap(matchable: newValue) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "updateAmount(_: Decimal)", parameterMatchers: matchers))
-	    }
-	    
-	    func selectAmountPercentage<M1: Cuckoo.Matchable>(_ percentage: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Float)> where M1.MatchedType == Float {
-	        let matchers: [Cuckoo.ParameterMatcher<(Float)>] = [wrap(matchable: percentage) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "selectAmountPercentage(_: Float)", parameterMatchers: matchers))
 	    }
 	    
 	    func selectStory<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
@@ -36543,18 +36503,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func updateAmount<M1: Cuckoo.Matchable>(_ newValue: M1) -> Cuckoo.__DoNotUse<(Decimal), Void> where M1.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(Decimal)>] = [wrap(matchable: newValue) { $0 }]
-	        return cuckoo_manager.verify("updateAmount(_: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func selectAmountPercentage<M1: Cuckoo.Matchable>(_ percentage: M1) -> Cuckoo.__DoNotUse<(Float), Void> where M1.MatchedType == Float {
-	        let matchers: [Cuckoo.ParameterMatcher<(Float)>] = [wrap(matchable: percentage) { $0 }]
-	        return cuckoo_manager.verify("selectAmountPercentage(_: Float)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func selectStory<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
 	        return cuckoo_manager.verify("selectStory(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -36624,14 +36572,6 @@ import SoraFoundation
     }
     
      func performAnalyticsAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func updateAmount(_ newValue: Decimal)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func selectAmountPercentage(_ percentage: Float)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -36883,16 +36823,16 @@ import SoraFoundation
     
     
     
-     func didReceive(totalReward: Error)  {
+     func didReceive(totalRewardError: Error)  {
         
-    return cuckoo_manager.call("didReceive(totalReward: Error)",
-            parameters: (totalReward),
-            escapingParameters: (totalReward),
+    return cuckoo_manager.call("didReceive(totalRewardError: Error)",
+            parameters: (totalRewardError),
+            escapingParameters: (totalRewardError),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(totalReward: totalReward))
+            defaultCall: __defaultImplStub!.didReceive(totalRewardError: totalRewardError))
         
     }
     
@@ -37330,9 +37270,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceive(totalReward: TotalRewardItem)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(totalReward: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: totalReward) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceive(totalReward: Error)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable>(totalRewardError: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: totalRewardError) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceive(totalRewardError: Error)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.OptionalMatchable>(accountInfo: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountInfo?)> where M1.OptionalMatchedType == AccountInfo {
@@ -37511,9 +37451,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(totalReward: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
-	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: totalReward) { $0 }]
-	        return cuckoo_manager.verify("didReceive(totalReward: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable>(totalRewardError: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: totalRewardError) { $0 }]
+	        return cuckoo_manager.verify("didReceive(totalRewardError: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -37703,7 +37643,7 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func didReceive(totalReward: Error)   {
+     func didReceive(totalRewardError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -37844,16 +37784,16 @@ import SoraFoundation
     
     
     
-     func showSetupAmount(from view: StakingMainViewProtocol?, amount: Decimal?)  {
+     func showSetupAmount(from view: StakingMainViewProtocol?)  {
         
-    return cuckoo_manager.call("showSetupAmount(from: StakingMainViewProtocol?, amount: Decimal?)",
-            parameters: (view, amount),
-            escapingParameters: (view, amount),
+    return cuckoo_manager.call("showSetupAmount(from: StakingMainViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showSetupAmount(from: view, amount: amount))
+            defaultCall: __defaultImplStub!.showSetupAmount(from: view))
         
     }
     
@@ -38136,9 +38076,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func showSetupAmount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable>(from view: M1, amount: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainViewProtocol?, Decimal?)> where M1.OptionalMatchedType == StakingMainViewProtocol, M2.OptionalMatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?, Decimal?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: amount) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showSetupAmount(from: StakingMainViewProtocol?, amount: Decimal?)", parameterMatchers: matchers))
+	    func showSetupAmount<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainViewProtocol?)> where M1.OptionalMatchedType == StakingMainViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showSetupAmount(from: StakingMainViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func showManageStaking<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(from view: M1, items: M2, delegate: M3, context: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainViewProtocol?, [StakingManageOption], ModalPickerViewControllerDelegate?, AnyObject?)> where M1.OptionalMatchedType == StakingMainViewProtocol, M2.MatchedType == [StakingManageOption], M3.OptionalMatchedType == ModalPickerViewControllerDelegate, M4.OptionalMatchedType == AnyObject {
@@ -38248,9 +38188,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func showSetupAmount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable>(from view: M1, amount: M2) -> Cuckoo.__DoNotUse<(StakingMainViewProtocol?, Decimal?), Void> where M1.OptionalMatchedType == StakingMainViewProtocol, M2.OptionalMatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?, Decimal?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: amount) { $0.1 }]
-	        return cuckoo_manager.verify("showSetupAmount(from: StakingMainViewProtocol?, amount: Decimal?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showSetupAmount<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(StakingMainViewProtocol?), Void> where M1.OptionalMatchedType == StakingMainViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showSetupAmount(from: StakingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -38370,7 +38310,7 @@ import SoraFoundation
     
 
     
-     func showSetupAmount(from view: StakingMainViewProtocol?, amount: Decimal?)   {
+     func showSetupAmount(from view: StakingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

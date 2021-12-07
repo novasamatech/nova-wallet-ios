@@ -20,7 +20,6 @@ protocol StakingStateProtocol {
     func process(chainAsset: ChainAsset?)
     func process(accountInfo: AccountInfo?)
     func process(price: PriceData?)
-    func process(rewardEstimationAmount: Decimal?) // TODO: Remove
     func process(calculator: RewardCalculatorEngineProtocol?)
     func process(stashItem: StashItem?)
     func process(ledgerInfo: StakingLedger?)

@@ -538,6 +538,8 @@
 "username.setup.title" = "Создать аккаунт";
 "import.json.unsupported.ethereum.crypto.message" = "Не поддерживается импорт аккаунта с Substrate секретом в сеть с Ethereum шифрованием";
 "import.json.unsupported.substrate.crypto.message" = "Не поддерживается импорт аккаунта с Ethereum секретом в сеть с Substrate шифрованием";
+"staking.month.period.title" = "Eжемесячно";
+"staking.year.period.title" = "Eжегодно";
 "wallet.nickname.create.title" = "Назовите кошелёк";
 "wallet.nickname.create.subtitle" = "Имя хранится только на вашем мобильном устройстве и показывается только вам.";
 "wallet.nickname.create.caption" = "Примеры: сбережения, инвестиции, краудлоуны, стейкинг.";
