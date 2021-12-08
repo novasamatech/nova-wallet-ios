@@ -35,14 +35,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
-    private lazy var storiesModel: LocalizableResource<StoriesModel> = StoriesFactory.createModel()
 
     private var balanceViewModel: LocalizableResource<String>?
     private var assetIconViewModel: ImageViewModelProtocol?
 
     var iconGenerator: IconGenerating?
     var uiFactory: UIFactoryProtocol?
-    var amountFormatterFactory: AssetBalanceFormatterFactoryProtocol?
 
     var keyboardHandler: KeyboardHandler?
 
@@ -135,7 +133,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     }
 
     private func setupNetworkInfoView() {
-        guard let networkInfoView = R.nib.networkInfoView(owner: self) else { return }
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343.0, height: 296))
+        let networkInfoView = NetworkInfoView(frame: defaultFrame)
 
         self.networkInfoView = networkInfoView
 
@@ -149,8 +148,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         applyConstraints(for: networkInfoContainerView, innerView: networkInfoView)
 
         stackView.insertArranged(view: networkInfoContainerView, after: assetSelectionContainerView)
-
-        configureStoriesView()
     }
 
     private func setupAlertsView() {
@@ -178,19 +175,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     @objc
     private func handleAnalyticsWidgetTap() {
         presenter.performAnalyticsAction()
-    }
-
-    private func configureStoriesView() {
-        networkInfoView.collectionView.backgroundView = nil
-        networkInfoView.collectionView.backgroundColor = UIColor.clear
-
-        networkInfoView.collectionView.dataSource = self
-        networkInfoView.collectionView.delegate = self
-
-        networkInfoView.collectionView.register(
-            UINib(resource: R.nib.storiesPreviewCollectionItem),
-            forCellWithReuseIdentifier: R.reuseIdentifier.storiesPreviewCollectionItemId.identifier
-        )
     }
 
     private func clearStateView() {
@@ -354,7 +338,7 @@ extension StakingMainViewController: RewardEstimationViewDelegate {
 
 extension StakingMainViewController: StakingMainViewProtocol {
     func didRecieveNetworkStakingInfo(
-        viewModel: LocalizableResource<NetworkStakingInfoViewModelProtocol>?
+        viewModel: LocalizableResource<NetworkStakingInfoViewModel>?
     ) {
         networkInfoView.bind(viewModel: viewModel)
     }
@@ -373,7 +357,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
         iconButton.imageWithTitleView?.iconImage = icon
         iconButton.invalidateLayout()
 
-        networkInfoView.bind(chainName: viewModel.chainName)
         assetSelectionView.title = viewModel.assetName
         assetSelectionView.subtitle = viewModel.balanceViewModel?.value(for: selectedLocale)
 
@@ -445,40 +428,6 @@ extension StakingMainViewController: KeyboardAdoptable {
 
             scrollView.scrollRectToVisible(fieldFrame, animated: true)
         }
-    }
-}
-
-// MARK: Collection View Data Source -
-
-extension StakingMainViewController: UICollectionViewDataSource {
-    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
-        storiesModel.value(for: selectedLocale).stories.count
-    }
-
-    func collectionView(
-        _ collectionView: UICollectionView,
-        cellForItemAt indexPath: IndexPath
-    ) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: R.reuseIdentifier.storiesPreviewCollectionItemId,
-            for: indexPath
-        )!
-
-        let model = storiesModel.value(for: selectedLocale)
-        let story = model.stories[indexPath.row]
-
-        cell.bind(icon: story.icon, caption: story.title)
-        return cell
-    }
-}
-
-// MARK: Collection View Delegate -
-
-extension StakingMainViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-
-        presenter.selectStory(at: indexPath.row)
     }
 }
 
