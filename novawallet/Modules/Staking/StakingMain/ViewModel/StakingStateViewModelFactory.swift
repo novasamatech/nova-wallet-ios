@@ -184,10 +184,11 @@ final class StakingStateViewModelFactory {
     }
 
     private func createEstimationViewModel(
+        chainAsset: ChainAsset,
         commonData: StakingStateCommonData
     ) throws -> StakingEstimationViewModel {
         guard let calculator = commonData.calculatorEngine else {
-            return StakingEstimationViewModel(reward: nil)
+            return StakingEstimationViewModel(tokenSymbol: chainAsset.asset.symbol, reward: nil)
         }
 
         let monthlyReturn = calculator.calculateMaxReturn(isCompound: true, period: .month)
@@ -202,7 +203,10 @@ final class StakingStateViewModelFactory {
             )
         }
 
-        return StakingEstimationViewModel(reward: reward)
+        return StakingEstimationViewModel(
+            tokenSymbol: chainAsset.asset.symbol,
+            reward: reward
+        )
     }
 }
 
@@ -231,7 +235,7 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         updateCacheForChainAsset(chainAsset)
 
         do {
-            let viewModel = try createEstimationViewModel(commonData: state.commonData)
+            let viewModel = try createEstimationViewModel(chainAsset: chainAsset, commonData: state.commonData)
 
             let alerts = stakingAlertsNoStashState(state)
             lastViewModel = .noStash(viewModel: viewModel, alerts: alerts)
