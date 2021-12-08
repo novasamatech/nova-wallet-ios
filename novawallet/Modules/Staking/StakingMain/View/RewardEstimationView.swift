@@ -328,14 +328,10 @@ extension RewardEstimationView: SkeletonLoadable {
     }
 
     func didUpdateSkeletonLayout() {
-        guard let skeletonView = skeletonView else {
+        guard skeletonView != nil else {
             return
         }
 
-        if skeletonView.frame.size != frame.size {
-            skeletonView.removeFromSuperview()
-            self.skeletonView = nil
-            setupSkeleton()
-        }
+        setupSkeleton()
     }
 }
