@@ -8,5 +8,6 @@ struct PeriodRewardViewModel {
 }
 
 struct StakingEstimationViewModel {
+    let tokenSymbol: String
     let reward: LocalizableResource<PeriodRewardViewModel>?
 }
