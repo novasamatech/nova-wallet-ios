@@ -28,6 +28,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private var networkInfoContainerView: UIView!
     private var networkInfoView: NetworkInfoView!
+    private var rewardContainerView: UIView?
+    private var rewardView: StakingRewardView?
     private lazy var alertsContainerView = UIView()
     private lazy var alertsView = AlertsView()
     private lazy var analyticsContainerView = UIView()
@@ -172,6 +174,32 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         analyticsView.backgroundButton.addTarget(self, action: #selector(handleAnalyticsWidgetTap), for: .touchUpInside)
     }
 
+    private func setupStakingRewardViewIfNeeded() {
+        guard rewardContainerView == nil else {
+            return
+        }
+
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 116.0))
+        let containerView = UIView(frame: defaultFrame)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
+        let rewardView = StakingRewardView(frame: defaultFrame)
+        containerView.addSubview(rewardView)
+
+        applyConstraints(for: containerView, innerView: rewardView)
+
+        stackView.insertArranged(view: containerView, after: networkInfoContainerView)
+
+        rewardContainerView = containerView
+        self.rewardView = rewardView
+    }
+
+    private func clearStakingRewardViewIfNeeded() {
+        rewardContainerView?.removeFromSuperview()
+        rewardContainerView = nil
+        rewardView = nil
+    }
+
     @objc
     private func handleAnalyticsWidgetTap() {
         presenter.performAnalyticsAction()
@@ -297,10 +325,19 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         alertsContainerView.setNeedsLayout()
     }
 
+    private func applyStakingReward(viewModel: LocalizableResource<StakingRewardViewModel>) {
+        setupStakingRewardViewIfNeeded()
+        rewardView?.bind(viewModel: viewModel)
+    }
+
     private func applyAnalyticsRewards(viewModel _: LocalizableResource<RewardAnalyticsWidgetViewModel>?) {
         // TODO: Temporary disable Analytics feature
         // analyticsContainerView.isHidden = false
         // analyticsView.bind(viewModel: viewModel)
+    }
+
+    @objc func actionAssetSelection() {
+        presenter.performAssetSelection()
     }
 }
 
@@ -316,6 +353,7 @@ extension StakingMainViewController: Localizable {
         stateView?.locale = locale
         alertsView.locale = locale
         analyticsView.locale = locale
+        rewardView?.locale = locale
     }
 
     func applyLocalization() {
@@ -374,18 +412,22 @@ extension StakingMainViewController: StakingMainViewProtocol {
         switch viewModel {
         case .undefined:
             clearStateView()
+            clearStakingRewardViewIfNeeded()
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
             expandNetworkInfoView(true)
-        case let .nominator(viewModel, alerts, analyticsViewModel):
+            clearStakingRewardViewIfNeeded()
+        case let .nominator(viewModel, alerts, reward, analyticsViewModel):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
+            applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
-        case let .validator(viewModel, alerts, analyticsViewModel):
+        case let .validator(viewModel, alerts, reward, analyticsViewModel):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
+            applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
         }
@@ -393,10 +435,6 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
     func expandNetworkInfoView(_ isExpanded: Bool) {
         networkInfoView.setExpanded(isExpanded, animated: false)
-    }
-
-    @objc func actionAssetSelection() {
-        presenter.performAssetSelection()
     }
 }
 
