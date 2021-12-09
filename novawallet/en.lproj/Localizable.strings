@@ -609,13 +609,13 @@
 "confirm.mnemonic.title" = "Let’s double check it";
 "confirm.mnemonic.subtitle" = "Select the words in the right order.";
 "confirm.mnemonic.select.word" = "Select the words...";
-"staking.rewards.learn.more_2_2_0" = "Find out more about rewards./More about rewards";
+"staking.rewards.learn.more_2_2_0" = "More about rewards";
 "staking.unbonding.empty.list_v2_2_0" = "Unstaking transactions will be displayed here";
-"staking.hint.reward.bond.more_v2_2_0" = "You will get your increased rewards in the next era.";
+"staking.hint.reward.bond.more_v2_2_0" = "You will get increased rewards starting from next era.";
 "staking.hint.no.rewards_ v2_2_0" = "During unstaking period tokens produce no rewards";
 "staking.hint.redeem_v2_2_0" = "After unstaking period don't forget to redeem your tokens.";
-"staking.pending.rewards.explanation.message_2_2_0" = "Rewards are payed every 2–5 days by validators. But, you can payout them by yourself, when rewards are close to expire. This operation requires fee to be paid.";
-"staking.reward.payouts.empty.rewards_2_2_0" = "Awesome! All rewards are paid.";
+"staking.pending.rewards.explanation.message_2_2_0" = "Rewards are paid every 2–3 days by validators. You can payout them by yourself, when they are close to expire, but you will pay the fee.";
+"staking.reward.payouts.empty.rewards_2_2_0" = "Awesome! You have no pending rewards.";
 "staking.your.allocated.description_2_2_0" = "Your stake is assigned to next validators.";
 "staking.your.not.allocated.description_v2_2_0" = "The rest, who are active without your stake allocation.";
 "staking.your.inactive.description_v2_2_0" = "Validators that were not elected in this era.";
@@ -629,3 +629,7 @@
 "staking.network.info.title" = "About staking";
 "staking.network.info.staking.period.value" = "Unlimited";
 "staking.network.info.staking.period.title" = "Staking period";
+"crowdloan.learn_v2_2_0" = "%@'s crowdloan website";
+"common.learn.more_v2_2_0" = "Find out more about";
+"staking.reward.widget.title" = "Your rewards";
+"staking.waiting.next.era.format" = "waiting for the next era (%@)";
