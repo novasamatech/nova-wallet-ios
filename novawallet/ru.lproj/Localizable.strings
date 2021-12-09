@@ -609,12 +609,12 @@
 "confirm.mnemonic.title" = "Давайте перепроверим";
 "confirm.mnemonic.subtitle" = "Выберите слова в правильном порядке";
 "confirm.mnemonic.select.word" = "Выберите слова...";
-"staking.rewards.learn.more_2_2_0" = "Узнать больше о вознаграждениях./Больше о вознаграждениях";
+"staking.rewards.learn.more_2_2_0" = "Подробнее о вознаграждениях";
 "staking.unbonding.empty.list_v2_2_0" = "Операции по выводу из стейка появятся здесь";
-"staking.hint.reward.bond.more_v2_2_0" = "Ваши вознаграждения увеличатся в следующей эре.";
-"staking.hint.no.rewards_ v2_2_0" = "Во время вывода токены не приносят наград.";
-"staking.hint.redeem_v2_2_0" = "После вывода токенов из стейкинга не забудьте их забрать.";
-"staking.pending.rewards.explanation.message_2_2_0" = "Вознаграждения выплачиваются валидаторами каждые 2–5 дней. Но вы можете выплатить их самостоятельно, когда срок вознаграждения истекает. В этом случае придётся заплатить комиссию.";
+"staking.hint.reward.bond.more_v2_2_0" = "Вознаграждения увеличатся начиная со следующей эры.";
+"staking.hint.no.rewards_ v2_2_0" = "Токены не приносят наград во время вывода.";
+"staking.hint.redeem_v2_2_0" = "Не забудьте забрать токены после вывода.";
+"staking.pending.rewards.explanation.message_2_2_0" = "Вознаграждения выплачиваются валидаторами каждые 2–3 дня. Вы можете выплатить их самостоятельно, когда срок вознаграждения истекает, но в этом случае придётся заплатить комиссию.";
 "staking.reward.payouts.empty.rewards_2_2_0" = "Замечательно! Все вознаграждения выплачены.";
 "staking.your.allocated.description_2_2_0" = "Ваш стейк распределен между следующими валидаторами.";
 "staking.your.not.allocated.description_v2_2_0" = "Остальные, которые активны без вашего стейка.";
@@ -629,3 +629,7 @@
 "staking.network.info.title" = "О стекинге";
 "staking.network.info.staking.period.value" = "Неограниченно";
 "staking.network.info.staking.period.title" = "Время стекинга";
+"crowdloan.learn_v2_2_0" = "Cайт краудлоана %@";
+"common.learn.more_v2_2_0" = "Узнать больше";
+"staking.reward.widget.title" = "Вознаграждения";
+"staking.waiting.next.era.format" = "ожидание следующей эры (%@)";
