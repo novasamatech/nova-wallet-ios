@@ -357,6 +357,7 @@ final class NetworkInfoView: UIView {
                 .fillSkeletonStart(R.color.colorSkeletonStart()!)
                 .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
                 .build()
+            view.autoresizingMask = []
             contentView.insertSubview(view, at: 0)
 
             skeletonView = view
@@ -367,7 +368,6 @@ final class NetworkInfoView: UIView {
         }
 
         currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
-        currentSkeletonView?.autoresizingMask = [.flexibleHeight]
     }
 
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
