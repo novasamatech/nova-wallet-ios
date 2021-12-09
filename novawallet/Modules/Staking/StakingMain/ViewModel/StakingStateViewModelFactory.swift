@@ -104,10 +104,10 @@ final class StakingStateViewModelFactory {
     private func createNominationViewModel(
         for chainAsset: ChainAsset,
         commonData: StakingStateCommonData,
-        state: BaseStashNextState,
+        state _: BaseStashNextState,
         ledgerInfo: StakingLedger,
         viewStatus: NominationViewStatus
-    ) -> LocalizableResource<NominationViewModelProtocol> {
+    ) -> LocalizableResource<NominationViewModel> {
         let balanceViewModelFactory = getBalanceViewModelFactory(for: chainAsset)
 
         let stakedAmount = convertAmount(ledgerInfo.active, for: chainAsset, defaultValue: 0.0)
@@ -116,25 +116,12 @@ final class StakingStateViewModelFactory {
             priceData: commonData.price
         )
 
-        let reward: LocalizableResource<BalanceViewModelProtocol>?
-        if let totalReward = state.totalReward {
-            reward = balanceViewModelFactory.balanceFromPrice(
-                totalReward.amount.decimalValue,
-                priceData: commonData.price
-            )
-        } else {
-            reward = nil
-        }
-
         return LocalizableResource { locale in
             let stakedViewModel = staked.value(for: locale)
-            let rewardViewModel = reward?.value(for: locale)
 
             return NominationViewModel(
                 totalStakedAmount: stakedViewModel.amount,
                 totalStakedPrice: stakedViewModel.price ?? "",
-                totalRewardAmount: rewardViewModel?.amount ?? "",
-                totalRewardPrice: rewardViewModel?.price ?? "",
                 status: viewStatus,
                 hasPrice: commonData.price != nil
             )
@@ -146,7 +133,7 @@ final class StakingStateViewModelFactory {
         commonData: StakingStateCommonData,
         state: ValidatorState,
         viewStatus: ValidationViewStatus
-    ) -> LocalizableResource<ValidationViewModelProtocol> {
+    ) -> LocalizableResource<ValidationViewModel> {
         let balanceViewModelFactory = getBalanceViewModelFactory(for: chainAsset)
 
         let stakedAmount = convertAmount(state.ledgerInfo.active, for: chainAsset, defaultValue: 0.0)
@@ -155,25 +142,12 @@ final class StakingStateViewModelFactory {
             priceData: commonData.price
         )
 
-        let reward: LocalizableResource<BalanceViewModelProtocol>?
-        if let totalReward = state.totalReward {
-            reward = balanceViewModelFactory.balanceFromPrice(
-                totalReward.amount.decimalValue,
-                priceData: commonData.price
-            )
-        } else {
-            reward = nil
-        }
-
         return LocalizableResource { locale in
             let stakedViewModel = staked.value(for: locale)
-            let rewardViewModel = reward?.value(for: locale)
 
             return ValidationViewModel(
                 totalStakedAmount: stakedViewModel.amount,
                 totalStakedPrice: stakedViewModel.price ?? "",
-                totalRewardAmount: rewardViewModel?.amount ?? "",
-                totalRewardPrice: rewardViewModel?.price ?? "",
                 status: viewStatus,
                 hasPrice: commonData.price != nil
             )

@@ -15,6 +15,8 @@ extension UIFont {
 
     static var capsTitle: UIFont { R.font.publicSansBold(size: 11)! }
 
+    static var capsTitleW500: UIFont { R.font.publicSansExtraLight(size: 11)! }
+
     static var p0Paragraph: UIFont { R.font.publicSansRegular(size: 17)! }
 
     static var p0Digits: UIFont {

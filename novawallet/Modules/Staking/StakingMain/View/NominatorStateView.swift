@@ -4,7 +4,7 @@ import SoraFoundation
 class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     private lazy var timer = CountdownTimer()
     private lazy var timeFormatter = TotalTimeFormatter()
-    private var localizableViewModel: LocalizableResource<NominationViewModelProtocol>?
+    private var localizableViewModel: LocalizableResource<NominationViewModel>?
 
     var locale = Locale.current {
         didSet {
@@ -24,7 +24,7 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
         timer.delegate = self
     }
 
-    func bind(viewModel: LocalizableResource<NominationViewModelProtocol>) {
+    func bind(viewModel: LocalizableResource<NominationViewModel>) {
         localizableViewModel = viewModel
 
         timer.stop()
@@ -34,10 +34,6 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
     private func applyLocalization() {
         titleLabel.text = R.string.localizable
             .stakingYourStake(preferredLanguages: locale.rLanguages)
-        stakeTitleLabel.text = R.string.localizable
-            .stakingMainStakeBalanceStaked(preferredLanguages: locale.rLanguages)
-        rewardTitleLabel.text = R.string.localizable
-            .stakingTotalRewards_v190(preferredLanguages: locale.rLanguages)
     }
 
     private func applyViewModel() {
@@ -47,8 +43,8 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
 
         stakeAmountView.valueTop.text = viewModel.totalStakedAmount
         stakeAmountView.valueBottom.text = viewModel.totalStakedPrice
-        rewardAmountView.valueTop.text = viewModel.totalRewardAmount
-        rewardAmountView.valueBottom.text = viewModel.totalRewardPrice
+
+        stakeAmountView.bind(topValue: viewModel.totalStakedAmount, bottomValue: viewModel.totalStakedPrice)
 
         if case .undefined = viewModel.status {
             toggleStatus(false)
@@ -60,10 +56,6 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
 
         if viewModel.totalStakedAmount.isEmpty {
             skeletonOptions.insert(.stake)
-        }
-
-        if viewModel.totalRewardAmount.isEmpty {
-            skeletonOptions.insert(.rewards)
         }
 
         switch viewModel.status {
@@ -89,54 +81,55 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
 
     private func toggleStatus(_ shouldShow: Bool) {
         statusView.isHidden = !shouldShow
-        statusButton.isUserInteractionEnabled = shouldShow
     }
 
-    private func presentActiveStatus(for era: UInt32) {
-        statusView.titleView.indicatorColor = R.color.colorGreen()!
-        statusView.titleView.titleLabel.textColor = R.color.colorGreen()!
+    private func presentActiveStatus(for _: UInt32) {
+        statusView.glowingView.outerFillColor = R.color.colorGreen24()!
+        statusView.glowingView.innerFillColor = R.color.colorGreen()!
+        statusView.detailsLabel.textColor = R.color.colorGreen()!
 
-        statusView.titleView.titleLabel.text = R.string.localizable
-            .stakingNominatorStatusActive(preferredLanguages: locale.rLanguages).uppercased()
-        statusView.valueView.detailsLabel.text = R.string.localizable
-            .stakingEraTitle("\(era)", preferredLanguages: locale.rLanguages).uppercased()
+        statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusActive(
+            preferredLanguages: locale.rLanguages
+        ).uppercased()
     }
 
-    private func presentInactiveStatus(for era: UInt32) {
-        statusView.titleView.indicatorColor = R.color.colorRed()!
-        statusView.titleView.titleLabel.textColor = R.color.colorRed()!
+    private func presentInactiveStatus(for _: UInt32) {
+        statusView.glowingView.outerFillColor = R.color.colorWhite16()!
+        statusView.glowingView.innerFillColor = R.color.colorWhite48()!
+        statusView.detailsLabel.textColor = R.color.colorWhite80()!
 
-        statusView.titleView.titleLabel.text = R.string.localizable
-            .stakingNominatorStatusInactive(preferredLanguages: locale.rLanguages).uppercased()
-        statusView.valueView.detailsLabel.text = R.string.localizable
-            .stakingEraTitle("\(era)", preferredLanguages: locale.rLanguages).uppercased()
+        statusView.detailsLabel.text = R.string.localizable.stakingNominatorStatusInactive(
+            preferredLanguages: locale.rLanguages
+        ).uppercased()
     }
 
     private func presentWaitingStatus(remainingTime: TimeInterval?) {
-        statusView.titleView.indicatorColor = R.color.colorTransparentText()!
-        statusView.titleView.titleLabel.textColor = R.color.colorTransparentText()!
+        statusView.glowingView.outerFillColor = R.color.colorWhite16()!
+        statusView.glowingView.innerFillColor = R.color.colorWhite48()!
+        statusView.detailsLabel.textColor = R.color.colorWhite80()!
 
-        statusView.titleView.titleLabel.text = R.string.localizable
-            .stakingNominatorStatusWaiting(preferredLanguages: locale.rLanguages).uppercased()
+        statusView.detailsLabel.text = "waiting for the next era".uppercased()
 
         if let remainingTime = remainingTime {
             timer.start(with: remainingTime, runLoop: .main, mode: .common)
-        } else {
-            statusView.valueView.detailsLabel.text = ""
         }
     }
 }
 
 extension NominatorStateView: CountdownTimerDelegate {
     func didStart(with interval: TimeInterval) {
-        statusView.valueView.detailsLabel.text = (try? timeFormatter.string(from: interval)) ?? ""
+        let time = (try? timeFormatter.string(from: interval)) ?? ""
+
+        statusView.detailsLabel.text = "waiting for the next era (\(time))".uppercased()
     }
 
     func didCountdown(remainedInterval: TimeInterval) {
-        statusView.valueView.detailsLabel.text = (try? timeFormatter.string(from: remainedInterval)) ?? ""
+        let time = (try? timeFormatter.string(from: remainedInterval)) ?? ""
+
+        statusView.detailsLabel.text = "waiting for the next era (\(time))".uppercased()
     }
 
     func didStop(with _: TimeInterval) {
-        statusView.valueView.detailsLabel.text = ""
+        statusView.detailsLabel.text = "waiting for the next era".uppercased()
     }
 }
