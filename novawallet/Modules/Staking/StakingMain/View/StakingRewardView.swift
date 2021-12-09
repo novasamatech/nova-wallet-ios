@@ -70,7 +70,7 @@ final class StakingRewardView: UIView {
     private func setupLocalization() {
         let languages = locale.rLanguages
 
-        titleLabel.text = "Your rewards"
+        titleLabel.text = R.string.localizable.stakingRewardWidgetTitle(preferredLanguages: languages)
     }
 
     private func setupLayout() {
