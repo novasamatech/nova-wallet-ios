@@ -4,13 +4,13 @@ import SoraFoundation
 enum StakingViewState {
     case undefined
     case nominator(
-        viewModel: LocalizableResource<NominationViewModelProtocol>,
+        viewModel: LocalizableResource<NominationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>,
         analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?
     )
     case validator(
-        viewModel: LocalizableResource<ValidationViewModelProtocol>,
+        viewModel: LocalizableResource<ValidationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>,
         analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?

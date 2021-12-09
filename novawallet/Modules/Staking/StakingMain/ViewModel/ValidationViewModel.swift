@@ -6,20 +6,9 @@ enum ValidationViewStatus {
     case inactive(era: UInt32)
 }
 
-protocol ValidationViewModelProtocol {
-    var totalStakedAmount: String { get }
-    var totalStakedPrice: String { get }
-    var totalRewardAmount: String { get }
-    var totalRewardPrice: String { get }
-    var status: ValidationViewStatus { get }
-    var hasPrice: Bool { get }
-}
-
-struct ValidationViewModel: ValidationViewModelProtocol {
+struct ValidationViewModel {
     let totalStakedAmount: String
     let totalStakedPrice: String
-    let totalRewardAmount: String
-    let totalRewardPrice: String
     let status: ValidationViewStatus
     let hasPrice: Bool
 }

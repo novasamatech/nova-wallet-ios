@@ -739,6 +739,8 @@
 		848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DE76726D64F7F0045CD29 /* UserStorageVersion.swift */; };
 		848E6BD92761CAC800C91022 /* StakingRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BD82761CAC800C91022 /* StakingRewardView.swift */; };
 		848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDA2761E0E100C91022 /* StakingRewardViewModel.swift */; };
+		848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDC2762142300C91022 /* StakingStatusView.swift */; };
+		848E6BDF276218E600C91022 /* GlowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDE276218E600C91022 /* GlowingView.swift */; };
 		848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */; };
 		848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */; };
 		848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE6525E6742400652AA5 /* EraValidatorService.swift */; };
@@ -2480,6 +2482,8 @@
 		848DE76726D64F7F0045CD29 /* UserStorageVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStorageVersion.swift; sourceTree = "<group>"; };
 		848E6BD82761CAC800C91022 /* StakingRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardView.swift; sourceTree = "<group>"; };
 		848E6BDA2761E0E100C91022 /* StakingRewardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardViewModel.swift; sourceTree = "<group>"; };
+		848E6BDC2762142300C91022 /* StakingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStatusView.swift; sourceTree = "<group>"; };
+		848E6BDE276218E600C91022 /* GlowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowingView.swift; sourceTree = "<group>"; };
 		848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanStatus.swift; sourceTree = "<group>"; };
 		848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModelFactory.swift; sourceTree = "<group>"; };
 		848FFE6525E6742400652AA5 /* EraValidatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorService.swift; sourceTree = "<group>"; };
@@ -5970,6 +5974,7 @@
 				2A90206D273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift */,
 				2A902074273E766400F2D584 /* NetworkFeeView+Protocol.swift */,
 				8402CC9B275B92AC00E5BF30 /* ControlView.swift */,
+				848E6BDE276218E600C91022 /* GlowingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -7848,6 +7853,7 @@
 				84B018AD26E03FB500C75E28 /* NominatorStateView.swift */,
 				84B018AF26E0450F00C75E28 /* ValidatorStateView.swift */,
 				848E6BD82761CAC800C91022 /* StakingRewardView.swift */,
+				848E6BDC2762142300C91022 /* StakingStatusView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9178,6 +9184,7 @@
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
+				848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */,
 				F4B39C66273272D200BB6E10 /* AcalaContributionSetupViewFactory.swift in Sources */,
 				8437877A264D2D5800E6AFD2 /* NetworkTypeSelectionPresentable.swift in Sources */,
 				846CD25B265709A800A2E4B6 /* StorageKeySuffixMapper.swift in Sources */,
@@ -10175,6 +10182,7 @@
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
 				F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */,
 				F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */,
+				848E6BDF276218E600C91022 /* GlowingView.swift in Sources */,
 				F47BBD4C2630B78E0087DA11 /* StakingBalanceWireframe.swift in Sources */,
 				843910B6253EE62B00E3C217 /* DataProviderChange+Result.swift in Sources */,
 				8436EDE725895846004D9E97 /* PurchaseProvider.swift in Sources */,

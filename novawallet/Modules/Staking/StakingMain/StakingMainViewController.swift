@@ -158,7 +158,13 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        stackView.addArrangedSubview(alertsContainerView)
+        if let stateContainerView = stateContainerView {
+            stackView.insertArranged(view: alertsContainerView, after: stateContainerView)
+        } else if let rewardContainerView = rewardContainerView {
+            stackView.insertArranged(view: alertsContainerView, after: rewardContainerView)
+        } else {
+            stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
+        }
 
         alertsView.delegate = self
     }
@@ -252,7 +258,11 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
         applyConstraints(for: containerView, innerView: stateView)
 
-        stackView.insertArranged(view: containerView, after: alertsContainerView)
+        if let rewardContainerView = rewardContainerView {
+            stackView.insertArranged(view: containerView, after: rewardContainerView)
+        } else {
+            stackView.insertArranged(view: containerView, after: networkInfoContainerView)
+        }
 
         stateContainerView = containerView
         self.stateView = stateView
@@ -296,7 +306,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         return stateView
     }
 
-    private func applyNominator(viewModel: LocalizableResource<NominationViewModelProtocol>) {
+    private func applyNominator(viewModel: LocalizableResource<NominationViewModel>) {
         let nominatorView = setupNominatorViewIfNeeded()
         nominatorView?.delegate = self
         nominatorView?.bind(viewModel: viewModel)
@@ -313,7 +323,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         scrollView.layoutIfNeeded()
     }
 
-    private func applyValidator(viewModel: LocalizableResource<ValidationViewModelProtocol>) {
+    private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
         let validatorView = setupValidatorViewIfNeeded()
         validatorView?.delegate = self
         validatorView?.bind(viewModel: viewModel)
