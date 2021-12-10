@@ -50,10 +50,10 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
         switch viewModel.status {
         case .undefined:
             skeletonOptions.insert(.status)
-        case let .active(era):
-            presentActiveStatus(for: era)
-        case let .inactive(era):
-            presentInactiveStatus(for: era)
+        case .active:
+            presentActiveStatus()
+        case .inactive:
+            presentInactiveStatus()
         }
 
         if !skeletonOptions.isEmpty, viewModel.hasPrice {
@@ -67,7 +67,7 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
         statusView.isHidden = !shouldShow
     }
 
-    private func presentActiveStatus(for _: UInt32) {
+    private func presentActiveStatus() {
         statusView.glowingView.outerFillColor = R.color.colorGreen24()!
         statusView.glowingView.innerFillColor = R.color.colorGreen()!
         statusView.detailsLabel.textColor = R.color.colorGreen()!
@@ -77,7 +77,7 @@ class ValidatorStateView: StakingStateView, LocalizableViewProtocol {
         ).uppercased()
     }
 
-    private func presentInactiveStatus(for _: UInt32) {
+    private func presentInactiveStatus() {
         statusView.glowingView.outerFillColor = R.color.colorWhite16()!
         statusView.glowingView.innerFillColor = R.color.colorWhite48()!
         statusView.detailsLabel.textColor = R.color.colorWhite80()!
