@@ -89,7 +89,7 @@ final class StakingRewardView: UIView {
         }
 
         let title = viewModel.amount.value ?? ""
-        let price = viewModel.price?.value
+        let price: String? = viewModel.price?.value
         rewardView.bind(topValue: title, bottomValue: price)
 
         var newSkeletonOptions: StakingRewardSkeletonOptions = []
@@ -139,7 +139,9 @@ final class StakingRewardView: UIView {
             return
         }
 
-        let spaceSize = backgroundView.frame.size
+        skeletonOptions = options
+
+        let spaceSize = frame.size
 
         guard spaceSize.width > 0.0, spaceSize.height > 0.0 else {
             return
@@ -182,7 +184,7 @@ final class StakingRewardView: UIView {
         var skeletons: [Skeletonable] = []
 
         if options.contains(StakingRewardSkeletonOptions.reward) {
-            let offset = CGPoint(x: 0.0, y: 2.0)
+            let offset = CGPoint(x: 0.0, y: 10.0)
             skeletons.append(
                 SingleSkeleton.createRow(
                     under: titleLabel,
@@ -195,7 +197,7 @@ final class StakingRewardView: UIView {
         }
 
         if options.contains(StakingRewardSkeletonOptions.price) {
-            let offset = CGPoint(x: 0.0, y: 32.0)
+            let offset = CGPoint(x: 0.0, y: 39.0)
             skeletons.append(
                 SingleSkeleton.createRow(
                     under: titleLabel,

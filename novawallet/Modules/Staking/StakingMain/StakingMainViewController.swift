@@ -283,7 +283,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
             return nominatorView
         }
 
-        let stateView = setupView { NominatorStateView() }
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
+        let stateView = setupView { NominatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
 
         return stateView
@@ -294,7 +295,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
             return validator
         }
 
-        let stateView = setupView { ValidatorStateView() }
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
+        let stateView = setupView { ValidatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
 
         return stateView
