@@ -5,8 +5,8 @@ import SoraFoundation
 struct StakingRewardSkeletonOptions: OptionSet {
     typealias RawValue = UInt8
 
-    static let reward = StakingStateSkeletonOptions(rawValue: 1 << 0)
-    static let price = StakingStateSkeletonOptions(rawValue: 1 << 1)
+    static let reward = StakingRewardSkeletonOptions(rawValue: 1 << 0)
+    static let price = StakingRewardSkeletonOptions(rawValue: 1 << 1)
 
     let rawValue: UInt8
 
@@ -68,6 +68,14 @@ final class StakingRewardView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if let options = skeletonOptions {
+            setupSkeleton(for: options)
+        }
+    }
+
     func bind(viewModel: LocalizableResource<StakingRewardViewModel>) {
         self.viewModel = viewModel
         applyViewModel()
@@ -75,10 +83,26 @@ final class StakingRewardView: UIView {
 
     private func applyViewModel() {
         guard let viewModel = viewModel?.value(for: locale) else {
+            rewardView.bind(topValue: "", bottomValue: nil)
+            setupSkeleton(for: [.reward, .price])
             return
         }
 
-        rewardView.bind(topValue: viewModel.amount.value ?? "", bottomValue: viewModel.price?.value)
+        let title = viewModel.amount.value ?? ""
+        let price = viewModel.price?.value
+        rewardView.bind(topValue: title, bottomValue: price)
+
+        var newSkeletonOptions: StakingRewardSkeletonOptions = []
+
+        if title.isEmpty {
+            newSkeletonOptions.insert(.reward)
+        }
+
+        if let price = price, price.isEmpty {
+            newSkeletonOptions.insert(.price)
+        }
+
+        setupSkeleton(for: newSkeletonOptions)
     }
 
     private func setupLocalization() {
@@ -155,6 +179,53 @@ final class StakingRewardView: UIView {
         for spaceSize: CGSize,
         options: StakingRewardSkeletonOptions
     ) -> [Skeletonable] {
-        return []
+        var skeletons: [Skeletonable] = []
+
+        if options.contains(StakingRewardSkeletonOptions.reward) {
+            let offset = CGPoint(x: 0.0, y: 2.0)
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    under: titleLabel,
+                    containerView: backgroundView,
+                    spaceSize: spaceSize,
+                    offset: offset,
+                    size: UIConstants.skeletonBigRowSize
+                )
+            )
+        }
+
+        if options.contains(StakingRewardSkeletonOptions.price) {
+            let offset = CGPoint(x: 0.0, y: 32.0)
+            skeletons.append(
+                SingleSkeleton.createRow(
+                    under: titleLabel,
+                    containerView: backgroundView,
+                    spaceSize: spaceSize,
+                    offset: offset,
+                    size: UIConstants.skeletonSmallRowSize
+                )
+            )
+        }
+
+        return skeletons
+    }
+}
+
+extension StakingRewardView: SkeletonLoadable {
+    func didDisappearSkeleton() {
+        skeletonView?.stopSkrulling()
+    }
+
+    func didAppearSkeleton() {
+        skeletonView?.stopSkrulling()
+        skeletonView?.startSkrulling()
+    }
+
+    func didUpdateSkeletonLayout() {
+        guard let skeletonOptions = skeletonOptions else {
+            return
+        }
+
+        setupSkeleton(for: skeletonOptions)
     }
 }
