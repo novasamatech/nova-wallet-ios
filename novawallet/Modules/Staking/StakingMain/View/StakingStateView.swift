@@ -38,12 +38,24 @@ class StakingStateView: UIView {
         return view
     }()
 
-    let stakeAmountView: MultiValueView = createMultiValueView()
+    let stakeAmountView: MultiValueView = {
+        let view = MultiValueView()
+        view.valueTop.font = .boldTitle1
+        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.textAlignment = .center
+        view.valueBottom.font = .p0Paragraph
+        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textAlignment = .center
+        view.spacing = 6.0
+        view.isUserInteractionEnabled = false
+        return view
+    }()
 
     let statusView: StakingStatusView = {
         let view = StakingStatusView()
         view.backgroundView.fillColor = R.color.colorWhite8()!
         view.backgroundView.highlightedFillColor = R.color.colorWhite8()!
+        view.isUserInteractionEnabled = false
         return view
     }()
 
@@ -96,14 +108,14 @@ class StakingStateView: UIView {
 
         addSubview(stakeAmountView)
         stakeAmountView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(2.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
             make.centerX.equalToSuperview()
         }
 
         addSubview(statusView)
         statusView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(stakeAmountView.snp.bottom).offset(12.0)
+            make.top.equalTo(stakeAmountView.snp.bottom).offset(14.0)
             make.bottom.equalToSuperview().offset(-24.0)
         }
 
@@ -249,20 +261,6 @@ extension StakingStateView {
         }
 
         return skeletons
-    }
-}
-
-extension StakingStateView {
-    private static func createMultiValueView() -> MultiValueView {
-        let view = MultiValueView()
-        view.valueTop.font = .p0Digits
-        view.valueTop.textColor = R.color.colorWhite()
-        view.valueTop.textAlignment = .left
-        view.valueBottom.font = .p2Paragraph
-        view.valueBottom.textColor = R.color.colorTransparentText()
-        view.valueBottom.textAlignment = .left
-        view.spacing = 4.0
-        return view
     }
 }
 

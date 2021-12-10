@@ -35,8 +35,12 @@ final class StakingRewardView: UIView {
     let rewardView: MultiValueView = {
         let view = MultiValueView()
         view.valueTop.textColor = R.color.colorWhite()
-        view.valueTop.font = .title2
+        view.valueTop.textAlignment = .left
+        view.valueTop.font = .boldTitle2
         view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.textAlignment = .left
+        view.valueBottom.font = .p1Paragraph
+        view.spacing = 4.0
         return view
     }()
 
@@ -96,6 +100,7 @@ final class StakingRewardView: UIView {
 
         if title.isEmpty {
             newSkeletonOptions.insert(.reward)
+            newSkeletonOptions.insert(.price)
         }
 
         if let price = price, price.isEmpty {
@@ -126,7 +131,7 @@ final class StakingRewardView: UIView {
         addSubview(rewardView)
         rewardView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(titleLabel.snp.bottom).offset(2.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
         }
     }
 
@@ -184,7 +189,7 @@ final class StakingRewardView: UIView {
         var skeletons: [Skeletonable] = []
 
         if options.contains(StakingRewardSkeletonOptions.reward) {
-            let offset = CGPoint(x: 0.0, y: 10.0)
+            let offset = CGPoint(x: 0.0, y: 12.0)
             skeletons.append(
                 SingleSkeleton.createRow(
                     under: titleLabel,
@@ -197,7 +202,7 @@ final class StakingRewardView: UIView {
         }
 
         if options.contains(StakingRewardSkeletonOptions.price) {
-            let offset = CGPoint(x: 0.0, y: 39.0)
+            let offset = CGPoint(x: 0.0, y: 41.0)
             skeletons.append(
                 SingleSkeleton.createRow(
                     under: titleLabel,
