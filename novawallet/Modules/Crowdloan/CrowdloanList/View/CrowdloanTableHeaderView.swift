@@ -80,7 +80,7 @@ final class CrowdloanTableHeaderView: UIView {
         chainBlur.addSubview(chainSelectionView)
         chainSelectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(48.0)
+            make.height.equalTo(52.0)
         }
 
         let textBlur = TriangularedBlurView()

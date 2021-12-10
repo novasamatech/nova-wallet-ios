@@ -742,6 +742,7 @@
 		848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDC2762142300C91022 /* StakingStatusView.swift */; };
 		848E6BDF276218E600C91022 /* GlowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDE276218E600C91022 /* GlowingView.swift */; };
 		848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848E6BE0276328B500C91022 /* PublicSans-Medium.otf */; };
+		848E6BE32763346800C91022 /* СhainAssetSelectionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BE22763346800C91022 /* СhainAssetSelectionControl.swift */; };
 		848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */; };
 		848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */; };
 		848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE6525E6742400652AA5 /* EraValidatorService.swift */; };
@@ -2486,6 +2487,7 @@
 		848E6BDC2762142300C91022 /* StakingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStatusView.swift; sourceTree = "<group>"; };
 		848E6BDE276218E600C91022 /* GlowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowingView.swift; sourceTree = "<group>"; };
 		848E6BE0276328B500C91022 /* PublicSans-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-Medium.otf"; sourceTree = "<group>"; };
+		848E6BE22763346800C91022 /* СhainAssetSelectionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "СhainAssetSelectionControl.swift"; sourceTree = "<group>"; };
 		848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanStatus.swift; sourceTree = "<group>"; };
 		848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModelFactory.swift; sourceTree = "<group>"; };
 		848FFE6525E6742400652AA5 /* EraValidatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorService.swift; sourceTree = "<group>"; };
@@ -5978,6 +5980,7 @@
 				2A902074273E766400F2D584 /* NetworkFeeView+Protocol.swift */,
 				8402CC9B275B92AC00E5BF30 /* ControlView.swift */,
 				848E6BDE276218E600C91022 /* GlowingView.swift */,
+				848E6BE22763346800C91022 /* СhainAssetSelectionControl.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9373,6 +9376,7 @@
 				84FAB076254378FC00319F74 /* ContactsListViewModelFactory.swift in Sources */,
 				F40966CF26B297D7008CD244 /* AnalyticsStakeViewFactory.swift in Sources */,
 				AEAC690426EB891900346599 /* Logger+FearlessUtils.swift in Sources */,
+				848E6BE32763346800C91022 /* СhainAssetSelectionControl.swift in Sources */,
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
 				2A902077273E7C9900F2D584 /* FeePriceViewModel.swift in Sources */,
 				8490143024A935FE008F705E /* AlertPresentable.swift in Sources */,
