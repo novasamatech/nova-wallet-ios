@@ -146,7 +146,12 @@ private class AlertItemView: UIView {
         return label
     }()
 
-    let accessoryView: UIView = UIImageView(image: R.image.iconSmallArrow())
+    let accessoryView: UIView = {
+        let view = UIImageView()
+        view.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
+        view.tintColor = R.color.colorWhite48()
+        return view
+    }()
 
     init(stakingAlert: StakingAlert, locale: Locale) {
         alertType = stakingAlert

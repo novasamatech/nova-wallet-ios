@@ -15,6 +15,8 @@ extension UIFont {
 
     static var capsTitle: UIFont { R.font.publicSansBold(size: 11)! }
 
+    static var capsTitleMedium: UIFont { R.font.publicSansMedium(size: 11)! }
+
     static var p0Paragraph: UIFont { R.font.publicSansRegular(size: 17)! }
 
     static var p0Digits: UIFont {
@@ -45,4 +47,7 @@ extension UIFont {
     static var caption2: UIFont { R.font.publicSansRegular(size: 11)! }
 
     static var title2: UIFont { R.font.publicSansRegular(size: 22)! }
+
+    static var boldTitle1: UIFont { R.font.publicSansBold(size: 28)! }
+    static var boldTitle2: UIFont { R.font.publicSansBold(size: 22)! }
 }

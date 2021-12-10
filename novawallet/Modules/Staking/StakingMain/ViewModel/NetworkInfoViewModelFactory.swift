@@ -15,7 +15,7 @@ protocol NetworkInfoViewModelFactoryProtocol {
         chainAsset: ChainAsset,
         minNominatorBond: BigUInt?,
         priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModelProtocol>
+    ) -> LocalizableResource<NetworkStakingInfoViewModel>
 }
 
 final class NetworkInfoViewModelFactory {
@@ -134,7 +134,7 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
         chainAsset: ChainAsset,
         minNominatorBond: BigUInt?,
         priceData: PriceData?
-    ) -> LocalizableResource<NetworkStakingInfoViewModelProtocol> {
+    ) -> LocalizableResource<NetworkStakingInfoViewModel> {
         let localizedTotalStake = createTotalStakeViewModel(
             with: networkStakingInfo,
             chainAsset: chainAsset,
@@ -153,10 +153,15 @@ extension NetworkInfoViewModelFactory: NetworkInfoViewModelFactoryProtocol {
         let localizedLockUpPeriod = createLockUpPeriodViewModel(with: networkStakingInfo)
 
         return LocalizableResource { locale in
-            NetworkStakingInfoViewModel(
+            let stakingPeriod = R.string.localizable.stakingNetworkInfoStakingPeriodValue(
+                preferredLanguages: locale.rLanguages
+            )
+
+            return NetworkStakingInfoViewModel(
                 totalStake: localizedTotalStake.value(for: locale),
                 minimalStake: localizedMinimalStake.value(for: locale),
                 activeNominators: nominatorsCount.value(for: locale),
+                stakingPeriod: stakingPeriod,
                 lockUpPeriod: localizedLockUpPeriod.value(for: locale)
             )
         }
