@@ -16,12 +16,15 @@ final class TitleMultiValueView: UIView {
         return label
     }()
 
-    let valueBottom: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorGray()
-        label.font = .p2Paragraph
-        return label
-    }()
+    var valueBottom: UILabel {
+        if let label = privateValueBottom {
+            return label
+        } else {
+            return setupBottomLabel()
+        }
+    }
+
+    private var privateValueBottom: UILabel?
 
     let borderView: BorderedContainerView = {
         let view = BorderedContainerView()
@@ -43,6 +46,40 @@ final class TitleMultiValueView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func resetToSingleValue() {
+        privateValueBottom?.removeFromSuperview()
+        privateValueBottom = nil
+
+        valueTop.snp.remakeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalTo(self.snp.centerY)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+        }
+    }
+
+    private func setupBottomLabel() -> UILabel {
+        let label = UILabel()
+        label.textColor = R.color.colorGray()
+        label.font = .p2Paragraph
+
+        privateValueBottom = label
+
+        valueTop.snp.remakeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.bottom.equalTo(self.snp.centerY)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+        }
+
+        addSubview(label)
+        label.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.top.equalTo(self.snp.centerY)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
+        }
+
+        return label
+    }
+
     private func setupLayout() {
         addSubview(borderView)
         borderView.snp.makeConstraints { make in
@@ -58,14 +95,7 @@ final class TitleMultiValueView: UIView {
         addSubview(valueTop)
         valueTop.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
-            make.bottom.equalTo(self.snp.centerY)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
-        }
-
-        addSubview(valueBottom)
-        valueBottom.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.top.equalTo(self.snp.centerY)
+            make.centerY.equalTo(self.snp.centerY)
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
         }
     }

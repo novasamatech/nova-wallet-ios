@@ -8,24 +8,89 @@ protocol NetworkInfoViewDelegate: AnyObject {
 }
 
 final class NetworkInfoView: UIView {
-    @IBOutlet var backgroundView: TriangularedBlurView!
-    @IBOutlet var networkInfoContainer: UIView!
-    @IBOutlet var titleControl: ActionTitleControl!
-    @IBOutlet var collectionView: UICollectionView!
+    private enum Constants {
+        static let headerHeight: CGFloat = 48.0
+        static let rowHeight: CGFloat = 48.0
+        static let contentMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        static let stackViewBottomInset: CGFloat = 4.0
+    }
 
-    @IBOutlet var totalStakedTitleLabel: UILabel!
-    @IBOutlet var totalStakedAmountLabel: UILabel!
-    @IBOutlet var totalStakedFiatAmountLabel: UILabel!
-    @IBOutlet var minimumStakeTitleLabel: UILabel!
-    @IBOutlet var minimumStakeAmountLabel: UILabel!
-    @IBOutlet var minimumStakeFiatAmountLabel: UILabel!
-    @IBOutlet var activeNominatorsTitleLabel: UILabel!
-    @IBOutlet var activeNominatorsLabel: UILabel!
-    @IBOutlet var lockUpPeriodTitleLabel: UILabel!
-    @IBOutlet var lockUpPeriodLabel: UILabel!
+    let backgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        return view
+    }()
 
-    @IBOutlet var contentTop: NSLayoutConstraint!
-    @IBOutlet var contentHeight: NSLayoutConstraint!
+    let networkInfoContainer: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.clipsToBounds = true
+        return view
+    }()
+
+    let contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+
+    let titleControl: ActionTitleControl = {
+        let control = ActionTitleControl()
+        control.imageView.image = R.image.iconArrowUp()?.withRenderingMode(.alwaysTemplate)
+        control.imageView.tintColor = R.color.colorWhite48()
+        control.identityIconAngle = CGFloat.pi
+        control.activationIconAngle = 0.0
+        control.titleLabel.textColor = R.color.colorWhite()
+        control.titleLabel.font = .p1Paragraph
+        control.layoutType = .flexible
+        control.contentInsets = Constants.contentMargins
+        control.horizontalSpacing = 0.0
+        control.iconDisplacement = 0.0
+        control.imageView.isUserInteractionEnabled = false
+        control.activate(animated: false)
+        return control
+    }()
+
+    let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.distribution = .fill
+        stackView.alignment = .fill
+        stackView.spacing = 0.0
+        stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        return stackView
+    }()
+
+    let totalStakedView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applySingleValueBlurStyle()
+        return view
+    }()
+
+    let minimumStakedView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applySingleValueBlurStyle()
+        return view
+    }()
+
+    let activeNominatorsView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applySingleValueBlurStyle()
+        return view
+    }()
+
+    let stakingPeriodView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applySingleValueBlurStyle()
+        return view
+    }()
+
+    let unstakingPeriodView: TitleMultiValueView = {
+        let view = TitleMultiValueView()
+        view.applySingleValueBlurStyle()
+        view.borderView.borderType = .none
+        return view
+    }()
 
     weak var delegate: NetworkInfoViewDelegate?
 
@@ -38,19 +103,30 @@ final class NetworkInfoView: UIView {
     var locale = Locale.current {
         didSet {
             applyLocalization()
-            applyTitle()
             applyViewModel()
         }
     }
 
-    private var localizableViewModel: LocalizableResource<NetworkStakingInfoViewModelProtocol>?
-    private var chainName: String?
+    private var localizableViewModel: LocalizableResource<NetworkStakingInfoViewModel>?
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
-        titleControl.imageView.isUserInteractionEnabled = false
-        titleControl.activate(animated: false)
+        setupLayout()
+        setupHandlers()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if skeletonView != nil {
+            setupSkeleton()
+        }
     }
 
     func setExpanded(_ value: Bool, animated: Bool) {
@@ -67,7 +143,7 @@ final class NetworkInfoView: UIView {
         applyExpansion(animated: animated)
     }
 
-    func bind(viewModel: LocalizableResource<NetworkStakingInfoViewModelProtocol>?) {
+    func bind(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?) {
         localizableViewModel = viewModel
 
         if viewModel != nil {
@@ -79,10 +155,55 @@ final class NetworkInfoView: UIView {
         }
     }
 
-    func bind(chainName: String) {
-        self.chainName = chainName
+    private func setupHandlers() {
+        titleControl.addTarget(self, action: #selector(actionToggleExpansion), for: .valueChanged)
+    }
 
-        applyTitle()
+    private func setupLayout() {
+        addSubview(backgroundView)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        addSubview(titleControl)
+        titleControl.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.height.equalTo(Constants.headerHeight)
+        }
+
+        addSubview(networkInfoContainer)
+        networkInfoContainer.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(titleControl.snp.bottom)
+        }
+
+        networkInfoContainer.addSubview(contentView)
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        contentView.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(Constants.stackViewBottomInset)
+        }
+
+        let views = [
+            totalStakedView,
+            minimumStakedView,
+            activeNominatorsView,
+            stakingPeriodView,
+            unstakingPeriodView
+        ]
+
+        views.forEach { view in
+            stackView.addArrangedSubview(view)
+
+            view.snp.makeConstraints { make in
+                make.height.equalTo(Constants.rowHeight)
+            }
+        }
     }
 
     private func applyViewModel() {
@@ -92,37 +213,47 @@ final class NetworkInfoView: UIView {
 
         let localizedViewModel = viewModel.value(for: locale)
 
-        totalStakedAmountLabel.text = localizedViewModel.totalStake?.amount
-        totalStakedFiatAmountLabel.text = localizedViewModel.totalStake?.price
-        minimumStakeAmountLabel.text = localizedViewModel.minimalStake?.amount
-        minimumStakeFiatAmountLabel.text = localizedViewModel.minimalStake?.price
-        activeNominatorsLabel.text = localizedViewModel.activeNominators
-        lockUpPeriodLabel.text = localizedViewModel.lockUpPeriod
-    }
+        totalStakedView.valueTop.text = localizedViewModel.totalStake?.amount
 
-    private func applyTitle() {
-        guard let chainName = chainName else {
-            return
+        if let price = localizedViewModel.totalStake?.price, !price.isEmpty {
+            totalStakedView.valueBottom.text = price
+        } else {
+            totalStakedView.resetToSingleValue()
         }
 
-        titleControl.titleLabel.text = R.string.localizable
-            .stakingMainNetworkTitle(chainName, preferredLanguages: locale.rLanguages)
-        titleControl.invalidateLayout()
+        minimumStakedView.valueTop.text = localizedViewModel.minimalStake?.amount
+
+        if let price = localizedViewModel.minimalStake?.price, !price.isEmpty {
+            minimumStakedView.valueBottom.text = price
+        } else {
+            minimumStakedView.resetToSingleValue()
+        }
+
+        activeNominatorsView.valueTop.text = localizedViewModel.activeNominators
+        stakingPeriodView.valueTop.text = localizedViewModel.stakingPeriod
+        unstakingPeriodView.valueTop.text = localizedViewModel.lockUpPeriod
     }
 
     private func applyLocalization() {
         let languages = locale.rLanguages
 
-        totalStakedTitleLabel.text = R.string.localizable
+        titleControl.titleLabel.text = R.string.localizable.stakingNetworkInfoTitle(
+            preferredLanguages: languages
+        )
+
+        totalStakedView.titleLabel.text = R.string.localizable
             .stakingMainTotalStakedTitle(preferredLanguages: languages)
-        minimumStakeTitleLabel.text = R.string.localizable
+        minimumStakedView.titleLabel.text = R.string.localizable
             .stakingMainMinimumStakeTitle(preferredLanguages: languages)
-        activeNominatorsTitleLabel.text = R.string.localizable
+        activeNominatorsView.titleLabel.text = R.string.localizable
             .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
-        lockUpPeriodTitleLabel.text = R.string.localizable
+        stakingPeriodView.titleLabel.text = R.string.localizable.stakingNetworkInfoStakingPeriodTitle(
+            preferredLanguages: languages
+        )
+        unstakingPeriodView.titleLabel.text = R.string.localizable
             .stakingMainLockupPeriodTitle_v190(preferredLanguages: languages)
 
-        collectionView.reloadData()
+        setNeedsLayout()
     }
 
     private func applyExpansion(animated: Bool) {
@@ -149,11 +280,19 @@ final class NetworkInfoView: UIView {
 
     private func applyExpansionState() {
         if expanded {
-            contentTop.constant = 0.0
+            contentView.snp.updateConstraints { make in
+                make.top.equalToSuperview()
+            }
+
             networkInfoContainer.alpha = 1.0
             delegate?.didChangeExpansion(isExpanded: true, view: self)
         } else {
-            contentTop.constant = -contentHeight.constant
+            contentView.snp.updateConstraints { make in
+                make.top.equalToSuperview().offset(
+                    -5 * Constants.rowHeight - Constants.stackViewBottomInset
+                )
+            }
+
             networkInfoContainer.alpha = 0.0
             delegate?.didChangeExpansion(isExpanded: false, view: self)
         }
@@ -164,12 +303,13 @@ final class NetworkInfoView: UIView {
             return
         }
 
-        totalStakedAmountLabel.alpha = 0.0
-        totalStakedFiatAmountLabel.alpha = 0.0
-        minimumStakeAmountLabel.alpha = 0.0
-        minimumStakeFiatAmountLabel.alpha = 0.0
-        activeNominatorsLabel.alpha = 0.0
-        lockUpPeriodLabel.alpha = 0.0
+        totalStakedView.valueTop.alpha = 0.0
+        totalStakedView.valueBottom.alpha = 0.0
+        minimumStakedView.valueTop.alpha = 0.0
+        minimumStakedView.valueBottom.alpha = 0.0
+        activeNominatorsView.valueTop.alpha = 0.0
+        stakingPeriodView.valueTop.alpha = 0.0
+        unstakingPeriodView.valueTop.alpha = 0.0
 
         setupSkeleton()
     }
@@ -183,87 +323,129 @@ final class NetworkInfoView: UIView {
         skeletonView?.removeFromSuperview()
         skeletonView = nil
 
-        totalStakedAmountLabel.alpha = 1.0
-        totalStakedFiatAmountLabel.alpha = 1.0
-        minimumStakeAmountLabel.alpha = 1.0
-        minimumStakeFiatAmountLabel.alpha = 1.0
-        activeNominatorsLabel.alpha = 1.0
-        lockUpPeriodLabel.alpha = 1.0
+        totalStakedView.valueTop.alpha = 1.0
+        totalStakedView.valueBottom.alpha = 1.0
+        minimumStakedView.valueTop.alpha = 1.0
+        minimumStakedView.valueBottom.alpha = 1.0
+        activeNominatorsView.valueTop.alpha = 1.0
+        stakingPeriodView.valueTop.alpha = 1.0
+        unstakingPeriodView.valueTop.alpha = 1.0
     }
 
     private func setupSkeleton() {
-        let spaceSize = networkInfoContainer.frame.size
+        let spaceSize = CGSize(
+            width: frame.width,
+            height: 5 * Constants.rowHeight + Constants.stackViewBottomInset
+        )
 
-        let skeletonView = Skrull(
-            size: networkInfoContainer.frame.size,
+        guard spaceSize.width > 0, spaceSize.height > 0 else {
+            return
+        }
+
+        let builder = Skrull(
+            size: spaceSize,
             decorations: [],
             skeletons: createSkeletons(for: spaceSize)
         )
-        .fillSkeletonStart(R.color.colorSkeletonStart()!)
-        .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
-        .build()
 
-        skeletonView.frame = CGRect(origin: .zero, size: spaceSize)
-        skeletonView.autoresizingMask = []
-        networkInfoContainer.insertSubview(skeletonView, at: 0)
+        let currentSkeletonView: SkrullableView?
 
-        self.skeletonView = skeletonView
+        if let skeletonView = skeletonView {
+            currentSkeletonView = skeletonView
+            builder.updateSkeletons(in: skeletonView)
+        } else {
+            let view = builder
+                .fillSkeletonStart(R.color.colorSkeletonStart()!)
+                .fillSkeletonEnd(color: R.color.colorSkeletonEnd()!)
+                .build()
+            view.autoresizingMask = []
+            contentView.insertSubview(view, at: 0)
 
-        skeletonView.startSkrulling()
+            skeletonView = view
+
+            view.startSkrulling()
+
+            currentSkeletonView = view
+        }
+
+        currentSkeletonView?.frame = CGRect(origin: .zero, size: spaceSize)
     }
 
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
         let smallRowSize = CGSize(width: 57.0, height: 6.0)
-        let topInset: CGFloat = 7.0
-        let verticalSpacing: CGFloat = 10.0
+
+        let horizontalInsetWidth = Constants.contentMargins.left + Constants.contentMargins.right
+
+        let doubleValueBigOffset = CGPoint(
+            x: networkInfoContainer.frame.width - horizontalInsetWidth - bigRowSize.width,
+            y: Constants.rowHeight / 2.0 - bigRowSize.height - 3.0
+        )
+
+        let doubleValueSmallOffset = CGPoint(
+            x: networkInfoContainer.frame.width - horizontalInsetWidth - smallRowSize.width,
+            y: Constants.rowHeight / 2.0 + 3.0
+        )
+
+        let singleValueOffset = CGPoint(
+            x: networkInfoContainer.frame.width - horizontalInsetWidth - bigRowSize.width,
+            y: Constants.rowHeight / 2.0 - bigRowSize.height / 2.0
+        )
 
         return [
             SingleSkeleton.createRow(
-                under: totalStakedTitleLabel,
-                containerView: networkInfoContainer,
+                on: totalStakedView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset),
+                offset: doubleValueBigOffset,
                 size: bigRowSize
             ),
 
             SingleSkeleton.createRow(
-                under: totalStakedTitleLabel,
-                containerView: networkInfoContainer,
+                on: totalStakedView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset + bigRowSize.height + verticalSpacing),
+                offset: doubleValueSmallOffset,
                 size: smallRowSize
             ),
 
             SingleSkeleton.createRow(
-                under: minimumStakeTitleLabel,
-                containerView: networkInfoContainer,
+                on: minimumStakedView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset),
+                offset: doubleValueBigOffset,
                 size: bigRowSize
             ),
 
             SingleSkeleton.createRow(
-                under: minimumStakeTitleLabel,
-                containerView: networkInfoContainer,
+                on: minimumStakedView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset + bigRowSize.height + verticalSpacing),
+                offset: doubleValueSmallOffset,
                 size: smallRowSize
             ),
 
             SingleSkeleton.createRow(
-                under: activeNominatorsTitleLabel,
-                containerView: networkInfoContainer,
+                on: activeNominatorsView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset),
+                offset: singleValueOffset,
                 size: bigRowSize
             ),
 
             SingleSkeleton.createRow(
-                under: lockUpPeriodTitleLabel,
-                containerView: networkInfoContainer,
+                on: stakingPeriodView,
+                containerView: contentView,
                 spaceSize: spaceSize,
-                offset: CGPoint(x: 0.0, y: topInset),
+                offset: singleValueOffset,
+                size: bigRowSize
+            ),
+
+            SingleSkeleton.createRow(
+                on: unstakingPeriodView,
+                containerView: contentView,
+                spaceSize: spaceSize,
+                offset: singleValueOffset,
                 size: bigRowSize
             )
         ]
@@ -271,7 +453,7 @@ final class NetworkInfoView: UIView {
 
     // MARK: Action
 
-    @IBAction func actionToggleExpansion() {
+    @objc func actionToggleExpansion() {
         applyExpansion(animated: true)
     }
 }
@@ -287,14 +469,10 @@ extension NetworkInfoView: SkeletonLoadable {
     }
 
     func didUpdateSkeletonLayout() {
-        guard let skeletonView = skeletonView else {
+        guard skeletonView != nil else {
             return
         }
 
-        if skeletonView.frame.size != networkInfoContainer.frame.size {
-            skeletonView.removeFromSuperview()
-            self.skeletonView = nil
-            setupSkeleton()
-        }
+        setupSkeleton()
     }
 }

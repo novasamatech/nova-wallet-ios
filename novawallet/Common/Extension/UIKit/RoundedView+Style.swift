@@ -22,4 +22,9 @@ extension RoundedView {
         fillColor = .clear
         highlightedFillColor = R.color.colorAccentSelected()!
     }
+
+    func applyFilledBackgroundStyle() {
+        shadowOpacity = 0.0
+        strokeWidth = 0.0
+    }
 }

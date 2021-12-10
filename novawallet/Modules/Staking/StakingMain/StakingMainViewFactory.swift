@@ -18,7 +18,6 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
         view.localizationManager = LocalizationManager.shared
         view.iconGenerator = NovaIconGenerator()
         view.uiFactory = UIFactory()
-        view.amountFormatterFactory = AssetBalanceFormatterFactory()
 
         // MARK: - Interactor
 
