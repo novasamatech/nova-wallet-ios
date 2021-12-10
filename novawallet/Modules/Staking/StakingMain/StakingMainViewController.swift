@@ -44,8 +44,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     var iconGenerator: IconGenerating?
     var uiFactory: UIFactoryProtocol?
 
-    var keyboardHandler: KeyboardHandler?
-
     // MARK: - UIViewController
 
     override func viewDidLoad() {
@@ -59,14 +57,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         presenter.setup()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if keyboardHandler == nil {
-            setupKeyboardHandler()
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -76,12 +66,12 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didAppearSkeleton()
         }
+
+        rewardView?.didAppearSkeleton()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        clearKeyboardHandler()
 
         networkInfoView.didDisappearSkeleton()
         analyticsView.didDisappearSkeleton()
@@ -89,6 +79,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didDisappearSkeleton()
         }
+
+        rewardView?.didDisappearSkeleton()
     }
 
     override func viewDidLayoutSubviews() {
@@ -100,6 +92,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         if let skeletonState = stateView as? SkeletonLoadable {
             skeletonState.didUpdateSkeletonLayout()
         }
+
+        rewardView?.didUpdateSkeletonLayout()
     }
 
     @IBAction func actionIcon() {
@@ -455,27 +449,6 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
 
     func didChangeExpansion(isExpanded: Bool, view _: NetworkInfoView) {
         presenter.networkInfoViewDidChangeExpansion(isExpanded: isExpanded)
-    }
-}
-
-extension StakingMainViewController: KeyboardAdoptable {
-    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
-        let localKeyboardFrame = view.convert(frame, from: nil)
-        let bottomInset = view.bounds.height - localKeyboardFrame.minY
-        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
-
-        var contentInsets = scrollView.contentInset
-        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
-        scrollView.contentInset = contentInsets
-
-        if contentInsets.bottom > 0.0, let firstResponderView = stateView {
-            let fieldFrame = scrollView.convert(
-                firstResponderView.frame,
-                from: firstResponderView.superview
-            )
-
-            scrollView.scrollRectToVisible(fieldFrame, animated: true)
-        }
     }
 }
 
