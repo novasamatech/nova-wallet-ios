@@ -57,6 +57,7 @@
 		<string>PublicSans-Regular.otf</string>
 		<string>PublicSans-SemiBold.otf</string>
 		<string>PublicSans-ExtraLight.otf</string>
+		<string>PublicSans-Medium.otf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
