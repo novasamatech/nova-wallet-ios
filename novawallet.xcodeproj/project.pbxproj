@@ -741,6 +741,7 @@
 		848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDA2761E0E100C91022 /* StakingRewardViewModel.swift */; };
 		848E6BDD2762142300C91022 /* StakingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDC2762142300C91022 /* StakingStatusView.swift */; };
 		848E6BDF276218E600C91022 /* GlowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BDE276218E600C91022 /* GlowingView.swift */; };
+		848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848E6BE0276328B500C91022 /* PublicSans-Medium.otf */; };
 		848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */; };
 		848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */; };
 		848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE6525E6742400652AA5 /* EraValidatorService.swift */; };
@@ -2484,6 +2485,7 @@
 		848E6BDA2761E0E100C91022 /* StakingRewardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRewardViewModel.swift; sourceTree = "<group>"; };
 		848E6BDC2762142300C91022 /* StakingStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStatusView.swift; sourceTree = "<group>"; };
 		848E6BDE276218E600C91022 /* GlowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowingView.swift; sourceTree = "<group>"; };
+		848E6BE0276328B500C91022 /* PublicSans-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-Medium.otf"; sourceTree = "<group>"; };
 		848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanStatus.swift; sourceTree = "<group>"; };
 		848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModelFactory.swift; sourceTree = "<group>"; };
 		848FFE6525E6742400652AA5 /* EraValidatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorService.swift; sourceTree = "<group>"; };
@@ -5730,6 +5732,7 @@
 				848A837D274BB03E004493DD /* PublicSans-Regular.otf */,
 				848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */,
 				84E58C7C275E124A00BD441A /* PublicSans-ExtraLight.otf */,
+				848E6BE0276328B500C91022 /* PublicSans-Medium.otf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -8821,6 +8824,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				848E6BE1276328B500C91022 /* PublicSans-Medium.otf in Resources */,
 				84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */,
 				849013FC24A92A05008F705E /* novawallet.release.xcconfig in Resources */,
 				8490145E24A94373008F705E /* Localizable.strings in Resources */,
