@@ -79,7 +79,7 @@ protocol UIFactoryProtocol {
 
     func createInfoIndicatingView() -> ImageWithTitleView
 
-    func createChainAssetSelectionView() -> DetailsTriangularedView
+    func createChainAssetSelectionView() -> ChainAssetSelectionControl
 
     func createAnimatedTextField() -> AnimatedTextField
 
@@ -102,6 +102,7 @@ extension UIFactoryProtocol {
     }
 }
 
+// swiftlint:disable:next type_body_length
 final class UIFactory: UIFactoryProtocol {
     static let `default` = UIFactory()
 
@@ -527,18 +528,23 @@ final class UIFactory: UIFactoryProtocol {
         return view
     }
 
-    func createChainAssetSelectionView() -> DetailsTriangularedView {
-        let view = DetailsTriangularedView()
-        view.layout = .largeIconTitleSubtitle
+    func createChainAssetSelectionView() -> ChainAssetSelectionControl {
+        let view = ChainAssetSelectionControl()
         view.fillColor = .clear
         view.highlightedFillColor = R.color.colorHighlightedAccent()!
         view.titleLabel.textColor = R.color.colorWhite()
         view.titleLabel.font = .p1Paragraph
         view.subtitleLabel?.textColor = R.color.colorLightGray()
         view.subtitleLabel?.font = .p2Paragraph
+        view.iconBackgroundView.fillColor = R.color.colorBlack24()!
+        view.iconBackgroundView.strokeColor = R.color.colorWhite16()!
+        view.iconBackgroundView.strokeWidth = 0.5
         view.actionImage = R.image.iconMore()
-        view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 8.0, right: 16.0)
-        view.iconRadius = 16.0
+        view.contentInsets = UIEdgeInsets(top: 13.0, left: 19.0, bottom: 13.0, right: 19.0)
+        view.titleAdditionalTopMargin = -5
+        view.subtitleAdditionalBottomMargin = -5
+        view.iconRadius = 13.0
+        view.horizontalSpacing = 19.0
         return view
     }
 
