@@ -12,7 +12,7 @@ final class NetworkInfoView: UIView {
         static let headerHeight: CGFloat = 48.0
         static let rowHeight: CGFloat = 48.0
         static let contentMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
-        static let stackViewInset: CGFloat = 4.0
+        static let stackViewBottomInset: CGFloat = 4.0
     }
 
     let backgroundView: TriangularedBlurView = {
@@ -185,7 +185,8 @@ final class NetworkInfoView: UIView {
         contentView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview().inset(Constants.stackViewInset)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(Constants.stackViewBottomInset)
         }
 
         let views = [
@@ -288,7 +289,7 @@ final class NetworkInfoView: UIView {
         } else {
             contentView.snp.updateConstraints { make in
                 make.top.equalToSuperview().offset(
-                    -5 * Constants.rowHeight - 2 * Constants.stackViewInset
+                    -5 * Constants.rowHeight - Constants.stackViewBottomInset
                 )
             }
 
@@ -334,7 +335,7 @@ final class NetworkInfoView: UIView {
     private func setupSkeleton() {
         let spaceSize = CGSize(
             width: frame.width,
-            height: 5 * Constants.rowHeight + 2 * Constants.stackViewInset
+            height: 5 * Constants.rowHeight + Constants.stackViewBottomInset
         )
 
         guard spaceSize.width > 0, spaceSize.height > 0 else {
