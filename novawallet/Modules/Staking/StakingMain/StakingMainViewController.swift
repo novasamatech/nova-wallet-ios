@@ -23,6 +23,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     let assetSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
         view.borderWidth = 0.0
+        view.actionImage = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
+        view.actionView.tintColor = R.color.colorWhite48()
         return view
     }()
 
@@ -114,7 +116,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         stackView.insertArranged(view: assetSelectionContainerView, after: headerView)
 
         assetSelectionView.snp.makeConstraints { make in
-            make.height.equalTo(48.0)
+            make.height.equalTo(52.0)
         }
 
         backgroundView.snp.makeConstraints { make in
