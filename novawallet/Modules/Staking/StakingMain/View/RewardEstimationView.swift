@@ -175,7 +175,7 @@ final class RewardEstimationView: LocalizableView {
             make.leading.greaterThanOrEqualToSuperview().inset(16)
             make.trailing.lessThanOrEqualTo(self.snp.centerX).offset(-16.0)
             make.centerX.equalToSuperview().multipliedBy(0.5)
-            make.bottom.equalTo(monthlyTitleLabel.snp.top)
+            make.bottom.equalTo(monthlyTitleLabel.snp.top).offset(-2.0)
         }
 
         addSubview(yearlyValueLabel)
@@ -183,7 +183,7 @@ final class RewardEstimationView: LocalizableView {
             make.leading.greaterThanOrEqualTo(self.snp.centerX).offset(16.0)
             make.trailing.lessThanOrEqualToSuperview().offset(-16.0)
             make.centerX.equalToSuperview().multipliedBy(1.5)
-            make.bottom.equalTo(yearlyTitleLabel.snp.top)
+            make.bottom.equalTo(yearlyTitleLabel.snp.top).offset(-2.0)
         }
     }
 
@@ -285,7 +285,7 @@ final class RewardEstimationView: LocalizableView {
     private func createSkeletons(for spaceSize: CGSize) -> [Skeletonable] {
         let bigRowSize = CGSize(width: 72.0, height: 12.0)
 
-        let offsetY = 6.0
+        let offsetY = 8.0
         let monthlyOffsetX = monthlyTitleLabel.intrinsicContentSize.width / 2.0 - bigRowSize.width / 2.0
         let yearlyOffsetX = yearlyTitleLabel.intrinsicContentSize.width / 2.0 - bigRowSize.width / 2.0
 

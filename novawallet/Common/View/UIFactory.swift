@@ -541,8 +541,8 @@ final class UIFactory: UIFactoryProtocol {
         view.iconBackgroundView.strokeWidth = 0.5
         view.actionImage = R.image.iconMore()
         view.contentInsets = UIEdgeInsets(top: 13.0, left: 19.0, bottom: 13.0, right: 19.0)
-        view.titleAdditionalTopMargin = -6
-        view.subtitleAdditionalBottomMargin = -6
+        view.titleAdditionalTopMargin = -5
+        view.subtitleAdditionalBottomMargin = -5
         view.iconRadius = 13.0
         view.horizontalSpacing = 19.0
         return view
