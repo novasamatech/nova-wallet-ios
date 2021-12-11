@@ -216,7 +216,7 @@ extension StakingStateView {
 
         let offset = CGPoint(
             x: statusView.frame.midX - bigRowSize.width / 2.0,
-            y: spaceSize.height - 24.0 - bigRowSize.height
+            y: spaceSize.height - 24.0 - statusView.frame.size.height / 2.0 - bigRowSize.height / 2.0
         )
 
         return SingleSkeleton.createRow(
