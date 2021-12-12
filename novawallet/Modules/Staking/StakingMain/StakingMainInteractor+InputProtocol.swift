@@ -55,6 +55,10 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     private func updateAfterChainAssetSave() {
+        clearCancellable()
+        clear(singleValueProvider: &priceProvider)
+        clearNominatorsLimitProviders()
+
         guard let newSelectedChainAsset = stakingSettings.value else {
             return
         }
@@ -69,14 +73,9 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
         provideNewChain()
 
-        clear(singleValueProvider: &priceProvider)
         performPriceSubscription()
 
-        clearNominatorsLimitProviders()
         performNominatorLimitsSubscripion()
-
-        clearStashControllerSubscription()
-        performStashControllerSubscription()
 
         guard
             let chainId = selectedChainAsset?.chain.chainId,

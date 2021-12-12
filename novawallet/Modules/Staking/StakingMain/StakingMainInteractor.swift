@@ -4,7 +4,7 @@ import RobinHood
 import SubstrateSdk
 import SoraFoundation
 
-final class StakingMainInteractor: RuntimeConstantFetching {
+final class StakingMainInteractor: RuntimeConstantFetching, AnyCancellableCleaning {
     weak var presenter: StakingMainInteractorOutputProtocol!
 
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol {
@@ -39,6 +39,11 @@ final class StakingMainInteractor: RuntimeConstantFetching {
 
     private var chainSubscriptionId: UUID?
     private var accountSubscriptionId: UUID?
+    private var maxNominatorsPerValidatorCancellable: CancellableCall?
+    private var eraStakersInfoCancellable: CancellableCall?
+    private var networkInfoCancellable: CancellableCall?
+    private var eraCompletionTimeCancellable: CancellableCall?
+    private var rewardCalculatorCancellable: CancellableCall?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: AnyDataProvider<DecodedAccountInfo>?
@@ -96,6 +101,15 @@ final class StakingMainInteractor: RuntimeConstantFetching {
         }
 
         clearAccountRemoteSubscription()
+        clearCancellable()
+    }
+
+    func clearCancellable() {
+        clear(cancellable: &maxNominatorsPerValidatorCancellable)
+        clear(cancellable: &eraCompletionTimeCancellable)
+        clear(cancellable: &eraStakersInfoCancellable)
+        clear(cancellable: &networkInfoCancellable)
+        clear(cancellable: &rewardCalculatorCancellable)
     }
 
     func setupSelectedAccountAndChainAsset() {
@@ -196,12 +210,17 @@ final class StakingMainInteractor: RuntimeConstantFetching {
     }
 
     func provideMaxNominatorsPerValidator(from runtimeService: RuntimeCodingServiceProtocol) {
-        fetchConstant(
+        clear(cancellable: &maxNominatorsPerValidatorCancellable)
+
+        maxNominatorsPerValidatorCancellable = fetchConstant(
             for: .maxNominatorRewardedPerValidator,
             runtimeCodingService: runtimeService,
             operationManager: operationManager
-        ) { [weak self] result in
-            self?.presenter.didReceiveMaxNominatorsPerValidator(result: result)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            if self?.maxNominatorsPerValidatorCancellable != nil {
+                self?.maxNominatorsPerValidatorCancellable = nil
+                self?.presenter.didReceiveMaxNominatorsPerValidator(result: result)
+            }
         }
     }
 
@@ -214,10 +233,18 @@ final class StakingMainInteractor: RuntimeConstantFetching {
     }
 
     func provideRewardCalculator(from calculatorService: RewardCalculatorServiceProtocol) {
+        clear(cancellable: &rewardCalculatorCancellable)
+
         let operation = calculatorService.fetchCalculatorOperation()
 
         operation.completionBlock = {
             DispatchQueue.main.async { [weak self] in
+                guard self?.rewardCalculatorCancellable === operation else {
+                    return
+                }
+
+                self?.rewardCalculatorCancellable = nil
+
                 do {
                     let engine = try operation.extractNoCancellableResultData()
                     self?.presenter.didReceive(calculator: engine)
@@ -227,14 +254,24 @@ final class StakingMainInteractor: RuntimeConstantFetching {
             }
         }
 
+        rewardCalculatorCancellable = operation
+
         operationManager.enqueue(operations: [operation], in: .transient)
     }
 
     func provideEraStakersInfo(from eraValidatorService: EraValidatorServiceProtocol) {
+        clear(cancellable: &eraStakersInfoCancellable)
+
         let operation = eraValidatorService.fetchInfoOperation()
 
         operation.completionBlock = {
             DispatchQueue.main.async { [weak self] in
+                guard self?.eraStakersInfoCancellable === operation else {
+                    return
+                }
+
+                self?.eraStakersInfoCancellable = nil
+
                 do {
                     let info = try operation.extractNoCancellableResultData()
                     self?.presenter.didReceive(eraStakersInfo: info)
@@ -245,10 +282,14 @@ final class StakingMainInteractor: RuntimeConstantFetching {
             }
         }
 
+        eraStakersInfoCancellable = operation
+
         operationManager.enqueue(operations: [operation], in: .transient)
     }
 
     func provideNetworkStakingInfo() {
+        clear(cancellable: &networkInfoCancellable)
+
         guard let chainId = selectedChainAsset?.chain.chainId else {
             return
         }
@@ -265,6 +306,12 @@ final class StakingMainInteractor: RuntimeConstantFetching {
 
         wrapper.targetOperation.completionBlock = {
             DispatchQueue.main.async { [weak self] in
+                guard self?.networkInfoCancellable === wrapper else {
+                    return
+                }
+
+                self?.networkInfoCancellable = nil
+
                 do {
                     let info = try wrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter.didReceive(networkStakingInfo: info)
@@ -274,10 +321,14 @@ final class StakingMainInteractor: RuntimeConstantFetching {
             }
         }
 
+        networkInfoCancellable = wrapper
+
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     func fetchEraCompletionTime() {
+        clear(cancellable: &eraCompletionTimeCancellable)
+
         guard let chainId = selectedChainAsset?.chain.chainId else {
             return
         }
@@ -299,6 +350,12 @@ final class StakingMainInteractor: RuntimeConstantFetching {
 
         operationWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
+                guard self?.eraCompletionTimeCancellable === operationWrapper else {
+                    return
+                }
+
+                self?.eraCompletionTimeCancellable = nil
+
                 do {
                     let result = try operationWrapper.targetOperation.extractNoCancellableResultData()
                     self?.presenter.didReceive(eraCountdownResult: .success(result))
@@ -307,6 +364,9 @@ final class StakingMainInteractor: RuntimeConstantFetching {
                 }
             }
         }
+
+        eraCompletionTimeCancellable = operationWrapper
+
         operationManager.enqueue(operations: operationWrapper.allOperations, in: .transient)
     }
 }

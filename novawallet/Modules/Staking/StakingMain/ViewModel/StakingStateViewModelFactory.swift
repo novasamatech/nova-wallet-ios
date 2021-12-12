@@ -104,7 +104,6 @@ final class StakingStateViewModelFactory {
     private func createNominationViewModel(
         for chainAsset: ChainAsset,
         commonData: StakingStateCommonData,
-        state _: BaseStashNextState,
         ledgerInfo: StakingLedger,
         viewStatus: NominationViewStatus
     ) -> LocalizableResource<NominationViewModel> {
@@ -275,18 +274,11 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
 
         updateCacheForChainAsset(chainAsset)
 
-        let status: NominationViewStatus = {
-            if let era = state.commonData.eraStakersInfo?.activeEra {
-                return .inactive(era: era)
-            } else {
-                return .undefined
-            }
-        }()
+        let status: NominationViewStatus = .inactive
 
         let viewModel = createNominationViewModel(
             for: chainAsset,
             commonData: state.commonData,
-            state: state,
             ledgerInfo: state.ledgerInfo,
             viewStatus: status
         )
@@ -337,7 +329,6 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         let viewModel = createNominationViewModel(
             for: chainAsset,
             commonData: state.commonData,
-            state: state,
             ledgerInfo: state.ledgerInfo,
             viewStatus: state.status
         )
