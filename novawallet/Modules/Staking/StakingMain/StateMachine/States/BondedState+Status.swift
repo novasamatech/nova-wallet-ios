@@ -2,11 +2,7 @@ import Foundation
 
 extension BondedState {
     var status: NominationViewStatus {
-        guard let eraStakers = commonData.eraStakersInfo else {
-            return .undefined
-        }
-
-        return .inactive(era: eraStakers.activeEra)
+        .inactive
     }
 
     func createStatusPresentableViewModel(locale: Locale?) -> AlertPresentableViewModel? {
