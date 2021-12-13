@@ -61,6 +61,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         interactor.setup()
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func actionRow(_ row: SettingsRow) {
         switch row {
         case .wallets:
@@ -71,6 +72,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             wireframe.showPincodeChange(from: view)
         case .telegram:
             show(url: config.socialURL)
+        case .youtube:
+            show(url: config.youtubeURL)
         case .twitter:
             show(url: config.twitterURL)
         case .rateUs:
