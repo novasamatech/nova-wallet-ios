@@ -72,35 +72,25 @@ final class ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender: AccountId?
-
-            if isEthereumBased {
-                let rawSender = try extrinsic.signature?.address.map(to: [StringScaleMapper<UInt8>].self)
-                    .map(\.value)
-                sender = rawSender.map { Data($0) }
-            } else {
-                sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
-            }
+            let sender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
 
             let parsingResult: (CallCodingPath, Bool, AccountId?) = try {
-                if isEthereumBased {
-                    let call = try extrinsic.call.map(to: RuntimeCall<EthereumTransferCall>.self)
-                    let callAccountId = call.args.dest
-                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-                    let isAccountMatched = accountId == sender || accountId == callAccountId
+                let call = try extrinsic.call.map(
+                    to: RuntimeCall<TransferCall>.self,
+                    with: runtimeJsonContext.toRawContext()
+                )
+                let callAccountId = call.args.dest.accountId
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                let isAccountMatched = accountId == sender || accountId == callAccountId
 
-                    return (callPath, isAccountMatched, callAccountId)
-                } else {
-                    let call = try extrinsic.call.map(to: RuntimeCall<TransferCall>.self)
-                    let callAccountId = call.args.dest.accountId
-                    let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-                    let isAccountMatched = accountId == sender || accountId == callAccountId
-
-                    return (callPath, isAccountMatched, callAccountId)
-                }
+                return (callPath, isAccountMatched, callAccountId)
             }()
 
             let callPath = parsingResult.0
@@ -143,18 +133,14 @@ final class ExtrinsicProcessor {
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender: AccountId?
-
-            if isEthereumBased {
-                let rawSender = try extrinsic.signature?.address.map(to: [StringScaleMapper<UInt8>].self)
-                    .map(\.value)
-                sender = rawSender.map { Data($0) }
-            } else {
-                sender = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
-            }
+            let sender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
 
             let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
@@ -201,11 +187,14 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
             let decoder = try coderFactory.createDecoder(from: extrinsicData)
             let extrinsic: Extrinsic = try decoder.read(of: GenericType.extrinsic.name)
 
+            let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
+
             if let processingResult = matchTransfer(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
-                metadata: coderFactory.metadata
+                metadata: coderFactory.metadata,
+                runtimeJsonContext: runtimeJsonContext
             ) {
                 return processingResult
             }
@@ -214,7 +203,8 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
-                metadata: coderFactory.metadata
+                metadata: coderFactory.metadata,
+                runtimeJsonContext: runtimeJsonContext
             )
         } catch {
             return nil

@@ -7,6 +7,7 @@ extension WalletNetworkFacade {
     func createHistoryMergeOperation(
         dependingOn remoteOperation: BaseOperation<WalletRemoteHistoryData>?,
         localOperation: BaseOperation<[TransactionHistoryItem]>?,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         chainAssetInfo: ChainAssetDisplayInfo,
         assetId: String,
         address: String
@@ -21,9 +22,14 @@ extension WalletNetworkFacade {
                     chainAssetInfo: chainAssetInfo,
                     assetId: assetId
                 )
+
+                let coderFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
+
                 return manager.merge(
                     subscanItems: remoteTransactions,
-                    localItems: localTransactions
+                    localItems: localTransactions,
+                    runtimeJsonContext: runtimeJsonContext
                 )
             } else {
                 let transactions: [AssetTransactionData] = remoteTransactions.map { item in

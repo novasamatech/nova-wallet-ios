@@ -91,7 +91,8 @@ final class TransactionSubscription {
             let txSaveOperation = createTxSaveOperation(
                 for: accountId,
                 chain: chainModel,
-                dependingOn: parseOperation
+                dependingOn: parseOperation,
+                codingFactoryOperation: coderFactoryOperation
             )
 
             let contactSaveWrapper = createContactSaveWrapper(
@@ -101,6 +102,7 @@ final class TransactionSubscription {
             )
 
             txSaveOperation.addDependency(parseOperation)
+            txSaveOperation.addDependency(coderFactoryOperation)
             contactSaveWrapper.allOperations.forEach { $0.addDependency(parseOperation) }
 
             txSaveOperation.completionBlock = {
@@ -141,14 +143,18 @@ extension TransactionSubscription {
     private func createTxSaveOperation(
         for accountId: AccountId,
         chain: ChainModel,
-        dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>
+        dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
     ) -> BaseOperation<Void> {
         txStorage.saveOperation({
-            try processingOperaton.extractNoCancellableResultData().compactMap { result in
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
+            return try processingOperaton.extractNoCancellableResultData().compactMap { result in
                 TransactionHistoryItem.createFromSubscriptionResult(
                     result,
                     accountId: accountId,
-                    chain: chain
+                    chain: chain,
+                    runtimeJsonContext: runtimeJsonContext
                 )
             }
         }, { [] })
