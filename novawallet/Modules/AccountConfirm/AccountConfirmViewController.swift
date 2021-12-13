@@ -86,6 +86,9 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
         setupNavigationItem()
         setupLocalization()
         configureLayout()
+
+        nextButton.applyDefaultStyle()
+
         updateNextButton()
 
         presenter.setup()
@@ -262,6 +265,7 @@ final class AccountConfirmViewController: UIViewController, AdaptiveDesignable {
             nextButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
                 preferredLanguages: selectedLocale.rLanguages
             )
+
         } else {
             nextButton.imageWithTitleView?.title = R.string.localizable.confirmMnemonicSelectWord(
                 preferredLanguages: selectedLocale.rLanguages
