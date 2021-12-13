@@ -9,6 +9,7 @@ enum SettingsRow {
     case youtube
     case twitter
     case rateUs
+    case email
     case website
     case github
     case terms
@@ -16,6 +17,7 @@ enum SettingsRow {
 }
 
 extension SettingsRow {
+    // swiftlint:disable:next cyclomatic_complexity
     func title(for locale: Locale) -> String {
         switch self {
         case .wallets:
@@ -32,6 +34,8 @@ extension SettingsRow {
             return R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
         case .rateUs:
             return R.string.localizable.settingsRateUs(preferredLanguages: locale.rLanguages)
+        case .email:
+            return R.string.localizable.settingsEmail(preferredLanguages: locale.rLanguages)
         case .website:
             return R.string.localizable.aboutWebsite(preferredLanguages: locale.rLanguages)
         case .github:
@@ -59,6 +63,8 @@ extension SettingsRow {
             return R.image.iconTwitter()
         case .rateUs:
             return R.image.iconStar()
+        case .email:
+            return R.image.iconEmail()
         case .website:
             return R.image.iconWebsite()
         case .github:

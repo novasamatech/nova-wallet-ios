@@ -5,6 +5,7 @@ enum SettingsSection {
     case preferences
     case security
     case community
+    case support
     case about
 }
 
@@ -19,6 +20,8 @@ extension SettingsSection {
             return R.string.localizable.settingsSecurity(preferredLanguages: locale.rLanguages).uppercased()
         case .community:
             return R.string.localizable.settingsCommunity(preferredLanguages: locale.rLanguages).uppercased()
+        case .support:
+            return R.string.localizable.settingsSupport(preferredLanguages: locale.rLanguages).uppercased()
         case .about:
             return R.string.localizable.aboutTitle(preferredLanguages: locale.rLanguages).uppercased()
         }

@@ -634,3 +634,5 @@
 "staking.reward.widget.title" = "Your rewards";
 "staking.waiting.next.era.format" = "waiting for the next era (%@)";
 "settings.youtube" = "Youtube";
+"settings.support" = "Support & Feedback";
+"settings.email" = "Email";
