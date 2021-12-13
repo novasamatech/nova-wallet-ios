@@ -241,6 +241,8 @@ final class NetworkInfoView: UIView {
             preferredLanguages: languages
         )
 
+        titleControl.invalidateLayout()
+
         totalStakedView.titleLabel.text = R.string.localizable
             .stakingMainTotalStakedTitle(preferredLanguages: languages)
         minimumStakedView.titleLabel.text = R.string.localizable

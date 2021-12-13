@@ -9,8 +9,6 @@ final class RewardCalculatorServiceStub: RewardCalculatorServiceProtocol {
         self.engine = engine
     }
 
-    func update(to chain: Chain) {}
-
     func setup() {}
 
     func throttle() {}
