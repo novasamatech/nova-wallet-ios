@@ -7,21 +7,16 @@ extension TransactionHistoryItem {
     static func createFromSubscriptionResult(
         _ result: TransactionSubscriptionResult,
         accountId: AccountId,
-        chain: ChainModel
+        chain: ChainModel,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryItem? {
         do {
             let extrinsic = result.processingResult.extrinsic
 
-            let maybeTxOrigin: AccountId?
-
-            if chain.isEthereumBased {
-                let rawOrigin = try extrinsic.signature?.address.map(
-                    to: [StringScaleMapper<UInt8>].self
-                ).map(\.value)
-                maybeTxOrigin = rawOrigin.map { Data($0) }
-            } else {
-                maybeTxOrigin = try extrinsic.signature?.address.map(to: MultiAddress.self).accountId
-            }
+            let maybeTxOrigin: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
 
             guard let txOrigin = maybeTxOrigin else {
                 return nil
