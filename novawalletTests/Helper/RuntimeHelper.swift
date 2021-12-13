@@ -35,7 +35,11 @@ final class RuntimeHelper {
         return container
     }
 
-    static func createTypeRegistry(from name: String, runtimeMetadataName: String) throws
+    static func createTypeRegistry(
+        from name: String,
+        runtimeMetadataName: String,
+        accountIdLength: Int = 32
+    ) throws
     -> TypeRegistry {
         guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
             throw RuntimeHelperError.invalidCatalogBaseName
@@ -44,7 +48,10 @@ final class RuntimeHelper {
         let runtimeMetadataContainer = try Self.createRuntimeMetadata(runtimeMetadataName)
 
         let data = try Data(contentsOf: url)
-        let basisNodes = BasisNodes.allNodes(for: runtimeMetadataContainer.metadata)
+        let basisNodes = BasisNodes.allNodes(
+            for: runtimeMetadataContainer.metadata,
+            accountIdLength: accountIdLength
+        )
         let registry = try TypeRegistry
             .createFromTypesDefinition(data: data,
                                        additionalNodes: basisNodes)
@@ -66,7 +73,8 @@ final class RuntimeHelper {
 
     static func createTypeRegistryCatalog(from baseName: String,
                                           networkName: String,
-                                          runtimeMetadataContainer: RuntimeMetadataContainer)
+                                          runtimeMetadataContainer: RuntimeMetadataContainer,
+                                          accountIdLength: Int = 32)
     throws -> TypeRegistryCatalog {
         guard let baseUrl = Bundle.main.url(forResource: baseName, withExtension: "json") else {
             throw RuntimeHelperError.invalidCatalogBaseName
@@ -85,12 +93,14 @@ final class RuntimeHelper {
             return try TypeRegistryCatalog.createFromTypeDefinition(
                 baseData,
                 versioningData: networkData,
-                runtimeMetadata: metadata
+                runtimeMetadata: metadata,
+                accountIdLength: accountIdLength
             )
         case .v14(let metadata):
             return try TypeRegistryCatalog.createFromSiDefinition(
                 versioningData: networkData,
-                runtimeMetadata: metadata
+                runtimeMetadata: metadata,
+                accountIdLength: accountIdLength
             )
         }
 
