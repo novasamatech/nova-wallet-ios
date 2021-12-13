@@ -123,7 +123,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
               let chain = chains[chainAssetId.chainId],
               let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress()
+              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
+              let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId)
         else {
             let pageData = AssetTransactionPageData(
                 transactions: [],
@@ -171,9 +172,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             localFetchOperation = nil
         }
 
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+        dependencies.append(codingFactoryOperation)
+
         let mergeOperation = createHistoryMergeOperation(
             dependingOn: remoteHistoryWrapper.targetOperation,
             localOperation: localFetchOperation,
+            codingFactoryOperation: codingFactoryOperation,
             chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo,
             assetId: walletAssetId,
             address: address
@@ -220,7 +225,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                 let chain = chains[chainAssetId.chainId],
                 let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
                 let accountResponse = metaAccount.fetch(for: chain.accountRequest()),
-                let address = accountResponse.toAddress() else {
+                let address = accountResponse.toAddress(),
+                let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
                 throw BaseOperationError.parentOperationCancelled
             }
 
@@ -230,8 +236,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             let destinationAddress = try destinationId.toAddress(using: chain.chainFormat)
             let contactSaveWrapper = contactsOperationFactory.saveByAddressOperation(destinationAddress)
 
+            let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
             let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
             let txSaveOperation = txStorage.saveOperation({
+                let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+                let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
+
                 switch transferWrapper.targetOperation.result {
                 case let .success(txHash):
                     let item = try TransactionHistoryItem
@@ -239,7 +250,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                             info,
                             senderAccount: accountResponse,
                             transactionHash: txHash,
-                            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo
+                            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo,
+                            runtimeJsonContext: runtimeJsonContext
                         )
                     return [item]
                 case let .failure(error):
@@ -248,6 +260,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                     throw BaseOperationError.parentOperationCancelled
                 }
             }, { [] })
+
+            txSaveOperation.addDependency(codingFactoryOperation)
 
             transferWrapper.allOperations.forEach { transaferOperation in
                 txSaveOperation.addDependency(transaferOperation)
@@ -266,7 +280,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
             }
 
-            let dependencies = [txSaveOperation] + contactSaveWrapper.allOperations +
+            let dependencies = [codingFactoryOperation, txSaveOperation] + contactSaveWrapper.allOperations +
                 transferWrapper.allOperations
 
             completionOperation.addDependency(txSaveOperation)

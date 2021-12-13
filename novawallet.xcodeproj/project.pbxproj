@@ -267,7 +267,6 @@
 		84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84205896260C795B007D26C6 /* NominatorState+Status.swift */; };
 		842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842348E82614F6EA002127AF /* SkeletonLoadable.swift */; };
 		842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */; };
-		842349C52624E98C0066ACFE /* MultiAddress+Query.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842349C42624E98C0066ACFE /* MultiAddress+Query.swift */; };
 		8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */; };
 		8423ADD226B2C9D000057EDD /* ImportantViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423ADD126B2C9D000057EDD /* ImportantViewProtocol.swift */; };
 		8423B0DE251A438F00B8687C /* AddConnectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423B0DD251A438F00B8687C /* AddConnectionError.swift */; };
@@ -2008,7 +2007,6 @@
 		84205896260C795B007D26C6 /* NominatorState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominatorState+Status.swift"; sourceTree = "<group>"; };
 		842348E82614F6EA002127AF /* SkeletonLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadable.swift; sourceTree = "<group>"; };
 		842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstrateAccountId.swift; sourceTree = "<group>"; };
-		842349C42624E98C0066ACFE /* MultiAddress+Query.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MultiAddress+Query.swift"; sourceTree = "<group>"; };
 		8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantFlowViewFactory.swift; sourceTree = "<group>"; };
 		8423ADD126B2C9D000057EDD /* ImportantViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantViewProtocol.swift; sourceTree = "<group>"; };
 		8423B0DD251A438F00B8687C /* AddConnectionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddConnectionError.swift; sourceTree = "<group>"; };
@@ -4663,18 +4661,17 @@
 			path = Types;
 			sourceTree = "<group>";
 		};
-		843910B7253EFB6E00E3C217 /* FearlessUtils */ = {
+		843910B7253EFB6E00E3C217 /* SubstrateSdk */ = {
 			isa = PBXGroup;
 			children = (
 				843910B8253EFB8100E3C217 /* StorageKeyFactory+Implicit.swift */,
 				849E0CCF25CFDDB700B33506 /* StorageUpdateData+Decoding.swift */,
 				845BB8BF25E4508800E5FCDC /* SS58FactoryExtensions.swift */,
-				842349C42624E98C0066ACFE /* MultiAddress+Query.swift */,
 				84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */,
 				AEAC690326EB891900346599 /* Logger+FearlessUtils.swift */,
 				8493D0E026FF4F5000A28008 /* ScaleCoder+Extension.swift */,
 			);
-			path = FearlessUtils;
+			path = SubstrateSdk;
 			sourceTree = "<group>";
 		};
 		843910CF253F8DAD00E3C217 /* NetworkAvailabilityLayer */ = {
@@ -5615,7 +5612,7 @@
 			isa = PBXGroup;
 			children = (
 				84F30EE225FFABEE00039D09 /* DataProvider */,
-				843910B7253EFB6E00E3C217 /* FearlessUtils */,
+				843910B7253EFB6E00E3C217 /* SubstrateSdk */,
 				8467FD5624EFD590005D486C /* Storage */,
 				84A2C90524E09DA60020D3B7 /* Operation */,
 				84DA3B1724C8200100B5E27F /* Model */,
@@ -9354,7 +9351,6 @@
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
 				8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */,
 				D9D163642744F60D00681C1F /* ExternalContribution.swift in Sources */,
-				842349C52624E98C0066ACFE /* MultiAddress+Query.swift in Sources */,
 				84155DED2539817200A27058 /* ApplicationService.swift in Sources */,
 				8409C264252210A70049B5C8 /* WalletDisplayAmountView.swift in Sources */,
 				841493DC2604C144000D8D1A /* SubscanRewardData.swift in Sources */,
