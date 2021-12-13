@@ -4,27 +4,37 @@ import SoraFoundation
 import UIKit
 
 final class AssetDetailsConfigurator {
+    let containingViewFactory: AssetDetailsContainingViewFactory
     let viewModelFactory: AssetDetailsViewModelFactory
 
     init(
         address: AccountAddress,
-        chain: ChainModel,
+        chainAsset: ChainAsset,
         purchaseProvider: PurchaseProviderProtocol,
-        priceAsset: WalletAsset
+        priceAsset: WalletAsset,
+        localizationManager: LocalizationManagerProtocol
     ) {
         let amountFormatterFactory = AmountFormatterFactory()
 
+        containingViewFactory = AssetDetailsContainingViewFactory(
+            chainAsset: chainAsset,
+            localizationManager: localizationManager
+        )
+
         viewModelFactory = AssetDetailsViewModelFactory(
             address: address,
-            chain: chain,
+            chain: chainAsset.chain,
             purchaseProvider: purchaseProvider,
             amountFormatterFactory: amountFormatterFactory,
             priceAsset: priceAsset
         )
     }
 
+    func bind(commandFactory: WalletCommandFactoryProtocol) {
+        containingViewFactory.commandFactory = commandFactory
+    }
+
     func configure(builder: AccountDetailsModuleBuilderProtocol) {
-        let containingViewFactory = AssetDetailsContainingViewFactory()
         builder
             .with(containingViewFactory: containingViewFactory)
             .with(listViewModelFactory: viewModelFactory)
