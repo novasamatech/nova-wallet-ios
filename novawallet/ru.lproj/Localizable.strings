@@ -633,3 +633,6 @@
 "common.learn.more_v2_2_0" = "Узнать больше";
 "staking.reward.widget.title" = "Вознаграждения";
 "staking.waiting.next.era.format" = "ожидание следующей эры (%@)";
+"settings.youtube" = "Youtube";
+"settings.support" = "Поддержка и обратная связь";
+"settings.email" = "Написать разработчикам";

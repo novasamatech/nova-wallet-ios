@@ -115,6 +115,11 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
                 preferredLanguages: locale.rLanguages
             ).uppercased()
             timer.start(with: remainingTime, runLoop: .main, mode: .common)
+        } else {
+            statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
+                "-:-:-",
+                preferredLanguages: locale.rLanguages
+            ).uppercased()
         }
     }
 }
