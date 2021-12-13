@@ -42,6 +42,14 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if case .loading = state {
+            didStartLoading()
+        }
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -58,6 +66,10 @@ final class CrowdloanListViewController: UIViewController, ViewHolder {
         super.viewDidDisappear(animated)
 
         presenter.putOffline()
+
+        if case .loading = state {
+            didStopLoading()
+        }
     }
 
     func configure() {
