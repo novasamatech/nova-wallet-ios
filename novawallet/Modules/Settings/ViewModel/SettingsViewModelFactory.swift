@@ -31,6 +31,7 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
             (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
             (.community, [
                 createCommonViewViewModel(row: .telegram, locale: locale),
+                createCommonViewViewModel(row: .youtube, locale: locale),
                 createCommonViewViewModel(row: .twitter, locale: locale),
                 createCommonViewViewModel(row: .rateUs, locale: locale)
             ]),
