@@ -6,6 +6,7 @@ enum SettingsRow {
     case language
     case changePin
     case telegram
+    case youtube
     case twitter
     case rateUs
     case website
@@ -25,6 +26,8 @@ extension SettingsRow {
             return R.string.localizable.profilePincodeChangeTitle(preferredLanguages: locale.rLanguages)
         case .telegram:
             return R.string.localizable.aboutTelegram(preferredLanguages: locale.rLanguages)
+        case .youtube:
+            return R.string.localizable.settingsYoutube(preferredLanguages: locale.rLanguages)
         case .twitter:
             return R.string.localizable.settingsTwitter(preferredLanguages: locale.rLanguages)
         case .rateUs:
@@ -50,6 +53,8 @@ extension SettingsRow {
             return R.image.iconPinCode()
         case .telegram:
             return R.image.iconTelegram()
+        case .youtube:
+            return R.image.iconYoutube()
         case .twitter:
             return R.image.iconTwitter()
         case .rateUs:
