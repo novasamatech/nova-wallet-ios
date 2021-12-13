@@ -186,6 +186,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         containerView.translatesAutoresizingMaskIntoConstraints = false
 
         let rewardView = StakingRewardView(frame: defaultFrame)
+        rewardView.locale = localizationManager?.selectedLocale ?? Locale.current
         containerView.addSubview(rewardView)
 
         applyConstraints(for: containerView, innerView: rewardView)
