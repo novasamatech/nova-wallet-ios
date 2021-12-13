@@ -48,6 +48,31 @@ final class SettingsPresenter {
             wireframe.showWeb(url: url, from: view, style: .automatic)
         }
     }
+
+    private func writeUs() {
+        guard let view = view else {
+            return
+        }
+
+        let message = SocialMessage(
+            body: nil,
+            subject: nil,
+            recepients: [config.supportEmail]
+        )
+
+        if !wireframe.writeEmail(with: message, from: view, completionHandler: nil) {
+            wireframe.present(
+                message: R.string.localizable.noEmailBoundErrorMessage(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                title: R.string.localizable.commonErrorGeneralTitle(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages),
+                from: view
+            )
+        }
+    }
 }
 
 extension SettingsPresenter: SettingsPresenterProtocol {
@@ -78,6 +103,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
             show(url: config.twitterURL)
         case .rateUs:
             show(url: config.appStoreURL)
+        case .email:
+            writeUs()
         case .website:
             show(url: config.websiteURL)
         case .github:

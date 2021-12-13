@@ -46,7 +46,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var appStoreURL: URL {
-        URL(string: "https://apps.apple.com/us/app/nova-wallet-polkadot-kusama/id1591993285")!
+        URL(string: "https://apps.apple.com/us/app/id1597119355")!
     }
 
     var socialURL: URL {
