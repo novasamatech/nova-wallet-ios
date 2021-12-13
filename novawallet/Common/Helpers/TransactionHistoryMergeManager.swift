@@ -1,6 +1,7 @@
 import Foundation
 import CommonWallet
 import IrohaCrypto
+import SubstrateSdk
 
 struct TransactionHistoryMergeResult {
     let historyItems: [AssetTransactionData]
@@ -60,7 +61,8 @@ enum TransactionHistoryMergeItem {
     func buildTransactionData(
         address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAssetInfo: ChainAssetDisplayInfo,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> AssetTransactionData {
         switch self {
         case let .local(item):
@@ -68,7 +70,8 @@ enum TransactionHistoryMergeItem {
                 from: item,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAssetInfo: chainAssetInfo,
+                runtimeJsonContext: runtimeJsonContext
             )
         case let .remote(item):
             return item.createTransactionForAddress(
@@ -110,7 +113,8 @@ final class TransactionHistoryMergeManager {
 
     func merge(
         subscanItems: [WalletRemoteHistoryItemProtocol],
-        localItems: [TransactionHistoryItem]
+        localItems: [TransactionHistoryItem],
+        runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryMergeResult {
         let existingHashes = Set(subscanItems.map(\.identifier))
         let minSubscanItem = subscanItems.last
@@ -150,7 +154,8 @@ final class TransactionHistoryMergeManager {
                 item.buildTransactionData(
                     address: address,
                     assetId: assetId,
-                    chainAssetInfo: chainAssetInfo
+                    chainAssetInfo: chainAssetInfo,
+                    runtimeJsonContext: runtimeJsonContext
                 )
             }
 

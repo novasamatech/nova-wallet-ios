@@ -9,11 +9,6 @@ protocol SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<TransferCall>
 
-    func ethereumTransfer(
-        to receiver: AccountId,
-        amount: BigUInt
-    ) -> RuntimeCall<EthereumTransferCall>
-
     func bond(
         amount: BigUInt,
         controller: String,
@@ -117,14 +112,6 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
-        return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
-    }
-
-    func ethereumTransfer(
-        to receiver: AccountId,
-        amount: BigUInt
-    ) -> RuntimeCall<EthereumTransferCall> {
-        let args = EthereumTransferCall(dest: receiver, value: amount)
         return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
     }
 

@@ -145,14 +145,16 @@ extension AssetTransactionData {
         from item: TransactionHistoryItem,
         address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAssetInfo: ChainAssetDisplayInfo,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> AssetTransactionData {
         if item.callPath.isTransfer {
             return createLocalTransfer(
                 from: item,
                 address: address,
                 assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAssetInfo: chainAssetInfo,
+                runtimeJsonContext: runtimeJsonContext
             )
         } else {
             return createLocalExtrinsic(
@@ -168,7 +170,8 @@ extension AssetTransactionData {
         from item: TransactionHistoryItem,
         address: String,
         assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAssetInfo: ChainAssetDisplayInfo,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> AssetTransactionData {
         let peerAddress = (item.sender == address ? item.receiver : item.sender) ?? item.sender
 
@@ -193,16 +196,10 @@ extension AssetTransactionData {
                 return .zero
             }
 
-            if let substrateTransfer = try? JSONDecoder.scaleCompatible()
+            if let substrateTransfer = try? JSONDecoder.scaleCompatible(with: runtimeJsonContext.toRawContext())
                 .decode(RuntimeCall<TransferCall>.self, from: encodedCall) {
                 return Decimal.fromSubstrateAmount(
                     substrateTransfer.args.value,
-                    precision: chainAssetInfo.asset.assetPrecision
-                ) ?? .zero
-            } else if let ethereumTransfer = try? JSONDecoder.scaleCompatible()
-                .decode(RuntimeCall<EthereumTransferCall>.self, from: encodedCall) {
-                return Decimal.fromSubstrateAmount(
-                    ethereumTransfer.args.value,
                     precision: chainAssetInfo.asset.assetPrecision
                 ) ?? .zero
             } else {

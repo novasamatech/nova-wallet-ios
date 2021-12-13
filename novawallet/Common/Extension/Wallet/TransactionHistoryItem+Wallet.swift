@@ -9,7 +9,8 @@ extension TransactionHistoryItem {
         _ info: TransferInfo,
         senderAccount: ChainAccountResponse,
         transactionHash: Data,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAssetInfo: ChainAssetDisplayInfo,
+        runtimeJsonContext: RuntimeJsonContext
     ) throws
         -> TransactionHistoryItem {
         let senderAccountId = senderAccount.accountId
@@ -31,7 +32,9 @@ extension TransactionHistoryItem {
             callName: callPath.callName,
             args: callArgs
         )
-        let encodedCall = try JSONEncoder.scaleCompatible().encode(call)
+        let encodedCall = try JSONEncoder.scaleCompatible(
+            with: runtimeJsonContext.toRawContext()
+        ).encode(call)
 
         let totalFee = info.fees.reduce(Decimal(0)) { total, fee in total + fee.value.decimalValue }
 

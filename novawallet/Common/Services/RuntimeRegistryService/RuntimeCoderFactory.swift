@@ -8,9 +8,12 @@ protocol RuntimeCoderFactoryProtocol {
 
     func createEncoder() -> DynamicScaleEncoding
     func createDecoder(from data: Data) throws -> DynamicScaleDecoding
+    func createRuntimeJsonContext() -> RuntimeJsonContext
 }
 
 final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
+    static let addressTypeName = "Address"
+
     let catalog: TypeRegistryCatalogProtocol
     let specVersion: UInt32
     let txVersion: UInt32
@@ -34,5 +37,19 @@ final class RuntimeCoderFactory: RuntimeCoderFactoryProtocol {
 
     func createDecoder(from data: Data) throws -> DynamicScaleDecoding {
         try DynamicScaleDecoder(data: data, registry: catalog, version: UInt64(specVersion))
+    }
+
+    func createRuntimeJsonContext() -> RuntimeJsonContext {
+        if let addressTypeNode = catalog.node(
+            for: Self.addressTypeName,
+            version: UInt64(specVersion)
+        ) as? ProxyNode {
+            let addressTypeName = addressTypeNode.typeName.components(separatedBy: ".").last
+
+            let preferresMultiAddress = addressTypeName?.lowercased() == "multiaddress"
+            return RuntimeJsonContext(prefersRawAddress: !preferresMultiAddress)
+        } else {
+            return RuntimeJsonContext(prefersRawAddress: false)
+        }
     }
 }
