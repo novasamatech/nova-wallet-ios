@@ -153,9 +153,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
             address: address,
-            chain: chain,
+            chainAsset: chainAsset,
             purchaseProvider: purchaseProvider,
-            priceAsset: priceAsset
+            priceAsset: priceAsset,
+            localizationManager: localizationManager
         )
 
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
@@ -222,6 +223,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         transferConfigurator.commandFactory = context
         confirmConfigurator.commandFactory = context
         receiveConfigurator.commandFactory = context
+
+        assetDetailsConfigurator.bind(commandFactory: context)
 
         return context
     }
