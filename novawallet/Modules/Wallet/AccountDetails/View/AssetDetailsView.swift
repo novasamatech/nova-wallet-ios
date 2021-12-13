@@ -1,11 +1,12 @@
 import UIKit
 import CommonWallet
 import SoraUI
+import SoraFoundation
 
 final class AssetDetailsView: BaseAccountDetailsContainingView {
     var contentInsets: UIEdgeInsets = .zero
 
-    var preferredContentHeight: CGFloat { 337.0 }
+    var preferredContentHeight: CGFloat { 380.0 }
 
     @IBOutlet var separators: [BorderedContainerView]!
 
@@ -32,8 +33,13 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
     @IBOutlet private var receiveButton: RoundedButton!
     @IBOutlet private var buyButton: RoundedButton!
 
-    private var actionsViewModel: WalletActionsViewModelProtocol?
-    private var assetViewModel: AssetDetailsViewModel?
+    private var localizedTitle: LocalizableResource<String>?
+    private var iconViewModel: WalletImageViewModelProtocol?
+
+    private var sendCommand: WalletCommandProtocol?
+    private var receiveCommand: WalletCommandProtocol?
+    private var buyCommand: WalletCommandProtocol?
+    private var lockedInfoCommand: WalletCommandProtocol?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -41,10 +47,41 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         separators.forEach {
             $0.strokeWidth = UIConstants.separatorHeight
         }
+
+        setupDefaultValues()
     }
 
     func setContentInsets(_ contentInsets: UIEdgeInsets, animated _: Bool) {
         self.contentInsets = contentInsets
+    }
+
+    func bind(title: LocalizableResource<String>, iconViewModel: WalletImageViewModelProtocol?) {
+        localizedTitle = title
+
+        titleLabel.text = title.value(for: selectedLocale)
+
+        iconViewModel?.cancel()
+        iconView.image = nil
+
+        self.iconViewModel = iconViewModel
+
+        iconViewModel?.loadImage { [weak self] image, _ in
+            self?.iconView.image = image
+        }
+    }
+
+    func bindActions(
+        send: WalletCommandProtocol?,
+        receive: WalletCommandProtocol?,
+        buy: WalletCommandProtocol?
+    ) {
+        sendCommand = send
+        receiveCommand = receive
+        buyCommand = buy
+
+        sendButton.isEnabled = (sendCommand != nil)
+        receiveButton.isEnabled = (receiveCommand != nil)
+        buyButton.isEnabled = (buyCommand != nil)
     }
 
     func bind(viewModels: [WalletViewModelProtocol]) {
@@ -53,35 +90,65 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
             bind(assetViewModel: assetViewModel)
         }
 
-        if let actionsViewModel = viewModels
-            .first(where: { $0 is ActionsViewModelProtocol }) as? ActionsViewModelProtocol {
-            bind(actionsViewModel: actionsViewModel)
-        }
-
         setNeedsLayout()
     }
 
+    private func setupLocalization() {
+        titleLabel.text = localizedTitle?.value(for: selectedLocale)
+
+        let languages = selectedLocale.rLanguages
+        widgetTitleLabel.text = R.string.localizable.walletBalancesWidgetTitle(
+            preferredLanguages: languages
+        )
+
+        totalSectionTitleLabel.text = R.string.localizable.walletTransferTotalTitle(
+            preferredLanguages: languages
+        )
+
+        transferableSectionTitleLabel.text = R.string.localizable.walletBalanceAvailable(
+            preferredLanguages: languages
+        )
+
+        lockedSectionTitleLabel.text = R.string.localizable.walletBalanceLocked(
+            preferredLanguages: languages
+        )
+
+        sendButton.imageWithTitleView?.title = R.string.localizable.walletSendTitle(
+            preferredLanguages: languages
+        )
+
+        sendButton.invalidateLayout()
+
+        receiveButton.imageWithTitleView?.title = R.string.localizable.walletAssetReceive(
+            preferredLanguages: languages
+        )
+
+        receiveButton.invalidateLayout()
+
+        buyButton.imageWithTitleView?.title = R.string.localizable.walletAssetBuy(
+            preferredLanguages: languages
+        )
+
+        buyButton.invalidateLayout()
+    }
+
+    private func setupDefaultValues() {
+        priceLabel.text = ""
+        totalSectionTokenLabel.text = ""
+        totalSectionFiatLabel.text = ""
+        transferableSectionTokenLabel.text = ""
+        transferableSectionFiatLabel.text = ""
+        lockedSectionTokenLabel.text = ""
+        lockedSectionFiatLabel.text = ""
+        priceChangeLabel.text = ""
+    }
+
     private func bind(assetViewModel: AssetDetailsViewModel) {
-        self.assetViewModel?.imageViewModel?.cancel()
-
-        self.assetViewModel = assetViewModel
-
-        titleLabel.text = assetViewModel.title
-
-        iconView.image = nil
-
-        assetViewModel.imageViewModel?.loadImage { [weak self] image, _ in
-            self?.iconView.image = image
-        }
+        lockedInfoCommand = assetViewModel.infoDetailsCommand
 
         priceLabel.text = assetViewModel.price
 
         // Balances widget
-        widgetTitleLabel.text = assetViewModel.balancesTitle
-        totalSectionTitleLabel.text = assetViewModel.totalTitle
-        transferableSectionTitleLabel.text = assetViewModel.transferableTitle
-        lockedSectionTitleLabel.text = assetViewModel.lockedTitle
-
         totalSectionTokenLabel.text = assetViewModel.totalBalance.amount
         totalSectionFiatLabel.text = assetViewModel.totalBalance.price
 
@@ -101,36 +168,25 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         }
     }
 
-    private func bind(actionsViewModel: ActionsViewModelProtocol) {
-        if let viewModel = actionsViewModel as? WalletActionsViewModelProtocol {
-            self.actionsViewModel = viewModel
-
-            sendButton.imageWithTitleView?.title = viewModel.send.title
-            sendButton.invalidateLayout()
-
-            receiveButton.imageWithTitleView?.title = viewModel.receive.title
-            receiveButton.invalidateLayout()
-
-            buyButton.imageWithTitleView?.title = viewModel.buy.title
-            buyButton.invalidateLayout()
-
-            buyButton.isEnabled = (viewModel.buy.command != nil)
-        }
-    }
-
     @IBAction private func actionSend() {
-        try? actionsViewModel?.send.command.execute()
+        try? sendCommand?.execute()
     }
 
     @IBAction private func actionReceive() {
-        try? actionsViewModel?.receive.command.execute()
+        try? receiveCommand?.execute()
     }
 
     @IBAction private func actionBuy() {
-        try? actionsViewModel?.buy.command?.execute()
+        try? buyCommand?.execute()
     }
 
     @IBAction private func actionFrozen() {
-        try? assetViewModel?.infoDetailsCommand.execute()
+        try? lockedInfoCommand?.execute()
+    }
+}
+
+extension AssetDetailsView: Localizable {
+    func applyLocalization() {
+        setupLocalization()
     }
 }
