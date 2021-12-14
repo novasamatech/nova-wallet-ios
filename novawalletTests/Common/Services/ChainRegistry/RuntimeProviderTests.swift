@@ -353,7 +353,6 @@ class RuntimeProviderTests: XCTestCase {
 
         let snapshotOperationFactory = RuntimeSnapshotFactory(
             chainId: chainModel.chainId,
-            accountIdLength: 32,
             filesOperationFactory: filesOperationFactory,
             repository: AnyDataProviderRepository(repository)
         )
