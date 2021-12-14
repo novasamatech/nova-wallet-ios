@@ -11,25 +11,21 @@ protocol RuntimeSnapshotFactoryProtocol {
 
 final class RuntimeSnapshotFactory {
     let chainId: ChainModel.Id
-    let accountIdLength: Int
     let filesOperationFactory: RuntimeFilesOperationFactoryProtocol
     let repository: AnyDataProviderRepository<RuntimeMetadataItem>
 
     init(
         chainId: ChainModel.Id,
-        accountIdLength: Int,
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         repository: AnyDataProviderRepository<RuntimeMetadataItem>
     ) {
         self.chainId = chainId
-        self.accountIdLength = accountIdLength
         self.filesOperationFactory = filesOperationFactory
         self.repository = repository
     }
 
     private func createWrapperForCommonAndChainTypes(
-        _ dataHasher: StorageHasher,
-        accountIdLength: Int
+        _ dataHasher: StorageHasher
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let baseTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chainId)
@@ -63,15 +59,13 @@ final class RuntimeSnapshotFactory {
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     commonTypes,
                     versioningData: chainTypes,
-                    runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength
+                    runtimeMetadata: metadata
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: chainTypes,
                     runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
@@ -97,8 +91,7 @@ final class RuntimeSnapshotFactory {
     }
 
     private func createWrapperForCommonTypes(
-        _ dataHasher: StorageHasher,
-        accountIdLength: Int
+        _ dataHasher: StorageHasher
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let commonTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
 
@@ -129,15 +122,13 @@ final class RuntimeSnapshotFactory {
             case let .v13(metadata):
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     commonTypes,
-                    runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength
+                    runtimeMetadata: metadata
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: commonTypes,
                     runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
@@ -162,8 +153,7 @@ final class RuntimeSnapshotFactory {
     }
 
     private func createWrapperForChainTypes(
-        _ dataHasher: StorageHasher,
-        accountIdLength: Int
+        _ dataHasher: StorageHasher
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chainId)
 
@@ -194,15 +184,13 @@ final class RuntimeSnapshotFactory {
             case let .v13(metadata):
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     ownTypes,
-                    runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength
+                    runtimeMetadata: metadata
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: ownTypes,
                     runtimeMetadata: metadata,
-                    accountIdLength: accountIdLength,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
@@ -234,11 +222,11 @@ extension RuntimeSnapshotFactory: RuntimeSnapshotFactoryProtocol {
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         switch typesUsage {
         case .onlyCommon:
-            return createWrapperForCommonTypes(dataHasher, accountIdLength: accountIdLength)
+            return createWrapperForCommonTypes(dataHasher)
         case .onlyOwn:
-            return createWrapperForChainTypes(dataHasher, accountIdLength: accountIdLength)
+            return createWrapperForChainTypes(dataHasher)
         case .both:
-            return createWrapperForCommonAndChainTypes(dataHasher, accountIdLength: accountIdLength)
+            return createWrapperForCommonAndChainTypes(dataHasher)
         }
     }
 }
