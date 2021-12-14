@@ -32,18 +32,8 @@ final class RuntimeProviderFactory {
 
 extension RuntimeProviderFactory: RuntimeProviderFactoryProtocol {
     func createRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol {
-        let accountIdLength: Int = {
-            switch chain.chainFormat {
-            case .substrate:
-                return 32
-            case .ethereum:
-                return 20
-            }
-        }()
-
         let snapshotOperationFactory = RuntimeSnapshotFactory(
             chainId: chain.chainId,
-            accountIdLength: accountIdLength,
             filesOperationFactory: fileOperationFactory,
             repository: repository
         )
