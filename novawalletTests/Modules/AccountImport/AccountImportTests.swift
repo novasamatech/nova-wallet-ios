@@ -70,7 +70,7 @@ class AccountImportTests: XCTestCase {
 
             when(stub).setSource(type: any()).thenDoNothing()
 
-            when(stub).setShouldShowAdvancedSettings(any()).then { _ in true }
+            when(stub).setShouldShowAdvancedSettings(any()).then { _ in }
         }
 
         let expectation = XCTestExpectation()
