@@ -55,6 +55,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
         wireframe.showWeb(url: subIdUrl, from: view, style: .automatic)
     }
+
+    func activateSearch() {
+        wireframe.showSearch(from: view)
+    }
 }
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {

@@ -18,6 +18,20 @@ final class DAppListViewLayout: UIView {
         return view
     }()
 
+    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
+        let backgroundView = TriangularedBlurView()
+        backgroundView.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
+
+        let contentView = IconDetailsView()
+        contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
+        contentView.tintColor = R.color.colorWhite48()
+        contentView.detailsLabel.textColor = R.color.colorWhite48()
+        contentView.detailsLabel.font = .p1Paragraph
+        contentView.detailsLabel.numberOfLines = 0
+
+        return ControlView(backgroundView: backgroundView, contentView: contentView, preferredHeight: 52.0)
+    }()
+
     let listHeaderTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
@@ -60,7 +74,10 @@ final class DAppListViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(headerView)
 
-        containerView.stackView.setCustomSpacing(24.0, after: headerView)
+        containerView.stackView.setCustomSpacing(12.0, after: headerView)
+
+        containerView.stackView.addArrangedSubview(searchView)
+        containerView.stackView.setCustomSpacing(24.0, after: searchView)
 
         containerView.stackView.addArrangedSubview(listHeaderTitleLabel)
         containerView.stackView.setCustomSpacing(16.0, after: listHeaderTitleLabel)
