@@ -1,11 +1,20 @@
-protocol DAppBrowserViewProtocol: ControllerBackedProtocol {}
+protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: DAppBrowserModel)
+}
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
+    func process(message: Any)
 }
 
-protocol DAppBrowserInteractorInputProtocol: AnyObject {}
+protocol DAppBrowserInteractorInputProtocol: AnyObject {
+    func setup()
+    func process(message: Any)
+}
 
-protocol DAppBrowserInteractorOutputProtocol: AnyObject {}
+protocol DAppBrowserInteractorOutputProtocol: AnyObject {
+    func didReceive(error: Error)
+    func didReceiveDApp(model: DAppBrowserModel)
+}
 
-protocol DAppBrowserWireframeProtocol: AnyObject {}
+protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {}
