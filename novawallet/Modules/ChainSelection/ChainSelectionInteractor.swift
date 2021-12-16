@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 
 final class ChainSelectionInteractor {
-    weak var presenter: ChainSelectionInteractorOutputProtocol!
+    weak var presenter: ChainSelectionInteractorOutputProtocol?
 
     let selectedMetaAccount: MetaAccountModel
     let repository: AnyDataProviderRepository<ChainModel>
@@ -38,12 +38,12 @@ final class ChainSelectionInteractor {
     private func handleChains(result: Result<[ChainModel], Error>?) {
         switch result {
         case let .success(chains):
-            presenter.didReceiveChains(result: .success(chains))
+            presenter?.didReceiveChains(result: .success(chains))
             subscribeToAccountInfo(for: chains)
         case let .failure(error):
-            presenter.didReceiveChains(result: .failure(error))
+            presenter?.didReceiveChains(result: .failure(error))
         case .none:
-            presenter.didReceiveChains(result: .failure(BaseOperationError.parentOperationCancelled))
+            presenter?.didReceiveChains(result: .failure(BaseOperationError.parentOperationCancelled))
         }
     }
 
@@ -56,7 +56,7 @@ final class ChainSelectionInteractor {
                 let dataProvider = subscribeToAccountInfoProvider(for: accountId, chainId: chain.chainId) {
                 providers.append(dataProvider)
             } else {
-                presenter.didReceiveAccountInfo(
+                presenter?.didReceiveAccountInfo(
                     result: .failure(ChainAccountFetchingError.accountNotExists),
                     for: chain.chainId
                 )
@@ -79,6 +79,6 @@ extension ChainSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSub
         accountId _: AccountId,
         chainId: ChainModel.Id
     ) {
-        presenter.didReceiveAccountInfo(result: result, for: chainId)
+        presenter?.didReceiveAccountInfo(result: result, for: chainId)
     }
 }
