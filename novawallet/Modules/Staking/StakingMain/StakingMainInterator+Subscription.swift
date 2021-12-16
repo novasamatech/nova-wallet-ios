@@ -172,11 +172,7 @@ extension StakingMainInteractor {
 
 extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
     AnyProviderAutoCleaning {
-    func handleStashItem(result: Result<StashItem?, Error>, for address: AccountAddress) {
-        guard selectedAccount?.toAddress() == address else {
-            return
-        }
-
+    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         switch result {
         case let .success(stashItem):
             handle(stashItem: stashItem)
@@ -240,13 +236,9 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
 
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
-        for address: AccountAddress,
+        for _: AccountAddress,
         api _: ChainModel.ExternalApi
     ) {
-        guard selectedAccount?.toAddress() == address else {
-            return
-        }
-
         switch result {
         case let .success(totalReward):
             presenter.didReceive(totalReward: totalReward)
@@ -300,13 +292,9 @@ extension StakingMainInteractor: StakingAnalyticsLocalStorageSubscriber,
     StakingAnalyticsLocalSubscriptionHandler {
     func handleWeaklyRewardAnalytics(
         result: Result<[SubqueryRewardItemData]?, Error>,
-        address: AccountAddress,
+        address _: AccountAddress,
         url _: URL
     ) {
-        guard selectedAccount?.toAddress() == address else {
-            return
-        }
-
         presenter.didReceieve(subqueryRewards: result, period: .week)
     }
 }
