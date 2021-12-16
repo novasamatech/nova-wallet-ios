@@ -62,10 +62,7 @@ final class StakingRewardDestConfirmViewController: UIViewController, ViewHolder
     }
 
     private func applyFeeViewModel() {
-        guard let feeViewModel = feeViewModel?.value(for: selectedLocale) else {
-            return
-        }
-
+        let feeViewModel = feeViewModel?.value(for: selectedLocale)
         rootView.bind(feeViewModel: feeViewModel)
     }
 
