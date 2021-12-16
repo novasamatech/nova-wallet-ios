@@ -1,0 +1,5 @@
+#include "../../Pods/Target Support Files/Pods-novawalletAll-novawallet/Pods-novawalletAll-novawallet.staging.xcconfig"
+
+OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
+
+APP_NAME = Nova Early Access

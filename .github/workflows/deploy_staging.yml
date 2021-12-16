@@ -1,8 +1,13 @@
-name: Build, Test and Deploy to Firebase
+name: Deploy to Staging
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      appVersion:
+        description: 'App version'
+        required: true
+  # release:
+  #   types: [published]
 
 jobs:
   build:
@@ -59,6 +64,14 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
+      - name: Bump version
+        uses: damienaicheh/update-ios-version-info-plist-action@v1.0.0
+        with:
+          info-plist-path: './novawallet/Info.plist'
+          bundle-short-version-string: ${{ github.event.inputs.appVersion }}
+          bundle-version: ${{github.run_number}}
+          print-file: true
+
       - name: Archive
         env:
           MOONPAY_PRODUCTION_SECRET: ${{ secrets.MOONPAY_PRODUCTION_SECRET }}
@@ -68,15 +81,15 @@ jobs:
           ACALA_TEST_AUTH_TOKEN: ${{ secrets.ACALA_TEST_AUTH_TOKEN }}
           MOONBEAM_API_KEY: ${{ secrets.MOONBEAM_API_KEY }}
           MOONBEAM_TEST_API_KEY: ${{ secrets.MOONBEAM_TEST_API_KEY }}
-        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme fearless -workspace fearless.xcworkspace -configuration Staging
+        run: xcodebuild archive -archivePath ./AdHoc.xcarchive -scheme novawallet -workspace novawallet.xcworkspace -configuration Staging
 
       - name: Export archive
-        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./fearless/exportOptionsStaging.plist
+        run: xcodebuild -exportArchive -archivePath ./AdHoc.xcarchive -exportPath ./export -exportOptionsPlist ./novawallet/exportOptionsStaging.plist
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: fearless.ipa
+          name: novawallet.ipa
           path: export
 
   # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
@@ -89,7 +102,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
         with:
-          name: fearless.ipa
+          name: novawallet.ipa
           path: export
 
       - name: Upload artifact to Firebase App Distribution
@@ -98,5 +111,5 @@ jobs:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: external-users
-          file: export/fearless.ipa
+          file: export/novawallet.ipa
           releaseNotes: ${{ github.event.head_commit.message }}

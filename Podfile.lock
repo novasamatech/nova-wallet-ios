@@ -122,7 +122,7 @@ PODS:
 
 DEPENDENCIES:
   - Charts
-  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `2f128c4d9f86d268748b8227e3e231bd6f786e35`)
+  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `e64218560a1749d352cf881ff73afaf20f9ce435`)
   - Cuckoo
   - FireMock
   - Kingfisher
@@ -132,9 +132,9 @@ DEPENDENCIES:
   - SnapKit (~> 5.0.0)
   - SoraFoundation (~> 1.0.0)
   - SoraKeystore (~> 1.0.0)
-  - SoraUI (~> 1.10.3)
+  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
   - Sourcery (~> 1.4)
-  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `d6614d299cef237a79bf4f0df028f6e60ee3625d`)"
+  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `3d849a15c7de64846350c15950c8c0ae457a3449`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -159,7 +159,6 @@ SPEC REPOS:
     - SnapKit
     - SoraFoundation
     - SoraKeystore
-    - SoraUI
     - Sourcery
     - Starscream
     - SwiftFormat
@@ -170,10 +169,13 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonWallet:
-    :commit: 2f128c4d9f86d268748b8227e3e231bd6f786e35
+    :commit: e64218560a1749d352cf881ff73afaf20f9ce435
     :git: https://github.com/ERussel/Capital-iOS.git
+  SoraUI:
+    :commit: 5d364b42000925775361d2098276871e429bfc47
+    :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
-    :commit: d6614d299cef237a79bf4f0df028f6e60ee3625d
+    :commit: 3d849a15c7de64846350c15950c8c0ae457a3449
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -181,10 +183,13 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonWallet:
-    :commit: 2f128c4d9f86d268748b8227e3e231bd6f786e35
+    :commit: e64218560a1749d352cf881ff73afaf20f9ce435
     :git: https://github.com/ERussel/Capital-iOS.git
+  SoraUI:
+    :commit: 5d364b42000925775361d2098276871e429bfc47
+    :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
-    :commit: d6614d299cef237a79bf4f0df028f6e60ee3625d
+    :commit: 3d849a15c7de64846350c15950c8c0ae457a3449
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -220,6 +225,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: c8fe2dbb77e171e24960d2998725bc3ce98cc9fa
+PODFILE CHECKSUM: d22f728bdc524a00a403569f29b2a553419e3bd5
 
 COCOAPODS: 1.11.2
