@@ -1,5 +1,0 @@
-#include "../../Pods/Target Support Files/Pods-fearlessAll-fearless/Pods-fearlessAll-fearless.staging.xcconfig"
-
-OTHER_SWIFT_FLAGS = $(inherited) "-DF_RELEASE"
-
-APP_NAME = Nova Early Access
