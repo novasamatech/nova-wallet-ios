@@ -154,13 +154,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
         applyConstraints(for: alertsContainerView, innerView: alertsView)
 
-        if let stateContainerView = stateContainerView {
-            stackView.insertArranged(view: alertsContainerView, after: stateContainerView)
-        } else if let rewardContainerView = rewardContainerView {
-            stackView.insertArranged(view: alertsContainerView, after: rewardContainerView)
-        } else {
-            stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
-        }
+        stackView.insertArranged(view: alertsContainerView, after: networkInfoContainerView)
 
         alertsView.delegate = self
     }
@@ -191,7 +185,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
         applyConstraints(for: containerView, innerView: rewardView)
 
-        stackView.insertArranged(view: containerView, after: networkInfoContainerView)
+        stackView.insertArranged(view: containerView, after: alertsContainerView)
 
         rewardContainerView = containerView
         self.rewardView = rewardView
@@ -258,7 +252,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         if let rewardContainerView = rewardContainerView {
             stackView.insertArranged(view: containerView, after: rewardContainerView)
         } else {
-            stackView.insertArranged(view: containerView, after: networkInfoContainerView)
+            stackView.insertArranged(view: containerView, after: alertsContainerView)
         }
 
         stateContainerView = containerView
