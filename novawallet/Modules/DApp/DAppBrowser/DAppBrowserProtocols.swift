@@ -1,5 +1,6 @@
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
+    func didReceive(response: PolkadotExtensionResponse)
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -15,6 +16,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
     func didReceiveDApp(model: DAppBrowserModel)
+    func didReceive(response: PolkadotExtensionResponse)
 }
 
 protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {}
