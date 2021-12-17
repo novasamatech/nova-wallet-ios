@@ -78,4 +78,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         let request = URLRequest(url: viewModel.url)
         rootView.webView.load(request)
     }
+
+    func didReceive(response: PolkadotExtensionResponse) {
+        rootView.webView.evaluateJavaScript(response.content)
+    }
 }
