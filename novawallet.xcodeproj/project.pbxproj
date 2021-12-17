@@ -1153,6 +1153,10 @@
 		84EBC55224F660A700459D15 /* EventProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC54724F660A700459D15 /* EventProtocols.swift */; };
 		84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */; };
 		84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */; };
+		84EC2D16276B92CB009B0BE1 /* PolkadotExtensionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D15276B92CB009B0BE1 /* PolkadotExtensionResponse.swift */; };
+		84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */; };
+		84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */; };
+		84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignature.swift */; };
 		84F0316F27302888003BDCF8 /* CoingeckoPriceListSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */; };
 		84F13F0826F13898006725FF /* StakingAssetSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0726F13898006725FF /* StakingAssetSettings.swift */; };
 		84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0926F14122006725FF /* ChainAsset.swift */; };
@@ -2928,6 +2932,10 @@
 		84EBC54724F660A700459D15 /* EventProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventProtocols.swift; sourceTree = "<group>"; };
 		84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedAccountChanged.swift; sourceTree = "<group>"; };
 		84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+ReorderColor.swift"; sourceTree = "<group>"; };
+		84EC2D15276B92CB009B0BE1 /* PolkadotExtensionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionResponse.swift; sourceTree = "<group>"; };
+		84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionAccount.swift; sourceTree = "<group>"; };
+		84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionExtrinsic.swift; sourceTree = "<group>"; };
+		84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionSignature.swift; sourceTree = "<group>"; };
 		84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceListSource.swift; sourceTree = "<group>"; };
 		84F13F0726F13898006725FF /* StakingAssetSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAssetSettings.swift; sourceTree = "<group>"; };
 		84F13F0926F14122006725FF /* ChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAsset.swift; sourceTree = "<group>"; };
@@ -5301,6 +5309,7 @@
 		846B49A92769EEC80066B875 /* DApp */ = {
 			isa = PBXGroup;
 			children = (
+				84EC2D1B276C67EB009B0BE1 /* Model */,
 				A7D3F0165AEEF4940B376CA5 /* DAppBrowser */,
 				B492B5426CD384887F1B351D /* DAppSearch */,
 				E06E44775A3129B62D29EC6E /* DAppList */,
@@ -6370,7 +6379,6 @@
 			children = (
 				8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */,
 				8496ADD6276AFEED00306B24 /* DAppBrowserModel.swift */,
-				8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -7050,6 +7058,18 @@
 				2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */,
 			);
 			path = Events;
+			sourceTree = "<group>";
+		};
+		84EC2D1B276C67EB009B0BE1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */,
+				84EC2D15276B92CB009B0BE1 /* PolkadotExtensionResponse.swift */,
+				84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */,
+				84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */,
+				84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignature.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		84EE6826264AD37B0026E6D3 /* Rewards */ = {
@@ -9687,6 +9707,7 @@
 				842898CC265A8EC3002D5D65 /* RemoteImageViewModel.swift in Sources */,
 				84DA3B1424C6D7C700B5E27F /* RuntimeDispatchInfo.swift in Sources */,
 				F4D96B6C2637EB1300B23D3D /* StakingBalanceActionsWidgetViewModel.swift in Sources */,
+				84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */,
 				84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */,
 				84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */,
 				84DBEA5E265EDAD300FDF73C /* BaseDataValidatorFactory.swift in Sources */,
@@ -9972,6 +9993,7 @@
 				AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */,
 				84113B6C255B2835009BD21A /* AccountCreateError.swift in Sources */,
 				849014C024AA87E4008F705E /* ScreenAuthorizationPresenter.swift in Sources */,
+				84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignature.swift in Sources */,
 				84F5105B263AB9F2005D15AE /* NetworkFeeView.swift in Sources */,
 				84786E2425FBA2A50089DFF7 /* StakingAccountSubscription.swift in Sources */,
 				8494D8782525343500614D8F /* SubscanOperationFactory.swift in Sources */,
@@ -10106,6 +10128,7 @@
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				8475AE34258B934F00B058F3 /* TransferValidatingError.swift in Sources */,
+				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				8494D8552524633300614D8F /* WalletTransferTokenView.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
 				AE2C84DF25EF98BA00986716 /* AnyValidatorInfoInteractor.swift in Sources */,
@@ -10135,6 +10158,7 @@
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
 				843910C3253F39B100E3C217 /* WalletNetworkFacade+Storage.swift in Sources */,
+				84EC2D16276B92CB009B0BE1 /* PolkadotExtensionResponse.swift in Sources */,
 				F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */,
 				AEA2C1B42681E99D0069492E /* ValidatorSearchProtocols.swift in Sources */,
 				7489BDA1D23D8DF73E7EB9BC /* UsernameSetupWireframe.swift in Sources */,

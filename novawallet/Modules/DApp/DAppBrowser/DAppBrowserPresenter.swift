@@ -41,4 +41,8 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceiveDApp(model: DAppBrowserModel) {
         view?.didReceive(viewModel: model)
     }
+
+    func didReceive(response: PolkadotExtensionResponse) {
+        view?.didReceive(response: response)
+    }
 }

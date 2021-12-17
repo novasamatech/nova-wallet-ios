@@ -102,6 +102,63 @@ final class DAppBrowserInteractor {
 
         operationQueue.addOperation(bridgeOperation)
     }
+
+    private func provideResponse<T: Encodable>(
+        for messageType: PolkadotExtensionMessage.MessageType,
+        result: T
+    ) throws {
+        let data = try JSONEncoder().encode(result)
+
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            return
+        }
+
+        let content = String(
+            format: "window.walletExtension.onAppResponse(\"%@\", %@, null)", messageType.rawValue, dataString
+        )
+
+        let response = PolkadotExtensionResponse(content: content)
+
+        presenter.didReceive(response: response)
+    }
+
+    private func provideAccountListResponse() throws {
+        let genericAddress = try wallet.substrateAccountId.toAddress(using: .substrate(42))
+
+        let keypairType: PolkadotExtensionKeypairType?
+        if let substrateCryptoType = MultiassetCryptoType(rawValue: wallet.substrateCryptoType) {
+            keypairType = PolkadotExtensionKeypairType(cryptoType: substrateCryptoType)
+        } else {
+            keypairType = nil
+        }
+
+        let substrateAccount = PolkadotExtensionAccount(
+            address: genericAddress,
+            genesisHash: nil,
+            name: wallet.name,
+            type: keypairType
+        )
+
+        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.map { chainModel in
+            let genericAddress = try chainModel.accountId.toAddress(using: .substrate(42))
+
+            let keypairType: PolkadotExtensionKeypairType?
+            if let substrateCryptoType = MultiassetCryptoType(rawValue: wallet.substrateCryptoType) {
+                keypairType = PolkadotExtensionKeypairType(cryptoType: substrateCryptoType)
+            } else {
+                keypairType = nil
+            }
+
+            return PolkadotExtensionAccount(
+                address: genericAddress,
+                genesisHash: nil,
+                name: nil,
+                type: keypairType
+            )
+        }
+
+        try provideResponse(for: .accountList, result: [substrateAccount] + chainAccounts)
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -116,8 +173,26 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
 
         do {
+            logger?.info("Did receive message: \(dict)")
+
             let parsedMessage = try dict.map(to: PolkadotExtensionMessage.self)
-            logger?.error("Did receive message: \(parsedMessage)")
+
+            switch parsedMessage.messageType {
+            case .authorize:
+                try provideResponse(for: .authorize, result: true)
+            case .accountList:
+                try provideAccountListResponse()
+            case .accountSubscribe:
+                break
+            case .metadataList:
+                break
+            case .metadataProvide:
+                break
+            case .signBytes:
+                break
+            case .signExtrinsic:
+                break
+            }
         } catch {
             presenter.didReceive(error: error)
         }
