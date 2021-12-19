@@ -155,7 +155,7 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
         let storageFacade = SubstrateDataStorageFacade.shared
 
         let stakingSettings = StakingAssetSettings(
-            storageFacade: storageFacade,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             settings: SettingsManager.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
