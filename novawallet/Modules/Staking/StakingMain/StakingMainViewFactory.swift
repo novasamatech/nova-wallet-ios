@@ -156,27 +156,7 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
 
         let stakingSettings = StakingAssetSettings(
             chainRegistry: ChainRegistryFacade.sharedRegistry,
-            settings: SettingsManager.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
-
-        stakingSettings.setup()
-
-        let serviceFactory = StakingServiceFactory(
-            chainRegisty: ChainRegistryFacade.sharedRegistry,
-            storageFacade: storageFacade,
-            eventCenter: EventCenter.shared,
-            operationManager: OperationManagerFacade.sharedManager
-        )
-
-        let eraValidatorService = try serviceFactory.createEraValidatorService(
-            for: stakingSettings.value.chain.chainId
-        )
-
-        let rewardCalculatorService = try serviceFactory.createRewardCalculatorService(
-            for: stakingSettings.value.chain.chainId,
-            assetPrecision: stakingSettings.value.assetDisplayInfo.assetPrecision,
-            validatorService: eraValidatorService
+            settings: SettingsManager.shared
         )
 
         let stakingLocalSubscriptionFactory = StakingLocalSubscriptionFactory(
@@ -192,8 +172,8 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
 
         return StakingSharedState(
             settings: stakingSettings,
-            eraValidatorService: eraValidatorService,
-            rewardCalculationService: rewardCalculatorService,
+            eraValidatorService: nil,
+            rewardCalculationService: nil,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             stakingAnalyticsLocalSubscriptionFactory: stakingAnalyticsLocalSubscriptionFactory
         )

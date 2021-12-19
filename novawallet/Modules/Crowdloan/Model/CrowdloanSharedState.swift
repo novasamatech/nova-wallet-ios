@@ -12,13 +12,11 @@ final class CrowdloanSharedState {
         storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         internalSettings: SettingsManagerProtocol = SettingsManager.shared,
         operationManager: OperationManagerProtocol = OperationManagerFacade.sharedManager,
-        operationQueue: OperationQueue = OperationManagerFacade.sharedDefaultQueue,
         logger: LoggerProtocol = Logger.shared
     ) {
         settings = CrowdloanChainSettings(
             chainRegistry: chainRegistry,
-            settings: internalSettings,
-            operationQueue: operationQueue
+            settings: internalSettings
         )
 
         crowdloanLocalSubscriptionFactory = CrowdloanLocalSubscriptionFactory(
