@@ -108,6 +108,8 @@ struct ChainModel: Equatable, Codable, Hashable {
         options?.contains(.crowdloans) ?? false
     }
 
+    var isRelaychain: Bool { parentId == nil }
+
     func utilityAssets() -> Set<AssetModel> {
         assets.filter { $0.isUtility }
     }

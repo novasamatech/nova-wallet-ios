@@ -33,13 +33,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
             return nil
         }
 
-        // TODO: Move setup to loading state
-        let crowdloanState = CrowdloanSharedState()
-        crowdloanState.settings.setup()
-
         guard let crowdloanController = createCrowdloanController(
             for: localizationManager,
-            state: crowdloanState
+            state: CrowdloanSharedState()
         ) else {
             return nil
         }
@@ -77,13 +73,9 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
     static func reloadCrowdloanView(on view: MainTabBarViewProtocol) {
         let localizationManager = LocalizationManager.shared
 
-        // TODO: Move setup to loading state
-        let crowdloanState = CrowdloanSharedState()
-        crowdloanState.settings.setup()
-
         guard let crowdloanController = createCrowdloanController(
             for: localizationManager,
-            state: crowdloanState
+            state: CrowdloanSharedState()
         ) else {
             return
         }
