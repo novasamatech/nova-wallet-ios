@@ -5,16 +5,13 @@ import RobinHood
 final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
     let chainRegistry: ChainRegistryProtocol
     let settings: SettingsManagerProtocol
-    let operationQueue: OperationQueue
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        settings: SettingsManagerProtocol,
-        operationQueue: OperationQueue
+        settings: SettingsManagerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.settings = settings
-        self.operationQueue = operationQueue
     }
 
     override func performSetup(completionClosure: @escaping (Result<ChainModel?, Error>) -> Void) {
