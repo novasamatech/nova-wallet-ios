@@ -73,7 +73,9 @@ final class StakingPayoutConfirmViewModelFactory {
     private func createRewardDestinationRestakeRow() -> LocalizableResource<PayoutConfirmViewModel> {
         LocalizableResource { locale in
             let title = R.string.localizable.stakingRewardsDestinationTitle(preferredLanguages: locale.rLanguages)
-            let subtitle = R.string.localizable.stakingRestakeTitle(preferredLanguages: locale.rLanguages)
+            let subtitle = R.string.localizable.stakingRestakeTitle_v2_2_0(
+                preferredLanguages: locale.rLanguages
+            )
 
             return .restakeDestination(.init(titleText: title, valueText: subtitle))
         }

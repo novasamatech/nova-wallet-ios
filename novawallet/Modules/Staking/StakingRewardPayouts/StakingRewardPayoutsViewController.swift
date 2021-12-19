@@ -56,8 +56,9 @@ final class StakingRewardPayoutsViewController: UIViewController, ViewHolder {
     }
 
     private func setupTitleLocalization() {
-        title = R.string.localizable
-            .stakingRewardPayoutsTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.stakingRewardPayoutsTitle_v2_2_0(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     private func setupButtonLocalization() {
@@ -166,8 +167,9 @@ extension StakingRewardPayoutsViewController: UITableViewDataSource {
             indexPath.section > 0
         else {
             let titleCell = rootView.tableView.dequeueReusableCellWithType(MultilineTableViewCell.self)!
-            let title = R.string.localizable
-                .stakingPendingRewardsExplanationMessage(preferredLanguages: selectedLocale.rLanguages)
+            let title = R.string.localizable.stakingPendingRewardsExplanationMessage_2_2_0(
+                preferredLanguages: selectedLocale.rLanguages
+            )
             titleCell.bind(title: title)
             return titleCell
         }
@@ -199,8 +201,9 @@ extension StakingRewardPayoutsViewController: EmptyStateDataSource {
         case .emptyList:
             let emptyView = EmptyStateView()
             emptyView.image = R.image.iconEmptyHistory()
-            emptyView.title = R.string.localizable
-                .stakingRewardPayoutsEmptyRewards(preferredLanguages: selectedLocale.rLanguages)
+            emptyView.title = R.string.localizable.stakingRewardPayoutsEmptyRewards_2_2_0(
+                preferredLanguages: selectedLocale.rLanguages
+            )
             emptyView.titleColor = R.color.colorLightGray()!
             emptyView.titleFont = .p2Paragraph
             return emptyView

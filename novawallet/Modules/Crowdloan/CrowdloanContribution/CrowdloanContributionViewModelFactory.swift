@@ -126,7 +126,10 @@ final class CrowdloanContributionViewModelFactory {
         let iconViewModel: ImageViewModelProtocol? = URL(string: displayInfo.icon).map { RemoteImageViewModel(url: $0)
         }
 
-        let title = R.string.localizable.crowdloanLearn(displayInfo.name, preferredLanguages: locale.rLanguages)
+        let title = R.string.localizable.crowdloanLearn_v2_2_0(
+            displayInfo.name,
+            preferredLanguages: locale.rLanguages
+        )
         return LearnMoreViewModel(iconViewModel: iconViewModel, title: title)
     }
 }
