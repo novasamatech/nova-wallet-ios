@@ -26,7 +26,6 @@ final class RuntimeProvider {
     let snapshotOperationFactory: RuntimeSnapshotFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
-    let dataHasher: StorageHasher
     let logger: LoggerProtocol?
 
     private(set) var snapshot: RuntimeSnapshot?
@@ -39,7 +38,6 @@ final class RuntimeProvider {
         snapshotOperationFactory: RuntimeSnapshotFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationQueue: OperationQueue,
-        dataHasher: StorageHasher = .twox256,
         logger: LoggerProtocol? = nil
     ) {
         chainId = chainModel.chainId
@@ -47,17 +45,13 @@ final class RuntimeProvider {
         self.snapshotOperationFactory = snapshotOperationFactory
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
-        self.dataHasher = dataHasher
         self.logger = logger
 
         eventCenter.add(observer: self, dispatchIn: DispatchQueue.global())
     }
 
-    private func buildSnapshot(with typesUsage: ChainModel.TypesUsage, dataHasher: StorageHasher) {
-        let wrapper = snapshotOperationFactory.createRuntimeSnapshotWrapper(
-            for: typesUsage,
-            dataHasher: dataHasher
-        )
+    private func buildSnapshot(with typesUsage: ChainModel.TypesUsage) {
+        let wrapper = snapshotOperationFactory.createRuntimeSnapshotWrapper(for: typesUsage)
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.global(qos: .userInitiated).async {
@@ -183,7 +177,7 @@ extension RuntimeProvider: RuntimeProviderProtocol {
             return
         }
 
-        buildSnapshot(with: typesUsage, dataHasher: dataHasher)
+        buildSnapshot(with: typesUsage)
     }
 
     func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage) {
@@ -202,7 +196,7 @@ extension RuntimeProvider: RuntimeProviderProtocol {
 
         typesUsage = newTypeUsage
 
-        buildSnapshot(with: newTypeUsage, dataHasher: dataHasher)
+        buildSnapshot(with: newTypeUsage)
     }
 
     func cleanup() {
@@ -242,7 +236,7 @@ extension RuntimeProvider: EventVisitorProtocol {
 
         logger?.debug("Will start building snapshot after chain types update for \(chainId)")
 
-        buildSnapshot(with: typesUsage, dataHasher: dataHasher)
+        buildSnapshot(with: typesUsage)
     }
 
     func processRuntimeChainMetadataSyncCompleted(event: RuntimeMetadataSyncCompleted) {
@@ -261,7 +255,7 @@ extension RuntimeProvider: EventVisitorProtocol {
 
         logger?.debug("Will start building snapshot after metadata update for \(chainId)")
 
-        buildSnapshot(with: typesUsage, dataHasher: dataHasher)
+        buildSnapshot(with: typesUsage)
     }
 
     func processRuntimeCommonTypesSyncCompleted(event: RuntimeCommonTypesSyncCompleted) {
@@ -284,6 +278,6 @@ extension RuntimeProvider: EventVisitorProtocol {
 
         logger?.debug("Will start building snapshot after common types update for \(chainId)")
 
-        buildSnapshot(with: typesUsage, dataHasher: dataHasher)
+        buildSnapshot(with: typesUsage)
     }
 }
