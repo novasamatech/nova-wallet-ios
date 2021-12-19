@@ -24,16 +24,6 @@ final class ServiceCoordinator {
 
     private func setup(chainRegistry: ChainRegistryProtocol) {
         chainRegistry.syncUp()
-
-        let semaphore = DispatchSemaphore(value: 0)
-
-        chainRegistry.chainsSubscribe(self, runningInQueue: DispatchQueue.global()) { changes in
-            if !changes.isEmpty {
-                semaphore.signal()
-            }
-        }
-
-        semaphore.wait()
     }
 }
 

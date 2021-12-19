@@ -16,7 +16,7 @@ final class CrowdloanSharedState {
         logger: LoggerProtocol = Logger.shared
     ) {
         settings = CrowdloanChainSettings(
-            storageFacade: storageFacade,
+            chainRegistry: chainRegistry,
             settings: internalSettings,
             operationQueue: operationQueue
         )
