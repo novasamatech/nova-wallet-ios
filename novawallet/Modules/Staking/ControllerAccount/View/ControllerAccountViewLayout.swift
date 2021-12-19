@@ -123,13 +123,13 @@ final class ControllerAccountViewLayout: UIView {
 
     private func applyLocalization() {
         descriptionLabel.text = R.string.localizable
-            .stakingSetSeparateAccountController(preferredLanguages: locale.rLanguages)
+            .stakingSetSeparateAccountController_v2_2_0(preferredLanguages: locale.rLanguages)
         stashHintView.titleLabel.text = R.string.localizable
-            .stakingStashCanHint(preferredLanguages: locale.rLanguages)
+            .stakingStashCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
         controllerHintView.titleLabel.text = R.string.localizable
-            .stakingControllerCanHint(preferredLanguages: locale.rLanguages)
+            .stakingControllerCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
         learnMoreView.titleLabel.text = R.string.localizable
-            .commonLearnMore(preferredLanguages: locale.rLanguages)
+            .commonLearnMore_v2_2_0(preferredLanguages: locale.rLanguages)
         currentAccountIsControllerHint.titleLabel.text = R.string.localizable
             .stakingSwitchAccountToStash(preferredLanguages: locale.rLanguages)
         actionButton.imageWithTitleView?.title = R.string.localizable
