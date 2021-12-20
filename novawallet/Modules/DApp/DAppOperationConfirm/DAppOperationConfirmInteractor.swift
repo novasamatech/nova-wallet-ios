@@ -11,6 +11,7 @@ final class DAppOperationConfirmInteractor {
     let signingWrapper: SigningWrapperProtocol
     let priceProviderFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
+    let operationQueue: OperationQueue
 
     private var runtimeCall: RuntimeCall<JSON>?
 
@@ -19,13 +20,15 @@ final class DAppOperationConfirmInteractor {
         runtimeProvider: RuntimeProviderProtocol,
         connection: ChainConnection,
         signingWrapper: SigningWrapperProtocol,
-        priceProviderFactory: PriceProviderFactoryProtocol
+        priceProviderFactory: PriceProviderFactoryProtocol,
+        operationQueue: OperationQueue
     ) {
         self.request = request
         self.runtimeProvider = runtimeProvider
         self.connection = connection
         self.signingWrapper = signingWrapper
         self.priceProviderFactory = priceProviderFactory
+        self.operationQueue = operationQueue
     }
 
     private func decodeCallAndContinueSetup(_ hexCall: String) {
@@ -54,6 +57,8 @@ final class DAppOperationConfirmInteractor {
                 }
             }
         }
+
+        operationQueue.addOperations([codingFactoryOperation, decodingOperation], waitUntilFinished: false)
     }
 
     private func completeSetup(for call: RuntimeCall<JSON>) {

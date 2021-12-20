@@ -29,12 +29,17 @@ struct DAppOperationConfirmViewFactory {
             runtimeProvider: runtimeProvider,
             connection: connection,
             signingWrapper: signingWrapper,
-            priceProviderFactory: PriceProviderFactory.shared
+            priceProviderFactory: PriceProviderFactory.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let wireframe = DAppOperationConfirmWireframe()
 
-        let presenter = DAppOperationConfirmPresenter(interactor: interactor, wireframe: wireframe)
+        let presenter = DAppOperationConfirmPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            logger: Logger.shared
+        )
 
         let view = DAppOperationConfirmViewController(presenter: presenter)
 
