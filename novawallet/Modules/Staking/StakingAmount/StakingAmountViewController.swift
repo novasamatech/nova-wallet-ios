@@ -178,8 +178,8 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
         amountInputView.title = R.string.localizable
             .walletSendAmountTitle(preferredLanguages: languages)
         rewardDestinationTitleLabel.text = R.string.localizable
-            .stakingSetupRewardDestinationSectionTitle(preferredLanguages: languages)
-        restakeView.title = R.string.localizable.stakingSetupRestakeTitle(preferredLanguages: languages)
+            .stakingSetupRewardDestinationSectionTitle_v2_2_0(preferredLanguages: languages)
+        restakeView.title = R.string.localizable.stakingSetupRestakeTitle_v2_2_0(preferredLanguages: languages)
         payoutView.title = R.string.localizable.stakingSetupPayoutTitle(preferredLanguages: languages)
         learnMoreView.title = R.string.localizable
             .stakingRewardsLearnMore(preferredLanguages: languages)
