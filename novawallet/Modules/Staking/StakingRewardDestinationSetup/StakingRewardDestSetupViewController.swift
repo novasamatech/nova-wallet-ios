@@ -186,7 +186,9 @@ extension StakingRewardDestSetupViewController: StakingRewardDestSetupViewProtoc
 
 extension StakingRewardDestSetupViewController: Localizable {
     private func setupLocalization() {
-        title = R.string.localizable.stakingRewardsDestinationTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.stakingRewardsDestinationTitle_v2_0_0(
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
         rootView.locale = selectedLocale
     }
