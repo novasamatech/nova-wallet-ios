@@ -45,4 +45,14 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceive(response: PolkadotExtensionResponse) {
         view?.didReceive(response: response)
     }
+
+    func didReceiveConfirmation(request: DAppOperationRequest) {
+        wireframe.presentOperationConfirm(from: view, request: request, delegate: self)
+    }
+}
+
+extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
+    func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for request: DAppOperationRequest) {
+        interactor.processConfirmation(response: response)
+    }
 }

@@ -9,6 +9,7 @@ struct DAppBrowserViewFactory {
         let interactor = DAppBrowserInteractor(
             userInput: userInput,
             wallet: SelectedWalletSettings.shared.value,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: logger
         )
