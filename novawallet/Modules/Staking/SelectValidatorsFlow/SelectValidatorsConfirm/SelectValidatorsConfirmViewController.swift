@@ -79,9 +79,8 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             preferredLanguages: languages
         )
 
-        rootView.rewardDestinationView.titleLabel.text = R.string.localizable.stakingRewardsDestinationTitle(
-            preferredLanguages: languages
-        )
+        rootView.rewardDestinationView.titleLabel.text = R.string.localizable
+            .stakingRewardsDestinationTitle_v2_0_0(preferredLanguages: languages)
 
         rootView.networkFeeConfirmView.locale = selectedLocale
 
