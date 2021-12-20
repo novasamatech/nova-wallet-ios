@@ -193,36 +193,8 @@ final class DAppBrowserInteractor {
             rawCryptoType: wallet.substrateCryptoType
         )
 
-        var walletAccounts: [PolkadotExtensionAccount] = [substrateAccount]
-
-        let chainAccountIds = wallet.chainAccounts.reduce(
-            into: Set<ChainModel.Id>()
-        ) { result, chainAccount in
-            _ = result.insert(chainAccount.chainId)
-        }
-
-        let ethereumChains = chainStore.filter { _, value in
-            value.isEthereumBased && !chainAccountIds.contains(value.chainId)
-        }
-
-        if let ethereumAddress = wallet.ethereumAddress {
-            for ethereumChain in ethereumChains {
-                let genesisHash = try Data(hexString: ethereumChain.value.chainId)
-                let name = wallet.name + " (\(ethereumChain.value.name))"
-                let account = try createExtensionAccount(
-                    for: ethereumAddress,
-                    genesisHash: genesisHash,
-                    name: name,
-                    chainFormat: .ethereum,
-                    rawCryptoType: MultiassetCryptoType.ethereumEcdsa.rawValue
-                )
-
-                walletAccounts.append(account)
-            }
-        }
-
         let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
-            guard let chain = chainStore[chainAccount.chainId] else {
+            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
                 return nil
             }
 
@@ -238,7 +210,7 @@ final class DAppBrowserInteractor {
             )
         }
 
-        try provideResponse(for: .accountList, result: walletAccounts + chainAccounts)
+        try provideResponse(for: .accountList, result: [substrateAccount] + chainAccounts)
     }
 
     private func handleExtrinsic(message: PolkadotExtensionMessage) {
