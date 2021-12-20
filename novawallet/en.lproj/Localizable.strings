@@ -643,3 +643,5 @@
 "staking.balance.title_v2_2_0" = "Balance";
 "staking.setup.reward.destination.section.title_v2_2_0" = "Select your rewards type";
 "staking.restake.title_v2_2_0" = "Restake rewards";
+"staking.pending.rewards_v2_0_0" = "Unpaid rewards";
+"staking.rewards.destination.title_v2_0_0" = "Rewards destination";
