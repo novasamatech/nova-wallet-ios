@@ -7,6 +7,13 @@ enum DAppBrowserInteractorError: Error {
     case unexpectedMessageType
 }
 
+enum DAppBrowserInteractorState {
+    case setup
+    case ready
+    case pendingAuth
+    case pendingOperation
+}
+
 final class DAppBrowserInteractor {
     static let subscriptionName = "_nova_"
 
@@ -15,18 +22,49 @@ final class DAppBrowserInteractor {
     let userInput: String
     let wallet: MetaAccountModel
     let operationQueue: OperationQueue
+    let chainRegistry: ChainRegistryProtocol
     let logger: LoggerProtocol?
+
+    private var chainStore: [String: ChainModel] = [:]
+
+    private(set) var state: DAppBrowserInteractorState = .setup
 
     init(
         userInput: String,
         wallet: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
         self.userInput = userInput
         self.wallet = wallet
         self.operationQueue = operationQueue
+        self.chainRegistry = chainRegistry
         self.logger = logger
+    }
+
+    private func subscribeChainRegistry() {
+        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+            for change in changes {
+                switch change {
+                case let .insert(newItem):
+                    self?.chainStore[newItem.chainId] = newItem
+                case let .update(newItem):
+                    self?.chainStore[newItem.chainId] = newItem
+                case let .delete(deletedIdentifier):
+                    self?.chainStore[deletedIdentifier] = nil
+                }
+            }
+
+            self?.completeSetupIfNeeded()
+        }
+    }
+
+    private func completeSetupIfNeeded() {
+        if case .setup = state, !chainStore.isEmpty {
+            state = .ready
+            provideModel()
+        }
     }
 
     private func createBridgeScriptOperation() -> BaseOperation<DAppBrowserScript> {
@@ -122,48 +160,123 @@ final class DAppBrowserInteractor {
         presenter.didReceive(response: response)
     }
 
-    private func provideAccountListResponse() throws {
-        let genericAddress = try wallet.substrateAccountId.toAddress(using: .substrate(42))
+    private func createExtensionAccount(
+        for accountId: AccountId,
+        genesisHash: Data?,
+        name: String,
+        chainFormat: ChainFormat,
+        rawCryptoType: UInt8
+    ) throws -> PolkadotExtensionAccount {
+        let address = try accountId.toAddress(using: chainFormat)
 
         let keypairType: PolkadotExtensionKeypairType?
-        if let substrateCryptoType = MultiassetCryptoType(rawValue: wallet.substrateCryptoType) {
+        if let substrateCryptoType = MultiassetCryptoType(rawValue: rawCryptoType) {
             keypairType = PolkadotExtensionKeypairType(cryptoType: substrateCryptoType)
         } else {
             keypairType = nil
         }
 
-        let substrateAccount = PolkadotExtensionAccount(
-            address: genericAddress,
-            genesisHash: nil,
-            name: wallet.name,
+        return PolkadotExtensionAccount(
+            address: address,
+            genesisHash: genesisHash?.toHex(includePrefix: true),
+            name: name,
             type: keypairType
         )
+    }
 
-        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.map { chainModel in
-            let genericAddress = try chainModel.accountId.toAddress(using: .substrate(42))
+    private func provideAccountListResponse() throws {
+        let substrateAccount = try createExtensionAccount(
+            for: wallet.substrateAccountId,
+            genesisHash: nil,
+            name: wallet.name,
+            chainFormat: .substrate(42),
+            rawCryptoType: wallet.substrateCryptoType
+        )
 
-            let keypairType: PolkadotExtensionKeypairType?
-            if let substrateCryptoType = MultiassetCryptoType(rawValue: wallet.substrateCryptoType) {
-                keypairType = PolkadotExtensionKeypairType(cryptoType: substrateCryptoType)
-            } else {
-                keypairType = nil
+        var walletAccounts: [PolkadotExtensionAccount] = [substrateAccount]
+
+        let chainAccountIds = wallet.chainAccounts.reduce(
+            into: Set<ChainModel.Id>()
+        ) { result, chainAccount in
+            _ = result.insert(chainAccount.chainId)
+        }
+
+        let ethereumChains = chainStore.filter { _, value in
+            value.isEthereumBased && !chainAccountIds.contains(value.chainId)
+        }
+
+        if let ethereumAddress = wallet.ethereumAddress {
+            for ethereumChain in ethereumChains {
+                let genesisHash = try Data(hexString: ethereumChain.value.chainId)
+                let name = wallet.name + " (\(ethereumChain.value.name))"
+                let account = try createExtensionAccount(
+                    for: ethereumAddress,
+                    genesisHash: genesisHash,
+                    name: name,
+                    chainFormat: .ethereum,
+                    rawCryptoType: MultiassetCryptoType.ethereumEcdsa.rawValue
+                )
+
+                walletAccounts.append(account)
+            }
+        }
+
+        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
+            guard let chain = chainStore[chainAccount.chainId] else {
+                return nil
             }
 
-            return PolkadotExtensionAccount(
-                address: genericAddress,
-                genesisHash: nil,
-                name: nil,
-                type: keypairType
+            let genesisHash = try Data(hexString: chain.chainId)
+            let name = wallet.name + " (\(chain.name))"
+
+            return try createExtensionAccount(
+                for: chainAccount.accountId,
+                genesisHash: genesisHash,
+                name: name,
+                chainFormat: chain.chainFormat,
+                rawCryptoType: chainAccount.cryptoType
             )
         }
 
-        try provideResponse(for: .accountList, result: [substrateAccount] + chainAccounts)
+        try provideResponse(for: .accountList, result: walletAccounts + chainAccounts)
+    }
+
+    private func handleExtrinsic(message: PolkadotExtensionMessage) {
+        guard case .ready = state else {
+            return
+        }
+
+        guard
+            let jsonRequest = message.request,
+            let extrinsic = try? jsonRequest.map(to: PolkadotExtensionExtrinsic.self) else {
+            return
+        }
+
+        guard
+            let chainId = try? Data(hexString: extrinsic.genesisHash).toHex(),
+            let chain = chainStore[chainId] else {
+            return
+        }
+
+        guard wallet.fetch(for: chain.accountRequest()) != nil else {
+            return
+        }
+
+        let request = DAppOperationRequest(
+            identifier: message.identifier,
+            wallet: wallet,
+            chain: chain,
+            dApp: "",
+            operationData: jsonRequest
+        )
+
+        presenter?.didReceiveConfirmation(request: request)
     }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
-        provideModel()
+        subscribeChainRegistry()
     }
 
     func process(message: Any) {
@@ -191,10 +304,15 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             case .signBytes:
                 break
             case .signExtrinsic:
+                handleExtrinsic(message: parsedMessage)
                 break
             }
         } catch {
             presenter.didReceive(error: error)
         }
+    }
+
+    func processConfirmation(response: DAppOperationResponse) {
+        
     }
 }
