@@ -53,7 +53,7 @@
 "wallet.username.setup.hint" = "Примеры: Сбережения, Инвестиции, Краудлоуны, Стейкинг. Имя хранится только на вашем мобильном устройстве и показывается только вам.";
 "account.username.setup.hint" = "Данное имя будет отображаться только для вас и храниться только на вашем мобильном устройстве.";
 "wallet.username.setup.title" = "Создать кошелёк";
-"account.username.setup.title" = "Create a new account";
+"account.username.setup.title" = "Создать новый аккаунт";
 "common.no.screenshot.title" = "Не делайте скриншоты";
 "common.no.screenshot.message" = "Не делайте скриншоты, которые могут быть собраны сторонними вредоносными программами";
 "common.ok" = "OK";
@@ -637,9 +637,11 @@
 "settings.support" = "Поддержка и обратная связь";
 "settings.email" = "Написать разработчикам";
 "wallet.manage.assets.title" = "Управление ассетами";
-"staking.reward.payouts.title_v2_2_0" = "Невыплаченные вознаграждения";
+"staking.reward.payouts.title_v2_2_0" = "Невыплаченные награды";
 "staking.setup.restake.title_v2_2_0" = "Увеличивать стейк";
 "staking.payout.title_v2_2_0" = "Увеличивать баланс";
 "staking.balance.title_v2_2_0" = "Баланс";
 "staking.setup.reward.destination.section.title_v2_2_0" = "Использовать вознаграждения чтобы";
 "staking.restake.title_v2_2_0" = "Увеличивать стейк";
+"staking.pending.rewards_v2_0_0" = "Невыплаченные награды";
+"staking.rewards.destination.title_v2_0_0" = "Назначение наград";

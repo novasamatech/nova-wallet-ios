@@ -121,7 +121,7 @@ final class StakingRewardDestConfirmViewLayout: UIView {
         senderAccountView.title = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
 
         typeView.titleLabel.text = R.string.localizable
-            .stakingRewardsDestinationTitle(preferredLanguages: locale.rLanguages)
+            .stakingRewardsDestinationTitle_v2_0_0(preferredLanguages: locale.rLanguages)
 
         payoutAccountView?.title = R.string.localizable
             .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
