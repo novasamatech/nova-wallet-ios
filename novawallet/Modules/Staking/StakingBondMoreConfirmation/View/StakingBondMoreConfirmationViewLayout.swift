@@ -106,7 +106,7 @@ final class StakingBMConfirmationViewLayout: UIView {
         amountView.title = R.string.localizable
             .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
 
-        hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore(
+        hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore_v2_2_0(
             preferredLanguages: locale.rLanguages
         )
 

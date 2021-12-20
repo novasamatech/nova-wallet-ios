@@ -43,13 +43,13 @@ final class StakingRewardDestSetupLayout: UIView {
         networkFeeView.locale = locale
 
         learnMoreView.titleLabel.text = R.string.localizable
-            .stakingRewardsLearnMore(preferredLanguages: locale.rLanguages)
+            .stakingRewardsLearnMore_2_2_0(preferredLanguages: locale.rLanguages)
 
         restakeOptionView.title = R.string.localizable
-            .stakingRestakeTitle(preferredLanguages: locale.rLanguages)
+            .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
         payoutOptionView.title = R.string.localizable
-            .stakingPayoutTitle(preferredLanguages: locale.rLanguages)
+            .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
         accountView.title = R.string.localizable
             .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)

@@ -93,11 +93,11 @@ final class StakingRewardDestConfirmViewLayout: UIView {
         switch confirmationViewModel.rewardDestination {
         case .restake:
             typeView.valueLabel.text = R.string.localizable
-                .stakingRestakeTitle(preferredLanguages: locale.rLanguages)
+                .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
         case let .payout(icon, title):
             typeView.valueLabel.text = R.string.localizable
-                .stakingPayoutTitle(preferredLanguages: locale.rLanguages)
+                .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
             insertPayoutViewIfNeeded()
 
             payoutAccountView?.iconImage = icon.imageWithFillColor(
@@ -121,7 +121,7 @@ final class StakingRewardDestConfirmViewLayout: UIView {
         senderAccountView.title = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
 
         typeView.titleLabel.text = R.string.localizable
-            .stakingRewardsDestinationTitle(preferredLanguages: locale.rLanguages)
+            .stakingRewardsDestinationTitle_v2_0_0(preferredLanguages: locale.rLanguages)
 
         payoutAccountView?.title = R.string.localizable
             .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
