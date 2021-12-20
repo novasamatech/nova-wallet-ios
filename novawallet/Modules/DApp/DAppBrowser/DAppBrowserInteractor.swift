@@ -305,14 +305,11 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
                 break
             case .signExtrinsic:
                 handleExtrinsic(message: parsedMessage)
-                break
             }
         } catch {
             presenter.didReceive(error: error)
         }
     }
 
-    func processConfirmation(response: DAppOperationResponse) {
-        
-    }
+    func processConfirmation(response _: DAppOperationResponse) {}
 }
