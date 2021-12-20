@@ -52,7 +52,7 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 }
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
-    func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for request: DAppOperationRequest) {
+    func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for _: DAppOperationRequest) {
         interactor.processConfirmation(response: response)
     }
 }
