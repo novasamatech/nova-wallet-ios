@@ -22,7 +22,7 @@
 "onboarding.terms.and.conditions.1" = "I have read and agreed to\nTerms and Conditions and Privacy Policy";
 "onboarding.terms.and.conditions.2" = "Terms and Conditions";
 "onboarding.privacy.policy" = "Privacy Policy";
-"pincode.enter.pin.code" = "Enter pin code";
+"pincode.enter.pin.code" = "Enter PIN code";
 "pincode.confirm.your.pin.code" = "Confirm your pin code";
 "pincode.set.your.pin.code" = "Set your pin code";
 "ask.touchid.title" = "Touch ID";
@@ -557,7 +557,7 @@
 "secret.type.picker.title" = "Select your secret type";
 "wallet.import.mnemonic.title" = "Enter the words in the right order";
 "wallet.import.mnemonic.subtitle" = "Write words separately with one space, no commas or other signs";
-"wallet.import.mnemonic.hint" = "Typically, 12-word phrase (but may be 15, 18, 21 or 24)";
+"wallet.import.mnemonic.hint" = "Typically 12-word phrase (but may be 15, 18, 21 or 24)";
 "wallet.import.seed.title" = "Enter your raw seed";
 "wallet.import.no.mnemonic.title" = "Enter the words...";
 "wallet.import.no.name.title" = "Enter wallet name...";
@@ -579,8 +579,8 @@
 "account.backup.mnemonic.caption" = "Please make sure to write down your phrase correctly and legibly.";
 "account.backup.mnemonic.field.title" = "Mnemonic Passphrase";
 "export.seed.hint" = "Please, make sure to write down your secret correctly and legibly";
-"export.seed.title" = "Write down your seed and store it in a safe place";
-"export.restore.json.title" = "Save your json and store it in a safe place";
+"export.seed.title" = "Write down your secret and store it in a safe place";
+"export.restore.json.title" = "Save your secret and store it in a safe place";
 "staking.main.stake.balance.staked" = "Staked";
 "language.title" = "Language";
 "common.account" = "Account";
