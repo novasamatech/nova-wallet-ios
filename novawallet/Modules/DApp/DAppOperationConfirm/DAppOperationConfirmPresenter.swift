@@ -15,7 +15,15 @@ final class DAppOperationConfirmPresenter {
 }
 
 extension DAppOperationConfirmPresenter: DAppOperationConfirmPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
 }
 
-extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputProtocol {}
+extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputProtocol {
+    func didReceive(modelResult _: Result<DAppOperationConfirmModel, Error>) {}
+
+    func didReceive(feeResult _: Result<RuntimeDispatchInfo, Error>) {}
+
+    func didReceive(priceResult _: Result<PriceData?, Error>) {}
+}
