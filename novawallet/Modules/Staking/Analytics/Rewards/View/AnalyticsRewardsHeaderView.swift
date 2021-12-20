@@ -122,7 +122,7 @@ final class AnalyticsRewardsHeaderView: UIView, AnalyticsRewardsHeaderViewProtoc
 
     private func applyLocalization() {
         pendingRewardsView.rowContentView.titleLabel.text = R.string.localizable
-            .stakingPendingRewards(preferredLanguages: locale.rLanguages)
+            .stakingPendingRewards_v2_0_0(preferredLanguages: locale.rLanguages)
         historyTitleLabel.text = R.string.localizable
             .walletHistoryTitle_v190(preferredLanguages: locale.rLanguages)
         periodView.locale = locale

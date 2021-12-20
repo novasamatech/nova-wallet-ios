@@ -106,10 +106,7 @@ final class StakingRebondSetupViewController: UIViewController, ViewHolder {
     }
 
     private func applyFeeViewModel() {
-        guard let viewModel = feeViewModel?.value(for: selectedLocale) else {
-            return
-        }
-
+        let viewModel = feeViewModel?.value(for: selectedLocale)
         rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
