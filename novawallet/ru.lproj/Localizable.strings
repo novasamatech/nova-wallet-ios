@@ -579,8 +579,8 @@
 "account.backup.mnemonic.caption" = "Пожалуйста, убедитесь, что ваша фраза записана корректно и разборчиво.";
 "account.backup.mnemonic.field.title" = "Мнемоническая фраза";
 "export.seed.hint" = "Пожалуйста, убедитесь, что ваш сид записан корректно и разборчиво";
-"export.seed.title" = "Запишите сид и храните его в надежном месте";
-"export.restore.json.title" = "Сохраните ваш json файл и храните его в надежном месте";
+"export.seed.title" = "Запишите секрет и храните его в надежном месте";
+"export.restore.json.title" = "Сохраните ваш секрет и храните его в надежном месте";
 "staking.main.stake.balance.staked" = "Застейкано";
 "language.title" = "Язык";
 "common.account" = "Аккаунт";
@@ -625,7 +625,7 @@
 "staking.hint.unstake.format_v2_2_0" = "Период вывода токенов из стейкинга занимает %@";
 "staking.set.separate.account.controller_v2_2_0" = "Установите отдельный аккаунт как контроллер, чтобы увеличить безопасность стейкинга делегируя ему управление стейком";
 "staking.controller.can.hint_v2_2_0" = "Контроллер аккаунт может: вывести, забрать, вернуть в стейк, сменить валидаторов и установить назначение вознаграждений";
-"staking.stash.can.hint_v2_2_0" = "Стэш аккаунт может: застейкать больше и установки контроллер аккаунт";
+"staking.stash.can.hint_v2_2_0" = "Стэш аккаунт может: застейкать больше и установить контроллер аккаунт";
 "staking.network.info.title" = "О стейкинге";
 "staking.network.info.staking.period.value" = "Неограниченно";
 "staking.network.info.staking.period.title" = "Время стекинга";
