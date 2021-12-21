@@ -37,7 +37,7 @@ class IconDetailsView: UIView {
         }
     }
 
-    private var stackView: UIStackView = {
+    var stackView: UIStackView = {
         let view = UIStackView()
         view.axis = .horizontal
         view.spacing = 8.0
