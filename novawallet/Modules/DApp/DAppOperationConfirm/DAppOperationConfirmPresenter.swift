@@ -33,7 +33,16 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         }
     }
 
-    func didReceive(feeResult _: Result<RuntimeDispatchInfo, Error>) {}
+    func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>) {
+        switch feeResult {
+        case let .success(fee):
+            logger?.info("Did receive fee: \(fee.fee)")
+        case let .failure(error):
+            logger?.error("Did receive error: \(error)")
+        }
+    }
 
     func didReceive(priceResult _: Result<PriceData?, Error>) {}
+
+    func didReceive(response _: DAppOperationResponse) {}
 }
