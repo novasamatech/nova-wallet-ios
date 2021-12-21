@@ -69,11 +69,11 @@ final class DAppBrowserInteractor {
 
     private func createBridgeScriptOperation() -> BaseOperation<DAppBrowserScript> {
         ClosureOperation<DAppBrowserScript> {
-            guard let jsUrl = Bundle.main.url(forResource: "nova-min", withExtension: "js") else {
+            guard let url = R.file.nova_minJs.url() else {
                 throw DAppBrowserInteractorError.scriptFileMissing
             }
 
-            let content = try String(contentsOf: jsUrl)
+            let content = try String(contentsOf: url)
 
             return DAppBrowserScript(content: content, insertionPoint: .atDocStart)
         }
