@@ -7,12 +7,15 @@ protocol DAppOperationConfirmPresenterProtocol: AnyObject {
 protocol DAppOperationConfirmInteractorInputProtocol: AnyObject {
     func setup()
     func estimateFee()
+    func confirm()
+    func reject()
 }
 
 protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)
     func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)
     func didReceive(priceResult: Result<PriceData?, Error>)
+    func didReceive(response: DAppOperationResponse)
 }
 
 protocol DAppOperationConfirmWireframeProtocol: AnyObject {}
