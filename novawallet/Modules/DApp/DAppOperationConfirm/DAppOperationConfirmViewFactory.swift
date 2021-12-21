@@ -14,21 +14,11 @@ struct DAppOperationConfirmViewFactory {
             return nil
         }
 
-        guard let accountResponse = request.wallet.fetch(for: request.chain.accountRequest()) else {
-            return nil
-        }
-
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: request.wallet.metaId,
-            accountResponse: accountResponse
-        )
-
         let interactor = DAppOperationConfirmInteractor(
             request: request,
             runtimeProvider: runtimeProvider,
             connection: connection,
-            signingWrapper: signingWrapper,
+            keychain: Keychain(),
             priceProviderFactory: PriceProviderFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
