@@ -213,6 +213,16 @@ final class DAppBrowserInteractor {
         try provideResponse(for: .accountList, result: [substrateAccount] + chainAccounts)
     }
 
+    private func provideOperationResponse(with signature: Data) throws {
+        let identifier = (0 ... UInt32.max).randomElement() ?? 0
+        let result = PolkadotExtensionSignerResult(
+            identifier: UInt(identifier),
+            signature: signature.toHex(includePrefix: true)
+        )
+
+        try provideResponse(for: .signExtrinsic, result: result)
+    }
+
     private func handleExtrinsic(message: PolkadotExtensionMessage) {
         guard case .ready = state else {
             return
@@ -241,6 +251,8 @@ final class DAppBrowserInteractor {
             dApp: "",
             operationData: jsonRequest
         )
+
+        state = .pendingOperation
 
         presenter?.didReceiveConfirmation(request: request)
     }
@@ -283,5 +295,19 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
     }
 
-    func processConfirmation(response _: DAppOperationResponse) {}
+    func processConfirmation(response: DAppOperationResponse) {
+        guard state == .pendingOperation else {
+            return
+        }
+
+        state = .ready
+
+        if let signature = response.signature {
+            do {
+                try provideOperationResponse(with: signature)
+            } catch {
+                presenter.didReceive(error: error)
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct PolkadotExtensionSignerResult: Decodable {
+struct PolkadotExtensionSignerResult: Codable {
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
         case signature

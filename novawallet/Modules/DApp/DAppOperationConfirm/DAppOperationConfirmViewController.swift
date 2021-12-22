@@ -14,6 +14,8 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         self.localizationManager = localizationManager
     }
 
+    private var viewModel: DAppOperationConfirmViewModel?
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -26,9 +28,15 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        presenter.setup()
-
+        setupHandlers()
         setupLocalization()
+
+        presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.confirmButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
+        rootView.rejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -43,9 +51,65 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
         rootView.confirmButton.imageWithTitleView?.title = "Confirm"
         rootView.rejectButton.imageWithTitleView?.title = "Reject"
     }
+
+    @objc private func actionConfirm() {
+        presenter.confirm()
+    }
+
+    @objc private func actionReject() {
+        presenter.reject()
+    }
 }
 
-extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {}
+extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
+    func didReceive(confimationViewModel: DAppOperationConfirmViewModel) {
+        viewModel?.iconImageViewModel?.cancel(on: rootView.iconImageView)
+
+        let networkImageView = rootView.networkView.rowContentView.valueView.imageView
+        viewModel?.networkIconViewModel?.cancel(on: networkImageView)
+
+        viewModel = confimationViewModel
+
+        rootView.iconImageView.image = nil
+        confimationViewModel.iconImageViewModel?.loadImage(
+            on: rootView.iconImageView,
+            targetSize: DAppOperationConfirmViewLayout.titleImageSize,
+            animated: true
+        )
+
+        rootView.walletView.rowContentView.valueView.detailsLabel.text = confimationViewModel.walletName
+
+        let walletImageView = rootView.walletView.rowContentView.valueView.imageView
+        walletImageView.image = confimationViewModel.walletIcon?.imageWithFillColor(
+            R.color.colorWhite()!,
+            size: DAppOperationConfirmViewLayout.listImageSize,
+            contentScale: UIScreen.main.scale
+        )
+
+        rootView.accountAddressView.rowContentView.valueView.detailsLabel.text = confimationViewModel.address
+
+        let addressImageView = rootView.accountAddressView.rowContentView.valueView.imageView
+        addressImageView.image = confimationViewModel.addressIcon?.imageWithFillColor(
+            R.color.colorWhite()!,
+            size: DAppOperationConfirmViewLayout.listImageSize,
+            contentScale: UIScreen.main.scale
+        )
+
+        rootView.networkView.rowContentView.valueView.detailsLabel.text = confimationViewModel.networkName
+
+        networkImageView.image = nil
+
+        confimationViewModel.networkIconViewModel?.loadImage(
+            on: networkImageView,
+            targetSize: DAppOperationConfirmViewLayout.listImageSize,
+            animated: true
+        )
+    }
+
+    func didReceive(feeViewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeView.bind(viewModel: feeViewModel)
+    }
+}
 
 extension DAppOperationConfirmViewController: Localizable {
     func applyLocalization() {
