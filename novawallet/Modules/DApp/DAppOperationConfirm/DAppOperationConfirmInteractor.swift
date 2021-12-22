@@ -180,7 +180,7 @@ final class DAppOperationConfirmInteractor {
         }
     }
 
-    private func createPayloadOperation(
+    private func createFeePayloadOperation(
         for result: ProcessedResult,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
@@ -213,6 +213,38 @@ final class DAppOperationConfirmInteractor {
             dependencies: [codingFactoryOperation, builderOperation]
         )
     }
+
+    private func createSignatureOperation(
+        for result: ProcessedResult,
+        signer: SigningWrapperProtocol
+    ) -> CompoundOperationWrapper<Data> {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let builderOperation = createBaseBuilderOperation(
+            for: result,
+            dependingOn: codingFactoryOperation
+        )
+
+        builderOperation.addDependency(codingFactoryOperation)
+
+        let signatureOperation = ClosureOperation<Data> {
+            let builder = try builderOperation.extractNoCancellableResultData()
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            return try builder.buildRawSignature(
+                using: { try signer.sign($0).rawData() },
+                encoder: codingFactory.createEncoder(),
+                metadata: codingFactory.metadata
+            )
+        }
+
+        signatureOperation.addDependency(builderOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: signatureOperation,
+            dependencies: [codingFactoryOperation, builderOperation]
+        )
+    }
 }
 
 extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
@@ -224,11 +256,49 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
         }
     }
 
-    func confirm() {}
+    func confirm() {
+        guard signWrapper == nil, let result = processedResult else {
+            return
+        }
+
+        let signer = SigningWrapper(
+            keystore: keychain,
+            metaId: request.wallet.metaId,
+            accountResponse: result.account
+        )
+
+        let signWrapper = createSignatureOperation(for: result, signer: signer)
+
+        self.signWrapper = signWrapper
+
+        signWrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.signWrapper != nil else {
+                    return
+                }
+
+                self?.signWrapper = nil
+
+                do {
+                    let signature = try signWrapper.targetOperation.extractNoCancellableResultData()
+                    let response = DAppOperationResponse(signature: signature)
+                    self?.presenter?.didReceive(responseResult: .success(response))
+                } catch {
+                    self?.presenter?.didReceive(responseResult: .failure(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations(signWrapper.allOperations, waitUntilFinished: false)
+    }
 
     func reject() {
+        guard signWrapper == nil else {
+            return
+        }
+
         let response = DAppOperationResponse(signature: nil)
-        presenter?.didReceive(response: response)
+        presenter?.didReceive(responseResult: .success(response))
     }
 
     func estimateFee() {
@@ -240,7 +310,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             return
         }
 
-        let builderWrapper = createPayloadOperation(
+        let builderWrapper = createFeePayloadOperation(
             for: result,
             signer: signer
         )

@@ -6,13 +6,17 @@ final class DAppOperationConfirmPresenter {
     let interactor: DAppOperationConfirmInteractorInputProtocol
     let logger: LoggerProtocol?
 
+    private(set) weak var delegate: DAppOperationConfirmDelegate?
+
     init(
         interactor: DAppOperationConfirmInteractorInputProtocol,
         wireframe: DAppOperationConfirmWireframeProtocol,
+        delegate: DAppOperationConfirmDelegate,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.delegate = delegate
         self.logger = logger
     }
 }
@@ -44,5 +48,5 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
 
     func didReceive(priceResult _: Result<PriceData?, Error>) {}
 
-    func didReceive(response _: DAppOperationResponse) {}
+    func didReceive(responseResult _: Result<DAppOperationResponse, Error>) {}
 }
