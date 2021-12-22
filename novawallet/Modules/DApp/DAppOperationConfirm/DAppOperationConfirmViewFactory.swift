@@ -1,10 +1,11 @@
 import Foundation
 import SoraKeystore
+import SoraFoundation
 
 struct DAppOperationConfirmViewFactory {
     static func createView(
         for request: DAppOperationRequest,
-        delegate _: DAppOperationConfirmDelegate
+        delegate: DAppOperationConfirmDelegate
     ) -> DAppOperationConfirmViewProtocol? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -28,10 +29,14 @@ struct DAppOperationConfirmViewFactory {
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            delegate: delegate,
             logger: Logger.shared
         )
 
-        let view = DAppOperationConfirmViewController(presenter: presenter)
+        let view = DAppOperationConfirmViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
