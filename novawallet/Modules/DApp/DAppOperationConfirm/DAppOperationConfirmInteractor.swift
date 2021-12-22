@@ -8,6 +8,7 @@ enum DAppOperationConfirmInteractorError: Error {
     case addressMismatch(actual: AccountAddress, expected: AccountAddress)
     case extrinsicBadField(name: String)
     case signedExtensionsMismatch(actual: [String], expected: [String])
+    case invalidRawSignature(data: Data)
 }
 
 final class DAppOperationConfirmInteractor {
@@ -231,11 +232,46 @@ final class DAppOperationConfirmInteractor {
             let builder = try builderOperation.extractNoCancellableResultData()
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            return try builder.buildRawSignature(
+            let rawSignature = try builder.buildRawSignature(
                 using: { try signer.sign($0).rawData() },
                 encoder: codingFactory.createEncoder(),
                 metadata: codingFactory.metadata
             )
+
+            let scaleEncoder = codingFactory.createEncoder()
+
+            switch result.account.cryptoType {
+            case .sr25519:
+                try scaleEncoder.append(
+                    MultiSignature.sr25519(data: rawSignature),
+                    ofType: KnownType.signature.name,
+                    with: codingFactory.createRuntimeJsonContext().toRawContext()
+                )
+            case .ed25519:
+                try scaleEncoder.append(
+                    MultiSignature.ed25519(data: rawSignature),
+                    ofType: KnownType.signature.name,
+                    with: codingFactory.createRuntimeJsonContext().toRawContext()
+                )
+            case .substrateEcdsa:
+                try scaleEncoder.append(
+                    MultiSignature.ecdsa(data: rawSignature),
+                    ofType: KnownType.signature.name,
+                    with: codingFactory.createRuntimeJsonContext().toRawContext()
+                )
+            case .ethereumEcdsa:
+                guard let signature = EthereumSignature(rawValue: rawSignature) else {
+                    throw DAppOperationConfirmInteractorError.invalidRawSignature(data: rawSignature)
+                }
+
+                try scaleEncoder.append(
+                    signature,
+                    ofType: KnownType.signature.name,
+                    with: codingFactory.createRuntimeJsonContext().toRawContext()
+                )
+            }
+
+            return try scaleEncoder.encode()
         }
 
         signatureOperation.addDependency(builderOperation)
@@ -279,12 +315,16 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
                 self?.signWrapper = nil
 
+                guard let request = self?.request else {
+                    return
+                }
+
                 do {
                     let signature = try signWrapper.targetOperation.extractNoCancellableResultData()
                     let response = DAppOperationResponse(signature: signature)
-                    self?.presenter?.didReceive(responseResult: .success(response))
+                    self?.presenter?.didReceive(responseResult: .success(response), for: request)
                 } catch {
-                    self?.presenter?.didReceive(responseResult: .failure(error))
+                    self?.presenter?.didReceive(responseResult: .failure(error), for: request)
                 }
             }
         }
@@ -298,7 +338,7 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
         }
 
         let response = DAppOperationResponse(signature: nil)
-        presenter?.didReceive(responseResult: .success(response))
+        presenter?.didReceive(responseResult: .success(response), for: request)
     }
 
     func estimateFee() {

@@ -11,7 +11,8 @@ struct DAppOperationConfirmViewFactory {
 
         guard
             let connection = chainRegistry.getConnection(for: request.chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.chain.chainId) else {
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.chain.chainId),
+            let assetInfo = request.chain.utilityAssets().first?.displayInfo(with: request.chain.icon) else {
             return nil
         }
 
@@ -26,10 +27,15 @@ struct DAppOperationConfirmViewFactory {
 
         let wireframe = DAppOperationConfirmWireframe()
 
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+
         let presenter = DAppOperationConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             delegate: delegate,
+            viewModelFactory: DAppOperationConfirmViewModelFactory(),
+            balanceViewModelFactory: balanceViewModelFactory,
+            localizationManager: LocalizationManager.shared,
             logger: Logger.shared
         )
 
