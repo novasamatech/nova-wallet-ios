@@ -2,6 +2,9 @@ import UIKit
 import SoraUI
 
 final class DAppOperationConfirmViewLayout: UIView {
+    static let titleImageSize = CGSize(width: 88, height: 88)
+    static let listImageSize = CGSize(width: 24, height: 24)
+
     let iconImageView: UIImageView = {
         let imageView = UIImageView()
         return imageView
@@ -53,8 +56,7 @@ final class DAppOperationConfirmViewLayout: UIView {
         let titleView = GenericTitleValueView(titleView: titleLabel, valueView: arrowImageView)
 
         let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
-        rowView.borderView.strokeColor = R.color.colorWhite16()!
-        rowView.borderView.strokeWidth = 0.5
+        rowView.borderView.strokeWidth = 0.0
         rowView.contentInsets = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
         return rowView
@@ -92,12 +94,13 @@ final class DAppOperationConfirmViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // swiftlint:disable:next function_body_length
     private func setupLayout() {
         addSubview(iconImageView)
         iconImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.size.equalTo(88.0)
+            make.size.equalTo(Self.titleImageSize.width)
         }
 
         addSubview(titleLabel)
@@ -115,7 +118,7 @@ final class DAppOperationConfirmViewLayout: UIView {
         addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.top.equalTo(subtitleLabel.snp.bottom).offset(20.0)
-            make.leading.trailing.equalToSuperview().offset(UIConstants.horizontalInset)
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         }
 
         let stackViews: [UIView] = [
