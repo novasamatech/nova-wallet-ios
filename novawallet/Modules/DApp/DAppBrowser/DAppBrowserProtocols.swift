@@ -6,6 +6,8 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
     func process(message: Any)
+    func activateSearch()
+    func toggleFavorite()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {

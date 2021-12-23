@@ -29,6 +29,10 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func process(message: Any) {
         interactor.process(message: message)
     }
+
+    func activateSearch() {}
+
+    func toggleFavorite() {}
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
