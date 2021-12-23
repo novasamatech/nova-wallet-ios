@@ -55,6 +55,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
         wireframe.showWeb(url: subIdUrl, from: view, style: .automatic)
     }
+
+    func activateSearch() {
+        wireframe.showSearch(from: view, delegate: self)
+    }
 }
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {
@@ -67,5 +71,11 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
             accountId = nil
             _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
         }
+    }
+}
+
+extension DAppListPresenter: DAppSearchDelegate {
+    func didCompleteDAppSearchQuery(_ query: String) {
+        wireframe.showBrowser(from: view, for: query)
     }
 }
