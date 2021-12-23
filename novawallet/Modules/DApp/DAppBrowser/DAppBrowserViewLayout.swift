@@ -1,12 +1,68 @@
 import UIKit
 import WebKit
+import SoraUI
 
 final class DAppBrowserViewLayout: UIView {
+    private enum Constants {
+        static let toolbarHeight: CGFloat = 44.0
+    }
+
+    let urlBar = DAppURLBarView()
+
+    var securityImageView: UIImageView { urlBar.controlContentView.imageView }
+    var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
+
+    let refreshBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
+    let goBackBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconBrowserBack()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
+    let goForwardBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconBrowserForward()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
+    let favoriteBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconFavNotSelected()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
+    let toolbarBackgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        view.sideLength = 0.0
+        return view
+    }()
+
+    let toolBar: UIToolbar = {
+        let view = UIToolbar()
+        view.setBackgroundImage(UIImage(), forToolbarPosition: .bottom, barMetrics: .default)
+        view.setShadowImage(UIImage(), forToolbarPosition: .bottom)
+
+        return view
+    }()
+
     let webView: WKWebView = {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = WKUserContentController()
 
         let view = WKWebView(frame: .zero, configuration: configuration)
+        view.scrollView.contentInsetAdjustmentBehavior = .always
+        view.scrollView.contentInset = UIEdgeInsets(
+            top: 0.0,
+            left: 0.0,
+            bottom: Constants.toolbarHeight,
+            right: 0.0
+        )
+
         return view
     }()
 
@@ -25,10 +81,36 @@ final class DAppBrowserViewLayout: UIView {
 
     private func setupLayout() {
         addSubview(webView)
-
         webView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
+
+        addSubview(toolbarBackgroundView)
+        toolbarBackgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-Constants.toolbarHeight)
+        }
+
+        addSubview(toolBar)
+        toolBar.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            make.height.equalTo(Constants.toolbarHeight)
+        }
+
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        toolBar.items = [
+            goBackBarItem,
+            flexibleSpace,
+            goForwardBarItem,
+            flexibleSpace,
+            favoriteBarItem,
+            flexibleSpace,
+            refreshBarItem
+        ]
     }
 }

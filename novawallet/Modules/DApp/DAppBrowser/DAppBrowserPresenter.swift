@@ -29,6 +29,12 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func process(message: Any) {
         interactor.process(message: message)
     }
+
+    func activateSearch(with query: String?) {
+        wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
+    }
+
+    func toggleFavorite() {}
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
@@ -54,5 +60,11 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
     func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for _: DAppOperationRequest) {
         interactor.processConfirmation(response: response)
+    }
+}
+
+extension DAppBrowserPresenter: DAppSearchDelegate {
+    func didCompleteDAppSearchQuery(_ query: String) {
+        interactor.process(newQuery: query)
     }
 }

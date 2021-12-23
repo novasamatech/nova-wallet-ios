@@ -11,8 +11,8 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(accountsView.controller, animated: true)
     }
 
-    func showSearch(from view: DAppListViewProtocol?) {
-        guard let searchView = DAppSearchViewFactory.createView() else {
+    func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate) {
+        guard let searchView = DAppSearchViewFactory.createView(with: nil, delegate: delegate) else {
             return
         }
 
@@ -20,5 +20,14 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         navigationController.modalTransitionStyle = .crossDissolve
         navigationController.modalPresentationStyle = .fullScreen
         view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showBrowser(from view: DAppListViewProtocol?, for query: String) {
+        guard let browserView = DAppBrowserViewFactory.createView(for: query) else {
+            return
+        }
+
+        browserView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
     }
 }
