@@ -96,11 +96,17 @@ final class UserNameSetupViewController: UIViewController, ViewHolder {
 
         rootView.titleLabel.text = R.string.localizable.walletNicknameCreateTitle_v2_2_0(preferredLanguages: languages)
 
-        rootView.subtitleLabel.text = R.string.localizable.walletNicknameCreateSubtitle_v2_2_0(preferredLanguages: languages)
+        rootView.subtitleLabel.text = R.string.localizable.walletNicknameCreateSubtitle_v2_2_0(
+            preferredLanguages: languages
+        )
 
-        rootView.captionLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(preferredLanguages: languages)
+        rootView.captionLabel.text = R.string.localizable.walletNicknameCreateCaption_v2_2_0(
+            preferredLanguages: languages
+        )
 
-        rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: languages)
+        rootView.nameField.title = R.string.localizable.walletUsernameSetupChooseTitle_v2_2_0(
+            preferredLanguages: languages
+        )
 
         rootView.proceedButton.imageWithTitleView?.title = R.string.localizable
             .commonContinue(preferredLanguages: languages)
