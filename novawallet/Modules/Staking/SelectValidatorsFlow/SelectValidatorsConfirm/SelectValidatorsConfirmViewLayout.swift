@@ -77,7 +77,10 @@ final class SelectValidatorsConfirmViewLayout: UIView {
 
         hintViews = hints.map { hint in
             let view = IconDetailsView()
-            view.iconWidth = 24.0
+            view.iconWidth = 16.0
+            view.stackView.alignment = .top
+            view.detailsLabel.font = .caption1
+            view.detailsLabel.textColor = R.color.colorTransparentText()
             view.detailsLabel.text = hint.title
             view.imageView.image = hint.icon
             return view

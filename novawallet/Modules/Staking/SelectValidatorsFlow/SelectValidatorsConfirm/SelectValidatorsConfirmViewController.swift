@@ -79,9 +79,8 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             preferredLanguages: languages
         )
 
-        rootView.rewardDestinationView.titleLabel.text = R.string.localizable.stakingRewardsDestinationTitle(
-            preferredLanguages: languages
-        )
+        rootView.rewardDestinationView.titleLabel.text = R.string.localizable
+            .stakingRewardsDestinationTitle_v2_0_0(preferredLanguages: languages)
 
         rootView.networkFeeConfirmView.locale = selectedLocale
 
@@ -115,11 +114,11 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
         switch viewModel.rewardDestination {
         case .restake:
             rootView.rewardDestinationView.valueLabel.text = R.string.localizable
-                .stakingRestakeTitle(preferredLanguages: selectedLocale.rLanguages)
+                .stakingRestakeTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
             rootView.removePayoutAccountIfNeeded()
         case let .payout(icon, title):
             rootView.rewardDestinationView.valueLabel.text = R.string.localizable
-                .stakingPayoutTitle(preferredLanguages: selectedLocale.rLanguages)
+                .stakingPayoutTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
             rootView.addPayoutAccountIfNeeded()
 
             rootView.payoutAccountView?.addTarget(
