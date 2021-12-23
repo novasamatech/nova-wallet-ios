@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct DAppSearchViewFactory {
     static func createView(with initialQuery: String?, delegate: DAppSearchDelegate) -> DAppSearchViewProtocol? {
@@ -12,7 +13,10 @@ struct DAppSearchViewFactory {
             delegate: delegate
         )
 
-        let view = DAppSearchViewController(presenter: presenter)
+        let view = DAppSearchViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
         interactor.presenter = presenter
