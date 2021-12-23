@@ -20,4 +20,19 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
 
         view?.controller.present(confirmationView.controller, animated: true, completion: nil)
     }
+
+    func presentSearch(
+        from view: DAppBrowserViewProtocol?,
+        initialQuery: String?,
+        delegate: DAppSearchDelegate
+    ) {
+        guard let searchView = DAppSearchViewFactory.createView(with: initialQuery, delegate: delegate) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: searchView.controller)
+        navigationController.modalTransitionStyle = .crossDissolve
+        navigationController.modalPresentationStyle = .fullScreen
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
