@@ -7,30 +7,7 @@ final class DAppBrowserViewLayout: UIView {
         static let toolbarHeight: CGFloat = 44.0
     }
 
-    let urlBar: ControlView<RoundedView, IconDetailsView> = {
-        let titleView = IconDetailsView()
-        titleView.mode = .iconDetails
-        titleView.detailsLabel.numberOfLines = 0
-        titleView.iconWidth = 12.0
-        titleView.spacing = 5.0
-        titleView.detailsLabel.textColor = R.color.colorWhite()
-        titleView.detailsLabel.font = .regularFootnote
-
-        let backgroundView = RoundedView()
-        backgroundView.applyFilledBackgroundStyle()
-        backgroundView.fillColor = R.color.colorWhite8()!
-        backgroundView.highlightedFillColor = R.color.colorAccentSelected()!
-
-        let controlView = ControlView(
-            backgroundView: backgroundView,
-            contentView: titleView,
-            preferredHeight: 36.0
-        )
-
-        controlView.contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
-
-        return controlView
-    }()
+    let urlBar = DAppURLBarView()
 
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }

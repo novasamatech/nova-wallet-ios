@@ -1,8 +1,10 @@
-protocol DAppSearchViewProtocol: ControllerBackedProtocol {}
+protocol DAppSearchViewProtocol: ControllerBackedProtocol {
+    func didReceive(initialQuery: String)
+}
 
 protocol DAppSearchPresenterProtocol: AnyObject {
     func setup()
-    func activateBrowser(for input: String)
+    func activateSearch(for input: String)
 }
 
 protocol DAppSearchInteractorInputProtocol: AnyObject {}
@@ -10,5 +12,9 @@ protocol DAppSearchInteractorInputProtocol: AnyObject {}
 protocol DAppSearchInteractorOutputProtocol: AnyObject {}
 
 protocol DAppSearchWireframeProtocol: AnyObject {
-    func showBrowser(from view: DAppSearchViewProtocol?, input: String)
+    func close(from view: DAppSearchViewProtocol?)
+}
+
+protocol DAppSearchDelegate: AnyObject {
+    func didCompleteDAppSearchQuery(_ query: String)
 }

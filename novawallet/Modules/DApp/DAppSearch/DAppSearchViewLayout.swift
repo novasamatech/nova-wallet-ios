@@ -1,6 +1,9 @@
 import UIKit
+import SoraUI
 
 final class DAppSearchViewLayout: UIView {
+    let searchBar = DAppSearchBar()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 

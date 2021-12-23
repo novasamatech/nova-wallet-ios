@@ -1060,6 +1060,8 @@
 		84D2F1A5277437D30040C680 /* DAppIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A4277437D30040C680 /* DAppIconView.swift */; };
 		84D2F1A727743DB00040C680 /* StaticImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A627743DB00040C680 /* StaticImageViewModel.swift */; };
 		84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */; };
+		84D2F1AC2774B3A00040C680 /* DAppSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1AB2774B3A00040C680 /* DAppSearchBar.swift */; };
+		84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1AE2774CEF00040C680 /* DAppURLBarView.swift */; };
 		84D2F45425EF044B008B914D /* RecommendedValidatorListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F45325EF044B008B914D /* RecommendedValidatorListViewModel.swift */; };
 		84D2F45A25EF0556008B914D /* RecommendedValidatorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84D2F45925EF0556008B914D /* RecommendedValidatorCell.xib */; };
 		84D2F45F25EF0599008B914D /* RecommendedValidatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F45E25EF0599008B914D /* RecommendedValidatorCell.swift */; };
@@ -2857,6 +2859,8 @@
 		84D2F1A4277437D30040C680 /* DAppIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppIconView.swift; sourceTree = "<group>"; };
 		84D2F1A627743DB00040C680 /* StaticImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticImageViewModel.swift; sourceTree = "<group>"; };
 		84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionError.swift; sourceTree = "<group>"; };
+		84D2F1AB2774B3A00040C680 /* DAppSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchBar.swift; sourceTree = "<group>"; };
+		84D2F1AE2774CEF00040C680 /* DAppURLBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppURLBarView.swift; sourceTree = "<group>"; };
 		84D2F45325EF044B008B914D /* RecommendedValidatorListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorListViewModel.swift; sourceTree = "<group>"; };
 		84D2F45925EF0556008B914D /* RecommendedValidatorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecommendedValidatorCell.xib; sourceTree = "<group>"; };
 		84D2F45E25EF0599008B914D /* RecommendedValidatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorCell.swift; sourceTree = "<group>"; };
@@ -6844,6 +6848,22 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		84D2F1AA2774B38F0040C680 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84D2F1AB2774B3A00040C680 /* DAppSearchBar.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		84D2F1AD2774CEBD0040C680 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				84D2F1AE2774CEF00040C680 /* DAppURLBarView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		84D2F45225EF043C008B914D /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -7475,6 +7495,7 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				84D2F1AD2774CEBD0040C680 /* View */,
 				8496ADD8276AFF3400306B24 /* Model */,
 				D02E38ABE379CA48E63328C4 /* DAppBrowserProtocols.swift */,
 				19F47911F8734C007135137D /* DAppBrowserWireframe.swift */,
@@ -8064,6 +8085,7 @@
 		B492B5426CD384887F1B351D /* DAppSearch */ = {
 			isa = PBXGroup;
 			children = (
+				84D2F1AA2774B38F0040C680 /* View */,
 				8F96182151D003DF6789CB4B /* DAppSearchProtocols.swift */,
 				4A191B92AD171FDDDD8C30E2 /* DAppSearchWireframe.swift */,
 				329C58A0AE09361F5ECD6D4E /* DAppSearchPresenter.swift */,
@@ -9790,6 +9812,7 @@
 				84C1B98424F5245700FE5470 /* ManagedAccountViewModel.swift in Sources */,
 				8460E1132541DEDA00826F55 /* TransactionDetailsFormViewModelBinder.swift in Sources */,
 				8444D1BE2671465A00AF6D8C /* CrowdloanBonusServiceError.swift in Sources */,
+				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
 				84D1110C26B922D50016D962 /* ConnectionPool.swift in Sources */,
 				8490152E24ABD0F5008F705E /* Logger+Wallet.swift in Sources */,
 				844CB57426FA01DD00396E13 /* SubstrateRepositoryFactory.swift in Sources */,
@@ -10261,6 +10284,7 @@
 				3E480EEAF501AEB5D543506D /* UsernameSetupPresenter.swift in Sources */,
 				84BE20A325E860DC00B4748C /* WebSocketServiceFactory.swift in Sources */,
 				84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */,
+				84D2F1AC2774B3A00040C680 /* DAppSearchBar.swift in Sources */,
 				8430AB002602338D005B1066 /* PendingNominatorState.swift in Sources */,
 				AE7129BC2608C069000AA3F5 /* NetworkStakingInfoOperationFactory.swift in Sources */,
 				84754CA02513D83E00854599 /* AccountPickerViewModel.swift in Sources */,

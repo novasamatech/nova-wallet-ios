@@ -1,15 +1,9 @@
 import UIKit
 
-final class DAppSearchViewController: UIViewController {
+final class DAppSearchViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppSearchViewLayout
 
     let presenter: DAppSearchPresenterProtocol
-
-    let searchBar: UISearchBar = {
-        let view = UISearchBar()
-        view.setBackgroundImage(UIImage(), for: .top, barMetrics: .default)
-        return view
-    }()
 
     init(presenter: DAppSearchPresenterProtocol) {
         self.presenter = presenter
@@ -36,24 +30,30 @@ final class DAppSearchViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        searchBar.becomeFirstResponder()
+        rootView.searchBar.textField.becomeFirstResponder()
     }
 
     private func setupSearchBar() {
-        navigationItem.titleView = searchBar
+        navigationItem.titleView = rootView.searchBar
 
-        searchBar.delegate = self
+        rootView.searchBar.textField.delegate = self
     }
 }
 
-extension DAppSearchViewController: DAppSearchViewProtocol {}
+extension DAppSearchViewController: DAppSearchViewProtocol {
+    func didReceive(initialQuery: String) {
+        rootView.searchBar.textField.text = initialQuery
+    }
+}
 
-extension DAppSearchViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let input = searchBar.text else {
-            return
+extension DAppSearchViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        guard let input = textField.text else {
+            return false
         }
 
-        presenter.activateBrowser(for: input)
+        presenter.activateSearch(for: input)
+
+        return true
     }
 }
