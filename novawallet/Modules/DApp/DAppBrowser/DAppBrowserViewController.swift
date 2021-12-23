@@ -94,6 +94,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         } else {
             rootView.securityImageView.image = nil
         }
+
+        rootView.urlBar.setNeedsLayout()
     }
 
     private func didChangeGoBack(_ newValue: Bool) {
@@ -118,7 +120,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.reload()
     }
 
-    @objc private func actionSearch() {}
+    @objc private func actionSearch() {
+        presenter.activateSearch(with: rootView.webView.url?.absoluteString)
+    }
 }
 
 extension DAppBrowserViewController: WKScriptMessageHandler {
@@ -174,6 +178,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         } else {
             rootView.securityImageView.image = nil
         }
+
+        rootView.urlBar.setNeedsLayout()
 
         rootView.goBackBarItem.isEnabled = false
         rootView.goForwardBarItem.isEnabled = false
