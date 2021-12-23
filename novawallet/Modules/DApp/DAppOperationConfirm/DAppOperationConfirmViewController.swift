@@ -63,18 +63,14 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
 
 extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
     func didReceive(confimationViewModel: DAppOperationConfirmViewModel) {
-        viewModel?.iconImageViewModel?.cancel(on: rootView.iconImageView)
-
         let networkImageView = rootView.networkView.rowContentView.valueView.imageView
         viewModel?.networkIconViewModel?.cancel(on: networkImageView)
 
         viewModel = confimationViewModel
 
-        rootView.iconImageView.image = nil
-        confimationViewModel.iconImageViewModel?.loadImage(
-            on: rootView.iconImageView,
-            targetSize: DAppOperationConfirmViewLayout.titleImageSize,
-            animated: true
+        rootView.iconView.bind(
+            viewModel: viewModel?.iconImageViewModel,
+            size: DAppOperationConfirmViewLayout.titleImageSize
         )
 
         rootView.walletView.rowContentView.valueView.detailsLabel.text = confimationViewModel.walletName
