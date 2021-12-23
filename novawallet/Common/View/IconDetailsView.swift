@@ -103,3 +103,10 @@ class IconDetailsView: UIView {
         }
     }
 }
+
+extension IconDetailsView: Highlightable {
+    func set(highlighted: Bool, animated: Bool) {
+        imageView.set(highlighted: highlighted, animated: animated)
+        detailsLabel.set(highlighted: highlighted, animated: animated)
+    }
+}
