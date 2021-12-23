@@ -160,6 +160,20 @@ final class DAppBrowserInteractor {
         presenter.didReceive(response: response)
     }
 
+    private func provideError(
+        for messageType: PolkadotExtensionMessage.MessageType,
+        errorMessage: String
+    ) {
+        let content = String(
+            format: "window.walletExtension.onAppResponse(\"%@\", null, new Error(\"%@\"))",
+            messageType.rawValue, errorMessage
+        )
+
+        let response = PolkadotExtensionResponse(content: content)
+
+        presenter.didReceive(response: response)
+    }
+
     private func createExtensionAccount(
         for accountId: AccountId,
         genesisHash: Data?,
@@ -221,6 +235,10 @@ final class DAppBrowserInteractor {
         )
 
         try provideResponse(for: .signExtrinsic, result: result)
+    }
+
+    private func providerOperationError(_ error: PolkadotExtensionError) {
+        provideError(for: .signExtrinsic, errorMessage: error.rawValue)
     }
 
     private func handleExtrinsic(message: PolkadotExtensionMessage) {
@@ -308,6 +326,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             } catch {
                 presenter.didReceive(error: error)
             }
+        } else {
+            providerOperationError(.rejected)
         }
     }
 }
