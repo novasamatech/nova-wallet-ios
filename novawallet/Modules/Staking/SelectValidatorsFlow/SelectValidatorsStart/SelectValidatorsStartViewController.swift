@@ -78,7 +78,7 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
         rootView.algoSectionLabel.text = R.string.localizable
             .stakingSelectValidatorsRecommendedTitle(preferredLanguages: languages)
         rootView.algoDetailsLabel.text = R.string.localizable
-            .stakingSelectValidatorsRecommendedDesc(preferredLanguages: languages)
+            .stakingSelectValidatorsRecommendedDesc_v2_2_0(preferredLanguages: languages)
 
         rootView.setAlgoSteps(
             [
@@ -97,7 +97,7 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
             .stakingSelectValidatorsCustomTitle(preferredLanguages: languages)
 
         rootView.customValidatorsDetailsLabel.text = R.string.localizable
-            .stakingSelectValidatorsCustomDesc(preferredLanguages: languages)
+            .stakingSelectValidatorsCustomDesc_2_2_0(preferredLanguages: languages)
 
         switch phase {
         case .setup:

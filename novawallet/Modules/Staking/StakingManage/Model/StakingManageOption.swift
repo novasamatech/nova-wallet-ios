@@ -12,11 +12,13 @@ enum StakingManageOption {
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
         case .stakingBalance:
-            return R.string.localizable.stakingBalanceTitle(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.stakingBalanceTitle_v2_2_0(preferredLanguages: locale.rLanguages)
         case .pendingRewards:
-            return R.string.localizable.stakingPendingRewards(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.stakingPendingRewards_v2_0_0(preferredLanguages: locale.rLanguages)
         case .rewardDestination:
-            return R.string.localizable.stakingRewardsDestinationTitle(preferredLanguages: locale.rLanguages)
+            return R.string.localizable.stakingRewardsDestinationTitle_v2_0_0(
+                preferredLanguages: locale.rLanguages
+            )
         case .changeValidators, .setupValidators:
             return R.string.localizable.stakingYourValidatorsTitle(preferredLanguages: locale.rLanguages)
         case .controllerAccount:

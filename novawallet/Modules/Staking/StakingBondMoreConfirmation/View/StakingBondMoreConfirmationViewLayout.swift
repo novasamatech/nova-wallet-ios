@@ -21,9 +21,11 @@ final class StakingBMConfirmationViewLayout: UIView {
 
     let hintView: IconDetailsView = {
         let view = IconDetailsView()
-        view.iconWidth = 24.0
-        view.imageView.contentMode = .top
-        view.imageView.image = R.image.iconGeneralReward()
+        view.iconWidth = 16.0
+        view.stackView.alignment = .top
+        view.detailsLabel.font = .caption1
+        view.detailsLabel.textColor = R.color.colorTransparentText()
+        view.imageView.image = R.image.iconStarGray16()
         return view
     }()
 
@@ -106,7 +108,7 @@ final class StakingBMConfirmationViewLayout: UIView {
         amountView.title = R.string.localizable
             .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
 
-        hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore(
+        hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore_v2_2_0(
             preferredLanguages: locale.rLanguages
         )
 

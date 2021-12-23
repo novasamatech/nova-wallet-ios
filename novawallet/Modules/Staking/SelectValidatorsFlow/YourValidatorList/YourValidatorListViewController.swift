@@ -252,7 +252,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
         let value = R.string.localizable
             .stakingCommonRewardsApy(preferredLanguages: selectedLocale.rLanguages).uppercased()
 
-        let description = R.string.localizable.stakingYourAllocatedDescription(
+        let description = R.string.localizable.stakingYourAllocatedDescription_2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -266,7 +266,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
     }
 
     private func configureNotAllocated(headerView: YourValidatorListDescSectionView) {
-        let description = R.string.localizable.stakingYourNotAllocatedDescription(
+        let description = R.string.localizable.stakingYourNotAllocatedDescription_v2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -286,7 +286,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourInactiveDescription(
+        let description = R.string.localizable.stakingYourInactiveDescription_v2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )
 
