@@ -1,13 +1,16 @@
 import UIKit
+import SoraFoundation
 
 final class DAppSearchViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppSearchViewLayout
 
     let presenter: DAppSearchPresenterProtocol
 
-    init(presenter: DAppSearchPresenterProtocol) {
+    init(presenter: DAppSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -23,8 +26,13 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupSearchBar()
+        setupLocalization()
 
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        rootView.searchBar.textField.placeholder = "Search by name or enter URL"
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -55,5 +63,13 @@ extension DAppSearchViewController: UITextFieldDelegate {
         presenter.activateSearch(for: input)
 
         return true
+    }
+}
+
+extension DAppSearchViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
     }
 }
