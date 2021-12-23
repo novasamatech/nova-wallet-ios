@@ -8,6 +8,7 @@ protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func activateAccount()
     func activateSubId()
+    func activateSearch()
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
@@ -20,4 +21,6 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
 
 protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {
     func showWalletSelection(from view: DAppListViewProtocol?)
+    func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)
+    func showBrowser(from view: DAppListViewProtocol?, for query: String)
 }
