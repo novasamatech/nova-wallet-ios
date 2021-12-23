@@ -31,7 +31,7 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
                     title: R.string.localizable.stakingHintNoRewards_V2_2_0(
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconNoReward()
+                    icon: R.image.iconStarGray16()
                 )
             )
 
@@ -41,7 +41,7 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
                         title: R.string.localizable.stakingHintUnbondKillsStash(
                             preferredLanguages: locale.rLanguages
                         ),
-                        icon: R.image.iconWallet()
+                        icon: R.image.iconStarGray16()
                     )
                 )
             }
@@ -51,7 +51,7 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
                     title: R.string.localizable.stakingHintRedeem_v2_2_0(
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconRedeem()
+                    icon: R.image.iconStarGray16()
                 )
             )
 
