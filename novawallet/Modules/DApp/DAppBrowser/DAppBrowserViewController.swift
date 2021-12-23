@@ -8,6 +8,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     private var viewModel: DAppBrowserModel?
 
+    private var urlObservation: NSKeyValueObservation?
+    private var goBackObservation: NSKeyValueObservation?
+    private var goForwardObservation: NSKeyValueObservation?
+
     init(presenter: DAppBrowserPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -18,6 +22,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        urlObservation?.invalidate()
+    }
+
     override func loadView() {
         view = DAppBrowserViewLayout()
     }
@@ -25,8 +33,92 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configure()
+
         presenter.setup()
     }
+
+    private func configure() {
+        navigationItem.titleView = rootView.urlBar
+
+        urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
+            guard let newValue = change.newValue, let url = newValue else {
+                return
+            }
+
+            self?.didChangeUrl(url)
+        }
+
+        goBackObservation = rootView.webView.observe(
+            \.canGoBack,
+            options: [.initial, .new]
+        ) { [weak self] _, change in
+            guard let newValue = change.newValue else {
+                return
+            }
+
+            self?.didChangeGoBack(newValue)
+        }
+
+        goForwardObservation = rootView.webView.observe(
+            \.canGoForward,
+            options: [.initial, .new]
+        ) { [weak self] _, change in
+            guard let newValue = change.newValue else {
+                return
+            }
+
+            self?.didChangeGoForward(newValue)
+        }
+
+        rootView.goBackBarItem.target = self
+        rootView.goBackBarItem.action = #selector(actionGoBack)
+
+        rootView.goForwardBarItem.target = self
+        rootView.goForwardBarItem.action = #selector(actionGoForward)
+
+        rootView.favoriteBarItem.target = self
+        rootView.favoriteBarItem.action = #selector(actionFavorite)
+
+        rootView.refreshBarItem.target = self
+        rootView.refreshBarItem.action = #selector(actionRefresh)
+
+        rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
+    }
+
+    private func didChangeUrl(_ newUrl: URL) {
+        rootView.urlLabel.text = newUrl.host
+
+        if newUrl.isTLSScheme {
+            rootView.securityImageView.image = R.image.iconBrowserSecurity()
+        } else {
+            rootView.securityImageView.image = nil
+        }
+    }
+
+    private func didChangeGoBack(_ newValue: Bool) {
+        rootView.goBackBarItem.isEnabled = newValue
+    }
+
+    private func didChangeGoForward(_: Bool) {
+        rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
+    }
+
+    @objc private func actionGoBack() {
+        rootView.webView.goBack()
+    }
+
+    @objc private func actionGoForward() {
+        rootView.webView.goForward()
+    }
+
+    @objc private func actionFavorite() {}
+
+    @objc private func actionRefresh() {
+        rootView.webView.reload()
+    }
+
+    @objc private func actionSearch() {}
 }
 
 extension DAppBrowserViewController: WKScriptMessageHandler {
@@ -74,6 +166,17 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         }
 
         contentController.add(self, name: viewModel.subscriptionName)
+
+        rootView.urlLabel.text = viewModel.url.host
+
+        if viewModel.url.isTLSScheme {
+            rootView.securityImageView.image = R.image.iconBrowserSecurity()
+        } else {
+            rootView.securityImageView.image = nil
+        }
+
+        rootView.goBackBarItem.isEnabled = false
+        rootView.goForwardBarItem.isEnabled = false
 
         let request = URLRequest(url: viewModel.url)
         rootView.webView.load(request)
