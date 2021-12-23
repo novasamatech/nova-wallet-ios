@@ -22,7 +22,7 @@ final class SettingsTableFooterView: UITableViewHeaderFooterView {
     }
 
     private func setupLayout() {
-        let logoIcon = UIImageView(image: R.image.novaGrayLogo())
+        let logoIcon = UIImageView(image: R.image.iconStarGray32())
         let content = UIView.vStack(alignment: .center, spacing: 8, [logoIcon, appNameLabel])
         logoIcon.snp.makeConstraints { $0.size.equalTo(32) }
 
