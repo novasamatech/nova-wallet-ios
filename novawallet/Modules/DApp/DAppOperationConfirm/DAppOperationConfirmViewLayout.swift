@@ -2,12 +2,12 @@ import UIKit
 import SoraUI
 
 final class DAppOperationConfirmViewLayout: UIView {
-    static let titleImageSize = CGSize(width: 88, height: 88)
+    static let titleImageSize = CGSize(width: 56, height: 56)
     static let listImageSize = CGSize(width: 24, height: 24)
 
-    let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        return imageView
+    let iconView: DAppIconView = {
+        let view = DAppIconView()
+        return view
     }()
 
     let titleLabel: UILabel = {
@@ -96,17 +96,17 @@ final class DAppOperationConfirmViewLayout: UIView {
 
     // swiftlint:disable:next function_body_length
     private func setupLayout() {
-        addSubview(iconImageView)
-        iconImageView.snp.makeConstraints { make in
+        addSubview(iconView)
+        iconView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.size.equalTo(Self.titleImageSize.width)
+            make.size.equalTo(88.0)
         }
 
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.top.equalTo(iconImageView.snp.bottom).offset(20.0)
+            make.top.equalTo(iconView.snp.bottom).offset(20.0)
         }
 
         addSubview(subtitleLabel)
