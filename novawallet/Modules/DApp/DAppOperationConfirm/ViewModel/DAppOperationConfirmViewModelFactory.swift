@@ -7,6 +7,8 @@ protocol DAppOperationConfirmViewModelFactoryProtocol {
 
 final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel {
+        let iconViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+
         let walletIcon = try? NovaIconGenerator().generateFromAccountId(
             model.wallet.substrateAccountId
         )
@@ -32,7 +34,7 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
         }
 
         return DAppOperationConfirmViewModel(
-            iconImageViewModel: nil,
+            iconImageViewModel: iconViewModel,
             walletName: model.wallet.name,
             walletIcon: walletIcon,
             address: address?.truncated ?? "",
