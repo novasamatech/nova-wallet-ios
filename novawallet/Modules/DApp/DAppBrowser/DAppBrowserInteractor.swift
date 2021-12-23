@@ -19,7 +19,7 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol!
 
-    let userInput: String
+    private(set) var userInput: String
     let wallet: MetaAccountModel
     let operationQueue: OperationQueue
     let chainRegistry: ChainRegistryProtocol
@@ -108,7 +108,7 @@ final class DAppBrowserInteractor {
                     return nil
                 }
 
-                return URL(string: "https://www.google.com/search?q=\(searchQuery)")
+                return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
             }
         }()
 
@@ -329,5 +329,16 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         } else {
             providerOperationError(.rejected)
         }
+    }
+
+    func process(newQuery: String) {
+        guard state != .setup else {
+            return
+        }
+
+        userInput = newQuery
+        state = .ready
+
+        provideModel()
     }
 }
