@@ -34,7 +34,7 @@ final class DAppTxDetailsViewController: UIViewController, ViewHolder {
         let languages = selectedLocale.rLanguages
 
         title = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
-        rootView.titleLabel.text = "Transaction details"
+        rootView.titleLabel.text = R.string.localizable.commonTxDetails(preferredLanguages: languages)
     }
 }
 

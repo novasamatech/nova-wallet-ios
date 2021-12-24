@@ -44,15 +44,29 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.titleLabel.text = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
-        rootView.subtitleLabel.text = "Approve this request if you trust the application.\nCheck transaction details."
-        rootView.walletView.rowContentView.titleView.text = "Wallet"
-        rootView.accountAddressView.rowContentView.titleView.text = "Account address"
-        rootView.networkView.rowContentView.titleView.text = "Network"
-        rootView.networkFeeView.titleLabel.text = "Transaction fee"
-        rootView.transactionDetailsControl.rowContentView.titleView.text = "Transaction details"
+        rootView.subtitleLabel.text = R.string.localizable.dappConfirmSubtitle(preferredLanguages: languages)
+        rootView.walletView.rowContentView.titleView.text = R.string.localizable.commonWallet(
+            preferredLanguages: languages
+        )
+        rootView.accountAddressView.rowContentView.titleView.text = R.string.localizable.commonAccountAddress(
+            preferredLanguages: languages
+        )
+        rootView.networkView.rowContentView.titleView.text = R.string.localizable.commonNetwork(
+            preferredLanguages: languages
+        )
+        rootView.networkFeeView.titleLabel.text = R.string.localizable.commonNetworkFee(
+            preferredLanguages: languages
+        )
+        rootView.transactionDetailsControl.rowContentView.titleView.text = R.string.localizable.commonTxDetails(
+            preferredLanguages: languages
+        )
 
-        rootView.confirmButton.imageWithTitleView?.title = "Confirm"
-        rootView.rejectButton.imageWithTitleView?.title = "Reject"
+        rootView.confirmButton.imageWithTitleView?.title = R.string.localizable.commonAllow(
+            preferredLanguages: languages
+        )
+        rootView.rejectButton.imageWithTitleView?.title = R.string.localizable.commonReject(
+            preferredLanguages: languages
+        )
     }
 
     @objc private func actionConfirm() {
