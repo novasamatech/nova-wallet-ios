@@ -398,6 +398,10 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
 
         operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: false)
     }
+
+    func prepareTxDetails() {
+        presenter?.didReceive(txDetailsResult: .success(request.operationData))
+    }
 }
 
 extension DAppOperationConfirmInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
