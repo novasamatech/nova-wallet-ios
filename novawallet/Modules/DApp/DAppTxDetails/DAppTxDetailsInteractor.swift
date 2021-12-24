@@ -1,22 +1,26 @@
 import UIKit
 import SubstrateSdk
+import RobinHood
 
 final class DAppTxDetailsInteractor {
-    weak var presenter: DAppTxDetailsInteractorOutputProtocol!
+    weak var presenter: DAppTxDetailsInteractorOutputProtocol?
 
     let txDetails: JSON
     let preprocessor: JSONPrettyPrinting
+    let operationQueue: OperationQueue
 
-    init(txDetails: JSON, preprocessor: JSONPrettyPrinting) {
+    init(txDetails: JSON, preprocessor: JSONPrettyPrinting, operationQueue: OperationQueue) {
         self.txDetails = txDetails
         self.preprocessor = preprocessor
+        self.operationQueue = operationQueue
     }
-}
 
-extension DAppTxDetailsInteractor: DAppTxDetailsInteractorInputProtocol {
-    func setup() {
-        do {
-            let prettyPrintedJson = preprocessor.prettyPrinted(from: txDetails)
+    private func createProcessingOperation(
+        for details: JSON,
+        preprocessor: JSONPrettyPrinting
+    ) -> BaseOperation<String> {
+        ClosureOperation<String> {
+            let prettyPrintedJson = preprocessor.prettyPrinted(from: details)
 
             let encoder = JSONEncoder()
             encoder.outputFormatting = .prettyPrinted
@@ -24,13 +28,29 @@ extension DAppTxDetailsInteractor: DAppTxDetailsInteractorInputProtocol {
             let data = try encoder.encode(prettyPrintedJson)
 
             if let displayString = String(data: data, encoding: .utf8) {
-                presenter.didReceive(displayResult: .success(displayString))
+                return displayString
             } else {
-                presenter.didReceive(displayResult: .failure(CommonError.undefined))
+                throw CommonError.undefined
             }
-
-        } catch {
-            presenter.didReceive(displayResult: .failure(error))
         }
+    }
+}
+
+extension DAppTxDetailsInteractor: DAppTxDetailsInteractorInputProtocol {
+    func setup() {
+        let operation = createProcessingOperation(for: txDetails, preprocessor: preprocessor)
+
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let displayString = try operation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(displayResult: .success(displayString))
+                } catch {
+                    self?.presenter?.didReceive(displayResult: .failure(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations([operation], waitUntilFinished: false)
     }
 }
