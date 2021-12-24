@@ -16,11 +16,13 @@ final class DAppURLBarView: BackgroundedContentControl {
         titleView.spacing = 5.0
         titleView.detailsLabel.textColor = R.color.colorWhite()
         titleView.detailsLabel.font = .regularFootnote
+        titleView.isUserInteractionEnabled = false
 
         let backgroundView = RoundedView()
         backgroundView.applyFilledBackgroundStyle()
         backgroundView.fillColor = R.color.colorWhite8()!
         backgroundView.highlightedFillColor = R.color.colorAccentSelected()!
+        backgroundView.isUserInteractionEnabled = false
 
         preferredHeight = 36.0
 
