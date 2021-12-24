@@ -60,9 +60,11 @@ extension DAppSearchViewController: UITextFieldDelegate {
             return false
         }
 
+        textField.resignFirstResponder()
+
         presenter.activateSearch(for: input)
 
-        return true
+        return false
     }
 }
 
