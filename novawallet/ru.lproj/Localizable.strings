@@ -645,3 +645,10 @@
 "staking.restake.title_v2_2_0" = "Увеличивать стейк";
 "staking.pending.rewards_v2_0_0" = "Невыплаченные награды";
 "staking.rewards.destination.title_v2_0_0" = "Назначение наград";
+"dapp.list.search" = "Поиск по названию или адресу";
+"dapp.confirm.subtitle" = "Разрешите операцию если доверяете приложению.\nПроверьте детали операции.";
+"common.wallet" = "Кошелек";
+"common.account.address" = "Адрес аккаунта";
+"common.allow" = "Разрешить";
+"common.reject" = "Отклонить";
+"common.tx.details" = "Детали операции";
