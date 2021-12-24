@@ -6,7 +6,8 @@ struct DAppTxDetailsViewFactory {
     static func createView(from txDetails: JSON) -> DAppTxDetailsViewProtocol? {
         let interactor = DAppTxDetailsInteractor(
             txDetails: txDetails,
-            preprocessor: ExtrinsicJSONProcessor()
+            preprocessor: ExtrinsicJSONProcessor(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let wireframe = DAppTxDetailsWireframe()
