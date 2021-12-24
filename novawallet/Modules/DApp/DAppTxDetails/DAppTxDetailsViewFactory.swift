@@ -4,7 +4,11 @@ import SoraFoundation
 
 struct DAppTxDetailsViewFactory {
     static func createView(from txDetails: JSON) -> DAppTxDetailsViewProtocol? {
-        let interactor = DAppTxDetailsInteractor(txDetails: txDetails)
+        let interactor = DAppTxDetailsInteractor(
+            txDetails: txDetails,
+            preprocessor: ExtrinsicJSONProcessor()
+        )
+
         let wireframe = DAppTxDetailsWireframe()
 
         let localizationManager = LocalizationManager.shared
