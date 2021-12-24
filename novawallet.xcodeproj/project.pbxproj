@@ -1064,6 +1064,8 @@
 		84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */; };
 		84D2F1AC2774B3A00040C680 /* DAppSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1AB2774B3A00040C680 /* DAppSearchBar.swift */; };
 		84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1AE2774CEF00040C680 /* DAppURLBarView.swift */; };
+		84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1B02775999F0040C680 /* DAppParsedExtrinsic.swift */; };
+		84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F1B22775A3220040C680 /* ExtrinsicJSONProcessor.swift */; };
 		84D2F45425EF044B008B914D /* RecommendedValidatorListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F45325EF044B008B914D /* RecommendedValidatorListViewModel.swift */; };
 		84D2F45A25EF0556008B914D /* RecommendedValidatorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84D2F45925EF0556008B914D /* RecommendedValidatorCell.xib */; };
 		84D2F45F25EF0599008B914D /* RecommendedValidatorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D2F45E25EF0599008B914D /* RecommendedValidatorCell.swift */; };
@@ -2873,6 +2875,8 @@
 		84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionError.swift; sourceTree = "<group>"; };
 		84D2F1AB2774B3A00040C680 /* DAppSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchBar.swift; sourceTree = "<group>"; };
 		84D2F1AE2774CEF00040C680 /* DAppURLBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppURLBarView.swift; sourceTree = "<group>"; };
+		84D2F1B02775999F0040C680 /* DAppParsedExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedExtrinsic.swift; sourceTree = "<group>"; };
+		84D2F1B22775A3220040C680 /* ExtrinsicJSONProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicJSONProcessor.swift; sourceTree = "<group>"; };
 		84D2F45325EF044B008B914D /* RecommendedValidatorListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorListViewModel.swift; sourceTree = "<group>"; };
 		84D2F45925EF0556008B914D /* RecommendedValidatorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RecommendedValidatorCell.xib; sourceTree = "<group>"; };
 		84D2F45E25EF0599008B914D /* RecommendedValidatorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorCell.swift; sourceTree = "<group>"; };
@@ -4358,6 +4362,7 @@
 			children = (
 				840DFDDA2770668200B62981 /* DAppOperationRequest.swift */,
 				840DFDD7277061ED00B62981 /* DAppOperationConfirmModel.swift */,
+				84D2F1B02775999F0040C680 /* DAppParsedExtrinsic.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -7528,6 +7533,7 @@
 				5BCDAB970C17F9798AC79B08 /* DAppTxDetailsViewController.swift */,
 				E29DAC8F2DB0F7BF909812FA /* DAppTxDetailsViewLayout.swift */,
 				A028BD1A81CA95BE0DB66031 /* DAppTxDetailsViewFactory.swift */,
+				84D2F1B22775A3220040C680 /* ExtrinsicJSONProcessor.swift */,
 			);
 			path = DAppTxDetails;
 			sourceTree = "<group>";
@@ -9550,6 +9556,7 @@
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
 				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
 				845CB6EF26276104005F798B /* SubscanQueryService.swift in Sources */,
+				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
 				849ABE5126276C3400011A2A /* SubscanQueryParams.swift in Sources */,
 				8428765624ADDE0200D91AD8 /* SettingsCellViewModel.swift in Sources */,
 				84C6801424D7013500006BF5 /* SubtitleContentView.swift in Sources */,
@@ -9566,6 +9573,7 @@
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,
 				84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */,
 				8490150324AB6C01008F705E /* WalletNetworkOperationFactory.swift in Sources */,
+				84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */,
 				84364D5E252FD09100281F9A /* AssetDetailsViewModel.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
 				F40966B926B297D6008CD244 /* AnalyticsRewardsViewModel.swift in Sources */,

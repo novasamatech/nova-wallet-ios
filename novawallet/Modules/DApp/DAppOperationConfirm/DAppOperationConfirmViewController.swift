@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppOperationConfirmViewLayout
@@ -118,5 +119,13 @@ extension DAppOperationConfirmViewController: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+extension DAppOperationConfirmViewController: ModalPresenterDelegate {
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { true }
+
+    func presenterDidHide(_: ModalPresenterProtocol) {
+        presenter.reject()
     }
 }
