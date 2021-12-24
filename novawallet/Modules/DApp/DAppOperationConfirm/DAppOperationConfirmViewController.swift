@@ -37,10 +37,12 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.confirmButton.addTarget(self, action: #selector(actionConfirm), for: .touchUpInside)
         rootView.rejectButton.addTarget(self, action: #selector(actionReject), for: .touchUpInside)
+        rootView.transactionDetailsControl.addTarget(self, action: #selector(actionTxDetails), for: .touchUpInside)
     }
 
     private func setupLocalization() {
-        rootView.titleLabel.text = "Confirmation"
+        let languages = selectedLocale.rLanguages
+        rootView.titleLabel.text = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
         rootView.subtitleLabel.text = "Approve this request if you trust the application.\nCheck transaction details."
         rootView.walletView.rowContentView.titleView.text = "Wallet"
         rootView.accountAddressView.rowContentView.titleView.text = "Account address"
@@ -58,6 +60,10 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
 
     @objc private func actionReject() {
         presenter.reject()
+    }
+
+    @objc private func actionTxDetails() {
+        presenter.activateTxDetails()
     }
 }
 
