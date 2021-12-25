@@ -61,7 +61,7 @@ final class DAppOperationConfirmViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.confirmButton.imageWithTitleView?.title = R.string.localizable.commonAllow(
+        rootView.confirmButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: languages
         )
         rootView.rejectButton.imageWithTitleView?.title = R.string.localizable.commonReject(
