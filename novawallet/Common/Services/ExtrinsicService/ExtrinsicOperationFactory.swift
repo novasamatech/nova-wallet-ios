@@ -158,7 +158,6 @@ final class ExtrinsicOperationFactory {
         return requestOperation
     }
 
-    // swiftlint:disable:next function_body_length
     private func createExtrinsicOperation(
         customClosure: @escaping ExtrinsicBuilderIndexedClosure,
         numberOfExtrinsics: Int,
@@ -171,19 +170,11 @@ final class ExtrinsicOperationFactory {
         let nonceOperation = createNonceOperation()
         let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
 
-        let genesisBlockOperation = createBlockHashOperation(
-            connection: engine,
-            for: { 0 }
-        )
+        let genesisBlockOperation = createBlockHashOperation(connection: engine, for: { 0 })
 
-        let eraWrapper = eraOperationFactory.createOperation(
-            from: engine,
-            runtimeService: runtimeRegistry
-        )
+        let eraWrapper = eraOperationFactory.createOperation(from: engine, runtimeService: runtimeRegistry)
 
-        let eraBlockOperation = createBlockHashOperation(
-            connection: engine
-        ) {
+        let eraBlockOperation = createBlockHashOperation(connection: engine) {
             try eraWrapper.targetOperation.extractNoCancellableResultData().blockNumber
         }
 
@@ -199,44 +190,23 @@ final class ExtrinsicOperationFactory {
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
 
             let extrinsics: [Data] = try (0 ..< numberOfExtrinsics).map { index in
-                var builder: ExtrinsicBuilderProtocol =
-                    ExtrinsicBuilder(
-                        specVersion: codingFactory.specVersion,
-                        transactionVersion: codingFactory.txVersion,
-                        genesisHash: genesisHash
-                    )
-                    .with(runtimeJsonContext: runtimeJsonContext)
-                    .with(era: era, blockHash: eraBlockHash)
-                    .with(nonce: nonce + UInt32(index))
+                var builder: ExtrinsicBuilderProtocol = ExtrinsicBuilder(
+                    specVersion: codingFactory.specVersion,
+                    transactionVersion: codingFactory.txVersion,
+                    genesisHash: genesisHash
+                )
+                .with(runtimeJsonContext: runtimeJsonContext)
+                .with(era: era, blockHash: eraBlockHash)
+                .with(nonce: nonce + UInt32(index))
 
                 let account = MultiAddress.accoundId(currentAccountId)
                 builder = try builder.with(address: account)
-
-                switch currentChainFormat {
-                case .ethereum:
-                    builder = try customClosure(builder, index).signing(
-                        by: { data in
-                            let signature = try signingClosure(data)
-
-                            guard let ethereumSignature = EthereumSignature(rawValue: signature) else {
-                                throw BaseOperationError.unexpectedDependentResult
-                            }
-
-                            return try ethereumSignature.toScaleCompatibleJSON(
-                                with: runtimeJsonContext.toRawContext()
-                            )
-                        },
-                        using: codingFactory.createEncoder(),
-                        metadata: codingFactory.metadata
-                    )
-                case .substrate:
-                    builder = try customClosure(builder, index).signing(
-                        by: signingClosure,
-                        of: currentCryptoType.utilsType,
-                        using: codingFactory.createEncoder(),
-                        metadata: codingFactory.metadata
-                    )
-                }
+                builder = try customClosure(builder, index).signing(
+                    with: signingClosure,
+                    chainFormat: currentChainFormat,
+                    cryptoType: currentCryptoType,
+                    codingFactory: codingFactory
+                )
 
                 return try builder.build(
                     encodingBy: codingFactory.createEncoder(),
@@ -252,10 +222,7 @@ final class ExtrinsicOperationFactory {
 
         dependencies.forEach { extrinsicsOperation.addDependency($0) }
 
-        return CompoundOperationWrapper(
-            targetOperation: extrinsicsOperation,
-            dependencies: dependencies
-        )
+        return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
     }
 }
 

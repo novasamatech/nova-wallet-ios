@@ -42,6 +42,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
         )
 
         rootView.subIdControlView.addTarget(self, action: #selector(actionSelectSubid), for: .touchUpInside)
+
+        rootView.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
 
     private func setupLocalization() {
@@ -59,6 +61,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
         rootView.listHeaderTitleLabel.text = R.string.localizable.dappsListHeaderTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        rootView.searchView.controlContentView.detailsLabel.text = "Search by name or enter URL"
     }
 
     private func applySubIdViewModel() {
@@ -74,6 +78,10 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     @objc func actionSelectSubid() {
         presenter.activateSubId()
+    }
+
+    @objc func actionSearch() {
+        presenter.activateSearch()
     }
 }
 
