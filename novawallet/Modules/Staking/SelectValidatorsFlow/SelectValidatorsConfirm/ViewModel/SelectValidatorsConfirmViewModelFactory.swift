@@ -31,30 +31,30 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
 
             return [
                 TitleIconViewModel(
-                    title: R.string.localizable.stakingHintRewardsFormat(
+                    title: R.string.localizable.stakingHintRewardsFormat_v2_2_0(
                         eraDurationString,
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconGeneralReward()
+                    icon: R.image.iconStarGray16()
                 ),
                 TitleIconViewModel(
-                    title: R.string.localizable.stakingHintUnstakeFormat(
+                    title: R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
                         unlockingDurationString,
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconUnbond()
+                    icon: R.image.iconStarGray16()
                 ),
                 TitleIconViewModel(
-                    title: R.string.localizable.stakingHintNoRewards(
+                    title: R.string.localizable.stakingHintNoRewards_V2_2_0(
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconNoReward()
+                    icon: R.image.iconStarGray16()
                 ),
                 TitleIconViewModel(
-                    title: R.string.localizable.stakingHintRedeem(
+                    title: R.string.localizable.stakingHintRedeem_v2_2_0(
                         preferredLanguages: locale.rLanguages
                     ),
-                    icon: R.image.iconRedeem()
+                    icon: R.image.iconStarGray16()
                 )
             ]
         }
