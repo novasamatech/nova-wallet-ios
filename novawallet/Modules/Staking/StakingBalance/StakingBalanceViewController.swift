@@ -62,7 +62,9 @@ final class StakingBalanceViewController: UIViewController, ViewHolder {
 extension StakingBalanceViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable.stakingBalanceTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.stakingBalanceTitle_v2_2_0(
+                preferredLanguages: selectedLocale.rLanguages
+            )
         }
     }
 }
