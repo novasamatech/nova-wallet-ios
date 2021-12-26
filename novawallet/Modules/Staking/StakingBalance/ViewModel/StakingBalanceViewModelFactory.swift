@@ -124,7 +124,7 @@ struct StakingBalanceViewModelFactory: StakingBalanceViewModelFactoryProtocol {
             title: R.string.localizable
                 .walletBalanceUnbonding_v190(preferredLanguages: locale.rLanguages),
             emptyListDescription: R.string.localizable
-                .stakingUnbondingEmptyList_v190(preferredLanguages: locale.rLanguages),
+                .stakingUnbondingEmptyList_v2_2_0(preferredLanguages: locale.rLanguages),
             unbondings: viewModels
         )
     }
