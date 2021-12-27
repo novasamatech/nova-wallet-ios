@@ -41,6 +41,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private func configure() {
         navigationItem.titleView = rootView.urlBar
 
+        rootView.webView.uiDelegate = self
+
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
             guard let newValue = change.newValue, let url = newValue else {
                 return
@@ -190,5 +192,20 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didReceive(response: PolkadotExtensionResponse) {
         rootView.webView.evaluateJavaScript(response.content)
+    }
+}
+
+extension DAppBrowserViewController: WKUIDelegate {
+    func webView(
+        _ webView: WKWebView,
+        createWebViewWith _: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction,
+        windowFeatures _: WKWindowFeatures
+    ) -> WKWebView? {
+        if navigationAction.targetFrame == nil {
+            webView.load(navigationAction.request)
+        }
+
+        return nil
     }
 }
