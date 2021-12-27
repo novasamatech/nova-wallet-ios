@@ -35,4 +35,22 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         navigationController.modalPresentationStyle = .fullScreen
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func presentAuth(
+        from view: DAppBrowserViewProtocol?,
+        request: DAppAuthRequest,
+        delegate: DAppAuthDelegate
+    ) {
+        guard let authVew = DAppAuthConfirmViewFactory.createView(for: request, delegate: delegate) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.fearless
+        )
+        authVew.controller.modalTransitioningFactory = factory
+        authVew.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(authVew.controller, animated: true, completion: nil)
+    }
 }

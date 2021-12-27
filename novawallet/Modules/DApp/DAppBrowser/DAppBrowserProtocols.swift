@@ -15,6 +15,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func process(message: Any)
     func processConfirmation(response: DAppOperationResponse)
     func process(newQuery: String)
+    func processAuth(response: DAppAuthResponse)
 }
 
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
@@ -22,6 +23,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceiveDApp(model: DAppBrowserModel)
     func didReceive(response: PolkadotExtensionResponse)
     func didReceiveConfirmation(request: DAppOperationRequest)
+    func didReceiveAuth(request: DAppAuthRequest)
 }
 
 protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
@@ -35,5 +37,11 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
         from view: DAppBrowserViewProtocol?,
         initialQuery: String?,
         delegate: DAppSearchDelegate
+    )
+
+    func presentAuth(
+        from view: DAppBrowserViewProtocol?,
+        request: DAppAuthRequest,
+        delegate: DAppAuthDelegate
     )
 }

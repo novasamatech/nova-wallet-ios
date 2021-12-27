@@ -55,6 +55,10 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceiveConfirmation(request: DAppOperationRequest) {
         wireframe.presentOperationConfirm(from: view, request: request, delegate: self)
     }
+
+    func didReceiveAuth(request: DAppAuthRequest) {
+        wireframe.presentAuth(from: view, request: request, delegate: self)
+    }
 }
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
@@ -66,5 +70,11 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
 extension DAppBrowserPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchQuery(_ query: String) {
         interactor.process(newQuery: query)
+    }
+}
+
+extension DAppBrowserPresenter: DAppAuthDelegate {
+    func didReceiveAuthResponse(_ response: DAppAuthResponse, for _: DAppAuthRequest) {
+        interactor.processAuth(response: response)
     }
 }
