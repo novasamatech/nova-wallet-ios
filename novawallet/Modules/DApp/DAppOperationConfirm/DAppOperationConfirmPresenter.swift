@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import SubstrateSdk
 
 final class DAppOperationConfirmPresenter {
     weak var view: DAppOperationConfirmViewProtocol?
@@ -80,6 +81,10 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmPresenterProtocol {
     func reject() {
         interactor.reject()
     }
+
+    func activateTxDetails() {
+        interactor.prepareTxDetails()
+    }
 }
 
 extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputProtocol {
@@ -138,6 +143,17 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         case let .failure(error):
             if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 logger?.error("Response error: \(error)")
+            }
+        }
+    }
+
+    func didReceive(txDetailsResult: Result<JSON, Error>) {
+        switch txDetailsResult {
+        case let .success(txDetails):
+            wireframe.showTxDetails(from: view, json: txDetails)
+        case let .failure(error):
+            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+                logger?.error("Tx details error: \(error)")
             }
         }
     }

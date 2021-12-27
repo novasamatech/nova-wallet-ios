@@ -13,9 +13,8 @@ enum DAppOperationConfirmInteractorError: Error {
 
 final class DAppOperationConfirmInteractor {
     struct ProcessedResult {
-        let runtimeCall: RuntimeCall<JSON>
         let account: ChainAccountResponse
-        let extrinsic: PolkadotExtensionExtrinsic
+        let extrinsic: DAppParsedExtrinsic
     }
 
     weak var presenter: DAppOperationConfirmInteractorOutputProtocol?
@@ -50,16 +49,19 @@ final class DAppOperationConfirmInteractor {
         self.operationQueue = operationQueue
     }
 
-    private func processRequestAndContinueSetup(_ request: DAppOperationRequest) {
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let decodingOperation = ClosureOperation<ProcessedResult> {
+    private func createParsedExtrinsicOperation(
+        wallet: MetaAccountModel,
+        chain: ChainModel,
+        dependingOn extrinsicOperation: BaseOperation<PolkadotExtensionExtrinsic>,
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> BaseOperation<ProcessedResult> {
+        ClosureOperation<ProcessedResult> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
-            let extrinsic = try request.operationData.map(to: PolkadotExtensionExtrinsic.self)
+            let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
 
             guard
-                let accountResponse = request.wallet.fetch(for: request.chain.accountRequest()) else {
+                let accountResponse = wallet.fetch(for: chain.accountRequest()) else {
                 throw ChainAccountFetchingError.accountNotExists
             }
 
@@ -71,61 +73,6 @@ final class DAppOperationConfirmInteractor {
                     expected: accountAddress
                 )
             }
-
-            let callData = try Data(hexString: extrinsic.method)
-
-            let runtimeContext = codingFactory.createRuntimeJsonContext()
-            let decoder = try codingFactory.createDecoder(from: callData)
-
-            let call: RuntimeCall<JSON> = try decoder.read(
-                of: KnownType.call.name,
-                with: runtimeContext.toRawContext()
-            )
-
-            return ProcessedResult(runtimeCall: call, account: accountResponse, extrinsic: extrinsic)
-        }
-
-        decodingOperation.addDependency(codingFactoryOperation)
-
-        decodingOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let call = try decodingOperation.extractNoCancellableResultData()
-                    self?.completeSetup(for: call)
-                } catch {
-                    self?.presenter?.didReceive(modelResult: .failure(error))
-                }
-            }
-        }
-
-        operationQueue.addOperations([codingFactoryOperation, decodingOperation], waitUntilFinished: false)
-    }
-
-    private func completeSetup(for result: ProcessedResult) {
-        processedResult = result
-
-        let confirmationModel = DAppOperationConfirmModel(
-            wallet: request.wallet,
-            chain: request.chain,
-            dApp: request.dApp,
-            module: result.runtimeCall.moduleName,
-            call: result.runtimeCall.callName,
-            amount: nil
-        )
-
-        presenter?.didReceive(modelResult: .success(confirmationModel))
-
-        estimateFee()
-    }
-
-    private func createBaseBuilderOperation(
-        for result: ProcessedResult,
-        dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> BaseOperation<ExtrinsicBuilderProtocol> {
-        ClosureOperation<ExtrinsicBuilderProtocol> {
-            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-
-            let extrinsic = result.extrinsic
 
             guard
                 let specVersion = BigUInt.fromHexString(extrinsic.specVersion),
@@ -147,6 +94,10 @@ final class DAppOperationConfirmInteractor {
                 throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "nonce")
             }
 
+            guard let blockNumber = BigUInt.fromHexString(extrinsic.blockNumber) else {
+                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "blockNumber")
+            }
+
             let expectedSignedExtensions = codingFactory.metadata.getSignedExtensions()
 
             guard expectedSignedExtensions == extrinsic.signedExtensions else {
@@ -161,20 +112,105 @@ final class DAppOperationConfirmInteractor {
             let eraDecoder = try ScaleDecoder(data: eraData)
             let era = try Era(scaleDecoder: eraDecoder)
 
+            let methodData = try Data(hexString: extrinsic.method)
+
+            let methodDecoder = try codingFactory.createDecoder(from: methodData)
+
+            let method: RuntimeCall<JSON> = try methodDecoder.read(
+                of: KnownType.call.name,
+                with: codingFactory.createRuntimeJsonContext().toRawContext()
+            )
+
+            let parsedExtrinsic = DAppParsedExtrinsic(
+                address: extrinsic.address,
+                blockHash: extrinsic.blockHash,
+                blockNumber: blockNumber,
+                era: era,
+                genesisHash: extrinsic.genesisHash,
+                method: method,
+                nonce: nonce,
+                specVersion: UInt32(specVersion),
+                tip: tip,
+                transactionVersion: UInt32(transactionVersion),
+                signedExtensions: expectedSignedExtensions,
+                version: extrinsic.version
+            )
+
+            return ProcessedResult(account: accountResponse, extrinsic: parsedExtrinsic)
+        }
+    }
+
+    private func processRequestAndContinueSetup(_ request: DAppOperationRequest) {
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let extrinsicMappingOperation = ClosureOperation<PolkadotExtensionExtrinsic> {
+            try request.operationData.map(to: PolkadotExtensionExtrinsic.self)
+        }
+
+        let decodingOperation = createParsedExtrinsicOperation(
+            wallet: request.wallet,
+            chain: request.chain,
+            dependingOn: extrinsicMappingOperation,
+            codingFactoryOperation: codingFactoryOperation
+        )
+
+        decodingOperation.addDependency(extrinsicMappingOperation)
+        decodingOperation.addDependency(codingFactoryOperation)
+
+        decodingOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let result = try decodingOperation.extractNoCancellableResultData()
+                    self?.completeSetup(for: result)
+                } catch {
+                    self?.presenter?.didReceive(modelResult: .failure(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations(
+            [codingFactoryOperation, extrinsicMappingOperation, decodingOperation],
+            waitUntilFinished: false
+        )
+    }
+
+    private func completeSetup(for result: ProcessedResult) {
+        processedResult = result
+
+        let confirmationModel = DAppOperationConfirmModel(
+            wallet: request.wallet,
+            chain: request.chain,
+            dApp: request.dApp,
+            module: result.extrinsic.method.moduleName,
+            call: result.extrinsic.method.callName,
+            amount: nil
+        )
+
+        presenter?.didReceive(modelResult: .success(confirmationModel))
+
+        estimateFee()
+    }
+
+    private func createBaseBuilderOperation(
+        for result: ProcessedResult
+    ) -> BaseOperation<ExtrinsicBuilderProtocol> {
+        ClosureOperation<ExtrinsicBuilderProtocol> {
+            let extrinsic = result.extrinsic
+
             let address = MultiAddress.accoundId(result.account.accountId)
 
             var builder = try ExtrinsicBuilder(
-                specVersion: UInt32(specVersion),
-                transactionVersion: UInt32(transactionVersion),
+                specVersion: extrinsic.specVersion,
+                transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
             )
             .with(address: address)
-            .with(nonce: UInt32(nonce))
-            .with(era: era, blockHash: extrinsic.blockHash)
-            .adding(call: result.runtimeCall)
+            .with(nonce: UInt32(extrinsic.nonce))
+            .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
+            .adding(call: extrinsic.method)
 
-            if tip > 0 {
-                builder = builder.with(tip: tip)
+            if extrinsic.tip > 0 {
+                builder = builder.with(tip: extrinsic.tip)
             }
 
             return builder
@@ -187,12 +223,7 @@ final class DAppOperationConfirmInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(
-            for: result,
-            dependingOn: codingFactoryOperation
-        )
-
-        builderOperation.addDependency(codingFactoryOperation)
+        let builderOperation = createBaseBuilderOperation(for: result)
 
         let payloadOperation = ClosureOperation<Data> {
             let builder = try builderOperation.extractNoCancellableResultData()
@@ -207,6 +238,7 @@ final class DAppOperationConfirmInteractor {
             .build(encodingBy: codingFactory.createEncoder(), metadata: codingFactory.metadata)
         }
 
+        payloadOperation.addDependency(codingFactoryOperation)
         payloadOperation.addDependency(builderOperation)
 
         return CompoundOperationWrapper(
@@ -221,12 +253,7 @@ final class DAppOperationConfirmInteractor {
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let builderOperation = createBaseBuilderOperation(
-            for: result,
-            dependingOn: codingFactoryOperation
-        )
-
-        builderOperation.addDependency(codingFactoryOperation)
+        let builderOperation = createBaseBuilderOperation(for: result)
 
         let signatureOperation = ClosureOperation<Data> {
             let builder = try builderOperation.extractNoCancellableResultData()
@@ -274,6 +301,7 @@ final class DAppOperationConfirmInteractor {
             return try scaleEncoder.encode()
         }
 
+        signatureOperation.addDependency(codingFactoryOperation)
         signatureOperation.addDependency(builderOperation)
 
         return CompoundOperationWrapper(
@@ -397,6 +425,38 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
         self.feeWrapper = feeWrapper
 
         operationQueue.addOperations(feeWrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func prepareTxDetails() {
+        guard let result = processedResult else {
+            presenter?.didReceive(txDetailsResult: .failure(CommonError.undefined))
+            return
+        }
+
+        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let encodingOperation = ClosureOperation<JSON> {
+            let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+
+            return try result.extrinsic.toScaleCompatibleJSON(
+                with: codingFactory.createRuntimeJsonContext().toRawContext()
+            )
+        }
+
+        encodingOperation.addDependency(codingFactoryOperation)
+
+        encodingOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let txDetails = try encodingOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceive(txDetailsResult: .success(txDetails))
+                } catch {
+                    self?.presenter?.didReceive(txDetailsResult: .failure(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations([codingFactoryOperation, encodingOperation], waitUntilFinished: false)
     }
 }
 

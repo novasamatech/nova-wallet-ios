@@ -32,7 +32,10 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        rootView.searchBar.textField.placeholder = "Search by name or enter URL"
+        let languages = selectedLocale.rLanguages
+        rootView.searchBar.textField.placeholder = R.string.localizable.dappListSearch(
+            preferredLanguages: languages
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,9 +63,11 @@ extension DAppSearchViewController: UITextFieldDelegate {
             return false
         }
 
+        textField.resignFirstResponder()
+
         presenter.activateSearch(for: input)
 
-        return true
+        return false
     }
 }
 
