@@ -62,7 +62,9 @@ final class DAppListViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.searchView.controlContentView.detailsLabel.text = "Search by name or enter URL"
+        rootView.searchView.controlContentView.detailsLabel.text = R.string.localizable.dappListSearch(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     private func applySubIdViewModel() {
