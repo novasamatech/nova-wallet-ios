@@ -1,16 +1,136 @@
 import XCTest
+@testable import novawallet
+import SoraKeystore
+import Cuckoo
 
 class DAppAuthConfirmTests: XCTestCase {
 
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testSetup() throws {
+        // given
+
+        let view = MockDAppAuthConfirmViewProtocol()
+        let wireframe = MockDAppAuthConfirmWireframeProtocol()
+        let delegate = MockDAppAuthDelegate()
+
+        let presenter = try performSetup(for: view, wireframe: wireframe, delegate: delegate)
+
+        // when
+
+        presenter.setup()
+
+        // then
+
+        verify(view, times(1)).didReceive(viewModel: any())
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    func testAllow() throws {
+        // given
+
+        let view = MockDAppAuthConfirmViewProtocol()
+        let wireframe = MockDAppAuthConfirmWireframeProtocol()
+        let delegate = MockDAppAuthDelegate()
+
+        let presenter = try performSetup(for: view, wireframe: wireframe, delegate: delegate)
+
+        var actualResponse: DAppAuthResponse?
+
+        stub(delegate) { stub in
+            stub.didReceiveAuthResponse(any(), for: any()).then { (response, _) in
+                actualResponse = response
+            }
+        }
+
+        // when
+
+        presenter.setup()
+
+        presenter.allow()
+
+        // then
+
+        verify(delegate, times(1)).didReceiveAuthResponse(any(), for: any())
+        verify(wireframe, times(1)).close(from: any())
+
+        XCTAssertEqual(actualResponse?.approved, true)
     }
 
-    func testExample() {
-        XCTFail("Did you forget to add tests?")   
+    func testDeny() throws {
+        // given
+
+        let view = MockDAppAuthConfirmViewProtocol()
+        let wireframe = MockDAppAuthConfirmWireframeProtocol()
+        let delegate = MockDAppAuthDelegate()
+
+        let presenter = try performSetup(for: view, wireframe: wireframe, delegate: delegate)
+
+        var actualResponse: DAppAuthResponse?
+
+        stub(delegate) { stub in
+            stub.didReceiveAuthResponse(any(), for: any()).then { (response, _) in
+                actualResponse = response
+            }
+        }
+
+        // when
+
+        presenter.setup()
+
+        presenter.deny()
+
+        // then
+
+        verify(delegate, times(1)).didReceiveAuthResponse(any(), for: any())
+        verify(wireframe, times(1)).close(from: any())
+
+        XCTAssertEqual(actualResponse?.approved, false)
+    }
+
+    private func performSetup(
+        for view: MockDAppAuthConfirmViewProtocol,
+        wireframe: MockDAppAuthConfirmWireframeProtocol,
+        delegate: MockDAppAuthDelegate
+    ) throws -> DAppAuthConfirmPresenter {
+        let keychain = InMemoryKeychain()
+
+        let storageFacade = UserDataStorageTestFacade()
+        let walletSettings = SelectedWalletSettings(
+            storageFacade: storageFacade,
+            operationQueue: OperationQueue()
+        )
+
+        try AccountCreationHelper.createMetaAccountFromMnemonic(
+            cryptoType: .sr25519,
+            keychain: keychain,
+            settings: walletSettings
+        )
+
+        let request = DAppAuthRequest(
+            identifier: UUID().uuidString,
+            wallet: walletSettings.value,
+            dApp: "Test"
+        )
+
+        let presenter = DAppAuthConfirmPresenter(
+            wireframe: wireframe,
+            request: request,
+            delegate: delegate,
+            viewModelFactory: DAppAuthViewModelFactory()
+        )
+
+        presenter.view = view
+
+        stub(view) { stub in
+            stub.didReceive(viewModel: any()).thenDoNothing()
+        }
+
+        stub(wireframe) { stub in
+            stub.close(from: any()).thenDoNothing()
+        }
+
+        stub(delegate) { stub in
+            stub.didReceiveAuthResponse(any(), for: any()).thenDoNothing()
+        }
+
+        return presenter
     }
 }
