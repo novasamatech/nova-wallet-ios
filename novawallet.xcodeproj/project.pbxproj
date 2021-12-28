@@ -656,6 +656,10 @@
 		846E5010277998040049B659 /* DAppAuthRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E500F277998040049B659 /* DAppAuthRequest.swift */; };
 		846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5012277999FC0049B659 /* DAppAuthViewModel.swift */; };
 		846E501527799B3E0049B659 /* DAppAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */; };
+		846E5018277AD3D50049B659 /* DAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5017277AD3D50049B659 /* DAppList.swift */; };
+		846E501B277ADB6B0049B659 /* DAppCategoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501A277ADB6B0049B659 /* DAppCategoryViewModel.swift */; };
+		846E501D277ADB8C0049B659 /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501C277ADB8C0049B659 /* DAppViewModel.swift */; };
+		846E501F277ADD280049B659 /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */; };
 		8470D6CD253E3170009E9A5D /* AccountInfoSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */; };
 		8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */; };
 		8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */; };
@@ -2472,6 +2476,10 @@
 		846E500F277998040049B659 /* DAppAuthRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthRequest.swift; sourceTree = "<group>"; };
 		846E5012277999FC0049B659 /* DAppAuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModel.swift; sourceTree = "<group>"; };
 		846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModelFactory.swift; sourceTree = "<group>"; };
+		846E5017277AD3D50049B659 /* DAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppList.swift; sourceTree = "<group>"; };
+		846E501A277ADB6B0049B659 /* DAppCategoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppCategoryViewModel.swift; sourceTree = "<group>"; };
+		846E501C277ADB8C0049B659 /* DAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
+		846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscription.swift; sourceTree = "<group>"; };
 		8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionContainer.swift; sourceTree = "<group>"; };
@@ -5478,6 +5486,29 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		846E5016277AD3AF0049B659 /* PolkadotExtensionProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */,
+				84EC2D15276B92CB009B0BE1 /* PolkadotExtensionResponse.swift */,
+				84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */,
+				84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */,
+				84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift */,
+				84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */,
+			);
+			path = PolkadotExtensionProtocol;
+			sourceTree = "<group>";
+		};
+		846E5019277ADB510049B659 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				846E501A277ADB6B0049B659 /* DAppCategoryViewModel.swift */,
+				846E501C277ADB8C0049B659 /* DAppViewModel.swift */,
+				846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		8470D6CE253E31FB009E9A5D /* StorageSubscription */ = {
 			isa = PBXGroup;
 			children = (
@@ -7233,12 +7264,8 @@
 		84EC2D1B276C67EB009B0BE1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */,
-				84EC2D15276B92CB009B0BE1 /* PolkadotExtensionResponse.swift */,
-				84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */,
-				84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */,
-				84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift */,
-				84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */,
+				846E5016277AD3AF0049B659 /* PolkadotExtensionProtocol */,
+				846E5017277AD3D50049B659 /* DAppList.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -8375,6 +8402,7 @@
 		E06E44775A3129B62D29EC6E /* DAppList */ = {
 			isa = PBXGroup;
 			children = (
+				846E5019277ADB510049B659 /* ViewModel */,
 				84DA03D9275A31A000E8B326 /* View */,
 				10F3CCA5BA57C68D5AE2B42F /* DAppListProtocols.swift */,
 				3E6E41F045986002E1E26C12 /* DAppListWireframe.swift */,
@@ -9530,6 +9558,7 @@
 				84FD3DC02541B10B00A234E3 /* TransactionDetailsViewModelFactory.swift in Sources */,
 				F4CE0FC727344F600094CD8A /* AcalaContributionConfirmProtocols.swift in Sources */,
 				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
+				846E501B277ADB6B0049B659 /* DAppCategoryViewModel.swift in Sources */,
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
@@ -9623,6 +9652,7 @@
 				844EFB5A265FCD9F0090ACB1 /* CrowdloanContributionProtocols.swift in Sources */,
 				F47BBD93263199830087DA11 /* StakingBalanceUnbondingWidgetView.swift in Sources */,
 				AE8B8837267351E300AB0AA9 /* CustomValidatorListComposer.swift in Sources */,
+				846E5018277AD3D50049B659 /* DAppList.swift in Sources */,
 				845E49832636C87B002F8C22 /* StakingManageViewModel.swift in Sources */,
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,
 				84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */,
@@ -10239,6 +10269,7 @@
 				849014DE24AA8F60008F705E /* MainTabBarInteractor.swift in Sources */,
 				849ABE7226280F3800011A2A /* ControllersReducer.swift in Sources */,
 				84F30EE425FFAC0800039D09 /* StreamableProviderOptions+Substrate.swift in Sources */,
+				846E501F277ADD280049B659 /* DAppListViewModelFactory.swift in Sources */,
 				8470D6D4253E35F0009E9A5D /* StorageUpdate.swift in Sources */,
 				84C2F27D25E297350050A4AD /* CalculatedReward.swift in Sources */,
 				849E689526AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift in Sources */,
@@ -11055,6 +11086,7 @@
 				9BADFCBF3AF5186094DB8D67 /* DAppTxDetailsInteractor.swift in Sources */,
 				B409644ED1E20062A3EA0316 /* DAppTxDetailsViewController.swift in Sources */,
 				DAD46B2B29A446C19A6ABF2D /* DAppTxDetailsViewLayout.swift in Sources */,
+				846E501D277ADB8C0049B659 /* DAppViewModel.swift in Sources */,
 				A97F32D057BFEFBCC478A09C /* DAppTxDetailsViewFactory.swift in Sources */,
 				D567BAAF620EDB9F4975C800 /* DAppAuthConfirmProtocols.swift in Sources */,
 				F0B74A766BF50518323AB25C /* DAppAuthConfirmWireframe.swift in Sources */,
@@ -11288,7 +11320,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11310,7 +11342,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11332,7 +11364,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11525,7 +11557,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11550,7 +11582,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11662,7 +11694,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11768,7 +11800,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -11790,7 +11822,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A8T3U2DXZX;
+				DEVELOPMENT_TEAM = 27GUNVKXNM;
 				INFOPLIST_FILE = novawalletIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
