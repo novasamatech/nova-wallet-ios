@@ -6,6 +6,7 @@ struct PolkadotExtensionMessage: Decodable {
         case identifier = "id"
         case messageType = "msgType"
         case request
+        case url
     }
 
     enum MessageType: String, Decodable {
@@ -21,4 +22,5 @@ struct PolkadotExtensionMessage: Decodable {
     let identifier: String
     let messageType: MessageType
     let request: JSON?
+    let url: String?
 }
