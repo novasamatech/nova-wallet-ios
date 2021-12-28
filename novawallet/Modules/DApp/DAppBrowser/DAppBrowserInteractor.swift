@@ -9,8 +9,10 @@ enum DAppBrowserInteractorError: Error {
 
 enum DAppBrowserInteractorState {
     case setup
-    case ready
+    case waitingAuth
     case pendingAuth
+    case authorized
+    case denied
     case pendingOperation
 }
 
@@ -62,7 +64,7 @@ final class DAppBrowserInteractor {
 
     private func completeSetupIfNeeded() {
         if case .setup = state, !chainStore.isEmpty {
-            state = .ready
+            state = .waitingAuth
             provideModel()
         }
     }
@@ -242,7 +244,7 @@ final class DAppBrowserInteractor {
     }
 
     private func handleExtrinsic(message: PolkadotExtensionMessage) {
-        guard case .ready = state else {
+        guard case .authorized = state else {
             return
         }
 
@@ -266,13 +268,38 @@ final class DAppBrowserInteractor {
             identifier: message.identifier,
             wallet: wallet,
             chain: chain,
-            dApp: "",
+            dApp: message.url ?? "",
             operationData: jsonRequest
         )
 
         state = .pendingOperation
 
         presenter?.didReceiveConfirmation(request: request)
+    }
+
+    private func handleAuth(message: PolkadotExtensionMessage) {
+        guard case .waitingAuth = state else {
+            return
+        }
+
+        let request = DAppAuthRequest(
+            identifier: message.identifier,
+            wallet: wallet,
+            dApp: message.url ?? ""
+        )
+
+        state = .pendingAuth
+
+        presenter.didReceiveAuth(request: request)
+    }
+
+    private func handleAccountList(message _: PolkadotExtensionMessage) throws {
+        switch state {
+        case .authorized, .pendingOperation:
+            try provideAccountListResponse()
+        case .setup, .waitingAuth, .pendingAuth, .denied:
+            try provideError(for: .accountList, errorMessage: PolkadotExtensionError.rejected.rawValue)
+        }
     }
 }
 
@@ -294,9 +321,9 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
             switch parsedMessage.messageType {
             case .authorize:
-                try provideResponse(for: .authorize, result: true)
+                handleAuth(message: parsedMessage)
             case .accountList:
-                try provideAccountListResponse()
+                try handleAccountList(message: parsedMessage)
             case .accountSubscribe:
                 break
             case .metadataList:
@@ -318,7 +345,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             return
         }
 
-        state = .ready
+        state = .authorized
 
         if let signature = response.signature {
             do {
@@ -337,8 +364,27 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         }
 
         userInput = newQuery
-        state = .ready
+        state = .waitingAuth
 
         provideModel()
+    }
+
+    func processAuth(response: DAppAuthResponse) {
+        guard state == .pendingAuth else {
+            return
+        }
+
+        state = response.approved ? .authorized : .denied
+
+        do {
+            if response.approved {
+                try provideResponse(for: .authorize, result: response.approved)
+            } else {
+                provideError(for: .authorize, errorMessage: PolkadotExtensionError.rejected.rawValue)
+            }
+
+        } catch {
+            presenter.didReceive(error: error)
+        }
     }
 }

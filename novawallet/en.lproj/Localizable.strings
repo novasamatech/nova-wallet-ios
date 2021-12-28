@@ -652,3 +652,6 @@
 "common.allow" = "Allow";
 "common.reject" = "Reject";
 "common.tx.details" = "Transaction details";
+"dapp.auth.title" = "Allow dapp to access\nyour account addresses?";
+"dapp.auth.subtitle" = "Approve this request if you trust the application";
+"common.dapp" = "DApp";
