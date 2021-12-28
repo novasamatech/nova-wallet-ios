@@ -41,8 +41,6 @@ final class DAppListViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.subIdControlView.addTarget(self, action: #selector(actionSelectSubid), for: .touchUpInside)
-
         rootView.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
     }
 
@@ -78,10 +76,6 @@ final class DAppListViewController: UIViewController, ViewHolder {
         presenter.activateAccount()
     }
 
-    @objc func actionSelectSubid() {
-        presenter.activateSubId()
-    }
-
     @objc func actionSearch() {
         presenter.activateSearch()
     }
@@ -97,6 +91,10 @@ extension DAppListViewController: DAppListViewProtocol {
         rootView.headerView.accountButton.imageWithTitleView?.iconImage = image
         rootView.headerView.accountButton.invalidateLayout()
     }
+
+    func didReceive(state _: DAppListState) {}
+
+    func didReceiveDApps(viewModels _: [DAppViewModel]) {}
 }
 
 extension DAppListViewController: Localizable {
