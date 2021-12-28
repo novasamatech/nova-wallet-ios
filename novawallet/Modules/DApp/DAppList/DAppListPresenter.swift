@@ -54,6 +54,8 @@ final class DAppListPresenter {
 
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
+        provideCategoriesState()
+
         interactor.setup()
     }
 
@@ -107,8 +109,11 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
     func didReceive(dAppsResult: Result<DAppList, Error>) {
         // ignore if we already loaded some dapps
-        guard case .success = self.dAppsResult, case .failure = dAppsResult else {
-            return
+
+        if let currentResult = self.dAppsResult {
+            guard case .success = currentResult, case .failure = dAppsResult else {
+                return
+            }
         }
 
         self.dAppsResult = dAppsResult
