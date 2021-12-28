@@ -6,19 +6,23 @@ final class DAppListPresenter {
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
+    let viewModelFactory: DAppListViewModelFactoryProtocol
     let localizationManager: LocalizationManagerProtocol
 
     private var accountId: AccountId?
+    private var dAppsResult: Result<DAppList, Error>?
 
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -34,6 +38,18 @@ final class DAppListPresenter {
             _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
         }
     }
+
+    private func provideCategoriesState() {
+        switch dAppsResult {
+        case let .success(dAppList):
+            let viewModels = viewModelFactory.createCategories(from: dAppList)
+            view?.didReceive(state: .loaded(categories: viewModels))
+        case .failure:
+            view?.didReceive(state: .error)
+        case .none:
+            view?.didReceive(state: .loading)
+        }
+    }
 }
 
 extension DAppListPresenter: DAppListPresenterProtocol {
@@ -45,15 +61,31 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         wireframe.showWalletSelection(from: view)
     }
 
-    func activateSubId() {
-        guard
-            let address = try? accountId?.toAddress(using: .substrate(42)),
-            let subIdUrl = URL(string: "https://sub.id/#/\(address)"),
-            let view = view else {
+    func filterDApps(forCategory index: Int?) {
+        guard case let .success(dAppList) = dAppsResult else {
             return
         }
 
-        wireframe.showWeb(url: subIdUrl, from: view, style: .automatic)
+        let categoryId: String?
+
+        if let categoryIndex = index, categoryIndex < dAppList.categories.count {
+            categoryId = dAppList.categories[categoryIndex].identifier
+        } else {
+            categoryId = nil
+        }
+
+        let viewModels = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
+        view?.didReceiveDApps(viewModels: viewModels)
+    }
+
+    func selectDApp(at index: Int) {
+        guard case let .success(dAppList) = dAppsResult else {
+            return
+        }
+
+        let dApp = dAppList.dApps[index]
+
+        wireframe.showBrowser(from: view, for: dApp.url.absoluteString)
     }
 
     func activateSearch() {
@@ -71,6 +103,17 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
             accountId = nil
             _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
         }
+    }
+
+    func didReceive(dAppsResult: Result<DAppList, Error>) {
+        // ignore if we already loaded some dapps
+        guard case .success = self.dAppsResult, case .failure = dAppsResult else {
+            return
+        }
+
+        self.dAppsResult = dAppsResult
+
+        provideCategoriesState()
     }
 }
 

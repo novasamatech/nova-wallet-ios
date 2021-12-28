@@ -2,13 +2,16 @@ import SubstrateSdk
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveAccount(icon: DrawableIcon)
+    func didReceive(state: DAppListState)
+    func didReceiveDApps(viewModels: [DAppViewModel])
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
     func setup()
     func activateAccount()
-    func activateSubId()
     func activateSearch()
+    func filterDApps(forCategory index: Int?)
+    func selectDApp(at index: Int)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
@@ -17,6 +20,7 @@ protocol DAppListInteractorInputProtocol: AnyObject {
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceive(accountIdResult: Result<AccountId, Error>)
+    func didReceive(dAppsResult: Result<DAppList, Error>)
 }
 
 protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {
