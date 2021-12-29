@@ -670,6 +670,8 @@
 		847119EB262EFF3800716580 /* ValidatorPayoutInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */; };
 		8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */; };
 		8472072C277B262B00F593DD /* DAppListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072B277B262B00F593DD /* DAppListTests.swift */; };
+		8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */; };
+		84720730277C335000F593DD /* DAppListFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072F277C335000F593DD /* DAppListFlowLayout.swift */; };
 		84729741260A9C13009B86D0 /* DisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84729740260A9C13009B86D0 /* DisplayAddress.swift */; };
 		8472974D260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472974C260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift */; };
 		84729758260AA519009B86D0 /* SelectValidatorsConfirmInteractorBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84729757260AA519009B86D0 /* SelectValidatorsConfirmInteractorBase.swift */; };
@@ -2491,6 +2493,8 @@
 		847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPayoutInfoFactory.swift; sourceTree = "<group>"; };
 		8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeRewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
 		8472072B277B262B00F593DD /* DAppListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListTests.swift; sourceTree = "<group>"; };
+		8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Reuse.swift"; sourceTree = "<group>"; };
+		8472072F277C335000F593DD /* DAppListFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListFlowLayout.swift; sourceTree = "<group>"; };
 		84729740260A9C13009B86D0 /* DisplayAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayAddress.swift; sourceTree = "<group>"; };
 		8472974C260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmationModel.swift; sourceTree = "<group>"; };
 		84729757260AA519009B86D0 /* SelectValidatorsConfirmInteractorBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmInteractorBase.swift; sourceTree = "<group>"; };
@@ -6072,6 +6076,7 @@
 				849ECD3826DF792800F542A3 /* SkeletonRow+View.swift */,
 				849D755A2756910A007726C3 /* RoundedView+Style.swift */,
 				84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */,
+				8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -7109,6 +7114,7 @@
 			children = (
 				84DA03DA275A31B500E8B326 /* DAppListHeaderView.swift */,
 				8402CC9D275B946100E5BF30 /* DAppContentView.swift */,
+				8472072F277C335000F593DD /* DAppListFlowLayout.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10400,6 +10406,7 @@
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
 				8494D8552524633300614D8F /* WalletTransferTokenView.swift in Sources */,
 				F4E17FCF272182E800FE36D3 /* MoonbeamAgreeRemarkRequest.swift in Sources */,
+				84720730277C335000F593DD /* DAppListFlowLayout.swift in Sources */,
 				AE2C84DF25EF98BA00986716 /* AnyValidatorInfoInteractor.swift in Sources */,
 				8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */,
 				84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */,
@@ -10994,6 +11001,7 @@
 				F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */,
 				830A27C5447348F1D202D996 /* CrowdloanContributionSetupInteractor.swift in Sources */,
 				AEA0C8C32681186500F9666F /* ChangeTargetsCustomValidatorListWireframe.swift in Sources */,
+				8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */,
 				AE4C53E5268C6F8300B03CE8 /* ValidatorListFilterSortCell.swift in Sources */,
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
