@@ -14,6 +14,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
         self.localizationManager = localizationManager
     }
 
+    private var accountIcon: UIImage?
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -26,50 +28,21 @@ final class DAppListViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupLocalization()
-        setupHandlers()
-
-        applySubIdViewModel()
+        configureCollectionView()
 
         presenter.setup()
     }
 
-    private func setupHandlers() {
-        rootView.headerView.accountButton.addTarget(
-            self,
-            action: #selector(actionSelectAccount),
-            for: .touchUpInside
-        )
+    private func configureCollectionView() {
+        rootView.collectionView.registerCellClass(DAppListHeaderView.self)
 
-        rootView.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
+        rootView.collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        rootView.collectionView.dataSource = self
     }
 
-    private func setupLocalization() {
-        rootView.headerView.titleLabel.text = R.string.localizable.tabbarDappsTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        rootView.headerView.decorationTitleLabel.text = R.string.localizable.dappDecorationTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-        rootView.headerView.decorationSubtitleLabel.text = R.string.localizable.dappsDecorationSubtitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        rootView.listHeaderTitleLabel.text = R.string.localizable.dappsListHeaderTitle(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
-        rootView.searchView.controlContentView.detailsLabel.text = R.string.localizable.dappListSearch(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-    }
-
-    private func applySubIdViewModel() {
-        rootView.subIdControlView.controlContentView.iconImageView.image = R.image.iconSubid()
-        rootView.subIdControlView.controlContentView.titleLabel.text = "Sub.ID"
-        rootView.subIdControlView.controlContentView.subtitleLabel.text =
-            "One place to see all your Substrate addresses and balances"
+    private func updateIcon(for headerView: DAppListHeaderView, icon _: UIImage?) {
+        headerView.accountButton.imageWithTitleView?.iconImage = accountIcon
+        headerView.accountButton.invalidateLayout()
     }
 
     @objc func actionSelectAccount() {
@@ -81,15 +54,47 @@ final class DAppListViewController: UIViewController, ViewHolder {
     }
 }
 
+extension DAppListViewController: UICollectionViewDataSource {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view: DAppListHeaderView = collectionView.dequeueReusableCellWithType(
+            DAppListHeaderView.self,
+            for: indexPath
+        )!
+
+        updateIcon(for: view, icon: accountIcon)
+
+        view.accountButton.addTarget(self, action: #selector(actionSelectAccount), for: .touchUpInside)
+        view.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
+
+        view.selectedLocale = selectedLocale
+
+        return view
+    }
+
+    func numberOfSections(in _: UICollectionView) -> Int {
+        1
+    }
+
+    func collectionView(_: UICollectionView, numberOfItemsInSection _: Int) -> Int {
+        1
+    }
+}
+
 extension DAppListViewController: DAppListViewProtocol {
     func didReceiveAccount(icon: DrawableIcon) {
         let iconSize = CGSize(
             width: UIConstants.navigationAccountIconSize,
             height: UIConstants.navigationAccountIconSize
         )
-        let image = icon.imageWithFillColor(.clear, size: iconSize, contentScale: UIScreen.main.scale)
-        rootView.headerView.accountButton.imageWithTitleView?.iconImage = image
-        rootView.headerView.accountButton.invalidateLayout()
+
+        accountIcon = icon.imageWithFillColor(.clear, size: iconSize, contentScale: UIScreen.main.scale)
+
+        if let headerView = rootView.findHeaderView() {
+            updateIcon(for: headerView, icon: accountIcon)
+        }
     }
 
     func didReceive(state _: DAppListState) {}
@@ -100,7 +105,7 @@ extension DAppListViewController: DAppListViewProtocol {
 extension DAppListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            setupLocalization()
+            rootView.collectionView.reloadSections([0])
         }
     }
 }
