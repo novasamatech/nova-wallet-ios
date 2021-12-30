@@ -21,7 +21,7 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol!
 
-    private(set) var userInput: String
+    private(set) var userQuery: DAppUserQuery
     let wallet: MetaAccountModel
     let operationQueue: OperationQueue
     let chainRegistry: ChainRegistryProtocol
@@ -32,13 +32,13 @@ final class DAppBrowserInteractor {
     private(set) var state: DAppBrowserInteractorState = .setup
 
     init(
-        userInput: String,
+        userQuery: DAppUserQuery,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
-        self.userInput = userInput
+        self.userQuery = userQuery
         self.wallet = wallet
         self.operationQueue = operationQueue
         self.chainRegistry = chainRegistry
@@ -102,15 +102,20 @@ final class DAppBrowserInteractor {
 
     func provideModel() {
         let maybeUrl: URL? = {
-            if NSPredicate.urlPredicate.evaluate(with: userInput), let inputUrl = URL(string: userInput) {
-                return inputUrl
-            } else {
-                let querySet = CharacterSet.urlQueryAllowed
-                guard let searchQuery = userInput.addingPercentEncoding(withAllowedCharacters: querySet) else {
-                    return nil
-                }
+            switch userQuery {
+            case let .url(url):
+                return url
+            case let .search(query):
+                if NSPredicate.urlPredicate.evaluate(with: query), let inputUrl = URL(string: query) {
+                    return inputUrl
+                } else {
+                    let querySet = CharacterSet.urlQueryAllowed
+                    guard let searchQuery = query.addingPercentEncoding(withAllowedCharacters: querySet) else {
+                        return nil
+                    }
 
-                return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
+                    return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
+                }
             }
         }()
 
@@ -298,7 +303,7 @@ final class DAppBrowserInteractor {
         case .authorized, .pendingOperation:
             try provideAccountListResponse()
         case .setup, .waitingAuth, .pendingAuth, .denied:
-            try provideError(for: .accountList, errorMessage: PolkadotExtensionError.rejected.rawValue)
+            provideError(for: .accountList, errorMessage: PolkadotExtensionError.rejected.rawValue)
         }
     }
 }
@@ -363,7 +368,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             return
         }
 
-        userInput = newQuery
+        userQuery = .search(newQuery)
         state = .waitingAuth
 
         provideModel()
