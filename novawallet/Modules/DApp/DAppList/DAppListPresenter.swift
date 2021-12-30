@@ -3,6 +3,37 @@ import SubstrateSdk
 import SoraFoundation
 
 final class DAppListPresenter {
+    enum CategoryIndex: Equatable {
+        case all
+        case custom(index: Int)
+
+        var selectedIndex: Int {
+            switch self {
+            case .all:
+                return 0
+            case let .custom(index):
+                return index + 1
+            }
+        }
+
+        var customIndex: Int? {
+            switch self {
+            case .all:
+                return nil
+            case let .custom(index):
+                return index
+            }
+        }
+
+        init(uiIndex: Int) {
+            if uiIndex == 0 {
+                self = .all
+            } else {
+                self = .custom(index: uiIndex - 1)
+            }
+        }
+    }
+
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
@@ -11,6 +42,9 @@ final class DAppListPresenter {
 
     private var accountId: AccountId?
     private var dAppsResult: Result<DAppList, Error>?
+    private var categories: [DAppCategory] = []
+    private var selectedDApps: [DAppViewModel] = []
+    private var selectedCategory: CategoryIndex = .all
 
     private lazy var iconGenerator = NovaIconGenerator()
 
@@ -39,11 +73,35 @@ final class DAppListPresenter {
         }
     }
 
-    private func provideCategoriesState() {
+    private func updateCategories() {
+        if let dAppList = try? dAppsResult?.get() {
+            let existingCategories = dAppList.dApps.reduce(into: Set<String>()) { result, dApp in
+                dApp.categories.forEach { result.insert($0) }
+            }
+
+            let maybeSelectedCategory = selectedCategory.customIndex.map { categories[$0] }
+            categories = dAppList.categories.filter { existingCategories.contains($0.identifier) }
+
+            let maybeNewCategoryIndex = categories.firstIndex { category in
+                category.identifier == maybeSelectedCategory?.identifier
+            }
+
+            selectedCategory = maybeNewCategoryIndex.map { CategoryIndex.custom(index: $0) } ?? .all
+
+            let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
+
+            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
+        } else {
+            categories = []
+            selectedDApps = []
+            selectedCategory = .all
+        }
+    }
+
+    private func updateState() {
         switch dAppsResult {
-        case let .success(dAppList):
-            let viewModels = viewModelFactory.createCategories(from: dAppList)
-            view?.didReceive(state: .loaded(categories: viewModels))
+        case .success:
+            view?.didReceive(state: .loaded)
         case .failure:
             view?.didReceive(state: .error)
         case .none:
@@ -54,7 +112,7 @@ final class DAppListPresenter {
 
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
-        provideCategoriesState()
+        updateState()
 
         interactor.setup()
     }
@@ -63,21 +121,58 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         wireframe.showWalletSelection(from: view)
     }
 
-    func filterDApps(forCategory index: Int?) {
-        guard case let .success(dAppList) = dAppsResult else {
+    func activateSearch() {
+        wireframe.showSearch(from: view, delegate: self)
+    }
+
+    func numberOfCategories() -> Int {
+        categories.count + 1
+    }
+
+    func category(at index: Int) -> String {
+        let category = CategoryIndex(uiIndex: index)
+
+        switch category {
+        case .all:
+            return "All"
+        case let .custom(index):
+            return categories[index].name
+        }
+    }
+
+    func selectedCategoryIndex() -> Int {
+        selectedCategory.selectedIndex
+    }
+
+    func selectCategory(at index: Int) {
+        guard let dAppList = try? dAppsResult?.get() else {
             return
         }
 
-        let categoryId: String?
+        let newCategory = CategoryIndex(uiIndex: index)
 
-        if let categoryIndex = index, categoryIndex < dAppList.categories.count {
-            categoryId = dAppList.categories[categoryIndex].identifier
-        } else {
-            categoryId = nil
+        guard selectedCategory != newCategory else {
+            return
         }
 
-        let viewModels = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
-        view?.didReceiveDApps(viewModels: viewModels)
+        selectedCategory = newCategory
+
+        if let categoryIndex = selectedCategory.customIndex {
+            let categoryId = categories[categoryIndex].identifier
+            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
+        } else {
+            selectedDApps = viewModelFactory.createDApps(from: nil, dAppList: dAppList)
+        }
+
+        view?.didReceive(state: .loaded)
+    }
+
+    func numberOfDApps() -> Int {
+        selectedDApps.count
+    }
+
+    func dApp(at index: Int) -> DAppViewModel {
+        selectedDApps[index]
     }
 
     func selectDApp(at index: Int) {
@@ -85,13 +180,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             return
         }
 
-        let dApp = dAppList.dApps[index]
+        let dAppViewModel = selectedDApps[index]
+        let dApp = dAppList.dApps[dAppViewModel.index]
 
         wireframe.showBrowser(from: view, for: dApp.url.absoluteString)
-    }
-
-    func activateSearch() {
-        wireframe.showSearch(from: view, delegate: self)
     }
 }
 
@@ -118,7 +210,8 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
         self.dAppsResult = dAppsResult
 
-        provideCategoriesState()
+        updateCategories()
+        updateState()
     }
 }
 

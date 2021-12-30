@@ -1,6 +1,11 @@
 import Foundation
 
 struct DAppList: Codable, Equatable {
+    enum CodingKeys: String, CodingKey {
+        case categories
+        case dApps = "dapps"
+    }
+
     let categories: [DAppCategory]
     let dApps: [DApp]
 }
