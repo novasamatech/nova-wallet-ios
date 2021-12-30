@@ -461,6 +461,7 @@
 		8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */; };
 		8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221B26B1850D007F4492 /* TitleIconViewModel.swift */; };
 		8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */; };
+		8448D5B8277DA4C200FAEEBC /* DAppListLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
 		844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */; };
 		844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */; };
@@ -2286,6 +2287,7 @@
 		8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewLayout.swift; sourceTree = "<group>"; };
 		8448221B26B1850D007F4492 /* TitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleIconViewModel.swift; sourceTree = "<group>"; };
 		8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListDecorationView.swift; sourceTree = "<group>"; };
+		8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListLoadingView.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
 		844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -7121,6 +7123,7 @@
 				8472072F277C335000F593DD /* DAppListFlowLayout.swift */,
 				84720731277C370600F593DD /* DAppCategoriesView.swift */,
 				8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */,
+				8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10068,6 +10071,7 @@
 				84031C17263EC95C008FD9D4 /* SetPayeeCall.swift in Sources */,
 				2A902075273E766400F2D584 /* NetworkFeeView+Protocol.swift in Sources */,
 				84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */,
+				8448D5B8277DA4C200FAEEBC /* DAppListLoadingView.swift in Sources */,
 				84F30EEC25FFF40C00039D09 /* Nomination.swift in Sources */,
 				84D2F1A227730F3A0040C680 /* DAppOperationConfirmViewModelFactory.swift in Sources */,
 				AE89720D25F12AF8008EC414 /* ValidatorInfoViewModelFactory.swift in Sources */,
