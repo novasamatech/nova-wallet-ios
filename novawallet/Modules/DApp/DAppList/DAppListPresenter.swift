@@ -116,6 +116,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         interactor.setup()
     }
 
+    func refresh() {
+        interactor.refresh()
+    }
+
     func activateAccount() {
         wireframe.showWalletSelection(from: view)
     }
@@ -198,7 +202,13 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         }
     }
 
-    func didReceive(dAppsResult: Result<DAppList, Error>) {
+    func didReceive(dAppsResult: Result<DAppList, Error>?) {
+        view?.didCompleteRefreshing()
+
+        guard dAppsResult != nil else {
+            return
+        }
+
         if let currentResult = self.dAppsResult {
             // ignore error if we already loaded some dapps
             guard case .success = currentResult, case .failure = dAppsResult else {
