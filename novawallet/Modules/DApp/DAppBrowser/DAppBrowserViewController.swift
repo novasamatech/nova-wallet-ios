@@ -12,6 +12,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
 
+    private var scriptMessageHandler: DAppBrowserScriptHandler?
+
     init(presenter: DAppBrowserPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -86,6 +88,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
+
+        scriptMessageHandler = DAppBrowserScriptHandler(
+            contentController: rootView.webView.configuration.userContentController,
+            delegate: self
+        )
     }
 
     private func didChangeUrl(_ newUrl: URL) {
@@ -127,51 +134,15 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     }
 }
 
-extension DAppBrowserViewController: WKScriptMessageHandler {
-    func userContentController(
-        _: WKUserContentController,
-        didReceive message: WKScriptMessage
-    ) {
-        guard viewModel?.subscriptionName == message.name else {
-            return
-        }
-
+extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
+    func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
         presenter.process(message: message.body)
     }
 }
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
-        let contentController = rootView.webView.configuration.userContentController
-
-        if let oldViewModel = self.viewModel {
-            contentController.removeAllUserScripts()
-            contentController.removeScriptMessageHandler(forName: oldViewModel.subscriptionName)
-        }
-
-        self.viewModel = viewModel
-
-        for script in viewModel.scripts {
-            let wkScript: WKUserScript
-            switch script.insertionPoint {
-            case .atDocStart:
-                wkScript = WKUserScript(
-                    source: script.content,
-                    injectionTime: .atDocumentStart,
-                    forMainFrameOnly: false
-                )
-            case .atDocEnd:
-                wkScript = WKUserScript(
-                    source: script.content,
-                    injectionTime: .atDocumentEnd,
-                    forMainFrameOnly: false
-                )
-            }
-
-            contentController.addUserScript(wkScript)
-        }
-
-        contentController.add(self, name: viewModel.subscriptionName)
+        scriptMessageHandler?.bind(viewModel: viewModel)
 
         rootView.urlLabel.text = viewModel.url.host
 
