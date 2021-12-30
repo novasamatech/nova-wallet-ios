@@ -22,7 +22,7 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showBrowser(from view: DAppListViewProtocol?, for query: String) {
+    func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery) {
         guard let browserView = DAppBrowserViewFactory.createView(for: query) else {
             return
         }

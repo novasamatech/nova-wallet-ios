@@ -20,11 +20,18 @@ final class ScrollableContainerView: UIView {
         }
     }
 
+    init(axis: NSLayoutConstraint.Axis) {
+        super.init(frame: .zero)
+
+        configureScrollView()
+        configureStackView(with: axis)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         configureScrollView()
-        configureStackView()
+        configureStackView(with: .vertical)
     }
 
     @available(*, unavailable)
@@ -47,16 +54,21 @@ final class ScrollableContainerView: UIView {
         scrollBottom = bottomConstraint
     }
 
-    private func configureStackView() {
+    private func configureStackView(with axis: NSLayoutConstraint.Axis) {
         stackView.backgroundColor = .clear
-        stackView.axis = .vertical
+        stackView.axis = axis
         stackView.alignment = .center
         stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
         scrollView.addSubview(stackView)
 
-        stackView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        switch axis {
+        case .horizontal:
+            stackView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        case .vertical:
+            stackView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        }
 
         stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
         stackView.rightAnchor.constraint(equalTo: scrollView.rightAnchor).isActive = true

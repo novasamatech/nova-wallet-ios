@@ -655,3 +655,4 @@
 "dapp.auth.title" = "Allow dapp to access\nyour account addresses?";
 "dapp.auth.subtitle" = "Approve this request if you trust the application";
 "common.dapp" = "DApp";
+"common.all" = "All";
