@@ -182,7 +182,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         let dAppViewModel = selectedDApps[index]
         let dApp = dAppList.dApps[dAppViewModel.index]
 
-        wireframe.showBrowser(from: view, for: dApp.url.absoluteString)
+        wireframe.showBrowser(from: view, for: .url(dApp.url))
     }
 }
 
@@ -215,7 +215,7 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchQuery(_ query: String) {
-        wireframe.showBrowser(from: view, for: query)
+        wireframe.showBrowser(from: view, for: .search(query))
     }
 }
 
