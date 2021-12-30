@@ -14,6 +14,7 @@ final class DAppListViewLayout: UIView {
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
+        view.refreshControl = UIRefreshControl()
 
         return view
     }()

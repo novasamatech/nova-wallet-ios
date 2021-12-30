@@ -75,6 +75,12 @@ final class DAppListViewController: UIViewController, ViewHolder {
         collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
+
+        rootView.collectionView.refreshControl?.addTarget(
+            self,
+            action: #selector(actionRefresh),
+            for: .valueChanged
+        )
     }
 
     private func updateIcon(for headerView: DAppListHeaderView, icon _: UIImage?) {
@@ -88,6 +94,10 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     @objc func actionSearch() {
         presenter.activateSearch()
+    }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
     }
 }
 
@@ -256,6 +266,10 @@ extension DAppListViewController: DAppListViewProtocol {
         self.state = state
 
         rootView.collectionView.reloadData()
+    }
+
+    func didCompleteRefreshing() {
+        rootView.collectionView.refreshControl?.endRefreshing()
     }
 }
 

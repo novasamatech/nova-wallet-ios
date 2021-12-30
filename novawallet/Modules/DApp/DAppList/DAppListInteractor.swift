@@ -30,6 +30,8 @@ final class DAppListInteractor {
         let updateClosure: ([DataProviderChange<DAppList>]) -> Void = { [weak self] changes in
             if let result = changes.reduceToLastChange() {
                 self?.presenter?.didReceive(dAppsResult: .success(result))
+            } else {
+                self?.presenter?.didReceive(dAppsResult: nil)
             }
         }
 
@@ -56,6 +58,10 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
         subscribeDApps()
 
         eventCenter.add(observer: self, dispatchIn: .main)
+    }
+
+    func refresh() {
+        dAppProvider.refresh()
     }
 }
 
