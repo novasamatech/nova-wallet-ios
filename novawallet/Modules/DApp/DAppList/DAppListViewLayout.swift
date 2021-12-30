@@ -6,10 +6,15 @@ final class DAppListViewLayout: UIView {
     let collectionView: UICollectionView = {
         let flowLayout = DAppListFlowLayout()
         flowLayout.scrollDirection = .vertical
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.minimumInteritemSpacing = 0
+        flowLayout.sectionInset = .zero
 
         let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
+        view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
+
         return view
     }()
 
