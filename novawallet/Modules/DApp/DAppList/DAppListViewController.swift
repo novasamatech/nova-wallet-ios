@@ -65,6 +65,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesView.self)
         rootView.collectionView.registerCellClass(DAppListLoadingView.self)
+        rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
 
         collectionViewLayout?.register(
@@ -181,13 +182,25 @@ extension DAppListViewController: UICollectionViewDataSource {
         return view
     }
 
+    private func setupErrorView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view = collectionView.dequeueReusableCellWithType(DAppListErrorView.self, for: indexPath)!
+        view.selectedLocale = selectedLocale
+
+        view.errorView.delegate = self
+
+        return view
+    }
+
     private func setupLoadingOrErrorView(
         using collectionView: UICollectionView,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         switch state {
         case .error:
-            return UICollectionViewCell()
+            return setupErrorView(using: collectionView, indexPath: indexPath)
         case .loading:
             return setupLoadingView(using: collectionView, indexPath: indexPath)
         case .loaded, .none:
@@ -245,6 +258,12 @@ extension DAppListViewController: UICollectionViewDataSource {
 extension DAppListViewController: DAppCategoriesViewDelegate {
     func dAppCategories(view _: DAppCategoriesView, didSelectItemAt index: Int) {
         presenter.selectCategory(at: index)
+    }
+}
+
+extension DAppListViewController: ErrorStateViewDelegate {
+    func didRetry(errorView _: ErrorStateView) {
+        presenter.refresh()
     }
 }
 
