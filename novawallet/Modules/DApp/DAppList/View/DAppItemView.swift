@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class DAppItemView: UICollectionViewCell {
     private enum Constants {
@@ -48,10 +49,28 @@ final class DAppItemView: UICollectionViewCell {
         return imageView
     }()
 
+    let selectionView: RowView<UIView> = {
+        let selectionView = RowView(contentView: UIView(), preferredHeight: DAppItemView.preferredHeight)
+        selectionView.isUserInteractionEnabled = false
+        selectionView.contentInsets = UIEdgeInsets(
+            top: 0.0,
+            left: UIConstants.horizontalInset,
+            bottom: 0.0,
+            right: UIConstants.horizontalInset
+        )
+
+        selectionView.rowContentView.backgroundColor = R.color.colorAccentSelected()
+        selectionView.borderView.borderType = []
+
+        return selectionView
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = .clear
+
+        selectedBackgroundView = selectionView
 
         setupLayout()
     }
