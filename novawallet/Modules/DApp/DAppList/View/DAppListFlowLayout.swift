@@ -2,6 +2,11 @@ import Foundation
 import UIKit
 
 final class DAppListFlowLayout: UICollectionViewFlowLayout {
+    static let backgroundDecoration = "backgroundDecoration"
+
+    private var itemsDecorationAttributes: UICollectionViewLayoutAttributes?
+    private var headerUsedFrame: CGRect?
+
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let layoutAttributesObjects = super.layoutAttributesForElements(
             in: rect
@@ -13,7 +18,17 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
                 }
             }
         }
-        return layoutAttributesObjects
+
+        updateItemsBackgroundAttributesIfNeeded()
+
+        if
+            let itemsDecorationAttributes = itemsDecorationAttributes,
+            itemsDecorationAttributes.frame.intersects(rect),
+            let copiedAttributes = itemsDecorationAttributes.copy() as? UICollectionViewLayoutAttributes {
+            return (layoutAttributesObjects ?? []) + [copiedAttributes]
+        } else {
+            return layoutAttributesObjects
+        }
     }
 
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
@@ -28,5 +43,66 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
         layoutAttributes.frame.size.width = collectionView.safeAreaLayoutGuide.layoutFrame.width -
             sectionInset.left - sectionInset.right
         return layoutAttributes
+    }
+
+    override func layoutAttributesForDecorationView(
+        ofKind elementKind: String,
+        at _: IndexPath
+    ) -> UICollectionViewLayoutAttributes? {
+        guard elementKind == Self.backgroundDecoration else {
+            return nil
+        }
+
+        updateItemsBackgroundAttributesIfNeeded()
+
+        return itemsDecorationAttributes
+    }
+
+    override func prepare() {
+        super.prepare()
+
+        itemsDecorationAttributes = nil
+        headerUsedFrame = nil
+    }
+
+    private func updateItemsBackgroundAttributesIfNeeded() {
+        guard let collectionView = collectionView else {
+            return
+        }
+
+        let numberOfItems = collectionView.numberOfItems(inSection: 1)
+
+        guard numberOfItems > 0 else {
+            return
+        }
+
+        guard
+            let headerLayoutFrame = collectionView.layoutAttributesForItem(
+                at: IndexPath(item: 0, section: 0)
+            )?.frame,
+            headerUsedFrame != headerLayoutFrame
+        else {
+            return
+        }
+
+        headerUsedFrame = headerLayoutFrame
+
+        let preferredHeight = CGFloat(numberOfItems - 1) * DAppItemView.preferredHeight +
+            DAppCategoriesView.preferredHeight
+
+        itemsDecorationAttributes = UICollectionViewLayoutAttributes(
+            forDecorationViewOfKind: Self.backgroundDecoration,
+            with: IndexPath(item: 0, section: 1)
+        )
+
+        let size = CGSize(
+            width: collectionView.frame.width - 2 * UIConstants.horizontalInset,
+            height: preferredHeight + 8.0
+        )
+
+        let origin = CGPoint(x: 16.0, y: headerLayoutFrame.maxY)
+
+        itemsDecorationAttributes?.frame = CGRect(origin: origin, size: size)
+        itemsDecorationAttributes?.zIndex = -1
     }
 }

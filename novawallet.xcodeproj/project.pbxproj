@@ -460,6 +460,7 @@
 		8447DAF427137AD700C3150F /* WalletListActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8447DAF327137AD700C3150F /* WalletListActionsViewModel.swift */; };
 		8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */; };
 		8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221B26B1850D007F4492 /* TitleIconViewModel.swift */; };
+		8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
 		844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */; };
 		844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */; };
@@ -2284,6 +2285,7 @@
 		8447DAF327137AD700C3150F /* WalletListActionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListActionsViewModel.swift; sourceTree = "<group>"; };
 		8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewLayout.swift; sourceTree = "<group>"; };
 		8448221B26B1850D007F4492 /* TitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleIconViewModel.swift; sourceTree = "<group>"; };
+		8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListDecorationView.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
 		844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		844CB56326F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -7118,6 +7120,7 @@
 				8402CC9D275B946100E5BF30 /* DAppItemView.swift */,
 				8472072F277C335000F593DD /* DAppListFlowLayout.swift */,
 				84720731277C370600F593DD /* DAppCategoriesView.swift */,
+				8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11058,6 +11061,7 @@
 				2EC610DC06643A00876BED6E /* WalletListWireframe.swift in Sources */,
 				2932BD7922FDCD64F4E9A57D /* WalletListPresenter.swift in Sources */,
 				98DADEB52480817D191188C1 /* WalletListInteractor.swift in Sources */,
+				8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* WalletListViewController.swift in Sources */,
 				75E689BC8D16786DF2674171 /* WalletListViewLayout.swift in Sources */,
 				2736BAABAE1389260A0B28D6 /* WalletListViewFactory.swift in Sources */,

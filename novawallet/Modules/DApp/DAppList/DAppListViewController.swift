@@ -45,6 +45,11 @@ final class DAppListViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(DAppCategoriesView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
 
+        rootView.collectionViewLayout?.register(
+            DAppListDecorationView.self,
+            forDecorationViewOfKind: DAppListFlowLayout.backgroundDecoration
+        )
+
         rootView.collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
