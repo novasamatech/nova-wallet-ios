@@ -3,11 +3,6 @@ import SoraFoundation
 import SubstrateSdk
 
 final class DAppListViewController: UIViewController, ViewHolder {
-    enum Section: Int {
-        case header
-        case items
-    }
-
     typealias RootViewType = DAppListViewLayout
 
     let presenter: DAppListPresenterProtocol
@@ -73,7 +68,9 @@ extension DAppListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        guard case .loaded = state, let section = Section(rawValue: indexPath.section) else {
+        guard
+            case .loaded = state,
+            let section = DAppListFlowLayout.Section(rawValue: indexPath.section) else {
             return
         }
 
@@ -124,6 +121,8 @@ extension DAppListViewController: UICollectionViewDataSource {
 
         view.bind(categories: allCategories)
 
+        view.setSelectedIndex(presenter.selectedCategoryIndex(), animated: false)
+
         return view
     }
 
@@ -143,7 +142,7 @@ extension DAppListViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let section = Section(rawValue: indexPath.section) else {
+        guard let section = DAppListFlowLayout.Section(rawValue: indexPath.section) else {
             return UICollectionViewCell()
         }
 
