@@ -2,6 +2,15 @@ import Foundation
 import UIKit
 
 final class DAppListFlowLayout: UICollectionViewFlowLayout {
+    enum Section: Int {
+        case header
+        case items
+    }
+
+    private enum Constants {
+        static let decorationBottomInset: CGFloat = 8.0
+    }
+
     static let backgroundDecoration = "backgroundDecoration"
 
     private var itemsDecorationAttributes: UICollectionViewLayoutAttributes?
@@ -78,7 +87,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         guard
             let headerLayoutFrame = collectionView.layoutAttributesForItem(
-                at: IndexPath(item: 0, section: 0)
+                at: IndexPath(item: 0, section: Section.header.rawValue)
             )?.frame,
             headerUsedFrame != headerLayoutFrame
         else {
@@ -92,15 +101,15 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         itemsDecorationAttributes = UICollectionViewLayoutAttributes(
             forDecorationViewOfKind: Self.backgroundDecoration,
-            with: IndexPath(item: 0, section: 1)
+            with: IndexPath(item: 0, section: Section.items.rawValue)
         )
 
         let size = CGSize(
             width: collectionView.frame.width - 2 * UIConstants.horizontalInset,
-            height: preferredHeight + 8.0
+            height: preferredHeight + Constants.decorationBottomInset
         )
 
-        let origin = CGPoint(x: 16.0, y: headerLayoutFrame.maxY)
+        let origin = CGPoint(x: UIConstants.horizontalInset, y: headerLayoutFrame.maxY)
 
         itemsDecorationAttributes?.frame = CGRect(origin: origin, size: size)
         itemsDecorationAttributes?.zIndex = -1
