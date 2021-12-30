@@ -26,7 +26,7 @@ class DAppListTests: XCTestCase {
         let wireframe = MockDAppListWireframeProtocol()
 
         let dAppProvider = SingleValueProviderStub(
-            item: DAppList(categories: [], dApps: [])
+            item: DAppListGenerator.createAnyDAppList()
         )
 
         let interactor = DAppListInteractor(
@@ -50,21 +50,18 @@ class DAppListTests: XCTestCase {
         let iconExpectation = XCTestExpectation()
 
         let stateExpectation = XCTestExpectation()
-        stateExpectation.expectedFulfillmentCount = 2
-
-        let dAppsListExpectation = XCTestExpectation()
 
         var actualState: DAppListState? = nil
 
         stub(view) { stub in
             stub.didReceive(state: any()).then { state in
+                guard case .loaded = state else {
+                    return
+                }
+
                 actualState = state
 
                 stateExpectation.fulfill()
-            }
-
-            stub.didReceiveDApps(viewModels: any()).then { _ in
-                dAppsListExpectation.fulfill()
             }
 
             stub.didReceiveAccount(icon: any()).then { _ in
@@ -77,14 +74,6 @@ class DAppListTests: XCTestCase {
         // then
 
         wait(for: [iconExpectation, stateExpectation], timeout: 10.0)
-
-        // when
-
-        presenter.filterDApps(forCategory: nil)
-
-        // then
-
-        wait(for: [dAppsListExpectation], timeout: 10)
 
         switch actualState {
         case .loading, .error, .none:
