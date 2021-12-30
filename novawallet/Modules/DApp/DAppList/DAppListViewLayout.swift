@@ -18,10 +18,6 @@ final class DAppListViewLayout: UIView {
         return view
     }()
 
-    var collectionViewLayout: UICollectionViewFlowLayout? {
-        collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
