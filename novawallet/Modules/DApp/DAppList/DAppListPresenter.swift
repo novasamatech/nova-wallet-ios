@@ -199,9 +199,8 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     }
 
     func didReceive(dAppsResult: Result<DAppList, Error>) {
-        // ignore error if we already loaded some dapps
-
         if let currentResult = self.dAppsResult {
+            // ignore error if we already loaded some dapps
             guard case .success = currentResult, case .failure = dAppsResult else {
                 return
             }

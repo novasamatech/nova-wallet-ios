@@ -7,6 +7,20 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     let presenter: DAppListPresenterProtocol
 
+    var collectionViewLayout: UICollectionViewFlowLayout? {
+        rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+    }
+
+    var loadingView: DAppListLoadingView? {
+        guard case .loading = state else {
+            return nil
+        }
+
+        return rootView.collectionView.cellForItem(
+            at: DAppListFlowLayout.CellType.notLoaded.indexPath
+        ) as? DAppListLoadingView
+    }
+
     init(presenter: DAppListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -35,17 +49,30 @@ final class DAppListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        loadingView?.didDisappearSkeleton()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        loadingView?.didAppearSkeleton()
+    }
+
     private func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
         rootView.collectionView.registerCellClass(DAppCategoriesView.self)
+        rootView.collectionView.registerCellClass(DAppListLoadingView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
 
-        rootView.collectionViewLayout?.register(
+        collectionViewLayout?.register(
             DAppListDecorationView.self,
             forDecorationViewOfKind: DAppListFlowLayout.backgroundDecoration
         )
 
-        rootView.collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
     }
@@ -68,19 +95,15 @@ extension DAppListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        guard
-            case .loaded = state,
-            let section = DAppListFlowLayout.Section(rawValue: indexPath.section) else {
+        guard let cellType = DAppListFlowLayout.CellType(indexPath: indexPath) else {
             return
         }
 
-        switch section {
-        case .items:
-            if indexPath.row > 0 {
-                presenter.selectDApp(at: indexPath.row - 1)
-            }
-        case .header:
+        switch cellType {
+        case .header, .notLoaded, .categories:
             break
+        case let .dapp(index):
+            presenter.selectDApp(at: index)
         }
     }
 }
@@ -138,42 +161,73 @@ extension DAppListViewController: UICollectionViewDataSource {
         return view
     }
 
+    private func setupLoadingView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view = collectionView.dequeueReusableCellWithType(DAppListLoadingView.self, for: indexPath)!
+        view.selectedLocale = selectedLocale
+
+        return view
+    }
+
+    private func setupLoadingOrErrorView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        switch state {
+        case .error:
+            return UICollectionViewCell()
+        case .loading:
+            return setupLoadingView(using: collectionView, indexPath: indexPath)
+        case .loaded, .none:
+            return UICollectionViewCell()
+        }
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        guard let section = DAppListFlowLayout.Section(rawValue: indexPath.section) else {
+        guard let cellType = DAppListFlowLayout.CellType(indexPath: indexPath) else {
             return UICollectionViewCell()
         }
 
-        switch section {
+        switch cellType {
         case .header:
             return setupHeaderView(using: collectionView, indexPath: indexPath)
-        case .items:
-            if indexPath.row == 0 {
-                return setupCategoriesView(using: collectionView, indexPath: indexPath)
-            } else {
-                return setupDAppView(using: collectionView, indexPath: indexPath)
-            }
+        case .notLoaded:
+            return setupLoadingOrErrorView(using: collectionView, indexPath: indexPath)
+        case .categories:
+            return setupCategoriesView(using: collectionView, indexPath: indexPath)
+        case .dapp:
+            return setupDAppView(using: collectionView, indexPath: indexPath)
         }
     }
 
     func numberOfSections(in _: UICollectionView) -> Int {
-        state != nil ? 2 : 1
+        switch state {
+        case .error, .loading:
+            return 1
+        case .loaded:
+            return 2
+        case .none:
+            return 0
+        }
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return 1
-        } else {
+        if section == DAppListFlowLayout.CellType.header.indexPath.section {
             switch state {
             case .error, .loading:
-                return 0
+                return 2
             case .loaded:
-                return presenter.numberOfDApps() + 1
+                return 1
             case .none:
                 return 0
             }
+        } else {
+            return presenter.numberOfDApps() + 1
         }
     }
 }
