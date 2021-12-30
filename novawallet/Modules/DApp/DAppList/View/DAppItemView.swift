@@ -11,9 +11,9 @@ final class DAppItemView: UICollectionViewCell {
                 height: iconInsets.top + iconSize.height + iconInsets.bottom
             )
         }
-
-        static let height: CGFloat = 56.0
     }
+
+    static let preferredHeight: CGFloat = 64.0
 
     let iconImageView: DAppIconView = {
         let view = DAppIconView()
@@ -64,7 +64,7 @@ final class DAppItemView: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(
         _ layoutAttributes: UICollectionViewLayoutAttributes
     ) -> UICollectionViewLayoutAttributes {
-        layoutAttributes.frame.size = CGSize(width: layoutAttributes.frame.width, height: Constants.height)
+        layoutAttributes.frame.size = CGSize(width: layoutAttributes.frame.width, height: Self.preferredHeight)
         return layoutAttributes
     }
 

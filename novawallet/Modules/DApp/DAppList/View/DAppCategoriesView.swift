@@ -9,10 +9,10 @@ final class DAppCategoriesView: UICollectionViewCell {
     private enum Constants {
         static let layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
         static let buttonHeight: CGFloat = 36
+    }
 
-        static var preferredHeight: CGFloat {
-            layoutMargins.top + layoutMargins.bottom + buttonHeight
-        }
+    static var preferredHeight: CGFloat {
+        Constants.layoutMargins.top + Constants.layoutMargins.bottom + Constants.buttonHeight
     }
 
     let containerView: ScrollableContainerView = {
@@ -22,6 +22,7 @@ final class DAppCategoriesView: UICollectionViewCell {
         view.stackView.layoutMargins = Constants.layoutMargins
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.spacing = 8.0
+        view.scrollView.showsHorizontalScrollIndicator = false
         return view
     }()
 
@@ -47,7 +48,7 @@ final class DAppCategoriesView: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(
         _ layoutAttributes: UICollectionViewLayoutAttributes
     ) -> UICollectionViewLayoutAttributes {
-        layoutAttributes.frame.size = CGSize(width: layoutAttributes.frame.width, height: Constants.preferredHeight)
+        layoutAttributes.frame.size = CGSize(width: layoutAttributes.frame.width, height: Self.preferredHeight)
         return layoutAttributes
     }
 
