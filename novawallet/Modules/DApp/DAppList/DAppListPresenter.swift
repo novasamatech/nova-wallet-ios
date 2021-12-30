@@ -38,7 +38,6 @@ final class DAppListPresenter {
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
-    let localizationManager: LocalizationManagerProtocol
 
     private var accountId: AccountId?
     private var dAppsResult: Result<DAppList, Error>?
@@ -69,7 +68,7 @@ final class DAppListPresenter {
             let icon = try iconGenerator.generateFromAccountId(accountId)
             view?.didReceiveAccount(icon: icon)
         } catch {
-            _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
     }
 
@@ -134,7 +133,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
         switch category {
         case .all:
-            return "All"
+            return R.string.localizable.commonAll(preferredLanguages: selectedLocale.rLanguages)
         case let .custom(index):
             return categories[index].name
         }
@@ -195,12 +194,12 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
             provideAccountIcon()
         case let .failure(error):
             accountId = nil
-            _ = wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale)
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
     }
 
     func didReceive(dAppsResult: Result<DAppList, Error>) {
-        // ignore if we already loaded some dapps
+        // ignore error if we already loaded some dapps
 
         if let currentResult = self.dAppsResult {
             guard case .success = currentResult, case .failure = dAppsResult else {
@@ -218,5 +217,13 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchQuery(_ query: String) {
         wireframe.showBrowser(from: view, for: query)
+    }
+}
+
+extension DAppListPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            updateState()
+        }
     }
 }
