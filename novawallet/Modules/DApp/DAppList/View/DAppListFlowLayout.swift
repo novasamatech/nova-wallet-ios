@@ -2,9 +2,46 @@ import Foundation
 import UIKit
 
 final class DAppListFlowLayout: UICollectionViewFlowLayout {
-    enum Section: Int {
+    enum CellType {
         case header
-        case items
+        case notLoaded
+        case categories
+        case dapp(index: Int)
+
+        init?(indexPath: IndexPath) {
+            if indexPath.section == 0 {
+                switch indexPath.row {
+                case 0:
+                    self = .header
+                case 1:
+                    self = .notLoaded
+                default:
+                    return nil
+                }
+            } else if indexPath.section == 1 {
+                switch indexPath.row {
+                case 0:
+                    self = .categories
+                default:
+                    self = .dapp(index: indexPath.row - 1)
+                }
+            } else {
+                return nil
+            }
+        }
+
+        var indexPath: IndexPath {
+            switch self {
+            case .header:
+                return IndexPath(item: 0, section: 0)
+            case .notLoaded:
+                return IndexPath(item: 1, section: 0)
+            case .categories:
+                return IndexPath(item: 0, section: 1)
+            case let .dapp(index):
+                return IndexPath(item: index + 1, section: 1)
+            }
+        }
     }
 
     private enum Constants {
@@ -75,11 +112,13 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
     }
 
     private func updateItemsBackgroundAttributesIfNeeded() {
-        guard let collectionView = collectionView else {
+        guard
+            let collectionView = collectionView,
+            collectionView.numberOfSections > CellType.categories.indexPath.section else {
             return
         }
 
-        let numberOfItems = collectionView.numberOfItems(inSection: 1)
+        let numberOfItems = collectionView.numberOfItems(inSection: CellType.categories.indexPath.section)
 
         guard numberOfItems > 0 else {
             return
@@ -87,7 +126,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         guard
             let headerLayoutFrame = collectionView.layoutAttributesForItem(
-                at: IndexPath(item: 0, section: Section.header.rawValue)
+                at: CellType.header.indexPath
             )?.frame,
             headerUsedFrame != headerLayoutFrame
         else {
@@ -101,7 +140,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         itemsDecorationAttributes = UICollectionViewLayoutAttributes(
             forDecorationViewOfKind: Self.backgroundDecoration,
-            with: IndexPath(item: 0, section: Section.items.rawValue)
+            with: IndexPath(item: 0, section: CellType.categories.indexPath.section)
         )
 
         let size = CGSize(
