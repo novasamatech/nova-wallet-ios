@@ -3,10 +3,12 @@ import SubstrateSdk
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveAccount(icon: DrawableIcon)
     func didReceive(state: DAppListState)
+    func didCompleteRefreshing()
 }
 
 protocol DAppListPresenterProtocol: AnyObject {
     func setup()
+    func refresh()
     func activateAccount()
     func activateSearch()
 
@@ -21,11 +23,12 @@ protocol DAppListPresenterProtocol: AnyObject {
 
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
+    func refresh()
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceive(accountIdResult: Result<AccountId, Error>)
-    func didReceive(dAppsResult: Result<DAppList, Error>)
+    func didReceive(dAppsResult: Result<DAppList, Error>?)
 }
 
 protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {

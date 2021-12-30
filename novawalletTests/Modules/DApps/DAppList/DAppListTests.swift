@@ -64,6 +64,8 @@ class DAppListTests: XCTestCase {
                 stateExpectation.fulfill()
             }
 
+            stub.didCompleteRefreshing().thenDoNothing()
+
             stub.didReceiveAccount(icon: any()).then { _ in
                 iconExpectation.fulfill()
             }
