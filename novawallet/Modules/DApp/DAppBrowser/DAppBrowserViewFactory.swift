@@ -2,12 +2,12 @@ import Foundation
 import SoraFoundation
 
 struct DAppBrowserViewFactory {
-    static func createView(for userInput: String) -> DAppBrowserViewProtocol? {
+    static func createView(for userQuery: DAppUserQuery) -> DAppBrowserViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let logger = Logger.shared
 
         let interactor = DAppBrowserInteractor(
-            userInput: userInput,
+            userQuery: userQuery,
             wallet: SelectedWalletSettings.shared.value,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,

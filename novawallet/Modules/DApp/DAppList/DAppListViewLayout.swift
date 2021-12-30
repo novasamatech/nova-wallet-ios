@@ -3,49 +3,18 @@ import UIKit
 final class DAppListViewLayout: UIView {
     let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
 
-    let headerView = DAppListHeaderView()
+    let collectionView: UICollectionView = {
+        let flowLayout = DAppListFlowLayout()
+        flowLayout.scrollDirection = .vertical
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.minimumInteritemSpacing = 0
+        flowLayout.sectionInset = .zero
 
-    let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
-        view.stackView.alignment = .fill
-        view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(
-            top: 0.0,
-            left: UIConstants.horizontalInset,
-            bottom: 0.0,
-            right: UIConstants.horizontalInset
-        )
-        return view
-    }()
-
-    let searchView: ControlView<TriangularedBlurView, IconDetailsView> = {
-        let backgroundView = TriangularedBlurView()
-        backgroundView.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
-
-        let contentView = IconDetailsView()
-        contentView.imageView.image = R.image.iconSearch()?.withRenderingMode(.alwaysTemplate)
-        contentView.tintColor = R.color.colorWhite48()
-        contentView.detailsLabel.textColor = R.color.colorWhite48()
-        contentView.detailsLabel.font = .p1Paragraph
-        contentView.detailsLabel.numberOfLines = 0
-
-        return ControlView(backgroundView: backgroundView, contentView: contentView, preferredHeight: 52.0)
-    }()
-
-    let listHeaderTitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .h3Title
-        return label
-    }()
-
-    let subIdControlView: ControlView<TriangularedBlurView, DAppContentView> = {
-        let backgroundView = TriangularedBlurView()
-        let contentView = DAppContentView()
-
-        let view = ControlView(backgroundView: backgroundView, contentView: contentView)
-        view.changesContentOpacityWhenHighlighted = true
-        view.contentInsets = UIEdgeInsets(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+        view.backgroundColor = .clear
+        view.contentInsetAdjustmentBehavior = .always
+        view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
+        view.refreshControl = UIRefreshControl()
 
         return view
     }()
@@ -61,27 +30,18 @@ final class DAppListViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func findHeaderView() -> DAppListHeaderView? {
+        collectionView.cellForItem(at: IndexPath(item: 0, section: 0)) as? DAppListHeaderView
+    }
+
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        addSubview(containerView)
-        containerView.snp.makeConstraints { make in
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalToSuperview()
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            make.top.bottom.equalToSuperview()
         }
-
-        containerView.stackView.addArrangedSubview(headerView)
-
-        containerView.stackView.setCustomSpacing(12.0, after: headerView)
-
-        containerView.stackView.addArrangedSubview(searchView)
-        containerView.stackView.setCustomSpacing(24.0, after: searchView)
-
-        containerView.stackView.addArrangedSubview(listHeaderTitleLabel)
-        containerView.stackView.setCustomSpacing(16.0, after: listHeaderTitleLabel)
-
-        containerView.stackView.addArrangedSubview(subIdControlView)
     }
 }
