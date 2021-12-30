@@ -1,7 +1,6 @@
 import Foundation
 
 protocol DAppListViewModelFactoryProtocol {
-    func createCategories(from dAppList: DAppList) -> [DAppCategoryViewModel]
     func createDApps(from category: String?, dAppList: DAppList) -> [DAppViewModel]
 }
 
@@ -28,10 +27,6 @@ final class DAppListViewModelFactory {
 }
 
 extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
-    func createCategories(from dAppList: DAppList) -> [DAppCategoryViewModel] {
-        dAppList.categories.map { DAppCategoryViewModel(name: $0.name) }
-    }
-
     func createDApps(from category: String?, dAppList: DAppList) -> [DAppViewModel] {
         let actualDApps: [(Int, DApp)] = dAppList.dApps.enumerated().compactMap { valueIndex in
             if let category = category {
