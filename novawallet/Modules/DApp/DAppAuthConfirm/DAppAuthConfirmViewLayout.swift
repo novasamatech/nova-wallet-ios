@@ -43,6 +43,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         valueView.spacing = 8.0
         valueView.detailsLabel.textColor = R.color.colorWhite()
         valueView.detailsLabel.font = .regularFootnote
+        valueView.detailsLabel.numberOfLines = 1
 
         let titleView = GenericTitleValueView(titleView: titleLabel, valueView: valueView)
         let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
@@ -60,6 +61,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         view.valueLabel.textColor = R.color.colorWhite()
         view.valueLabel.font = .regularFootnote
         view.borderView.borderType = .none
+        view.valueLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
         return view
     }()
