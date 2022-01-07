@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class DAppOperationConfirmViewLayout: UIView {
+final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
     static let titleImageSize = CGSize(width: 56, height: 56)
     static let listImageSize = CGSize(width: 24, height: 24)
 
@@ -142,11 +142,14 @@ final class DAppOperationConfirmViewLayout: UIView {
             make.height.equalTo(48.0)
         }
 
+        let bottomOffsetMultiplier = isAdaptiveHeightDecreased ? designScaleRatio.height : 1.0
+        let bottomOffset = bottomOffsetMultiplier * 14.0
+
         addSubview(rejectButton)
         rejectButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.equalTo(self.snp.centerX).offset(-8.0)
-            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(14.0)
+            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(bottomOffset)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
@@ -154,7 +157,7 @@ final class DAppOperationConfirmViewLayout: UIView {
         confirmButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.leading.equalTo(self.snp.centerX).offset(8.0)
-            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(14.0)
+            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(bottomOffset)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
@@ -172,6 +175,7 @@ extension DAppOperationConfirmViewLayout {
         valueView.spacing = 8.0
         valueView.detailsLabel.textColor = R.color.colorWhite()
         valueView.detailsLabel.font = .regularFootnote
+        valueView.detailsLabel.numberOfLines = 1
 
         let titleView = GenericTitleValueView(titleView: titleLabel, valueView: valueView)
         let rowView = RowView(contentView: titleView, preferredHeight: 48.0)
