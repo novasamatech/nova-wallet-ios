@@ -341,7 +341,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             case .accountList, .accountSubscribe:
                 try handleAccountList(message: parsedMessage)
             case .metadataList:
-                break
+                try provideResponse(for: parsedMessage.messageType, result: [String]())
             case .metadataProvide:
                 break
             case .signBytes:
