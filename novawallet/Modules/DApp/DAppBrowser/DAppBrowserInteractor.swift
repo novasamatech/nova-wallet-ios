@@ -13,7 +13,7 @@ enum DAppBrowserInteractorState {
     case pendingAuth
     case authorized
     case denied
-    case pendingOperation
+    case pendingOperation(queue: [DAppOperationRequest])
 }
 
 final class DAppBrowserInteractor {
@@ -249,37 +249,48 @@ final class DAppBrowserInteractor {
     }
 
     private func handleExtrinsic(message: PolkadotExtensionMessage) {
-        guard case .authorized = state else {
-            return
+        switch state {
+        case .setup, .waitingAuth, .pendingAuth, .denied:
+            break
+        case .authorized, .pendingOperation:
+            guard
+                let jsonRequest = message.request,
+                let extrinsic = try? jsonRequest.map(to: PolkadotExtensionExtrinsic.self) else {
+                return
+            }
+
+            guard
+                let chainId = try? Data(hexString: extrinsic.genesisHash).toHex(),
+                let chain = chainStore[chainId] else {
+                return
+            }
+
+            guard wallet.fetch(for: chain.accountRequest()) != nil else {
+                return
+            }
+
+            let request = DAppOperationRequest(
+                identifier: message.identifier,
+                wallet: wallet,
+                chain: chain,
+                dApp: message.url ?? "",
+                operationData: jsonRequest
+            )
+
+            handleOperation(request: request)
         }
+    }
 
-        guard
-            let jsonRequest = message.request,
-            let extrinsic = try? jsonRequest.map(to: PolkadotExtensionExtrinsic.self) else {
-            return
+    private func handleOperation(request: DAppOperationRequest) {
+        switch state {
+        case .setup, .waitingAuth, .pendingAuth, .denied:
+            break
+        case .authorized:
+            state = .pendingOperation(queue: [])
+            presenter?.didReceiveConfirmation(request: request)
+        case let .pendingOperation(queue):
+            state = .pendingOperation(queue: queue + [request])
         }
-
-        guard
-            let chainId = try? Data(hexString: extrinsic.genesisHash).toHex(),
-            let chain = chainStore[chainId] else {
-            return
-        }
-
-        guard wallet.fetch(for: chain.accountRequest()) != nil else {
-            return
-        }
-
-        let request = DAppOperationRequest(
-            identifier: message.identifier,
-            wallet: wallet,
-            chain: chain,
-            dApp: message.url ?? "",
-            operationData: jsonRequest
-        )
-
-        state = .pendingOperation
-
-        presenter?.didReceiveConfirmation(request: request)
     }
 
     private func handleAuth(message: PolkadotExtensionMessage) {
@@ -327,10 +338,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             switch parsedMessage.messageType {
             case .authorize:
                 handleAuth(message: parsedMessage)
-            case .accountList:
+            case .accountList, .accountSubscribe:
                 try handleAccountList(message: parsedMessage)
-            case .accountSubscribe:
-                break
             case .metadataList:
                 break
             case .metadataProvide:
@@ -346,11 +355,18 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func processConfirmation(response: DAppOperationResponse) {
-        guard state == .pendingOperation else {
+        guard case let .pendingOperation(queue) = state else {
             return
         }
 
-        state = .authorized
+        let maybeRequest = queue.first
+
+        if maybeRequest != nil {
+            let nextQueue = Array(queue.dropFirst())
+            state = .pendingOperation(queue: nextQueue)
+        } else {
+            state = .authorized
+        }
 
         if let signature = response.signature {
             do {
@@ -361,10 +377,14 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         } else {
             providerOperationError(.rejected)
         }
+
+        if let nextRequest = maybeRequest {
+            handleOperation(request: nextRequest)
+        }
     }
 
     func process(newQuery: String) {
-        guard state != .setup else {
+        if case .setup = state {
             return
         }
 
@@ -375,7 +395,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func processAuth(response: DAppAuthResponse) {
-        guard state == .pendingAuth else {
+        guard case .pendingAuth = state else {
             return
         }
 
