@@ -5,6 +5,7 @@ enum DAppBrowserInteractorError: Error {
     case scriptFileMissing
     case invalidUrl
     case unexpectedMessageType
+    case specVersionMismatch
 }
 
 enum DAppBrowserInteractorState {
@@ -28,6 +29,7 @@ final class DAppBrowserInteractor {
     let logger: LoggerProtocol?
 
     private var chainStore: [String: ChainModel] = [:]
+    private var metadataStore: [String: PolkadotExtensionMetadata] = [:]
 
     private(set) var state: DAppBrowserInteractorState = .setup
 
@@ -43,6 +45,35 @@ final class DAppBrowserInteractor {
         self.operationQueue = operationQueue
         self.chainRegistry = chainRegistry
         self.logger = logger
+    }
+
+    private func fetchAccountList() throws -> [PolkadotExtensionAccount] {
+        let substrateAccount = try createExtensionAccount(
+            for: wallet.substrateAccountId,
+            genesisHash: nil,
+            name: wallet.name,
+            chainFormat: .substrate(42),
+            rawCryptoType: wallet.substrateCryptoType
+        )
+
+        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
+            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
+                return nil
+            }
+
+            let genesisHash = try Data(hexString: chain.chainId)
+            let name = wallet.name + " (\(chain.name))"
+
+            return try createExtensionAccount(
+                for: chainAccount.accountId,
+                genesisHash: genesisHash,
+                name: name,
+                chainFormat: chain.chainFormat,
+                rawCryptoType: chainAccount.cryptoType
+            )
+        }
+
+        return [substrateAccount] + chainAccounts
     }
 
     private func subscribeChainRegistry() {
@@ -181,6 +212,25 @@ final class DAppBrowserInteractor {
         presenter.didReceive(response: response)
     }
 
+    private func provideSubscription<T: Encodable>(
+        for requestId: String,
+        result: T
+    ) throws {
+        let data = try JSONEncoder().encode(result)
+
+        guard let dataString = String(data: data, encoding: .utf8) else {
+            return
+        }
+
+        let content = String(
+            format: "window.walletExtension.onAppSubscription(\"%@\", %@)", requestId, dataString
+        )
+
+        let response = PolkadotExtensionResponse(content: content)
+
+        presenter.didReceive(response: response)
+    }
+
     private func createExtensionAccount(
         for accountId: AccountId,
         genesisHash: Data?,
@@ -206,32 +256,16 @@ final class DAppBrowserInteractor {
     }
 
     private func provideAccountListResponse() throws {
-        let substrateAccount = try createExtensionAccount(
-            for: wallet.substrateAccountId,
-            genesisHash: nil,
-            name: wallet.name,
-            chainFormat: .substrate(42),
-            rawCryptoType: wallet.substrateCryptoType
-        )
+        let accounts = try fetchAccountList()
 
-        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
-            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
-                return nil
-            }
+        try provideResponse(for: .accountList, result: accounts)
+    }
 
-            let genesisHash = try Data(hexString: chain.chainId)
-            let name = wallet.name + " (\(chain.name))"
+    private func provideAccountSubscriptionResult(for requestId: String) throws {
+        let accounts = try fetchAccountList()
 
-            return try createExtensionAccount(
-                for: chainAccount.accountId,
-                genesisHash: genesisHash,
-                name: name,
-                chainFormat: chain.chainFormat,
-                rawCryptoType: chainAccount.cryptoType
-            )
-        }
-
-        try provideResponse(for: .accountList, result: [substrateAccount] + chainAccounts)
+        try provideResponse(for: .accountSubscribe, result: true)
+        try provideSubscription(for: requestId, result: accounts)
     }
 
     private func provideOperationResponse(with signature: Data) throws {
@@ -281,6 +315,74 @@ final class DAppBrowserInteractor {
         }
     }
 
+    private func handleAuth(message: PolkadotExtensionMessage) throws {
+        switch state {
+        case .setup, .pendingAuth, .denied:
+            break
+        case .waitingAuth:
+            let request = DAppAuthRequest(
+                identifier: message.identifier,
+                wallet: wallet,
+                dApp: message.url ?? ""
+            )
+
+            state = .pendingAuth
+
+            presenter.didReceiveAuth(request: request)
+        case .authorized, .pendingOperation:
+            try provideResponse(for: .authorize, result: true)
+        }
+    }
+
+    private func handleAccountList(message: PolkadotExtensionMessage) throws {
+        switch state {
+        case .authorized, .pendingOperation:
+            try provideAccountListResponse()
+        case .setup, .waitingAuth, .pendingAuth, .denied:
+            provideError(for: message.messageType, errorMessage: PolkadotExtensionError.rejected.rawValue)
+        }
+    }
+
+    private func handleAccountSubscribe(message: PolkadotExtensionMessage) throws {
+        switch state {
+        case .authorized, .pendingOperation:
+            try provideAccountSubscriptionResult(for: message.identifier)
+        case .setup, .waitingAuth, .pendingAuth, .denied:
+            provideError(for: message.messageType, errorMessage: PolkadotExtensionError.rejected.rawValue)
+        }
+    }
+
+    private func handleMetadataList(message _: PolkadotExtensionMessage) throws {
+        switch state {
+        case .setup, .pendingAuth, .waitingAuth, .denied:
+            return
+        case .authorized, .pendingOperation:
+            let metadataList = metadataStore.map { _, value in
+                PolkadotExtensionMetadataResponse(
+                    genesisHash: value.genesisHash,
+                    specVersion: value.specVersion
+                )
+            }
+
+            try provideResponse(for: .metadataList, result: metadataList)
+        }
+    }
+
+    private func handleProvidedMetadata(message: PolkadotExtensionMessage) throws {
+        switch state {
+        case .setup, .pendingAuth, .waitingAuth, .denied:
+            return
+        case .authorized, .pendingOperation:
+            guard let request = try message.request?.map(to: PolkadotExtensionMetadata.self) else {
+                return
+            }
+
+            let genesisHash = try Data(hexString: request.genesisHash)
+
+            validate(specVersion: request.specVersion, for: genesisHash)
+        }
+    }
+
     private func handleOperation(request: DAppOperationRequest) {
         switch state {
         case .setup, .waitingAuth, .pendingAuth, .denied:
@@ -293,29 +395,49 @@ final class DAppBrowserInteractor {
         }
     }
 
-    private func handleAuth(message: PolkadotExtensionMessage) {
-        guard case .waitingAuth = state else {
+    private func validate(specVersion: UInt32, for genesisHashData: Data) {
+        let chainId = genesisHashData.toHex()
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+            provideError(
+                for: .metadataProvide,
+                errorMessage: PolkadotExtensionError.unsupported.rawValue
+            )
             return
         }
 
-        let request = DAppAuthRequest(
-            identifier: message.identifier,
-            wallet: wallet,
-            dApp: message.url ?? ""
-        )
+        let operation = runtimeProvider.fetchCoderFactoryOperation()
 
-        state = .pendingAuth
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let coderFactory = try operation.extractNoCancellableResultData()
 
-        presenter.didReceiveAuth(request: request)
-    }
+                    if coderFactory.specVersion != specVersion {
+                        self?.provideError(
+                            for: .metadataProvide,
+                            errorMessage: PolkadotExtensionError.unsupported.rawValue
+                        )
+                    } else {
+                        let genesisHash = genesisHashData.toHex(includePrefix: true)
 
-    private func handleAccountList(message _: PolkadotExtensionMessage) throws {
-        switch state {
-        case .authorized, .pendingOperation:
-            try provideAccountListResponse()
-        case .setup, .waitingAuth, .pendingAuth, .denied:
-            provideError(for: .accountList, errorMessage: PolkadotExtensionError.rejected.rawValue)
+                        let metadata = PolkadotExtensionMetadata(
+                            genesisHash: genesisHash,
+                            specVersion: specVersion
+                        )
+
+                        self?.metadataStore[genesisHash] = metadata
+
+                        try self?.provideResponse(for: .metadataProvide, result: true)
+                    }
+
+                } catch {
+                    self?.presenter.didReceive(error: error)
+                }
+            }
         }
+
+        operationQueue.addOperation(operation)
     }
 }
 
@@ -337,13 +459,15 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
             switch parsedMessage.messageType {
             case .authorize:
-                handleAuth(message: parsedMessage)
-            case .accountList, .accountSubscribe:
+                try handleAuth(message: parsedMessage)
+            case .accountList:
                 try handleAccountList(message: parsedMessage)
+            case .accountSubscribe:
+                try handleAccountSubscribe(message: parsedMessage)
             case .metadataList:
-                try provideResponse(for: parsedMessage.messageType, result: [String]())
+                try handleMetadataList(message: parsedMessage)
             case .metadataProvide:
-                break
+                try handleProvidedMetadata(message: parsedMessage)
             case .signBytes:
                 break
             case .signExtrinsic:
