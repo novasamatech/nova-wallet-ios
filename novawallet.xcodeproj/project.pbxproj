@@ -350,6 +350,15 @@
 		84293E62261BBFD7008E5EDD /* TransactionDetailsViewModelFactory+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84293E61261BBFD7008E5EDD /* TransactionDetailsViewModelFactory+Transfer.swift */; };
 		84293E67261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84293E66261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift */; };
 		84293E6C261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84293E6B261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift */; };
+		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
+		842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB20278C222100AB4B5A /* DAppBrowserBaseState.swift */; };
+		842BDB23278C229D00AB4B5A /* DAppBrowserStateDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB22278C229D00AB4B5A /* DAppBrowserStateDataSource.swift */; };
+		842BDB25278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB24278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift */; };
+		842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */; };
+		842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */; };
+		842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */; };
+		842BDB2E278C506F00AB4B5A /* DAppBrowserDeniedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */; };
+		842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */; };
 		842D1E7924D063FD00C30A7A /* TriangularedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7824D063FD00C30A7A /* TriangularedView.swift */; };
 		842D1E7B24D0667E00C30A7A /* TriangularedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7A24D0667E00C30A7A /* TriangularedButton.swift */; };
 		842D1E7D24D0686D00C30A7A /* TriangularedButton+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842D1E7C24D0686D00C30A7A /* TriangularedButton+Inspectable.swift */; };
@@ -1004,6 +1013,8 @@
 		84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1B98524F5424700FE5470 /* ChainAccountViewModelFactory.swift */; };
 		84C1B98B24F55E8200FE5470 /* AccountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1B98A24F55E8200FE5470 /* AccountTableViewCell.swift */; };
 		84C1B98D24F55EB200FE5470 /* AccountTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */; };
+		84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */; };
+		84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */; };
 		84C2802126F541DE006E8014 /* WebSocketEngine+Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */; };
 		84C2F27725E296CD0050A4AD /* RewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */; };
 		84C2F27D25E297350050A4AD /* CalculatedReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27C25E297350050A4AD /* CalculatedReward.swift */; };
@@ -2178,6 +2189,15 @@
 		84293E61261BBFD7008E5EDD /* TransactionDetailsViewModelFactory+Transfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailsViewModelFactory+Transfer.swift"; sourceTree = "<group>"; };
 		84293E66261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailsViewModelFactory+RewardsAndSlashes.swift"; sourceTree = "<group>"; };
 		84293E6B261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailsViewModelFactory+Extrinsic.swift"; sourceTree = "<group>"; };
+		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
+		842BDB20278C222100AB4B5A /* DAppBrowserBaseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserBaseState.swift; sourceTree = "<group>"; };
+		842BDB22278C229D00AB4B5A /* DAppBrowserStateDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateDataSource.swift; sourceTree = "<group>"; };
+		842BDB24278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserMetadataState.swift; sourceTree = "<group>"; };
+		842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserWaitingAuthState.swift; sourceTree = "<group>"; };
+		842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAuthorizingState.swift; sourceTree = "<group>"; };
+		842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAuthorizedState.swift; sourceTree = "<group>"; };
+		842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserDeniedState.swift; sourceTree = "<group>"; };
+		842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserSigningState.swift; sourceTree = "<group>"; };
 		842D1E7824D063FD00C30A7A /* TriangularedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangularedView.swift; sourceTree = "<group>"; };
 		842D1E7A24D0667E00C30A7A /* TriangularedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriangularedButton.swift; sourceTree = "<group>"; };
 		842D1E7C24D0686D00C30A7A /* TriangularedButton+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriangularedButton+Inspectable.swift"; sourceTree = "<group>"; };
@@ -2842,6 +2862,8 @@
 		84C1B98524F5424700FE5470 /* ChainAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAccountViewModelFactory.swift; sourceTree = "<group>"; };
 		84C1B98A24F55E8200FE5470 /* AccountTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTableViewCell.swift; sourceTree = "<group>"; };
 		84C1B98C24F55EB200FE5470 /* AccountTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AccountTableViewCell.xib; sourceTree = "<group>"; };
+		84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserAccountSubscribingState.swift; sourceTree = "<group>"; };
+		84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionPayload.swift; sourceTree = "<group>"; };
 		84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebSocketEngine+Connection.swift"; sourceTree = "<group>"; };
 		84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
 		84C2F27C25E297350050A4AD /* CalculatedReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatedReward.swift; sourceTree = "<group>"; };
@@ -4633,6 +4655,31 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		842BDB1F278C21FC00AB4B5A /* StateMachine */ = {
+			isa = PBXGroup;
+			children = (
+				842BDB26278C46EE00AB4B5A /* States */,
+				842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */,
+				842BDB22278C229D00AB4B5A /* DAppBrowserStateDataSource.swift */,
+			);
+			path = StateMachine;
+			sourceTree = "<group>";
+		};
+		842BDB26278C46EE00AB4B5A /* States */ = {
+			isa = PBXGroup;
+			children = (
+				842BDB20278C222100AB4B5A /* DAppBrowserBaseState.swift */,
+				842BDB24278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift */,
+				842BDB27278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift */,
+				842BDB29278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift */,
+				842BDB2B278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift */,
+				842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */,
+				842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */,
+				84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */,
+			);
+			path = States;
+			sourceTree = "<group>";
+		};
 		842D1E7724D063E500C30A7A /* TriangularedView */ = {
 			isa = PBXGroup;
 			children = (
@@ -5525,6 +5572,7 @@
 				84D2F1A827744C280040C680 /* PolkadotExtensionError.swift */,
 				8412AF982789AB76008A6C22 /* PolkadotExtensionMetadata.swift */,
 				8412AF9A2789ABBC008A6C22 /* PolkadotExtensionMetadataResponse.swift */,
+				84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */,
 			);
 			path = PolkadotExtensionProtocol;
 			sourceTree = "<group>";
@@ -7673,6 +7721,7 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				842BDB1F278C21FC00AB4B5A /* StateMachine */,
 				84D2F1AD2774CEBD0040C680 /* View */,
 				8496ADD8276AFF3400306B24 /* Model */,
 				D02E38ABE379CA48E63328C4 /* DAppBrowserProtocols.swift */,
@@ -9760,6 +9809,7 @@
 				84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */,
 				84DA03D12758AA6800E8B326 /* BaseAccountImportWireframe.swift in Sources */,
 				F4C201822728678400B0F3D0 /* ExtrinsicStatus.swift in Sources */,
+				842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */,
 				84B018B026E0450F00C75E28 /* ValidatorStateView.swift in Sources */,
 				AEE0C43A272A8B1F009F9AD5 /* AddChainAccount+AccountCreateWireframe.swift in Sources */,
 				84563CFF24EFE07E0055591D /* Storage+Identifiable.swift in Sources */,
@@ -9883,6 +9933,7 @@
 				842876B424AE059700D91AD8 /* SocialMessage.swift in Sources */,
 				849014BC24AA87E4008F705E /* PinSetupInteractor.swift in Sources */,
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
+				842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
 				8490147B24AA13D9008F705E /* AccountOperationFactory.swift in Sources */,
 				8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */,
@@ -10169,6 +10220,7 @@
 				8472C5B5265CF9C500E2481B /* StakingRewardDestConfirmProtocols.swift in Sources */,
 				8490151B24ABC44E008F705E /* TransactionHistoryConfigurator.swift in Sources */,
 				84CEAAEF26D6DF160021B881 /* SingleToMultiassetMigrationPolicy.swift in Sources */,
+				842BDB23278C229D00AB4B5A /* DAppBrowserStateDataSource.swift in Sources */,
 				AE3983A0272BFE5600BC8A85 /* ImportChainAccount+AccountImportInteractor.swift in Sources */,
 				F471897B26C29A78006487AD /* AnalyticsValidatorsPageSelector.swift in Sources */,
 				F40966C226B297D6008CD244 /* AnalyticsPeriod.swift in Sources */,
@@ -10405,6 +10457,7 @@
 				843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */,
 				F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */,
 				84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */,
+				84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */,
 				8447DAF22712DEA000C3150F /* SingleValueProviderFactory.swift in Sources */,
 				849013D024A9267F008F705E /* R.generated.swift in Sources */,
 				84F4387025D9BC3900AEDA56 /* EmptyStreamableSource.swift in Sources */,
@@ -10430,6 +10483,7 @@
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
 				8472974D260A9CDF009B86D0 /* SelectValidatorsConfirmationModel.swift in Sources */,
 				AE398388272AFAC300BC8A85 /* WalletManagementProtocols.swift in Sources */,
+				842BDB2A278C4F3C00AB4B5A /* DAppBrowserAuthorizingState.swift in Sources */,
 				847C966325536455002D288F /* ExportRestoreJsonViewFactory.swift in Sources */,
 				F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */,
 				84C91FAF261E7CDD002796B9 /* WalletHistoryFilterEditor.swift in Sources */,
@@ -10449,6 +10503,7 @@
 				8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */,
 				84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */,
 				843939902636F88F0087658D /* YourValidatorsModel.swift in Sources */,
+				842BDB2E278C506F00AB4B5A /* DAppBrowserDeniedState.swift in Sources */,
 				84A2A60A26B82B35000C6C6C /* ValidatorOperationFactory+Protocol.swift in Sources */,
 				8490152324ABC77E008F705E /* WalletAssetViewModel.swift in Sources */,
 				845C407D2702812E00BFA50B /* StakingAccountUpdatingService.swift in Sources */,
@@ -10464,10 +10519,12 @@
 				84C1B98B24F55E8200FE5470 /* AccountTableViewCell.swift in Sources */,
 				8490150F24AB8A3A008F705E /* WalletEmptyStateDataSource+Module.swift in Sources */,
 				84CA68E126BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift in Sources */,
+				842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */,
 				8460519425546E7100A1F0B4 /* Chain+ViewModel.swift in Sources */,
 				DAB29F2A9C864D7FCF1AF934 /* UsernameSetupProtocols.swift in Sources */,
 				841937832544455C00CFA50C /* AccountShareFactory.swift in Sources */,
 				84D1111126B932480016D962 /* AssetModel.swift in Sources */,
+				84C1FA16278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift in Sources */,
 				848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */,
 				8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */,
 				840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */,
@@ -10778,6 +10835,7 @@
 				48641BF5A7B1B9F53246F376 /* AddConnectionViewController.swift in Sources */,
 				849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */,
 				8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */,
+				842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */,
 				848919DB26FB663D004DBAD5 /* CrowdloansChainViewModel.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */,
@@ -10785,6 +10843,7 @@
 				846A2C4B2529F99400731018 /* AccountRepositoryFactory.swift in Sources */,
 				AE528E4D26852C380058935A /* ValidatorSearchViewModel.swift in Sources */,
 				F408E9B626B807200043CFE0 /* AnalyticsRewardsHeaderView.swift in Sources */,
+				842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */,
 				F4D6FF3926B3E33E002313AF /* AnalyticsContainerViewFactory.swift in Sources */,
 				843910C9253F591D00E3C217 /* ScaleDecoderOperation.swift in Sources */,
 				F4C086C726D1159E00716AEC /* SubqueryEraStakersInfoSource.swift in Sources */,
@@ -10796,6 +10855,7 @@
 				F4D96B672637E89300B23D3D /* UIView+Separator.swift in Sources */,
 				99A4B2A357ADEA45EFF515A5 /* AccountExportPasswordProtocols.swift in Sources */,
 				F466AA85273D0D4200D14021 /* SettingsSectionHeaderView.swift in Sources */,
+				842BDB25278C3ACB00AB4B5A /* DAppBrowserMetadataState.swift in Sources */,
 				64B508A1A3D820AA8DBCFAA3 /* AccountExportPasswordWireframe.swift in Sources */,
 				F462B351260C7DBE0005AB01 /* StakingRewardHistoryTableCell.swift in Sources */,
 				AE89720825F12143008EC414 /* ValidatorInfoViewModel.swift in Sources */,
