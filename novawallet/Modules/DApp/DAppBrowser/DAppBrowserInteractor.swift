@@ -193,6 +193,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 extension DAppBrowserInteractor: DAppBrowserStateMachineProtocol {
     func emit(nextState: DAppBrowserStateProtocol) {
         state = nextState
+
+        nextState.setup(with: dataSource)
     }
 
     func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol) {
