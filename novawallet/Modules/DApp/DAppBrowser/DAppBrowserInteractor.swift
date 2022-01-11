@@ -8,30 +8,17 @@ enum DAppBrowserInteractorError: Error {
     case specVersionMismatch
 }
 
-enum DAppBrowserInteractorState {
-    case setup
-    case waitingAuth
-    case pendingAuth
-    case authorized
-    case denied
-    case pendingOperation(queue: [DAppOperationRequest])
-}
-
 final class DAppBrowserInteractor {
     static let subscriptionName = "_nova_"
 
     weak var presenter: DAppBrowserInteractorOutputProtocol!
 
     private(set) var userQuery: DAppUserQuery
-    let wallet: MetaAccountModel
-    let operationQueue: OperationQueue
-    let chainRegistry: ChainRegistryProtocol
+    let dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
 
-    private var chainStore: [String: ChainModel] = [:]
-    private var metadataStore: [String: PolkadotExtensionMetadata] = [:]
-
-    private(set) var state: DAppBrowserInteractorState = .setup
+    private(set) var messageQueue: [PolkadotExtensionMessage] = []
+    private(set) var state: DAppBrowserStateProtocol?
 
     init(
         userQuery: DAppUserQuery,
@@ -41,51 +28,24 @@ final class DAppBrowserInteractor {
         logger: LoggerProtocol? = nil
     ) {
         self.userQuery = userQuery
-        self.wallet = wallet
-        self.operationQueue = operationQueue
-        self.chainRegistry = chainRegistry
+        dataSource = DAppBrowserStateDataSource(
+            wallet: wallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
+        )
         self.logger = logger
     }
 
-    private func fetchAccountList() throws -> [PolkadotExtensionAccount] {
-        let substrateAccount = try createExtensionAccount(
-            for: wallet.substrateAccountId,
-            genesisHash: nil,
-            name: wallet.name,
-            chainFormat: .substrate(42),
-            rawCryptoType: wallet.substrateCryptoType
-        )
-
-        let chainAccounts: [PolkadotExtensionAccount] = try wallet.chainAccounts.compactMap { chainAccount in
-            guard let chain = chainStore[chainAccount.chainId], !chain.isEthereumBased else {
-                return nil
-            }
-
-            let genesisHash = try Data(hexString: chain.chainId)
-            let name = wallet.name + " (\(chain.name))"
-
-            return try createExtensionAccount(
-                for: chainAccount.accountId,
-                genesisHash: genesisHash,
-                name: name,
-                chainFormat: chain.chainFormat,
-                rawCryptoType: chainAccount.cryptoType
-            )
-        }
-
-        return [substrateAccount] + chainAccounts
-    }
-
     private func subscribeChainRegistry() {
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+        dataSource.chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
             for change in changes {
                 switch change {
                 case let .insert(newItem):
-                    self?.chainStore[newItem.chainId] = newItem
+                    self?.dataSource.set(chain: newItem, for: newItem.identifier)
                 case let .update(newItem):
-                    self?.chainStore[newItem.chainId] = newItem
+                    self?.dataSource.set(chain: newItem, for: newItem.identifier)
                 case let .delete(deletedIdentifier):
-                    self?.chainStore[deletedIdentifier] = nil
+                    self?.dataSource.set(chain: nil, for: deletedIdentifier)
                 }
             }
 
@@ -94,8 +54,8 @@ final class DAppBrowserInteractor {
     }
 
     private func completeSetupIfNeeded() {
-        if case .setup = state, !chainStore.isEmpty {
-            state = .waitingAuth
+        if state == nil, !dataSource.chainStore.isEmpty {
+            state = DAppBrowserWaitingAuthState(stateMachine: self)
             provideModel()
         }
     }
@@ -176,268 +136,17 @@ final class DAppBrowserInteractor {
             }
         }
 
-        operationQueue.addOperation(bridgeOperation)
+        dataSource.operationQueue.addOperation(bridgeOperation)
     }
 
-    private func provideResponse<T: Encodable>(
-        for messageType: PolkadotExtensionMessage.MessageType,
-        result: T
-    ) throws {
-        let data = try JSONEncoder().encode(result)
-
-        guard let dataString = String(data: data, encoding: .utf8) else {
+    private func processMessageIfNeeded() {
+        guard let state = state, state.canHandleMessage(), let message = messageQueue.first else {
             return
         }
 
-        let content = String(
-            format: "window.walletExtension.onAppResponse(\"%@\", %@, null)", messageType.rawValue, dataString
-        )
+        messageQueue.removeFirst()
 
-        let response = PolkadotExtensionResponse(content: content)
-
-        presenter.didReceive(response: response)
-    }
-
-    private func provideError(
-        for messageType: PolkadotExtensionMessage.MessageType,
-        errorMessage: String
-    ) {
-        let content = String(
-            format: "window.walletExtension.onAppResponse(\"%@\", null, new Error(\"%@\"))",
-            messageType.rawValue, errorMessage
-        )
-
-        let response = PolkadotExtensionResponse(content: content)
-
-        presenter.didReceive(response: response)
-    }
-
-    private func provideSubscription<T: Encodable>(
-        for requestId: String,
-        result: T
-    ) throws {
-        let data = try JSONEncoder().encode(result)
-
-        guard let dataString = String(data: data, encoding: .utf8) else {
-            return
-        }
-
-        let content = String(
-            format: "window.walletExtension.onAppSubscription(\"%@\", %@)", requestId, dataString
-        )
-
-        let response = PolkadotExtensionResponse(content: content)
-
-        presenter.didReceive(response: response)
-    }
-
-    private func createExtensionAccount(
-        for accountId: AccountId,
-        genesisHash: Data?,
-        name: String,
-        chainFormat: ChainFormat,
-        rawCryptoType: UInt8
-    ) throws -> PolkadotExtensionAccount {
-        let address = try accountId.toAddress(using: chainFormat)
-
-        let keypairType: PolkadotExtensionKeypairType?
-        if let substrateCryptoType = MultiassetCryptoType(rawValue: rawCryptoType) {
-            keypairType = PolkadotExtensionKeypairType(cryptoType: substrateCryptoType)
-        } else {
-            keypairType = nil
-        }
-
-        return PolkadotExtensionAccount(
-            address: address,
-            genesisHash: genesisHash?.toHex(includePrefix: true),
-            name: name,
-            type: keypairType
-        )
-    }
-
-    private func provideAccountListResponse() throws {
-        let accounts = try fetchAccountList()
-
-        try provideResponse(for: .accountList, result: accounts)
-    }
-
-    private func provideAccountSubscriptionResult(for requestId: String) throws {
-        let accounts = try fetchAccountList()
-
-        try provideResponse(for: .accountSubscribe, result: true)
-        try provideSubscription(for: requestId, result: accounts)
-    }
-
-    private func provideOperationResponse(with signature: Data) throws {
-        let identifier = (0 ... UInt32.max).randomElement() ?? 0
-        let result = PolkadotExtensionSignerResult(
-            identifier: UInt(identifier),
-            signature: signature.toHex(includePrefix: true)
-        )
-
-        try provideResponse(for: .signExtrinsic, result: result)
-    }
-
-    private func providerOperationError(_ error: PolkadotExtensionError) {
-        provideError(for: .signExtrinsic, errorMessage: error.rawValue)
-    }
-
-    private func handleExtrinsic(message: PolkadotExtensionMessage) {
-        switch state {
-        case .setup, .waitingAuth, .pendingAuth, .denied:
-            break
-        case .authorized, .pendingOperation:
-            guard
-                let jsonRequest = message.request,
-                let extrinsic = try? jsonRequest.map(to: PolkadotExtensionExtrinsic.self) else {
-                return
-            }
-
-            guard
-                let chainId = try? Data(hexString: extrinsic.genesisHash).toHex(),
-                let chain = chainStore[chainId] else {
-                return
-            }
-
-            guard wallet.fetch(for: chain.accountRequest()) != nil else {
-                return
-            }
-
-            let request = DAppOperationRequest(
-                identifier: message.identifier,
-                wallet: wallet,
-                chain: chain,
-                dApp: message.url ?? "",
-                operationData: jsonRequest
-            )
-
-            handleOperation(request: request)
-        }
-    }
-
-    private func handleAuth(message: PolkadotExtensionMessage) throws {
-        switch state {
-        case .setup, .pendingAuth, .denied:
-            break
-        case .waitingAuth:
-            let request = DAppAuthRequest(
-                identifier: message.identifier,
-                wallet: wallet,
-                dApp: message.url ?? ""
-            )
-
-            state = .pendingAuth
-
-            presenter.didReceiveAuth(request: request)
-        case .authorized, .pendingOperation:
-            try provideResponse(for: .authorize, result: true)
-        }
-    }
-
-    private func handleAccountList(message: PolkadotExtensionMessage) throws {
-        switch state {
-        case .authorized, .pendingOperation:
-            try provideAccountListResponse()
-        case .setup, .waitingAuth, .pendingAuth, .denied:
-            provideError(for: message.messageType, errorMessage: PolkadotExtensionError.rejected.rawValue)
-        }
-    }
-
-    private func handleAccountSubscribe(message: PolkadotExtensionMessage) throws {
-        switch state {
-        case .authorized, .pendingOperation:
-            try provideAccountSubscriptionResult(for: message.identifier)
-        case .setup, .waitingAuth, .pendingAuth, .denied:
-            provideError(for: message.messageType, errorMessage: PolkadotExtensionError.rejected.rawValue)
-        }
-    }
-
-    private func handleMetadataList(message _: PolkadotExtensionMessage) throws {
-        switch state {
-        case .setup, .pendingAuth, .waitingAuth, .denied:
-            return
-        case .authorized, .pendingOperation:
-            let metadataList = metadataStore.map { _, value in
-                PolkadotExtensionMetadataResponse(
-                    genesisHash: value.genesisHash,
-                    specVersion: value.specVersion
-                )
-            }
-
-            try provideResponse(for: .metadataList, result: metadataList)
-        }
-    }
-
-    private func handleProvidedMetadata(message: PolkadotExtensionMessage) throws {
-        switch state {
-        case .setup, .pendingAuth, .waitingAuth, .denied:
-            return
-        case .authorized, .pendingOperation:
-            guard let request = try message.request?.map(to: PolkadotExtensionMetadata.self) else {
-                return
-            }
-
-            let genesisHash = try Data(hexString: request.genesisHash)
-
-            validate(specVersion: request.specVersion, for: genesisHash)
-        }
-    }
-
-    private func handleOperation(request: DAppOperationRequest) {
-        switch state {
-        case .setup, .waitingAuth, .pendingAuth, .denied:
-            break
-        case .authorized:
-            state = .pendingOperation(queue: [])
-            presenter?.didReceiveConfirmation(request: request)
-        case let .pendingOperation(queue):
-            state = .pendingOperation(queue: queue + [request])
-        }
-    }
-
-    private func validate(specVersion: UInt32, for genesisHashData: Data) {
-        let chainId = genesisHashData.toHex()
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            provideError(
-                for: .metadataProvide,
-                errorMessage: PolkadotExtensionError.unsupported.rawValue
-            )
-            return
-        }
-
-        let operation = runtimeProvider.fetchCoderFactoryOperation()
-
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let coderFactory = try operation.extractNoCancellableResultData()
-
-                    if coderFactory.specVersion != specVersion {
-                        self?.provideError(
-                            for: .metadataProvide,
-                            errorMessage: PolkadotExtensionError.unsupported.rawValue
-                        )
-                    } else {
-                        let genesisHash = genesisHashData.toHex(includePrefix: true)
-
-                        let metadata = PolkadotExtensionMetadata(
-                            genesisHash: genesisHash,
-                            specVersion: specVersion
-                        )
-
-                        self?.metadataStore[genesisHash] = metadata
-
-                        try self?.provideResponse(for: .metadataProvide, result: true)
-                    }
-
-                } catch {
-                    self?.presenter.didReceive(error: error)
-                }
-            }
-        }
-
-        operationQueue.addOperation(operation)
+        state.handle(message: message, dataSource: dataSource)
     }
 }
 
@@ -456,84 +165,69 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
             logger?.info("Did receive message: \(dict)")
 
             let parsedMessage = try dict.map(to: PolkadotExtensionMessage.self)
+            messageQueue.append(parsedMessage)
 
-            switch parsedMessage.messageType {
-            case .authorize:
-                try handleAuth(message: parsedMessage)
-            case .accountList:
-                try handleAccountList(message: parsedMessage)
-            case .accountSubscribe:
-                try handleAccountSubscribe(message: parsedMessage)
-            case .metadataList:
-                try handleMetadataList(message: parsedMessage)
-            case .metadataProvide:
-                try handleProvidedMetadata(message: parsedMessage)
-            case .signBytes:
-                break
-            case .signExtrinsic:
-                handleExtrinsic(message: parsedMessage)
-            }
+            processMessageIfNeeded()
         } catch {
             presenter.didReceive(error: error)
         }
     }
 
     func processConfirmation(response: DAppOperationResponse) {
-        guard case let .pendingOperation(queue) = state else {
-            return
-        }
-
-        let maybeRequest = queue.first
-
-        if maybeRequest != nil {
-            let nextQueue = Array(queue.dropFirst())
-            state = .pendingOperation(queue: nextQueue)
-        } else {
-            state = .authorized
-        }
-
-        if let signature = response.signature {
-            do {
-                try provideOperationResponse(with: signature)
-            } catch {
-                presenter.didReceive(error: error)
-            }
-        } else {
-            providerOperationError(.rejected)
-        }
-
-        if let nextRequest = maybeRequest {
-            handleOperation(request: nextRequest)
-        }
+        state?.handleOperation(response: response, dataSource: dataSource)
     }
 
     func process(newQuery: String) {
-        if case .setup = state {
-            return
-        }
-
         userQuery = .search(newQuery)
-        state = .waitingAuth
 
-        provideModel()
+        state?.stateMachine = nil
+        state = nil
+        completeSetupIfNeeded()
     }
 
     func processAuth(response: DAppAuthResponse) {
-        guard case .pendingAuth = state else {
-            return
-        }
+        state?.handleAuth(response: response, dataSource: dataSource)
+    }
+}
 
-        state = response.approved ? .authorized : .denied
+extension DAppBrowserInteractor: DAppBrowserStateMachineProtocol {
+    func emit(nextState: DAppBrowserStateProtocol) {
+        state = nextState
+    }
 
-        do {
-            if response.approved {
-                try provideResponse(for: .authorize, result: response.approved)
-            } else {
-                provideError(for: .authorize, errorMessage: PolkadotExtensionError.rejected.rawValue)
-            }
+    func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol) {
+        state = nextState
 
-        } catch {
-            presenter.didReceive(error: error)
-        }
+        presenter.didReceive(response: response)
+
+        nextState.setup(with: dataSource)
+    }
+
+    func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol) {
+        state = nextState
+
+        presenter.didReceiveAuth(request: authRequest)
+
+        nextState.setup(with: dataSource)
+    }
+
+    func emit(signingRequest: DAppOperationRequest, nextState: DAppBrowserStateProtocol) {
+        state = nextState
+
+        presenter.didReceiveConfirmation(request: signingRequest)
+
+        nextState.setup(with: dataSource)
+    }
+
+    func emit(error: Error, nextState: DAppBrowserStateProtocol) {
+        state = nextState
+
+        presenter.didReceive(error: error)
+
+        nextState.setup(with: dataSource)
+    }
+
+    func popMessage() {
+        processMessageIfNeeded()
     }
 }
