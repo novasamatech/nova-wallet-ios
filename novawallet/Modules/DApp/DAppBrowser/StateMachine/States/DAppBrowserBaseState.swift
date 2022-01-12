@@ -12,10 +12,10 @@ class DAppBrowserBaseState {
         result: T,
         nextState: DAppBrowserStateProtocol
     ) throws {
-        let data = try JSONEncoder().encode(result)
-
-        guard let dataString = String(data: data, encoding: .utf8) else {
-            return
+        guard
+            let data = try? JSONEncoder().encode(result),
+            let dataString = String(data: data, encoding: .utf8) else {
+            throw DAppBrowserStateError.unexpected(reason: "invalid response result")
         }
 
         let content = String(
@@ -47,10 +47,10 @@ class DAppBrowserBaseState {
         result: T,
         nextState: DAppBrowserStateProtocol
     ) throws {
-        let data = try JSONEncoder().encode(result)
-
-        guard let dataString = String(data: data, encoding: .utf8) else {
-            return
+        guard
+            let data = try? JSONEncoder().encode(result),
+            let dataString = String(data: data, encoding: .utf8) else {
+            throw DAppBrowserStateError.unexpected(reason: "invalid subscription result")
         }
 
         let content = String(

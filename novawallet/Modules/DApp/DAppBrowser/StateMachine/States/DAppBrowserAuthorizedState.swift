@@ -3,7 +3,9 @@ import IrohaCrypto
 
 final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
     private func provideAccountListResponse(from dataSource: DAppBrowserStateDataSource) throws {
-        let accounts = try dataSource.fetchAccountList()
+        guard let accounts = try? dataSource.fetchAccountList() else {
+            throw DAppBrowserStateError.unexpected(reason: "can't fetch account list")
+        }
 
         try provideResponse(for: .accountList, result: accounts, nextState: self)
     }
@@ -24,8 +26,8 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         try provideResponse(for: .metadataList, result: metadataList, nextState: self)
     }
 
-    private func handleMetadata(from message: PolkadotExtensionMessage) throws {
-        if let metadata = try message.request?.map(to: PolkadotExtensionMetadata.self) {
+    private func handleMetadata(from message: PolkadotExtensionMessage) {
+        if let metadata = try? message.request?.map(to: PolkadotExtensionMetadata.self) {
             let nextState = DAppBrowserMetadataState(
                 stateMachine: stateMachine,
                 previousState: self,
@@ -34,27 +36,34 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
 
             stateMachine?.emit(nextState: nextState)
         } else {
-            stateMachine?.emit(error: DAppBrowserInteractorError.unexpectedMessageType, nextState: self)
+            let error = DAppBrowserStateError.unexpected(reason: "metadata message")
+            stateMachine?.emit(error: error, nextState: self)
         }
     }
 
     private func handleExtrinsicSigning(
         from message: PolkadotExtensionMessage,
         dataSource: DAppBrowserStateDataSource
-    ) throws {
+    ) {
         guard
             let jsonRequest = message.request,
             let extrinsic = try? jsonRequest.map(to: PolkadotExtensionExtrinsic.self) else {
+            let error = DAppBrowserStateError.unexpected(reason: "extrinsic message")
+            stateMachine?.emit(error: error, nextState: self)
             return
         }
 
         guard
             let chainId = try? Data(hexString: extrinsic.genesisHash).toHex(),
             let chain = dataSource.chainStore[chainId] else {
+            let error = DAppBrowserStateError.unexpected(reason: "extrinsic chain")
+            stateMachine?.emit(error: error, nextState: self)
             return
         }
 
         guard dataSource.wallet.fetch(for: chain.accountRequest()) != nil else {
+            let error = DAppBrowserStateError.unexpected(reason: "no account for extrinsic chain")
+            stateMachine?.emit(error: error, nextState: self)
             return
         }
 
@@ -73,13 +82,20 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
     private func handleRawPayloadSigning(
         from message: PolkadotExtensionMessage,
         dataSource: DAppBrowserStateDataSource
-    ) throws {
-        guard let payload = try message.request?.map(to: PolkadotExtensionPayload.self) else {
+    ) {
+        guard let payload = try? message.request?.map(to: PolkadotExtensionPayload.self) else {
+            let error = DAppBrowserStateError.unexpected(reason: "raw payload message")
+            stateMachine?.emit(error: error, nextState: self)
             return
         }
 
-        let accountId = try payload.address.toAccountId()
-        let addressPrefix = try SS58AddressFactory().type(fromAddress: payload.address).uint16Value
+        guard
+            let accountId = try? payload.address.toAccountId(),
+            let addressPrefix = try? SS58AddressFactory().type(fromAddress: payload.address).uint16Value else {
+            let error = DAppBrowserStateError.unexpected(reason: "address format")
+            stateMachine?.emit(error: error, nextState: self)
+            return
+        }
 
         let chains = dataSource.chainStore.values.filter { $0.addressPrefix == addressPrefix }
         let maybeChain = chains.first { chain in
@@ -87,6 +103,8 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         }
 
         guard let chain = maybeChain else {
+            let error = DAppBrowserStateError.unexpected(reason: "raw payload chain")
+            stateMachine?.emit(error: error, nextState: self)
             return
         }
 
@@ -122,18 +140,36 @@ extension DAppBrowserAuthorizedState: DAppBrowserStateProtocol {
             case .metadataList:
                 try provideMetadataList(from: dataSource)
             case .metadataProvide:
-                try handleMetadata(from: message)
+                handleMetadata(from: message)
             case .signExtrinsic:
-                try handleExtrinsicSigning(from: message, dataSource: dataSource)
+                handleExtrinsicSigning(from: message, dataSource: dataSource)
             case .signBytes:
-                try handleRawPayloadSigning(from: message, dataSource: dataSource)
+                handleRawPayloadSigning(from: message, dataSource: dataSource)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)
         }
     }
 
-    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {}
+    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "signing response but no request"
+        )
 
-    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {}
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
+
+    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "auth response but already authorized"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 }

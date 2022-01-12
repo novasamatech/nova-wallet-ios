@@ -43,7 +43,14 @@ extension DAppBrowserSigningState: DAppBrowserStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
-    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {}
+    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(reason: "can't handle message while signing")
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 
     func handleOperation(response: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
         let nextState = DAppBrowserAuthorizedState(stateMachine: stateMachine)
@@ -59,5 +66,14 @@ extension DAppBrowserSigningState: DAppBrowserStateProtocol {
         }
     }
 
-    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {}
+    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "auth response when signing"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 }
