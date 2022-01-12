@@ -116,10 +116,16 @@ final class DAppOperationConfirmInteractor {
 
             let methodDecoder = try codingFactory.createDecoder(from: methodData)
 
-            let method: RuntimeCall<JSON> = try methodDecoder.read(
+            let method: DAppParsedCall
+
+            if let callableMethod: RuntimeCall<JSON> = try? methodDecoder.read(
                 of: KnownType.call.name,
                 with: codingFactory.createRuntimeJsonContext().toRawContext()
-            )
+            ) {
+                method = .callable(value: callableMethod)
+            } else {
+                method = .raw(bytes: methodData)
+            }
 
             let parsedExtrinsic = DAppParsedExtrinsic(
                 address: extrinsic.address,
@@ -180,10 +186,7 @@ final class DAppOperationConfirmInteractor {
         let confirmationModel = DAppOperationConfirmModel(
             wallet: request.wallet,
             chain: request.chain,
-            dApp: request.dApp,
-            module: result.extrinsic.method.moduleName,
-            call: result.extrinsic.method.callName,
-            amount: nil
+            dApp: request.dApp
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))
@@ -199,7 +202,7 @@ final class DAppOperationConfirmInteractor {
 
             let address = MultiAddress.accoundId(result.account.accountId)
 
-            var builder = try ExtrinsicBuilder(
+            var builder: ExtrinsicBuilderProtocol = try ExtrinsicBuilder(
                 specVersion: extrinsic.specVersion,
                 transactionVersion: extrinsic.transactionVersion,
                 genesisHash: extrinsic.genesisHash
@@ -207,7 +210,8 @@ final class DAppOperationConfirmInteractor {
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
-            .adding(call: extrinsic.method)
+
+            builder = try result.extrinsic.method.accept(builder: builder)
 
             if extrinsic.tip > 0 {
                 builder = builder.with(tip: extrinsic.tip)
