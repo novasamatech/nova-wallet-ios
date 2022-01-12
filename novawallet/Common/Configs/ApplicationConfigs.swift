@@ -117,7 +117,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
     }
 
     var dAppsListURL: URL {
-        URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
+        #endif
     }
 
     var commonTypesURL: URL {

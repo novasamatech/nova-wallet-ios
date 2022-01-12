@@ -656,3 +656,5 @@
 "dapp.auth.subtitle" = "Approve this request if you trust the application";
 "common.dapp" = "DApp";
 "common.all" = "All";
+"dapp.unexpected.error.format" = "DApp communication failed with reason: %@";
+"common.reload" = "Reload";
