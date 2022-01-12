@@ -81,9 +81,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.goForwardBarItem.target = self
         rootView.goForwardBarItem.action = #selector(actionGoForward)
 
-        rootView.favoriteBarItem.target = self
-        rootView.favoriteBarItem.action = #selector(actionFavorite)
-
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
