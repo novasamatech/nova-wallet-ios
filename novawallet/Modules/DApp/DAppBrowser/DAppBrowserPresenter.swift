@@ -55,8 +55,6 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func activateSearch(with query: String?) {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
     }
-
-    func toggleFavorite() {}
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
