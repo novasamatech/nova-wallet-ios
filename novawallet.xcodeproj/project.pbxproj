@@ -245,6 +245,8 @@
 		840BF22726C2C8A600E3A955 /* ChainSyncEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840BF22626C2C8A600E3A955 /* ChainSyncEvents.swift */; };
 		840D8918262429C900AB231B /* LocalStorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */; };
 		840D891D26242AE500AB231B /* StorageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D891C26242AE500AB231B /* StorageRequest.swift */; };
+		840D929F278D8D2E0007B979 /* DAppBrowserInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */; };
+		840D92A1278D8D6F0007B979 /* DAppBrowserStateError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D92A0278D8D6F0007B979 /* DAppBrowserStateError.swift */; };
 		840DCBF125DFEE4800D45C6A /* AmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBF025DFEE4800D45C6A /* AmountInputView.swift */; };
 		840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */; };
 		840DCBFB25E0703A00D45C6A /* RewardSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBFA25E0703A00D45C6A /* RewardSelectionView.swift */; };
@@ -2084,6 +2086,8 @@
 		840BF22626C2C8A600E3A955 /* ChainSyncEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainSyncEvents.swift; sourceTree = "<group>"; };
 		840D8917262429C900AB231B /* LocalStorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageRequestFactory.swift; sourceTree = "<group>"; };
 		840D891C26242AE500AB231B /* StorageRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequest.swift; sourceTree = "<group>"; };
+		840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserInteractorError.swift; sourceTree = "<group>"; };
+		840D92A0278D8D6F0007B979 /* DAppBrowserStateError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateError.swift; sourceTree = "<group>"; };
 		840DCBF025DFEE4800D45C6A /* AmountInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputView.swift; sourceTree = "<group>"; };
 		840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AmountInputView+Inspectable.swift"; sourceTree = "<group>"; };
 		840DCBFA25E0703A00D45C6A /* RewardSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardSelectionView.swift; sourceTree = "<group>"; };
@@ -4661,6 +4665,7 @@
 				842BDB26278C46EE00AB4B5A /* States */,
 				842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */,
 				842BDB22278C229D00AB4B5A /* DAppBrowserStateDataSource.swift */,
+				840D92A0278D8D6F0007B979 /* DAppBrowserStateError.swift */,
 			);
 			path = StateMachine;
 			sourceTree = "<group>";
@@ -7732,6 +7737,7 @@
 				5278A5F4178922A240590334 /* DAppBrowserViewLayout.swift */,
 				677CE34BFAB45122C57095F6 /* DAppBrowserViewFactory.swift */,
 				8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */,
+				840D929E278D8D2E0007B979 /* DAppBrowserInteractorError.swift */,
 			);
 			path = DAppBrowser;
 			sourceTree = "<group>";
@@ -10324,6 +10330,7 @@
 				F4EF24D026BA7A4400F28B4E /* AnalyticsViewModelFactoryBase.swift in Sources */,
 				849013E224A9288B008F705E /* Language.swift in Sources */,
 				84E493292732A823000534F2 /* WalletListAssetCell.swift in Sources */,
+				840D92A1278D8D6F0007B979 /* DAppBrowserStateError.swift in Sources */,
 				84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */,
 				8430AACC2602249B005B1066 /* InitialStakingState.swift in Sources */,
 				84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */,
@@ -10930,6 +10937,7 @@
 				846E5010277998040049B659 /* DAppAuthRequest.swift in Sources */,
 				6BAF97802DB9C640515F47C7 /* StakingMainInteractor.swift in Sources */,
 				8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */,
+				840D929F278D8D2E0007B979 /* DAppBrowserInteractorError.swift in Sources */,
 				F402BC8B273AD20D0075F803 /* AstarBonusServiceError.swift in Sources */,
 				E5F3DF66415E54AE04D0C9A9 /* StakingMainViewController.swift in Sources */,
 				F44CCBEE26D38D1900A9E02E /* AnalyticsMagentaButton.swift in Sources */,
