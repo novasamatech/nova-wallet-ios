@@ -656,3 +656,5 @@
 "dapp.auth.subtitle" = "Подтвердите запрос если вы доверяете этому приложению";
 "common.dapp" = "DApp";
 "common.all" = "Все";
+"dapp.unexpected.error.format" = "Взаимодействие с приложением оборвалось по причине: %@";
+"common.reload" = "Перезагрузить";

@@ -19,6 +19,28 @@ final class DAppBrowserPresenter {
         self.localizationManager = localizationManager
         self.logger = logger
     }
+
+    private func showState(error: DAppBrowserStateError) {
+        let locale = localizationManager.selectedLocale
+        let errorContent = error.toErrorContent(for: locale)
+
+        let skipAction = R.string.localizable.commonSkip(preferredLanguages: locale.rLanguages)
+
+        let reloadViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonReload(preferredLanguages: locale.rLanguages)
+        ) { [weak self] in
+            self?.interactor.reload()
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [reloadViewModel],
+            closeAction: skipAction
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
@@ -33,13 +55,13 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func activateSearch(with query: String?) {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
     }
-
-    func toggleFavorite() {}
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceive(error: Error) {
-        if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
+        if let stateError = error as? DAppBrowserStateError {
+            showState(error: stateError)
+        } else if !wireframe.present(error: error, from: view, locale: localizationManager.selectedLocale) {
             logger?.error("Did receive error: \(error)")
         }
     }
