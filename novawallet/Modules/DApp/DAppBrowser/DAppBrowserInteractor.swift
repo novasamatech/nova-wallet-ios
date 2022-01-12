@@ -1,13 +1,6 @@
 import UIKit
 import RobinHood
 
-enum DAppBrowserInteractorError: Error {
-    case scriptFileMissing
-    case invalidUrl
-    case unexpectedMessageType
-    case specVersionMismatch
-}
-
 final class DAppBrowserInteractor {
     static let subscriptionName = "_nova_"
 
@@ -156,21 +149,18 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(message: Any) {
-        guard let dict = message as? NSDictionary else {
+        logger?.debug("Did receive message: \(message)")
+
+        guard
+            let dict = message as? NSDictionary,
+            let parsedMessage = try? dict.map(to: PolkadotExtensionMessage.self) else {
             presenter.didReceive(error: DAppBrowserInteractorError.unexpectedMessageType)
             return
         }
 
-        do {
-            logger?.info("Did receive message: \(dict)")
+        messageQueue.append(parsedMessage)
 
-            let parsedMessage = try dict.map(to: PolkadotExtensionMessage.self)
-            messageQueue.append(parsedMessage)
-
-            processMessageIfNeeded()
-        } catch {
-            presenter.didReceive(error: error)
-        }
+        processMessageIfNeeded()
     }
 
     func processConfirmation(response: DAppOperationResponse) {
@@ -187,6 +177,12 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
     func processAuth(response: DAppAuthResponse) {
         state?.handleAuth(response: response, dataSource: dataSource)
+    }
+
+    func reload() {
+        state?.stateMachine = nil
+        state = nil
+        completeSetupIfNeeded()
     }
 }
 

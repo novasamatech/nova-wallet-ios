@@ -22,11 +22,30 @@ extension DAppBrowserWaitingAuthState: DAppBrowserStateProtocol {
 
             stateMachine?.emit(authRequest: request, nextState: nextState)
         default:
-            break
+            let error = "auth message expected but \(message.messageType.rawValue) received"
+            stateMachine?.emit(error: DAppBrowserStateError.unexpected(reason: error), nextState: self)
         }
     }
 
-    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {}
+    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "signing response while waiting auth"
+        )
 
-    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {}
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
+
+    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "auth response while waiting request"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 }

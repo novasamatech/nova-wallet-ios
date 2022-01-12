@@ -49,7 +49,7 @@ extension DAppBrowserMetadataState: DAppBrowserStateProtocol {
         guard let genesisHashData = try? Data(hexString: metadata.genesisHash) else {
             provideError(
                 for: .metadataProvide,
-                errorMessage: PolkadotExtensionError.unsupported.rawValue,
+                errorMessage: "Invalid genesis hash",
                 nextState: previousState
             )
 
@@ -88,7 +88,34 @@ extension DAppBrowserMetadataState: DAppBrowserStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
-    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {}
-    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {}
-    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {}
+    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(reason: "can't handle message while handling metadata")
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
+
+    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "signing response while handling metadata"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
+
+    func handleAuth(response _: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "auth response while handling metadata"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 }

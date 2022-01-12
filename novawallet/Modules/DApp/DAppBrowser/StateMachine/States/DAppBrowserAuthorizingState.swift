@@ -7,9 +7,25 @@ extension DAppBrowserAuthorizingState: DAppBrowserStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
-    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {}
+    func handle(message _: PolkadotExtensionMessage, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(reason: "can't handle message while authorizing")
 
-    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {}
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
+
+    func handleOperation(response _: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
+        let error = DAppBrowserStateError.unexpected(
+            reason: "signing response while waiting auth response"
+        )
+
+        stateMachine?.emit(
+            error: error,
+            nextState: self
+        )
+    }
 
     func handleAuth(response: DAppAuthResponse, dataSource _: DAppBrowserStateDataSource) {
         do {
