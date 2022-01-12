@@ -14216,6 +14216,1008 @@ import Cuckoo
 import Cuckoo
 @testable import novawallet
 
+
+ class MockDAppBrowserViewProtocol: DAppBrowserViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserViewProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserViewProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(viewModel: DAppBrowserModel)  {
+        
+    return cuckoo_manager.call("didReceive(viewModel: DAppBrowserModel)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(viewModel: viewModel))
+        
+    }
+    
+    
+    
+     func didReceive(response: PolkadotExtensionResponse)  {
+        
+    return cuckoo_manager.call("didReceive(response: PolkadotExtensionResponse)",
+            parameters: (response),
+            escapingParameters: (response),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(response: response))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppBrowserViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppBrowserViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserModel)> where M1.MatchedType == DAppBrowserModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(viewModel: DAppBrowserModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse)> where M1.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(DAppBrowserModel), Void> where M1.MatchedType == DAppBrowserModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(viewModel: DAppBrowserModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(PolkadotExtensionResponse), Void> where M1.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserViewProtocolStub: DAppBrowserViewProtocol {
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+     func didReceive(viewModel: DAppBrowserModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(response: PolkadotExtensionResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppBrowserPresenterProtocol: DAppBrowserPresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserPresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserPresenterProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserPresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserPresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserPresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func process(message: Any)  {
+        
+    return cuckoo_manager.call("process(message: Any)",
+            parameters: (message),
+            escapingParameters: (message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.process(message: message))
+        
+    }
+    
+    
+    
+     func activateSearch(with query: String?)  {
+        
+    return cuckoo_manager.call("activateSearch(with: String?)",
+            parameters: (query),
+            escapingParameters: (query),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateSearch(with: query))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Any)> where M1.MatchedType == Any {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any)", parameterMatchers: matchers))
+	    }
+	    
+	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserPresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.__DoNotUse<(Any), Void> where M1.MatchedType == Any {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
+	        return cuckoo_manager.verify("process(message: Any)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.__DoNotUse<(String?), Void> where M1.OptionalMatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
+	        return cuckoo_manager.verify("activateSearch(with: String?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserPresenterProtocolStub: DAppBrowserPresenterProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func process(message: Any)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func activateSearch(with query: String?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppBrowserInteractorInputProtocol: DAppBrowserInteractorInputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserInteractorInputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserInteractorInputProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserInteractorInputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserInteractorInputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserInteractorInputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func process(message: Any)  {
+        
+    return cuckoo_manager.call("process(message: Any)",
+            parameters: (message),
+            escapingParameters: (message),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.process(message: message))
+        
+    }
+    
+    
+    
+     func processConfirmation(response: DAppOperationResponse)  {
+        
+    return cuckoo_manager.call("processConfirmation(response: DAppOperationResponse)",
+            parameters: (response),
+            escapingParameters: (response),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.processConfirmation(response: response))
+        
+    }
+    
+    
+    
+     func process(newQuery: String)  {
+        
+    return cuckoo_manager.call("process(newQuery: String)",
+            parameters: (newQuery),
+            escapingParameters: (newQuery),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.process(newQuery: newQuery))
+        
+    }
+    
+    
+    
+     func processAuth(response: DAppAuthResponse)  {
+        
+    return cuckoo_manager.call("processAuth(response: DAppAuthResponse)",
+            parameters: (response),
+            escapingParameters: (response),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.processAuth(response: response))
+        
+    }
+    
+    
+    
+     func reload()  {
+        
+    return cuckoo_manager.call("reload()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.reload())
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserInteractorInputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Any)> where M1.MatchedType == Any {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(message: Any)", parameterMatchers: matchers))
+	    }
+	    
+	    func processConfirmation<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationResponse)> where M1.MatchedType == DAppOperationResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processConfirmation(response: DAppOperationResponse)", parameterMatchers: matchers))
+	    }
+	    
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse)> where M1.MatchedType == DAppAuthResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processAuth(response: DAppAuthResponse)", parameterMatchers: matchers))
+	    }
+	    
+	    func reload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "reload()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserInteractorInputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.__DoNotUse<(Any), Void> where M1.MatchedType == Any {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
+	        return cuckoo_manager.verify("process(message: Any)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func processConfirmation<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppOperationResponse), Void> where M1.MatchedType == DAppOperationResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("processConfirmation(response: DAppOperationResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
+	        return cuckoo_manager.verify("process(newQuery: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppAuthResponse), Void> where M1.MatchedType == DAppAuthResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("processAuth(response: DAppAuthResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func reload() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("reload()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserInteractorInputProtocolStub: DAppBrowserInteractorInputProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func process(message: Any)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func processConfirmation(response: DAppOperationResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func process(newQuery: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func processAuth(response: DAppAuthResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func reload()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppBrowserInteractorOutputProtocol: DAppBrowserInteractorOutputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserInteractorOutputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserInteractorOutputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserInteractorOutputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserInteractorOutputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceive(error: Error)  {
+        
+    return cuckoo_manager.call("didReceive(error: Error)",
+            parameters: (error),
+            escapingParameters: (error),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(error: error))
+        
+    }
+    
+    
+    
+     func didReceiveDApp(model: DAppBrowserModel)  {
+        
+    return cuckoo_manager.call("didReceiveDApp(model: DAppBrowserModel)",
+            parameters: (model),
+            escapingParameters: (model),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveDApp(model: model))
+        
+    }
+    
+    
+    
+     func didReceive(response: PolkadotExtensionResponse)  {
+        
+    return cuckoo_manager.call("didReceive(response: PolkadotExtensionResponse)",
+            parameters: (response),
+            escapingParameters: (response),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(response: response))
+        
+    }
+    
+    
+    
+     func didReceiveConfirmation(request: DAppOperationRequest)  {
+        
+    return cuckoo_manager.call("didReceiveConfirmation(request: DAppOperationRequest)",
+            parameters: (request),
+            escapingParameters: (request),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveConfirmation(request: request))
+        
+    }
+    
+    
+    
+     func didReceiveAuth(request: DAppAuthRequest)  {
+        
+    return cuckoo_manager.call("didReceiveAuth(request: DAppAuthRequest)",
+            parameters: (request),
+            escapingParameters: (request),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveAuth(request: request))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Error)> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(error: Error)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveDApp<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserModel)> where M1.MatchedType == DAppBrowserModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserModel)>] = [wrap(matchable: model) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveDApp(model: DAppBrowserModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse)> where M1.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest)> where M1.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveConfirmation(request: DAppOperationRequest)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveAuth<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthRequest)> where M1.MatchedType == DAppAuthRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthRequest)>] = [wrap(matchable: request) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveAuth(request: DAppAuthRequest)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(error: M1) -> Cuckoo.__DoNotUse<(Error), Void> where M1.MatchedType == Error {
+	        let matchers: [Cuckoo.ParameterMatcher<(Error)>] = [wrap(matchable: error) { $0 }]
+	        return cuckoo_manager.verify("didReceive(error: Error)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveDApp<M1: Cuckoo.Matchable>(model: M1) -> Cuckoo.__DoNotUse<(DAppBrowserModel), Void> where M1.MatchedType == DAppBrowserModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserModel)>] = [wrap(matchable: model) { $0 }]
+	        return cuckoo_manager.verify("didReceiveDApp(model: DAppBrowserModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(PolkadotExtensionResponse), Void> where M1.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
+	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(DAppOperationRequest), Void> where M1.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
+	        return cuckoo_manager.verify("didReceiveConfirmation(request: DAppOperationRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveAuth<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(DAppAuthRequest), Void> where M1.MatchedType == DAppAuthRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthRequest)>] = [wrap(matchable: request) { $0 }]
+	        return cuckoo_manager.verify("didReceiveAuth(request: DAppAuthRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserInteractorOutputProtocolStub: DAppBrowserInteractorOutputProtocol {
+    
+
+    
+
+    
+     func didReceive(error: Error)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveDApp(model: DAppBrowserModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(response: PolkadotExtensionResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveConfirmation(request: DAppOperationRequest)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveAuth(request: DAppAuthRequest)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppBrowserWireframeProtocol: DAppBrowserWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppBrowserWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppBrowserWireframeProtocol
+     typealias Verification = __VerificationProxy_DAppBrowserWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppBrowserWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppBrowserWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)  {
+        
+    return cuckoo_manager.call("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)",
+            parameters: (view, request, delegate),
+            escapingParameters: (view, request, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentOperationConfirm(from: view, request: request, delegate: delegate))
+        
+    }
+    
+    
+    
+     func presentSearch(from view: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)  {
+        
+    return cuckoo_manager.call("presentSearch(from: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)",
+            parameters: (view, initialQuery, delegate),
+            escapingParameters: (view, initialQuery, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentSearch(from: view, initialQuery: initialQuery, delegate: delegate))
+        
+    }
+    
+    
+    
+     func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)  {
+        
+    return cuckoo_manager.call("presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)",
+            parameters: (view, request, delegate),
+            escapingParameters: (view, request, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentAuth(from: view, request: request, delegate: delegate))
+        
+    }
+    
+    
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
+            parameters: (message, title, closeAction, view),
+            escapingParameters: (message, title, closeAction, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
+        
+    }
+    
+    
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
+            parameters: (viewModel, style, view),
+            escapingParameters: (viewModel, style, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppBrowserWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentSearch<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(from view: M1, initialQuery: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.OptionalMatchedType == String, M3.MatchedType == DAppSearchDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: initialQuery) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentSearch(from: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func presentAuth<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppAuthRequest, M3.MatchedType == DAppAuthDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppBrowserWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return cuckoo_manager.verify("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentSearch<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(from view: M1, initialQuery: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.OptionalMatchedType == String, M3.MatchedType == DAppSearchDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: initialQuery) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return cuckoo_manager.verify("presentSearch(from: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func presentAuth<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppAuthRequest, M3.MatchedType == DAppAuthDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
+	        return cuckoo_manager.verify("presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppBrowserWireframeProtocolStub: DAppBrowserWireframeProtocol {
+    
+
+    
+
+    
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func presentSearch(from view: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
 import SubstrateSdk
 
 
