@@ -7,7 +7,6 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
     func process(message: Any)
     func activateSearch(with query: String?)
-    func toggleFavorite()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
