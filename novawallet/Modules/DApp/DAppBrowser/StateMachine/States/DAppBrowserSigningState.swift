@@ -1,23 +1,9 @@
 import Foundation
 
 final class DAppBrowserSigningState: DAppBrowserBaseState {
-    enum SigningType {
-        case extrinsic
-        case bytes
+    let signingType: DAppSigningType
 
-        var msgType: PolkadotExtensionMessage.MessageType {
-            switch self {
-            case .extrinsic:
-                return .signExtrinsic
-            case .bytes:
-                return .signBytes
-            }
-        }
-    }
-
-    let signingType: SigningType
-
-    init(stateMachine: DAppBrowserStateMachineProtocol?, signingType: SigningType) {
+    init(stateMachine: DAppBrowserStateMachineProtocol?, signingType: DAppSigningType) {
         self.signingType = signingType
 
         super.init(stateMachine: stateMachine)

@@ -76,7 +76,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         )
 
         let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: .extrinsic)
-        stateMachine?.emit(signingRequest: request, nextState: nextState)
+        stateMachine?.emit(signingRequest: request, type: .extrinsic, nextState: nextState)
     }
 
     private func handleRawPayloadSigning(
@@ -97,7 +97,10 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             return
         }
 
-        let chains = dataSource.chainStore.values.filter { $0.addressPrefix == addressPrefix }
+        let chains = dataSource.chainStore.values.filter {
+            $0.addressPrefix == addressPrefix
+        }.sorted { $0.order < $1.order }
+
         let maybeChain = chains.first { chain in
             dataSource.wallet.fetch(for: chain.accountRequest())?.accountId == accountId
         }
@@ -117,7 +120,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         )
 
         let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: .bytes)
-        stateMachine?.emit(signingRequest: request, nextState: nextState)
+        stateMachine?.emit(signingRequest: request, type: .bytes, nextState: nextState)
     }
 }
 
