@@ -14864,16 +14864,16 @@ import Cuckoo
     
     
     
-     func didReceiveConfirmation(request: DAppOperationRequest)  {
+     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)  {
         
-    return cuckoo_manager.call("didReceiveConfirmation(request: DAppOperationRequest)",
-            parameters: (request),
-            escapingParameters: (request),
+    return cuckoo_manager.call("didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)",
+            parameters: (request, type),
+            escapingParameters: (request, type),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveConfirmation(request: request))
+            defaultCall: __defaultImplStub!.didReceiveConfirmation(request: request, type: type))
         
     }
     
@@ -14916,9 +14916,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest)> where M1.MatchedType == DAppOperationRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveConfirmation(request: DAppOperationRequest)", parameterMatchers: matchers))
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest, DAppSigningType)> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest, DAppSigningType)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: type) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveAuth<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthRequest)> where M1.MatchedType == DAppAuthRequest {
@@ -14961,9 +14961,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(DAppOperationRequest), Void> where M1.MatchedType == DAppOperationRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
-	        return cuckoo_manager.verify("didReceiveConfirmation(request: DAppOperationRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.__DoNotUse<(DAppOperationRequest, DAppSigningType), Void> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest, DAppSigningType)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: type) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14993,7 +14993,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func didReceiveConfirmation(request: DAppOperationRequest)   {
+     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15030,16 +15030,16 @@ import Cuckoo
     
     
     
-     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)  {
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)  {
         
-    return cuckoo_manager.call("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)",
-            parameters: (view, request, delegate),
-            escapingParameters: (view, request, delegate),
+    return cuckoo_manager.call("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)",
+            parameters: (view, request, type, delegate),
+            escapingParameters: (view, request, type, delegate),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentOperationConfirm(from: view, request: request, delegate: delegate))
+            defaultCall: __defaultImplStub!.presentOperationConfirm(from: view, request: request, type: type, delegate: delegate))
         
     }
     
@@ -15112,9 +15112,9 @@ import Cuckoo
 	    }
 	    
 	    
-	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", parameterMatchers: matchers))
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, type: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppSigningType, M4.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: type) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)", parameterMatchers: matchers))
 	    }
 	    
 	    func presentSearch<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(from view: M1, initialQuery: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.OptionalMatchedType == String, M3.MatchedType == DAppSearchDelegate {
@@ -15154,9 +15154,9 @@ import Cuckoo
 	
 	    
 	    @discardableResult
-	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return cuckoo_manager.verify("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, type: M3, delegate: M4) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppSigningType, M4.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: type) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return cuckoo_manager.verify("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15192,7 +15192,7 @@ import Cuckoo
     
 
     
-     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)   {
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

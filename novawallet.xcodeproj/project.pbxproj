@@ -399,6 +399,9 @@
 		8434C9E625403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434C9E525403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift */; };
 		8434C9EA2540AE51009E4191 /* ExtrinsicEraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8434C9E92540AE51009E4191 /* ExtrinsicEraTests.swift */; };
 		843612BB278FD6E000DC739E /* DAppSigningType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BA278FD6E000DC739E /* DAppSigningType.swift */; };
+		843612BD278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BC278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift */; };
+		843612BF278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612BE278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift */; };
+		843612C1278FE62900DC739E /* DAppOperationConfirmInteractorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */; };
 		84364D55252FAD7100281F9A /* AssetDetailsConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84364D54252FAD7100281F9A /* AssetDetailsConfigurator.swift */; };
 		84364D58252FAE0A00281F9A /* AssetDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84364D57252FAE0A00281F9A /* AssetDetailsView.swift */; };
 		84364D5A252FAF1700281F9A /* AssetDetailsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84364D59252FAF1700281F9A /* AssetDetailsView.xib */; };
@@ -2244,6 +2247,9 @@
 		8434C9E525403686009E4191 /* CDTransactionHistoryItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDTransactionHistoryItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		8434C9E92540AE51009E4191 /* ExtrinsicEraTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicEraTests.swift; sourceTree = "<group>"; };
 		843612BA278FD6E000DC739E /* DAppSigningType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSigningType.swift; sourceTree = "<group>"; };
+		843612BC278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppOperationConfirmInteractor+Protocol.swift"; sourceTree = "<group>"; };
+		843612BE278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DAppOperationConfirmInteractor+Proccessing.swift"; sourceTree = "<group>"; };
+		843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmInteractorError.swift; sourceTree = "<group>"; };
 		84364D54252FAD7100281F9A /* AssetDetailsConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsConfigurator.swift; sourceTree = "<group>"; };
 		84364D57252FAE0A00281F9A /* AssetDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDetailsView.swift; sourceTree = "<group>"; };
 		84364D59252FAF1700281F9A /* AssetDetailsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AssetDetailsView.xib; sourceTree = "<group>"; };
@@ -4068,6 +4074,8 @@
 				48CECA2C5A0EFEBFDBB3C90C /* DAppOperationConfirmWireframe.swift */,
 				3C50BB281AD6DB3CF1493958 /* DAppOperationConfirmPresenter.swift */,
 				715F4A252715B543F11087AB /* DAppOperationConfirmInteractor.swift */,
+				843612BC278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift */,
+				843612BE278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift */,
 				43FBC2EA83A121CEBD25549D /* DAppOperationConfirmViewController.swift */,
 				859E0EF774DF0D498FEF8FCB /* DAppOperationConfirmViewLayout.swift */,
 				3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */,
@@ -4450,6 +4458,7 @@
 				84D2F1B02775999F0040C680 /* DAppParsedExtrinsic.swift */,
 				846E500F277998040049B659 /* DAppAuthRequest.swift */,
 				840D92A2278EDB2E0007B979 /* DAppParsedCall.swift */,
+				843612C0278FE62900DC739E /* DAppOperationConfirmInteractorError.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -9819,6 +9828,7 @@
 				84F0316F27302888003BDCF8 /* CoingeckoPriceListSource.swift in Sources */,
 				8490146D24A9487A008F705E /* ErrorPresentable+AlertText.swift in Sources */,
 				8472979A260B3095009B86D0 /* InitBondingSelectValidatorsStartWireframe.swift in Sources */,
+				843612BF278FE59D00DC739E /* DAppOperationConfirmInteractor+Proccessing.swift in Sources */,
 				841E6AF625EC12100007DDFE /* PreparedNomination.swift in Sources */,
 				848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */,
 				84754C962511EF0D00854599 /* ManagedConnectionItemMapper.swift in Sources */,
@@ -10444,6 +10454,7 @@
 				845BB8C025E4508800E5FCDC /* SS58FactoryExtensions.swift in Sources */,
 				F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */,
 				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
+				843612C1278FE62900DC739E /* DAppOperationConfirmInteractorError.swift in Sources */,
 				F40966C326B297D6008CD244 /* AnalyticsContainerViewLayout.swift in Sources */,
 				84E1CD02260DCC62001E81B5 /* SwitchAccount+OnboardingMainWireframe.swift in Sources */,
 				AEC167062667671B0058F572 /* RecommendedValidatorListViewModelFactory.swift in Sources */,
@@ -10590,6 +10601,7 @@
 				8467FD5124EFD11E005D486C /* UserDataModel.xcdatamodeld in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
 				849DEC5925ED756F00C64C19 /* SubstrateCallFactory.swift in Sources */,
+				843612BD278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift in Sources */,
 				844DBC5E274D1B13009F8351 /* IconWithTitleSubtitleTableViewCell.swift in Sources */,
 				84DBEA42265E80DD00FDF73C /* LearnMoreViewModel.swift in Sources */,
 				849E2351254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift in Sources */,
