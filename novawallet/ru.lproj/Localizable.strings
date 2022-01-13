@@ -658,3 +658,7 @@
 "common.all" = "Все";
 "dapp.unexpected.error.format" = "Взаимодействие с приложением оборвалось по причине: %@";
 "common.reload" = "Перезагрузить";
+"dapp.confirmation.address.mismatch" = "Адрес в транзакции (%@) не совпадает с адресом в кошельке (%@)";
+"dapp.confirmation.bad.field" = "Не удалось обработать поле транзакции: \(%@)";
+"dapp.confirmation.extensions.mismatch" = "Расширенные настройки транзакции не совпадают с локальными";
+"dapp.confirmation.invalid.signature" = "Сформированная подпись не прошла проверку";
