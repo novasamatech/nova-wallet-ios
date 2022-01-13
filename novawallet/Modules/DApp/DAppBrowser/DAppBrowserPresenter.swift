@@ -74,8 +74,8 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         view?.didReceive(response: response)
     }
 
-    func didReceiveConfirmation(request: DAppOperationRequest) {
-        wireframe.presentOperationConfirm(from: view, request: request, delegate: self)
+    func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType) {
+        wireframe.presentOperationConfirm(from: view, request: request, type: type, delegate: self)
     }
 
     func didReceiveAuth(request: DAppAuthRequest) {

@@ -4,7 +4,7 @@ protocol DAppBrowserStateMachineProtocol: AnyObject {
     func emit(nextState: DAppBrowserStateProtocol)
     func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol)
-    func emit(signingRequest: DAppOperationRequest, nextState: DAppBrowserStateProtocol)
+    func emit(signingRequest: DAppOperationRequest, type: DAppSigningType, nextState: DAppBrowserStateProtocol)
     func emit(error: Error, nextState: DAppBrowserStateProtocol)
     func popMessage()
 }
