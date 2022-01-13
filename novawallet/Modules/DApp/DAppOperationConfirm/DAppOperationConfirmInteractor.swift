@@ -11,13 +11,11 @@ enum DAppOperationConfirmInteractorError: Error {
     case invalidRawSignature(data: Data)
 }
 
-final class DAppOperationConfirmInteractor {
+final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     struct ProcessedResult {
         let account: ChainAccountResponse
         let extrinsic: DAppParsedExtrinsic
     }
-
-    weak var presenter: DAppOperationConfirmInteractorOutputProtocol?
 
     let request: DAppOperationRequest
 
