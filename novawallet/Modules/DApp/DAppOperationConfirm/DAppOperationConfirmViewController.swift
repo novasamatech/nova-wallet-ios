@@ -146,9 +146,7 @@ extension DAppOperationConfirmViewController: Localizable {
 }
 
 extension DAppOperationConfirmViewController: ModalPresenterDelegate {
-    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { true }
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { false }
 
-    func presenterDidHide(_: ModalPresenterProtocol) {
-        presenter.reject()
-    }
+    func presenterDidHide(_: ModalPresenterProtocol) {}
 }
