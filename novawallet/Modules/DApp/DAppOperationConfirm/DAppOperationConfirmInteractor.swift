@@ -5,20 +5,15 @@ import BigInt
 import SoraKeystore
 
 final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
-    struct ProcessedResult {
-        let account: ChainAccountResponse
-        let extrinsic: DAppParsedExtrinsic
-    }
-
     let request: DAppOperationRequest
 
     let connection: ChainConnection
-    let keychain: KeystoreProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let runtimeProvider: RuntimeProviderProtocol
     let operationQueue: OperationQueue
 
-    var processedResult: ProcessedResult?
+    var processedResult: DAppOperationProcessedResult?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var feeWrapper: CompoundOperationWrapper<RuntimeDispatchInfo>?
@@ -28,14 +23,14 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         request: DAppOperationRequest,
         runtimeProvider: RuntimeProviderProtocol,
         connection: ChainConnection,
-        keychain: KeystoreProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
         priceProviderFactory: PriceProviderFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.request = request
         self.runtimeProvider = runtimeProvider
         self.connection = connection
-        self.keychain = keychain
+        self.signingWrapperFactory = signingWrapperFactory
         priceLocalSubscriptionFactory = priceProviderFactory
         self.operationQueue = operationQueue
     }
@@ -73,7 +68,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         )
     }
 
-    func completeSetup(for result: ProcessedResult) {
+    func completeSetup(for result: DAppOperationProcessedResult) {
         processedResult = result
 
         let confirmationModel = DAppOperationConfirmModel(
@@ -88,7 +83,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     func createBaseBuilderOperation(
-        for result: ProcessedResult
+        for result: DAppOperationProcessedResult
     ) -> BaseOperation<ExtrinsicBuilderProtocol> {
         ClosureOperation<ExtrinsicBuilderProtocol> {
             let extrinsic = result.extrinsic
@@ -115,7 +110,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     func createFeePayloadOperation(
-        for result: ProcessedResult,
+        for result: DAppOperationProcessedResult,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -145,7 +140,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     func createSignatureOperation(
-        for result: ProcessedResult,
+        for result: DAppOperationProcessedResult,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<Data> {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()

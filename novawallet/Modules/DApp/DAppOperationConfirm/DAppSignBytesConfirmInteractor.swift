@@ -4,13 +4,13 @@ import SoraKeystore
 
 final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
-    let keychain: KeystoreProtocol
+    let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     private(set) var account: ChainAccountResponse?
 
-    init(request: DAppOperationRequest, keychain: KeystoreProtocol) {
+    init(request: DAppOperationRequest, signingWrapperFactory: SigningWrapperFactoryProtocol) {
         self.request = request
-        self.keychain = keychain
+        self.signingWrapperFactory = signingWrapperFactory
     }
 
     private func validateAndProvideConfirmationModel() {
@@ -32,7 +32,7 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     }
 
     private func provideZeroFee() {
-        let fee = RuntimeDispatchInfo(dispatchClass: "", fee: "0", weight: 0)
+        let fee = RuntimeDispatchInfo(dispatchClass: "Fee", fee: "0", weight: 0)
 
         presenter?.didReceive(feeResult: .success(fee))
         presenter?.didReceive(priceResult: .success(nil))
@@ -64,9 +64,8 @@ extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputPro
         }
 
         do {
-            let signer = SigningWrapper(
-                keystore: keychain,
-                metaId: request.wallet.metaId,
+            let signer = signingWrapperFactory.createSigningWrapper(
+                for: request.wallet.metaId,
                 accountResponse: account
             )
 
