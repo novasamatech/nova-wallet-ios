@@ -1,15 +1,23 @@
+import RobinHood
 protocol DAppSearchViewProtocol: ControllerBackedProtocol {
     func didReceive(initialQuery: String)
+    func didReceiveDApp(viewModels: [DAppViewModel])
 }
 
 protocol DAppSearchPresenterProtocol: AnyObject {
     func setup()
-    func activateSearch(for input: String)
+    func updateSearch(query: String)
+    func selectDApp(viewModel: DAppViewModel)
+    func selectSearchQuery()
 }
 
-protocol DAppSearchInteractorInputProtocol: AnyObject {}
+protocol DAppSearchInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol DAppSearchInteractorOutputProtocol: AnyObject {}
+protocol DAppSearchInteractorOutputProtocol: AnyObject {
+    func didReceive(dAppsResult: Result<DAppList?, Error>)
+}
 
 protocol DAppSearchWireframeProtocol: AnyObject {
     func close(from view: DAppSearchViewProtocol?)
