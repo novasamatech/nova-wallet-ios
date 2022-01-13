@@ -48,7 +48,7 @@ extension DAppOperationConfirmInteractor {
         chain: ChainModel,
         dependingOn extrinsicOperation: BaseOperation<PolkadotExtensionExtrinsic>,
         codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
-    ) -> CompoundOperationWrapper<ProcessedResult> {
+    ) -> CompoundOperationWrapper<DAppOperationProcessedResult> {
         let callOperation = createCallParsingOperation(
             dependingOn: extrinsicOperation,
             codingFactoryOperation: codingFactoryOperation
@@ -56,7 +56,7 @@ extension DAppOperationConfirmInteractor {
 
         let eraOperation = createEraParsingOperation(dependingOn: extrinsicOperation)
 
-        let resultOperation = ClosureOperation<ProcessedResult> {
+        let resultOperation = ClosureOperation<DAppOperationProcessedResult> {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 
             let extrinsic = try extrinsicOperation.extractNoCancellableResultData()
@@ -131,7 +131,7 @@ extension DAppOperationConfirmInteractor {
                 version: extrinsic.version
             )
 
-            return ProcessedResult(account: accountResponse, extrinsic: parsedExtrinsic)
+            return DAppOperationProcessedResult(account: accountResponse, extrinsic: parsedExtrinsic)
         }
 
         let dependencies = [eraOperation, callOperation]

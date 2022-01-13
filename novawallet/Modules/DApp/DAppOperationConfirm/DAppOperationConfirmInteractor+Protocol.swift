@@ -16,9 +16,8 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
             return
         }
 
-        let signer = SigningWrapper(
-            keystore: keychain,
-            metaId: request.wallet.metaId,
+        let signer = signingWrapperFactory.createSigningWrapper(
+            for: request.wallet.metaId,
             accountResponse: result.account
         )
 
