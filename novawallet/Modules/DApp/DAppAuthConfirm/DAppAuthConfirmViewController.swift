@@ -103,9 +103,7 @@ extension DAppAuthConfirmViewController: Localizable {
 }
 
 extension DAppAuthConfirmViewController: ModalPresenterDelegate {
-    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { true }
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { false }
 
-    func presenterDidHide(_: ModalPresenterProtocol) {
-        presenter.deny()
-    }
+    func presenterDidHide(_: ModalPresenterProtocol) {}
 }

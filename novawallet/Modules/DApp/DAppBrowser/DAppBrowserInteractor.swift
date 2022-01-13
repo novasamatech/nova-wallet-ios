@@ -209,10 +209,10 @@ extension DAppBrowserInteractor: DAppBrowserStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
-    func emit(signingRequest: DAppOperationRequest, nextState: DAppBrowserStateProtocol) {
+    func emit(signingRequest: DAppOperationRequest, type: DAppSigningType, nextState: DAppBrowserStateProtocol) {
         state = nextState
 
-        presenter.didReceiveConfirmation(request: signingRequest)
+        presenter.didReceiveConfirmation(request: signingRequest, type: type)
 
         nextState.setup(with: dataSource)
     }
