@@ -31,6 +31,13 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
         presenter?.didReceive(modelResult: .success(confirmationModel))
     }
 
+    private func provideZeroFee() {
+        let fee = RuntimeDispatchInfo(dispatchClass: "", fee: "0", weight: 0)
+
+        presenter?.didReceive(feeResult: .success(fee))
+        presenter?.didReceive(priceResult: .success(nil))
+    }
+
     private func prepareRawBytes() throws -> Data {
         if case let .stringValue(hexValue) = request.operationData {
             return try Data(hexString: hexValue)
@@ -43,9 +50,13 @@ final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
 extension DAppSignBytesConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
     func setup() {
         validateAndProvideConfirmationModel()
+
+        provideZeroFee()
     }
 
-    func estimateFee() {}
+    func estimateFee() {
+        provideZeroFee()
+    }
 
     func confirm() {
         guard let account = account else {
