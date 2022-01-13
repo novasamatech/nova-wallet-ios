@@ -662,3 +662,4 @@
 "dapp.confirmation.bad.field" = "Invalid field in transaction: %@";
 "dapp.confirmation.extensions.mismatch" = "Extrinsic extensions doesn't much local ones";
 "dapp.confirmation.invalid.signature" = "Generated signature is invalid";
+"common.fee.retry.failed" = "Fee loading failed. Would you like to retry?";

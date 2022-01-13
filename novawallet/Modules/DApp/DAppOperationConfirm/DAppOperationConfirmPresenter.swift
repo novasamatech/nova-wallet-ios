@@ -133,11 +133,14 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         switch feeResult {
         case let .success(fee):
             feeModel = fee
-        case let .failure(error):
+        case .failure:
             feeModel = nil
 
-            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
-                logger?.error("Fee error: \(error)")
+            wireframe.presentFeeStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.estimateFee()
             }
         }
 
