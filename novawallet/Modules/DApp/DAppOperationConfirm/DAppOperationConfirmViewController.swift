@@ -123,8 +123,17 @@ extension DAppOperationConfirmViewController: DAppOperationConfirmViewProtocol {
         )
     }
 
-    func didReceive(feeViewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeView.bind(viewModel: feeViewModel)
+    func didReceive(feeViewModel: DAppOperationFeeViewModel) {
+        switch feeViewModel {
+        case .loading:
+            rootView.networkFeeView.isHidden = false
+            rootView.networkFeeView.bind(viewModel: nil)
+        case .empty:
+            rootView.networkFeeView.isHidden = true
+        case let .loaded(value):
+            rootView.networkFeeView.isHidden = false
+            rootView.networkFeeView.bind(viewModel: value)
+        }
     }
 }
 

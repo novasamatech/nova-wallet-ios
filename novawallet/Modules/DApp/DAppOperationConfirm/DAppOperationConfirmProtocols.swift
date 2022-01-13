@@ -2,7 +2,7 @@ import SubstrateSdk
 
 protocol DAppOperationConfirmViewProtocol: ControllerBackedProtocol {
     func didReceive(confimationViewModel: DAppOperationConfirmViewModel)
-    func didReceive(feeViewModel: BalanceViewModelProtocol?)
+    func didReceive(feeViewModel: DAppOperationFeeViewModel)
 }
 
 protocol DAppOperationConfirmPresenterProtocol: AnyObject {
