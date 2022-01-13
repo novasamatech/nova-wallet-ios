@@ -22,15 +22,19 @@ final class DAppTxDetailsInteractor {
         ClosureOperation<String> {
             let prettyPrintedJson = preprocessor.prettyPrinted(from: details)
 
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
-
-            let data = try encoder.encode(prettyPrintedJson)
-
-            if let displayString = String(data: data, encoding: .utf8) {
-                return displayString
+            if case let .stringValue(value) = prettyPrintedJson {
+                return value
             } else {
-                throw CommonError.undefined
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = .prettyPrinted
+
+                let data = try encoder.encode(prettyPrintedJson)
+
+                if let displayString = String(data: data, encoding: .utf8) {
+                    return displayString
+                } else {
+                    throw CommonError.undefined
+                }
             }
         }
     }

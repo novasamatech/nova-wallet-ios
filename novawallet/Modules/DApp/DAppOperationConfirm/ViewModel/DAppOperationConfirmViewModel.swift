@@ -10,3 +10,9 @@ struct DAppOperationConfirmViewModel {
     let networkName: String
     let networkIconViewModel: ImageViewModelProtocol?
 }
+
+enum DAppOperationFeeViewModel {
+    case loading
+    case empty
+    case loaded(value: BalanceViewModelProtocol?)
+}
