@@ -659,6 +659,6 @@
 "dapp.unexpected.error.format" = "DApp communication failed with reason: %@";
 "common.reload" = "Reload";
 "dapp.confirmation.address.mismatch" = "Address in transaction (%@) doesn't match the address in the wallet (%@)";
-"dapp.confirmation.bad.field" = "Invalid field in transaction: \(%@)";
+"dapp.confirmation.bad.field" = "Invalid field in transaction: %@";
 "dapp.confirmation.extensions.mismatch" = "Extrinsic extensions doesn't much local ones";
 "dapp.confirmation.invalid.signature" = "Generated signature is invalid";
