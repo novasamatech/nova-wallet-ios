@@ -22,7 +22,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
     func didReceiveDApp(model: DAppBrowserModel)
     func didReceive(response: PolkadotExtensionResponse)
-    func didReceiveConfirmation(request: DAppOperationRequest)
+    func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)
     func didReceiveAuth(request: DAppAuthRequest)
 }
 
@@ -30,6 +30,7 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
+        type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     )
 
