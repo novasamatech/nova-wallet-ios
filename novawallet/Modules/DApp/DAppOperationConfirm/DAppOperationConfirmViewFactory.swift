@@ -65,7 +65,7 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             runtimeProvider: runtimeProvider,
             connection: connection,
-            keychain: Keychain(),
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             priceProviderFactory: PriceProviderFactory.shared,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
@@ -74,6 +74,9 @@ struct DAppOperationConfirmViewFactory {
     private static func createSignBytesInteractor(
         for request: DAppOperationRequest
     ) -> DAppSignBytesConfirmInteractor {
-        DAppSignBytesConfirmInteractor(request: request, keychain: Keychain())
+        DAppSignBytesConfirmInteractor(
+            request: request,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+        )
     }
 }

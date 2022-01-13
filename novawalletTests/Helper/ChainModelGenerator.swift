@@ -139,13 +139,14 @@ enum ChainModelGenerator {
     }
 
     static func generateChain(
+        defaultChainId: ChainModel.Id? = nil,
         generatingAssets count: Int,
         addressPrefix: UInt16,
         assetPresicion: UInt16 = (9...18).randomElement()!,
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false
     ) -> ChainModel {
-        let chainId = Data.random(of: 32)!.toHex()
+        let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
         let assets = (0..<count).map { index in
             generateAssetWithId(
