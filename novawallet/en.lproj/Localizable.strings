@@ -645,3 +645,16 @@
 "staking.restake.title_v2_2_0" = "Restake rewards";
 "staking.pending.rewards_v2_0_0" = "Unpaid rewards";
 "staking.rewards.destination.title_v2_0_0" = "Rewards destination";
+"dapp.list.search" = "Search by name or enter URL";
+"dapp.confirm.subtitle" = "Approve this request if you trust the application.\nCheck transaction details.";
+"common.wallet" = "Wallet";
+"common.account.address" = "Account address";
+"common.allow" = "Allow";
+"common.reject" = "Reject";
+"common.tx.details" = "Transaction details";
+"dapp.auth.title" = "Allow dapp to access\nyour account addresses?";
+"dapp.auth.subtitle" = "Approve this request if you trust the application";
+"common.dapp" = "DApp";
+"common.all" = "All";
+"dapp.unexpected.error.format" = "DApp communication failed with reason: %@";
+"common.reload" = "Reload";
