@@ -5,10 +5,12 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
+        type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) {
         guard let confirmationView = DAppOperationConfirmViewFactory.createView(
             for: request,
+            type: type,
             delegate: delegate
         ) else {
             return

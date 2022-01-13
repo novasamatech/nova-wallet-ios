@@ -1,6 +1,6 @@
 import Foundation
 
-struct PolkadotExtensionExtrinsic: Decodable {
+struct PolkadotExtensionExtrinsic: Codable {
     /**
      *   The ss-58 encoded address
      */
