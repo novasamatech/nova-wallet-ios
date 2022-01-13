@@ -41,7 +41,7 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         addSubview(valueView)
         valueView.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleView).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
         }
     }
 }

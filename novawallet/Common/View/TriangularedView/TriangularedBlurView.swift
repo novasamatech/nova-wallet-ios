@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 @IBDesignable
 open class TriangularedBlurView: UIView {
@@ -92,5 +93,11 @@ open class TriangularedBlurView: UIView {
         blurMaskView?.frame = CGRect(origin: .zero, size: bounds.size)
         blurView?.frame = bounds
         overlayView.frame = bounds
+    }
+}
+
+extension TriangularedBlurView: Highlightable {
+    public func set(highlighted: Bool, animated: Bool) {
+        overlayView.set(highlighted: highlighted, animated: animated)
     }
 }
