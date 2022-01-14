@@ -5,7 +5,7 @@ import SoraKeystore
 import SoraFoundation
 
 class DAppBrowserTests: XCTestCase {
-    let dAppURL = URL(string: "https://polkadot.js.org/apps")!
+    let dAppURL = "https://polkadot.js.org/apps"
 
     let dAppChain = ChainModelGenerator.generateChain(
         generatingAssets: 2,
@@ -36,7 +36,7 @@ class DAppBrowserTests: XCTestCase {
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [dAppChain])
 
         let interactor = DAppBrowserInteractor(
-            userQuery: .url(dAppURL),
+            userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
             operationQueue: OperationQueue()
@@ -71,7 +71,7 @@ class DAppBrowserTests: XCTestCase {
 
         wait(for: [loadingExpectation], timeout: 10)
 
-        XCTAssertEqual(loadedModel?.url, dAppURL)
+        XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
 
         if (interactor.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")

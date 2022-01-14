@@ -74,7 +74,8 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         let confirmationModel = DAppOperationConfirmModel(
             wallet: request.wallet,
             chain: request.chain,
-            dApp: request.dApp
+            dApp: request.dApp,
+            dAppIcon: request.dAppIcon
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))

@@ -15,7 +15,8 @@ extension DAppBrowserWaitingAuthState: DAppBrowserStateProtocol {
             let request = DAppAuthRequest(
                 identifier: message.identifier,
                 wallet: dataSource.wallet,
-                dApp: message.url ?? ""
+                dApp: message.url ?? "",
+                dAppIcon: dataSource.dApp?.icon
             )
 
             let nextState = DAppBrowserAuthorizingState(stateMachine: stateMachine)
