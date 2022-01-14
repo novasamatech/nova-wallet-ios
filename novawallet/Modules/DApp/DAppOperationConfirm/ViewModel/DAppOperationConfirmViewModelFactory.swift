@@ -7,7 +7,13 @@ protocol DAppOperationConfirmViewModelFactoryProtocol {
 
 final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelFactoryProtocol {
     func createViewModel(from model: DAppOperationConfirmModel) -> DAppOperationConfirmViewModel {
-        let iconViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        let iconViewModel: ImageViewModelProtocol
+
+        if let iconUrl = model.dAppIcon {
+            iconViewModel = RemoteImageViewModel(url: iconUrl)
+        } else {
+            iconViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        }
 
         let walletIcon = try? NovaIconGenerator().generateFromAccountId(
             model.wallet.substrateAccountId

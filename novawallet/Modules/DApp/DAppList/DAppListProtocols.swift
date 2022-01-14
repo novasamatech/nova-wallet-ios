@@ -34,5 +34,5 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
 protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {
     func showWalletSelection(from view: DAppListViewProtocol?)
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)
-    func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery)
+    func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)
 }

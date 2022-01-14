@@ -13,18 +13,22 @@ final class DAppSearchPresenter {
 
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
+    let logger: LoggerProtocol?
+
     init(
         interactor: DAppSearchInteractorInputProtocol,
         wireframe: DAppSearchWireframeProtocol,
         viewModelFactory: DAppListViewModelFactoryProtocol,
         initialQuery: String?,
-        delegate: DAppSearchDelegate
+        delegate: DAppSearchDelegate,
+        logger: LoggerProtocol?
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         query = initialQuery
         self.delegate = delegate
+        self.logger = logger
     }
 
     private func provideViewModel() {
@@ -52,10 +56,18 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
         provideViewModel()
     }
 
-    func selectDApp(viewModel _: DAppViewModel) {}
+    func selectDApp(viewModel: DAppViewModel) {
+        guard let dAppList = dAppList else {
+            return
+        }
+
+        let dApp = dAppList.dApps[viewModel.index]
+        delegate?.didCompleteDAppSearchResult(.dApp(model: dApp))
+        wireframe.close(from: view)
+    }
 
     func selectSearchQuery() {
-        delegate?.didCompleteDAppSearchQuery(query ?? "")
+        delegate?.didCompleteDAppSearchResult(.query(string: query ?? ""))
         wireframe.close(from: view)
     }
 }
@@ -67,8 +79,8 @@ extension DAppSearchPresenter: DAppSearchInteractorOutputProtocol {
             dAppList = list
 
             provideViewModel()
-        case .failure:
-            break
+        case let .failure(error):
+            logger?.error("Fatal error: \(error)")
         }
     }
 }

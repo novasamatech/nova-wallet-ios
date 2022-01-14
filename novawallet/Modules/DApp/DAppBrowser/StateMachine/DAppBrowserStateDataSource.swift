@@ -6,11 +6,18 @@ final class DAppBrowserStateDataSource {
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
+    let dApp: DApp?
 
-    init(wallet: MetaAccountModel, chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue) {
+    init(
+        wallet: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
+        operationQueue: OperationQueue,
+        dApp: DApp?
+    ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
         self.operationQueue = operationQueue
+        self.dApp = dApp
     }
 
     func set(metadata: PolkadotExtensionMetadata, for key: String) {

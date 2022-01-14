@@ -14623,9 +14623,9 @@ import Cuckoo
     
     
     
-     func process(newQuery: String)  {
+     func process(newQuery: DAppSearchResult)  {
         
-    return cuckoo_manager.call("process(newQuery: String)",
+    return cuckoo_manager.call("process(newQuery: DAppSearchResult)",
             parameters: (newQuery),
             escapingParameters: (newQuery),
             superclassCall:
@@ -14690,9 +14690,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processConfirmation(response: DAppOperationResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: String)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppSearchResult)> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: newQuery) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
 	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse)> where M1.MatchedType == DAppAuthResponse {
@@ -14740,9 +14740,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
-	        return cuckoo_manager.verify("process(newQuery: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.__DoNotUse<(DAppSearchResult), Void> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: newQuery) { $0 }]
+	        return cuckoo_manager.verify("process(newQuery: DAppSearchResult)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14778,7 +14778,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func process(newQuery: String)   {
+     func process(newQuery: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16124,16 +16124,16 @@ import SubstrateSdk
     
     
     
-     func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery)  {
+     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)  {
         
-    return cuckoo_manager.call("showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)",
-            parameters: (view, query),
-            escapingParameters: (view, query),
+    return cuckoo_manager.call("showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)",
+            parameters: (view, result),
+            escapingParameters: (view, result),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showBrowser(from: view, for: query))
+            defaultCall: __defaultImplStub!.showBrowser(from: view, for: result))
         
     }
     
@@ -16201,9 +16201,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showSearch(from: DAppListViewProtocol?, delegate: DAppSearchDelegate)", parameterMatchers: matchers))
 	    }
 	    
-	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for query: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppUserQuery)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppUserQuery {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppUserQuery)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: query) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)", parameterMatchers: matchers))
+	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppSearchResult)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -16250,9 +16250,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for query: M2) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?, DAppUserQuery), Void> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppUserQuery {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppUserQuery)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: query) { $0.1 }]
-	        return cuckoo_manager.verify("showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?, DAppSearchResult), Void> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
+	        return cuckoo_manager.verify("showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -16290,7 +16290,7 @@ import SubstrateSdk
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery)   {
+     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
