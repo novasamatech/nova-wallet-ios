@@ -28,6 +28,12 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
             return [newSettings]
         }, { [] })
 
+        saveOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                self?.complete(approved)
+            }
+        }
+
         saveOperation.addDependency(fetchOperations)
 
         dataSource.operationQueue.addOperations([fetchOperations, saveOperation], waitUntilFinished: false)
