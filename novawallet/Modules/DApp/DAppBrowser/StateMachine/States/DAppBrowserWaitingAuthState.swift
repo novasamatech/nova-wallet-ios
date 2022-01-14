@@ -74,7 +74,7 @@ extension DAppBrowserWaitingAuthState: DAppBrowserStateProtocol {
         stateMachine?.popMessage()
     }
 
-    func canHandleMessage() -> Bool { true }
+    func canHandleMessage() -> Bool { !isHandlingAuthMessage }
 
     func handle(message: PolkadotExtensionMessage, dataSource: DAppBrowserStateDataSource) {
         switch message.messageType {
