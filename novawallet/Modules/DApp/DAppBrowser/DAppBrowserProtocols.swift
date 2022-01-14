@@ -7,6 +7,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
     func process(message: Any)
     func activateSearch(with query: String?)
+    func close()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
@@ -45,4 +46,6 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
         request: DAppAuthRequest,
         delegate: DAppAuthDelegate
     )
+
+    func close(view: DAppBrowserViewProtocol?)
 }
