@@ -90,8 +90,8 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
 }
 
 extension DAppBrowserPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchQuery(_ query: String) {
-        interactor.process(newQuery: query)
+    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
+        interactor.process(newQuery: result)
     }
 }
 

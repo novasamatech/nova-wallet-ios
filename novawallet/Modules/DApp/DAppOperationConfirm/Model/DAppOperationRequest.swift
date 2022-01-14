@@ -6,6 +6,7 @@ struct DAppOperationRequest {
     let wallet: MetaAccountModel
     let chain: ChainModel
     let dApp: String
+    let dAppIcon: URL?
     let operationData: JSON
 }
 

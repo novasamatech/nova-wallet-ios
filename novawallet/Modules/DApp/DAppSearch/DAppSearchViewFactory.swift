@@ -19,7 +19,8 @@ struct DAppSearchViewFactory {
             wireframe: wireframe,
             viewModelFactory: DAppListViewModelFactory(),
             initialQuery: initialQuery,
-            delegate: delegate
+            delegate: delegate,
+            logger: Logger.shared
         )
 
         let view = DAppSearchViewController(

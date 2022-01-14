@@ -24,5 +24,5 @@ protocol DAppSearchWireframeProtocol: AnyObject {
 }
 
 protocol DAppSearchDelegate: AnyObject {
-    func didCompleteDAppSearchQuery(_ query: String)
+    func didCompleteDAppSearchResult(_ result: DAppSearchResult)
 }
