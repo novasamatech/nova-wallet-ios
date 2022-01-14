@@ -13,6 +13,12 @@ protocol NavigationControlling: AnyObject {
 }
 
 class FearlessNavigationController: UINavigationController, UINavigationControllerDelegate {
+    var barSettings: NavigationBarSettings = .defaultSettings {
+        didSet {
+            applyBarStyle()
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,14 +34,62 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
 
         view.backgroundColor = R.color.colorBlack()
 
-        navigationBar.tintColor = FearlessNavigationBarStyle.tintColor
+        applyBarStyle()
+    }
 
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.backIndicatorImage = R.image.iconBack()
-        navigationBar.backIndicatorTransitionMaskImage = R.image.iconBack()
+    // swiftlint:disable:next cyclomatic_complexity
+    func applyBarStyle() {
+        if #available(iOS 13.0, *) {
+            let appearance = UINavigationBarAppearance()
 
-        navigationBar.titleTextAttributes = FearlessNavigationBarStyle.titleAttributes
+            if let tintColor = barSettings.style.tintColor {
+                navigationBar.tintColor = tintColor
+            }
+
+            if let background = barSettings.style.background {
+                appearance.backgroundImage = background
+            }
+
+            if let shadow = barSettings.style.shadow {
+                appearance.shadowImage = shadow
+            }
+
+            if let back = barSettings.style.backImage {
+                appearance.setBackIndicatorImage(back, transitionMaskImage: back)
+            }
+
+            if let titleAttributes = barSettings.style.titleAttributes {
+                appearance.titleTextAttributes = titleAttributes
+            }
+
+            if let visualEffect = barSettings.style.visualEffect {
+                appearance.backgroundEffect = visualEffect as? UIBlurEffect
+            }
+
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+        } else {
+            if let tintColor = barSettings.style.tintColor {
+                navigationBar.tintColor = tintColor
+            }
+
+            if let background = barSettings.style.background {
+                navigationBar.setBackgroundImage(background, for: UIBarMetrics.default)
+            }
+
+            if let shadow = barSettings.style.shadow {
+                navigationBar.shadowImage = shadow
+            }
+
+            if let back = barSettings.style.backImage {
+                navigationBar.backIndicatorImage = back
+                navigationBar.backIndicatorTransitionMaskImage = back
+            }
+
+            if let titleAttributes = barSettings.style.titleAttributes {
+                navigationBar.titleTextAttributes = titleAttributes
+            }
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,6 +128,7 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
 
     private func insertCloseButtonToRootIfNeeded() {
         if
+            barSettings.shouldSetCloseButton,
             presentingViewController != nil,
             let rootViewController = viewControllers.first,
             rootViewController.navigationItem.leftBarButtonItem == nil {

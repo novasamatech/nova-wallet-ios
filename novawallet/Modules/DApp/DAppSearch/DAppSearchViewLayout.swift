@@ -11,6 +11,12 @@ final class DAppSearchViewLayout: UIView {
         return view
     }()
 
+    let cancelBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
+        item.tintColor = R.color.colorNovaBlue()
+        return item
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
