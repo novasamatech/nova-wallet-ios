@@ -70,6 +70,10 @@ extension DAppSearchPresenter: DAppSearchPresenterProtocol {
         delegate?.didCompleteDAppSearchResult(.query(string: query ?? ""))
         wireframe.close(from: view)
     }
+
+    func cancel() {
+        wireframe.close(from: view)
+    }
 }
 
 extension DAppSearchPresenter: DAppSearchInteractorOutputProtocol {

@@ -832,7 +832,6 @@
 		8490142E24A935FE008F705E /* LoadableViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142924A935FE008F705E /* LoadableViewProtocol.swift */; };
 		8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */; };
 		8490143024A935FE008F705E /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490142B24A935FE008F705E /* AlertPresentable.swift */; };
-		8490144B24A93D0B008F705E /* FearlessNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144924A93D0B008F705E /* FearlessNavigationBar.swift */; };
 		8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144A24A93D0B008F705E /* FearlessNavigationController.swift */; };
 		8490144F24A93E2E008F705E /* UIImage+Drawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490144E24A93E2E008F705E /* UIImage+Drawing.swift */; };
 		8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490145024A93FD1008F705E /* FearlessLoadingViewPresenter.swift */; };
@@ -963,6 +962,9 @@
 		849E17DE279093B4002D1744 /* DAppSearchDAppTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17DD279093B4002D1744 /* DAppSearchDAppTableViewCell.swift */; };
 		849E17E0279094E7002D1744 /* DAppSearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17DF279094E7002D1744 /* DAppSearchHeaderView.swift */; };
 		849E17E327913220002D1744 /* DAppSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E227913220002D1744 /* DAppSearchResult.swift */; };
+		849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E527914393002D1744 /* NavigationBarSettings.swift */; };
+		849E17E8279143B2002D1744 /* NavigationBarStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E7279143B2002D1744 /* NavigationBarStyle.swift */; };
+		849E17EA279148C3002D1744 /* NavigationBarSettings+DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E9279148C3002D1744 /* NavigationBarSettings+DApp.swift */; };
 		849E2332254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E2331254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift */; };
 		849E2351254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E2350254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift */; };
 		849E689526AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */; };
@@ -2695,7 +2697,6 @@
 		8490142924A935FE008F705E /* LoadableViewProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadableViewProtocol.swift; sourceTree = "<group>"; };
 		8490142A24A935FE008F705E /* ControllerBackedProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerBackedProtocol.swift; sourceTree = "<group>"; };
 		8490142B24A935FE008F705E /* AlertPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
-		8490144924A93D0B008F705E /* FearlessNavigationBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessNavigationBar.swift; sourceTree = "<group>"; };
 		8490144A24A93D0B008F705E /* FearlessNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessNavigationController.swift; sourceTree = "<group>"; };
 		8490144E24A93E2E008F705E /* UIImage+Drawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Drawing.swift"; sourceTree = "<group>"; };
 		8490145024A93FD1008F705E /* FearlessLoadingViewPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FearlessLoadingViewPresenter.swift; sourceTree = "<group>"; };
@@ -2827,6 +2828,9 @@
 		849E17DD279093B4002D1744 /* DAppSearchDAppTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchDAppTableViewCell.swift; sourceTree = "<group>"; };
 		849E17DF279094E7002D1744 /* DAppSearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchHeaderView.swift; sourceTree = "<group>"; };
 		849E17E227913220002D1744 /* DAppSearchResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchResult.swift; sourceTree = "<group>"; };
+		849E17E527914393002D1744 /* NavigationBarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarSettings.swift; sourceTree = "<group>"; };
+		849E17E7279143B2002D1744 /* NavigationBarStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarStyle.swift; sourceTree = "<group>"; };
+		849E17E9279148C3002D1744 /* NavigationBarSettings+DApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NavigationBarSettings+DApp.swift"; sourceTree = "<group>"; };
 		849E2331254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceScanConfigurator.swift; sourceTree = "<group>"; };
 		849E2350254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceScanLocalSearchEngine.swift; sourceTree = "<group>"; };
 		849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ElectedValidatorInfo+Selected.swift"; sourceTree = "<group>"; };
@@ -6162,11 +6166,12 @@
 		8490144224A93CDC008F705E /* NavigationController */ = {
 			isa = PBXGroup;
 			children = (
-				8490144924A93D0B008F705E /* FearlessNavigationBar.swift */,
 				8490144A24A93D0B008F705E /* FearlessNavigationController.swift */,
 				8467F4C826B2943A00C5B6F4 /* ImportantFlowNavigationController.swift */,
 				8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */,
 				8423ADD126B2C9D000057EDD /* ImportantViewProtocol.swift */,
+				849E17E527914393002D1744 /* NavigationBarSettings.swift */,
+				849E17E7279143B2002D1744 /* NavigationBarStyle.swift */,
 			);
 			path = NavigationController;
 			sourceTree = "<group>";
@@ -7097,6 +7102,7 @@
 			isa = PBXGroup;
 			children = (
 				84D2F1A4277437D30040C680 /* DAppIconView.swift */,
+				849E17E9279148C3002D1744 /* NavigationBarSettings+DApp.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9957,7 +9963,6 @@
 				AEA2C1C02681E9EC0069492E /* ValidatorSearchViewLayout.swift in Sources */,
 				840DFDD8277061ED00B62981 /* DAppOperationConfirmModel.swift in Sources */,
 				AE398392272AFB2B00BC8A85 /* WalletManagementViewFactory.swift in Sources */,
-				8490144B24A93D0B008F705E /* FearlessNavigationBar.swift in Sources */,
 				84F4393A25DAC48D00AEDA56 /* JSONRPCAliases.swift in Sources */,
 				843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */,
 				AE9EF25A260A82970026910A /* StoriesInteractor.swift in Sources */,
@@ -10029,6 +10034,7 @@
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
 				84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */,
 				8428765A24ADDE0200D91AD8 /* SettingsViewFactory.swift in Sources */,
+				849E17E8279143B2002D1744 /* NavigationBarStyle.swift in Sources */,
 				8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */,
 				842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */,
 				8490147724A94A37008F705E /* RootPresenter.swift in Sources */,
@@ -10238,6 +10244,7 @@
 				AE6F7FE22685E812002BBC3E /* ValidatorListFilterWireframe.swift in Sources */,
 				849014DD24AA8F60008F705E /* MainTabBarViewFactory.swift in Sources */,
 				AE7129C12608CAE7000AA3F5 /* NetworkStakingInfo.swift in Sources */,
+				849E17EA279148C3002D1744 /* NavigationBarSettings+DApp.swift in Sources */,
 				F4D96B7926380A4100B23D3D /* StakingBalanceUnbondingWidgetViewModel.swift in Sources */,
 				8401F24F24E524900081D8F8 /* String+Helpers.swift in Sources */,
 				F4113B3F260C77FF00DF4DBA /* StakingRewardPayoutsViewLayout.swift in Sources */,
@@ -10767,6 +10774,7 @@
 				84F47D4B2666EF1C00F7647A /* KaruraStatementData.swift in Sources */,
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
 				84644A0C256713D5004EAA4B /* TriangularedBlurView+Inspectable.swift in Sources */,
+				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
 				844CB57226F9EB2000396E13 /* RuntimeCodingService.swift in Sources */,
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,

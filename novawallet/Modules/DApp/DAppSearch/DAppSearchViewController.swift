@@ -85,12 +85,16 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
 
     private func setupSearchBar() {
         navigationItem.titleView = rootView.searchBar
+        navigationItem.rightBarButtonItem = rootView.cancelBarItem
 
         rootView.searchBar.textField.addTarget(
             self,
             action: #selector(actionTextFieldChanged),
             for: .editingChanged
         )
+
+        rootView.cancelBarItem.target = self
+        rootView.cancelBarItem.action = #selector(actionCancel)
     }
 
     @objc private func actionTextFieldChanged() {
@@ -106,6 +110,10 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         }
 
         presenter.updateSearch(query: searchTitle ?? "")
+    }
+
+    @objc func actionCancel() {
+        presenter.cancel()
     }
 }
 
