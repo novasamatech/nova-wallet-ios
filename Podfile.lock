@@ -134,7 +134,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
   - Sourcery (~> 1.4)
-  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `ca9566ff92dd77940752116c3985ef97eaa0d9db`)"
+  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `5e3550164e0ed08e4fbace45ce5fbc01b95f2355`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -175,7 +175,7 @@ EXTERNAL SOURCES:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
-    :commit: ca9566ff92dd77940752116c3985ef97eaa0d9db
+    :commit: 5e3550164e0ed08e4fbace45ce5fbc01b95f2355
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -189,7 +189,7 @@ CHECKOUT OPTIONS:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
   SubstrateSdk:
-    :commit: ca9566ff92dd77940752116c3985ef97eaa0d9db
+    :commit: 5e3550164e0ed08e4fbace45ce5fbc01b95f2355
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
@@ -225,6 +225,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 2f1a5e931254b012bbe6a8bde9db1d66f3616266
+PODFILE CHECKSUM: 88887f5c3d7ac7526e99b8122dd865a2b0bbd833
 
 COCOAPODS: 1.11.2
