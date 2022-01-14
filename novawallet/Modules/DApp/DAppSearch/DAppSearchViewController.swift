@@ -155,9 +155,13 @@ extension DAppSearchViewController: UITableViewDataSource {
 
         switch tableSection {
         case .search:
-            title = "Search"
+            title = R.string.localizable.dappSearchQuerySection(
+                preferredLanguages: selectedLocale.rLanguages
+            )
         case .dapps:
-            title = "DApps"
+            title = R.string.localizable.dappSearchAppSection(
+                preferredLanguages: selectedLocale.rLanguages
+            )
         }
 
         view.bind(title: title)
@@ -212,6 +216,7 @@ extension DAppSearchViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
+            rootView.tableView.reloadData()
         }
     }
 }
