@@ -56,4 +56,8 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
 
         view?.controller.present(authVew.controller, animated: true, completion: nil)
     }
+
+    func close(view: DAppBrowserViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
+    }
 }
