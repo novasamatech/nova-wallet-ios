@@ -8,7 +8,14 @@ protocol DAppAuthViewModelFactoryProtocol {
 final class DAppAuthViewModelFactory: DAppAuthViewModelFactoryProtocol {
     func createViewModel(from request: DAppAuthRequest) -> DAppAuthViewModel {
         let sourceViewModel = StaticImageViewModel(image: R.image.iconDappExtension()!)
-        let destinationViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+
+        let destinationViewModel: ImageViewModelProtocol
+
+        if let iconUrl = request.dAppIcon {
+            destinationViewModel = RemoteImageViewModel(url: iconUrl)
+        } else {
+            destinationViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        }
 
         let walletIcon = try? NovaIconGenerator().generateFromAccountId(
             request.wallet.substrateAccountId

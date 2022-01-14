@@ -13,7 +13,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
     func process(message: Any)
     func processConfirmation(response: DAppOperationResponse)
-    func process(newQuery: String)
+    func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse)
     func reload()
 }
