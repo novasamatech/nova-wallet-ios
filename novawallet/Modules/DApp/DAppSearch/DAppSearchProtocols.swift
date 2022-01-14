@@ -9,6 +9,7 @@ protocol DAppSearchPresenterProtocol: AnyObject {
     func updateSearch(query: String)
     func selectDApp(viewModel: DAppViewModel)
     func selectSearchQuery()
+    func cancel()
 }
 
 protocol DAppSearchInteractorInputProtocol: AnyObject {
