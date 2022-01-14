@@ -4,9 +4,10 @@ import UIKit
 struct NavigationBarStyle {
     let background: UIImage?
     let shadow: UIImage?
+    let shadowColor: UIColor?
     let tintColor: UIColor?
     let backImage: UIImage?
-    let visualEffect: UIVisualEffect?
+    let backgroundEffect: UIBlurEffect?
     let titleAttributes: [NSAttributedString.Key: Any]?
 }
 
@@ -20,10 +21,11 @@ extension NavigationBarStyle {
 
         return NavigationBarStyle(
             background: UIImage(),
-            shadow: UIImage(),
+            shadow: nil,
+            shadowColor: nil,
             tintColor: R.color.colorWhite()!,
             backImage: R.image.iconBack(),
-            visualEffect: nil,
+            backgroundEffect: nil,
             titleAttributes: titleTextAttributes
         )
     }
