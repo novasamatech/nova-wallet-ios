@@ -74,6 +74,7 @@ class DAppOperationConfirmTests: XCTestCase {
             wallet: wallet,
             chain: chain,
             dApp: "Test",
+            dAppIcon: nil,
             operationData: jsonRequest
         )
 
@@ -217,6 +218,7 @@ class DAppOperationConfirmTests: XCTestCase {
             wallet: wallet,
             chain: chain,
             dApp: "Test",
+            dAppIcon: nil,
             operationData: jsonRequest
         )
 
