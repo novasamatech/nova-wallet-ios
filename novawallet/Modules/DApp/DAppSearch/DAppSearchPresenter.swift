@@ -21,7 +21,7 @@ final class DAppSearchPresenter {
         viewModelFactory: DAppListViewModelFactoryProtocol,
         initialQuery: String?,
         delegate: DAppSearchDelegate,
-        logger: LoggerProtocol?
+        logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
