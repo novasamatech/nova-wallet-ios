@@ -66,6 +66,8 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
         rootView.searchBar.textField.placeholder = R.string.localizable.dappListSearch(
             preferredLanguages: languages
         )
+
+        rootView.cancelBarItem.title = R.string.localizable.commonCancel(preferredLanguages: languages)
     }
 
     private func setupTableView() {

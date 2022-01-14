@@ -37,58 +37,41 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
         applyBarStyle()
     }
 
-    // swiftlint:disable:next cyclomatic_complexity
     func applyBarStyle() {
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
 
-            if let tintColor = barSettings.style.tintColor {
-                navigationBar.tintColor = tintColor
-            }
+            navigationBar.tintColor = barSettings.style.tintColor
 
-            if let background = barSettings.style.background {
-                appearance.backgroundImage = background
-            }
+            appearance.backgroundImage = barSettings.style.background
 
-            if let shadow = barSettings.style.shadow {
-                appearance.shadowImage = shadow
-            }
+            appearance.shadowImage = barSettings.style.shadow
 
-            if let back = barSettings.style.backImage {
-                appearance.setBackIndicatorImage(back, transitionMaskImage: back)
-            }
+            appearance.shadowColor = barSettings.style.shadowColor
+
+            let back = barSettings.style.backImage
+            appearance.setBackIndicatorImage(back, transitionMaskImage: back)
 
             if let titleAttributes = barSettings.style.titleAttributes {
                 appearance.titleTextAttributes = titleAttributes
             }
 
-            if let visualEffect = barSettings.style.visualEffect {
-                appearance.backgroundEffect = visualEffect as? UIBlurEffect
-            }
+            appearance.backgroundEffect = barSettings.style.backgroundEffect
 
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
         } else {
-            if let tintColor = barSettings.style.tintColor {
-                navigationBar.tintColor = tintColor
-            }
+            navigationBar.tintColor = barSettings.style.tintColor
 
-            if let background = barSettings.style.background {
-                navigationBar.setBackgroundImage(background, for: UIBarMetrics.default)
-            }
+            navigationBar.setBackgroundImage(barSettings.style.background, for: UIBarMetrics.default)
 
-            if let shadow = barSettings.style.shadow {
-                navigationBar.shadowImage = shadow
-            }
+            navigationBar.shadowImage = barSettings.style.shadow
 
-            if let back = barSettings.style.backImage {
-                navigationBar.backIndicatorImage = back
-                navigationBar.backIndicatorTransitionMaskImage = back
-            }
+            let back = barSettings.style.backImage
+            navigationBar.backIndicatorImage = back
+            navigationBar.backIndicatorTransitionMaskImage = back
 
-            if let titleAttributes = barSettings.style.titleAttributes {
-                navigationBar.titleTextAttributes = titleAttributes
-            }
+            navigationBar.titleTextAttributes = barSettings.style.titleAttributes
         }
     }
 
