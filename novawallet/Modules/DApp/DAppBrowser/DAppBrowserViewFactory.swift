@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct DAppBrowserViewFactory {
-    static func createView(for userQuery: DAppUserQuery) -> DAppBrowserViewProtocol? {
+    static func createView(for userQuery: DAppSearchResult) -> DAppBrowserViewProtocol? {
         let localizationManager = LocalizationManager.shared
         let logger = Logger.shared
 

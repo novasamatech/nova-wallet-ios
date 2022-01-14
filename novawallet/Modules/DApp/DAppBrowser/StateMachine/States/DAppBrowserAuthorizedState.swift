@@ -72,6 +72,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             wallet: dataSource.wallet,
             chain: chain,
             dApp: message.url ?? "",
+            dAppIcon: dataSource.dApp?.icon,
             operationData: jsonRequest
         )
 
@@ -116,6 +117,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             wallet: dataSource.wallet,
             chain: chain,
             dApp: message.url ?? "",
+            dAppIcon: dataSource.dApp?.icon,
             operationData: .stringValue(payload.data)
         )
 
