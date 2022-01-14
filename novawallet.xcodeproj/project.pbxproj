@@ -965,6 +965,8 @@
 		849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E527914393002D1744 /* NavigationBarSettings.swift */; };
 		849E17E8279143B2002D1744 /* NavigationBarStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E7279143B2002D1744 /* NavigationBarStyle.swift */; };
 		849E17EA279148C3002D1744 /* NavigationBarSettings+DApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17E9279148C3002D1744 /* NavigationBarSettings+DApp.swift */; };
+		849E17F02791909C002D1744 /* DAppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17EF2791909C002D1744 /* DAppSettings.swift */; };
+		849E17F2279191EB002D1744 /* DAppSettingsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17F1279191EB002D1744 /* DAppSettingsMapper.swift */; };
 		849E2332254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E2331254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift */; };
 		849E2351254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E2350254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift */; };
 		849E689526AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */; };
@@ -2831,6 +2833,9 @@
 		849E17E527914393002D1744 /* NavigationBarSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarSettings.swift; sourceTree = "<group>"; };
 		849E17E7279143B2002D1744 /* NavigationBarStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarStyle.swift; sourceTree = "<group>"; };
 		849E17E9279148C3002D1744 /* NavigationBarSettings+DApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NavigationBarSettings+DApp.swift"; sourceTree = "<group>"; };
+		849E17EE27918999002D1744 /* MultiassetUserDataModel2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel2.xcdatamodel; sourceTree = "<group>"; };
+		849E17EF2791909C002D1744 /* DAppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettings.swift; sourceTree = "<group>"; };
+		849E17F1279191EB002D1744 /* DAppSettingsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSettingsMapper.swift; sourceTree = "<group>"; };
 		849E2331254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceScanConfigurator.swift; sourceTree = "<group>"; };
 		849E2350254AF44200B1F6D4 /* InvoiceScanLocalSearchEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceScanLocalSearchEngine.swift; sourceTree = "<group>"; };
 		849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ElectedValidatorInfo+Selected.swift"; sourceTree = "<group>"; };
@@ -7440,6 +7445,8 @@
 				846E5016277AD3AF0049B659 /* PolkadotExtensionProtocol */,
 				846E5017277AD3D50049B659 /* DAppList.swift */,
 				843612BA278FD6E000DC739E /* DAppSigningType.swift */,
+				849E17EF2791909C002D1744 /* DAppSettings.swift */,
+				849E17F1279191EB002D1744 /* DAppSettingsMapper.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -9792,6 +9799,7 @@
 				84FD3DB52540ED0900A234E3 /* Block.swift in Sources */,
 				8494D86B25247F9600614D8F /* Decimal+String.swift in Sources */,
 				843910AA253E3BAA00E3C217 /* WebSocketSubscriptionProtocols.swift in Sources */,
+				849E17F2279191EB002D1744 /* DAppSettingsMapper.swift in Sources */,
 				84873B0926029CBD000A83EE /* StakingStateViewModelFactory.swift in Sources */,
 				84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */,
 				846CA7722707A3060011124C /* SingleToMultiasset.xcmappingmodel in Sources */,
@@ -10775,6 +10783,7 @@
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
 				84644A0C256713D5004EAA4B /* TriangularedBlurView+Inspectable.swift in Sources */,
 				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
+				849E17F02791909C002D1744 /* DAppSettings.swift in Sources */,
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
 				844CB57226F9EB2000396E13 /* RuntimeCodingService.swift in Sources */,
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,
@@ -12121,10 +12130,11 @@
 		8467FD4F24EFD11E005D486C /* UserDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				849E17EE27918999002D1744 /* MultiassetUserDataModel2.xcdatamodel */,
 				848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */,
 				8467FD5024EFD11E005D486C /* UserDataModel.xcdatamodel */,
 			);
-			currentVersion = 848DE75726D595660045CD29 /* MultiassetUserDataModel.xcdatamodel */;
+			currentVersion = 849E17EE27918999002D1744 /* MultiassetUserDataModel2.xcdatamodel */;
 			path = UserDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
