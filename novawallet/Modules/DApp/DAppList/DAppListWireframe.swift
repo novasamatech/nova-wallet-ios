@@ -17,13 +17,14 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         }
 
         let navigationController = FearlessNavigationController(rootViewController: searchView.controller)
+        navigationController.barSettings = .dappSettings
         navigationController.modalTransitionStyle = .crossDissolve
         navigationController.modalPresentationStyle = .fullScreen
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery) {
-        guard let browserView = DAppBrowserViewFactory.createView(for: query) else {
+    func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult) {
+        guard let browserView = DAppBrowserViewFactory.createView(for: result) else {
             return
         }
 
