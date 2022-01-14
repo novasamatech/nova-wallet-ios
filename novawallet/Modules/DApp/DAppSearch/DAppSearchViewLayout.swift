@@ -12,7 +12,7 @@ final class DAppSearchViewLayout: UIView {
     }()
 
     let cancelBarItem: UIBarButtonItem = {
-        let item = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
+        let item = UIBarButtonItem()
         item.tintColor = R.color.colorNovaBlue()
         return item
     }()

@@ -12,9 +12,10 @@ extension NavigationBarSettings {
         let style = NavigationBarStyle(
             background: UIImage(),
             shadow: UIImage(),
-            tintColor: nil,
+            shadowColor: nil,
+            tintColor: R.color.colorWhite(),
             backImage: R.image.iconBack(),
-            visualEffect: UIBlurEffect(style: .dark),
+            backgroundEffect: UIBlurEffect(style: .dark),
             titleAttributes: titleTextAttributes
         )
 
