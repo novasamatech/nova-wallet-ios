@@ -17,6 +17,7 @@ final class DAppBrowserInteractor {
         userQuery: DAppSearchResult,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
@@ -24,6 +25,7 @@ final class DAppBrowserInteractor {
         dataSource = DAppBrowserStateDataSource(
             wallet: wallet,
             chainRegistry: chainRegistry,
+            dAppSettingsRepository: dAppSettingsRepository,
             operationQueue: operationQueue,
             dApp: userQuery.dApp
         )

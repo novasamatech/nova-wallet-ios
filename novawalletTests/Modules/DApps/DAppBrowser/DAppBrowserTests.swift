@@ -3,6 +3,7 @@ import XCTest
 import Cuckoo
 import SoraKeystore
 import SoraFoundation
+import RobinHood
 
 class DAppBrowserTests: XCTestCase {
     let dAppURL = "https://polkadot.js.org/apps"
@@ -35,10 +36,17 @@ class DAppBrowserTests: XCTestCase {
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [dAppChain])
 
+        let dAppSettingsRepository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(DAppSettingsMapper())
+        )
+
         let interactor = DAppBrowserInteractor(
             userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
+            dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
             operationQueue: OperationQueue()
         )
 
