@@ -665,3 +665,4 @@
 "common.fee.retry.failed" = "Fee loading failed. Would you like to retry?";
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
+"dapp.browser.close.confirmation" = "Are you sure you want to close this screen?\nYour changes will not be applied.";
