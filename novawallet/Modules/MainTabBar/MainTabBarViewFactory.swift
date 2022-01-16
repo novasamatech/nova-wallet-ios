@@ -273,31 +273,6 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         normalImage: UIImage?,
         selectedImage: UIImage?
     ) -> UITabBarItem {
-        let tabBarItem = UITabBarItem(
-            title: title,
-            image: normalImage,
-            selectedImage: selectedImage
-        )
-
-        // Style is set here for compatibility reasons for iOS 12.x and less.
-        // For iOS 13 styling see MainTabBarViewController's 'configure' method.
-
-        if #available(iOS 13.0, *) {
-            return tabBarItem
-        }
-
-        let normalAttributes = [
-            NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
-            NSAttributedString.Key.font: UIFont.caption2
-        ]
-        let selectedAttributes = [
-            NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
-            NSAttributedString.Key.font: UIFont.caption2
-        ]
-
-        tabBarItem.setTitleTextAttributes(normalAttributes, for: .normal)
-        tabBarItem.setTitleTextAttributes(selectedAttributes, for: .selected)
-
-        return tabBarItem
+        UITabBarItem(title: title, image: normalImage, selectedImage: selectedImage)
     }
 }

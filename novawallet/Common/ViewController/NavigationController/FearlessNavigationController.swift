@@ -38,41 +38,27 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
     }
 
     func applyBarStyle() {
-        if #available(iOS 13.0, *) {
-            let appearance = UINavigationBarAppearance()
+        let appearance = UINavigationBarAppearance()
 
-            navigationBar.tintColor = barSettings.style.tintColor
+        navigationBar.tintColor = barSettings.style.tintColor
 
-            appearance.backgroundImage = barSettings.style.background
+        appearance.backgroundImage = barSettings.style.background
 
-            appearance.shadowImage = barSettings.style.shadow
+        appearance.shadowImage = barSettings.style.shadow
 
-            appearance.shadowColor = barSettings.style.shadowColor
+        appearance.shadowColor = barSettings.style.shadowColor
 
-            let back = barSettings.style.backImage
-            appearance.setBackIndicatorImage(back, transitionMaskImage: back)
+        let back = barSettings.style.backImage
+        appearance.setBackIndicatorImage(back, transitionMaskImage: back)
 
-            if let titleAttributes = barSettings.style.titleAttributes {
-                appearance.titleTextAttributes = titleAttributes
-            }
-
-            appearance.backgroundEffect = barSettings.style.backgroundEffect
-
-            navigationBar.standardAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-        } else {
-            navigationBar.tintColor = barSettings.style.tintColor
-
-            navigationBar.setBackgroundImage(barSettings.style.background, for: UIBarMetrics.default)
-
-            navigationBar.shadowImage = barSettings.style.shadow
-
-            let back = barSettings.style.backImage
-            navigationBar.backIndicatorImage = back
-            navigationBar.backIndicatorTransitionMaskImage = back
-
-            navigationBar.titleTextAttributes = barSettings.style.titleAttributes
+        if let titleAttributes = barSettings.style.titleAttributes {
+            appearance.titleTextAttributes = titleAttributes
         }
+
+        appearance.backgroundEffect = barSettings.style.backgroundEffect
+
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
     }
 
     override func viewWillAppear(_ animated: Bool) {
