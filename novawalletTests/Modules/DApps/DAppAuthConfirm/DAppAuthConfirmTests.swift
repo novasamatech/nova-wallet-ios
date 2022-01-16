@@ -107,6 +107,7 @@ class DAppAuthConfirmTests: XCTestCase {
         let request = DAppAuthRequest(
             identifier: UUID().uuidString,
             wallet: walletSettings.value,
+            origin: "DApp",
             dApp: "Test",
             dAppIcon: nil
         )
