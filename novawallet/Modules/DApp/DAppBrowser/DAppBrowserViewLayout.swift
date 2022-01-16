@@ -83,7 +83,8 @@ final class DAppBrowserViewLayout: UIView {
         addSubview(webView)
         webView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.bottom.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
 
         addSubview(toolbarBackgroundView)

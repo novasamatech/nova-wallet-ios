@@ -34,7 +34,8 @@ final class DAppSearchViewLayout: UIView {
         addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 }
