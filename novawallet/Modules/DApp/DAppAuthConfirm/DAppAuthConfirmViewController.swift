@@ -13,7 +13,7 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
-        preferredContentSize = CGSize(width: 0.0, height: 402.0)
+        preferredContentSize = CGSize(width: 0.0, height: 432.0)
         self.localizationManager = localizationManager
     }
 
