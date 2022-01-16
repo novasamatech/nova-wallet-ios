@@ -666,3 +666,4 @@
 "dapp.search.query.section" = "Поиск";
 "dapp.search.app.section" = "DApps";
 "dapp.browser.close.confirmation" = "Вы действительно хотите закрыть браузер?\nВаши действия не будут сохранены.";
+"dapp.sign.extrinsic.failed" = "Не удалось подписать запрошенную операцию";
