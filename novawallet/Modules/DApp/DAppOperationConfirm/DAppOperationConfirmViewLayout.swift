@@ -22,7 +22,7 @@ final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
         let label = UILabel()
         label.textColor = R.color.colorLightGray()
         label.font = .regularFootnote
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         label.textAlignment = .center
         return label
     }()
@@ -142,14 +142,11 @@ final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
             make.height.equalTo(48.0)
         }
 
-        let bottomOffsetMultiplier = isAdaptiveHeightDecreased ? designScaleRatio.height : 1.0
-        let bottomOffset = bottomOffsetMultiplier * 14.0
-
         addSubview(rejectButton)
         rejectButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.equalTo(self.snp.centerX).offset(-8.0)
-            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(bottomOffset)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
@@ -157,7 +154,7 @@ final class DAppOperationConfirmViewLayout: UIView, AdaptiveDesignable {
         confirmButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.leading.equalTo(self.snp.centerX).offset(8.0)
-            make.top.equalTo(transactionDetailsControl.snp.bottom).offset(bottomOffset)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }
