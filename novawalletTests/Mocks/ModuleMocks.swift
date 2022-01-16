@@ -14470,6 +14470,21 @@ import Cuckoo
         
     }
     
+    
+    
+     func close()  {
+        
+    return cuckoo_manager.call("close()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14492,6 +14507,11 @@ import Cuckoo
 	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
+	    }
+	    
+	    func close() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "close()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14528,6 +14548,12 @@ import Cuckoo
 	        return cuckoo_manager.verify("activateSearch(with: String?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func close() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("close()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -14546,6 +14572,10 @@ import Cuckoo
     }
     
      func activateSearch(with query: String?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func close()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15075,6 +15105,21 @@ import Cuckoo
     
     
     
+     func close(view: DAppBrowserViewProtocol?)  {
+        
+    return cuckoo_manager.call("close(view: DAppBrowserViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close(view: view))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -15127,6 +15172,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", parameterMatchers: matchers))
 	    }
 	    
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "close(view: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -15172,6 +15222,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("close(view: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15201,6 +15257,10 @@ import Cuckoo
     }
     
      func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func close(view: DAppBrowserViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -95,6 +95,9 @@ final class DAppSearchViewController: UIViewController, ViewHolder {
             for: .editingChanged
         )
 
+        rootView.searchBar.textField.delegate = self
+        rootView.searchBar.textField.returnKeyType = .done
+
         rootView.cancelBarItem.target = self
         rootView.cancelBarItem.action = #selector(actionCancel)
     }
@@ -204,6 +207,13 @@ extension DAppSearchViewController: UITableViewDelegate {
         case .dapps:
             presenter.selectDApp(viewModel: viewModels[indexPath.row])
         }
+    }
+}
+
+extension DAppSearchViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
 }
 
