@@ -6,6 +6,7 @@ final class DAppSearchViewLayout: UIView {
 
     let tableView: UITableView = {
         let view = UITableView()
+        view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.separatorStyle = .none
         return view
