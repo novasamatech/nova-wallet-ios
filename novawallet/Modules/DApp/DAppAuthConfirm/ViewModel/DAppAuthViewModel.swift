@@ -7,4 +7,5 @@ struct DAppAuthViewModel {
     let walletName: String
     let walletIcon: DrawableIcon?
     let dApp: String
+    let origin: String?
 }

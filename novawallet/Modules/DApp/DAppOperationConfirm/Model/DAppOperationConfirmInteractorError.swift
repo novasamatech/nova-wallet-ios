@@ -5,6 +5,7 @@ enum DAppOperationConfirmInteractorError: Error {
     case extrinsicBadField(name: String)
     case signedExtensionsMismatch(actual: [String], expected: [String])
     case invalidRawSignature(data: Data)
+    case signingFailed
 }
 
 extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
@@ -35,6 +36,8 @@ extension DAppOperationConfirmInteractorError: ErrorContentConvertible {
             message = R.string.localizable.dappConfirmationInvalidSignature(
                 preferredLanguages: locale?.rLanguages
             )
+        case .signingFailed:
+            message = R.string.localizable.dappSignExtrinsicFailed(preferredLanguages: locale?.rLanguages)
         }
 
         return ErrorContent(title: title, message: message)

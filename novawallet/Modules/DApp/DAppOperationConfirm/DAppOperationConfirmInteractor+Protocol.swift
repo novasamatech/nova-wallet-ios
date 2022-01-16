@@ -42,7 +42,8 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     let response = DAppOperationResponse(signature: signature)
                     self?.presenter?.didReceive(responseResult: .success(response), for: request)
                 } catch {
-                    self?.presenter?.didReceive(responseResult: .failure(error), for: request)
+                    let interactorError = error as? DAppOperationConfirmInteractorError ?? .signingFailed
+                    self?.presenter?.didReceive(responseResult: .failure(interactorError), for: request)
                 }
             }
         }
