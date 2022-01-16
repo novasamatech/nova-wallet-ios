@@ -55,6 +55,26 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func activateSearch(with query: String?) {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
     }
+
+    func close() {
+        let languages = localizationManager.selectedLocale.rLanguages
+
+        let closeViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonClose(preferredLanguages: languages),
+            style: .destructive
+        ) { [weak self] in
+            self?.wireframe.close(view: self?.view)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: nil,
+            message: R.string.localizable.dappBrowserCloseConfirmation(preferredLanguages: languages),
+            actions: [closeViewModel],
+            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {

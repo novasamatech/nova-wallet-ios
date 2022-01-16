@@ -12,6 +12,12 @@ final class DAppBrowserViewLayout: UIView {
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
 
+    let closeBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
     let refreshBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
         item.tintColor = R.color.colorWhite()
@@ -77,8 +83,7 @@ final class DAppBrowserViewLayout: UIView {
         addSubview(webView)
         webView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalToSuperview()
+            make.top.bottom.equalToSuperview()
         }
 
         addSubview(toolbarBackgroundView)
