@@ -26,7 +26,8 @@ final class DAppAuthViewModelFactory: DAppAuthViewModelFactoryProtocol {
             destinationImageViewModel: destinationViewModel,
             walletName: request.wallet.name,
             walletIcon: walletIcon,
-            dApp: request.dApp
+            dApp: request.dApp,
+            origin: request.origin
         )
     }
 }

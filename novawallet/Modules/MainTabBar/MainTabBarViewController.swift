@@ -25,32 +25,27 @@ final class MainTabBarViewController: UITabBarController {
     }
 
     private func configureTabBar() {
-        if #available(iOS 13.0, *) {
-            let appearance = UITabBarAppearance()
+        let appearance = UITabBarAppearance()
 
-            appearance.shadowImage = UIImage()
+        appearance.shadowImage = UIImage()
 
-            let normalAttributes = [
-                NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
-                NSAttributedString.Key.font: UIFont.caption2
-            ]
-            let selectedAttributes = [
-                NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
-                NSAttributedString.Key.font: UIFont.caption2
-            ]
+        let normalAttributes = [
+            NSAttributedString.Key.foregroundColor: R.color.colorWhite48()!,
+            NSAttributedString.Key.font: UIFont.caption2
+        ]
+        let selectedAttributes = [
+            NSAttributedString.Key.foregroundColor: R.color.colorNovaBlue()!,
+            NSAttributedString.Key.font: UIFont.caption2
+        ]
 
-            appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
-            appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
-            appearance.backgroundEffect = UIBlurEffect(style: .dark)
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
+        appearance.backgroundEffect = UIBlurEffect(style: .dark)
 
-            tabBar.standardAppearance = appearance
+        tabBar.standardAppearance = appearance
 
-            if #available(iOS 15.0, *) {
-                UITabBar.appearance().scrollEdgeAppearance = appearance
-            }
-        } else {
-            tabBar.backgroundImage = UIImage.background(from: R.color.colorAlmostBlack()!)
-            tabBar.shadowImage = UIImage()
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
         }
     }
 }

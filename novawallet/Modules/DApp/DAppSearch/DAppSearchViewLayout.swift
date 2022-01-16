@@ -6,6 +6,7 @@ final class DAppSearchViewLayout: UIView {
 
     let tableView: UITableView = {
         let view = UITableView()
+        view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
         view.separatorStyle = .none
         return view
@@ -34,7 +35,8 @@ final class DAppSearchViewLayout: UIView {
         addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 }
