@@ -93,7 +93,13 @@ final class DAppBrowserInteractor {
             case let .dApp(model):
                 return model.url
             case let .query(string):
-                if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = URL(string: string) {
+                var urlComponents = URLComponents(string: string)
+
+                if urlComponents?.scheme == nil {
+                    urlComponents?.scheme = "https"
+                }
+
+                if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = urlComponents?.url {
                     return inputUrl
                 } else {
                     let querySet = CharacterSet.urlQueryAllowed
