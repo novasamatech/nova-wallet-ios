@@ -6472,7 +6472,6 @@
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				F40966D426B29839008CD244 /* Subquery */,
 				AECF10EE26E9EF4E005B54A0 /* Coingecko */,
 				849AFEBA26DCCD4000B65924 /* Subquery */,
 				849AFEB926DCCCE000B65924 /* Misc */,
@@ -6778,20 +6777,23 @@
 		849AFEBA26DCCD4000B65924 /* Subquery */ = {
 			isa = PBXGroup;
 			children = (
-				849AFEBB26DCCDDD00B65924 /* Data */,
+				849AFEBB26DCCDDD00B65924 /* Models */,
 				84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */,
 				843461D026E2641500DCE0CD /* SubqueryRewardOperationFactory.swift */,
 			);
 			path = Subquery;
 			sourceTree = "<group>";
 		};
-		849AFEBB26DCCDDD00B65924 /* Data */ = {
+		849AFEBB26DCCDDD00B65924 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F40966D726B29839008CD244 /* SubqueryRewardData.swift */,
+				F40966D826B29839008CD244 /* SubqueryStakeData.swift */,
+				F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */,
 				849AFEB226DADC1300B65924 /* SubqueryHistory.swift */,
 				849AFEBC26DCCE3A00B65924 /* SubqueryResponse.swift */,
 			);
-			path = Data;
+			path = Models;
 			sourceTree = "<group>";
 		};
 		849DEBD225ED014000C64C19 /* ViewModel */ = {
@@ -8773,16 +8775,6 @@
 				F40966AE26B297D6008CD244 /* AnalyticsStakeViewModelFactory.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		F40966D426B29839008CD244 /* Subquery */ = {
-			isa = PBXGroup;
-			children = (
-				F40966D726B29839008CD244 /* SubqueryRewardData.swift */,
-				F40966D826B29839008CD244 /* SubqueryStakeData.swift */,
-				F4C086BC26D114F700716AEC /* SubqueryEraValidatorInfo.swift */,
-			);
-			path = Subquery;
 			sourceTree = "<group>";
 		};
 		F40966FA26B29A58008CD244 /* Chart */ = {
