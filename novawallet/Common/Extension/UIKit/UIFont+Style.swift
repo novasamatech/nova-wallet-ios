@@ -49,6 +49,10 @@ extension UIFont {
 
     static var title2: UIFont { R.font.publicSansRegular(size: 22)! }
 
+    static var semiBoldTitle3: UIFont { R.font.publicSansSemiBold(size: 20)! }
+    static var regularFootnote: UIFont { R.font.publicSansRegular(size: 13)! }
+    static var regularSubheadline: UIFont { R.font.publicSansRegular(size: 15)! }
+
     static var boldTitle1: UIFont { R.font.publicSansBold(size: 28)! }
     static var boldTitle2: UIFont { R.font.publicSansBold(size: 22)! }
 }

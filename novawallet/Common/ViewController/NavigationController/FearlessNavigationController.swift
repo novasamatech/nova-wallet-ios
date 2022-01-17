@@ -13,6 +13,12 @@ protocol NavigationControlling: AnyObject {
 }
 
 class FearlessNavigationController: UINavigationController, UINavigationControllerDelegate {
+    var barSettings: NavigationBarSettings = .defaultSettings {
+        didSet {
+            applyBarStyle()
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -28,14 +34,31 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
 
         view.backgroundColor = R.color.colorBlack()
 
-        navigationBar.tintColor = FearlessNavigationBarStyle.tintColor
+        applyBarStyle()
+    }
 
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.backIndicatorImage = R.image.iconBack()
-        navigationBar.backIndicatorTransitionMaskImage = R.image.iconBack()
+    func applyBarStyle() {
+        let appearance = UINavigationBarAppearance()
 
-        navigationBar.titleTextAttributes = FearlessNavigationBarStyle.titleAttributes
+        navigationBar.tintColor = barSettings.style.tintColor
+
+        appearance.backgroundImage = barSettings.style.background
+
+        appearance.shadowImage = barSettings.style.shadow
+
+        appearance.shadowColor = barSettings.style.shadowColor
+
+        let back = barSettings.style.backImage
+        appearance.setBackIndicatorImage(back, transitionMaskImage: back)
+
+        if let titleAttributes = barSettings.style.titleAttributes {
+            appearance.titleTextAttributes = titleAttributes
+        }
+
+        appearance.backgroundEffect = barSettings.style.backgroundEffect
+
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,6 +97,7 @@ class FearlessNavigationController: UINavigationController, UINavigationControll
 
     private func insertCloseButtonToRootIfNeeded() {
         if
+            barSettings.shouldSetCloseButton,
             presentingViewController != nil,
             let rootViewController = viewControllers.first,
             rootViewController.navigationItem.leftBarButtonItem == nil {
