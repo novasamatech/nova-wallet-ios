@@ -7,13 +7,23 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let presenter = RootPresenter()
         let wireframe = RootWireframe()
         let keychain = Keychain()
+        let settings = SettingsManager.shared
+
+        let dbMigrator = UserStorageMigrator(
+            targetVersion: .version3,
+            storeURL: UserStorageParams.storageURL,
+            modelDirectory: UserStorageParams.modelDirectory,
+            keystore: keychain,
+            settings: settings,
+            fileManager: FileManager.default
+        )
 
         let interactor = RootInteractor(
             settings: SelectedWalletSettings.shared,
             keystore: keychain,
             applicationConfig: ApplicationConfig.shared,
             eventCenter: EventCenter.shared,
-            migrators: [],
+            migrators: [dbMigrator],
             logger: Logger.shared
         )
 

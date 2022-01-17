@@ -19,6 +19,7 @@ protocol ApplicationConfigProtocol {
     var purchaseRedirect: URL { get }
     var phishingListURL: URL { get }
     var chainListURL: URL { get }
+    var dAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
@@ -112,6 +113,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v2/chains.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v2/chains_dev.json")!
+        #endif
+    }
+
+    var dAppsListURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
         #endif
     }
 
