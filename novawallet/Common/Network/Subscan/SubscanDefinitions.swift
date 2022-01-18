@@ -21,6 +21,8 @@ extension WalletAssetId {
             return URL(string: "https://moonriver.api.subscan.io/")
         case .monbaseAlpha:
             return URL(string: "https://moonbase.api.subscan.io/")
+        case .kar:
+            return URL(string: "https://karura.api.subscan.io/")
         default:
             return nil
         }
