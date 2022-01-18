@@ -8,6 +8,7 @@ enum WalletAssetId: String {
     case roc
     case monbaseAlpha
     case moonriver
+    case kar
 }
 
 // TODO: Extract url from chain
@@ -25,6 +26,8 @@ extension WalletAssetId {
             self = .monbaseAlpha
         } else if chainId == "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b" {
             self = .moonriver
+        } else if chainId == "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b" {
+            self = .kar
         } else {
             return nil
         }
