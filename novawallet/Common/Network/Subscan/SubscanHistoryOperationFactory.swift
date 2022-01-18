@@ -12,11 +12,11 @@ final class SubscanHistoryOperationFactory {
 
     let baseURL: URL
 
-    let filter: WalletRemoteHistoryFiltering?
+    let walletFilter: WalletHistoryFilter
 
-    init(baseURL: URL, filter: WalletRemoteHistoryFiltering? = nil) {
+    init(baseURL: URL, walletFilter: WalletHistoryFilter) {
         self.baseURL = baseURL
-        self.filter = filter
+        self.walletFilter = walletFilter
     }
 
     private func createTransfersOperationIfNeeded(
@@ -207,7 +207,7 @@ extension SubscanHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
         SubscanHistoryContext(
             context: pagination.context ?? [:],
             defaultRow: pagination.count
-        ).isComplete
+        ).byApplying(filter: walletFilter).isComplete
     }
 
     func createOperationWrapper(for address: String, pagination: Pagination)
@@ -220,7 +220,7 @@ extension SubscanHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
         let subscanContext = SubscanHistoryContext(
             context: pagination.context ?? [:],
             defaultRow: pagination.count
-        )
+        ).byApplying(filter: walletFilter)
 
         let transfersOperation = createTransfersOperationIfNeeded(for: subscanContext, address: address)
         let rewardsOperation = createRewardsOperationIfNeeded(for: subscanContext, address: address)
@@ -241,7 +241,7 @@ extension SubscanHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
         let mapOperation = createMapOperation(
             dependingOn: mergeOperation,
             context: subscanContext,
-            filter: filter
+            filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
         )
 
         mapOperation.addDependency(mergeOperation)

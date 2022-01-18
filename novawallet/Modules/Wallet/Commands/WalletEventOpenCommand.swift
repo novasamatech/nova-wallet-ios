@@ -1,21 +1,22 @@
 import Foundation
 import CommonWallet
+import SoraFoundation
 
 final class WalletEventOpenCommand: WalletCommandProtocol {
     let eventId: String
     let locale: Locale
-    let chain: Chain
+    let explorers: [ChainModel.Explorer]?
 
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         eventId: String,
-        chain: Chain,
+        explorers: [ChainModel.Explorer]?,
         commandFactory: WalletCommandFactoryProtocol,
         locale: Locale
     ) {
         self.eventId = eventId
-        self.chain = chain
+        self.explorers = explorers
         self.commandFactory = commandFactory
         self.locale = locale
     }
@@ -36,15 +37,20 @@ final class WalletEventOpenCommand: WalletCommandProtocol {
 
         alertController.addAction(copy)
 
-        if let url = chain.polkascanEventURL(eventId) {
-            let polkascanTitle = R.string.localizable
-                .transactionDetailsViewPolkascan(preferredLanguages: locale.rLanguages)
-            let viewPolkascan = UIAlertAction(title: polkascanTitle, style: .default) { [weak self] _ in
-                self?.present(url: url)
+        let actions: [UIAlertAction] = explorers?.compactMap { explorer in
+            guard
+                let urlTemplate = explorer.event,
+                let url = try? EndpointBuilder(urlTemplate: urlTemplate)
+                .buildParameterURL(eventId) else {
+                return nil
             }
 
-            alertController.addAction(viewPolkascan)
-        }
+            return UIAlertAction(title: explorer.name, style: .default) { [weak self] _ in
+                self?.present(url: url)
+            }
+        } ?? []
+
+        actions.forEach { alertController.addAction($0) }
 
         let cancelTitle = R.string.localizable
             .commonCancel(preferredLanguages: locale.rLanguages)
