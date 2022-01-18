@@ -135,37 +135,27 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         }
 
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
-        let updatedPagination: Pagination
 
         if let baseUrl = chain.externalApi?.staking?.url {
             maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
-            updatedPagination = pagination
         } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
             maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
                 baseURL: fallbackUrl,
-                filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
+                walletFilter: filter
             )
-
-            let context = SubscanHistoryContext(
-                context: pagination.context ?? [:],
-                defaultRow: pagination.count
-            ).byApplying(filter: filter).toContext()
-
-            updatedPagination = Pagination(count: pagination.count, context: context)
         } else {
             maybeRemoteHistoryFactory = nil
-            updatedPagination = pagination
         }
 
         guard
             let remoteHistoryFactory = maybeRemoteHistoryFactory,
-            !remoteHistoryFactory.isComplete(pagination: updatedPagination) else {
+            !remoteHistoryFactory.isComplete(pagination: pagination) else {
             return createEmptyHistoryResponseOperation()
         }
 
         let remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
             for: address,
-            pagination: updatedPagination
+            pagination: pagination
         )
 
         var dependencies = remoteHistoryWrapper.allOperations
