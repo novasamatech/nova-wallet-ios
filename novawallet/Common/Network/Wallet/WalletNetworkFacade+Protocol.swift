@@ -102,17 +102,6 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         )
     }
 
-    private func createEmptyHistoryResponseOperation() -> CompoundOperationWrapper<AssetTransactionPageData?> {
-        let pageData = AssetTransactionPageData(
-            transactions: [],
-            context: nil
-        )
-
-        let operation = BaseOperation<AssetTransactionPageData?>()
-        operation.result = .success(pageData)
-        return CompoundOperationWrapper(targetOperation: operation)
-    }
-
     func fetchTransactionHistoryOperation(
         _ request: WalletHistoryRequest,
         pagination: Pagination
@@ -136,7 +125,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
-        if let baseUrl = chain.externalApi?.staking?.url {
+        if let baseUrl = chain.externalApi?.history?.url {
             maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
         } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
             maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
@@ -165,12 +154,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
 
         if pagination.context == nil {
-            let operation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
-            dependencies.append(operation)
+            let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
 
-            remoteHistoryWrapper.allOperations.forEach { operation.addDependency($0) }
+            wrapper.addDependency(wrapper: remoteHistoryWrapper)
 
-            localFetchOperation = operation
+            dependencies.append(contentsOf: wrapper.allOperations)
+
+            localFetchOperation = wrapper.targetOperation
         } else {
             localFetchOperation = nil
         }
