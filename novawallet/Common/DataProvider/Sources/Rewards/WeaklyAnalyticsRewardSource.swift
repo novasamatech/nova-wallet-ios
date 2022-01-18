@@ -35,11 +35,12 @@ extension WeaklyAnalyticsRewardSource: SingleValueProviderSourceProtocol {
                 guard
                     let reward = wrappedReward.reward,
                     let validatorAddress = reward.validator,
-                    let timestamp = Int64(wrappedReward.timestamp),
                     let era = reward.era, era >= 0,
                     let amount = BigUInt(reward.amount) else {
                     return nil
                 }
+
+                let timestamp = Int64(wrappedReward.timestamp) ?? 0
 
                 return SubqueryRewardItemData(
                     eventId: wrappedReward.identifier,
