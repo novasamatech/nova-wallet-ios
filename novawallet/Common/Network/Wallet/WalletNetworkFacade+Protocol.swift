@@ -102,22 +102,27 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         )
     }
 
+    private func createEmptyHistoryResponseOperation() -> CompoundOperationWrapper<AssetTransactionPageData?> {
+        let pageData = AssetTransactionPageData(
+            transactions: [],
+            context: nil
+        )
+
+        let operation = BaseOperation<AssetTransactionPageData?>()
+        operation.result = .success(pageData)
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
     func fetchTransactionHistoryOperation(
         _ request: WalletHistoryRequest,
         pagination: Pagination
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
         let filter = WalletHistoryFilter(string: request.filter)
 
-        let historyContext = TransactionHistoryContext(
-            context: pagination.context ?? [:],
-            defaultRow: pagination.count
-        ).byApplying(filter: filter)
-
         let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
 
         // The history only works for asset detals now
-        guard !historyContext.isComplete,
-              let userAssets = mayBeUserAssets,
+        guard let userAssets = mayBeUserAssets,
               userAssets.count == 1,
               let walletAssetId = userAssets.first,
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
@@ -126,34 +131,42 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
               let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
               let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId)
         else {
-            let pageData = AssetTransactionPageData(
-                transactions: [],
-                context: nil
-            )
-
-            let operation = BaseOperation<AssetTransactionPageData?>()
-            operation.result = .success(pageData)
-            return CompoundOperationWrapper(targetOperation: operation)
+            return createEmptyHistoryResponseOperation()
         }
 
-        let remoteHistoryWrapper: CompoundOperationWrapper<WalletRemoteHistoryData>
+        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
+        let updatedPagination: Pagination
 
-        if let baseUrl = WalletAssetId(chainId: chainAssetId.chainId)?.subscanUrl {
-            let remoteHistoryFactory = SubscanHistoryOperationFactory(
-                baseURL: baseUrl,
+        if let baseUrl = chain.externalApi?.staking?.url {
+            maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
+            updatedPagination = pagination
+        } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
+            maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
+                baseURL: fallbackUrl,
                 filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
             )
 
-            remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
-                for: historyContext,
-                address: address,
-                count: pagination.count
-            )
+            let context = SubscanHistoryContext(
+                context: pagination.context ?? [:],
+                defaultRow: pagination.count
+            ).byApplying(filter: filter).toContext()
+
+            updatedPagination = Pagination(count: pagination.count, context: context)
         } else {
-            let context = TransactionHistoryContext(context: [:], defaultRow: 0)
-            let result = WalletRemoteHistoryData(historyItems: [], context: context)
-            remoteHistoryWrapper = CompoundOperationWrapper.createWithResult(result)
+            maybeRemoteHistoryFactory = nil
+            updatedPagination = pagination
         }
+
+        guard
+            let remoteHistoryFactory = maybeRemoteHistoryFactory,
+            !remoteHistoryFactory.isComplete(pagination: updatedPagination) else {
+            return createEmptyHistoryResponseOperation()
+        }
+
+        let remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
+            for: address,
+            pagination: updatedPagination
+        )
 
         var dependencies = remoteHistoryWrapper.allOperations
 
