@@ -99,6 +99,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
             .with(address: address)
             .with(nonce: UInt32(extrinsic.nonce))
             .with(era: extrinsic.era, blockHash: extrinsic.blockHash)
+            .adding(extrinsicExtension: ChargeAssetTxPayment())
 
             builder = try result.extrinsic.method.accept(builder: builder)
 

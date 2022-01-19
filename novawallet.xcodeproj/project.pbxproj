@@ -1193,6 +1193,8 @@
 		84DED4032666537600A153BB /* CrowdloanBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DED4022666537600A153BB /* CrowdloanBonusService.swift */; };
 		84DED40B266656D400A153BB /* KaruraBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DED40A266656D400A153BB /* KaruraBonusService.swift */; };
 		84DED410266659EC00A153BB /* CustomCrowdloanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DED40F266659EC00A153BB /* CustomCrowdloanDelegate.swift */; };
+		84DEE7022797F0BF00B9A39E /* ChargeAssetTxPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DEE7012797F0BF00B9A39E /* ChargeAssetTxPayment.swift */; };
+		84DEE7042797FBF800B9A39E /* ExtrinsicExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DEE7032797FBF800B9A39E /* ExtrinsicExtension.swift */; };
 		84DF219F25346696005454AE /* WalletAccountInfoCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DF219E25346696005454AE /* WalletAccountInfoCommand.swift */; };
 		84DF21A125347031005454AE /* DetailsDisplayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84DF21A025347031005454AE /* DetailsDisplayTableViewCell.swift */; };
 		84DF21A325347042005454AE /* DetailsDisplayTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DF21A225347042005454AE /* DetailsDisplayTableViewCell.xib */; };
@@ -3065,6 +3067,8 @@
 		84DED4022666537600A153BB /* CrowdloanBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanBonusService.swift; sourceTree = "<group>"; };
 		84DED40A266656D400A153BB /* KaruraBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaruraBonusService.swift; sourceTree = "<group>"; };
 		84DED40F266659EC00A153BB /* CustomCrowdloanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCrowdloanDelegate.swift; sourceTree = "<group>"; };
+		84DEE7012797F0BF00B9A39E /* ChargeAssetTxPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeAssetTxPayment.swift; sourceTree = "<group>"; };
+		84DEE7032797FBF800B9A39E /* ExtrinsicExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicExtension.swift; sourceTree = "<group>"; };
 		84DF219E25346696005454AE /* WalletAccountInfoCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAccountInfoCommand.swift; sourceTree = "<group>"; };
 		84DF21A025347031005454AE /* DetailsDisplayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsDisplayTableViewCell.swift; sourceTree = "<group>"; };
 		84DF21A225347042005454AE /* DetailsDisplayTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailsDisplayTableViewCell.xib; sourceTree = "<group>"; };
@@ -6548,6 +6552,7 @@
 		8490154E24ACD521008F705E /* Substrate */ = {
 			isa = PBXGroup;
 			children = (
+				84DEE7002797F09300B9A39E /* Extension */,
 				84AF3788272349AB007408D6 /* SiMappers */,
 				845BB8C725E45D0600E5FCDC /* Calls */,
 				8438E1DC24C18F11001BDB13 /* Types */,
@@ -7366,6 +7371,15 @@
 				8444D1BD2671465A00AF6D8C /* CrowdloanBonusServiceError.swift */,
 			);
 			path = CustomCrowdloan;
+			sourceTree = "<group>";
+		};
+		84DEE7002797F09300B9A39E /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				84DEE7012797F0BF00B9A39E /* ChargeAssetTxPayment.swift */,
+				84DEE7032797FBF800B9A39E /* ExtrinsicExtension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		84E1CCF3260DC973001E81B5 /* SwitchAccount */ = {
@@ -10318,6 +10332,7 @@
 				2A9F8D50274E4EB6003720E0 /* AccountCreateViewLayout.swift in Sources */,
 				84786E1525FA57B90089DFF7 /* StakingLedger.swift in Sources */,
 				8497FC6026317783002FEAA7 /* AccountInfoViewModel.swift in Sources */,
+				84DEE7042797FBF800B9A39E /* ExtrinsicExtension.swift in Sources */,
 				84DC3CE7279679230038E2ED /* SubqueryHistory+Wallet.swift in Sources */,
 				84B677D626AED45500863DC6 /* SharedList.swift in Sources */,
 				8490142F24A935FE008F705E /* ControllerBackedProtocol.swift in Sources */,
@@ -10581,6 +10596,7 @@
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,
 				2A90206E273E6CA200F2D584 /* NetworkFeeConfirmView+Protocol.swift in Sources */,
 				AEA0C8A4267B6B1900F9666F /* SelectedValidatorListProtocols.swift in Sources */,
+				84DEE7022797F0BF00B9A39E /* ChargeAssetTxPayment.swift in Sources */,
 				F4B39C4E27326E8400BB6E10 /* AcalaContributionSetupViewController.swift in Sources */,
 				8475AE34258B934F00B058F3 /* TransferValidatingError.swift in Sources */,
 				84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */,
