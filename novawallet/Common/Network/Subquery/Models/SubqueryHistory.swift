@@ -12,9 +12,7 @@ struct SubqueryTransfer: Decodable {
         case receiver = "to"
         case sender = "from"
         case fee
-        case block
-        case extrinsicId
-        case extrinsicHash
+        case eventIdx
         case success
     }
 
@@ -22,9 +20,7 @@ struct SubqueryTransfer: Decodable {
     let receiver: String
     let sender: String
     let fee: String
-    let block: String
-    let extrinsicId: String?
-    let extrinsicHash: String?
+    let eventIdx: Int
     let success: Bool
 }
 
@@ -32,6 +28,7 @@ struct SubqueryRewardOrSlash: Decodable {
     let amount: String
     let isReward: Bool
     let era: Int?
+    let stash: String?
     let validator: String?
 }
 
@@ -46,6 +43,9 @@ struct SubqueryExtrinsic: Decodable {
 struct SubqueryHistoryElement: Decodable {
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
+        case blockNumber
+        case extrinsicIdx
+        case extrinsicHash
         case timestamp
         case address
         case reward
@@ -54,6 +54,9 @@ struct SubqueryHistoryElement: Decodable {
     }
 
     let identifier: String
+    let blockNumber: UInt64
+    let extrinsicIdx: UInt16?
+    let extrinsicHash: String
     let timestamp: String
     let address: String
     let reward: SubqueryRewardOrSlash?
