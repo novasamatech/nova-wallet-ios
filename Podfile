@@ -3,7 +3,7 @@ platform :ios, '13.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
-  pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '5e3550164e0ed08e4fbace45ce5fbc01b95f2355'
+  pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'fdde11162a46068eb9d9d783809d3197f865e39f'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -24,7 +24,7 @@ abstract_target 'novawalletAll' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '5e3550164e0ed08e4fbace45ce5fbc01b95f2355'
+    pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => 'fdde11162a46068eb9d9d783809d3197f865e39f'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
