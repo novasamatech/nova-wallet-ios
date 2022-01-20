@@ -84,6 +84,7 @@ final class ExtrinsicService {
             chainFormat: chainFormat,
             cryptoType: cryptoType,
             runtimeRegistry: runtimeRegistry,
+            customExtensions: DefaultExtrinsicExtension.extensions,
             engine: engine
         )
 
