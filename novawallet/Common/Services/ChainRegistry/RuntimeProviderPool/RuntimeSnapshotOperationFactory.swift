@@ -59,13 +59,15 @@ final class RuntimeSnapshotFactory {
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     commonTypes,
                     versioningData: chainTypes,
-                    runtimeMetadata: metadata
+                    runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: chainTypes,
                     runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
@@ -122,13 +124,15 @@ final class RuntimeSnapshotFactory {
             case let .v13(metadata):
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     commonTypes,
-                    runtimeMetadata: metadata
+                    runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: commonTypes,
                     runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
@@ -184,13 +188,15 @@ final class RuntimeSnapshotFactory {
             case let .v13(metadata):
                 catalog = try TypeRegistryCatalog.createFromTypeDefinition(
                     ownTypes,
-                    runtimeMetadata: metadata
+                    runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders
                 )
                 runtimeMetadata = metadata
             case let .v14(metadata):
                 catalog = try TypeRegistryCatalog.createFromSiDefinition(
                     versioningData: ownTypes,
                     runtimeMetadata: metadata,
+                    customExtensions: DefaultExtrinsicExtension.coders,
                     customTypeMapper: SiDataTypeMapper(),
                     customNameMapper: ScaleInfoCamelCaseMapper()
                 )
