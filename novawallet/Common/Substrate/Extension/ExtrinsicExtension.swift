@@ -10,7 +10,10 @@ enum DefaultExtrinsicExtension {
 
     static var coders: [ExtrinsicExtensionCoder] {
         [
-            ChargeAssetTxPaymentCoder()
+            DefaultExtrinsicExtensionCoder(
+                name: ChargeAssetTxPayment.name,
+                extraType: "pallet_asset_tx_payment.ChargeAssetTxPayment"
+            )
         ]
     }
 }
