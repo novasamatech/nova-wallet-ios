@@ -113,8 +113,12 @@ final class AssetsUpdatingService {
             guard
                 let extras = asset.typeExtras,
                 let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
-                    return nil
-                }
+                return nil
+            }
+
+            let handlingFactory = EventRemoteSubscriptionHandlingFactory(eventCenter: eventCenter) { _ in
+                WalletBalanceChanged()
+            }
 
             let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
                 of: accountId,
@@ -122,7 +126,7 @@ final class AssetsUpdatingService {
                 chainId: chainId,
                 queue: nil,
                 closure: nil,
-                subscriptionHandlingFactory: nil
+                subscriptionHandlingFactory: handlingFactory
             )
 
             if let subscriptionId = maybeSubscriptionId {
@@ -157,8 +161,8 @@ final class AssetsUpdatingService {
                 guard
                     let extras = asset.typeExtras,
                     let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
-                        return
-                    }
+                    return
+                }
 
                 remoteSubscriptionService.detachFromAsset(
                     for: subscriptionInfo.subscriptionId,
