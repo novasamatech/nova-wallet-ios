@@ -201,8 +201,6 @@ final class ChainModelMapper {
 
 extension ChainModelMapper: CoreDataMapperProtocol {
     func transform(entity: CDChain) throws -> ChainModel {
-        let jsonDecoder = JSONDecoder()
-
         let assets: [AssetModel] = try entity.assets?.compactMap { anyAsset in
             guard let asset = anyAsset as? CDAsset else {
                 return nil
