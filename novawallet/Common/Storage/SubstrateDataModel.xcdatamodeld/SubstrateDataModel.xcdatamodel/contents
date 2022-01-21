@@ -12,6 +12,15 @@
         <attribute name="typeExtras" optional="YES" attributeType="Binary"/>
         <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="assets" inverseEntity="CDChain"/>
     </entity>
+    <entity name="CDAssetBalance" representedClassName="CDAssetBalance" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="freeInPlank" optional="YES" attributeType="String"/>
+        <attribute name="frozenInPlank" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="reservedInPlank" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
@@ -107,5 +116,6 @@
         <element name="CDSingleValue" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDStashItem" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="209"/>
+        <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
     </elements>
 </model>

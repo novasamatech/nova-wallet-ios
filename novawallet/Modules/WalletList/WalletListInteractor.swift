@@ -11,9 +11,9 @@ final class WalletListInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
 
-    private var accountInfoSubscriptions: [ChainModel.Id: AnyDataProvider<DecodedAccountInfo>] = [:]
+    private var assetBalanceSubscriptions: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
-    private var availableTokenPrice: [ChainModel.Id: AssetModel.PriceId] = [:]
+    private var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
@@ -62,8 +62,8 @@ final class WalletListInteractor {
     }
 
     private func clearAccountSubscriptions() {
-        accountInfoSubscriptions.values.forEach { $0.removeObserver(self) }
-        accountInfoSubscriptions = [:]
+        assetBalanceSubscriptions.values.forEach { $0.removeObserver(self) }
+        assetBalanceSubscriptions = [:]
     }
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
@@ -114,21 +114,36 @@ final class WalletListInteractor {
             return
         }
 
-        accountInfoSubscriptions = changes.reduce(into: accountInfoSubscriptions) { result, change in
+        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
             switch change {
             case let .insert(chain), let .update(chain):
-                guard
-                    result[chain.chainId] == nil,
-                    let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
+                let allChainAssetIds = result.keys
+
+                for chainAssetId in allChainAssetIds where chainAssetId.chainId == chain.chainId {
+                    result[chainAssetId]?.removeObserver(self)
+                    result[chainAssetId] = nil
+                }
+
+                guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
                     return
                 }
 
-                result[chain.chainId] = subscribeToAccountInfoProvider(
-                    for: accountId,
-                    chainId: chain.chainId
-                )
+                for asset in chain.assets {
+                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+
+                    result[chainAssetId] = subscribeToAssetBalanceProvider(
+                        for: accountId,
+                        chainId: chainAssetId.chainId,
+                        assetId: chainAssetId.assetId
+                    )
+                }
             case let .delete(deletedIdentifier):
-                result[deletedIdentifier] = nil
+                let allChainAssetIds = result.keys
+
+                for chainAssetId in allChainAssetIds where chainAssetId.chainId == deletedIdentifier {
+                    result[chainAssetId]?.removeObserver(self)
+                    result[chainAssetId] = nil
+                }
             }
         }
     }
@@ -138,13 +153,18 @@ final class WalletListInteractor {
         for change in changes {
             switch change {
             case let .insert(chain), let .update(chain):
-                availableTokenPrice = availableTokenPrice.filter { $0.key != chain.chainId }
+                availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != chain.chainId }
 
-                if let asset = chain.utilityAssets().first, let priceId = asset.priceId {
-                    availableTokenPrice[chain.chainId] = priceId
+                availableTokenPrice = chain.assets.reduce(into: availableTokenPrice) { result, asset in
+                    guard let priceId = asset.priceId else {
+                        return
+                    }
+
+                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+                    result[chainAssetId] = priceId
                 }
             case let .delete(deletedIdentifier):
-                availableTokenPrice = availableTokenPrice.filter { $0.key != deletedIdentifier }
+                availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != deletedIdentifier }
             }
         }
 
@@ -170,15 +190,15 @@ final class WalletListInteractor {
             switch finalValue {
             case let .some(prices):
                 let chainPrices = zip(priceIds, prices).reduce(
-                    into: [ChainModel.Id: PriceData]()
+                    into: [ChainAssetId: PriceData]()
                 ) { result, item in
-                    guard let chainIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
+                    guard let chainAssetIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
                         .map(\.key) else {
                         return
                     }
 
-                    for chainId in chainIds {
-                        result[chainId] = item.1
+                    for chainAssetId in chainAssetIds {
+                        result[chainAssetId] = item.1
                     }
                 }
 
@@ -226,8 +246,26 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 }
 
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAccountInfo(result: Result<AccountInfo?, Error>, accountId _: AccountId, chainId: ChainModel.Id) {
-        presenter.didReceiveAccountInfo(result: result, chainId: chainId)
+    func handleAssetBalance(result: Result<AssetBalance?, Error>, accountId _: AccountId, chainId: ChainModel.Id, assetId _: AssetModel.Id) {
+        guard let chain = availableChains[chainId], let asset = chain.utilityAssets().first else {
+            return
+        }
+
+        do {
+            let balance = try result.get()?.totalInPlank ?? 0
+
+            presenter.didReceiveBalance(
+                result: .success(balance),
+                chainId: chain.chainId,
+                assetId: asset.assetId
+            )
+        } catch {
+            presenter.didReceiveBalance(
+                result: .failure(error),
+                chainId: chain.chainId,
+                assetId: asset.assetId
+            )
+        }
     }
 }
 
