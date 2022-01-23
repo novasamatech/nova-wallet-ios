@@ -19,6 +19,7 @@ final class WalletNetworkFacade {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let contactsOperationFactory: WalletContactOperationFactoryProtocol
     let accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
 
     init(
         accountSettings: WalletAccountSettings,
@@ -35,7 +36,8 @@ final class WalletNetworkFacade {
         localStorageRequestFactory: LocalStorageRequestFactoryProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         contactsOperationFactory: WalletContactOperationFactoryProtocol,
-        accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
     ) {
         self.accountSettings = accountSettings
         self.metaAccount = metaAccount
@@ -52,5 +54,6 @@ final class WalletNetworkFacade {
         self.repositoryFactory = repositoryFactory
         self.contactsOperationFactory = contactsOperationFactory
         self.accountsRepository = accountsRepository
+        self.assetBalanceRepository = assetBalanceRepository
     }
 }

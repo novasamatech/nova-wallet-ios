@@ -12,7 +12,7 @@ enum WalletContextFactoryError: Error {
 }
 
 protocol WalletContextFactoryProtocol {
-    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol
+    func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol
 }
 
 final class WalletContextFactory {
@@ -27,14 +27,10 @@ final class WalletContextFactory {
 
 extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
-    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol {
+    func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value,
               let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
             throw WalletContextFactoryError.missingAccount
-        }
-
-        guard let asset = chain.utilityAssets().first else {
-            throw WalletContextFactoryError.missingAsset
         }
 
         let accountId = chainAccountResponse.accountId
@@ -116,6 +112,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             targetAddress: address
         )
 
+        let assetBalanceRepository = repositoryFactory.createAssetBalanceRepository()
+
         let networkFacade = WalletNetworkFacade(
             accountSettings: accountSettings,
             metaAccount: metaAccount,
@@ -131,7 +129,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             localStorageRequestFactory: localStorageRequestFactory,
             repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
-            accountsRepository: accountsRepository
+            accountsRepository: accountsRepository,
+            assetBalanceRepository: assetBalanceRepository
         )
 
         let builder = CommonWalletBuilder.builder(

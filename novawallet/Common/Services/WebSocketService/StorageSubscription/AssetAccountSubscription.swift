@@ -26,7 +26,11 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
         fatalError("Must be overriden by subclass")
     }
 
-    override func handle(result: Result<DataProviderChange<ChainStorageItem>?, Error>, blockHash _: Data?) {
+    override func handle(
+        result: Result<DataProviderChange<ChainStorageItem>?, Error>,
+        remoteItem _: ChainStorageItem?,
+        blockHash _: Data?
+    ) {
         logger.debug("Did receive asset account update")
 
         if case let .success(optionalChange) = result {

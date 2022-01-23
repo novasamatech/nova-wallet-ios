@@ -59,9 +59,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
 
         let priceString = priceFormatter.stringFromDecimal(balanceContext.price) ?? ""
 
-        let priceChangeString = NumberFormatter.signedPercent
-            .localizableResource()
-            .value(for: locale)
+        let priceChangeString = NumberFormatter.signedPercent.localizableResource().value(for: locale)
             .string(from: balanceContext.priceChange as NSNumber) ?? ""
 
         let priceChangeViewModel = balanceContext.priceChange >= 0.0 ?
@@ -83,7 +81,7 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
         )
 
         let lockedBalance = createBalanceViewModel(
-            from: balanceContext.frozen,
+            from: balanceContext.locked,
             price: balanceContext.price,
             with: amountFormatter,
             priceFormatter: priceFormatter

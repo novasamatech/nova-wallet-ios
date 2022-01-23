@@ -7,103 +7,88 @@ extension WalletNetworkFacade {
     func fetchBalanceInfoForAsset(
         _ assets: [WalletAsset]
     ) -> CompoundOperationWrapper<[BalanceData]?> {
-        do {
-            let localKeyFactory = LocalStorageKeyFactory()
-
-            let wrappers: [CompoundOperationWrapper<BalanceData>] = try assets.map { asset in
-                guard
-                    let chainAssetId = ChainAssetId(walletId: asset.identifier),
-                    let chain = chains[chainAssetId.chainId],
-                    let selectedAccount = metaAccount.fetch(for: chain.accountRequest()) else {
-                    return CompoundOperationWrapper.createWithResult(
-                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
-                    )
-                }
-
-                guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-                    return CompoundOperationWrapper.createWithResult(
-                        BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
-                    )
-                }
-
-                let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-                let accountKey = try localKeyFactory.createFromStoragePath(
-                    .account,
-                    accountId: selectedAccount.accountId,
-                    chainId: chain.chainId
-                )
-
-                let accountInfoWrapper: CompoundOperationWrapper<AccountInfo?> =
-                    localStorageRequestFactory.queryItems(
-                        repository: chainStorage,
-                        key: { accountKey },
-                        factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                        params: StorageRequestParams(path: .account)
-                    )
-
-                let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> =
-                    createBalanceLocksFetchOperation(
-                        for: selectedAccount.accountId,
-                        chainId: chain.chainId,
-                        chainFormat: chain.chainFormat
-                    )
-
-                let mappingOperation = createBalanceMappingOperation(
-                    asset: asset,
-                    dependingOn: accountInfoWrapper,
-                    balanceLocksWrapper: balanceLocksWrapper
-                )
-
-                let storageOperations = accountInfoWrapper.allOperations +
-                    balanceLocksWrapper.allOperations
-
-                storageOperations.forEach { storageOperation in
-                    storageOperation.addDependency(codingFactoryOperation)
-                    mappingOperation.addDependency(storageOperation)
-                }
-
-                return CompoundOperationWrapper(
-                    targetOperation: mappingOperation,
-                    dependencies: [codingFactoryOperation] + storageOperations
+        let wrappers: [CompoundOperationWrapper<BalanceData>] = assets.map { asset in
+            guard
+                let chainAssetId = ChainAssetId(walletId: asset.identifier),
+                let chain = chains[chainAssetId.chainId],
+                let remoteAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+                let selectedAccount = metaAccount.fetch(for: chain.accountRequest()) else {
+                return CompoundOperationWrapper.createWithResult(
+                    BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
                 )
             }
 
-            let combiningOperation = ClosureOperation<[BalanceData]?> {
-                try wrappers.map { wrapper in
-                    try wrapper.targetOperation.extractNoCancellableResultData()
-                }
+            guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+                return CompoundOperationWrapper.createWithResult(
+                    BalanceData(identifier: asset.identifier, balance: AmountDecimal(value: 0.0))
+                )
             }
 
-            wrappers.forEach { combiningOperation.addDependency($0.targetOperation) }
+            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-            let dependencies = wrappers.flatMap(\.allOperations)
-
-            return CompoundOperationWrapper(
-                targetOperation: combiningOperation,
-                dependencies: dependencies
+            let balanceId = AssetBalance.createIdentifier(
+                for: ChainAssetId(chainId: chain.chainId, assetId: remoteAsset.assetId),
+                accountId: selectedAccount.accountId
             )
 
-        } catch {
-            return CompoundOperationWrapper<[BalanceData]?>
-                .createWithError(error)
+            let balanceOperation = assetBalanceRepository.fetchOperation(
+                by: balanceId,
+                options: RepositoryFetchOptions()
+            )
+
+            let balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?> =
+                createBalanceLocksFetchOperation(
+                    for: selectedAccount.accountId,
+                    chainId: chain.chainId,
+                    chainFormat: chain.chainFormat
+                )
+
+            let mappingOperation = createBalanceMappingOperation(
+                asset: asset,
+                dependingOn: balanceOperation,
+                balanceLocksWrapper: balanceLocksWrapper
+            )
+
+            let storageOperations = [balanceOperation] + balanceLocksWrapper.allOperations
+
+            storageOperations.forEach { storageOperation in
+                storageOperation.addDependency(codingFactoryOperation)
+                mappingOperation.addDependency(storageOperation)
+            }
+
+            return CompoundOperationWrapper(
+                targetOperation: mappingOperation,
+                dependencies: [codingFactoryOperation] + storageOperations
+            )
         }
+
+        let combiningOperation = ClosureOperation<[BalanceData]?> {
+            try wrappers.map { wrapper in
+                try wrapper.targetOperation.extractNoCancellableResultData()
+            }
+        }
+
+        wrappers.forEach { combiningOperation.addDependency($0.targetOperation) }
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(
+            targetOperation: combiningOperation,
+            dependencies: dependencies
+        )
     }
 
     private func createBalanceMappingOperation(
         asset: WalletAsset,
-        dependingOn accountInfoWrapper: CompoundOperationWrapper<AccountInfo?>,
+        dependingOn balanceOperation: BaseOperation<AssetBalance?>,
         balanceLocksWrapper: CompoundOperationWrapper<[BalanceLock]?>
     ) -> BaseOperation<BalanceData> {
         ClosureOperation<BalanceData> {
-            let accountInfo = try accountInfoWrapper.targetOperation.extractNoCancellableResultData()
+            let maybeAssetBalance = try balanceOperation.extractNoCancellableResultData()
             var context = BalanceContext(context: [:])
 
-            if let accountData = accountInfo?.data {
-                context = context.byChangingAccountInfo(
-                    accountData,
-                    precision: asset.precision
-                )
+            if let assetBalance = maybeAssetBalance {
+                context = context.byChangingAssetBalance(assetBalance, precision: asset.precision)
 
                 if let balanceLocks = try? balanceLocksWrapper.targetOperation.extractNoCancellableResultData() {
                     context = context.byChangingBalanceLocks(balanceLocks)
