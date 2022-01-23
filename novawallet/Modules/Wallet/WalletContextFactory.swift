@@ -186,10 +186,21 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
+        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
+
+        if let utilityAsset = chain.utilityAssets().first, utilityAsset.assetId != asset.assetId {
+            feeViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: utilityAsset.displayInfo(with: chain.icon)
+            )
+        } else {
+            feeViewModelFactory = nil
+        }
+
         let transferConfigurator = TransferConfigurator(
             chainAsset: chainAsset,
             explorers: chain.explorers,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 
@@ -199,6 +210,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainAccount: chainAccountResponse,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 
