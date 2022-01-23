@@ -66,13 +66,21 @@ final class WalletListPresenter {
                 } else if value2 > 0 {
                     return false
                 } else if balance1 > 0, balance2 > 0 {
-                    return model1.chainModel.order < model2.chainModel.order
+                    if model1.chainModel.order != model2.chainModel.order {
+                        return model1.chainModel.order < model2.chainModel.order
+                    } else {
+                        return model1.assetModel.assetId < model2.assetModel.assetId
+                    }
                 } else if balance1 > 0 {
                     return true
                 } else if balance2 > 0 {
                     return false
                 } else {
-                    return model1.chainModel.order < model2.chainModel.order
+                    if model1.chainModel.order != model2.chainModel.order {
+                        return model1.chainModel.order < model2.chainModel.order
+                    } else {
+                        return model1.assetModel.assetId < model2.assetModel.assetId
+                    }
                 }
             }
         )
