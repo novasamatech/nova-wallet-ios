@@ -8,15 +8,18 @@ final class TransferConfirmViewModelFactory {
     let chainAccount: ChainAccountResponse
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         chainAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?
     ) {
         self.chainAccount = chainAccount
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.feeViewModelFactory = feeViewModelFactory
     }
 
     private func getPriceDataFrom(_ transferInfo: TransferInfo) -> PriceData? {
@@ -178,7 +181,8 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
 
         let priceData = getPriceDataFrom(payload.transferInfo)
 
-        let balanceData = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData).value(for: locale)
+        let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
+        let balanceData = viewModelFactory.balanceFromPrice(fee, priceData: priceData).value(for: locale)
 
         return ExtrinisicConfirmViewModel(
             title: title,

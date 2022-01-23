@@ -9,15 +9,18 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
     let chainAsset: ChainAsset
     let explorers: [ChainModel.Explorer]?
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?
     ) {
         self.chainAsset = chainAsset
         self.explorers = explorers
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.feeViewModelFactory = feeViewModelFactory
     }
 
     private func getPriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
@@ -40,7 +43,9 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         let feeAmount = fee.feeDescription.parameters.first?.decimalValue ?? 0
 
         let priceData = getPriceDataFrom(inputState)
-        let balance = balanceViewModelFactory.balanceFromPrice(
+
+        let feeFactory = feeViewModelFactory ?? balanceViewModelFactory
+        let balance = feeFactory.balanceFromPrice(
             feeAmount,
             priceData: priceData
         ).value(for: locale)

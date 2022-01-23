@@ -95,7 +95,11 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let priceData = try priceOperation.targetOperation.extractNoCancellableResultData()
 
             guard let fee = BigUInt(paymentInfo.fee),
-                  let decimalFee = Decimal.fromSubstrateAmount(fee, precision: asset.precision)
+                  let feeAsset = chain.utilityAssets().first,
+                  let decimalFee = Decimal.fromSubstrateAmount(
+                      fee,
+                      precision: Int16(bitPattern: feeAsset.precision)
+                  )
             else {
                 return nil
             }
