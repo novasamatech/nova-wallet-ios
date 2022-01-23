@@ -27,7 +27,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        assetBalanceUpdater: AssetsBalanceUpdater
     ) -> UUID?
 
     // swiftlint:disable:next function_parameter_count
@@ -123,29 +123,50 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?
+        assetBalanceUpdater: AssetsBalanceUpdater
     ) -> UUID? {
         do {
-            let storagePath = StorageCodingPath.assetsAccount
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                storagePath,
+            let localKeyFactory = LocalStorageKeyFactory()
+
+            let accountStoragePath = StorageCodingPath.assetsAccount
+            let accountLocalKey = try localKeyFactory.createFromStoragePath(
+                accountStoragePath,
                 encodableElements: [assetId, accountId],
                 chainId: chainId
             )
 
-            let request = DoubleMapSubscriptionRequest(
-                storagePath: storagePath,
-                localKey: localKey,
-                keyParamClosure: { (assetId, accountId) }
+            let accountRequest = DoubleMapSubscriptionRequest(
+                storagePath: accountStoragePath,
+                localKey: accountLocalKey,
+                keyParamClosure: { (StringScaleMapper(value: assetId), accountId) }
+            )
+
+            let detailsStoragePath = StorageCodingPath.assetsDetails
+            let detailsLocalKey = try localKeyFactory.createFromStoragePath(
+                detailsStoragePath,
+                encodableElement: assetId,
+                chainId: chainId
+            )
+
+            let detailsRequest = MapSubscriptionRequest(
+                storagePath: detailsStoragePath,
+                localKey: detailsLocalKey,
+                keyParamClosure: { StringScaleMapper(value: assetId) }
+            )
+
+            let handlingFactory = AssetsSubscriptionHandlingFactory(
+                assetAccountKey: accountLocalKey,
+                assetDetailsKey: detailsLocalKey,
+                assetBalanceUpdater: assetBalanceUpdater
             )
 
             return attachToSubscription(
-                with: [request],
+                with: [detailsRequest, accountRequest],
                 chainId: chainId,
-                cacheKey: localKey,
+                cacheKey: accountLocalKey,
                 queue: queue,
                 closure: closure,
-                subscriptionHandlingFactory: subscriptionHandlingFactory
+                subscriptionHandlingFactory: handlingFactory
             )
 
         } catch {
