@@ -287,7 +287,7 @@ extension AcalaBonusService: CrowdloanBonusServiceProtocol {
         }
         let builder = builder.reset()
         let callFactory = SubstrateCallFactory()
-        let transferCall = callFactory.transfer(to: accountId, amount: amount)
+        let transferCall = callFactory.nativeTransfer(to: accountId, amount: amount)
         let statementRemark = callFactory.remarkWithEvent(remark: statement)
 
         if
