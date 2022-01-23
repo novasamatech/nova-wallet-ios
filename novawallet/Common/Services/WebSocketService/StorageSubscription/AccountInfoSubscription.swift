@@ -38,18 +38,17 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         )
     }
 
-    override func handle(result: Result<DataProviderChange<ChainStorageItem>?, Error>, blockHash: Data?) {
+    override func handle(
+        result: Result<DataProviderChange<ChainStorageItem>?, Error>,
+        remoteItem: ChainStorageItem?,
+        blockHash: Data?
+    ) {
         logger.debug("Did account info update")
+
+        decodeAndSaveAccountInfo(remoteItem, chainAssetId: chainAssetId, accountId: accountId)
 
         if case let .success(optionalChange) = result, let change = optionalChange {
             logger.debug("Did change account info")
-
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                decodeAndSaveAccountInfo(newItem, chainAssetId: chainAssetId, accountId: accountId)
-            case .delete:
-                decodeAndSaveAccountInfo(nil, chainAssetId: chainAssetId, accountId: accountId)
-            }
 
             if let blockHash = blockHash {
                 transactionSubscription.process(blockHash: blockHash)
@@ -87,41 +86,46 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         decodingOperation.addDependency(codingFactoryOperation)
 
         let identifier = AssetBalance.createIdentifier(for: chainAssetId, accountId: accountId)
+        let fetchOperation = assetRepository.fetchOperation(
+            by: identifier,
+            options: RepositoryFetchOptions()
+        )
 
         let saveOperation = assetRepository.saveOperation({
             let accountInfo = try decodingOperation.extractNoCancellableResultData()
+            let localModel = try fetchOperation.extractNoCancellableResultData()
 
-            let total = accountInfo?.data.total ?? 0
+            let remoteModel = AssetBalance(
+                chainAssetId: chainAssetId,
+                accountId: accountId,
+                freeInPlank: accountInfo?.data.free ?? 0,
+                reservedInPlank: accountInfo?.data.reserved ?? 0,
+                frozenInPlank: accountInfo?.data.locked ?? 0
+            )
 
-            if total > 0 {
-                let assetBalance = AssetBalance(
-                    chainAssetId: chainAssetId,
-                    accountId: accountId,
-                    freeInPlank: accountInfo?.data.free ?? 0,
-                    reservedInPlank: accountInfo?.data.reserved ?? 0,
-                    frozenInPlank: accountInfo?.data.frozen ?? 0
-                )
-
-                return [assetBalance]
+            if localModel != remoteModel, remoteModel.totalInPlank > 0 {
+                return [remoteModel]
             } else {
                 return []
             }
         }, {
             let accountInfo = try decodingOperation.extractNoCancellableResultData()
+            let localModel = try fetchOperation.extractNoCancellableResultData()
 
             let total = accountInfo?.data.total ?? 0
 
-            if total == 0 {
+            if total == 0, localModel != nil {
                 return [identifier]
             } else {
                 return []
             }
         })
 
+        saveOperation.addDependency(fetchOperation)
         saveOperation.addDependency(decodingOperation)
 
         operationManager.enqueue(
-            operations: [codingFactoryOperation, decodingOperation, saveOperation],
+            operations: [codingFactoryOperation, decodingOperation, fetchOperation, saveOperation],
             in: .transient
         )
     }

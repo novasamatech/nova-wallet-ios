@@ -14,7 +14,8 @@ struct AssetBalance: Equatable {
 
 extension AssetBalance: Identifiable {
     static func createIdentifier(for chainAssetId: ChainAssetId, accountId: AccountId) -> String {
-        chainAssetId.stringValue + "\(accountId.toHex())"
+        let data = (chainAssetId.stringValue + "-\(accountId.toHex())").data(using: .utf8)
+        return data!.sha256().toHex()
     }
 
     var identifier: String { Self.createIdentifier(for: chainAssetId, accountId: accountId) }

@@ -16,7 +16,7 @@ extension AssetBalanceMapper: CoreDataMapperProtocol {
         from model: DataProviderModel,
         using _: NSManagedObjectContext
     ) throws {
-        entity.identifier = model.chainAssetId.stringValue
+        entity.identifier = model.identifier
         entity.chainAccountId = model.accountId.toHex()
         entity.chainId = model.chainAssetId.chainId
         entity.assetId = Int32(bitPattern: model.chainAssetId.assetId)

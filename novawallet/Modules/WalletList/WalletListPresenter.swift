@@ -243,7 +243,8 @@ extension WalletListPresenter: WalletListPresenterProtocol {
 
     func selectAsset(at index: Int) {
         let chainModel = chainList.allItems[index].chainModel
-        wireframe.showAssetDetails(from: view, chain: chainModel)
+        let assetModel = chainList.allItems[index].assetModel
+        wireframe.showAssetDetails(from: view, chain: chainModel, asset: assetModel)
     }
 
     func refresh() {

@@ -32,5 +32,5 @@ protocol WalletListInteractorOutputProtocol: AnyObject {
 
 protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
-    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel)
+    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
 }
