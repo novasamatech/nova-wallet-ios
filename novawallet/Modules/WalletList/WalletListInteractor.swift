@@ -246,8 +246,15 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 }
 
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(result: Result<AssetBalance?, Error>, accountId _: AccountId, chainId: ChainModel.Id, assetId _: AssetModel.Id) {
-        guard let chain = availableChains[chainId], let asset = chain.utilityAssets().first else {
+    func handleAssetBalance(
+        result: Result<AssetBalance?, Error>,
+        accountId _: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) {
+        guard
+            let chain = availableChains[chainId],
+            let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
             return
         }
 

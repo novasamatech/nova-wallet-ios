@@ -16,10 +16,9 @@ final class AssetsUpdatingService {
     let chainRegistry: ChainRegistryProtocol
     let remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol
     let eventCenter: EventCenterProtocol
-    let storageFacade: StorageFacadeProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var subscribedChains: [ChainModel.Id: [AssetModel.Id: SubscriptionInfo]] = [:]
@@ -37,16 +36,15 @@ final class AssetsUpdatingService {
         storageFacade: StorageFacadeProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         selectedMetaAccount = selectedAccount
         self.chainRegistry = chainRegistry
         self.remoteSubscriptionService = remoteSubscriptionService
-        self.storageFacade = storageFacade
         self.eventCenter = eventCenter
         self.storageRequestFactory = storageRequestFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.logger = logger
         repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
     }
@@ -110,34 +108,51 @@ final class AssetsUpdatingService {
 
         switch assetType {
         case .statemine:
-            guard
-                let extras = asset.typeExtras,
-                let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
-                return nil
-            }
+            return createStatemineSubscription(for: asset, accountId: accountId, chainId: chainId)
+        }
+    }
 
-            let handlingFactory = EventRemoteSubscriptionHandlingFactory(eventCenter: eventCenter) { _ in
-                WalletBalanceChanged()
-            }
+    private func createStatemineSubscription(
+        for asset: AssetModel,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> SubscriptionInfo? {
+        guard
+            let extras = asset.typeExtras,
+            let assetExtras = try? extras.map(to: StatemineAssetExtras.self) else {
+            return nil
+        }
 
-            let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
-                of: accountId,
-                assetId: assetExtras.assetId,
-                chainId: chainId,
-                queue: nil,
-                closure: nil,
-                subscriptionHandlingFactory: handlingFactory
+        let assetRepository = repositoryFactory.createAssetBalanceRepository()
+        let chainItemRepository = repositoryFactory.createChainStorageItemRepository()
+
+        let assetBalanceUpdater = AssetsBalanceUpdater(
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            assetRepository: assetRepository,
+            chainRepository: chainItemRepository,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
+        )
+
+        let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
+            of: accountId,
+            assetId: assetExtras.assetId,
+            chainId: chainId,
+            queue: nil,
+            closure: nil,
+            assetBalanceUpdater: assetBalanceUpdater
+        )
+
+        if let subscriptionId = maybeSubscriptionId {
+            return SubscriptionInfo(
+                subscriptionId: subscriptionId,
+                accountId: accountId,
+                asset: asset
             )
-
-            if let subscriptionId = maybeSubscriptionId {
-                return SubscriptionInfo(
-                    subscriptionId: subscriptionId,
-                    accountId: accountId,
-                    asset: asset
-                )
-            } else {
-                return nil
-            }
+        } else {
+            return nil
         }
     }
 

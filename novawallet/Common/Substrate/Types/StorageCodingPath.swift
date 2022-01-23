@@ -143,6 +143,6 @@ extension StorageCodingPath {
     }
 
     static var assetsDetails: StorageCodingPath {
-        StorageCodingPath(moduleName: "Assets", itemName: "Assets")
+        StorageCodingPath(moduleName: "Assets", itemName: "Asset")
     }
 }

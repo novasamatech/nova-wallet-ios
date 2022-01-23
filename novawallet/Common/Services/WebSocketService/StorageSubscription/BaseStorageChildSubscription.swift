@@ -47,8 +47,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
                 let currentItem = try fetchOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
-                return DataProviderChange<ChainStorageItem>
-                    .change(value1: currentItem, value2: newItem)
+                return DataProviderChange<ChainStorageItem>.change(value1: currentItem, value2: newItem)
             }
 
         let saveOperation = storage.saveOperation({
