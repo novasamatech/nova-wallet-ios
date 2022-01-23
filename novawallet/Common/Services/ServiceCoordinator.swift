@@ -105,7 +105,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationManager: operationManager,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
             logger: logger
         )
 

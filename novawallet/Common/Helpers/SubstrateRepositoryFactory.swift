@@ -3,6 +3,7 @@ import RobinHood
 
 protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository() -> AnyDataProviderRepository<ChainStorageItem>
+    func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
@@ -66,5 +67,11 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
             storageFacade.createRepository(filter: txFilter)
         return AnyDataProviderRepository(txStorage)
+    }
+
+    func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance> {
+        let mapper = AssetBalanceMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
     }
 }
