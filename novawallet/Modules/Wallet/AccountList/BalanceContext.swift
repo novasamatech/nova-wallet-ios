@@ -3,8 +3,7 @@ import Foundation
 struct BalanceContext {
     static let freeKey = "account.balance.free.key"
     static let reservedKey = "account.balance.reserved.key"
-    static let miscFrozenKey = "account.balance.misc.frozen.key"
-    static let feeFrozenKey = "account.balance.fee.frozen.key"
+    static let frozen = "account.balance.frozen.key"
     static let priceKey = "account.balance.price.key"
     static let priceChangeKey = "account.balance.price.change.key"
     static let minimalBalanceKey = "account.balance.minimal.key"
@@ -12,8 +11,7 @@ struct BalanceContext {
 
     let free: Decimal
     let reserved: Decimal
-    let miscFrozen: Decimal
-    let feeFrozen: Decimal
+    let frozen: Decimal
     let price: Decimal
     let priceChange: Decimal
     let minimalBalance: Decimal
@@ -22,17 +20,15 @@ struct BalanceContext {
 
 extension BalanceContext {
     var total: Decimal { free + reserved }
-    var frozen: Decimal { reserved + locked }
-    var locked: Decimal { max(miscFrozen, feeFrozen) }
-    var available: Decimal { free >= locked ? free - locked : 0.0 }
+    var locked: Decimal { reserved + frozen }
+    var available: Decimal { free >= frozen ? free - frozen : 0.0 }
 }
 
 extension BalanceContext {
     init(context: [String: String]) {
         free = Self.parseContext(key: BalanceContext.freeKey, context: context)
         reserved = Self.parseContext(key: BalanceContext.reservedKey, context: context)
-        miscFrozen = Self.parseContext(key: BalanceContext.miscFrozenKey, context: context)
-        feeFrozen = Self.parseContext(key: BalanceContext.feeFrozenKey, context: context)
+        frozen = Self.parseContext(key: BalanceContext.frozen, context: context)
 
         price = Self.parseContext(key: BalanceContext.priceKey, context: context)
         priceChange = Self.parseContext(key: BalanceContext.priceChangeKey, context: context)
@@ -54,8 +50,7 @@ extension BalanceContext {
         return [
             BalanceContext.freeKey: free.stringWithPointSeparator,
             BalanceContext.reservedKey: reserved.stringWithPointSeparator,
-            BalanceContext.miscFrozenKey: miscFrozen.stringWithPointSeparator,
-            BalanceContext.feeFrozenKey: feeFrozen.stringWithPointSeparator,
+            BalanceContext.frozen: frozen.stringWithPointSeparator,
             BalanceContext.priceKey: price.stringWithPointSeparator,
             BalanceContext.priceChangeKey: priceChange.stringWithPointSeparator,
             BalanceContext.minimalBalanceKey: minimalBalance.stringWithPointSeparator,
@@ -101,8 +96,26 @@ extension BalanceContext {
         return BalanceContext(
             free: free,
             reserved: reserved,
-            miscFrozen: miscFrozen,
-            feeFrozen: feeFrozen,
+            frozen: max(miscFrozen, feeFrozen),
+            price: price,
+            priceChange: priceChange,
+            minimalBalance: minimalBalance,
+            balanceLocks: balanceLocks
+        )
+    }
+
+    func byChangingAssetBalance(_ assetBalance: AssetBalance, precision: Int16) -> BalanceContext {
+        let free = Decimal
+            .fromSubstrateAmount(assetBalance.freeInPlank, precision: precision) ?? .zero
+        let reserved = Decimal
+            .fromSubstrateAmount(assetBalance.reservedInPlank, precision: precision) ?? .zero
+        let frozen = Decimal
+            .fromSubstrateAmount(assetBalance.frozenInPlank, precision: precision) ?? .zero
+
+        return BalanceContext(
+            free: free,
+            reserved: reserved,
+            frozen: frozen,
             price: price,
             priceChange: priceChange,
             minimalBalance: minimalBalance,
@@ -116,8 +129,7 @@ extension BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
-            miscFrozen: miscFrozen,
-            feeFrozen: feeFrozen,
+            frozen: frozen,
             price: price,
             priceChange: priceChange,
             minimalBalance: minimalBalance,
@@ -129,8 +141,7 @@ extension BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
-            miscFrozen: miscFrozen,
-            feeFrozen: feeFrozen,
+            frozen: frozen,
             price: newPrice,
             priceChange: newPriceChange,
             minimalBalance: minimalBalance,
@@ -142,8 +153,7 @@ extension BalanceContext {
         BalanceContext(
             free: free,
             reserved: reserved,
-            miscFrozen: miscFrozen,
-            feeFrozen: feeFrozen,
+            frozen: frozen,
             price: price,
             priceChange: priceChange,
             minimalBalance: newMinimalBalance,
