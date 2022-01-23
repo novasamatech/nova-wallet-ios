@@ -14,11 +14,11 @@ extension TransferMetadataContext {
         return Decimal(string: stringValue) ?? .zero
     }
 
-    init(data: AccountData, precision: Int16, price: Decimal) {
+    init(assetBalance: AssetBalance, precision: Int16, price: Decimal) {
         let free = Decimal
-            .fromSubstrateAmount(data.free, precision: precision) ?? .zero
+            .fromSubstrateAmount(assetBalance.freeInPlank, precision: precision) ?? .zero
         let reserved = Decimal
-            .fromSubstrateAmount(data.reserved, precision: precision) ?? .zero
+            .fromSubstrateAmount(assetBalance.reservedInPlank, precision: precision) ?? .zero
 
         receiverBalance = free + reserved
         self.price = price

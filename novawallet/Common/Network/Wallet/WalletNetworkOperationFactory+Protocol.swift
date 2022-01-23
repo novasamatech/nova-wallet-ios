@@ -37,7 +37,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let chainAssetId = ChainAssetId(walletId: info.assetId),
             let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
             let chain = chains[chainAssetId.chainId],
-            let assetModel = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+            let remoteAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -55,15 +55,21 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithError(error)
         }
 
-        let compoundReceiver = createAccountInfoFetchOperation(
+        let compoundReceiver = createAssetBalanceFetchOperation(
             receiver,
-            chainId: chainAssetId.chainId,
-            chainFormat: chain.chainFormat
+            chain: chain,
+            asset: remoteAsset
         )
 
-        let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
-            return try builder.adding(call: call)
+        let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let maybeBuilder = try self?.addingTransferCall(
+                to: builder,
+                for: receiver,
+                amount: amount,
+                asset: remoteAsset
+            )
+
+            return maybeBuilder ?? builder
         }
 
         let extrinsicFactory = ExtrinsicOperationFactory(
@@ -78,7 +84,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
 
         let priceOperation: CompoundOperationWrapper<PriceData?>
-        if let priceId = assetModel.priceId {
+        if let priceId = remoteAsset.priceId {
             priceOperation = CoingeckoPriceSource(priceId: priceId).fetchOperation()
         } else {
             priceOperation = CompoundOperationWrapper.createWithResult(nil)
@@ -114,7 +120,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             if let receiverInfo = try compoundReceiver.targetOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled) {
                 let context = TransferMetadataContext(
-                    data: receiverInfo.data,
+                    assetBalance: receiverInfo,
                     precision: asset.precision,
                     price: price
                 ).toContext()
@@ -136,6 +142,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let chainAssetId = ChainAssetId(walletId: info.asset),
             let asset = accountSettings.assets.first(where: { $0.identifier == info.asset }),
             let chain = chains[chainAssetId.chainId],
+            let remoteAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -153,9 +160,15 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithError(error)
         }
 
-        let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = SubstrateCallFactory().transfer(to: receiver, amount: amount)
-            return try builder.adding(call: call)
+        let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let maybeBuilder = try self?.addingTransferCall(
+                to: builder,
+                for: receiver,
+                amount: amount,
+                asset: remoteAsset
+            )
+
+            return maybeBuilder ?? builder
         }
 
         let signer = SigningWrapper(
