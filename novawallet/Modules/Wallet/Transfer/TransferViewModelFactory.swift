@@ -23,9 +23,21 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
         self.feeViewModelFactory = feeViewModelFactory
     }
 
-    private func getPriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
+    private func getTransferPriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
         let priceContext = TransferMetadataContext(context: inputState.metadata?.context ?? [:])
-        let price = priceContext.price
+        let price = priceContext.transferAssetPrice
+
+        guard price > 0.0 else { return nil }
+
+        return PriceData(price: price.stringWithPointSeparator, usdDayChange: nil)
+    }
+
+    private func getFeePriceDataFrom(_ inputState: TransferInputState) -> PriceData? {
+        let priceContext = FeeMetadataContext(
+            context: inputState.metadata?.feeDescriptions.first?.context ?? [:]
+        )
+
+        let price = priceContext.feeAssetPrice
 
         guard price > 0.0 else { return nil }
 
@@ -42,7 +54,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let feeAmount = fee.feeDescription.parameters.first?.decimalValue ?? 0
 
-        let priceData = getPriceDataFrom(inputState)
+        let priceData = getFeePriceDataFrom(inputState)
 
         let feeFactory = feeViewModelFactory ?? balanceViewModelFactory
         let balance = feeFactory.balanceFromPrice(
@@ -145,7 +157,7 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
 
         let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
 
-        let priceData = getPriceDataFrom(inputState)
+        let priceData = getTransferPriceDataFrom(inputState)
 
         let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
 

@@ -2,10 +2,10 @@ import Foundation
 
 struct TransferMetadataContext {
     static let receiverBalanceKey = "transfer.metadata.receiver.balance.key"
-    static let priceKey = "transfer.metadata.price.key"
+    static let transferAssetPriceKey = "transfer.metadata.transfer.asset.price.key"
 
     let receiverBalance: Decimal
-    let price: Decimal
+    let transferAssetPrice: Decimal
 }
 
 extension TransferMetadataContext {
@@ -14,25 +14,25 @@ extension TransferMetadataContext {
         return Decimal(string: stringValue) ?? .zero
     }
 
-    init(assetBalance: AssetBalance, precision: Int16, price: Decimal) {
+    init(assetBalance: AssetBalance, precision: Int16, transferAssetPrice: Decimal) {
         let free = Decimal
             .fromSubstrateAmount(assetBalance.freeInPlank, precision: precision) ?? .zero
         let reserved = Decimal
             .fromSubstrateAmount(assetBalance.reservedInPlank, precision: precision) ?? .zero
 
         receiverBalance = free + reserved
-        self.price = price
+        self.transferAssetPrice = transferAssetPrice
     }
 
     init(context: [String: String]) {
         receiverBalance = Self.decimalFromContext(context, key: Self.receiverBalanceKey)
-        price = Self.decimalFromContext(context, key: Self.priceKey)
+        transferAssetPrice = Self.decimalFromContext(context, key: Self.transferAssetPriceKey)
     }
 
     func toContext() -> [String: String] {
         [
             Self.receiverBalanceKey: receiverBalance.stringWithPointSeparator,
-            Self.priceKey: price.stringWithPointSeparator
+            Self.transferAssetPriceKey: transferAssetPrice.stringWithPointSeparator
         ]
     }
 }
