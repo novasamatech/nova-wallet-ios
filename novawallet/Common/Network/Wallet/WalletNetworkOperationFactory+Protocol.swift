@@ -37,7 +37,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let chainAssetId = ChainAssetId(walletId: info.assetId),
             let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
             let chain = chains[chainAssetId.chainId],
-            let remoteAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+            let transferAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
+            let feeAsset = chain.utilityAssets().first,
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -58,7 +59,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         let compoundReceiver = createAssetBalanceFetchOperation(
             receiver,
             chain: chain,
-            asset: remoteAsset
+            asset: transferAsset
         )
 
         let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
@@ -66,7 +67,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 to: builder,
                 for: receiver,
                 amount: amount,
-                asset: remoteAsset
+                asset: transferAsset
             )
 
             return maybeBuilder ?? builder
@@ -83,19 +84,27 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
 
-        let priceOperation: CompoundOperationWrapper<PriceData?>
-        if let priceId = remoteAsset.priceId {
-            priceOperation = CoingeckoPriceSource(priceId: priceId).fetchOperation()
+        let priceOperation: CompoundOperationWrapper<[PriceData]?>
+
+        let priceIds = [transferAsset, feeAsset].reduce(
+            into: [AssetModel.PriceId]()
+        ) { result, asset in
+            if let priceId = asset.priceId, !result.contains(priceId) {
+                result.append(priceId)
+            }
+        }
+
+        if !priceIds.isEmpty {
+            priceOperation = CoingeckoPriceListSource(priceIds: priceIds).fetchOperation()
         } else {
             priceOperation = CompoundOperationWrapper.createWithResult(nil)
         }
 
         let mapOperation: ClosureOperation<TransferMetaData?> = ClosureOperation {
             let paymentInfo = try infoWrapper.targetOperation.extractNoCancellableResultData()
-            let priceData = try priceOperation.targetOperation.extractNoCancellableResultData()
+            let priceDataList = try priceOperation.targetOperation.extractNoCancellableResultData()
 
             guard let fee = BigUInt(paymentInfo.fee),
-                  let feeAsset = chain.utilityAssets().first,
                   let decimalFee = Decimal.fromSubstrateAmount(
                       fee,
                       precision: Int16(bitPattern: feeAsset.precision)
@@ -104,8 +113,16 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 return nil
             }
 
-            let price: Decimal = {
-                if let priceData = priceData {
+            let assetPrice: Decimal = {
+                if transferAsset.priceId != nil, let priceData = priceDataList?.first {
+                    return Decimal(string: priceData.price) ?? .zero
+                } else {
+                    return .zero
+                }
+            }()
+
+            let feePrice: Decimal = {
+                if feeAsset.priceId != nil, let priceData = priceDataList?.last {
                     return Decimal(string: priceData.price) ?? .zero
                 } else {
                     return .zero
@@ -118,7 +135,8 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 identifier: asset.identifier,
                 assetId: asset.identifier,
                 type: FeeType.fixed.rawValue,
-                parameters: [amount]
+                parameters: [amount],
+                context: FeeMetadataContext(feeAssetBalance: 0, feeAssetPrice: feePrice).toContext()
             )
 
             if let receiverInfo = try compoundReceiver.targetOperation
@@ -126,7 +144,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 let context = TransferMetadataContext(
                     assetBalance: receiverInfo,
                     precision: asset.precision,
-                    price: price
+                    transferAssetPrice: assetPrice
                 ).toContext()
                 return TransferMetaData(feeDescriptions: [feeDescription], context: context)
             } else {
