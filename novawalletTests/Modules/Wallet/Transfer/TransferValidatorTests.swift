@@ -84,8 +84,7 @@ class TransferValidatorTests: XCTestCase {
             identifier: asset,
             balance: availableAmount,
             context: [
-                BalanceContext.freeKey: "1.0001",
-                BalanceContext.minimalBalanceKey: "1.0",
+                BalanceContext.freeKey: "1.0001"
             ]
         )
 
@@ -115,9 +114,7 @@ class TransferValidatorTests: XCTestCase {
             identifier: asset,
             balance: availableAmount,
             context: [
-                BalanceContext.freeKey: availableAmount.stringValue,
-                TransferMetadataContext.receiverBalanceKey: "0.1",
-                BalanceContext.minimalBalanceKey: "1.0",
+                BalanceContext.freeKey: availableAmount.stringValue
             ]
         )
 
