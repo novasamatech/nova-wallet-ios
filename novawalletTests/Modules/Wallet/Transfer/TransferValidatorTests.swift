@@ -79,7 +79,9 @@ class TransferValidatorTests: XCTestCase {
         let asset = "assetId"
         let fee = Fee(value: AmountDecimal(value: 0.01), feeDescription: .stub)
         let transferInfo = TransferInfo.stub(amount: transferAmount, asset: asset, fees: [fee])
-        let transferMetadata = TransferMetaData(feeDescriptions: [])
+        let transferMetadata = TransferMetaData(feeDescriptions: [], context: [
+            TransferMetadataContext.assetMinBalanceKey: "1"
+        ])
         let balance = BalanceData(
             identifier: asset,
             balance: availableAmount,
@@ -109,7 +111,10 @@ class TransferValidatorTests: XCTestCase {
         let asset = "assetId"
         let fee = Fee(value: AmountDecimal(value: 0.1), feeDescription: .stub)
         let transferInfo = TransferInfo.stub(amount: transferAmount, asset: asset, fees: [fee])
-        let transferMetadata = TransferMetaData(feeDescriptions: [])
+        let transferMetadata = TransferMetaData(feeDescriptions: [], context: [
+            TransferMetadataContext.receiverAssetBalanceKey: "0",
+            TransferMetadataContext.assetMinBalanceKey: "1"
+        ])
         let balance = BalanceData(
             identifier: asset,
             balance: availableAmount,
