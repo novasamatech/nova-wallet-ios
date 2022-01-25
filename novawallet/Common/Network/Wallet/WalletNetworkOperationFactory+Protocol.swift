@@ -12,6 +12,7 @@ enum WalletNetworkOperationFactoryError: Error {
     case invalidAsset
     case invalidChain
     case invalidReceiver
+    case invalidSender
 }
 
 extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
@@ -30,6 +31,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         return CompoundOperationWrapper(targetOperation: operation)
     }
 
+    // swiftlint:disable:next function_body_length
     func transferMetadataOperation(
         _ info: TransferMetadataInfo
     ) -> CompoundOperationWrapper<TransferMetaData?> {
@@ -38,7 +40,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             let asset = accountSettings.assets.first(where: { $0.identifier == info.assetId }),
             let chain = chains[chainAssetId.chainId],
             let transferAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-            let feeAsset = chain.utilityAssets().first,
+            let utilityAsset = chain.utilityAssets().first,
             let selectedAccount = metaAccount.fetch(for: chain.accountRequest()),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId),
             let connection = chainRegistry.getConnection(for: chain.chainId) else {
@@ -56,11 +58,49 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithError(error)
         }
 
-        let compoundReceiver = createAssetBalanceFetchOperation(
+        let receiverAssetBalanceOperation = createAssetBalanceFetchOperation(
             receiver,
             chain: chain,
             asset: transferAsset
         )
+
+        let utilityMatchesAsset = transferAsset.assetId == utilityAsset.assetId
+
+        let minBalanceAssets = utilityMatchesAsset ?
+            [
+                ChainAsset(chain: chain, asset: transferAsset)
+            ] :
+            [
+                ChainAsset(chain: chain, asset: transferAsset),
+                ChainAsset(chain: chain, asset: utilityAsset)
+            ]
+
+        let assetMinBalanceWrapper = fetchMinimalBalanceOperation(for: minBalanceAssets)
+
+        let senderUtilityBalanceWrapper: CompoundOperationWrapper<AssetBalance?>?
+        let receiverUtilityBalanceWrapper: CompoundOperationWrapper<AssetBalance?>?
+
+        if !utilityMatchesAsset {
+            receiverUtilityBalanceWrapper = createAssetBalanceFetchOperation(
+                receiver,
+                chain: chain,
+                asset: utilityAsset
+            )
+
+            guard let sender = try? Data(hexString: info.sender) else {
+                let error = WalletNetworkOperationFactoryError.invalidChain
+                return CompoundOperationWrapper.createWithError(error)
+            }
+
+            senderUtilityBalanceWrapper = createAssetBalanceFetchOperation(
+                sender,
+                chain: chain,
+                asset: utilityAsset
+            )
+        } else {
+            receiverUtilityBalanceWrapper = nil
+            senderUtilityBalanceWrapper = nil
+        }
 
         let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
             let maybeBuilder = try self?.addingTransferCall(
@@ -86,7 +126,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let priceOperation: CompoundOperationWrapper<[PriceData]?>
 
-        let priceIds = [transferAsset, feeAsset].reduce(
+        let priceIds = [transferAsset, utilityAsset].reduce(
             into: [AssetModel.PriceId]()
         ) { result, asset in
             if let priceId = asset.priceId, !result.contains(priceId) {
@@ -103,11 +143,25 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         let mapOperation: ClosureOperation<TransferMetaData?> = ClosureOperation {
             let paymentInfo = try infoWrapper.targetOperation.extractNoCancellableResultData()
             let priceDataList = try priceOperation.targetOperation.extractNoCancellableResultData()
+            let senderUtilityBalance = try senderUtilityBalanceWrapper?.targetOperation
+                .extractNoCancellableResultData()
+
+            let receiverUtilityBalance = try receiverUtilityBalanceWrapper?.targetOperation
+                .extractNoCancellableResultData()
+
+            let minBalances = try assetMinBalanceWrapper.targetOperation
+                .extractNoCancellableResultData()
+
+            let transferChainAssetId = ChainAssetId(chainId: chain.chainId, assetId: transferAsset.assetId)
+            let assetMinBalance = minBalances[transferChainAssetId] ?? 0
+
+            let utilityChainAssetId = ChainAssetId(chainId: chain.chainId, assetId: utilityAsset.assetId)
+            let utilityMinBalance = !utilityMatchesAsset ? minBalances[utilityChainAssetId] : nil
 
             guard let fee = BigUInt(paymentInfo.fee),
                   let decimalFee = Decimal.fromSubstrateAmount(
                       fee,
-                      precision: Int16(bitPattern: feeAsset.precision)
+                      precision: Int16(bitPattern: utilityAsset.precision)
                   )
             else {
                 return nil
@@ -122,7 +176,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             }()
 
             let feePrice: Decimal = {
-                if feeAsset.priceId != nil, let priceData = priceDataList?.last {
+                if utilityAsset.priceId != nil, let priceData = priceDataList?.last {
                     return Decimal(string: priceData.price) ?? .zero
                 } else {
                     return .zero
@@ -139,12 +193,17 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
                 context: FeeMetadataContext(feeAssetBalance: 0, feeAssetPrice: feePrice).toContext()
             )
 
-            if let receiverInfo = try compoundReceiver.targetOperation
+            if let receiverAssetInfo = try receiverAssetBalanceOperation.targetOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled) {
                 let context = TransferMetadataContext(
-                    assetBalance: receiverInfo,
-                    precision: asset.precision,
-                    transferAssetPrice: assetPrice
+                    receiverAssetBalance: receiverAssetInfo,
+                    assetMinBalance: assetMinBalance,
+                    assetPrecision: asset.precision,
+                    transferAssetPrice: assetPrice,
+                    receiverUtilityBalance: receiverUtilityBalance,
+                    senderUtilityBalance: senderUtilityBalance,
+                    utilityMinBalance: utilityMinBalance,
+                    utilityPrecision: Int16(bitPattern: utilityAsset.precision)
                 ).toContext()
                 return TransferMetaData(feeDescriptions: [feeDescription], context: context)
             } else {
@@ -152,7 +211,17 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             }
         }
 
-        let dependencies = compoundReceiver.allOperations + infoWrapper.allOperations + priceOperation.allOperations
+        var dependencies = assetMinBalanceWrapper.allOperations +
+            receiverAssetBalanceOperation.allOperations +
+            infoWrapper.allOperations + priceOperation.allOperations
+
+        if let wrapper = senderUtilityBalanceWrapper {
+            dependencies.append(contentsOf: wrapper.allOperations)
+        }
+
+        if let wrapper = receiverUtilityBalanceWrapper {
+            dependencies.append(contentsOf: wrapper.allOperations)
+        }
 
         dependencies.forEach { mapOperation.addDependency($0) }
 

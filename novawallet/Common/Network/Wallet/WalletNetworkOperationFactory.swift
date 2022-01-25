@@ -13,6 +13,7 @@ final class WalletNetworkOperationFactory {
     let chainRegistry: ChainRegistryProtocol
     let requestFactory: StorageRequestFactoryProtocol
     let chainStorage: AnyDataProviderRepository<ChainStorageItem>
+    let localStorageRequestFactory: LocalStorageRequestFactoryProtocol
     let keystore: KeystoreProtocol
 
     init(
@@ -22,6 +23,7 @@ final class WalletNetworkOperationFactory {
         chainRegistry: ChainRegistryProtocol,
         requestFactory: StorageRequestFactoryProtocol,
         chainStorage: AnyDataProviderRepository<ChainStorageItem>,
+        localStorageRequestFactory: LocalStorageRequestFactoryProtocol,
         keystore: KeystoreProtocol
     ) {
         self.metaAccount = metaAccount
@@ -30,6 +32,7 @@ final class WalletNetworkOperationFactory {
         self.accountSettings = accountSettings
         self.requestFactory = requestFactory
         self.chainStorage = chainStorage
+        self.localStorageRequestFactory = localStorageRequestFactory
         self.keystore = keystore
     }
 

@@ -47,7 +47,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
 
         decodeAndSaveAccountInfo(remoteItem, chainAssetId: chainAssetId, accountId: accountId)
 
-        if case let .success(optionalChange) = result, let change = optionalChange {
+        if case let .success(optionalChange) = result, optionalChange != nil {
             logger.debug("Did change account info")
 
             if let blockHash = blockHash {
