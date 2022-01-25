@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import RobinHood
+import SubstrateSdk
 
 final class ChainModelMapper {
     var entityIdentifierFieldName: String { #keyPath(CDChain.chainId) }
@@ -8,15 +9,28 @@ final class ChainModelMapper {
     typealias DataProviderModel = ChainModel
     typealias CoreDataEntity = CDChain
 
-    private func createAsset(from entity: CDAsset) -> AssetModel {
-        AssetModel(
+    private lazy var jsonEncoder = JSONEncoder()
+    private lazy var jsonDecoder = JSONDecoder()
+
+    private func createAsset(from entity: CDAsset) throws -> AssetModel {
+        let typeExtras: JSON?
+
+        if let data = entity.typeExtras {
+            typeExtras = try jsonDecoder.decode(JSON.self, from: data)
+        } else {
+            typeExtras = nil
+        }
+
+        return AssetModel(
             assetId: UInt32(bitPattern: entity.assetId),
             icon: entity.icon,
             name: entity.name,
             symbol: entity.symbol!,
             precision: UInt16(bitPattern: entity.precision),
             priceId: entity.priceId,
-            staking: entity.staking
+            staking: entity.staking,
+            type: entity.type,
+            typeExtras: typeExtras
         )
     }
 
@@ -41,8 +55,8 @@ final class ChainModelMapper {
         for entity: CDChain,
         from model: ChainModel,
         context: NSManagedObjectContext
-    ) {
-        let assetEntities: [CDAsset] = model.assets.map { asset in
+    ) throws {
+        let assetEntities: [CDAsset] = try model.assets.map { asset in
             let assetEntity: CDAsset
             let assetEntityId = Int32(bitPattern: asset.assetId)
 
@@ -62,6 +76,13 @@ final class ChainModelMapper {
             assetEntity.symbol = asset.symbol
             assetEntity.priceId = asset.priceId
             assetEntity.staking = asset.staking
+            assetEntity.type = asset.type
+
+            if let json = asset.typeExtras {
+                assetEntity.typeExtras = try jsonEncoder.encode(json)
+            } else {
+                assetEntity.typeExtras = nil
+            }
 
             return assetEntity
         }
@@ -180,12 +201,12 @@ final class ChainModelMapper {
 
 extension ChainModelMapper: CoreDataMapperProtocol {
     func transform(entity: CDChain) throws -> ChainModel {
-        let assets: [AssetModel] = entity.assets?.compactMap { anyAsset in
+        let assets: [AssetModel] = try entity.assets?.compactMap { anyAsset in
             guard let asset = anyAsset as? CDAsset else {
                 return nil
             }
 
-            return createAsset(from: asset)
+            return try createAsset(from: asset)
         } ?? []
 
         let nodes: [ChainNodeModel] = entity.nodes?.compactMap { anyNode in
@@ -255,7 +276,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.hasCrowdloans = model.hasCrowdloans
         entity.order = model.order
 
-        updateEntityAssets(for: entity, from: model, context: context)
+        try updateEntityAssets(for: entity, from: model, context: context)
 
         updateEntityNodes(for: entity, from: model, context: context)
 

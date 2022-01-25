@@ -22,7 +22,11 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
         self.logger = logger
     }
 
-    func handle(result _: Result<DataProviderChange<ChainStorageItem>?, Error>, blockHash _: Data?) {
+    func handle(
+        result _: Result<DataProviderChange<ChainStorageItem>?, Error>,
+        remoteItem _: ChainStorageItem?,
+        blockHash _: Data?
+    ) {
         logger.warning("Must be overriden after inheritance")
     }
 
@@ -47,8 +51,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
                 let currentItem = try fetchOperation
                     .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
 
-                return DataProviderChange<ChainStorageItem>
-                    .change(value1: currentItem, value2: newItem)
+                return DataProviderChange<ChainStorageItem>.change(value1: currentItem, value2: newItem)
             }
 
         let saveOperation = storage.saveOperation({
@@ -85,7 +88,15 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
                 return
             }
 
-            self?.handle(result: changeResult, blockHash: blockHash)
+            let remoteItem: ChainStorageItem?
+
+            if let newData = data {
+                remoteItem = ChainStorageItem(identifier: identifier, data: newData)
+            } else {
+                remoteItem = nil
+            }
+
+            self?.handle(result: changeResult, remoteItem: remoteItem, blockHash: blockHash)
         }
 
         operationManager.enqueue(

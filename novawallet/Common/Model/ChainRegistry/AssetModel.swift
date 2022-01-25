@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 struct AssetModel: Equatable, Codable, Hashable {
     // swiftlint:disable:next type_name
@@ -12,6 +13,8 @@ struct AssetModel: Equatable, Codable, Hashable {
     let precision: UInt16
     let priceId: PriceId?
     let staking: String?
+    let type: String?
+    let typeExtras: JSON?
 
     var isUtility: Bool { assetId == 0 }
 }
