@@ -85,6 +85,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let chainStorage = SubstrateRepositoryFactory(storageFacade: substrateFacade)
             .createChainStorageItemRepository()
 
+        let localStorageRequestFactory = LocalStorageRequestFactory()
+
         let nodeOperationFactory = WalletNetworkOperationFactory(
             metaAccount: metaAccount,
             chains: chainsById,
@@ -92,13 +94,12 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainRegistry: chainRegistry,
             requestFactory: requestFactory,
             chainStorage: chainStorage,
+            localStorageRequestFactory: localStorageRequestFactory,
             keystore: Keychain()
         )
 
         let subscanOperationFactory = SubscanOperationFactory()
         let coingeckoOperationFactory = CoingeckoOperationFactory()
-
-        let localStorageRequestFactory = LocalStorageRequestFactory()
 
         let accountsRepository = AccountRepositoryFactory(storageFacade: userFacade).createManagedMetaAccountRepository(
             for: nil,
@@ -126,7 +127,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             totalPriceId: priceAsset.identifier,
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
-            localStorageRequestFactory: localStorageRequestFactory,
             repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository,
