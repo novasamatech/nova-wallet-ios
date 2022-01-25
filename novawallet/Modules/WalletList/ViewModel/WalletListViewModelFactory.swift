@@ -5,7 +5,7 @@ import BigInt
 
 struct WalletListChainAccountPrice {
     let assetInfo: AssetBalanceDisplayInfo
-    let accountInfo: AccountInfo
+    let balance: BigUInt
     let price: PriceData
 }
 
@@ -47,7 +47,7 @@ final class WalletListViewModelFactory {
     private func formatTotalPrice(from prices: [WalletListChainAccountPrice], locale: Locale) -> String {
         let totalPrice = prices.reduce(Decimal(0)) { result, item in
             let balance = Decimal.fromSubstrateAmount(
-                item.accountInfo.data.total,
+                item.balance,
                 precision: item.assetInfo.assetPrecision
             ) ?? 0.0
 

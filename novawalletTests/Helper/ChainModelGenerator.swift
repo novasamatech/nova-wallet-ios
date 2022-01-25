@@ -18,7 +18,9 @@ enum ChainModelGenerator {
                 symbol: chainId.prefix(3).uppercased(),
                 precision: 12,
                 priceId: nil,
-                staking: hasStaking ? "relaychain" : nil
+                staking: hasStaking ? "relaychain" : nil,
+                type: nil,
+                typeExtras: nil
             )
 
             let node = ChainNodeModel(
@@ -87,7 +89,9 @@ enum ChainModelGenerator {
                 symbol: chainId.prefix(3).uppercased(),
                 precision: 12,
                 priceId: nil,
-                staking: hasStaking ? "relaychain" : nil
+                staking: hasStaking ? "relaychain" : nil,
+                type: nil,
+                typeExtras: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -214,7 +218,9 @@ enum ChainModelGenerator {
             symbol: String(UUID().uuidString.prefix(3)),
             precision: assetPresicion,
             priceId: nil,
-            staking: hasStaking ? "relaychain" : nil
+            staking: hasStaking ? "relaychain" : nil,
+            type: nil,
+            typeExtras: nil
         )
     }
 

@@ -20,10 +20,8 @@ final class WalletListWireframe: WalletListWireframeProtocol {
         )
     }
 
-    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel) {
-        guard
-            let context = try? WalletContextFactory().createContext(for: chain),
-            let asset = chain.utilityAssets().first else {
+    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel) {
+        guard let context = try? WalletContextFactory().createContext(for: chain, asset: asset) else {
             return
         }
 
