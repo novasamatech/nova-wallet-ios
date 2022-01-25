@@ -10,9 +10,15 @@ final class AssetsBalanceUpdater {
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
 
-    private var assetDetailsKey: String?
-    private var assetAccountKey: String?
+    private var lastDetailsValue: ChainStorageItem?
+    private var receivedDetails: Bool = false
+
+    private var lastAccountValue: ChainStorageItem?
+    private var receivedAccount: Bool = false
+
     private var hasChanges: Bool = false
+
+    private let mutex = NSLock()
 
     init(
         chainAssetId: ChainAssetId,
@@ -32,29 +38,49 @@ final class AssetsBalanceUpdater {
         self.operationQueue = operationQueue
     }
 
-    func handleAssetDetails(change: DataProviderChange<ChainStorageItem>?, localKey: String) {
-        hasChanges = hasChanges || (change != nil) || (assetDetailsKey == nil)
-        assetDetailsKey = localKey
+    func handleAssetDetails(value: ChainStorageItem?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        hasChanges = hasChanges || (value != nil) || (!receivedDetails)
+        receivedDetails = true
+
+        if value != nil {
+            lastDetailsValue = value
+        }
 
         checkChanges(chainAssetId: chainAssetId, accountId: accountId)
     }
 
-    func handleAssetAccount(change: DataProviderChange<ChainStorageItem>?, localKey: String) {
-        hasChanges = hasChanges || (change != nil) || (assetAccountKey == nil)
-        assetAccountKey = localKey
+    func handleAssetAccount(value: ChainStorageItem?) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        hasChanges = hasChanges || (value != nil) || (!receivedAccount)
+        receivedAccount = true
+
+        if value != nil {
+            lastAccountValue = value
+        }
 
         checkChanges(chainAssetId: chainAssetId, accountId: accountId)
     }
 
     private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId) {
-        if hasChanges, let assetDetailsKey = assetDetailsKey, let assetAccountKey = assetAccountKey {
+        if hasChanges, receivedAccount, receivedDetails {
             hasChanges = false
 
             let assetAccountWrapper: CompoundOperationWrapper<AssetAccount?> =
-                createFetchStorageItemWrapper(for: assetAccountKey, path: .assetsAccount)
+                createStorageDecoderWrapper(for: lastAccountValue, path: .assetsAccount)
 
             let assetDetailsWrapper: CompoundOperationWrapper<AssetDetails?> =
-                createFetchStorageItemWrapper(for: assetDetailsKey, path: .assetsDetails)
+                createStorageDecoderWrapper(for: lastDetailsValue, path: .assetsDetails)
 
             let identifier = AssetBalance.createIdentifier(for: chainAssetId, accountId: accountId)
             let fetchOperation = assetRepository.fetchOperation(
@@ -80,7 +106,7 @@ final class AssetsBalanceUpdater {
                     frozenInPlank: isFrozen ? balance : 0
                 )
 
-                if localModel != remoteModel {
+                if localModel != remoteModel, balance > 0 {
                     return [remoteModel]
                 } else {
                     return []
@@ -114,44 +140,41 @@ final class AssetsBalanceUpdater {
         }
     }
 
-    private func createFetchStorageItemWrapper<T: Decodable>(
-        for localKey: String,
+    private func createStorageDecoderWrapper<T: Decodable>(
+        for value: ChainStorageItem?,
         path: StorageCodingPath
     ) -> CompoundOperationWrapper<T?> {
+        guard let storageData = value?.data else {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }
+
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-        let fetchOperation = chainRepository.fetchOperation(
-            by: localKey,
-            options: RepositoryFetchOptions()
-        )
-
-        let decodingOperation = StorageFallbackDecodingOperation<T>(path: path)
+        let decodingOperation = StorageDecodingOperation<T>(path: path, data: storageData)
         decodingOperation.configurationBlock = {
             do {
-                let maybeItem = try fetchOperation.extractNoCancellableResultData()
                 decodingOperation.codingFactory = try codingFactoryOperation
                     .extractNoCancellableResultData()
-
-                if let item = maybeItem {
-                    decodingOperation.data = item.data
-                } else {
-                    decodingOperation.result = .success(nil)
-                }
             } catch {
                 decodingOperation.result = .failure(error)
             }
         }
 
         decodingOperation.addDependency(codingFactoryOperation)
-        decodingOperation.addDependency(fetchOperation)
+
+        let mappingOperation = ClosureOperation<T?> {
+            try decodingOperation.extractNoCancellableResultData()
+        }
+
+        mappingOperation.addDependency(decodingOperation)
 
         return CompoundOperationWrapper(
-            targetOperation: decodingOperation,
-            dependencies: [codingFactoryOperation, fetchOperation]
+            targetOperation: mappingOperation,
+            dependencies: [codingFactoryOperation, decodingOperation]
         )
     }
 }

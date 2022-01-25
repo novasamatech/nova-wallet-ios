@@ -155,7 +155,15 @@ final class TransferViewModelFactory: TransferViewModelFactoryOverriding {
             inputState.amount
         ).value(for: locale)
 
-        let fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
+        let metadataContext = TransferMetadataContext(context: inputState.metadata?.context ?? [:])
+
+        let fee: Decimal
+
+        if metadataContext.utilityMatchesAsset {
+            fee = inputState.metadata?.feeDescriptions.first?.parameters.first?.decimalValue ?? .zero
+        } else {
+            fee = 0
+        }
 
         let priceData = getTransferPriceDataFrom(inputState)
 
