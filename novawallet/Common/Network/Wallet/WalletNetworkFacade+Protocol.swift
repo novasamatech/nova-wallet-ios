@@ -19,9 +19,6 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             assets: userAssets
         )
 
-        let minimalBalanceOperation: CompoundOperationWrapper<[String: BigUInt]> =
-            fetchMinimalBalanceOperation(for: userAssets)
-
         let currentPriceId = totalPriceId
 
         let mergeOperation: BaseOperation<[BalanceData]?> = ClosureOperation {
@@ -29,30 +26,12 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
             let prices = try priceWrapper.targetOperation.extractNoCancellableResultData()
 
-            let minimalBalanceMapping = try minimalBalanceOperation.targetOperation
-                .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-
             // match balance with price and form context
 
             let balances: [BalanceData]? = try balanceOperation.targetOperation
                 .extractResultData(throwing: BaseOperationError.parentOperationCancelled)?
                 .map { balanceData in
-                    let minimalBalance: Decimal
-                    if
-                        let asset = userAssets.first(
-                            where: { $0.identifier == balanceData.identifier }
-                        ),
-                        let minBalanceValue = minimalBalanceMapping[asset.identifier] {
-                        minimalBalance = Decimal.fromSubstrateAmount(
-                            minBalanceValue,
-                            precision: asset.precision
-                        ) ?? .zero
-                    } else {
-                        minimalBalance = .zero
-                    }
-
                     let context = BalanceContext(context: balanceData.context ?? [:])
-                        .byChangingMinimalBalance(to: minimalBalance)
 
                     let contextWithPrice: BalanceContext = {
                         guard let price = prices[balanceData.identifier] else { return context }
@@ -91,8 +70,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             }
         }
 
-        let dependencies = balanceOperation.allOperations + flatenedPriceOperations +
-            minimalBalanceOperation.allOperations
+        let dependencies = balanceOperation.allOperations + flatenedPriceOperations
 
         dependencies.forEach { mergeOperation.addDependency($0) }
 

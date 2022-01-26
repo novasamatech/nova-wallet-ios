@@ -2,38 +2,34 @@ import RobinHood
 import BigInt
 import CommonWallet
 
-extension WalletNetworkFacade {
+extension WalletNetworkOperationFactory {
     func fetchMinimalBalanceOperation(
-        for assets: [WalletAsset]
-    ) -> CompoundOperationWrapper<[String: BigUInt]> {
-        let wrappers: [String: CompoundOperationWrapper<BigUInt>] = assets.reduce(
+        for chainAssets: [ChainAsset]
+    ) -> CompoundOperationWrapper<[ChainAssetId: BigUInt]> {
+        let wrappers: [ChainAssetId: CompoundOperationWrapper<BigUInt>] = chainAssets.reduce(
             into: [:]
-        ) { result, asset in
-            guard
-                let chainAssetId = ChainAssetId(walletId: asset.identifier),
-                let chain = chains[chainAssetId.chainId],
-                let remoteAsset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
-                return
-            }
+        ) { result, chainAsset in
 
-            let assetId = asset.identifier
+            let chain = chainAsset.chain
+            let asset = chainAsset.asset
+            let assetId = chainAsset.chainAssetId
 
-            if let rawType = remoteAsset.type {
+            if let rawType = asset.type {
                 switch AssetType(rawValue: rawType) {
                 case .statemine:
                     result[assetId] = createStateminMinimalBalanceOperation(
                         from: chain,
-                        asset: remoteAsset
+                        asset: asset
                     )
                 case .none:
                     result[assetId] = CompoundOperationWrapper.createWithResult(0)
                 }
             } else {
-                result[assetId] = createNativeMinimalBalanceOperation(from: chain, asset: remoteAsset)
+                result[assetId] = createNativeMinimalBalanceOperation(from: chain, asset: asset)
             }
         }
 
-        let mappingOperation = ClosureOperation<[String: BigUInt]> {
+        let mappingOperation = ClosureOperation<[ChainAssetId: BigUInt]> {
             try wrappers.mapValues { try $0.targetOperation.extractNoCancellableResultData() }
         }
 

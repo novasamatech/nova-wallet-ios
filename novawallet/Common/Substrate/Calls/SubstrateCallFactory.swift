@@ -4,10 +4,16 @@ import IrohaCrypto
 import BigInt
 
 protocol SubstrateCallFactoryProtocol {
-    func transfer(
+    func nativeTransfer(
         to receiver: AccountId,
         amount: BigUInt
     ) -> RuntimeCall<TransferCall>
+
+    func assetsTransfer(
+        to receiver: AccountId,
+        assetId: UInt32,
+        amount: BigUInt
+    ) -> RuntimeCall<AssetsTransfer>
 
     func bond(
         amount: BigUInt,
@@ -107,7 +113,16 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: "Staking", callName: "payout_stakers", args: args)
     }
 
-    func transfer(
+    func assetsTransfer(
+        to receiver: AccountId,
+        assetId: UInt32,
+        amount: BigUInt
+    ) -> RuntimeCall<AssetsTransfer> {
+        let args = AssetsTransfer(assetId: assetId, target: .accoundId(receiver), amount: amount)
+        return RuntimeCall(moduleName: "Assets", callName: "transfer", args: args)
+    }
+
+    func nativeTransfer(
         to receiver: AccountId,
         amount: BigUInt
     ) -> RuntimeCall<TransferCall> {
