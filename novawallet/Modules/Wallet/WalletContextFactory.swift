@@ -85,6 +85,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let chainStorage = SubstrateRepositoryFactory(storageFacade: substrateFacade)
             .createChainStorageItemRepository()
 
+        let localStorageRequestFactory = LocalStorageRequestFactory()
+
         let nodeOperationFactory = WalletNetworkOperationFactory(
             metaAccount: metaAccount,
             chains: chainsById,
@@ -92,13 +94,12 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainRegistry: chainRegistry,
             requestFactory: requestFactory,
             chainStorage: chainStorage,
+            localStorageRequestFactory: localStorageRequestFactory,
             keystore: Keychain()
         )
 
         let subscanOperationFactory = SubscanOperationFactory()
         let coingeckoOperationFactory = CoingeckoOperationFactory()
-
-        let localStorageRequestFactory = LocalStorageRequestFactory()
 
         let accountsRepository = AccountRepositoryFactory(storageFacade: userFacade).createManagedMetaAccountRepository(
             for: nil,
@@ -126,7 +127,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             totalPriceId: priceAsset.identifier,
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
-            localStorageRequestFactory: localStorageRequestFactory,
             repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
             accountsRepository: accountsRepository,
@@ -186,10 +186,21 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
+        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
+
+        if let utilityAsset = chain.utilityAssets().first, utilityAsset.assetId != asset.assetId {
+            feeViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: utilityAsset.displayInfo(with: chain.icon)
+            )
+        } else {
+            feeViewModelFactory = nil
+        }
+
         let transferConfigurator = TransferConfigurator(
             chainAsset: chainAsset,
             explorers: chain.explorers,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 
@@ -199,6 +210,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainAccount: chainAccountResponse,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 
