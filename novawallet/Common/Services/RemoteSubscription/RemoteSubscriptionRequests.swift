@@ -70,6 +70,8 @@ struct DoubleMapSubscriptionRequest<T1: Encodable, T2: Encodable>: SubscriptionR
     let storagePath: StorageCodingPath
     let localKey: String
     let keyParamClosure: () throws -> (T1, T2)
+    let keyParam1Encoder: ((T1) throws -> Data)?
+    let keyParam2Encoder: ((T2) throws -> Data)?
 
     func createKeyEncodingWrapper(
         using storageKeyFactory: StorageKeyFactoryProtocol,

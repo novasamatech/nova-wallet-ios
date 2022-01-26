@@ -109,6 +109,8 @@ final class AssetsUpdatingService {
         switch assetType {
         case .statemine:
             return createStatemineSubscription(for: asset, accountId: accountId, chainId: chainId)
+        case .orml:
+            return createOrmlTokenSubscription(for: asset, accountId: accountId, chainId: chainId)
         }
     }
 
@@ -145,14 +147,43 @@ final class AssetsUpdatingService {
             assetBalanceUpdater: assetBalanceUpdater
         )
 
-        if let subscriptionId = maybeSubscriptionId {
-            return SubscriptionInfo(
-                subscriptionId: subscriptionId,
-                accountId: accountId,
-                asset: asset
-            )
-        } else {
+        return maybeSubscriptionId.map { subscriptionId in
+            SubscriptionInfo(subscriptionId: subscriptionId, accountId: accountId, asset: asset)
+        }
+    }
+
+    private func createOrmlTokenSubscription(
+        for asset: AssetModel,
+        accountId: AccountId,
+        chainId: ChainModel.Id
+    ) -> SubscriptionInfo? {
+        guard
+            let extras = asset.typeExtras,
+            let tokenExtras = try? extras.map(to: OrmlTokenExtras.self),
+            let currencyId = try? Data(hexString: tokenExtras.currencyIdScale) else {
             return nil
+        }
+
+        let assetsRepository = repositoryFactory.createAssetBalanceRepository()
+        let subscriptionHandlingFactory = OrmlAccountSubscriptionHandlingFactory(
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: asset.assetId),
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            assetRepository: assetsRepository,
+            eventCenter: eventCenter
+        )
+
+        let maybeSubscriptionId = remoteSubscriptionService.attachToOrmlToken(
+            of: accountId,
+            currencyId: currencyId,
+            chainId: chainId,
+            queue: nil,
+            closure: nil,
+            subscriptionHandlingFactory: subscriptionHandlingFactory
+        )
+
+        return maybeSubscriptionId.map { subscriptionId in
+            SubscriptionInfo(subscriptionId: subscriptionId, accountId: accountId, asset: asset)
         }
     }
 
@@ -183,6 +214,22 @@ final class AssetsUpdatingService {
                     for: subscriptionInfo.subscriptionId,
                     accountId: subscriptionInfo.accountId,
                     assetId: assetExtras.assetId,
+                    chainId: chainId,
+                    queue: nil,
+                    closure: nil
+                )
+            case .orml:
+                guard
+                    let extras = asset.typeExtras,
+                    let assetExtras = try? extras.map(to: OrmlTokenExtras.self),
+                    let currencyId = try? Data(hexString: assetExtras.currencyIdScale) else {
+                    return
+                }
+
+                remoteSubscriptionService.detachFromOrmlToken(
+                    for: subscriptionInfo.subscriptionId,
+                    accountId: subscriptionInfo.accountId,
+                    currencyId: currencyId,
                     chainId: chainId,
                     queue: nil,
                     closure: nil

@@ -21,6 +21,8 @@ extension WalletNetworkOperationFactory {
                         from: chain,
                         asset: asset
                     )
+                case .orml:
+                    result[assetId] = createOrmlMinimalBalanceOperation(from: chain, asset: asset)
                 case .none:
                     result[assetId] = CompoundOperationWrapper.createWithResult(0)
                 }
@@ -106,5 +108,17 @@ extension WalletNetworkOperationFactory {
         dependencies.forEach { mappingOperation.addDependency($0) }
 
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+    }
+
+    private func createOrmlMinimalBalanceOperation(
+        from _: ChainModel,
+        asset: AssetModel
+    ) -> CompoundOperationWrapper<BigUInt> {
+        if let extras = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) {
+            let minBalance = BigUInt(extras.existentialDeposit) ?? 0
+            return CompoundOperationWrapper.createWithResult(minBalance)
+        } else {
+            return CompoundOperationWrapper.createWithResult(0)
+        }
     }
 }

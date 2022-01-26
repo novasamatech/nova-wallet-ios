@@ -145,4 +145,12 @@ extension StorageCodingPath {
     static var assetsDetails: StorageCodingPath {
         StorageCodingPath(moduleName: "Assets", itemName: "Asset")
     }
+
+    static var ormlTokenAccount: StorageCodingPath {
+        StorageCodingPath(moduleName: "Tokens", itemName: "Accounts")
+    }
+
+    static var ormlTokenLocks: StorageCodingPath {
+        StorageCodingPath(moduleName: "Tokens", itemName: "Locks")
+    }
 }
