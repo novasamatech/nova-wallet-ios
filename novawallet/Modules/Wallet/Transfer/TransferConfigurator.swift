@@ -95,13 +95,15 @@ final class TransferConfigurator {
         chainAsset: ChainAsset,
         explorers: [ChainModel.Explorer]?,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         localizationManager: LocalizationManagerProtocol
 
     ) {
         viewModelFactory = TransferViewModelFactory(
             chainAsset: chainAsset,
             explorers: explorers,
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory
         )
         self.localizationManager = localizationManager
     }
