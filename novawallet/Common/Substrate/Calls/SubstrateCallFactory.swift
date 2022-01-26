@@ -15,6 +15,13 @@ protocol SubstrateCallFactoryProtocol {
         amount: BigUInt
     ) -> RuntimeCall<AssetsTransfer>
 
+    func ormlTransfer(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<OrmlTokenTransfer>
+
     func bond(
         amount: BigUInt,
         controller: String,
@@ -128,6 +135,21 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
         return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
+    }
+
+    func ormlTransfer(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<OrmlTokenTransfer> {
+        let args = OrmlTokenTransfer(
+            dest: .accoundId(receiverId),
+            currencyId: currencyId,
+            amount: amount
+        )
+
+        return RuntimeCall(moduleName: moduleName, callName: "transfer", args: args)
     }
 
     func setPayee(for destination: RewardDestinationArg) -> RuntimeCall<SetPayeeCall> {
