@@ -85,7 +85,7 @@ final class AccountInfoUpdatingService {
         guard
             let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
             let address = try? accountId.toAddress(using: chain.chainFormat),
-            let asset = chain.utilityAssets().first else {
+            let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
             logger.error("Couldn't create account for chain \(chain.chainId)")
             return
         }
