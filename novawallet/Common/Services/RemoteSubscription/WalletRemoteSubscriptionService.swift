@@ -23,7 +23,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     // swiftlint:disable:next function_parameter_count
     func attachToAsset(
         of accountId: AccountId,
-        assetId: UInt32,
+        assetId: String,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
@@ -34,7 +34,7 @@ protocol WalletRemoteSubscriptionServiceProtocol {
     func detachFromAsset(
         for subscriptionId: UUID,
         accountId: AccountId,
-        assetId: UInt32,
+        assetId: String,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
@@ -139,7 +139,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     // swiftlint:disable:next function_parameter_count
     func attachToAsset(
         of accountId: AccountId,
-        assetId: UInt32,
+        assetId: String,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
@@ -158,7 +158,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             let accountRequest = DoubleMapSubscriptionRequest(
                 storagePath: accountStoragePath,
                 localKey: accountLocalKey,
-                keyParamClosure: { (StringScaleMapper(value: assetId), accountId) },
+                keyParamClosure: { (assetId, accountId) },
                 param1Encoder: nil,
                 param2Encoder: nil
             )
@@ -202,7 +202,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
     func detachFromAsset(
         for subscriptionId: UUID,
         accountId: AccountId,
-        assetId: UInt32,
+        assetId: String,
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?
@@ -222,6 +222,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         }
     }
 
+    // swiftlint:disable:next function_parameter_count
     func attachToOrmlToken(
         of accountId: AccountId,
         currencyId: Data,
