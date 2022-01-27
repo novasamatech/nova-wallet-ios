@@ -60,13 +60,15 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         }
     }
 
-    private func decodeAndSaveAccountInfo(
+    private func createDecodingOperationWrapper(
         _ item: ChainStorageItem?,
         chainAssetId: ChainAssetId,
-        accountId: AccountId
-    ) {
+        accountId _: AccountId
+    ) -> CompoundOperationWrapper<AccountInfo?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
-            return
+            return CompoundOperationWrapper.createWithError(
+                ChainRegistryError.runtimeMetadaUnavailable
+            )
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
@@ -85,14 +87,27 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
 
         decodingOperation.addDependency(codingFactoryOperation)
 
+        decodingOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: decodingOperation,
+            dependencies: [codingFactoryOperation]
+        )
+    }
+
+    private func createChangesOperationWrapper(
+        dependingOn decodingWrapper: CompoundOperationWrapper<AccountInfo?>,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId
+    ) -> CompoundOperationWrapper<DataProviderChange<AssetBalance>?> {
         let identifier = AssetBalance.createIdentifier(for: chainAssetId, accountId: accountId)
         let fetchOperation = assetRepository.fetchOperation(
             by: identifier,
             options: RepositoryFetchOptions()
         )
 
-        let saveOperation = assetRepository.saveOperation({
-            let account = try decodingOperation.extractNoCancellableResultData()
+        let changesOperation = ClosureOperation<DataProviderChange<AssetBalance>?> {
+            let account = try decodingWrapper.targetOperation.extractNoCancellableResultData()
             let localModel = try fetchOperation.extractNoCancellableResultData()
 
             let remoteModel = AssetBalance(
@@ -104,35 +119,69 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {
+                return DataProviderChange.update(newItem: remoteModel)
+            } else if localModel != nil, remoteModel.totalInPlank == 0 {
+                return DataProviderChange.delete(deletedIdentifier: identifier)
+            } else {
+                return nil
+            }
+        }
+
+        changesOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [fetchOperation])
+    }
+
+    private func decodeAndSaveAccountInfo(
+        _ item: ChainStorageItem?,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId
+    ) {
+        let decodingWrapper = createDecodingOperationWrapper(
+            item,
+            chainAssetId: chainAssetId,
+            accountId: accountId
+        )
+
+        let changesWrapper = createChangesOperationWrapper(
+            dependingOn: decodingWrapper,
+            chainAssetId: chainAssetId,
+            accountId: accountId
+        )
+
+        let saveOperation = assetRepository.saveOperation({
+            let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+            if let remoteModel = change?.item {
                 return [remoteModel]
             } else {
                 return []
             }
         }, {
-            let account = try decodingOperation.extractNoCancellableResultData()
-            let localModel = try fetchOperation.extractNoCancellableResultData()
+            let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
 
-            let total = account?.data.total ?? 0
-
-            if total == 0, localModel != nil {
+            if case let .delete(identifier) = change {
                 return [identifier]
             } else {
                 return []
             }
         })
 
-        saveOperation.addDependency(fetchOperation)
-        saveOperation.addDependency(decodingOperation)
+        changesWrapper.addDependency(wrapper: decodingWrapper)
+        saveOperation.addDependency(changesWrapper.targetOperation)
 
-        saveOperation.completionBlock = {
+        saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self.eventCenter.notify(with: WalletBalanceChanged())
+                let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
+
+                if maybeItem != nil {
+                    self?.eventCenter.notify(with: WalletBalanceChanged())
+                }
             }
         }
 
-        operationManager.enqueue(
-            operations: [codingFactoryOperation, decodingOperation, fetchOperation, saveOperation],
-            in: .transient
-        )
+        let operations = decodingWrapper.allOperations + changesWrapper.allOperations + [saveOperation]
+
+        operationManager.enqueue(operations: operations, in: .transient)
     }
 }
