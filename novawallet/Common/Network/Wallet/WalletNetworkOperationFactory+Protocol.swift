@@ -102,12 +102,16 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             senderUtilityBalanceWrapper = nil
         }
 
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
         let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
             let maybeBuilder = try self?.addingTransferCall(
                 to: builder,
                 for: receiver,
                 amount: amount,
-                asset: transferAsset
+                asset: transferAsset,
+                coderFactory: coderFactory
             )
 
             return maybeBuilder ?? builder
@@ -123,6 +127,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         )
 
         let infoWrapper = extrinsicFactory.estimateFeeOperation(builderClosure)
+        infoWrapper.addDependency(operations: [coderFactoryOperation])
 
         let priceOperation: CompoundOperationWrapper<[PriceData]?>
 
@@ -212,7 +217,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         }
 
         var dependencies = assetMinBalanceWrapper.allOperations +
-            receiverAssetBalanceOperation.allOperations +
+            receiverAssetBalanceOperation.allOperations + [coderFactoryOperation] +
             infoWrapper.allOperations + priceOperation.allOperations
 
         if let wrapper = senderUtilityBalanceWrapper {
@@ -251,12 +256,16 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             return CompoundOperationWrapper.createWithError(error)
         }
 
+        let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
         let builderClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+            let coderFactory = try coderFactoryOperation.extractNoCancellableResultData()
             let maybeBuilder = try self?.addingTransferCall(
                 to: builder,
                 for: receiver,
                 amount: amount,
-                asset: remoteAsset
+                asset: remoteAsset,
+                coderFactory: coderFactory
             )
 
             return maybeBuilder ?? builder
@@ -278,6 +287,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
         )
 
         let wrapper = extrinsicFactory.submit(builderClosure, signer: signer)
+        wrapper.addDependency(operations: [coderFactoryOperation])
 
         let mapOperation: ClosureOperation<Data> = ClosureOperation {
             let hashString = try wrapper.targetOperation.extractNoCancellableResultData()
@@ -286,7 +296,10 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         wrapper.allOperations.forEach { mapOperation.addDependency($0) }
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [coderFactoryOperation] + wrapper.allOperations
+        )
     }
 
     func searchOperation(_: String) -> CompoundOperationWrapper<[SearchData]?> {

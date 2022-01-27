@@ -1,12 +1,11 @@
 import Foundation
 import RobinHood
 
-final class AccountInfoSubscription: BaseStorageChildSubscription {
+final class OrmlAccountSubscription: BaseStorageChildSubscription {
     let chainAssetId: ChainAssetId
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
-    let transactionSubscription: TransactionSubscription
     let eventCenter: EventCenterProtocol
 
     init(
@@ -14,7 +13,6 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription,
         remoteStorageKey: Data,
         localStorageKey: String,
         storage: AnyDataProviderRepository<ChainStorageItem>,
@@ -26,7 +24,6 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         self.accountId = accountId
         self.chainRegistry = chainRegistry
         self.assetRepository = assetRepository
-        self.transactionSubscription = transactionSubscription
         self.eventCenter = eventCenter
 
         super.init(
@@ -39,25 +36,17 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
     }
 
     override func handle(
-        result: Result<DataProviderChange<ChainStorageItem>?, Error>,
+        result _: Result<DataProviderChange<ChainStorageItem>?, Error>,
         remoteItem: ChainStorageItem?,
-        blockHash: Data?
+        blockHash _: Data?
     ) {
-        logger.debug("Did account info update")
+        logger.debug("Did orml account update")
 
         decodeAndSaveAccountInfo(
             remoteItem,
             chainAssetId: chainAssetId,
             accountId: accountId
         )
-
-        if case let .success(optionalChange) = result, optionalChange != nil {
-            logger.debug("Did change account info")
-
-            if let blockHash = blockHash {
-                transactionSubscription.process(blockHash: blockHash)
-            }
-        }
     }
 
     private func decodeAndSaveAccountInfo(
@@ -70,8 +59,8 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         }
 
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let decodingOperation = StorageFallbackDecodingOperation<AccountInfo>(
-            path: .account,
+        let decodingOperation = StorageFallbackDecodingOperation<OrmlAccount>(
+            path: .ormlTokenAccount,
             data: item?.data
         )
 
@@ -98,9 +87,9 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
             let remoteModel = AssetBalance(
                 chainAssetId: chainAssetId,
                 accountId: accountId,
-                freeInPlank: account?.data.free ?? 0,
-                reservedInPlank: account?.data.reserved ?? 0,
-                frozenInPlank: account?.data.locked ?? 0
+                freeInPlank: account?.free ?? 0,
+                reservedInPlank: account?.reserved ?? 0,
+                frozenInPlank: account?.frozen ?? 0
             )
 
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {
@@ -112,7 +101,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
             let account = try decodingOperation.extractNoCancellableResultData()
             let localModel = try fetchOperation.extractNoCancellableResultData()
 
-            let total = account?.data.total ?? 0
+            let total = account?.total ?? 0
 
             if total == 0, localModel != nil {
                 return [identifier]
