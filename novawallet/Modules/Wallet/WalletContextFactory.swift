@@ -29,7 +29,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
     func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()),
+              let utilityAsset = chain.utilityAssets().first else {
             throw WalletContextFactoryError.missingAccount
         }
 
@@ -198,6 +199,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         let transferConfigurator = TransferConfigurator(
             chainAsset: chainAsset,
+            utilityAsset: utilityAsset,
             explorers: chain.explorers,
             balanceViewModelFactory: balanceViewModelFactory,
             feeViewModelFactory: feeViewModelFactory,
