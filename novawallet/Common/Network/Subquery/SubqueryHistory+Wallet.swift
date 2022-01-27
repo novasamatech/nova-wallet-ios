@@ -136,6 +136,12 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
 
         let type: TransactionType = reward.isReward ? .reward : .slash
 
+        let context = HistoryRewardContext(
+            validator: reward.validator,
+            era: reward.era,
+            eventId: identifier
+        )
+
         return AssetTransactionData(
             transactionId: identifier,
             status: .commited,
@@ -150,7 +156,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             timestamp: itemTimestamp,
             type: type.rawValue,
             reason: nil,
-            context: nil
+            context: context.toContext()
         )
     }
 
