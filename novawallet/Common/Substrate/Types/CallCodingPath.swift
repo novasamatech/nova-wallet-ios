@@ -17,4 +17,12 @@ extension CallCodingPath {
     static var transferKeepAlive: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer_keep_alive")
     }
+
+    static var tokensTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Tokens", callName: "transfer")
+    }
+
+    static var currenciesTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Currencies", callName: "transfer")
+    }
 }
