@@ -159,8 +159,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 storagePath: accountStoragePath,
                 localKey: accountLocalKey,
                 keyParamClosure: { (StringScaleMapper(value: assetId), accountId) },
-                keyParam1Encoder: nil,
-                keyParam2Encoder: nil
+                param1Encoder: nil,
+                param2Encoder: nil
             )
 
             let detailsStoragePath = StorageCodingPath.assetsDetails
@@ -243,8 +243,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
                 storagePath: storagePath,
                 localKey: localKey,
                 keyParamClosure: { (accountId, currencyId) },
-                keyParam1Encoder: nil,
-                keyParam2Encoder: { $0 }
+                param1Encoder: nil,
+                param2Encoder: { $0 }
             )
 
             return attachToSubscription(
@@ -275,7 +275,7 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             let storagePath = StorageCodingPath.ormlTokenAccount
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
                 storagePath,
-                encodableElements: [accountId, currencyId],
+                encodableElement: accountId + currencyId,
                 chainId: chainId
             )
 
