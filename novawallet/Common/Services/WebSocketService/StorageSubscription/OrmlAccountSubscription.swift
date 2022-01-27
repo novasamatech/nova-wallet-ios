@@ -92,8 +92,6 @@ final class OrmlAccountSubscription: BaseStorageChildSubscription {
                 frozenInPlank: account?.frozen ?? 0
             )
 
-            Logger.shared.info("Apply model: \(remoteModel)")
-
             if localModel != remoteModel, remoteModel.totalInPlank > 0 {
                 return [remoteModel]
             } else {
