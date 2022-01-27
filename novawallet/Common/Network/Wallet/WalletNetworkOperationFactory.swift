@@ -273,10 +273,14 @@ final class WalletNetworkOperationFactory {
 
                 let moduleName: String
 
-                if coderFactory.metadata.getCall(from: "Tokens", with: "transfer") != nil {
-                    moduleName = "Tokens"
+                let tokensTransfer = CallCodingPath.tokensTransfer
+                if coderFactory.metadata.getCall(
+                    from: tokensTransfer.moduleName,
+                    with: tokensTransfer.callName
+                ) != nil {
+                    moduleName = tokensTransfer.moduleName
                 } else {
-                    moduleName = "Currencies"
+                    moduleName = CallCodingPath.currenciesTransfer.moduleName
                 }
 
                 let call = callFactory.ormlTransfer(
