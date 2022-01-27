@@ -62,8 +62,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
 
     private func createDecodingOperationWrapper(
         _ item: ChainStorageItem?,
-        chainAssetId: ChainAssetId,
-        accountId _: AccountId
+        chainAssetId: ChainAssetId
     ) -> CompoundOperationWrapper<AccountInfo?> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAssetId.chainId) else {
             return CompoundOperationWrapper.createWithError(
@@ -139,8 +138,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
     ) {
         let decodingWrapper = createDecodingOperationWrapper(
             item,
-            chainAssetId: chainAssetId,
-            accountId: accountId
+            chainAssetId: chainAssetId
         )
 
         let changesWrapper = createChangesOperationWrapper(
