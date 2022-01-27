@@ -2,6 +2,12 @@ import Foundation
 import CommonWallet
 
 final class TransferValidator: TransferValidating {
+    let utilityAsset: AssetModel
+
+    init(utilityAsset: AssetModel) {
+        self.utilityAsset = utilityAsset
+    }
+
     func validate(
         info: TransferInfo,
         balances: [BalanceData],
@@ -37,11 +43,15 @@ final class TransferValidator: TransferValidating {
             totalBalance: totalBalance,
             metadata: metadata
         ) else {
-            throw FearlessTransferValidatingError.cantPayFee
+            throw NovaTransferValidatingError.cantPayFee
+        }
+
+        guard receiverHasMainAccount(in: metadata) else {
+            throw NovaTransferValidatingError.noReceiverAccount(assetSymbol: utilityAsset.symbol)
         }
 
         guard receiverCanReceive(amount: sendingAmount, metadata: metadata) else {
-            throw FearlessTransferValidatingError.receiverBalanceTooLow
+            throw NovaTransferValidatingError.receiverBalanceTooLow
         }
 
         let senderWillBeDead = senderWillBeDead(info: info, totalBalance: totalBalance, metadata: metadata)
@@ -115,15 +125,20 @@ final class TransferValidator: TransferValidating {
         return totalBalance - spendingAmount < context.assetMinBalance
     }
 
-    private func receiverCanReceive(amount: Decimal, metadata: TransferMetaData) -> Bool {
+    private func receiverHasMainAccount(in metadata: TransferMetaData) -> Bool {
         let context = TransferMetadataContext(context: metadata.context ?? [:])
 
         if context.utilityMatchesAsset {
-            return (context.receiverAssetBalance > 0) || (amount >= context.assetMinBalance)
+            return context.receiverAssetBalance > 0
         } else {
             let receiverUtilityBalance = context.receiverUtilityBalance ?? 0
-            return (receiverUtilityBalance > 0) &&
-                (context.receiverAssetBalance > 0 || (amount >= context.assetMinBalance))
+            return receiverUtilityBalance > 0
         }
+    }
+
+    private func receiverCanReceive(amount: Decimal, metadata: TransferMetaData) -> Bool {
+        let context = TransferMetadataContext(context: metadata.context ?? [:])
+
+        return (context.receiverAssetBalance > 0) || (amount >= context.assetMinBalance)
     }
 }
