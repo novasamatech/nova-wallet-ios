@@ -5,7 +5,8 @@ import CommonWallet
 
 class TransferValidatorTests: XCTestCase {
     func testThrowErrorIfAmountIsNotPositive() {
-        let validator = TransferValidator()
+        let utilityAsset = ChainModelGenerator.generateAssetWithId(0)
+        let validator = TransferValidator(utilityAsset: utilityAsset)
         let transferAmount = AmountDecimal(value: 0)
         let transferInfo = TransferInfo.stub(amount: transferAmount)
         let transferMetadata = TransferMetaData(feeDescriptions: [])
@@ -25,7 +26,8 @@ class TransferValidatorTests: XCTestCase {
     }
 
     func testThrowMissingBalanceError() {
-        let validator = TransferValidator()
+        let utilityAsset = ChainModelGenerator.generateAssetWithId(0)
+        let validator = TransferValidator(utilityAsset: utilityAsset)
         let transferAmount = AmountDecimal(value: 1)
         let transferInfo = TransferInfo.stub(amount: transferAmount)
         let transferMetadata = TransferMetaData(feeDescriptions: [])
@@ -45,7 +47,8 @@ class TransferValidatorTests: XCTestCase {
     }
 
     func testThrowUnsuffientFundsError() {
-        let validator = TransferValidator()
+        let utilityAsset = ChainModelGenerator.generateAssetWithId(0)
+        let validator = TransferValidator(utilityAsset: utilityAsset)
         let transferAmount = AmountDecimal(value: 0.9)
         let availableAmount = AmountDecimal(value: 1)
         let asset = "assetId"
@@ -73,7 +76,8 @@ class TransferValidatorTests: XCTestCase {
     }
 
     func testThrowSenderBalanceTooLowError() {
-        let validator = TransferValidator()
+        let utilityAsset = ChainModelGenerator.generateAssetWithId(0)
+        let validator = TransferValidator(utilityAsset: utilityAsset)
         let transferAmount = AmountDecimal(value: 0.9)
         let availableAmount = AmountDecimal(value: 1)
         let asset = "assetId"
@@ -94,7 +98,7 @@ class TransferValidatorTests: XCTestCase {
         do {
             _ = try validator.validate(info: transferInfo, balances: [balance], metadata: transferMetadata)
         } catch {
-            if case FearlessTransferValidatingError.cantPayFee = error {
+            if case NovaTransferValidatingError.cantPayFee = error {
                 errorExpectation.fulfill()
             } else {
                 XCTFail(error.localizedDescription)
@@ -105,7 +109,8 @@ class TransferValidatorTests: XCTestCase {
     }
 
     func testThrowReceiverBalanceTooLowError() {
-        let validator = TransferValidator()
+        let utilityAsset = ChainModelGenerator.generateAssetWithId(0)
+        let validator = TransferValidator(utilityAsset: utilityAsset)
         let transferAmount = AmountDecimal(value: 0.1)
         let availableAmount = AmountDecimal(value: 1.2)
         let asset = "assetId"
@@ -127,7 +132,7 @@ class TransferValidatorTests: XCTestCase {
         do {
             _ = try validator.validate(info: transferInfo, balances: [balance], metadata: transferMetadata)
         } catch {
-            if case FearlessTransferValidatingError.receiverBalanceTooLow = error {
+            if case NovaTransferValidatingError.receiverBalanceTooLow = error {
                 errorExpectation.fulfill()
             } else {
                 XCTFail(error.localizedDescription)
