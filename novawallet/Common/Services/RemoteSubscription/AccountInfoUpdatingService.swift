@@ -84,7 +84,8 @@ final class AccountInfoUpdatingService {
     private func addSubscriptionIfNeeded(for chain: ChainModel) {
         guard
             let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
-            let address = try? accountId.toAddress(using: chain.chainFormat) else {
+            let address = try? accountId.toAddress(using: chain.chainFormat),
+            let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
             logger.error("Couldn't create account for chain \(chain.chainId)")
             return
         }
@@ -106,7 +107,14 @@ final class AccountInfoUpdatingService {
             logger: logger
         )
 
+        let assetBalanceMapper = AssetBalanceMapper()
+        let assetRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetBalanceMapper))
+
         let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            assetRepository: AnyDataProviderRepository(assetRepository),
             transactionSubscription: transactionSubscription,
             eventCenter: eventCenter
         )
