@@ -2,12 +2,6 @@ import Foundation
 import IrohaCrypto
 
 extension NSPredicate {
-    // TODO: Remove
-    static func filterAccountBy(networkType: SNAddressType) -> NSPredicate {
-        let rawValue = Int16(networkType.rawValue)
-        return NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.order), rawValue)
-    }
-
     static func filterTransactionsBy(address: String, chainId: ChainModel.Id) -> NSPredicate {
         let senderPredicate = filterTransactionsBySender(address: address)
         let receiverPredicate = filterTransactionsByReceiver(address: address)
@@ -98,5 +92,33 @@ extension NSPredicate {
 
     static func hasCrowloans() -> NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDChain.hasCrowdloans))
+    }
+
+    static func assetBalance(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> NSPredicate {
+        let accountPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainAccountId),
+            accountId.toHex()
+        )
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetBalance.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate
+        ])
     }
 }

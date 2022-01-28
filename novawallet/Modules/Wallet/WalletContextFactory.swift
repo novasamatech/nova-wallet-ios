@@ -12,7 +12,7 @@ enum WalletContextFactoryError: Error {
 }
 
 protocol WalletContextFactoryProtocol {
-    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol
+    func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol
 }
 
 final class WalletContextFactory {
@@ -27,14 +27,11 @@ final class WalletContextFactory {
 
 extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
-    func createContext(for chain: ChainModel) throws -> CommonWalletContextProtocol {
+    func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
+              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()),
+              let utilityAsset = chain.utilityAssets().first else {
             throw WalletContextFactoryError.missingAccount
-        }
-
-        guard let asset = chain.utilityAssets().first else {
-            throw WalletContextFactoryError.missingAsset
         }
 
         let accountId = chainAccountResponse.accountId
@@ -89,6 +86,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let chainStorage = SubstrateRepositoryFactory(storageFacade: substrateFacade)
             .createChainStorageItemRepository()
 
+        let localStorageRequestFactory = LocalStorageRequestFactory()
+
         let nodeOperationFactory = WalletNetworkOperationFactory(
             metaAccount: metaAccount,
             chains: chainsById,
@@ -96,13 +95,12 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainRegistry: chainRegistry,
             requestFactory: requestFactory,
             chainStorage: chainStorage,
+            localStorageRequestFactory: localStorageRequestFactory,
             keystore: Keychain()
         )
 
         let subscanOperationFactory = SubscanOperationFactory()
         let coingeckoOperationFactory = CoingeckoOperationFactory()
-
-        let localStorageRequestFactory = LocalStorageRequestFactory()
 
         let accountsRepository = AccountRepositoryFactory(storageFacade: userFacade).createManagedMetaAccountRepository(
             for: nil,
@@ -116,6 +114,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             targetAddress: address
         )
 
+        let assetBalanceRepository = repositoryFactory.createAssetBalanceRepository()
+
         let networkFacade = WalletNetworkFacade(
             accountSettings: accountSettings,
             metaAccount: metaAccount,
@@ -128,10 +128,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             totalPriceId: priceAsset.identifier,
             totalPriceAssetInfo: priceAssetInfo,
             chainStorage: chainStorage,
-            localStorageRequestFactory: localStorageRequestFactory,
             repositoryFactory: repositoryFactory,
             contactsOperationFactory: contactOperationFactory,
-            accountsRepository: accountsRepository
+            accountsRepository: accountsRepository,
+            assetBalanceRepository: assetBalanceRepository
         )
 
         let builder = CommonWalletBuilder.builder(
@@ -187,10 +187,22 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
+        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
+
+        if let utilityAsset = chain.utilityAssets().first, utilityAsset.assetId != asset.assetId {
+            feeViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: utilityAsset.displayInfo(with: chain.icon)
+            )
+        } else {
+            feeViewModelFactory = nil
+        }
+
         let transferConfigurator = TransferConfigurator(
             chainAsset: chainAsset,
+            utilityAsset: utilityAsset,
             explorers: chain.explorers,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 
@@ -200,6 +212,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             chainAccount: chainAccountResponse,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             localizationManager: localizationManager
         )
 

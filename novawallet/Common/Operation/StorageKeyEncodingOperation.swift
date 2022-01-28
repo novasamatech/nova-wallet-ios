@@ -151,16 +151,23 @@ class DoubleMapKeyEncodingOperation<T1: Encodable, T2: Encodable>: BaseOperation
     let path: StorageCodingPath
     let storageKeyFactory: StorageKeyFactoryProtocol
 
+    var param1Encoder: ((T1) throws -> Data)?
+    var param2Encoder: ((T2) throws -> Data)?
+
     init(
         path: StorageCodingPath,
         storageKeyFactory: StorageKeyFactoryProtocol,
         keyParams1: [T1]? = nil,
-        keyParams2: [T2]? = nil
+        keyParams2: [T2]? = nil,
+        param1Encoder: ((T1) throws -> Data)? = nil,
+        param2Encoder: ((T2) throws -> Data)? = nil
     ) {
         self.path = path
         self.keyParams1 = keyParams1
         self.keyParams2 = keyParams2
         self.storageKeyFactory = storageKeyFactory
+        self.param1Encoder = param1Encoder
+        self.param2Encoder = param2Encoder
 
         super.init()
     }
@@ -197,17 +204,29 @@ class DoubleMapKeyEncodingOperation<T1: Encodable, T2: Encodable>: BaseOperation
             }
 
             let keys: [Data] = try zip(keyParams1, keyParams2).map { param in
-                let encodedParam1 = try encodeParam(
-                    param.0,
-                    factory: factory,
-                    type: doubleMapEntry.key1
-                )
+                let encodedParam1: Data
 
-                let encodedParam2 = try encodeParam(
-                    param.1,
-                    factory: factory,
-                    type: doubleMapEntry.key2
-                )
+                if let param1Encoder = param1Encoder {
+                    encodedParam1 = try param1Encoder(param.0)
+                } else {
+                    encodedParam1 = try encodeParam(
+                        param.0,
+                        factory: factory,
+                        type: doubleMapEntry.key1
+                    )
+                }
+
+                let encodedParam2: Data
+
+                if let param2Encoder = param2Encoder {
+                    encodedParam2 = try param2Encoder(param.1)
+                } else {
+                    encodedParam2 = try encodeParam(
+                        param.1,
+                        factory: factory,
+                        type: doubleMapEntry.key2
+                    )
+                }
 
                 return try storageKeyFactory.createStorageKey(
                     moduleName: path.moduleName,

@@ -5,11 +5,20 @@ import SoraFoundation
 import BigInt
 
 final class WalletListPresenter {
+    typealias ChainAssetPrice = (chainId: ChainModel.Id, assetId: AssetModel.Id, price: PriceData)
+
     struct ListModel: Identifiable {
-        var identifier: String { chainModel.chainId }
+        static func createIdentifier(chainId: ChainModel.Id, assetId: AssetModel.Id) -> String {
+            "\(chainId)-\(assetId)"
+        }
+
+        var identifier: String {
+            Self.createIdentifier(chainId: chainModel.chainId, assetId: assetModel.assetId)
+        }
 
         let chainModel: ChainModel
-        let accountInfoResult: Result<AccountInfo?, Error>?
+        let assetModel: AssetModel
+        let balanceResult: Result<BigUInt, Error>?
         let value: Decimal?
     }
 
@@ -23,8 +32,8 @@ final class WalletListPresenter {
     private var genericAccountId: AccountId?
     private var name: String?
     private var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
-    private var priceResult: Result<[ChainModel.Id: PriceData], Error>?
-    private var accountResults: [ChainModel.Id: Result<AccountInfo?, Error>] = [:]
+    private var priceResult: Result<[ChainAssetId: PriceData], Error>?
+    private var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private var allChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
@@ -44,26 +53,34 @@ final class WalletListPresenter {
         ListDifferenceCalculator(
             initialItems: [],
             sortBlock: { model1, model2 in
-                let balance1 = try? model1.accountInfoResult?.get()?.data.total
-                let balance2 = try? model2.accountInfoResult?.get()?.data.total
+                let balance1 = (try? model1.balanceResult?.get()) ?? 0
+                let balance2 = (try? model2.balanceResult?.get()) ?? 0
 
-                let optValue1 = model1.value
-                let optValue2 = model2.value
+                let value1 = model1.value ?? 0
+                let value2 = model2.value ?? 0
 
-                if let value1 = optValue1, let value2 = optValue2 {
+                if value1 > 0, value2 > 0 {
                     return value1 > value2
-                } else if optValue1 != nil {
+                } else if value1 > 0 {
                     return true
-                } else if optValue2 != nil {
+                } else if value2 > 0 {
                     return false
-                } else if balance1 != nil, balance2 != nil {
-                    return model1.chainModel.order < model2.chainModel.order
-                } else if balance1 != nil {
+                } else if balance1 > 0, balance2 > 0 {
+                    if model1.chainModel.order != model2.chainModel.order {
+                        return model1.chainModel.order < model2.chainModel.order
+                    } else {
+                        return model1.assetModel.assetId < model2.assetModel.assetId
+                    }
+                } else if balance1 > 0 {
                     return true
-                } else if balance2 != nil {
+                } else if balance2 > 0 {
                     return false
                 } else {
-                    return model1.chainModel.order < model2.chainModel.order
+                    if model1.chainModel.order != model2.chainModel.order {
+                        return model1.chainModel.order < model2.chainModel.order
+                    } else {
+                        return model1.assetModel.assetId < model2.assetModel.assetId
+                    }
                 }
             }
         )
@@ -89,48 +106,42 @@ final class WalletListPresenter {
         let priceState: LoadableViewModelState<[WalletListChainAccountPrice]> = priceMapping.reduce(
             LoadableViewModelState.loaded(value: [])
         ) { result, keyValue in
-            let chainId = keyValue.key
+            let chainAssetId = keyValue.key
+            let chainId = chainAssetId.chainId
+            let assetId = chainAssetId.assetId
             switch result {
             case .loading:
                 return .loading
             case let .cached(items):
                 guard
                     let chain = allChains[chainId],
-                    let asset = chain.utilityAssets().first,
-                    case let .success(maybeAccountInfo) = accountResults[chainId] else {
+                    let asset = chain.assets.first(where: { $0.assetId == assetId }),
+                    case let .success(balance) = balanceResults[chainAssetId] else {
                     return .cached(value: items)
                 }
 
-                if let accountInfo = maybeAccountInfo {
-                    let newItem = WalletListChainAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        accountInfo: accountInfo,
-                        price: keyValue.value
-                    )
+                let newItem = WalletListChainAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: balance,
+                    price: keyValue.value
+                )
 
-                    return .cached(value: items + [newItem])
-                } else {
-                    return .cached(value: items)
-                }
+                return .cached(value: items + [newItem])
             case let .loaded(items):
                 guard
                     let chain = allChains[chainId],
-                    let asset = chain.utilityAssets().first,
-                    case let .success(maybeAccountInfo) = accountResults[chainId] else {
+                    let asset = chain.assets.first(where: { $0.assetId == assetId }),
+                    case let .success(balance) = balanceResults[chainAssetId] else {
                     return .cached(value: items)
                 }
 
-                if let accountInfo = maybeAccountInfo {
-                    let newItem = WalletListChainAccountPrice(
-                        assetInfo: asset.displayInfo,
-                        accountInfo: accountInfo,
-                        price: keyValue.value
-                    )
+                let newItem = WalletListChainAccountPrice(
+                    assetInfo: asset.displayInfo,
+                    balance: balance,
+                    price: keyValue.value
+                )
 
-                    return .loaded(value: items + [newItem])
-                } else {
-                    return .loaded(value: items)
-                }
+                return .loaded(value: items + [newItem])
             }
         }
 
@@ -144,22 +155,27 @@ final class WalletListPresenter {
         view?.didReceiveHeader(viewModel: viewModel)
     }
 
-    private func createListModel(for chainModel: ChainModel) -> ListModel {
-        let accountInfo = accountResults[chainModel.chainId]
+    private func createListModels(for chainModel: ChainModel) -> [ListModel] {
+        chainModel.assets.map { createListModel(for: chainModel, assetModel: $0) }
+    }
+
+    private func createListModel(for chainModel: ChainModel, assetModel: AssetModel) -> ListModel {
+        let chainAssetId = ChainAssetId(chainId: chainModel.chainId, assetId: assetModel.assetId)
+        let balanceResult = balanceResults[chainAssetId]
 
         let maybeBalance: Decimal? = {
-            if
-                let total = try? accountInfo?.get()?.data.total,
-                let asset = chainModel.utilityAssets().first {
-                return Decimal.fromSubstrateAmount(total, precision: Int16(bitPattern: asset.precision))
+            if let balance = try? balanceResult?.get() {
+                return Decimal.fromSubstrateAmount(
+                    balance,
+                    precision: Int16(bitPattern: assetModel.precision)
+                )
             } else {
                 return nil
             }
         }()
 
         let maybePrice: Decimal? = {
-            if
-                let mapping = try? priceResult?.get(), let priceData = mapping[chainModel.chainId] {
+            if let mapping = try? priceResult?.get(), let priceData = mapping[chainAssetId] {
                 return Decimal(string: priceData.price)
             } else {
                 return nil
@@ -167,19 +183,30 @@ final class WalletListPresenter {
         }()
 
         if let balance = maybeBalance, let price = maybePrice {
-            return ListModel(chainModel: chainModel, accountInfoResult: accountInfo, value: balance * price)
+            return ListModel(
+                chainModel: chainModel,
+                assetModel: assetModel,
+                balanceResult: balanceResult,
+                value: balance * price
+            )
         } else {
-            return ListModel(chainModel: chainModel, accountInfoResult: accountInfo, value: nil)
+            return ListModel(
+                chainModel: chainModel,
+                assetModel: assetModel,
+                balanceResult: balanceResult,
+                value: nil
+            )
         }
     }
 
     private func provideAssetViewModels() {
         let maybePrices = try? priceResult?.get()
-        let viewModels: [WalletListViewModel] = chainList.allItems.compactMap { model in
-            let chain = model.chainModel
-            guard let assetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon) else {
-                return nil
-            }
+        let viewModels: [WalletListViewModel] = chainList.allItems.compactMap { listModel in
+            let chain = listModel.chainModel
+            let asset = listModel.assetModel
+            let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+
+            let assetInfo = asset.displayInfo(with: chain.icon)
 
             let connected: Bool
 
@@ -189,22 +216,15 @@ final class WalletListPresenter {
                 connected = false
             }
 
-            let balance: BigUInt?
-
-            switch model.accountInfoResult {
-            case let .success(accountInfo):
-                balance = accountInfo?.data.total ?? 0
-            case .failure, .none:
-                balance = nil
-            }
-
             let priceData: PriceData?
 
             if let prices = maybePrices {
-                priceData = prices[chain.chainId] ?? PriceData(price: "0", usdDayChange: 0)
+                priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
             } else {
                 priceData = nil
             }
+
+            let balance = try? listModel.balanceResult?.get()
 
             return viewModelFactory.createAssetViewModel(
                 for: chain,
@@ -231,7 +251,8 @@ extension WalletListPresenter: WalletListPresenterProtocol {
 
     func selectAsset(at index: Int) {
         let chainModel = chainList.allItems[index].chainModel
-        wireframe.showAssetDetails(from: view, chain: chainModel)
+        let assetModel = chainList.allItems[index].assetModel
+        wireframe.showAssetDetails(from: view, chain: chainModel, asset: assetModel)
     }
 
     func refresh() {
@@ -245,7 +266,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         self.name = name
 
         allChains = [:]
-        accountResults = [:]
+        balanceResults = [:]
 
         if !chainList.allItems.isEmpty || !chainList.lastDifferences.isEmpty {
             chainList = Self.createChainList()
@@ -261,7 +282,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideAssetViewModels()
     }
 
-    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>?) {
+    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
         view?.didCompleteRefreshing()
 
         guard let result = result else {
@@ -270,9 +291,11 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         priceResult = result
 
-        let changes: [DataProviderChange<ListModel>] = allChains.values.map { chain in
-            let model = createListModel(for: chain)
-            return .update(newItem: model)
+        let changes: [DataProviderChange<ListModel>] = allChains.values.flatMap { chain in
+            chain.assets.map { asset in
+                let model = createListModel(for: chain, assetModel: asset)
+                return .update(newItem: model)
+            }
         }
 
         chainList.apply(changes: changes)
@@ -282,6 +305,48 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        let listChanges: [DataProviderChange<ListModel>] = changes
+            .flatMap { (change) -> [DataProviderChange<ListModel>] in
+                switch change {
+                case let .insert(newItem):
+                    let models = createListModels(for: newItem)
+                    return models.map { DataProviderChange.insert(newItem: $0) }
+                case let .update(newItem):
+                    let removals: [DataProviderChange<ListModel>]
+
+                    if let previousChain = allChains[newItem.chainId] {
+                        removals = previousChain.assets.map { asset in
+                            let identifier = ListModel.createIdentifier(
+                                chainId: previousChain.chainId,
+                                assetId: asset.assetId
+                            )
+
+                            return DataProviderChange.delete(deletedIdentifier: identifier)
+                        }
+                    } else {
+                        removals = []
+                    }
+
+                    let models = createListModels(for: newItem)
+                    let insertions = models.map { DataProviderChange.insert(newItem: $0) }
+
+                    return removals + insertions
+                case let .delete(deletedIdentifier):
+                    if let previousChain = allChains[deletedIdentifier] {
+                        return previousChain.assets.map { asset in
+                            let identifier = ListModel.createIdentifier(
+                                chainId: previousChain.chainId,
+                                assetId: asset.assetId
+                            )
+
+                            return DataProviderChange.delete(deletedIdentifier: identifier)
+                        }
+                    } else {
+                        return []
+                    }
+                }
+            }
+
         allChains = changes.reduce(into: allChains) { result, change in
             switch change {
             case let .insert(newItem):
@@ -293,33 +358,23 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
             }
         }
 
-        let listChanges: [DataProviderChange<ListModel>] = changes.map { change in
-            switch change {
-            case let .insert(newItem):
-                let model = createListModel(for: newItem)
-                return .insert(newItem: model)
-            case let .update(newItem):
-                let model = createListModel(for: newItem)
-                return .update(newItem: model)
-            case let .delete(deletedIdentifier):
-                return .delete(deletedIdentifier: deletedIdentifier)
-            }
-        }
-
         chainList.apply(changes: listChanges)
 
         provideHeaderViewModel()
         provideAssetViewModels()
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, chainId: ChainModel.Id) {
-        accountResults[chainId] = result
+    func didReceiveBalance(result: Result<BigUInt, Error>, chainId: ChainModel.Id, assetId: AssetModel.Id) {
+        let chainAssetId = ChainAssetId(chainId: chainId, assetId: assetId)
+        balanceResults[chainAssetId] = result
 
-        guard let chainModel = allChains[chainId] else {
+        guard
+            let chainModel = allChains[chainId],
+            let assetModel = chainModel.assets.first(where: { $0.assetId == assetId }) else {
             return
         }
 
-        let listModel = createListModel(for: chainModel)
+        let listModel = createListModel(for: chainModel, assetModel: assetModel)
         chainList.apply(changes: [.update(newItem: listModel)])
 
         provideHeaderViewModel()
