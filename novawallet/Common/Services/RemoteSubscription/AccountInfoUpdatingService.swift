@@ -94,17 +94,12 @@ final class AccountInfoUpdatingService {
         }
 
         let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
-        let contactOperationFactory = WalletContactOperationFactory(
-            storageFacade: storageFacade,
-            targetAddress: address
-        )
 
         let transactionSubscription = TransactionSubscription(
             chainRegistry: chainRegistry,
             accountId: accountId,
             chainModel: chain,
             txStorage: txStorage,
-            contactOperationFactory: contactOperationFactory,
             storageRequestFactory: storageRequestFactory,
             operationManager: operationManager,
             eventCenter: eventCenter,

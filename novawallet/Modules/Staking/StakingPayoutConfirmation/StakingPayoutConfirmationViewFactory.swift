@@ -91,6 +91,7 @@ final class StakingPayoutConfirmationViewFactory {
             chainFormat: chainAsset.chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
+            customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
         )
 

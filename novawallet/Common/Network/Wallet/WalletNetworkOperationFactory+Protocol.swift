@@ -71,6 +71,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             chainFormat: chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
+            customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
         )
 
@@ -168,6 +169,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
             chainFormat: chain.chainFormat,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
+            customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
         )
 

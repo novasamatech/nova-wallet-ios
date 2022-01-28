@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+@testable import novawallet
 
 enum RuntimeHelperError: Error {
     case invalidCatalogBaseName
@@ -48,7 +49,8 @@ final class RuntimeHelper {
 
         let data = try Data(contentsOf: url)
         let basisNodes = BasisNodes.allNodes(
-            for: runtimeMetadataContainer.metadata
+            for: runtimeMetadataContainer.metadata,
+            customExtensions: DefaultExtrinsicExtension.coders
         )
         let registry = try TypeRegistry
             .createFromTypesDefinition(data: data,

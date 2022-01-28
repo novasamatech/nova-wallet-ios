@@ -1,6 +1,6 @@
 import Foundation
 
-struct TransactionHistorySourceContext {
+struct SubscanHistorySourceContext {
     static let pageKey = "history.page"
     static let rowKey = "history.row"
     static let completeKey = "history.complete"
@@ -37,8 +37,8 @@ struct TransactionHistorySourceContext {
         ]
     }
 
-    func byReplacingPage(_ newPage: Int) -> TransactionHistorySourceContext {
-        TransactionHistorySourceContext(
+    func byReplacingPage(_ newPage: Int) -> SubscanHistorySourceContext {
+        SubscanHistorySourceContext(
             page: newPage,
             row: row,
             isComplete: isComplete,
@@ -46,8 +46,8 @@ struct TransactionHistorySourceContext {
         )
     }
 
-    func byReplacingRow(_ newRow: Int) -> TransactionHistorySourceContext {
-        TransactionHistorySourceContext(
+    func byReplacingRow(_ newRow: Int) -> SubscanHistorySourceContext {
+        SubscanHistorySourceContext(
             page: page,
             row: newRow,
             isComplete: isComplete,
@@ -55,8 +55,8 @@ struct TransactionHistorySourceContext {
         )
     }
 
-    func byReplacingCompletion(_ newCompletion: Bool) -> TransactionHistorySourceContext {
-        TransactionHistorySourceContext(
+    func byReplacingCompletion(_ newCompletion: Bool) -> SubscanHistorySourceContext {
+        SubscanHistorySourceContext(
             page: page,
             row: row,
             isComplete: newCompletion,
@@ -77,22 +77,22 @@ struct TransactionHistorySourceContext {
     }
 }
 
-struct TransactionHistoryContext {
+struct SubscanHistoryContext {
     static let transfersSuffix = ".transfers"
     static let rewardsSuffix = ".rewards"
     static let extrinsicsSuffix = ".extrinsics"
 
-    let transfers: TransactionHistorySourceContext
-    let rewards: TransactionHistorySourceContext
-    let extrinsics: TransactionHistorySourceContext
+    let transfers: SubscanHistorySourceContext
+    let rewards: SubscanHistorySourceContext
+    let extrinsics: SubscanHistorySourceContext
     let defaultRow: Int
 
     var isComplete: Bool { transfers.isComplete && rewards.isComplete && extrinsics.isComplete }
 
     init(
-        transfers: TransactionHistorySourceContext,
-        rewards: TransactionHistorySourceContext,
-        extrinsics: TransactionHistorySourceContext,
+        transfers: SubscanHistorySourceContext,
+        rewards: SubscanHistorySourceContext,
+        extrinsics: SubscanHistorySourceContext,
         defaultRow: Int
     ) {
         self.transfers = transfers
@@ -102,23 +102,23 @@ struct TransactionHistoryContext {
     }
 }
 
-extension TransactionHistoryContext {
+extension SubscanHistoryContext {
     init(context: [String: String], defaultRow: Int) {
         self.defaultRow = defaultRow
 
-        transfers = TransactionHistorySourceContext(
+        transfers = SubscanHistorySourceContext(
             context: context,
             defaultRow: defaultRow,
             keySuffix: Self.transfersSuffix
         )
 
-        rewards = TransactionHistorySourceContext(
+        rewards = SubscanHistorySourceContext(
             context: context,
             defaultRow: defaultRow,
             keySuffix: Self.rewardsSuffix
         )
 
-        extrinsics = TransactionHistorySourceContext(
+        extrinsics = SubscanHistorySourceContext(
             context: context,
             defaultRow: defaultRow,
             keySuffix: Self.extrinsicsSuffix
@@ -131,8 +131,8 @@ extension TransactionHistoryContext {
         }
     }
 
-    func byReplacingTransfers(_ value: TransactionHistorySourceContext) -> TransactionHistoryContext {
-        TransactionHistoryContext(
+    func byReplacingTransfers(_ value: SubscanHistorySourceContext) -> SubscanHistoryContext {
+        SubscanHistoryContext(
             transfers: value,
             rewards: rewards,
             extrinsics: extrinsics,
@@ -140,8 +140,8 @@ extension TransactionHistoryContext {
         )
     }
 
-    func byReplacingRewards(_ value: TransactionHistorySourceContext) -> TransactionHistoryContext {
-        TransactionHistoryContext(
+    func byReplacingRewards(_ value: SubscanHistorySourceContext) -> SubscanHistoryContext {
+        SubscanHistoryContext(
             transfers: transfers,
             rewards: value,
             extrinsics: extrinsics,
@@ -149,8 +149,8 @@ extension TransactionHistoryContext {
         )
     }
 
-    func byReplacingExtrinsics(_ value: TransactionHistorySourceContext) -> TransactionHistoryContext {
-        TransactionHistoryContext(
+    func byReplacingExtrinsics(_ value: SubscanHistorySourceContext) -> SubscanHistoryContext {
+        SubscanHistoryContext(
             transfers: transfers,
             rewards: rewards,
             extrinsics: value,
@@ -158,7 +158,7 @@ extension TransactionHistoryContext {
         )
     }
 
-    func sourceContext(for label: WalletRemoteHistorySourceLabel) -> TransactionHistorySourceContext {
+    func sourceContext(for label: WalletRemoteHistorySourceLabel) -> SubscanHistorySourceContext {
         switch label {
         case .transfers:
             return transfers
@@ -170,9 +170,9 @@ extension TransactionHistoryContext {
     }
 
     func byReplacingSource(
-        context: TransactionHistorySourceContext,
+        context: SubscanHistorySourceContext,
         for label: WalletRemoteHistorySourceLabel
-    ) -> TransactionHistoryContext {
+    ) -> SubscanHistoryContext {
         switch label {
         case .transfers:
             return byReplacingTransfers(context)
@@ -183,7 +183,7 @@ extension TransactionHistoryContext {
         }
     }
 
-    func byApplying(filter: WalletHistoryFilter) -> TransactionHistoryContext {
+    func byApplying(filter: WalletHistoryFilter) -> SubscanHistoryContext {
         WalletRemoteHistorySourceLabel.allCases.reduce(self) { context, source in
             context.byApplyingIfNeeded(filter: filter, for: source)
         }
@@ -192,7 +192,7 @@ extension TransactionHistoryContext {
     private func byApplyingIfNeeded(
         filter: WalletHistoryFilter,
         for label: WalletRemoteHistorySourceLabel
-    ) -> TransactionHistoryContext {
+    ) -> SubscanHistoryContext {
         switch label {
         case .transfers:
             if !filter.contains(.transfers) {
