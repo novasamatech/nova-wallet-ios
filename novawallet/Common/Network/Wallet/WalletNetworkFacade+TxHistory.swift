@@ -27,7 +27,7 @@ extension WalletNetworkFacade {
                 let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
 
                 return manager.merge(
-                    subscanItems: remoteTransactions,
+                    remoteItems: remoteTransactions,
                     localItems: localTransactions,
                     runtimeJsonContext: runtimeJsonContext
                 )
