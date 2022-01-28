@@ -15,7 +15,8 @@ final class TransactionDetailsConfigurator {
             explorers: explorers,
             assets: assets,
             dateFormatter: DateFormatter.txDetails,
-            amountFormatterFactory: amountFormatterFactory
+            amountFormatterFactory: amountFormatterFactory,
+            integerFormatter: NumberFormatter.quantity.localizableResource()
         )
     }
 
