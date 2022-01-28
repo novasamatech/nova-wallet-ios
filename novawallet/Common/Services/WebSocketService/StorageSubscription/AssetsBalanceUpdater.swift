@@ -82,62 +82,94 @@ final class AssetsBalanceUpdater {
             let assetDetailsWrapper: CompoundOperationWrapper<AssetDetails?> =
                 createStorageDecoderWrapper(for: lastDetailsValue, path: .assetsDetails)
 
-            let identifier = AssetBalance.createIdentifier(for: chainAssetId, accountId: accountId)
-            let fetchOperation = assetRepository.fetchOperation(
-                by: identifier,
-                options: RepositoryFetchOptions()
+            let changesWrapper = createChangesOperationWrapper(
+                dependingOn: assetDetailsWrapper,
+                accountWrapper: assetAccountWrapper,
+                chainAssetId: chainAssetId,
+                accountId: accountId
             )
 
             let saveOperation = assetRepository.saveOperation({
-                let assetAccount = try assetAccountWrapper.targetOperation.extractNoCancellableResultData()
-                let localModel = try fetchOperation.extractNoCancellableResultData()
+                let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
 
-                let balance = assetAccount?.balance ?? 0
-
-                let assetDetails = try assetDetailsWrapper.targetOperation.extractNoCancellableResultData()
-
-                let isFrozen = (assetAccount?.isFrozen ?? false) || (assetDetails?.isFrozen ?? false)
-
-                let remoteModel = AssetBalance(
-                    chainAssetId: chainAssetId,
-                    accountId: accountId,
-                    freeInPlank: !isFrozen ? balance : 0,
-                    reservedInPlank: 0,
-                    frozenInPlank: isFrozen ? balance : 0
-                )
-
-                if localModel != remoteModel, balance > 0 {
+                if let remoteModel = change?.item {
                     return [remoteModel]
                 } else {
                     return []
                 }
             }, {
-                let assetAccount = try assetAccountWrapper.targetOperation.extractNoCancellableResultData()
-                let localModel = try fetchOperation.extractNoCancellableResultData()
+                let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
 
-                let balance = assetAccount?.balance ?? 0
-
-                if balance == 0, localModel != nil {
+                if case let .delete(identifier) = change {
                     return [identifier]
                 } else {
                     return []
                 }
             })
 
+            changesWrapper.addDependency(wrapper: assetAccountWrapper)
+            changesWrapper.addDependency(wrapper: assetDetailsWrapper)
+            saveOperation.addDependency(changesWrapper.targetOperation)
+
             saveOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
-                    self?.eventCenter.notify(with: WalletBalanceChanged())
+                    let maybeItem = try? changesWrapper.targetOperation.extractNoCancellableResultData()
+
+                    if maybeItem != nil {
+                        self?.eventCenter.notify(with: WalletBalanceChanged())
+                    }
                 }
             }
 
-            let dependencies = [fetchOperation] + assetDetailsWrapper.allOperations +
-                assetAccountWrapper.allOperations
-            dependencies.forEach { saveOperation.addDependency($0) }
-
-            let operations = dependencies + [saveOperation]
+            let operations = assetDetailsWrapper.allOperations + assetAccountWrapper.allOperations +
+                changesWrapper.allOperations + [saveOperation]
 
             operationQueue.addOperations(operations, waitUntilFinished: false)
         }
+    }
+
+    private func createChangesOperationWrapper(
+        dependingOn detailsWrapper: CompoundOperationWrapper<AssetDetails?>,
+        accountWrapper: CompoundOperationWrapper<AssetAccount?>,
+        chainAssetId: ChainAssetId,
+        accountId: AccountId
+    ) -> CompoundOperationWrapper<DataProviderChange<AssetBalance>?> {
+        let identifier = AssetBalance.createIdentifier(for: chainAssetId, accountId: accountId)
+        let fetchOperation = assetRepository.fetchOperation(
+            by: identifier,
+            options: RepositoryFetchOptions()
+        )
+
+        let changesOperation = ClosureOperation<DataProviderChange<AssetBalance>?> {
+            let assetAccount = try accountWrapper.targetOperation.extractNoCancellableResultData()
+            let localModel = try fetchOperation.extractNoCancellableResultData()
+
+            let balance = assetAccount?.balance ?? 0
+
+            let assetDetails = try detailsWrapper.targetOperation.extractNoCancellableResultData()
+
+            let isFrozen = (assetAccount?.isFrozen ?? false) || (assetDetails?.isFrozen ?? false)
+
+            let remoteModel = AssetBalance(
+                chainAssetId: chainAssetId,
+                accountId: accountId,
+                freeInPlank: !isFrozen ? balance : 0,
+                reservedInPlank: 0,
+                frozenInPlank: isFrozen ? balance : 0
+            )
+
+            if localModel != remoteModel, balance > 0 {
+                return DataProviderChange.update(newItem: remoteModel)
+            } else if localModel != nil, balance == 0 {
+                return DataProviderChange.delete(deletedIdentifier: identifier)
+            } else {
+                return nil
+            }
+        }
+
+        changesOperation.addDependency(fetchOperation)
+
+        return CompoundOperationWrapper(targetOperation: changesOperation, dependencies: [fetchOperation])
     }
 
     private func createStorageDecoderWrapper<T: Decodable>(

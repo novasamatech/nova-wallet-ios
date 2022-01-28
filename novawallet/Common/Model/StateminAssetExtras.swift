@@ -1,5 +1,5 @@
 import Foundation
 
 struct StatemineAssetExtras: Codable {
-    let assetId: UInt32
+    let assetId: String
 }
