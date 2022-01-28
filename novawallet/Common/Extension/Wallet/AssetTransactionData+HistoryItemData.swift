@@ -84,7 +84,7 @@ extension AssetTransactionData {
         let type = TransactionType(rawValue: item.eventId.uppercased())
 
         return AssetTransactionData(
-            transactionId: item.identifier,
+            transactionId: item.remoteIdentifier,
             status: status,
             assetId: assetId,
             peerId: item.extrinsicHash,
@@ -124,7 +124,7 @@ extension AssetTransactionData {
         }
 
         return AssetTransactionData(
-            transactionId: item.identifier,
+            transactionId: item.remoteIdentifier,
             status: status,
             assetId: assetId,
             peerId: peerId,
