@@ -10,7 +10,8 @@ enum WalletRemoteHistorySourceLabel: Int, CaseIterable {
 }
 
 protocol WalletRemoteHistoryItemProtocol {
-    var identifier: String { get }
+    var remoteIdentifier: String { get }
+    var localIdentifier: String { get }
     var itemBlockNumber: UInt64 { get }
     var itemExtrinsicIndex: UInt16 { get }
     var itemTimestamp: Int64 { get }
@@ -25,10 +26,12 @@ protocol WalletRemoteHistoryItemProtocol {
 
 struct WalletRemoteHistoryData {
     let historyItems: [WalletRemoteHistoryItemProtocol]
-    let context: TransactionHistoryContext
+    let context: [String: String]
 }
 
 protocol WalletRemoteHistoryFactoryProtocol {
-    func createOperationWrapper(for context: TransactionHistoryContext, address: String, count: Int)
+    func isComplete(pagination: Pagination) -> Bool
+
+    func createOperationWrapper(for address: String, pagination: Pagination)
         -> CompoundOperationWrapper<WalletRemoteHistoryData>
 }
