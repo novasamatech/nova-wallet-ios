@@ -667,4 +667,6 @@
 "common.fee.retry.failed" = "Fee loading failed. Would you like to retry?";
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
+"wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
+"wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
 "common.era.format" = "\#%@";

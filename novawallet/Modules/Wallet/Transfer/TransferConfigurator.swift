@@ -90,18 +90,24 @@ final class TransferConfigurator {
     let localizationManager: LocalizationManagerProtocol
 
     let viewModelFactory: TransferViewModelFactory
+    let utilityAsset: AssetModel
 
     init(
         chainAsset: ChainAsset,
+        utilityAsset: AssetModel,
         explorers: [ChainModel.Explorer]?,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         localizationManager: LocalizationManagerProtocol
 
     ) {
+        self.utilityAsset = utilityAsset
+
         viewModelFactory = TransferViewModelFactory(
             chainAsset: chainAsset,
             explorers: explorers,
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory
         )
         self.localizationManager = localizationManager
     }
@@ -130,7 +136,7 @@ final class TransferConfigurator {
             .with(transferViewModelFactory: viewModelFactory)
             .with(accessoryViewFactory: WalletSingleActionAccessoryFactory.self)
             .with(operationDefinitionFactory: definitionFactory)
-            .with(resultValidator: TransferValidator())
+            .with(resultValidator: TransferValidator(utilityAsset: utilityAsset))
             .with(accessoryOverlayMode: .overlay)
     }
 }
