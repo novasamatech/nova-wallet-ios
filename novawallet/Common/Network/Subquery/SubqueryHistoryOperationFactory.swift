@@ -87,6 +87,9 @@ final class SubqueryHistoryOperationFactory {
                  },
                  nodes {
                      id
+                     blockNumber
+                     extrinsicIdx
+                     extrinsicHash
                      timestamp
                      address
                      reward

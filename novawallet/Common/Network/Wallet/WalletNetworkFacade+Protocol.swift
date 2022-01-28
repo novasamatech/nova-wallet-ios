@@ -108,16 +108,10 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
         let filter = WalletHistoryFilter(string: request.filter)
 
-        let historyContext = TransactionHistoryContext(
-            context: pagination.context ?? [:],
-            defaultRow: pagination.count
-        ).byApplying(filter: filter)
-
         let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
 
         // The history only works for asset detals now
-        guard !historyContext.isComplete,
-              let userAssets = mayBeUserAssets,
+        guard let userAssets = mayBeUserAssets,
               userAssets.count == 1,
               let walletAssetId = userAssets.first,
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
@@ -126,34 +120,32 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
               let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
               let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId)
         else {
-            let pageData = AssetTransactionPageData(
-                transactions: [],
-                context: nil
-            )
-
-            let operation = BaseOperation<AssetTransactionPageData?>()
-            operation.result = .success(pageData)
-            return CompoundOperationWrapper(targetOperation: operation)
+            return createEmptyHistoryResponseOperation()
         }
 
-        let remoteHistoryWrapper: CompoundOperationWrapper<WalletRemoteHistoryData>
+        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
-        if let baseUrl = WalletAssetId(chainId: chainAssetId.chainId)?.subscanUrl {
-            let remoteHistoryFactory = SubscanHistoryOperationFactory(
-                baseURL: baseUrl,
-                filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
-            )
-
-            remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
-                for: historyContext,
-                address: address,
-                count: pagination.count
+        if let baseUrl = chain.externalApi?.history?.url {
+            maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
+        } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
+            maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
+                baseURL: fallbackUrl,
+                walletFilter: filter
             )
         } else {
-            let context = TransactionHistoryContext(context: [:], defaultRow: 0)
-            let result = WalletRemoteHistoryData(historyItems: [], context: context)
-            remoteHistoryWrapper = CompoundOperationWrapper.createWithResult(result)
+            maybeRemoteHistoryFactory = nil
         }
+
+        guard
+            let remoteHistoryFactory = maybeRemoteHistoryFactory,
+            !remoteHistoryFactory.isComplete(pagination: pagination) else {
+            return createEmptyHistoryResponseOperation()
+        }
+
+        let remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
+            for: address,
+            pagination: pagination
+        )
 
         var dependencies = remoteHistoryWrapper.allOperations
 
@@ -162,12 +154,13 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
 
         if pagination.context == nil {
-            let operation = txStorage.fetchAllOperation(with: RepositoryFetchOptions())
-            dependencies.append(operation)
+            let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
 
-            remoteHistoryWrapper.allOperations.forEach { operation.addDependency($0) }
+            wrapper.addDependency(wrapper: remoteHistoryWrapper)
 
-            localFetchOperation = operation
+            dependencies.append(contentsOf: wrapper.allOperations)
+
+            localFetchOperation = wrapper.targetOperation
         } else {
             localFetchOperation = nil
         }
