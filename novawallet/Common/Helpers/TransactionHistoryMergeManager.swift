@@ -112,23 +112,23 @@ final class TransactionHistoryMergeManager {
     }
 
     func merge(
-        subscanItems: [WalletRemoteHistoryItemProtocol],
+        remoteItems: [WalletRemoteHistoryItemProtocol],
         localItems: [TransactionHistoryItem],
         runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryMergeResult {
-        let existingHashes = Set(subscanItems.map(\.identifier))
-        let minSubscanItem = subscanItems.last
+        let existingHashes = Set(remoteItems.map(\.localIdentifier))
+        let minRemoteItem = remoteItems.last
 
         let hashesToRemove: [String] = localItems.compactMap { item in
             if existingHashes.contains(item.txHash) {
                 return item.txHash
             }
 
-            guard let subscanItem = minSubscanItem else {
+            guard let remoteItem = minRemoteItem else {
                 return nil
             }
 
-            if item.timestamp < subscanItem.itemTimestamp {
+            if item.timestamp < remoteItem.itemTimestamp {
                 return item.txHash
             }
 
@@ -144,7 +144,7 @@ final class TransactionHistoryMergeManager {
             return TransactionHistoryMergeItem.local(item: item)
         }
 
-        let remoteMergeItems: [TransactionHistoryMergeItem] = subscanItems.map {
+        let remoteMergeItems: [TransactionHistoryMergeItem] = remoteItems.map {
             TransactionHistoryMergeItem.remote(remote: $0)
         }
 
