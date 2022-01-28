@@ -3,6 +3,12 @@ import CommonWallet
 import BigInt
 
 extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
+    var remoteIdentifier: String {
+        identifier
+    }
+
+    var localIdentifier: String { extrinsicHash }
+
     var itemBlockNumber: UInt64 {
         blockNumber
     }
