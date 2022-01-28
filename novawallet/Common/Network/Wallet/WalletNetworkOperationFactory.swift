@@ -135,7 +135,7 @@ final class WalletNetworkOperationFactory {
     func createStatemineFetchOperation(
         _ accountId: Data,
         chainAssetId: ChainAssetId,
-        palletAssetId: UInt32
+        palletAssetId: String
     ) -> CompoundOperationWrapper<AssetBalance?> {
         guard let connection = chainRegistry.getConnection(for: chainAssetId.chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
@@ -149,7 +149,7 @@ final class WalletNetworkOperationFactory {
 
         let wrapper: CompoundOperationWrapper<[StorageResponse<AssetAccount>]> = requestFactory.queryItems(
             engine: connection,
-            keyParams1: { [StringScaleMapper(value: palletAssetId)] },
+            keyParams1: { [palletAssetId] },
             keyParams2: { [accountId] },
             factory: { try coderFactoryOperation.extractNoCancellableResultData() },
             storagePath: StorageCodingPath.assetsAccount

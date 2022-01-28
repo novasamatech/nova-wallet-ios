@@ -128,11 +128,12 @@ final class TransferValidator: TransferValidating {
     private func receiverHasMainAccount(in metadata: TransferMetaData) -> Bool {
         let context = TransferMetadataContext(context: metadata.context ?? [:])
 
-        if context.utilityMatchesAsset {
-            return context.receiverAssetBalance > 0
-        } else {
+        if !context.utilityMatchesAsset {
             let receiverUtilityBalance = context.receiverUtilityBalance ?? 0
-            return receiverUtilityBalance > 0
+            let utilityMinBalance = context.utilityMinBalance ?? 0
+            return receiverUtilityBalance >= utilityMinBalance
+        } else {
+            return true
         }
     }
 
