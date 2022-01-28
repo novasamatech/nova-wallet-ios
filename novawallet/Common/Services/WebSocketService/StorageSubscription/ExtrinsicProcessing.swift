@@ -45,27 +45,96 @@ final class ExtrinsicProcessor {
 
     private func findFee(
         for index: UInt32,
+        sender: AccountId,
         eventRecords: [EventRecord],
         metadata: RuntimeMetadataProtocol
     ) -> BigUInt {
-        eventRecords.compactMap { record in
+        if let fee = findFeeOfBalancesWithdraw(
+            for: index,
+            sender: sender,
+            eventRecords: eventRecords,
+            metadata: metadata
+        ) {
+            return fee
+        } else {
+            return findFeeOfBalancesTreasuryDeposit(
+                for: index,
+                eventRecords: eventRecords,
+                metadata: metadata
+            )
+        }
+    }
+
+    private func findFeeOfBalancesWithdraw(
+        for index: UInt32,
+        sender: AccountId,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol
+    ) -> BigUInt? {
+        let withdraw = EventCodingPath.balancesWithdraw
+        let closure: (EventRecord) -> Bool = { record in
             guard record.extrinsicIndex == index,
                   let eventPath = metadata.createEventCodingPath(from: record.event) else {
-                return nil
+                return false
             }
 
-            if eventPath == .balanceDeposit {
-                return try? record.event.params.map(to: BalanceDepositEvent.self).amount
+            guard eventPath.moduleName == withdraw.moduleName,
+                  eventPath.eventName == withdraw.eventName else {
+                return false
             }
 
-            if eventPath == .treasuryDeposit {
-                return try? record.event.params.map(to: TreasuryDepositEvent.self).amount
+            guard let event = try? record.event.params.map(to: BalancesWithdrawEvent.self) else {
+                return false
             }
 
-            return nil
-        }.reduce(BigUInt(0)) { (totalFee: BigUInt, partialFee: BigUInt) in
-            totalFee + partialFee
+            return event.accountId == sender
         }
+
+        guard
+            let record = eventRecords.first(where: closure),
+            let event = try? record.event.params.map(to: BalancesWithdrawEvent.self) else {
+            return nil
+        }
+
+        return event.amount
+    }
+
+    private func findFeeOfBalancesTreasuryDeposit(
+        for index: UInt32,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol
+    ) -> BigUInt {
+        let balances = EventCodingPath.balancesDeposit
+
+        let balancesDeposit: BigUInt = eventRecords.last { record in
+            guard record.extrinsicIndex == index,
+                  let eventPath = metadata.createEventCodingPath(from: record.event) else {
+                return false
+            }
+
+            return eventPath.moduleName == balances.moduleName &&
+                eventPath.eventName == balances.eventName
+        }.map { record in
+            let event = try? record.event.params.map(to: BalanceDepositEvent.self)
+            return event?.amount ?? 0
+        } ?? 0
+
+        let treasury = EventCodingPath.treasuryDeposit
+
+        let treasuryDeposit: BigUInt = eventRecords.last { record in
+            guard record.extrinsicIndex == index,
+                  let eventPath = metadata.createEventCodingPath(from: record.event) else {
+                return false
+            }
+
+            return eventPath.moduleName == treasury.moduleName &&
+                eventPath.eventName == treasury.eventName
+        }.map { record in
+            let event = try? record.event.params.map(to: TreasuryDepositEvent.self)
+            return event?.amount ?? 0
+        } ?? 0
+
+        return balancesDeposit + treasuryDeposit
     }
 
     private func matchTransfer(
@@ -76,7 +145,7 @@ final class ExtrinsicProcessor {
         runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
                 to: MultiAddress.self,
                 with: runtimeJsonContext.toRawContext()
             ).accountId
@@ -88,7 +157,7 @@ final class ExtrinsicProcessor {
                 )
                 let callAccountId = call.args.dest.accountId
                 let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-                let isAccountMatched = accountId == sender || accountId == callAccountId
+                let isAccountMatched = accountId == maybeSender || accountId == callAccountId
 
                 return (callPath, isAccountMatched, callAccountId)
             }()
@@ -100,6 +169,7 @@ final class ExtrinsicProcessor {
             guard
                 callPath.isTransfer,
                 isAccountMatched,
+                let sender = maybeSender,
                 let isSuccess = matchStatus(
                     for: extrinsicIndex,
                     eventRecords: eventRecords,
@@ -110,6 +180,7 @@ final class ExtrinsicProcessor {
 
             let fee = findFee(
                 for: extrinsicIndex,
+                sender: sender,
                 eventRecords: eventRecords,
                 metadata: metadata
             )
@@ -137,16 +208,17 @@ final class ExtrinsicProcessor {
         runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let sender: AccountId? = try extrinsic.signature?.address.map(
+            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
                 to: MultiAddress.self,
                 with: runtimeJsonContext.toRawContext()
             ).accountId
 
             let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
             let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == sender
+            let isAccountMatched = accountId == maybeSender
 
             guard
+                let sender = maybeSender,
                 isAccountMatched,
                 let isSuccess = matchStatus(
                     for: extrinsicIndex,
@@ -158,6 +230,7 @@ final class ExtrinsicProcessor {
 
             let fee = findFee(
                 for: extrinsicIndex,
+                sender: sender,
                 eventRecords: eventRecords,
                 metadata: metadata
             )
