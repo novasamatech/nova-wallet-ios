@@ -669,3 +669,4 @@
 "dapp.search.app.section" = "DApps";
 "wallet.send.dead.recipient.commission.asset.title" = "Получатель не получит перевод";
 "wallet.send.dead.recipient.commission.asset.message" = "Невозможно осуществить перевод так как получатель не имеет %@ токенов";
+"common.era.format" = "#%@";

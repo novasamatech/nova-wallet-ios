@@ -10,7 +10,8 @@ enum WalletRemoteHistorySourceLabel: Int, CaseIterable {
 }
 
 protocol WalletRemoteHistoryItemProtocol {
-    var identifier: String { get }
+    var remoteIdentifier: String { get }
+    var localIdentifier: String { get }
     var itemBlockNumber: UInt64 { get }
     var itemExtrinsicIndex: UInt16 { get }
     var itemTimestamp: Int64 { get }
