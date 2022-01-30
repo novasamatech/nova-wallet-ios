@@ -33,7 +33,7 @@ struct TransactionHistoryItem: Codable {
     let status: Status
     let txHash: String
     let timestamp: Int64
-    let fee: String
+    let fee: String?
     let blockNumber: UInt64?
     let txIndex: UInt16?
     let callPath: CallCodingPath
