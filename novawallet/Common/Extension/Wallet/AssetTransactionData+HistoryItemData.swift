@@ -146,7 +146,12 @@ extension AssetTransactionData {
         chainAsset: ChainAsset,
         utilityAsset: AssetModel
     ) -> AssetTransactionData {
-        if item.callPath.isTransfer {
+        let selectedAssetId = chainAsset.asset.assetId
+
+        let isTransfer = (selectedAssetId == utilityAsset.assetId && item.callPath.isBalancesTransfer) ||
+            (selectedAssetId != utilityAsset.assetId && item.callPath.isTransfer)
+
+        if isTransfer {
             return createLocalTransfer(
                 from: item,
                 address: address,
