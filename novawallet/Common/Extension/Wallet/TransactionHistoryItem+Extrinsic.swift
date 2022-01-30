@@ -7,11 +7,13 @@ extension TransactionHistoryItem {
     static func createFromSubscriptionResult(
         _ result: TransactionSubscriptionResult,
         accountId: AccountId,
-        chain: ChainModel,
+        chainAsset: ChainAsset,
         runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryItem? {
         do {
             let extrinsic = result.processingResult.extrinsic
+            let chain = chainAsset.chain
+            let asset = chainAsset.asset
 
             let maybeTxOrigin: AccountId? = try extrinsic.signature?.address.map(
                 to: MultiAddress.self,
@@ -41,10 +43,14 @@ extension TransactionHistoryItem {
 
             let encodedCall = try JSONEncoder.scaleCompatible().encode(extrinsic.call)
 
+            let amountString = result.processingResult.amount.map { String($0) }
+
             return TransactionHistoryItem(
                 chainId: chain.chainId,
+                assetId: asset.assetId,
                 sender: sender,
                 receiver: receiver,
+                amountInPlank: amountString,
                 status: result.processingResult.isSuccess ? .success : .failed,
                 txHash: result.extrinsicHash.toHex(includePrefix: true),
                 timestamp: timestamp,

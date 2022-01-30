@@ -7,7 +7,9 @@ struct ExtrinsicProcessingResult {
     let callPath: CallCodingPath
     let fee: BigUInt?
     let peerId: AccountId?
+    let amount: BigUInt?
     let isSuccess: Bool
+    let assetId: UInt32
 }
 
 protocol ExtrinsicProcessing {
@@ -21,11 +23,11 @@ protocol ExtrinsicProcessing {
 
 final class ExtrinsicProcessor {
     let accountId: Data
-    let isEthereumBased: Bool
+    let chain: ChainModel
 
-    init(accountId: Data, isEthereumBased: Bool) {
+    init(accountId: Data, chain: ChainModel) {
         self.accountId = accountId
-        self.isEthereumBased = isEthereumBased
+        self.chain = chain
     }
 
     private func matchStatus(
@@ -137,37 +139,42 @@ final class ExtrinsicProcessor {
         return balancesDeposit + treasuryDeposit
     }
 
-    private func matchTransfer(
+    private func matchOrmlTransfer(
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol,
-        runtimeJsonContext: RuntimeJsonContext
+        codingFactory: RuntimeCoderFactoryProtocol
     ) -> ExtrinsicProcessingResult? {
         do {
+            let metadata = codingFactory.metadata
+            let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
+
             let maybeSender: AccountId? = try extrinsic.signature?.address.map(
                 to: MultiAddress.self,
                 with: runtimeJsonContext.toRawContext()
             ).accountId
 
-            let parsingResult: (CallCodingPath, Bool, AccountId?) = try {
+            let parsingResult: (CallCodingPath, Bool, AccountId?, JSON, BigUInt) = try {
                 let call = try extrinsic.call.map(
-                    to: RuntimeCall<TransferCall>.self,
+                    to: RuntimeCall<OrmlTokenTransfer>.self,
                     with: runtimeJsonContext.toRawContext()
                 )
                 let callAccountId = call.args.dest.accountId
                 let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
                 let isAccountMatched = accountId == maybeSender || accountId == callAccountId
+                let currencyId = call.args.currencyId
 
-                return (callPath, isAccountMatched, callAccountId)
+                return (callPath, isAccountMatched, callAccountId, currencyId, call.args.amount)
             }()
 
             let callPath = parsingResult.0
             let isAccountMatched = parsingResult.1
             let callAccountId = parsingResult.2
+            let callCurrencyId = parsingResult.3
+            let callAmount = parsingResult.4
 
             guard
-                callPath.isTransfer,
+                callPath.isTokensTransfer,
                 isAccountMatched,
                 let sender = maybeSender,
                 let isSuccess = matchStatus(
@@ -187,12 +194,188 @@ final class ExtrinsicProcessor {
 
             let peerId = accountId == sender ? callAccountId : sender
 
+            let maybeAsset = chain.assets.first { asset in
+                guard
+                    asset.type == AssetType.orml.rawValue,
+                    let typeExtra = try? asset.typeExtras?.map(to: OrmlTokenExtras.self) else {
+                    return false
+                }
+
+                do {
+                    let encoder = codingFactory.createEncoder()
+                    try encoder.append(json: callCurrencyId, type: typeExtra.currencyIdType)
+                    let currencyIdScale = try encoder.encode().toHex()
+
+                    return currencyIdScale == typeExtra.currencyIdScale
+                } catch {
+                    return false
+                }
+            }
+
+            guard let asset = maybeAsset else {
+                return nil
+            }
+
             return ExtrinsicProcessingResult(
                 extrinsic: extrinsic,
                 callPath: callPath,
                 fee: fee,
                 peerId: peerId,
-                isSuccess: isSuccess
+                amount: callAmount,
+                isSuccess: isSuccess,
+                assetId: asset.assetId
+            )
+
+        } catch {
+            return nil
+        }
+    }
+
+    private func matchAssetsTransfer(
+        extrinsicIndex: UInt32,
+        extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
+    ) -> ExtrinsicProcessingResult? {
+        do {
+            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
+
+            let parsingResult: (CallCodingPath, Bool, AccountId?, String, BigUInt) = try {
+                let call = try extrinsic.call.map(
+                    to: RuntimeCall<AssetsTransfer>.self,
+                    with: runtimeJsonContext.toRawContext()
+                )
+                let callAccountId = call.args.target.accountId
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                let isAccountMatched = accountId == maybeSender || accountId == callAccountId
+                let assetId = call.args.assetId
+
+                return (callPath, isAccountMatched, callAccountId, assetId, call.args.amount)
+            }()
+
+            let callPath = parsingResult.0
+            let isAccountMatched = parsingResult.1
+            let callAccountId = parsingResult.2
+            let callAssetId = parsingResult.3
+            let callAmount = parsingResult.4
+
+            guard
+                callPath.isAssetsTransfer,
+                isAccountMatched,
+                let sender = maybeSender,
+                let isSuccess = matchStatus(
+                    for: extrinsicIndex,
+                    eventRecords: eventRecords,
+                    metadata: metadata
+                ) else {
+                return nil
+            }
+
+            let fee = findFee(
+                for: extrinsicIndex,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: metadata
+            )
+
+            let peerId = accountId == sender ? callAccountId : sender
+
+            let maybeAsset = chain.assets.first { asset in
+                guard
+                    asset.type == AssetType.statemine.rawValue,
+                    let typeExtra = try? asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
+                    return false
+                }
+
+                return typeExtra.assetId == callAssetId
+            }
+
+            guard let asset = maybeAsset else {
+                return nil
+            }
+
+            return ExtrinsicProcessingResult(
+                extrinsic: extrinsic,
+                callPath: callPath,
+                fee: fee,
+                peerId: peerId,
+                amount: callAmount,
+                isSuccess: isSuccess,
+                assetId: asset.assetId
+            )
+
+        } catch {
+            return nil
+        }
+    }
+
+    private func matchBalancesTransfer(
+        extrinsicIndex: UInt32,
+        extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
+    ) -> ExtrinsicProcessingResult? {
+        do {
+            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
+
+            let parsingResult: (CallCodingPath, Bool, AccountId?, BigUInt) = try {
+                let call = try extrinsic.call.map(
+                    to: RuntimeCall<TransferCall>.self,
+                    with: runtimeJsonContext.toRawContext()
+                )
+                let callAccountId = call.args.dest.accountId
+                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+                let isAccountMatched = accountId == maybeSender || accountId == callAccountId
+
+                return (callPath, isAccountMatched, callAccountId, call.args.value)
+            }()
+
+            let callPath = parsingResult.0
+            let isAccountMatched = parsingResult.1
+            let callAccountId = parsingResult.2
+            let callAmount = parsingResult.3
+
+            guard
+                callPath.isBalancesTransfer,
+                isAccountMatched,
+                let sender = maybeSender,
+                let isSuccess = matchStatus(
+                    for: extrinsicIndex,
+                    eventRecords: eventRecords,
+                    metadata: metadata
+                ) else {
+                return nil
+            }
+
+            let fee = findFee(
+                for: extrinsicIndex,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: metadata
+            )
+
+            let peerId = accountId == sender ? callAccountId : sender
+
+            guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
+                return nil
+            }
+
+            return ExtrinsicProcessingResult(
+                extrinsic: extrinsic,
+                callPath: callPath,
+                fee: fee,
+                peerId: peerId,
+                amount: callAmount,
+                isSuccess: isSuccess,
+                assetId: assetId
             )
 
         } catch {
@@ -235,12 +418,18 @@ final class ExtrinsicProcessor {
                 metadata: metadata
             )
 
+            guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
+                return nil
+            }
+
             return ExtrinsicProcessingResult(
                 extrinsic: extrinsic,
                 callPath: callPath,
                 fee: fee,
                 peerId: nil,
-                isSuccess: isSuccess
+                amount: nil,
+                isSuccess: isSuccess,
+                assetId: assetId
             )
 
         } catch {
@@ -262,12 +451,31 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
 
             let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
 
-            if let processingResult = matchTransfer(
+            if let processingResult = matchBalancesTransfer(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
                 metadata: coderFactory.metadata,
                 runtimeJsonContext: runtimeJsonContext
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchAssetsTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                metadata: coderFactory.metadata,
+                runtimeJsonContext: runtimeJsonContext
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchOrmlTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
             ) {
                 return processingResult
             }
