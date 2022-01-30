@@ -181,8 +181,9 @@ extension AssetTransactionData {
 
         let peerId = accountId?.toHex() ?? peerAddress
 
+        let feeValue = item.fee.map { BigUInt($0) ?? 0 } ?? 0
         let feeDecimal = Decimal.fromSubstrateAmount(
-            BigUInt(item.fee) ?? 0,
+            feeValue,
             precision: utilityAsset.displayInfo.assetPrecision
         ) ?? .zero
 
@@ -228,8 +229,9 @@ extension AssetTransactionData {
     ) -> AssetTransactionData {
         let assetId = chainAsset.chainAssetId.walletId
 
+        let feeValue = item.fee.map { BigUInt($0) ?? 0 } ?? 0
         let amount = Decimal.fromSubstrateAmount(
-            BigUInt(item.fee) ?? 0,
+            feeValue,
             precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
 

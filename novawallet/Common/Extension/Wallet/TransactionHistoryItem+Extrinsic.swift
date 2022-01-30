@@ -45,6 +45,8 @@ extension TransactionHistoryItem {
 
             let amountString = result.processingResult.amount.map { String($0) }
 
+            let maybeFee = result.processingResult.fee.map { String($0) }
+
             return TransactionHistoryItem(
                 chainId: chain.chainId,
                 assetId: asset.assetId,
@@ -54,7 +56,7 @@ extension TransactionHistoryItem {
                 status: result.processingResult.isSuccess ? .success : .failed,
                 txHash: result.extrinsicHash.toHex(includePrefix: true),
                 timestamp: timestamp,
-                fee: String(result.processingResult.fee ?? 0),
+                fee: maybeFee,
                 blockNumber: result.blockNumber,
                 txIndex: result.txIndex,
                 callPath: result.processingResult.callPath,
