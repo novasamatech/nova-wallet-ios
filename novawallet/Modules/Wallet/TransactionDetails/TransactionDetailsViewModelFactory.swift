@@ -5,27 +5,33 @@ import SubstrateSdk
 
 final class TransactionDetailsViewModelFactory {
     let chainAccount: ChainAccountResponse
+    let selectedAsset: AssetModel
+    let utilityAsset: AssetModel
     let explorers: [ChainModel.Explorer]?
-    let amountFormatterFactory: NumberFormatterFactoryProtocol
+    let amountViewModelFactory: BalanceViewModelFactoryProtocol
+    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
     let dateFormatter: LocalizableResource<DateFormatter>
     let integerFormatter: LocalizableResource<NumberFormatter>
-    let assets: [WalletAsset]
 
     let iconGenerator = PolkadotIconGenerator()
 
     init(
         chainAccount: ChainAccountResponse,
+        selectedAsset: AssetModel,
+        utilityAsset: AssetModel,
         explorers: [ChainModel.Explorer]?,
-        assets: [WalletAsset],
+        amountViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         dateFormatter: LocalizableResource<DateFormatter>,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
         integerFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.chainAccount = chainAccount
+        self.selectedAsset = selectedAsset
+        self.utilityAsset = utilityAsset
         self.explorers = explorers
-        self.assets = assets
         self.dateFormatter = dateFormatter
-        self.amountFormatterFactory = amountFormatterFactory
+        self.amountViewModelFactory = amountViewModelFactory
+        self.feeViewModelFactory = feeViewModelFactory
         self.integerFormatter = integerFormatter
     }
 
@@ -101,17 +107,9 @@ final class TransactionDetailsViewModelFactory {
         data: AssetTransactionData,
         locale: Locale
     ) {
-        guard let asset = assets.first(where: { $0.identifier == data.assetId }) else {
-            return
-        }
-
         let amount = data.amount.decimalValue
 
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset)
-
-        guard let displayAmount = formatter.value(for: locale).stringFromDecimal(amount) else {
-            return
-        }
+        let displayAmount = amountViewModelFactory.amountFromValue(amount).value(for: locale)
 
         let viewModel = WalletNewFormDetailsViewModel(
             title: title,
@@ -145,14 +143,10 @@ final class TransactionDetailsViewModelFactory {
         data: AssetTransactionData,
         locale: Locale
     ) {
-        let asset = assets.first(where: { $0.identifier == data.assetId })
+        let formatter = feeViewModelFactory ?? amountViewModelFactory
 
-        let formatter = amountFormatterFactory.createFeeTokenFormatter(for: asset).value(for: locale)
-
-        for fee in data.fees where fee.assetId == data.assetId {
-            guard let amount = formatter.stringFromDecimal(fee.amount.decimalValue) else {
-                continue
-            }
+        for fee in data.fees {
+            let amount = formatter.amountFromValue(fee.amount.decimalValue).value(for: locale)
 
             let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
