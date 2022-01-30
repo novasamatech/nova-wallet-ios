@@ -33,10 +33,9 @@ extension AssetTransactionData {
 
         let amount = AmountDecimal(string: item.amount) ?? AmountDecimal(value: 0)
         let feeValue = BigUInt(item.fee) ?? BigUInt(0)
-        let feeDecimal = Decimal.fromSubstrateAmount(
-            feeValue,
-            precision: chainAssetInfo.asset.assetPrecision
-        ) ?? .zero
+
+        let precision = chainAssetInfo.asset.assetPrecision
+        let feeDecimal = Decimal.fromSubstrateAmount(feeValue, precision: precision) ?? .zero
 
         let fee = AssetTransactionFee(
             identifier: assetId,
@@ -144,24 +143,22 @@ extension AssetTransactionData {
     static func createTransaction(
         from item: TransactionHistoryItem,
         address: String,
-        assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo,
-        runtimeJsonContext: RuntimeJsonContext
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
         if item.callPath.isTransfer {
             return createLocalTransfer(
                 from: item,
                 address: address,
-                assetId: assetId,
-                chainAssetInfo: chainAssetInfo,
-                runtimeJsonContext: runtimeJsonContext
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         } else {
             return createLocalExtrinsic(
                 from: item,
                 address: address,
-                assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         }
     }
@@ -169,19 +166,20 @@ extension AssetTransactionData {
     private static func createLocalTransfer(
         from item: TransactionHistoryItem,
         address: String,
-        assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo,
-        runtimeJsonContext: RuntimeJsonContext
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
+        let assetId = chainAsset.chainAssetId.walletId
+
         let peerAddress = (item.sender == address ? item.receiver : item.sender) ?? item.sender
 
-        let accountId = try? peerAddress.toAccountId(using: chainAssetInfo.chain)
+        let accountId = try? peerAddress.toAccountId(using: chainAsset.chain.chainFormat)
 
         let peerId = accountId?.toHex() ?? peerAddress
 
         let feeDecimal = Decimal.fromSubstrateAmount(
             BigUInt(item.fee) ?? 0,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: utilityAsset.displayInfo.assetPrecision
         ) ?? .zero
 
         let fee = AssetTransactionFee(
@@ -191,21 +189,11 @@ extension AssetTransactionData {
             context: nil
         )
 
-        let amount: Decimal = {
-            guard let encodedCall = item.call else {
-                return .zero
-            }
-
-            if let substrateTransfer = try? JSONDecoder.scaleCompatible(with: runtimeJsonContext.toRawContext())
-                .decode(RuntimeCall<TransferCall>.self, from: encodedCall) {
-                return Decimal.fromSubstrateAmount(
-                    substrateTransfer.args.value,
-                    precision: chainAssetInfo.asset.assetPrecision
-                ) ?? .zero
-            } else {
-                return .zero
-            }
-        }()
+        let amountInPlank = item.amountInPlank.map { BigUInt($0) ?? 0 } ?? 0
+        let amount = Decimal.fromSubstrateAmount(
+            amountInPlank,
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) ?? .zero
 
         let type = item.sender == address ? TransactionType.outgoing :
             TransactionType.incoming
@@ -231,15 +219,17 @@ extension AssetTransactionData {
     private static func createLocalExtrinsic(
         from item: TransactionHistoryItem,
         address: String,
-        assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
+        let assetId = chainAsset.chainAssetId.walletId
+
         let amount = Decimal.fromSubstrateAmount(
             BigUInt(item.fee) ?? 0,
-            precision: chainAssetInfo.asset.assetPrecision
+            precision: utilityAsset.displayInfo.assetPrecision
         ) ?? .zero
 
-        let accountId = try? item.sender.toAccountId(using: chainAssetInfo.chain)
+        let accountId = try? item.sender.toAccountId(using: chainAsset.chain.chainFormat)
 
         let peerId = accountId?.toHex() ?? address
 

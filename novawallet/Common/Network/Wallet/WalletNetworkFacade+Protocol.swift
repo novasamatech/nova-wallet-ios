@@ -95,92 +95,27 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
               let chainAssetId = ChainAssetId(walletId: walletAssetId),
               let chain = chains[chainAssetId.chainId],
               let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }),
-              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress(),
-              let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId)
+              let utilityAsset = chain.utilityAssets().first,
+              let address = metaAccount.fetch(for: chain.accountRequest())?.toAddress()
         else {
             return createEmptyHistoryResponseOperation()
         }
 
-        let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
-
-        if let baseUrl = chain.externalApi?.history?.url {
-            maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
-        } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
-            maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
-                baseURL: fallbackUrl,
-                walletFilter: filter
+        if asset.assetId == utilityAsset.assetId {
+            return createUtilityAssetHistory(
+                for: address,
+                chainAsset: ChainAsset(chain: chain, asset: asset),
+                pagination: pagination,
+                filter: filter
             )
         } else {
-            maybeRemoteHistoryFactory = nil
+            return createCustomAssetHistory(
+                for: address,
+                chainAsset: ChainAsset(chain: chain, asset: asset),
+                pagination: pagination,
+                filter: filter
+            )
         }
-
-        guard
-            let remoteHistoryFactory = maybeRemoteHistoryFactory,
-            !remoteHistoryFactory.isComplete(pagination: pagination) else {
-            return createEmptyHistoryResponseOperation()
-        }
-
-        let remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
-            for: address,
-            pagination: pagination
-        )
-
-        var dependencies = remoteHistoryWrapper.allOperations
-
-        let localFetchOperation: BaseOperation<[TransactionHistoryItem]>?
-
-        let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
-
-        if pagination.context == nil {
-            let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
-
-            wrapper.addDependency(wrapper: remoteHistoryWrapper)
-
-            dependencies.append(contentsOf: wrapper.allOperations)
-
-            localFetchOperation = wrapper.targetOperation
-        } else {
-            localFetchOperation = nil
-        }
-
-        let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        dependencies.append(codingFactoryOperation)
-
-        let mergeOperation = createHistoryMergeOperation(
-            dependingOn: remoteHistoryWrapper.targetOperation,
-            localOperation: localFetchOperation,
-            codingFactoryOperation: codingFactoryOperation,
-            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo,
-            assetId: walletAssetId,
-            address: address
-        )
-
-        dependencies.forEach { mergeOperation.addDependency($0) }
-
-        dependencies.append(mergeOperation)
-
-        if pagination.context == nil {
-            let clearOperation = txStorage.saveOperation({ [] }, {
-                let mergeResult = try mergeOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                return mergeResult.identifiersToRemove
-            })
-
-            dependencies.append(clearOperation)
-            clearOperation.addDependency(mergeOperation)
-        }
-
-        let mapOperation = createHistoryMapOperation(
-            dependingOn: mergeOperation,
-            remoteOperation: remoteHistoryWrapper.targetOperation
-        )
-
-        dependencies.forEach { mapOperation.addDependency($0) }
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: dependencies
-        )
     }
 
     func transferMetadataOperation(
@@ -212,7 +147,6 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
             let txSaveOperation = txStorage.saveOperation({
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
-                let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
 
                 switch transferWrapper.targetOperation.result {
                 case let .success(txHash):
@@ -221,8 +155,8 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                             info,
                             senderAccount: accountResponse,
                             transactionHash: txHash,
-                            chainAssetInfo: ChainAsset(chain: chain, asset: asset).chainAssetInfo,
-                            runtimeJsonContext: runtimeJsonContext
+                            chainAsset: ChainAsset(chain: chain, asset: asset),
+                            codingFactory: codingFactory
                         )
                     return [item]
                 case let .failure(error):

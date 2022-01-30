@@ -139,10 +139,16 @@ extension TransactionSubscription {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
             return try processingOperaton.extractNoCancellableResultData().compactMap { result in
-                TransactionHistoryItem.createFromSubscriptionResult(
+                guard let asset = chain.assets.first(
+                    where: { $0.assetId == result.processingResult.assetId }
+                ) else {
+                    return nil
+                }
+
+                return TransactionHistoryItem.createFromSubscriptionResult(
                     result,
                     accountId: accountId,
-                    chain: chain,
+                    chainAsset: ChainAsset(chain: chain, asset: asset),
                     runtimeJsonContext: runtimeJsonContext
                 )
             }
@@ -169,10 +175,7 @@ extension TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let extrinsicProcessor = ExtrinsicProcessor(
-                accountId: accountId,
-                isEthereumBased: chain.isEthereumBased
-            )
+            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId, chain: chain)
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {
