@@ -18,7 +18,7 @@ final class AccountInfoUpdatingService {
     let storageFacade: StorageFacadeProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var subscribedChains: [ChainModel.Id: SubscriptionInfo] = [:]
@@ -36,7 +36,7 @@ final class AccountInfoUpdatingService {
         storageFacade: StorageFacadeProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         selectedMetaAccount = selectedAccount
@@ -45,7 +45,7 @@ final class AccountInfoUpdatingService {
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
         self.storageRequestFactory = storageRequestFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.logger = logger
         repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
     }
@@ -105,7 +105,7 @@ final class AccountInfoUpdatingService {
             chainModel: chain,
             txStorage: txStorage,
             storageRequestFactory: storageRequestFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             eventCenter: eventCenter,
             logger: logger
         )

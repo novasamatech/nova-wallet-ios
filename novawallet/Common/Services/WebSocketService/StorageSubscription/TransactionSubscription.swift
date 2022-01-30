@@ -17,7 +17,7 @@ final class TransactionSubscription {
     let chainModel: ChainModel
     let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
@@ -27,7 +27,7 @@ final class TransactionSubscription {
         chainModel: ChainModel,
         txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,7 +36,7 @@ final class TransactionSubscription {
         self.chainModel = chainModel
         self.storageRequestFactory = storageRequestFactory
         self.txStorage = txStorage
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.logger = logger
     }
@@ -121,7 +121,7 @@ final class TransactionSubscription {
                 return array
             }()
 
-            operationManager.enqueue(operations: operations, in: .transient)
+            operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
             logger.error("Block processing failed: \(error)")
         }

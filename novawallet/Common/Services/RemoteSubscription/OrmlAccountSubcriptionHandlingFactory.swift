@@ -7,19 +7,22 @@ final class OrmlAccountSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let eventCenter: EventCenterProtocol
+    let transactionSubscription: TransactionSubscription?
 
     init(
         chainAssetId: ChainAssetId,
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        transactionSubscription: TransactionSubscription?
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
         self.chainRegistry = chainRegistry
         self.assetRepository = assetRepository
         self.eventCenter = eventCenter
+        self.transactionSubscription = transactionSubscription
     }
 
     func createHandler(
@@ -39,7 +42,8 @@ final class OrmlAccountSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
             storage: storage,
             operationManager: operationManager,
             logger: logger,
-            eventCenter: eventCenter
+            eventCenter: eventCenter,
+            transactionSubscription: transactionSubscription
         )
     }
 }
