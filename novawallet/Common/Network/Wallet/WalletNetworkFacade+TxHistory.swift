@@ -25,13 +25,38 @@ extension WalletNetworkFacade {
             maybeRemoteHistoryFactory = nil
         }
 
-        guard
-            let remoteHistoryFactory = maybeRemoteHistoryFactory,
-            !remoteHistoryFactory.isComplete(pagination: pagination) else {
+        if let remoteFactory = maybeRemoteHistoryFactory {
+            return createRemoteUtilityAssetHistory(
+                for: address,
+                chainAsset: chainAsset,
+                pagination: pagination,
+                filter: filter,
+                remoteFactory: remoteFactory
+            )
+        } else {
+            return createLocalAssetHistory(
+                for: address,
+                chainAsset: chainAsset,
+                pagination: pagination,
+                filter: filter
+            )
+        }
+    }
+
+    func createRemoteUtilityAssetHistory(
+        for address: AccountAddress,
+        chainAsset: ChainAsset,
+        pagination: Pagination,
+        filter: WalletHistoryFilter,
+        remoteFactory: WalletRemoteHistoryFactoryProtocol
+    ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
+        guard !remoteFactory.isComplete(pagination: pagination) else {
             return createEmptyHistoryResponseOperation()
         }
 
-        let remoteHistoryWrapper = remoteHistoryFactory.createOperationWrapper(
+        let chain = chainAsset.chain
+
+        let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
             for: address,
             pagination: pagination
         )
@@ -91,7 +116,7 @@ extension WalletNetworkFacade {
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
-    func createCustomAssetHistory(
+    func createLocalAssetHistory(
         for address: AccountAddress,
         chainAsset: ChainAsset,
         pagination: Pagination,
@@ -103,11 +128,21 @@ extension WalletNetworkFacade {
             return createEmptyHistoryResponseOperation()
         }
 
-        let txStorage = repositoryFactory.createCustomAssetTxRepository(
-            for: address,
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        )
+        let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
+
+        if utilityAsset.assetId == chainAsset.asset.assetId {
+            txStorage = repositoryFactory.createUtilityAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: utilityAsset.assetId
+            )
+        } else {
+            txStorage = repositoryFactory.createCustomAssetTxRepository(
+                for: address,
+                chainId: chainAsset.chain.chainId,
+                assetId: chainAsset.asset.assetId
+            )
+        }
 
         let wrapper = createLocalFetchWrapper(for: filter, txStorage: txStorage)
 
