@@ -7,6 +7,12 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
+
+    func createChainAddressTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
     func createCustomAssetTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id,
@@ -77,9 +83,19 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             assetId: assetId
         )
 
-        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
-            storageFacade.createRepository(filter: txFilter)
-        return AnyDataProviderRepository(txStorage)
+        return createTxRepository(for: txFilter)
+    }
+
+    func createChainAddressTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let txFilter = NSPredicate.filterTransactionsBy(
+            address: address,
+            chainId: chainId
+        )
+
+        return createTxRepository(for: txFilter)
     }
 
     func createUtilityAssetTxRepository(
@@ -93,14 +109,24 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
             utilityAssetId: assetId
         )
 
-        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
-            storageFacade.createRepository(filter: txFilter)
-        return AnyDataProviderRepository(txStorage)
+        return createTxRepository(for: txFilter)
     }
 
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance> {
         let mapper = AssetBalanceMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
         return AnyDataProviderRepository(repository)
+    }
+
+    private func createTxRepository(
+        for filter: NSPredicate
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let sortDescriptor = NSSortDescriptor(
+            key: #keyPath(CDTransactionHistoryItem.timestamp),
+            ascending: false
+        )
+        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository(filter: filter, sortDescriptors: [sortDescriptor])
+        return AnyDataProviderRepository(txStorage)
     }
 }

@@ -4,6 +4,21 @@ import IrohaCrypto
 extension NSPredicate {
     static func filterTransactionsBy(
         address: String,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
+        let senderPredicate = filterTransactionsBySender(address: address)
+        let receiverPredicate = filterTransactionsByReceiver(address: address)
+        let chainPredicate = filterTransactionsByChainId(chainId)
+
+        let orPredicates = [senderPredicate, receiverPredicate]
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainPredicate,
+            NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        ])
+    }
+
+    static func filterTransactionsBy(
+        address: String,
         chainId: ChainModel.Id,
         assetId: UInt32
     ) -> NSPredicate {
