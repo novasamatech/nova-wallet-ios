@@ -6,16 +6,28 @@ final class TransactionDetailsConfigurator {
 
     init(
         chainAccount: ChainAccountResponse,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
-        assets: [WalletAsset],
+        selectedAsset: AssetModel,
+        utilityAsset: AssetModel,
         explorers: [ChainModel.Explorer]?
     ) {
+        let amountViewModelFactory = BalanceViewModelFactory(targetAssetInfo: selectedAsset.displayInfo)
+
+        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
+
+        if selectedAsset.assetId != utilityAsset.assetId {
+            feeViewModelFactory = BalanceViewModelFactory(targetAssetInfo: utilityAsset.displayInfo)
+        } else {
+            feeViewModelFactory = nil
+        }
+
         viewModelFactory = TransactionDetailsViewModelFactory(
             chainAccount: chainAccount,
+            selectedAsset: selectedAsset,
+            utilityAsset: utilityAsset,
             explorers: explorers,
-            assets: assets,
+            amountViewModelFactory: amountViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory,
             dateFormatter: DateFormatter.txDetails,
-            amountFormatterFactory: amountFormatterFactory,
             integerFormatter: NumberFormatter.quantity.localizableResource()
         )
     }

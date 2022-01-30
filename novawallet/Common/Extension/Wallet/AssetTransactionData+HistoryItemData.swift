@@ -148,8 +148,8 @@ extension AssetTransactionData {
     ) -> AssetTransactionData {
         let selectedAssetId = chainAsset.asset.assetId
 
-        let isTransfer = (selectedAssetId == utilityAsset.assetId && item.callPath.isBalancesTransfer) ||
-            (selectedAssetId != utilityAsset.assetId && item.callPath.isTransfer)
+        let isTransfer = (selectedAssetId == item.assetId || selectedAssetId != utilityAsset.assetId) &&
+            item.callPath.isTransfer
 
         if isTransfer {
             return createLocalTransfer(
@@ -162,8 +162,7 @@ extension AssetTransactionData {
             return createLocalExtrinsic(
                 from: item,
                 address: address,
-                chainAsset: chainAsset,
-                utilityAsset: utilityAsset
+                chainAsset: ChainAsset(chain: chainAsset.chain, asset: utilityAsset)
             )
         }
     }
@@ -187,9 +186,10 @@ extension AssetTransactionData {
             precision: utilityAsset.displayInfo.assetPrecision
         ) ?? .zero
 
+        let feeAssetId = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).chainAssetId.walletId
         let fee = AssetTransactionFee(
-            identifier: assetId,
-            assetId: assetId,
+            identifier: feeAssetId,
+            assetId: feeAssetId,
             amount: AmountDecimal(value: feeDecimal),
             context: nil
         )
@@ -224,14 +224,13 @@ extension AssetTransactionData {
     private static func createLocalExtrinsic(
         from item: TransactionHistoryItem,
         address: String,
-        chainAsset: ChainAsset,
-        utilityAsset: AssetModel
+        chainAsset: ChainAsset
     ) -> AssetTransactionData {
         let assetId = chainAsset.chainAssetId.walletId
 
         let amount = Decimal.fromSubstrateAmount(
             BigUInt(item.fee) ?? 0,
-            precision: utilityAsset.displayInfo.assetPrecision
+            precision: chainAsset.assetDisplayInfo.assetPrecision
         ) ?? .zero
 
         let accountId = try? item.sender.toAccountId(using: chainAsset.chain.chainFormat)

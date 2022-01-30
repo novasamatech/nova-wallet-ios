@@ -57,20 +57,17 @@ extension TransactionDetailsViewModelFactory {
         isIncoming: Bool,
         locale: Locale
     ) -> AccessoryViewModelProtocol? {
-        guard let asset = assets.first(where: { $0.identifier == data.assetId }) else {
-            return nil
-        }
-
         let title = R.string.localizable.walletTransferTotalTitle(preferredLanguages: locale.rLanguages)
 
-        let totalAmount = isIncoming ? data.amount.decimalValue :
-            data.fees.reduce(data.amount.decimalValue) { $0 + $1.amount.decimalValue }
+        let totalAmount: Decimal
 
-        let formatter = amountFormatterFactory.createTokenFormatter(for: asset)
-
-        guard let amount = formatter.value(for: locale).stringFromDecimal(totalAmount) else {
-            return nil
+        if utilityAsset.assetId != selectedAsset.assetId || isIncoming {
+            totalAmount = data.amount.decimalValue
+        } else {
+            totalAmount = data.fees.reduce(data.amount.decimalValue) { $0 + $1.amount.decimalValue }
         }
+
+        let amount = amountViewModelFactory.amountFromValue(totalAmount).value(for: locale)
 
         let icon: UIImage?
 
@@ -85,9 +82,11 @@ extension TransactionDetailsViewModelFactory {
             icon = nil
         }
 
+        let assetId = ChainAssetId(chainId: chainAccount.chainId, assetId: selectedAsset.assetId).walletId
+
         let receiverInfo = ReceiveInfo(
             accountId: data.peerId,
-            assetId: asset.identifier,
+            assetId: assetId,
             amount: nil,
             details: nil
         )
