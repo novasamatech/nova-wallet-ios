@@ -204,9 +204,10 @@ final class ExtrinsicProcessor {
                 do {
                     let encoder = codingFactory.createEncoder()
                     try encoder.append(json: callCurrencyId, type: typeExtra.currencyIdType)
-                    let currencyIdScale = try encoder.encode().toHex()
+                    let currencyIdScale = try encoder.encode()
+                    let assetCurrencyId = try Data(hexString: typeExtra.currencyIdScale)
 
-                    return currencyIdScale == typeExtra.currencyIdScale
+                    return currencyIdScale == assetCurrencyId
                 } catch {
                     return false
                 }

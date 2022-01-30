@@ -109,7 +109,7 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
                 filter: filter
             )
         } else {
-            return createCustomAssetHistory(
+            return createLocalAssetHistory(
                 for: address,
                 chainAsset: ChainAsset(chain: chain, asset: asset),
                 pagination: pagination,
@@ -144,7 +144,11 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
 
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
-            let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
+            let txStorage = repositoryFactory.createChainAddressTxRepository(
+                for: address,
+                chainId: chain.chainId
+            )
+
             let txSaveOperation = txStorage.saveOperation({
                 let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
 

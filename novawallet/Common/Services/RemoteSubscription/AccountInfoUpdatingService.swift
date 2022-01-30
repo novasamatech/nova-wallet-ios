@@ -94,7 +94,10 @@ final class AccountInfoUpdatingService {
             return
         }
 
-        let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
+        let txStorage = repositoryFactory.createChainAddressTxRepository(
+            for: address,
+            chainId: chain.chainId
+        )
 
         let transactionSubscription = TransactionSubscription(
             chainRegistry: chainRegistry,
