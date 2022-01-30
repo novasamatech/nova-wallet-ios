@@ -7,9 +7,16 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
-    func createTxRepository(
+    func createCustomAssetTxRepository(
         for address: AccountAddress,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
+    func createUtilityAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
 }
 
@@ -59,11 +66,33 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createTxRepository(
+    func createCustomAssetTxRepository(
         for address: AccountAddress,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        assetId: UInt32
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
-        let txFilter = NSPredicate.filterTransactionsBy(address: address, chainId: chainId)
+        let txFilter = NSPredicate.filterTransactionsBy(
+            address: address,
+            chainId: chainId,
+            assetId: assetId
+        )
+
+        let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository(filter: txFilter)
+        return AnyDataProviderRepository(txStorage)
+    }
+
+    func createUtilityAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let txFilter = NSPredicate.filterUtilityAssetTransactionsBy(
+            address: address,
+            chainId: chainId,
+            utilityAssetId: assetId
+        )
+
         let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
             storageFacade.createRepository(filter: txFilter)
         return AnyDataProviderRepository(txStorage)
