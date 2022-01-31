@@ -953,6 +953,8 @@
 		849AFEB326DADC1300B65924 /* SubqueryHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFEB226DADC1300B65924 /* SubqueryHistory.swift */; };
 		849AFEB726DBC0BE00B65924 /* AssetTransactionData+HistoryItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFEB626DBC0BE00B65924 /* AssetTransactionData+HistoryItemData.swift */; };
 		849AFEBD26DCCE3A00B65924 /* SubqueryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849AFEBC26DCCE3A00B65924 /* SubqueryResponse.swift */; };
+		849B563327A70D71007D5528 /* ExtrinsicProcessor+Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563227A70D71007D5528 /* ExtrinsicProcessor+Fee.swift */; };
+		849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */; };
 		849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */; };
 		849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */; };
 		849D755B2756910A007726C3 /* RoundedView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D755A2756910A007726C3 /* RoundedView+Style.swift */; };
@@ -2846,6 +2848,8 @@
 		849AFEB226DADC1300B65924 /* SubqueryHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryHistory.swift; sourceTree = "<group>"; };
 		849AFEB626DBC0BE00B65924 /* AssetTransactionData+HistoryItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AssetTransactionData+HistoryItemData.swift"; sourceTree = "<group>"; };
 		849AFEBC26DCCE3A00B65924 /* SubqueryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryResponse.swift; sourceTree = "<group>"; };
+		849B563227A70D71007D5528 /* ExtrinsicProcessor+Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Fee.swift"; sourceTree = "<group>"; };
+		849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExtrinsicProcessor+Matching.swift"; sourceTree = "<group>"; };
 		849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyCancellableCleaning.swift; sourceTree = "<group>"; };
 		849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BaseOperation+Cancellable.swift"; sourceTree = "<group>"; };
 		849D755A2756910A007726C3 /* RoundedView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RoundedView+Style.swift"; sourceTree = "<group>"; };
@@ -5704,6 +5708,8 @@
 				84F30E9B25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift */,
 				84F30E9625FD3C5300039D09 /* EventEmittingStorageSubscription.swift */,
 				8454C26E2632BBAA00657DAD /* ExtrinsicProcessing.swift */,
+				849B563227A70D71007D5528 /* ExtrinsicProcessor+Fee.swift */,
+				849B563427A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift */,
 				84452F9725D6728B00F47EC5 /* RuntimeVersionSubscription.swift */,
 				8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */,
 				8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */,
@@ -6558,7 +6564,6 @@
 				8490151524AB8C45008F705E /* WalletAccountListConfigurator.swift */,
 				84CD357425264FA30081BC0B /* WalletAccountListConstants.swift */,
 				846AF8452525C93A00868F37 /* BalanceContext.swift */,
-				8475AE1E258B7F4A00B058F3 /* TransferMetadataContext.swift */,
 				84B73ADF279E6A600071AE16 /* FeeMetadataContext.swift */,
 				84B73AE1279E95810071AE16 /* TransferInfoContext.swift */,
 			);
@@ -10146,6 +10151,7 @@
 				AEE5FB0126415E2A002B8FDC /* StakingRebondSetupInteractor.swift in Sources */,
 				84C1B98624F5424700FE5470 /* ChainAccountViewModelFactory.swift in Sources */,
 				AEE5FB1026457806002B8FDC /* StakingRewardDestSetupViewFactory.swift in Sources */,
+				849B563327A70D71007D5528 /* ExtrinsicProcessor+Fee.swift in Sources */,
 				843461D126E2641500DCE0CD /* SubqueryRewardOperationFactory.swift in Sources */,
 				849ABE49262763BB00011A2A /* Longrun.swift in Sources */,
 				84644A30256722D2004EAA4B /* TriangularedBlurButton+Inspectable.swift in Sources */,
@@ -10843,6 +10849,7 @@
 				84DF21B12536DDC1005454AE /* TransferConfirmCommand.swift in Sources */,
 				AEA0C8BC2681140700F9666F /* YourValidatorList+CustomList.swift in Sources */,
 				846A2C492527490700731018 /* WalletSelectAccountCommand.swift in Sources */,
+				849B563527A70DDE007D5528 /* ExtrinsicProcessor+Matching.swift in Sources */,
 				94B0F0C84AF74B3CD7223C3A /* AccountConfirmPresenter.swift in Sources */,
 				8468B87224F63D3A00B76BC6 /* AddAccount+AccountCreateWireframe.swift in Sources */,
 				9DFB37659A6B911A4D54623E /* AccountConfirmInteractor.swift in Sources */,

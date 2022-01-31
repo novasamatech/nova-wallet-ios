@@ -5,15 +5,18 @@ final class AssetsSubscriptionHandlingFactory {
     let assetAccountKey: String
     let assetDetailsKey: String
     let assetBalanceUpdater: AssetsBalanceUpdater
+    let transactionSubscription: TransactionSubscription?
 
     init(
         assetAccountKey: String,
         assetDetailsKey: String,
-        assetBalanceUpdater: AssetsBalanceUpdater
+        assetBalanceUpdater: AssetsBalanceUpdater,
+        transactionSubscription: TransactionSubscription?
     ) {
         self.assetAccountKey = assetAccountKey
         self.assetDetailsKey = assetDetailsKey
         self.assetBalanceUpdater = assetBalanceUpdater
+        self.transactionSubscription = transactionSubscription
     }
 }
 
@@ -32,6 +35,7 @@ extension AssetsSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryPr
                 localStorageKey: localStorageKey,
                 storage: storage,
                 operationManager: operationManager,
+                transactionSubscription: transactionSubscription,
                 logger: logger
             )
         } else {
@@ -41,6 +45,7 @@ extension AssetsSubscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryPr
                 localStorageKey: localStorageKey,
                 storage: storage,
                 operationManager: operationManager,
+                transactionSubscription: nil,
                 logger: logger
             )
         }

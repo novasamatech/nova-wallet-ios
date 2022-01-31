@@ -27,7 +27,8 @@ protocol WalletRemoteSubscriptionServiceProtocol {
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        assetBalanceUpdater: AssetsBalanceUpdater
+        assetBalanceUpdater: AssetsBalanceUpdater,
+        transactionSubscription: TransactionSubscription?
     ) -> UUID?
 
     // swiftlint:disable:next function_parameter_count
@@ -143,7 +144,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
         chainId: ChainModel.Id,
         queue: DispatchQueue?,
         closure: RemoteSubscriptionClosure?,
-        assetBalanceUpdater: AssetsBalanceUpdater
+        assetBalanceUpdater: AssetsBalanceUpdater,
+        transactionSubscription: TransactionSubscription?
     ) -> UUID? {
         do {
             let localKeyFactory = LocalStorageKeyFactory()
@@ -179,7 +181,8 @@ class WalletRemoteSubscriptionService: RemoteSubscriptionService, WalletRemoteSu
             let handlingFactory = AssetsSubscriptionHandlingFactory(
                 assetAccountKey: accountLocalKey,
                 assetDetailsKey: detailsLocalKey,
-                assetBalanceUpdater: assetBalanceUpdater
+                assetBalanceUpdater: assetBalanceUpdater,
+                transactionSubscription: transactionSubscription
             )
 
             return attachToSubscription(
