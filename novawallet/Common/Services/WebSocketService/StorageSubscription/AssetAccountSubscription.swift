@@ -2,6 +2,7 @@ import RobinHood
 
 class BaseAssetAccountSubscription: BaseStorageChildSubscription {
     let assetBalanceUpdater: AssetsBalanceUpdater
+    let transactionSubscription: TransactionSubscription?
 
     init(
         assetBalanceUpdater: AssetsBalanceUpdater,
@@ -9,9 +10,11 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
         localStorageKey: String,
         storage: AnyDataProviderRepository<ChainStorageItem>,
         operationManager: OperationManagerProtocol,
+        transactionSubscription: TransactionSubscription?,
         logger: LoggerProtocol
     ) {
         self.assetBalanceUpdater = assetBalanceUpdater
+        self.transactionSubscription = transactionSubscription
 
         super.init(
             remoteStorageKey: remoteStorageKey,
@@ -29,14 +32,18 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
     override func handle(
         result: Result<DataProviderChange<ChainStorageItem>?, Error>,
         remoteItem: ChainStorageItem?,
-        blockHash _: Data?
+        blockHash: Data?
     ) {
         logger.debug("Did receive asset account update")
 
-        if case .success = result {
+        if case let .success(optionalChange) = result {
             logger.debug("Successfull asset account info")
 
             handle(storageItem: remoteItem)
+
+            if optionalChange != nil, let blockHash = blockHash {
+                transactionSubscription?.process(blockHash: blockHash)
+            }
         }
     }
 }

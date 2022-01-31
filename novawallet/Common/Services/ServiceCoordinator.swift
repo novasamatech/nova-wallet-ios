@@ -72,6 +72,7 @@ extension ServiceCoordinator {
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
         let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
@@ -94,7 +95,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             logger: logger
         )
 
@@ -105,7 +106,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: operationQueue,
             logger: logger
         )
 
