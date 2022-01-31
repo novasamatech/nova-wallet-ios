@@ -91,7 +91,11 @@ final class AssetsUpdatingService {
         let assetSubscriptions = chain.assets.reduce(
             into: [AssetModel.Id: SubscriptionInfo]()
         ) { result, asset in
-            result[asset.assetId] = createSubscription(for: asset, accountId: accountId, chainId: chain.chainId)
+            result[asset.assetId] = createSubscription(
+                for: asset,
+                accountId: accountId,
+                chain: chain
+            )
         }
 
         subscribedChains[chain.chainId] = assetSubscriptions
@@ -100,24 +104,38 @@ final class AssetsUpdatingService {
     private func createSubscription(
         for asset: AssetModel,
         accountId: AccountId,
-        chainId: ChainModel.Id
+        chain: ChainModel
     ) -> SubscriptionInfo? {
         guard let typeString = asset.type, let assetType = AssetType(rawValue: typeString) else {
             return nil
         }
 
+        let transactionSubscription = asset.isUtility ?
+            try? createTransactionSubscription(for: accountId, chain: chain) : nil
+
         switch assetType {
         case .statemine:
-            return createStatemineSubscription(for: asset, accountId: accountId, chainId: chainId)
+            return createStatemineSubscription(
+                for: asset,
+                accountId: accountId,
+                chainId: chain.chainId,
+                transactionSubscription: transactionSubscription
+            )
         case .orml:
-            return createOrmlTokenSubscription(for: asset, accountId: accountId, chainId: chainId)
+            return createOrmlTokenSubscription(
+                for: asset,
+                accountId: accountId,
+                chainId: chain.chainId,
+                transactionSubscription: transactionSubscription
+            )
         }
     }
 
     private func createStatemineSubscription(
         for asset: AssetModel,
         accountId: AccountId,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        transactionSubscription: TransactionSubscription?
     ) -> SubscriptionInfo? {
         guard
             let extras = asset.typeExtras,
@@ -144,7 +162,8 @@ final class AssetsUpdatingService {
             chainId: chainId,
             queue: nil,
             closure: nil,
-            assetBalanceUpdater: assetBalanceUpdater
+            assetBalanceUpdater: assetBalanceUpdater,
+            transactionSubscription: transactionSubscription
         )
 
         return maybeSubscriptionId.map { subscriptionId in
@@ -155,7 +174,8 @@ final class AssetsUpdatingService {
     private func createOrmlTokenSubscription(
         for asset: AssetModel,
         accountId: AccountId,
-        chainId: ChainModel.Id
+        chainId: ChainModel.Id,
+        transactionSubscription: TransactionSubscription?
     ) -> SubscriptionInfo? {
         guard
             let extras = asset.typeExtras,
@@ -170,7 +190,8 @@ final class AssetsUpdatingService {
             accountId: accountId,
             chainRegistry: chainRegistry,
             assetRepository: assetsRepository,
-            eventCenter: eventCenter
+            eventCenter: eventCenter,
+            transactionSubscription: transactionSubscription
         )
 
         let maybeSubscriptionId = remoteSubscriptionService.attachToOrmlToken(
@@ -251,6 +272,28 @@ final class AssetsUpdatingService {
         chainRegistry.chainsUnsubscribe(self)
 
         removeAllSubscriptions()
+    }
+
+    private func createTransactionSubscription(
+        for accountId: AccountId,
+        chain: ChainModel
+    ) throws -> TransactionSubscription {
+        let address = try accountId.toAddress(using: chain.chainFormat)
+        let txStorage = repositoryFactory.createChainAddressTxRepository(
+            for: address,
+            chainId: chain.chainId
+        )
+
+        return TransactionSubscription(
+            chainRegistry: chainRegistry,
+            accountId: accountId,
+            chainModel: chain,
+            txStorage: txStorage,
+            storageRequestFactory: storageRequestFactory,
+            operationQueue: operationQueue,
+            eventCenter: eventCenter,
+            logger: logger
+        )
     }
 }
 
