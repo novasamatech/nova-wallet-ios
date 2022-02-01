@@ -8,7 +8,7 @@ final class WalletListViewLayout: UIView {
     }()
 
     let collectionView: UICollectionView = {
-        let flowLayout = UICollectionViewFlowLayout()
+        let flowLayout = WalletListFlowLayout()
         flowLayout.scrollDirection = .vertical
         flowLayout.minimumLineSpacing = 0
         flowLayout.minimumInteritemSpacing = 0
