@@ -1,9 +1,10 @@
 import UIKit
 
 final class WalletListAssetCell: UICollectionViewCell {
-    let iconView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .center
+    private static let iconViewSize: CGFloat = 40.0
+
+    let iconView: AssetIconView = {
+        let view = AssetIconView()
         return view
     }()
 
@@ -58,12 +59,18 @@ final class WalletListAssetCell: UICollectionViewCell {
     }
 
     func bind(viewModel: WalletListViewModel) {
-        self.viewModel?.icon?.cancel(on: iconView)
+        self.viewModel?.icon?.cancel(on: iconView.imageView)
 
         self.viewModel = viewModel
 
-        iconView.image = nil
-        viewModel.icon?.loadImage(on: iconView, targetSize: CGSize(width: 28.0, height: 28.0), animated: true)
+        iconView.imageView.image = nil
+
+        let iconSize = Self.iconViewSize - iconView.contentInsets.left - iconView.contentInsets.right
+        viewModel.icon?.loadImage(
+            on: iconView.imageView,
+            targetSize: CGSize(width: iconSize, height: iconSize),
+            animated: true
+        )
 
         assetLabel.text = viewModel.tokenName
 
@@ -124,8 +131,10 @@ final class WalletListAssetCell: UICollectionViewCell {
         iconView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(28.0)
             make.top.bottom.equalToSuperview().inset(8.0)
-            make.size.equalTo(40.0)
+            make.size.equalTo(Self.iconViewSize)
         }
+
+        iconView.backgroundView.cornerRadius = Self.iconViewSize / 2.0
 
         contentView.addSubview(assetLabel)
         assetLabel.snp.makeConstraints { make in
