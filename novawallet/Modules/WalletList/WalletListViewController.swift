@@ -44,6 +44,11 @@ final class WalletListViewController: UIViewController, ViewHolder {
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
         )
 
+        collectionViewLayout?.register(
+            TokenGroupDecorationView.self,
+            forDecorationViewOfKind: WalletListFlowLayout.assetGroupDecoration
+        )
+
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
 
@@ -71,17 +76,8 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        if indexPath.section == 0 {
-            if indexPath.row == 0 {
-                return CGSize(width: collectionView.frame.width, height: 56.0)
-            } else {
-                return CGSize(width: collectionView.frame.width, height: 124.0)
-            }
-        } else if indexPath.section == 1 {
-            return CGSize(width: collectionView.frame.width, height: 56.0)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: 56.0)
-        }
+        let cellType = WalletListFlowLayout.CellType(indexPath: indexPath)
+        return CGSize(width: collectionView.frame.width, height: cellType.height)
     }
 
     func collectionView(
@@ -89,9 +85,14 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         referenceSizeForHeaderInSection section: Int
     ) -> CGSize {
-        if section > 1 {
-            return CGSize(width: collectionView.frame.width, height: 38.0)
-        } else {
+        switch WalletListFlowLayout.SectionType(section: section) {
+        case .assetGroup:
+            return CGSize(
+                width: collectionView.frame.width,
+                height: WalletListFlowLayout.Constants.assetHeaderHeight
+            )
+
+        case .summary, .settings:
             return .zero
         }
     }
@@ -99,20 +100,41 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
     }
+
+    func collectionView(
+        _: UICollectionView,
+        layout _: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        WalletListFlowLayout.SectionType(section: section).cellSpacing
+    }
+
+    func collectionView(
+        _: UICollectionView,
+        layout _: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        WalletListFlowLayout.SectionType(section: section).insets
+    }
 }
 
 extension WalletListViewController: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        2 + sections.count
+        WalletListFlowLayout.SectionType.assetsStartingSection + sections.count
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
+        switch WalletListFlowLayout.SectionType(section: section) {
+        case .summary:
             return headerViewModel != nil ? 2 : 0
-        } else if section == 1 {
+        case .settings:
             return 1
-        } else {
-            return assetViewModels[sections[section - 2]]?.count ?? 0
+        case .assetGroup:
+            if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
+                return assetViewModels[sections[groupIndex]]?.count ?? 0
+            } else {
+                return 0
+            }
         }
     }
 
@@ -120,31 +142,30 @@ extension WalletListViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
-        if indexPath.section == 0 {
-            if indexPath.row == 0 {
-                let accountCell = collectionView.dequeueReusableCellWithType(
-                    WalletListAccountCell.self,
-                    for: indexPath
-                )!
+        switch WalletListFlowLayout.CellType(indexPath: indexPath) {
+        case .account:
+            let accountCell = collectionView.dequeueReusableCellWithType(
+                WalletListAccountCell.self,
+                for: indexPath
+            )!
 
-                if let viewModel = headerViewModel {
-                    accountCell.bind(viewModel: viewModel)
-                }
-
-                return accountCell
-
-            } else {
-                let totalBalanceCell = collectionView.dequeueReusableCellWithType(
-                    WalletListTotalBalanceCell.self,
-                    for: indexPath
-                )!
-
-                totalBalanceCell.amountLabel.text = "1.24343"
-                totalBalanceCell.lockedView.detailsLabel.text = "23.434"
-
-                return totalBalanceCell
+            if let viewModel = headerViewModel {
+                accountCell.bind(viewModel: viewModel)
             }
-        } else if indexPath.section == 1 {
+
+            return accountCell
+        case .totalBalance:
+            let totalBalanceCell = collectionView.dequeueReusableCellWithType(
+                WalletListTotalBalanceCell.self,
+                for: indexPath
+            )!
+
+            totalBalanceCell.amountLabel.text = "1.24343"
+            totalBalanceCell.lockedView.detailsLabel.text = "23.434"
+
+            return totalBalanceCell
+
+        case .settings:
             let settingsCell = collectionView.dequeueReusableCellWithType(
                 WalletListSettingsCell.self,
                 for: indexPath
@@ -157,14 +178,18 @@ extension WalletListViewController: UICollectionViewDataSource {
             )
 
             return settingsCell
-        } else {
+        case let .asset(assetIndex):
             let tokenCell = collectionView.dequeueReusableCellWithType(
                 WalletListTokenCell.self,
                 for: indexPath
             )!
 
-            if let viewModels = assetViewModels[sections[indexPath.section - 2]] {
-                let viewModel = viewModels[indexPath.row]
+            if
+                let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
+                    indexPath.section
+                ),
+                let viewModels = assetViewModels[sections[groupIndex]] {
+                let viewModel = viewModels[assetIndex]
                 tokenCell.bind(viewModel: viewModel)
             }
 
