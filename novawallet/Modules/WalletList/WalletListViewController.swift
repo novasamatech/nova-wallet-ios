@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class WalletListViewController: UIViewController, ViewHolder {
     typealias RootViewType = WalletListViewLayout
@@ -13,9 +14,11 @@ final class WalletListViewController: UIViewController, ViewHolder {
     private var assetViewModels: [String: [WalletListViewModel]] = [:]
     private var sections: [String] = []
 
-    init(presenter: WalletListPresenterProtocol) {
+    init(presenter: WalletListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -35,7 +38,7 @@ final class WalletListViewController: UIViewController, ViewHolder {
     }
 
     private func setupTableView() {
-        rootView.collectionView.registerCellClass(WalletListTokenCell.self)
+        rootView.collectionView.registerCellClass(WalletListAssetCell.self)
         rootView.collectionView.registerCellClass(WalletListTotalBalanceCell.self)
         rootView.collectionView.registerCellClass(WalletListAccountCell.self)
         rootView.collectionView.registerCellClass(WalletListSettingsCell.self)
@@ -160,6 +163,8 @@ extension WalletListViewController: UICollectionViewDataSource {
                 for: indexPath
             )!
 
+            totalBalanceCell.locale = selectedLocale
+
             totalBalanceCell.amountLabel.text = "1.24343"
             totalBalanceCell.lockedView.detailsLabel.text = "23.434"
 
@@ -171,6 +176,8 @@ extension WalletListViewController: UICollectionViewDataSource {
                 for: indexPath
             )!
 
+            settingsCell.locale = selectedLocale
+
             settingsCell.actionButton.addTarget(
                 self,
                 action: #selector(actionSettings),
@@ -179,8 +186,8 @@ extension WalletListViewController: UICollectionViewDataSource {
 
             return settingsCell
         case let .asset(assetIndex):
-            let tokenCell = collectionView.dequeueReusableCellWithType(
-                WalletListTokenCell.self,
+            let assetCell = collectionView.dequeueReusableCellWithType(
+                WalletListAssetCell.self,
                 for: indexPath
             )!
 
@@ -190,10 +197,10 @@ extension WalletListViewController: UICollectionViewDataSource {
                 ),
                 let viewModels = assetViewModels[sections[groupIndex]] {
                 let viewModel = viewModels[assetIndex]
-                tokenCell.bind(viewModel: viewModel)
+                assetCell.bind(viewModel: viewModel)
             }
 
-            return tokenCell
+            return assetCell
         }
     }
 
@@ -214,6 +221,14 @@ extension WalletListViewController: UICollectionViewDataSource {
         view.valueLabel.text = "$10.23"
 
         return view
+    }
+}
+
+extension WalletListViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            rootView.collectionView.reloadData()
+        }
     }
 }
 

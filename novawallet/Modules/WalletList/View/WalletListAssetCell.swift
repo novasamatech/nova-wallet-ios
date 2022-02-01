@@ -1,6 +1,6 @@
 import UIKit
 
-final class WalletListTokenCell: UICollectionViewCell {
+final class WalletListAssetCell: UICollectionViewCell {
     let iconView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .center
