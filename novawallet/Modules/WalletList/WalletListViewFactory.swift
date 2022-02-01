@@ -28,7 +28,10 @@ struct WalletListViewFactory {
             localizationManager: localizationManager
         )
 
-        let view = WalletListViewController(presenter: presenter)
+        let view = WalletListViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
