@@ -772,6 +772,7 @@
 		847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5027AAB4BC00AFD476 /* GradientModel.swift */; };
 		847F2D5327AAB59200AFD476 /* GradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5227AAB59200AFD476 /* GradientFactory.swift */; };
 		847F2D5727AB08D200AFD476 /* GradientColorFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */; };
+		847F2D5927AB201200AFD476 /* GradientIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5827AB201200AFD476 /* GradientIconView.swift */; };
 		84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B01273301C800E1E4DD /* RemoteChainModel.swift */; };
 		84800B042733024600E1E4DD /* RemoteChainNodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */; };
 		84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */; };
@@ -2677,6 +2678,7 @@
 		847F2D5027AAB4BC00AFD476 /* GradientModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientModel.swift; sourceTree = "<group>"; };
 		847F2D5227AAB59200AFD476 /* GradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientFactory.swift; sourceTree = "<group>"; };
 		847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientColorFactoryTests.swift; sourceTree = "<group>"; };
+		847F2D5827AB201200AFD476 /* GradientIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientIconView.swift; sourceTree = "<group>"; };
 		84800B01273301C800E1E4DD /* RemoteChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainModel.swift; sourceTree = "<group>"; };
 		84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainNodeModel.swift; sourceTree = "<group>"; };
 		84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TitleMultiValueView+Style.swift"; sourceTree = "<group>"; };
@@ -6480,6 +6482,7 @@
 				847F2D4327A9822200AFD476 /* AssetIconView.swift */,
 				847F2D4527A9DB8E00AFD476 /* MultigradientView.swift */,
 				847F2D4727A9DDC700AFD476 /* MultigradientView+Default.swift */,
+				847F2D5827AB201200AFD476 /* GradientIconView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11250,6 +11253,7 @@
 				C937154FA9021AECD72A871B /* StakingRewardDetailsViewController.swift in Sources */,
 				84E493252731C064000534F2 /* WalletListViewModel.swift in Sources */,
 				AEA0C8B8267C905500F9666F /* SelectedValidatorCell.swift in Sources */,
+				847F2D5927AB201200AFD476 /* GradientIconView.swift in Sources */,
 				847F2D4427A9822200AFD476 /* AssetIconView.swift in Sources */,
 				20B2942A4241F6713A1C70D9 /* StakingRewardDetailsViewFactory.swift in Sources */,
 				84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */,
