@@ -65,6 +65,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
+                color: generateChainColor(),
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers,
@@ -135,6 +136,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
+                color: generateChainColor(),
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers
@@ -199,6 +201,7 @@ enum ChainModelGenerator {
             addressPrefix: addressPrefix,
             types: nil,
             icon: Constants.dummyURL,
+            color: generateChainColor(),
             options: options.isEmpty ? nil : options,
             externalApi: externalApi,
             explorers: explorers,
@@ -256,5 +259,9 @@ enum ChainModelGenerator {
         } else {
             return nil
         }
+    }
+
+    static func generateChainColor() -> String {
+        "linear-gradient(315deg, #D43079 0%, #F93C90 100%)"
     }
 }
