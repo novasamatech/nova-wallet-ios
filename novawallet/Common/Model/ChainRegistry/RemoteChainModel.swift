@@ -10,6 +10,7 @@ struct RemoteChainModel: Equatable, Codable, Hashable {
     let addressPrefix: UInt16
     let types: ChainModel.TypesSettings?
     let icon: URL
+    let color: String
     let options: [ChainOptions]?
     let externalApi: ChainModel.ExternalApiSet?
     let explorers: [ChainModel.Explorer]?
