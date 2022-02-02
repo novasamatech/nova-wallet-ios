@@ -251,6 +251,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             addressPrefix: UInt16(bitPattern: entity.addressPrefix),
             types: types,
             icon: entity.icon!,
+            color: entity.color!,
             options: options.isEmpty ? nil : options,
             externalApi: externalApiSet,
             explorers: explorers,
@@ -271,6 +272,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
 
         entity.addressPrefix = Int16(bitPattern: model.addressPrefix)
         entity.icon = model.icon
+        entity.color = model.color
         entity.isEthereumBased = model.isEthereumBased
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans

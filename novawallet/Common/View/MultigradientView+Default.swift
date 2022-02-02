@@ -14,7 +14,7 @@ extension MultigradientView {
             UIColor(hex: "#104677")!
         ]
 
-        view.locations = [0.2304, 0.4826]
+        view.locations = [0.0, 0.2304, 0.4826, 1.0]
 
         return view
     }

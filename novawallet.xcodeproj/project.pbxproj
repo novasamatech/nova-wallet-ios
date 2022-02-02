@@ -769,6 +769,9 @@
 		847F2D4A27AA687C00AFD476 /* WalletListPresenter+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D4927AA687C00AFD476 /* WalletListPresenter+Model.swift */; };
 		847F2D4D27AA68DD00AFD476 /* WalletListAssetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D4C27AA68DD00AFD476 /* WalletListAssetModel.swift */; };
 		847F2D4F27AA695F00AFD476 /* WalletListGroupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D4E27AA695F00AFD476 /* WalletListGroupModel.swift */; };
+		847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5027AAB4BC00AFD476 /* GradientModel.swift */; };
+		847F2D5327AAB59200AFD476 /* GradientFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5227AAB59200AFD476 /* GradientFactory.swift */; };
+		847F2D5727AB08D200AFD476 /* GradientColorFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */; };
 		84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B01273301C800E1E4DD /* RemoteChainModel.swift */; };
 		84800B042733024600E1E4DD /* RemoteChainNodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */; };
 		84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */; };
@@ -2671,6 +2674,9 @@
 		847F2D4927AA687C00AFD476 /* WalletListPresenter+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletListPresenter+Model.swift"; sourceTree = "<group>"; };
 		847F2D4C27AA68DD00AFD476 /* WalletListAssetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListAssetModel.swift; sourceTree = "<group>"; };
 		847F2D4E27AA695F00AFD476 /* WalletListGroupModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListGroupModel.swift; sourceTree = "<group>"; };
+		847F2D5027AAB4BC00AFD476 /* GradientModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientModel.swift; sourceTree = "<group>"; };
+		847F2D5227AAB59200AFD476 /* GradientFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientFactory.swift; sourceTree = "<group>"; };
+		847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientColorFactoryTests.swift; sourceTree = "<group>"; };
 		84800B01273301C800E1E4DD /* RemoteChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainModel.swift; sourceTree = "<group>"; };
 		84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainNodeModel.swift; sourceTree = "<group>"; };
 		84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TitleMultiValueView+Style.swift"; sourceTree = "<group>"; };
@@ -6342,6 +6348,8 @@
 				841AAC2426F692EF00F0A25E /* AddressConversion.swift */,
 				841AAC2626F6A2A500F0A25E /* ChainAccountFetching.swift */,
 				844CB57926FA706C00396E13 /* ChainAssetDisplayInfo.swift */,
+				847F2D5027AAB4BC00AFD476 /* GradientModel.swift */,
+				847F2D5227AAB59200AFD476 /* GradientFactory.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -7686,6 +7694,7 @@
 				84CE69EC25667A5600559427 /* ByteLengthEncodingTests.swift */,
 				84452F5C25D5CB3B00F47EC5 /* FileManagerTests.swift */,
 				84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */,
+				847F2D5627AB08D200AFD476 /* GradientColorFactoryTests.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -9858,6 +9867,7 @@
 				8428765524ADDE0200D91AD8 /* SettingsAccountViewModel.swift in Sources */,
 				AE9EF2C5260C85370026910A /* StoriesProgressAnimator.swift in Sources */,
 				842876B624AE05C700D91AD8 /* EmailPresentable.swift in Sources */,
+				847F2D5327AAB59200AFD476 /* GradientFactory.swift in Sources */,
 				8494D857252465AC00614D8F /* WalletDisplayTokenView.swift in Sources */,
 				84D1110E26B931C20016D962 /* ChainModel.swift in Sources */,
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
@@ -11049,6 +11059,7 @@
 				B893A2515909AB6915196317 /* NetworkInfoViewController.swift in Sources */,
 				607699C7CEEDA3598613DCA0 /* NetworkInfoViewFactory.swift in Sources */,
 				8401AEC62642A71D000B03E3 /* StakingRebondConfirmationLayout.swift in Sources */,
+				847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */,
 				84981CC32666D95F00C4C691 /* GradientButton+Style.swift in Sources */,
 				845CB6FA26276326005F798B /* LongrunOperation.swift in Sources */,
 				84FB1F6D2526987D00E0242B /* SubscanHistoryContext.swift in Sources */,
@@ -11538,6 +11549,7 @@
 				8400F0B8252BBCFA00E6B4CB /* WalletSelectAccountCommandTests.swift in Sources */,
 				84F81318265B9E990043FA1D /* CrowdloansOperationFactoryStub.swift in Sources */,
 				846CA43324E3C6C3004F1B14 /* PincodeSetupTests.swift in Sources */,
+				847F2D5727AB08D200AFD476 /* GradientColorFactoryTests.swift in Sources */,
 				A76B05966CE772DD4B822A3C /* AccountCreateTests.swift in Sources */,
 				8467FD4C24EEA081005D486C /* SettingsTests.swift in Sources */,
 				8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */,
