@@ -1,27 +1,17 @@
 import UIKit
 
-final class WalletListHeaderCell: UITableViewCell {
+final class WalletListAccountCell: UICollectionViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
-        return label
-    }()
-
-    let amountLabel: UILabel = {
-        let label = UILabel()
-        label.font = .h1Title
+        label.font = .semiBoldTitle3
         label.textColor = R.color.colorWhite()
         return label
     }()
 
     let iconButton = UIButton()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        selectionStyle = .none
-        backgroundColor = .clear
+    override init(frame: CGRect) {
+        super.init(frame: frame)
 
         setupLayout()
     }
@@ -41,15 +31,6 @@ final class WalletListHeaderCell: UITableViewCell {
         )
 
         iconButton.setImage(icon, for: .normal)
-
-        switch viewModel.amount {
-        case .loading:
-            amountLabel.text = ""
-        case let .cached(value):
-            amountLabel.text = value
-        case let .loaded(value):
-            amountLabel.text = value
-        }
     }
 
     private func setupLayout() {
@@ -63,15 +44,8 @@ final class WalletListHeaderCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(3.0)
+            make.centerY.equalTo(iconButton)
             make.trailing.equalTo(iconButton.snp.leading).offset(-8.0)
-        }
-
-        contentView.addSubview(amountLabel)
-        amountLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.equalTo(iconButton.snp.leading).offset(-8.0)
-            make.top.equalTo(titleLabel.snp.bottom)
         }
     }
 }
