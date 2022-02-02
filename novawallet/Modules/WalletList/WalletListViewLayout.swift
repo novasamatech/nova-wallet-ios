@@ -1,11 +1,7 @@
 import UIKit
 
 final class WalletListViewLayout: UIView {
-    let backgroundView: UIImageView = {
-        let view = UIImageView(image: R.image.backgroundImage())
-        view.contentMode = .scaleAspectFill
-        return view
-    }()
+    let backgroundView = MultigradientView.background
 
     let collectionView: UICollectionView = {
         let flowLayout = WalletListFlowLayout()
