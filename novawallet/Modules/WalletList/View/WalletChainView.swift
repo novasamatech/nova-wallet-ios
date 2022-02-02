@@ -10,9 +10,8 @@ final class WalletChainView: UIView {
         return view
     }()
 
-    let iconView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .center
+    let iconView: GradientIconView = {
+        let view = GradientIconView()
         return view
     }()
 
