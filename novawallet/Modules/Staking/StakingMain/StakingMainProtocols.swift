@@ -24,7 +24,6 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performBondMoreAction()
     func performRedeemAction()
     func performAnalyticsAction()
-    func selectStory(at index: Int)
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
 }
 
@@ -84,11 +83,6 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
     func proceedToSelectValidatorsStart(
         from view: StakingMainViewProtocol?,
         existingBonding: ExistingBonding
-    )
-
-    func showStories(
-        from view: ControllerBackedProtocol?,
-        startingFrom index: Int
     )
 
     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
