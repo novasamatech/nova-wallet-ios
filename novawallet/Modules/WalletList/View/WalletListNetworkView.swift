@@ -42,7 +42,7 @@ final class WalletListNetworkView: UICollectionReusableView {
         iconViewModel = viewModel.icon
         iconViewModel?.loadImage(
             on: chainView.iconView,
-            targetSize: CGSize(width: 24.0, height: 24.0),
+            targetSize: CGSize(width: 21.0, height: 21.0),
             animated: true
         )
     }
