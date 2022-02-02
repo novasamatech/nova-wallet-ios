@@ -3,28 +3,39 @@ import SubstrateSdk
 import SoraFoundation
 import BigInt
 
-struct WalletListChainAccountPrice {
+struct WalletListAssetAccountPrice {
     let assetInfo: AssetBalanceDisplayInfo
     let balance: BigUInt
     let price: PriceData
+}
+
+struct WalletListAssetAccountInfo {
+    let assetInfo: AssetBalanceDisplayInfo
+    let balance: BigUInt?
+    let priceData: PriceData?
 }
 
 protocol WalletListViewModelFactoryProtocol {
     func createHeaderViewModel(
         from title: String,
         accountId: AccountId,
-        prices: LoadableViewModelState<[WalletListChainAccountPrice]>?,
+        prices: LoadableViewModelState<[WalletListAssetAccountPrice]>?,
         locale: Locale
     ) -> WalletListHeaderViewModel
 
-    func createAssetViewModel(
+    func createGroupViewModel(
         for chain: ChainModel,
-        assetInfo: AssetBalanceDisplayInfo,
-        balance: BigUInt?,
-        priceData: PriceData?,
+        assets: [WalletListAssetAccountInfo],
+        value: Decimal,
         connected: Bool,
         locale: Locale
-    ) -> WalletListViewModel
+    ) -> WalletListGroupViewModel
+
+    func createAssetViewModel(
+        assetAccountInfo: WalletListAssetAccountInfo,
+        connected: Bool,
+        locale: Locale
+    ) -> WalletListAssetViewModel
 }
 
 final class WalletListViewModelFactory {
@@ -44,7 +55,7 @@ final class WalletListViewModelFactory {
 
     private lazy var iconGenerator = NovaIconGenerator()
 
-    private func formatTotalPrice(from prices: [WalletListChainAccountPrice], locale: Locale) -> String {
+    private func formatTotalPrice(from prices: [WalletListAssetAccountPrice], locale: Locale) -> String {
         let totalPrice = prices.reduce(Decimal(0)) { result, item in
             let balance = Decimal.fromSubstrateAmount(
                 item.balance,
@@ -60,7 +71,7 @@ final class WalletListViewModelFactory {
     }
 
     private func createTotalPrice(
-        from prices: LoadableViewModelState<[WalletListChainAccountPrice]>,
+        from prices: LoadableViewModelState<[WalletListAssetAccountPrice]>,
         locale: Locale
     ) -> LoadableViewModelState<String> {
         switch prices {
@@ -80,33 +91,70 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     func createHeaderViewModel(
         from title: String,
         accountId: AccountId,
-        prices: LoadableViewModelState<[WalletListChainAccountPrice]>?,
+        prices: LoadableViewModelState<[WalletListAssetAccountPrice]>?,
         locale: Locale
     ) -> WalletListHeaderViewModel {
         let icon = try? iconGenerator.generateFromAccountId(accountId)
 
+        // TODO: Add locks handling
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
-            return WalletListHeaderViewModel(title: title, amount: totalPrice, icon: icon)
+            return WalletListHeaderViewModel(
+                title: title,
+                amount: totalPrice,
+                locked: .loaded(value: "0"),
+                icon: icon
+            )
         } else {
-            return WalletListHeaderViewModel(title: title, amount: .loading, icon: icon)
+            return WalletListHeaderViewModel(
+                title: title,
+                amount: .loading,
+                locked: .loaded(value: "0"),
+                icon: icon
+            )
         }
     }
 
-    func createAssetViewModel(
+    func createGroupViewModel(
         for chain: ChainModel,
-        assetInfo: AssetBalanceDisplayInfo,
-        balance: BigUInt?,
-        priceData: PriceData?,
+        assets: [WalletListAssetAccountInfo],
+        value: Decimal,
         connected: Bool,
         locale: Locale
-    ) -> WalletListViewModel {
+    ) -> WalletListGroupViewModel {
+        let assetViewModels = assets.map { asset in
+            createAssetViewModel(
+                assetAccountInfo: asset,
+                connected: connected,
+                locale: locale
+            )
+        }
+
+        let networkName = chain.name.uppercased()
+
+        let iconViewModel = RemoteImageViewModel(url: chain.icon)
+
+        let priceString = priceFormatter.value(for: locale).stringFromDecimal(value) ?? ""
+
+        return WalletListGroupViewModel(
+            networkName: networkName,
+            amount: .loaded(value: priceString),
+            icon: iconViewModel,
+            assets: assetViewModels
+        )
+    }
+
+    func createAssetViewModel(
+        assetAccountInfo: WalletListAssetAccountInfo,
+        connected: Bool,
+        locale: Locale
+    ) -> WalletListAssetViewModel {
         let priceState: LoadableViewModelState<WalletPriceViewModel>
 
         if
-            let priceString = priceData?.price,
+            let priceString = assetAccountInfo.priceData?.price,
             let price = Decimal(string: priceString) {
-            let priceChangeValue = (priceData?.usdDayChange ?? 0.0) / 100.0
+            let priceChangeValue = (assetAccountInfo.priceData?.usdDayChange ?? 0.0) / 100.0
             let priceChangeString = percentFormatter.value(for: locale)
                 .stringFromDecimal(priceChangeValue) ?? ""
             let priceString = priceFormatter.value(for: locale)
@@ -122,7 +170,9 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
         let balanceState: LoadableViewModelState<String>
         let balanceValueState: LoadableViewModelState<String>
 
-        if let balance = balance {
+        let assetInfo = assetAccountInfo.assetInfo
+
+        if let balance = assetAccountInfo.balance {
             let decimalBalance = Decimal.fromSubstrateAmount(
                 balance,
                 precision: assetInfo.assetPrecision
@@ -137,7 +187,9 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
             balanceState = connected ? .loaded(value: balanceAmountString) :
                 .cached(value: balanceAmountString)
 
-            if let priceData = priceData, let decimalPrice = Decimal(string: priceData.price) {
+            if
+                let priceData = assetAccountInfo.priceData,
+                let decimalPrice = Decimal(string: priceData.price) {
                 let balanceValue = priceFormatter.value(for: locale).stringFromDecimal(
                     decimalBalance * decimalPrice
                 ) ?? ""
@@ -153,8 +205,7 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
 
         let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
 
-        return WalletListViewModel(
-            networkName: chain.name.uppercased(),
+        return WalletListAssetViewModel(
             tokenName: assetInfo.symbol.uppercased(),
             icon: iconViewModel,
             price: priceState,
