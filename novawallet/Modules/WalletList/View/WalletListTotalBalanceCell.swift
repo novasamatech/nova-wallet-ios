@@ -5,6 +5,7 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
+        view.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
         return view
     }()
 
@@ -67,6 +68,15 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
         }
     }
 
+    override var isHighlighted: Bool {
+        didSet {
+            if oldValue != isHighlighted {
+                let animated = !isHighlighted
+                backgroundBlurView.set(highlighted: isHighlighted, animated: animated)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -77,6 +87,22 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(viewModel: WalletListHeaderViewModel) {
+        switch viewModel.amount {
+        case let .loaded(value), let .cached(value):
+            amountLabel.text = value
+        case .loading:
+            amountLabel.text = ""
+        }
+
+        switch viewModel.locked {
+        case let .loaded(value), let .cached(value):
+            lockedView.detailsLabel.text = value
+        case .loading:
+            lockedView.detailsLabel.text = ""
+        }
     }
 
     private func setupLocalization() {
@@ -103,13 +129,12 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
             make.centerX.equalToSuperview()
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
-            make.top.equalTo(titleView.snp.bottom)
+            make.centerY.equalToSuperview()
         }
 
         contentView.addSubview(lockedBackgroundView)
         lockedBackgroundView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(amountLabel.snp.bottom).offset(8.0)
             make.bottom.equalTo(backgroundBlurView.snp.bottom).offset(-16.0)
         }
 
