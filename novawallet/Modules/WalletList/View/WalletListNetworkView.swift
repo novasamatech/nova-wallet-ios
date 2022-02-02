@@ -19,9 +19,32 @@ final class WalletListNetworkView: UICollectionReusableView {
         setupLayout()
     }
 
+    var iconViewModel: ImageViewModelProtocol?
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(viewModel: WalletListGroupViewModel) {
+        iconViewModel?.cancel(on: chainView.iconView)
+        chainView.iconView.image = nil
+
+        switch viewModel.amount {
+        case let .loaded(value), let .cached(value):
+            valueLabel.text = value
+        case .loading:
+            valueLabel.text = ""
+        }
+
+        chainView.nameLabel.text = viewModel.networkName
+
+        iconViewModel = viewModel.icon
+        iconViewModel?.loadImage(
+            on: chainView.iconView,
+            targetSize: CGSize(width: 24.0, height: 24.0),
+            animated: true
+        )
     }
 
     private func setupLayout() {

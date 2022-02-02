@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class WalletListAssetCell: UICollectionViewCell {
     private static let iconViewSize: CGFloat = 40.0
@@ -45,10 +46,26 @@ final class WalletListAssetCell: UICollectionViewCell {
         return label
     }()
 
-    private var viewModel: WalletListViewModel?
+    private var iconViewModel: ImageViewModelProtocol?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        let selectedBackgroundView = RoundedView()
+        selectedBackgroundView.applyFilledBackgroundStyle()
+        selectedBackgroundView.fillColor = R.color.colorAccentSelected()!
+        selectedBackgroundView.cornerRadius = 0.0
+
+        let rowView = RowView(contentView: selectedBackgroundView)
+        rowView.isUserInteractionEnabled = false
+        rowView.contentInsets = UIEdgeInsets(
+            top: 0.0,
+            left: UIConstants.horizontalInset,
+            bottom: 0.0,
+            right: UIConstants.horizontalInset
+        )
+
+        self.selectedBackgroundView = rowView
 
         setupLayout()
     }
@@ -58,10 +75,10 @@ final class WalletListAssetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: WalletListViewModel) {
-        self.viewModel?.icon?.cancel(on: iconView.imageView)
+    func bind(viewModel: WalletListAssetViewModel) {
+        iconViewModel?.cancel(on: iconView.imageView)
 
-        self.viewModel = viewModel
+        iconViewModel = viewModel.icon
 
         iconView.imageView.image = nil
 

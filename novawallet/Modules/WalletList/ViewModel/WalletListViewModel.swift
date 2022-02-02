@@ -15,6 +15,7 @@ enum ValueDirection<T> {
 struct WalletListHeaderViewModel {
     let title: String
     let amount: LoadableViewModelState<String>
+    let locked: LoadableViewModelState<String>
     let icon: DrawableIcon?
 }
 
@@ -23,8 +24,14 @@ struct WalletPriceViewModel {
     let change: ValueDirection<String>
 }
 
-struct WalletListViewModel {
+struct WalletListGroupViewModel {
     let networkName: String
+    let amount: LoadableViewModelState<String>
+    let icon: ImageViewModelProtocol?
+    let assets: [WalletListAssetViewModel]
+}
+
+struct WalletListAssetViewModel {
     let tokenName: String
     let icon: ImageViewModelProtocol?
     let price: LoadableViewModelState<WalletPriceViewModel>
