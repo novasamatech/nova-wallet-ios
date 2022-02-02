@@ -122,6 +122,11 @@
             <point key="canvasLocation" x="-108.69565217391305" y="111.83035714285714"/>
         </view>
     </objects>
+    <designables>
+        <designable name="FbN-Vm-EC2">
+            <size key="intrinsicContentSize" width="32" height="26"/>
+        </designable>
+    </designables>
     <resources>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
