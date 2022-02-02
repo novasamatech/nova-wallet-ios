@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -18,7 +18,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoriesViewController" customModule="fearless" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StoriesViewController" customModule="novawallet" customModuleProvider="target">
             <connections>
                 <outlet property="contentLabel" destination="6Q8-bt-QvQ" id="4Fx-EI-vMb"/>
                 <outlet property="learnMoreButton" destination="LmP-ld-yUb" id="uf7-LE-7Jc"/>
@@ -32,10 +32,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backgroundImage" translatesAutoresizingMaskIntoConstraints="NO" id="Dkq-u3-dRe">
-                    <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                </imageView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yba-Jy-FTL" customClass="TriangularedBlurView" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yba-Jy-FTL" customClass="TriangularedBlurView" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <userDefinedRuntimeAttributes>
@@ -47,7 +44,7 @@
                         </userDefinedRuntimeAttribute>
                     </userDefinedRuntimeAttributes>
                 </view>
-                <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6R-9T-9we" customClass="StoriesProgressBar" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6R-9T-9we" customClass="StoriesProgressBar" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="16" y="52" width="343" height="2"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
@@ -84,7 +81,7 @@
                     <color key="textColor" name="colorWhite"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LmP-ld-yUb" customClass="TriangularedButton" customModule="fearless" customModuleProvider="target">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LmP-ld-yUb" customClass="TriangularedButton" customModule="novawallet" customModuleProvider="target">
                     <rect key="frame" x="16" y="710" width="343" height="52"/>
                     <viewLayoutGuide key="safeArea" id="RFf-0L-AkE"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -124,17 +121,13 @@
             <viewLayoutGuide key="safeArea" id="mU8-WX-FPe"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="Dkq-u3-dRe" secondAttribute="bottom" id="0Bf-5W-f3A"/>
                 <constraint firstItem="P6R-9T-9we" firstAttribute="top" secondItem="mU8-WX-FPe" secondAttribute="top" constant="8" id="1RP-fj-tdE"/>
-                <constraint firstItem="Dkq-u3-dRe" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="99m-rI-aPg"/>
                 <constraint firstItem="X1J-zO-wC7" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="9hI-dr-J8o"/>
-                <constraint firstItem="Dkq-u3-dRe" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="AaT-Zd-cGp"/>
                 <constraint firstItem="yba-Jy-FTL" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Bsa-bm-63v"/>
                 <constraint firstItem="6Q8-bt-QvQ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="EWK-n7-1uZ"/>
                 <constraint firstAttribute="trailing" secondItem="LmP-ld-yUb" secondAttribute="trailing" constant="16" id="FDx-1H-ZHk"/>
                 <constraint firstItem="sRK-lH-16C" firstAttribute="top" secondItem="P6R-9T-9we" secondAttribute="bottom" constant="24" id="GQ0-bO-eEw"/>
                 <constraint firstItem="LmP-ld-yUb" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="GYp-fH-Nzf"/>
-                <constraint firstAttribute="trailing" secondItem="Dkq-u3-dRe" secondAttribute="trailing" id="KrC-1u-neU"/>
                 <constraint firstAttribute="trailing" secondItem="P6R-9T-9we" secondAttribute="trailing" constant="16" id="N75-MT-Vh0"/>
                 <constraint firstItem="LmP-ld-yUb" firstAttribute="top" relation="greaterThanOrEqual" secondItem="6Q8-bt-QvQ" secondAttribute="bottom" constant="48" id="Nci-mk-Tq8"/>
                 <constraint firstItem="X1J-zO-wC7" firstAttribute="top" secondItem="sRK-lH-16C" secondAttribute="bottom" constant="32" id="XZ3-L4-xBW"/>
@@ -157,7 +150,6 @@
         </designable>
     </designables>
     <resources>
-        <image name="backgroundImage" width="375" height="812"/>
         <image name="iconClose" width="20" height="20"/>
         <namedColor name="colorAccent">
             <color red="0.12941176470588237" green="0.58039215686274515" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
