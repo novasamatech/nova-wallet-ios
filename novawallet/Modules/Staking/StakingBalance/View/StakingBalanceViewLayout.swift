@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 
 final class StakingBalanceViewLayout: UIView {
-    let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
+    private let backgroundView = MultigradientView.background
 
     let navBarBlurView: UIView = {
         let blurView = TriangularedBlurView()
