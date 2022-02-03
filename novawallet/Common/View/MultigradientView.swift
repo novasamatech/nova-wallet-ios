@@ -123,8 +123,16 @@ class MultigradientView: UIView {
     private func applyMask() {
         if let layer = self.layer as? CAGradientLayer {
             if cornerRadius > 0 {
+                let path = CGMutablePath()
+                path.addRoundedRect(
+                    in: layer.bounds,
+                    cornerWidth: cornerRadius,
+                    cornerHeight: cornerRadius
+                )
+
                 let mask = CAShapeLayer()
-                mask.path = UIBezierPath(roundedRect: layer.bounds, cornerRadius: cornerRadius).cgPath
+                mask.frame = layer.bounds
+                mask.path = path
                 layer.mask = mask
             } else {
                 layer.mask = nil
