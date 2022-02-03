@@ -53,10 +53,13 @@ struct GradientModel: Equatable {
 extension GradientModel {
     static var defaultGradient: GradientModel {
         GradientModel(
-            startPoint: CGPoint(x: 0.0, y: 0.0),
-            endPoint: CGPoint(x: 1.0, y: 1.0),
-            colors: [.gray, .black],
-            locations: nil
+            startPoint: CGPoint(x: 1.0, y: 1.0),
+            endPoint: CGPoint(x: 0.0, y: 0.0),
+            colors: [
+                UIColor(hex: "#434852")!,
+                UIColor(hex: "#787F92")!
+            ],
+            locations: [0.0, 1.0]
         )
     }
 }

@@ -24,7 +24,7 @@
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
-        <attribute name="color" attributeType="String"/>
+        <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiType" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiUrl" optional="YES" attributeType="URI"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>

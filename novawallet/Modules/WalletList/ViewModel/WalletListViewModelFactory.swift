@@ -199,7 +199,9 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
 
         let color: GradientModel
 
-        if let colorModel = cssColorFactory.createFromString(chain.color) {
+        if
+            let colorString = chain.color,
+            let colorModel = cssColorFactory.createFromString(colorString) {
             color = colorModel
         } else {
             color = GradientModel.defaultGradient
