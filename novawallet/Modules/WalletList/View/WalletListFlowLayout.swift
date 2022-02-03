@@ -9,6 +9,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         static let settingsHeight: CGFloat = 56.0
         static let assetHeight: CGFloat = 56.0
         static let assetHeaderHeight: CGFloat = 40.0
+        static let emptyStateCellHeight: CGFloat = 198
         static let decorationInset: CGFloat = 8.0
     }
 
@@ -82,13 +83,14 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         case totalBalance
         case settings
         case asset(index: Int)
+        case emptyState
 
         init(indexPath: IndexPath) {
             switch indexPath.section {
             case 0:
                 self = indexPath.row == 0 ? .account : .totalBalance
             case 1:
-                self = .settings
+                self = indexPath.row == 0 ? .settings : .emptyState
             default:
                 self = .asset(index: indexPath.row)
             }
@@ -102,6 +104,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
                 return Constants.totalBalanceHeight
             case .settings:
                 return Constants.settingsHeight
+            case .emptyState:
+                return Constants.emptyStateCellHeight
             case .asset:
                 return Constants.assetHeight
             }
