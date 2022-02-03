@@ -3,7 +3,6 @@ import SoraUI
 final class GradientIconView: UIView {
     let backgroundView: MultigradientView = {
         let view = MultigradientView()
-        view.cornerRadius = 8.0
         return view
     }()
 
