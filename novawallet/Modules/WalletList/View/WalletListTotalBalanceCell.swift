@@ -5,7 +5,6 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
-        view.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
         return view
     }()
 
@@ -34,45 +33,10 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
         return view
     }()
 
-    let lockedBackgroundView: RoundedView = {
-        let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
-        view.cornerRadius = 3.0
-        return view
-    }()
-
-    let lockedView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.mode = .iconDetails
-
-        view.detailsLabel.numberOfLines = 1
-        view.detailsLabel.textColor = R.color.colorTransparentText()
-        view.detailsLabel.font = .regularFootnote
-
-        view.imageView.image = R.image.iconLock()?
-            .withRenderingMode(.alwaysTemplate)
-            .tinted(with: R.color.colorWhite48()!)
-        view.iconWidth = 12.0
-        view.spacing = 5.0
-
-        return view
-    }()
-
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
                 setupLocalization()
-            }
-        }
-    }
-
-    override var isHighlighted: Bool {
-        didSet {
-            if oldValue != isHighlighted {
-                let animated = !isHighlighted
-                backgroundBlurView.set(highlighted: isHighlighted, animated: animated)
             }
         }
     }
@@ -95,13 +59,6 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
             amountLabel.text = value
         case .loading:
             amountLabel.text = ""
-        }
-
-        switch viewModel.locked {
-        case let .loaded(value), let .cached(value):
-            lockedView.detailsLabel.text = value
-        case .loading:
-            lockedView.detailsLabel.text = ""
         }
     }
 
@@ -129,19 +86,7 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
             make.centerX.equalToSuperview()
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
-            make.centerY.equalToSuperview()
-        }
-
-        contentView.addSubview(lockedBackgroundView)
-        lockedBackgroundView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(backgroundBlurView.snp.bottom).offset(-16.0)
-        }
-
-        lockedBackgroundView.addSubview(lockedView)
-        lockedView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(4.0)
-            make.top.bottom.equalToSuperview().inset(1.0)
+            make.bottom.equalToSuperview().inset(16.0)
         }
     }
 }
