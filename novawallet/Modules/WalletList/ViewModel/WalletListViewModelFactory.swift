@@ -10,6 +10,7 @@ struct WalletListAssetAccountPrice {
 }
 
 struct WalletListAssetAccountInfo {
+    let assetId: AssetModel.Id
     let assetInfo: AssetBalanceDisplayInfo
     let balance: BigUInt?
     let priceData: PriceData?
@@ -32,6 +33,7 @@ protocol WalletListViewModelFactoryProtocol {
     ) -> WalletListGroupViewModel
 
     func createAssetViewModel(
+        chainId: ChainModel.Id,
         assetAccountInfo: WalletListAssetAccountInfo,
         connected: Bool,
         locale: Locale
@@ -182,6 +184,7 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     ) -> WalletListGroupViewModel {
         let assetViewModels = assets.map { asset in
             createAssetViewModel(
+                chainId: chain.chainId,
                 assetAccountInfo: asset,
                 connected: connected,
                 locale: locale
@@ -212,6 +215,7 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     }
 
     func createAssetViewModel(
+        chainId: ChainModel.Id,
         assetAccountInfo: WalletListAssetAccountInfo,
         connected: Bool,
         locale: Locale
@@ -229,6 +233,7 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
         let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
 
         return WalletListAssetViewModel(
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),
             tokenName: assetInfo.symbol,
             icon: iconViewModel,
             price: priceState,
