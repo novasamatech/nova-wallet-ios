@@ -5,7 +5,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
 
     enum Constants {
         static let accountHeight: CGFloat = 56.0
-        static let totalBalanceHeight: CGFloat = 124.0
+        static let totalBalanceHeight: CGFloat = 96.0
         static let settingsHeight: CGFloat = 56.0
         static let assetHeight: CGFloat = 56.0
         static let assetHeaderHeight: CGFloat = 40.0
