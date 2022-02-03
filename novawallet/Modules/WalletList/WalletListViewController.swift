@@ -69,7 +69,9 @@ final class WalletListViewController: UIViewController, ViewHolder {
         presenter.refresh()
     }
 
-    @objc func actionSettings() {}
+    @objc func actionSettings() {
+        presenter.presentSettings()
+    }
 }
 
 extension WalletListViewController: UICollectionViewDelegateFlowLayout {

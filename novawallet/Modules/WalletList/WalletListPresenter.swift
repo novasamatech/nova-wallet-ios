@@ -17,6 +17,7 @@ final class WalletListPresenter {
 
     private var genericAccountId: AccountId?
     private var name: String?
+    private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
@@ -113,11 +114,33 @@ final class WalletListPresenter {
     }
 
     private func provideAssetViewModels() {
+        guard let hidesZeroBalances = hidesZeroBalances else {
+            return
+        }
+
         let maybePrices = try? priceResult?.get()
         let viewModels: [WalletListGroupViewModel] = groups.allItems.compactMap { groupModel in
             let chain = groupModel.chain
 
             let assets = groupLists[chain.chainId]?.allItems ?? []
+
+            let filteredAssets: [WalletListAssetModel]
+
+            if hidesZeroBalances {
+                filteredAssets = assets.filter { asset in
+                    if let balance = try? asset.balanceResult?.get(), balance > 0 {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+
+                guard !filteredAssets.isEmpty else {
+                    return nil
+                }
+            } else {
+                filteredAssets = assets
+            }
 
             let connected: Bool
 
@@ -127,7 +150,7 @@ final class WalletListPresenter {
                 connected = false
             }
 
-            let assetInfoList: [WalletListAssetAccountInfo] = assets.map { asset in
+            let assetInfoList: [WalletListAssetAccountInfo] = filteredAssets.map { asset in
                 let assetModel = asset.assetModel
                 let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
 
@@ -184,6 +207,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
 
     func refresh() {
         interactor.refresh()
+    }
+
+    func presentSettings() {
+        wireframe.showAssetsManage(from: view)
     }
 }
 
@@ -307,6 +334,12 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         self.name = name
 
         provideHeaderViewModel()
+    }
+
+    func didReceive(hidesZeroBalances: Bool) {
+        self.hidesZeroBalances = hidesZeroBalances
+
+        provideAssetViewModels()
     }
 }
 
