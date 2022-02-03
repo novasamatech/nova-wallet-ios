@@ -16,7 +16,7 @@ final class AssetsManagePresenter {
     }
 
     func changeHideZeroBalances(value: Bool) {
-        let canApply = value != hidesZeroBalances
+        let canApply = hidesZeroBalances != nil && value != hidesZeroBalances
         hidesZeroBalances = value
 
         view?.didReceive(viewModel: AssetsManageViewModel(hideZeroBalances: value, canApply: canApply))
