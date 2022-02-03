@@ -75,8 +75,8 @@ class GradientColorFactoryTests: XCTestCase {
         let css = "linear-gradient(97.21deg, #E40C5B 0%, #645AFD 100%)"
 
         let expectedColor = GradientModel(
-            startPoint: CGPoint(x: 0.0, y: 0.0),
-            endPoint: CGPoint(x: 1.0, y: 1.0),
+            startPoint: CGPoint(x: 0.0, y: 0.5),
+            endPoint: CGPoint(x: 1.0, y: 0.5),
             colors: [
                 UIColor(hex: "#E40C5B")!,
                 UIColor(hex: "#645AFD")!
