@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_5" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -30,9 +30,6 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backgroundImage" translatesAutoresizingMaskIntoConstraints="NO" id="dUw-Wd-1PW">
-                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                </imageView>
                 <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" contentInsetAdjustmentBehavior="always" translatesAutoresizingMaskIntoConstraints="NO" id="YoQ-5F-IAf">
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                     <subviews>
@@ -115,12 +112,8 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="dUw-Wd-1PW" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="39D-j8-NQN"/>
-                <constraint firstItem="dUw-Wd-1PW" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Ejd-fz-WwW"/>
                 <constraint firstItem="cqn-Ij-trJ" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="Uw6-lt-o6N"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="cqn-Ij-trJ" secondAttribute="trailing" id="jnk-6A-6RW"/>
-                <constraint firstItem="dUw-Wd-1PW" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="qUG-aZ-CCm"/>
-                <constraint firstAttribute="bottom" secondItem="dUw-Wd-1PW" secondAttribute="bottom" id="rP2-7b-tnr"/>
                 <constraint firstItem="YoQ-5F-IAf" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="toB-N4-VGp"/>
                 <constraint firstItem="YoQ-5F-IAf" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="vSM-n9-aVG"/>
                 <constraint firstItem="YoQ-5F-IAf" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="vjH-yz-ca6"/>
@@ -135,7 +128,6 @@
         </designable>
     </designables>
     <resources>
-        <image name="backgroundImage" width="375" height="812"/>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

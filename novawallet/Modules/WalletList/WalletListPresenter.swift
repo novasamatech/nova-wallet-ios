@@ -52,6 +52,14 @@ final class WalletListPresenter {
             return
         }
 
+        provideHeaderViewModel(with: priceMapping, genericAccountId: genericAccountId, name: name)
+    }
+
+    private func provideHeaderViewModel(
+        with priceMapping: [ChainAssetId: PriceData],
+        genericAccountId: AccountId,
+        name: String
+    ) {
         let priceState: LoadableViewModelState<[WalletListAssetAccountPrice]> = priceMapping.reduce(
             LoadableViewModelState.loaded(value: [])
         ) { result, keyValue in

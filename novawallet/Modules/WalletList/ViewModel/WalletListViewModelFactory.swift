@@ -43,6 +43,8 @@ final class WalletListViewModelFactory {
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
 
+    private lazy var cssColorFactory = CSSGradientFactory()
+
     init(
         priceFormatter: LocalizableResource<TokenFormatter>,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
@@ -136,10 +138,19 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
 
         let priceString = priceFormatter.value(for: locale).stringFromDecimal(value) ?? ""
 
+        let color: GradientModel
+
+        if let colorModel = cssColorFactory.createFromString(chain.color) {
+            color = colorModel
+        } else {
+            color = GradientModel.defaultGradient
+        }
+
         return WalletListGroupViewModel(
             networkName: networkName,
             amount: .loaded(value: priceString),
             icon: iconViewModel,
+            color: color,
             assets: assetViewModels
         )
     }
