@@ -12,6 +12,7 @@ final class WalletChainView: UIView {
 
     let iconView: GradientIconView = {
         let view = GradientIconView()
+        view.backgroundView.cornerRadius = 8.0
         return view
     }()
 
