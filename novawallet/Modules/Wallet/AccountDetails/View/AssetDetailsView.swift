@@ -41,8 +41,12 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
     private var buyCommand: WalletCommandProtocol?
     private var lockedInfoCommand: WalletCommandProtocol?
 
+    private var backgroundView = MultigradientView.background
+
     override func awakeFromNib() {
         super.awakeFromNib()
+
+        setupBackgroundView()
 
         separators.forEach {
             $0.strokeWidth = UIConstants.separatorHeight
@@ -130,6 +134,13 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         )
 
         buyButton.invalidateLayout()
+    }
+
+    private func setupBackgroundView() {
+        insertSubview(backgroundView, at: 0)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     private func setupDefaultValues() {

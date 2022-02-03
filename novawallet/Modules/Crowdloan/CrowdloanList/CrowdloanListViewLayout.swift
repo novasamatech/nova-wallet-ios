@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 
 final class CrowdloanListViewLayout: UIView {
-    private let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
+    private let backgroundView = MultigradientView.background
 
     let headerView = CrowdloanTableHeaderView()
 
