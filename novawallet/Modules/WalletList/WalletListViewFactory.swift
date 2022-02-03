@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct WalletListViewFactory {
     static func createView() -> WalletListViewProtocol? {
@@ -8,7 +9,8 @@ struct WalletListViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            settingsManager: SettingsManager.shared
         )
 
         let wireframe = WalletListWireframe(walletUpdater: WalletDetailsUpdater.shared)
