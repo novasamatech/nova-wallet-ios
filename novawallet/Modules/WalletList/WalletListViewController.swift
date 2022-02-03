@@ -11,7 +11,7 @@ final class WalletListViewController: UIViewController, ViewHolder {
     }
 
     private var headerViewModel: WalletListHeaderViewModel?
-    private var groupsViewModels: [WalletListGroupViewModel] = []
+    private var groupsState: WalletListGroupState = .list(groups: [])
 
     init(presenter: WalletListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -131,7 +131,7 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
 
 extension WalletListViewController: UICollectionViewDataSource {
     func numberOfSections(in _: UICollectionView) -> Int {
-        WalletListFlowLayout.SectionType.assetsStartingSection + groupsViewModels.count
+        WalletListFlowLayout.SectionType.assetsStartingSection + groupsState.groups.count
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -139,10 +139,10 @@ extension WalletListViewController: UICollectionViewDataSource {
         case .summary:
             return headerViewModel != nil ? 2 : 0
         case .settings:
-            return groupsViewModels.isEmpty ? 2 : 1
+            return groupsState.isEmpty ? 2 : 1
         case .assetGroup:
             if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
-                return groupsViewModels[groupIndex].assets.count
+                return groupsState.groups[groupIndex].assets.count
             } else {
                 return 0
             }
@@ -222,7 +222,7 @@ extension WalletListViewController: UICollectionViewDataSource {
         if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsViewModels[groupIndex].assets[assetIndex]
+            let viewModel = groupsState.groups[groupIndex].assets[assetIndex]
             assetCell.bind(viewModel: viewModel)
         }
 
@@ -275,7 +275,7 @@ extension WalletListViewController: UICollectionViewDataSource {
         if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            let viewModel = groupsViewModels[groupIndex]
+            let viewModel = groupsState.groups[groupIndex]
             view.bind(viewModel: viewModel)
         }
 
@@ -300,8 +300,8 @@ extension WalletListViewController: WalletListViewProtocol {
         rootView.collectionView.reloadData()
     }
 
-    func didReceiveGroups(viewModels: [WalletListGroupViewModel]) {
-        groupsViewModels = viewModels
+    func didReceiveGroups(state: WalletListGroupState) {
+        groupsState = state
 
         rootView.collectionView.reloadData()
     }
