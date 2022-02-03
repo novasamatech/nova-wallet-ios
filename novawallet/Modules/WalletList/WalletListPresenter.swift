@@ -203,6 +203,7 @@ final class WalletListPresenter {
         let balance = try? asset.balanceResult?.get()
 
         return WalletListAssetAccountInfo(
+            assetId: asset.assetModel.assetId,
             assetInfo: assetInfo,
             balance: balance,
             priceData: priceData
@@ -219,14 +220,14 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         wireframe.showWalletList(from: view)
     }
 
-    func selectAsset(at index: Int, in group: Int) {
-        let chainModel = groups.allItems[group].chain
-
-        guard let assetListModel = groupLists[chainModel.chainId]?.allItems[index] else {
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        guard
+            let chain = allChains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
             return
         }
 
-        wireframe.showAssetDetails(from: view, chain: chainModel, asset: assetListModel.assetModel)
+        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
     func refresh() {
