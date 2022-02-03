@@ -24,6 +24,7 @@
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
+        <attribute name="color" attributeType="String"/>
         <attribute name="crowdloansApiType" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiUrl" optional="YES" attributeType="URI"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>
@@ -110,7 +111,7 @@
     <elements>
         <element name="CDAsset" positionX="-36" positionY="90" width="128" height="179"/>
         <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
-        <element name="CDChain" positionX="-45" positionY="81" width="128" height="329"/>
+        <element name="CDChain" positionX="-45" positionY="81" width="128" height="344"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
         <element name="CDContactItem" positionX="-45" positionY="81" width="128" height="118"/>
