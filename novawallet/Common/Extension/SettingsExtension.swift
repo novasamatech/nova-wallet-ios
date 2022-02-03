@@ -100,7 +100,7 @@ extension SettingsManagerProtocol {
 
     var hidesZeroBalances: Bool {
         get {
-            bool(for: SettingsKey.hidesZeroBalances.rawValue) ?? true
+            bool(for: SettingsKey.hidesZeroBalances.rawValue) ?? false
         }
 
         set {

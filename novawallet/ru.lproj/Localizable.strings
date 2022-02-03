@@ -673,3 +673,4 @@
 "wallet.total.balance" = "Общий баланс";
 "assets.manage.hide.zero.balances" = "Скрывать нулевые балансы";
 "assets.manage.title" = "Фильтр";
+"wallet.list.empty.message" = "Здесь появятся ваши активы.\nУбедитесь, что фильтр \"Скрыть нулевой баланс\" отключен.";

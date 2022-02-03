@@ -527,6 +527,7 @@
 		844EFB65265FD61D0090ACB1 /* CrowdloanContributeConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844EFB64265FD61D0090ACB1 /* CrowdloanContributeConfirmViewModel.swift */; };
 		8452585127ABC531004F9082 /* AssetsManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585027ABC531004F9082 /* AssetsManageViewModel.swift */; };
 		8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */; };
+		8452585527ABF270004F9082 /* WalletListEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585427ABF270004F9082 /* WalletListEmptyCell.swift */; };
 		8454C21D2632A78900657DAD /* EventRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C21C2632A78900657DAD /* EventRecord.swift */; };
 		8454C2652632B0EF00657DAD /* EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2642632B0EF00657DAD /* EventCodingPath.swift */; };
 		8454C26A2632B8CE00657DAD /* BalanceDepositEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2692632B8CE00657DAD /* BalanceDepositEvent.swift */; };
@@ -2413,6 +2414,7 @@
 		844EFB64265FD61D0090ACB1 /* CrowdloanContributeConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributeConfirmViewModel.swift; sourceTree = "<group>"; };
 		8452585027ABC531004F9082 /* AssetsManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManageViewModel.swift; sourceTree = "<group>"; };
 		8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideZeroBalancesChanged.swift; sourceTree = "<group>"; };
+		8452585427ABF270004F9082 /* WalletListEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListEmptyCell.swift; sourceTree = "<group>"; };
 		8454C21C2632A78900657DAD /* EventRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRecord.swift; sourceTree = "<group>"; };
 		8454C2642632B0EF00657DAD /* EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCodingPath.swift; sourceTree = "<group>"; };
 		8454C2692632B8CE00657DAD /* BalanceDepositEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceDepositEvent.swift; sourceTree = "<group>"; };
@@ -7480,6 +7482,7 @@
 				84AEEE6927A9204C005EBA77 /* WalletListSettingsCell.swift */,
 				84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */,
 				847F2D4127A96D9200AFD476 /* TokenGroupDecorationView.swift */,
+				8452585427ABF270004F9082 /* WalletListEmptyCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11316,6 +11319,7 @@
 				BE8CF97B6EA62C75277B78AA /* MoonbeamTermsProtocols.swift in Sources */,
 				B316F0D2BDF0F44AD27F58E0 /* MoonbeamTermsWireframe.swift in Sources */,
 				8027EA456C0C13F6DA73D540 /* MoonbeamTermsPresenter.swift in Sources */,
+				8452585527ABF270004F9082 /* WalletListEmptyCell.swift in Sources */,
 				D72773CE9AF638387DA9BA77 /* MoonbeamTermsInteractor.swift in Sources */,
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,

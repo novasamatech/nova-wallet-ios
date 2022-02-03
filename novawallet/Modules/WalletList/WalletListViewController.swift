@@ -41,6 +41,7 @@ final class WalletListViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(WalletListTotalBalanceCell.self)
         rootView.collectionView.registerCellClass(WalletListAccountCell.self)
         rootView.collectionView.registerCellClass(WalletListSettingsCell.self)
+        rootView.collectionView.registerCellClass(WalletListEmptyCell.self)
         rootView.collectionView.registerClass(
             WalletListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -138,7 +139,7 @@ extension WalletListViewController: UICollectionViewDataSource {
         case .summary:
             return headerViewModel != nil ? 2 : 0
         case .settings:
-            return 1
+            return groupsViewModels.isEmpty ? 2 : 1
         case .assetGroup:
             if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
                 return groupsViewModels[groupIndex].assets.count
@@ -228,6 +229,20 @@ extension WalletListViewController: UICollectionViewDataSource {
         return assetCell
     }
 
+    private func provideEmptyStateCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> WalletListEmptyCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            WalletListEmptyCell.self,
+            for: indexPath
+        )!
+
+        cell.locale = selectedLocale
+
+        return cell
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -239,6 +254,8 @@ extension WalletListViewController: UICollectionViewDataSource {
             return provideTotalBalanceCell(collectionView, indexPath: indexPath)
         case .settings:
             return provideSettingsCell(collectionView, indexPath: indexPath)
+        case .emptyState:
+            return provideEmptyStateCell(collectionView, indexPath: indexPath)
         case let .asset(assetIndex):
             return provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
         }
