@@ -5,7 +5,7 @@ import BigInt
 
 protocol WalletListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel)
-    func didReceiveGroups(viewModels: [WalletListGroupViewModel])
+    func didReceiveGroups(state: WalletListGroupState)
     func didCompleteRefreshing()
 }
 
