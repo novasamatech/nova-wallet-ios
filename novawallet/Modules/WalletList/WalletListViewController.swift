@@ -108,7 +108,8 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
         if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
-            presenter.selectAsset(at: indexPath.row, in: groupIndex)
+            let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
+            presenter.selectAsset(for: viewModel.chainAssetId)
         }
     }
 

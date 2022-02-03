@@ -55,6 +55,7 @@ struct WalletListGroupViewModel {
 }
 
 struct WalletListAssetViewModel {
+    let chainAssetId: ChainAssetId
     let tokenName: String
     let icon: ImageViewModelProtocol?
     let price: LoadableViewModelState<WalletPriceViewModel>
