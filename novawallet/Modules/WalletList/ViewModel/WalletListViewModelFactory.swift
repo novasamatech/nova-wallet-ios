@@ -98,20 +98,17 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     ) -> WalletListHeaderViewModel {
         let icon = try? iconGenerator.generateFromAccountId(accountId)
 
-        // TODO: Add locks handling
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return WalletListHeaderViewModel(
                 title: title,
                 amount: totalPrice,
-                locked: .loaded(value: "0"),
                 icon: icon
             )
         } else {
             return WalletListHeaderViewModel(
                 title: title,
                 amount: .loading,
-                locked: .loaded(value: "0"),
                 icon: icon
             )
         }

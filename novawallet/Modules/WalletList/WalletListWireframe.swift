@@ -35,4 +35,16 @@ final class WalletListWireframe: WalletListWireframeProtocol {
 
         walletUpdater.context = context
     }
+
+    func showAssetsManage(from view: WalletListViewProtocol?) {
+        guard let assetsManageView = AssetsManageViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: assetsManageView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }

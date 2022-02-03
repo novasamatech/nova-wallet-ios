@@ -671,3 +671,5 @@
 "wallet.send.dead.recipient.commission.asset.message" = "Невозможно осуществить перевод так как получатель не имеет %@ токенов";
 "common.era.format" = "#%@";
 "wallet.total.balance" = "Общий баланс";
+"assets.manage.hide.zero.balances" = "Скрывать нулевые балансы";
+"assets.manage.title" = "Фильтр";
