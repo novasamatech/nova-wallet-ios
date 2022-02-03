@@ -127,7 +127,7 @@ final class WalletListPresenter {
             )
         }
 
-        if hidesZeroBalances, viewModels.isEmpty {
+        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
             view?.didReceiveGroups(state: .empty)
         } else {
             view?.didReceiveGroups(state: .list(groups: viewModels))
