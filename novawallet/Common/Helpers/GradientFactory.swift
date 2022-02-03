@@ -15,7 +15,7 @@ final class CSSGradientFactory {
             return nil
         }
 
-        let normalizedAngle = (360 - cssAngle + 90) % 360
+        let normalizedAngle = (360 - cssAngle.quantized(by: 45) + 90) % 360
 
         let colorAndLocations: [(UIColor, Float)] = normalizedArguments.dropFirst().compactMap { param in
             guard let colorAndLocation = extractColorAndLocation(from: param) else {
