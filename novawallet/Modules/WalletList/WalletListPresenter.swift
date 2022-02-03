@@ -185,6 +185,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     func refresh() {
         interactor.refresh()
     }
+
+    func presentSettings() {
+        wireframe.showAssetsManage(from: view)
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {

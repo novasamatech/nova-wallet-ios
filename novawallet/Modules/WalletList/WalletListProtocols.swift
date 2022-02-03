@@ -14,6 +14,7 @@ protocol WalletListPresenterProtocol: AnyObject {
     func selectWallet()
     func selectAsset(at index: Int, in group: Int)
     func refresh()
+    func presentSettings()
 }
 
 protocol WalletListInteractorInputProtocol: AnyObject {
@@ -33,4 +34,5 @@ protocol WalletListInteractorOutputProtocol: AnyObject {
 protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
     func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
+    func showAssetsManage(from view: WalletListViewProtocol?)
 }
