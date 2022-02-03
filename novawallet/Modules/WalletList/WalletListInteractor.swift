@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import SoraKeystore
 
 final class WalletListInteractor {
     weak var presenter: WalletListInteractorOutputProtocol!
@@ -10,6 +11,7 @@ final class WalletListInteractor {
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
+    let settingsManager: SettingsManagerProtocol
 
     private var assetBalanceSubscriptions: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
@@ -21,13 +23,15 @@ final class WalletListInteractor {
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        eventCenter: EventCenterProtocol
+        eventCenter: EventCenterProtocol,
+        settingsManager: SettingsManagerProtocol
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.eventCenter = eventCenter
+        self.settingsManager = settingsManager
     }
 
     private func resetWallet() {
@@ -59,6 +63,11 @@ final class WalletListInteractor {
             genericAccountId: selectedMetaAccount.substrateAccountId,
             name: selectedMetaAccount.name
         )
+    }
+
+    private func provideHidesZeroBalances() {
+        let value = settingsManager.hidesZeroBalances
+        presenter.didReceive(hidesZeroBalances: value)
     }
 
     private func clearAccountSubscriptions() {
@@ -227,6 +236,7 @@ final class WalletListInteractor {
 
 extension WalletListInteractor: WalletListInteractorInputProtocol {
     func setup() {
+        provideHidesZeroBalances()
         providerWalletInfo()
 
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
@@ -297,5 +307,9 @@ extension WalletListInteractor: EventVisitorProtocol {
         }
 
         presenter.didChange(name: name)
+    }
+
+    func processHideZeroBalances(event _: HideZeroBalancesChanged) {
+        provideHidesZeroBalances()
     }
 }
