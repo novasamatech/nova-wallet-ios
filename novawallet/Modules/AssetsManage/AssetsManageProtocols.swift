@@ -1,11 +1,23 @@
-protocol AssetsManageViewProtocol: class {}
-
-protocol AssetsManagePresenterProtocol: class {
-    func setup()
+protocol AssetsManageViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: AssetsManageViewModel)
 }
 
-protocol AssetsManageInteractorInputProtocol: class {}
+protocol AssetsManagePresenterProtocol: AnyObject {
+    func setup()
+    func setHideZeroBalances(value: Bool)
+    func apply()
+}
 
-protocol AssetsManageInteractorOutputProtocol: class {}
+protocol AssetsManageInteractorInputProtocol: AnyObject {
+    func setup()
+    func save(hideZeroBalances: Bool)
+}
 
-protocol AssetsManageWireframeProtocol: class {}
+protocol AssetsManageInteractorOutputProtocol: AnyObject {
+    func didReceive(hideZeroBalances: Bool)
+    func didSave()
+}
+
+protocol AssetsManageWireframeProtocol: AnyObject {
+    func close(view: AssetsManageViewProtocol?)
+}

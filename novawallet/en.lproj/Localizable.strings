@@ -671,3 +671,5 @@
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
 "common.era.format" = "\#%@";
 "wallet.total.balance" = "Total balance";
+"assets.manage.hide.zero.balances" = "Hide assets with zero balances";
+"assets.manage.title" = "Filter";
