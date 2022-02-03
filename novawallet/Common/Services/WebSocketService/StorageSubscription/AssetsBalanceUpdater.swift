@@ -153,7 +153,7 @@ final class AssetsBalanceUpdater {
             let remoteModel = AssetBalance(
                 chainAssetId: chainAssetId,
                 accountId: accountId,
-                freeInPlank: !isFrozen ? balance : 0,
+                freeInPlank: balance,
                 reservedInPlank: 0,
                 frozenInPlank: isFrozen ? balance : 0
             )
