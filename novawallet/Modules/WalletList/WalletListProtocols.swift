@@ -14,6 +14,7 @@ protocol WalletListPresenterProtocol: AnyObject {
     func selectWallet()
     func selectAsset(at index: Int, in group: Int)
     func refresh()
+    func presentSettings()
 }
 
 protocol WalletListInteractorInputProtocol: AnyObject {
@@ -28,9 +29,11 @@ protocol WalletListInteractorOutputProtocol: AnyObject {
     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
     func didChange(name: String)
+    func didReceive(hidesZeroBalances: Bool)
 }
 
 protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
     func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
+    func showAssetsManage(from view: WalletListViewProtocol?)
 }
