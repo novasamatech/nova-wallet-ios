@@ -52,6 +52,7 @@ final class ChainRegistryFactory {
             filesOperationFactory: filesOperationFactory,
             dataOperationFactory: dataFetchOperationFactory,
             eventCenter: EventCenter.shared,
+            operationQueue: OperationManagerFacade.runtimeSyncQueue,
             logger: Logger.shared
         )
 
