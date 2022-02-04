@@ -333,23 +333,46 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideAssetViewModels()
     }
 
-    func didReceiveBalance(result: Result<BigUInt, Error>, chainId: ChainModel.Id, assetId: AssetModel.Id) {
-        let chainAssetId = ChainAssetId(chainId: chainId, assetId: assetId)
-        balanceResults[chainAssetId] = result
+    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt, Error>]) {
+        var assetsChanges: [ChainModel.Id: [DataProviderChange<WalletListAssetModel>]] = [:]
+        var changedGroups: [ChainModel.Id: ChainModel] = [:]
 
-        guard
-            let chainModel = allChains[chainId],
-            let assetModel = chainModel.assets.first(where: { $0.assetId == assetId }) else {
-            return
+        for (chainAssetId, result) in results {
+            balanceResults[chainAssetId] = result
         }
 
-        let assetListModel = createAssetModel(for: chainModel, assetModel: assetModel)
-        groupLists[chainId]?.apply(changes: [.update(newItem: assetListModel)])
+        for chainAssetId in results.keys {
+            guard
+                let chainModel = allChains[chainAssetId.chainId],
+                let assetModel = chainModel.assets.first(
+                    where: { $0.assetId == chainAssetId.assetId }
+                ) else {
+                continue
+            }
 
-        let allListAssets = groupLists[chainId]?.allItems ?? []
-        let groupsModel = createGroupModel(from: chainModel, assets: allListAssets)
+            let assetListModel = createAssetModel(for: chainModel, assetModel: assetModel)
+            var chainChanges = assetsChanges[chainAssetId.chainId] ?? []
+            chainChanges.append(.update(newItem: assetListModel))
+            assetsChanges[chainAssetId.chainId] = chainChanges
 
-        groups.apply(changes: [.update(newItem: groupsModel)])
+            changedGroups[chainModel.chainId] = chainModel
+        }
+
+        for (chainId, changes) in assetsChanges {
+            groupLists[chainId]?.apply(changes: changes)
+        }
+
+        let groupChanges: [DataProviderChange<WalletListGroupModel>] = changedGroups.map { keyValue in
+            let chainId = keyValue.key
+            let chainModel = keyValue.value
+
+            let allItems = groupLists[chainId]?.allItems ?? []
+            let groupModel = createGroupModel(from: chainModel, assets: allItems)
+
+            return .update(newItem: groupModel)
+        }
+
+        groups.apply(changes: groupChanges)
 
         provideHeaderViewModel()
         provideAssetViewModels()
