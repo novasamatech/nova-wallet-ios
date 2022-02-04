@@ -10,6 +10,7 @@ struct WalletListAssetAccountPrice {
 }
 
 struct WalletListAssetAccountInfo {
+    let assetId: AssetModel.Id
     let assetInfo: AssetBalanceDisplayInfo
     let balance: BigUInt?
     let priceData: PriceData?
@@ -32,6 +33,7 @@ protocol WalletListViewModelFactoryProtocol {
     ) -> WalletListGroupViewModel
 
     func createAssetViewModel(
+        chainId: ChainModel.Id,
         assetAccountInfo: WalletListAssetAccountInfo,
         connected: Bool,
         locale: Locale
@@ -87,6 +89,65 @@ final class WalletListViewModelFactory {
             return .loaded(value: formattedPrice)
         }
     }
+
+    private func createPriceState(
+        assetAccountInfo: WalletListAssetAccountInfo,
+        locale: Locale
+    ) -> LoadableViewModelState<WalletPriceViewModel> {
+        if
+            let priceString = assetAccountInfo.priceData?.price,
+            let price = Decimal(string: priceString) {
+            let priceChangeValue = (assetAccountInfo.priceData?.usdDayChange ?? 0.0) / 100.0
+            let priceChangeString = percentFormatter.value(for: locale)
+                .stringFromDecimal(priceChangeValue) ?? ""
+            let priceString = priceFormatter.value(for: locale)
+                .stringFromDecimal(price) ?? ""
+
+            let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
+                ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
+            return .loaded(value: WalletPriceViewModel(amount: priceString, change: priceChange))
+        } else {
+            return .loading
+        }
+    }
+
+    private func createBalanceState(
+        assetAccountInfo: WalletListAssetAccountInfo,
+        connected: Bool,
+        locale: Locale
+    ) -> (LoadableViewModelState<String>, LoadableViewModelState<String>) {
+        if let balance = assetAccountInfo.balance {
+            let assetInfo = assetAccountInfo.assetInfo
+
+            let decimalBalance = Decimal.fromSubstrateAmount(
+                balance,
+                precision: assetInfo.assetPrecision
+            ) ?? 0.0
+
+            let balanceFormatter = assetFormatterFactory.createDisplayFormatter(for: assetInfo)
+
+            let balanceAmountString = balanceFormatter.value(for: locale).stringFromDecimal(
+                decimalBalance
+            ) ?? ""
+
+            let balanceState = connected ? LoadableViewModelState.loaded(value: balanceAmountString) :
+                LoadableViewModelState.cached(value: balanceAmountString)
+
+            if
+                let priceData = assetAccountInfo.priceData,
+                let decimalPrice = Decimal(string: priceData.price) {
+                let balanceValue = priceFormatter.value(for: locale).stringFromDecimal(
+                    decimalBalance * decimalPrice
+                ) ?? ""
+                return (balanceState, .loaded(value: balanceValue))
+            } else {
+                return (balanceState, .loading)
+            }
+
+        } else {
+            return (.loading, .loading)
+        }
+    }
 }
 
 extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
@@ -123,6 +184,7 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     ) -> WalletListGroupViewModel {
         let assetViewModels = assets.map { asset in
             createAssetViewModel(
+                chainId: chain.chainId,
                 assetAccountInfo: asset,
                 connected: connected,
                 locale: locale
@@ -137,7 +199,9 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
 
         let color: GradientModel
 
-        if let colorModel = cssColorFactory.createFromString(chain.color) {
+        if
+            let colorString = chain.color,
+            let colorModel = cssColorFactory.createFromString(colorString) {
             color = colorModel
         } else {
             color = GradientModel.defaultGradient
@@ -153,68 +217,26 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     }
 
     func createAssetViewModel(
+        chainId: ChainModel.Id,
         assetAccountInfo: WalletListAssetAccountInfo,
         connected: Bool,
         locale: Locale
     ) -> WalletListAssetViewModel {
-        let priceState: LoadableViewModelState<WalletPriceViewModel>
+        let priceState = createPriceState(assetAccountInfo: assetAccountInfo, locale: locale)
 
-        if
-            let priceString = assetAccountInfo.priceData?.price,
-            let price = Decimal(string: priceString) {
-            let priceChangeValue = (assetAccountInfo.priceData?.usdDayChange ?? 0.0) / 100.0
-            let priceChangeString = percentFormatter.value(for: locale)
-                .stringFromDecimal(priceChangeValue) ?? ""
-            let priceString = priceFormatter.value(for: locale)
-                .stringFromDecimal(price) ?? ""
-
-            let priceChange: ValueDirection<String> = priceChangeValue >= 0.0
-                ? .increase(value: priceChangeString) : .decrease(value: priceChangeString)
-            priceState = .loaded(value: WalletPriceViewModel(amount: priceString, change: priceChange))
-        } else {
-            priceState = .loading
-        }
-
-        let balanceState: LoadableViewModelState<String>
-        let balanceValueState: LoadableViewModelState<String>
+        let (balanceState, balanceValueState) = createBalanceState(
+            assetAccountInfo: assetAccountInfo,
+            connected: connected,
+            locale: locale
+        )
 
         let assetInfo = assetAccountInfo.assetInfo
-
-        if let balance = assetAccountInfo.balance {
-            let decimalBalance = Decimal.fromSubstrateAmount(
-                balance,
-                precision: assetInfo.assetPrecision
-            ) ?? 0.0
-
-            let balanceFormatter = assetFormatterFactory.createDisplayFormatter(for: assetInfo)
-
-            let balanceAmountString = balanceFormatter.value(for: locale).stringFromDecimal(
-                decimalBalance
-            ) ?? ""
-
-            balanceState = connected ? .loaded(value: balanceAmountString) :
-                .cached(value: balanceAmountString)
-
-            if
-                let priceData = assetAccountInfo.priceData,
-                let decimalPrice = Decimal(string: priceData.price) {
-                let balanceValue = priceFormatter.value(for: locale).stringFromDecimal(
-                    decimalBalance * decimalPrice
-                ) ?? ""
-                balanceValueState = .loaded(value: balanceValue)
-            } else {
-                balanceValueState = .loading
-            }
-
-        } else {
-            balanceState = .loading
-            balanceValueState = .loading
-        }
 
         let iconViewModel = assetInfo.icon.map { RemoteImageViewModel(url: $0) }
 
         return WalletListAssetViewModel(
-            tokenName: assetInfo.symbol.uppercased(),
+            chainAssetId: ChainAssetId(chainId: chainId, assetId: assetAccountInfo.assetId),
+            tokenName: assetInfo.symbol,
             icon: iconViewModel,
             price: priceState,
             balanceAmount: balanceState,

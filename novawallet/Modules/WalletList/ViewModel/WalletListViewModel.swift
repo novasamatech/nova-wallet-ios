@@ -23,6 +23,29 @@ struct WalletPriceViewModel {
     let change: ValueDirection<String>
 }
 
+enum WalletListGroupState {
+    case empty
+    case list(groups: [WalletListGroupViewModel])
+
+    var isEmpty: Bool {
+        switch self {
+        case .empty:
+            return true
+        case .list:
+            return false
+        }
+    }
+
+    var groups: [WalletListGroupViewModel] {
+        switch self {
+        case .empty:
+            return []
+        case let .list(groups):
+            return groups
+        }
+    }
+}
+
 struct WalletListGroupViewModel {
     let networkName: String
     let amount: LoadableViewModelState<String>
@@ -32,6 +55,7 @@ struct WalletListGroupViewModel {
 }
 
 struct WalletListAssetViewModel {
+    let chainAssetId: ChainAssetId
     let tokenName: String
     let icon: ImageViewModelProtocol?
     let price: LoadableViewModelState<WalletPriceViewModel>
