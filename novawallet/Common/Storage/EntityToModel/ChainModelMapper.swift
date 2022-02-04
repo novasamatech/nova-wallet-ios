@@ -251,7 +251,7 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             addressPrefix: UInt16(bitPattern: entity.addressPrefix),
             types: types,
             icon: entity.icon!,
-            color: entity.color!,
+            color: entity.color,
             options: options.isEmpty ? nil : options,
             externalApi: externalApiSet,
             explorers: explorers,
