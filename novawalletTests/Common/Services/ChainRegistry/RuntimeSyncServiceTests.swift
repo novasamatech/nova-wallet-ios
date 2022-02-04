@@ -18,7 +18,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         let syncService = RuntimeSyncService(repository: AnyDataProviderRepository(metadataRepository),
                                              filesOperationFactory: filesOperationFactory,
                                              dataOperationFactory: dataOperationFactory,
-                                             eventCenter: eventCenter
+                                             eventCenter: eventCenter,
+                                             operationQueue: OperationQueue()
         )
 
         let chainCount = 10
@@ -59,7 +60,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         let syncService = RuntimeSyncService(repository: AnyDataProviderRepository(metadataRepository),
                                              filesOperationFactory: filesOperationFactory,
                                              dataOperationFactory: dataOperationFactory,
-                                             eventCenter: eventCenter
+                                             eventCenter: eventCenter,
+                                             operationQueue: OperationQueue()
         )
 
         // when
@@ -180,7 +182,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         let syncService = RuntimeSyncService(repository: AnyDataProviderRepository(metadataRepository),
                                              filesOperationFactory: filesOperationFactory,
                                              dataOperationFactory: dataOperationFactory,
-                                             eventCenter: eventCenter
+                                             eventCenter: eventCenter,
+                                             operationQueue: OperationQueue()
         )
 
         // when
@@ -274,7 +277,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         let syncService = RuntimeSyncService(repository: AnyDataProviderRepository(metadataRepository),
                                              filesOperationFactory: filesOperationFactory,
                                              dataOperationFactory: dataOperationFactory,
-                                             eventCenter: eventCenter
+                                             eventCenter: eventCenter,
+                                             operationQueue: OperationQueue()
         )
 
         // when
@@ -418,7 +422,8 @@ class RuntimeSyncServiceTests: XCTestCase {
         let syncService = RuntimeSyncService(repository: AnyDataProviderRepository(metadataRepository),
                                              filesOperationFactory: filesOperationFactory,
                                              dataOperationFactory: dataOperationFactory,
-                                             eventCenter: eventCenter
+                                             eventCenter: eventCenter,
+                                             operationQueue: OperationQueue()
         )
 
         // when

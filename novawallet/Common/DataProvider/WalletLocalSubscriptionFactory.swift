@@ -12,6 +12,8 @@ protocol WalletLocalSubscriptionFactoryProtocol {
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) throws -> StreamableProvider<AssetBalance>
+
+    func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance>
 }
 
 final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -69,6 +71,49 @@ final class WalletLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             predicate: { entity in
                 accountId.toHex() == entity.chainAccountId && chainId == entity.chainId &&
                     assetId == entity.assetId
+            }
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Did receive error: \(error)")
+            }
+        }
+
+        let provider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager
+        )
+
+        saveProvider(provider, for: cacheKey)
+
+        return provider
+    }
+
+    func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance> {
+        let cacheKey = "account-\(accountId.toHex())"
+
+        if let provider = getProvider(for: cacheKey) as? StreamableProvider<AssetBalance> {
+            return provider
+        }
+
+        let source = EmptyStreamableSource<AssetBalance>()
+
+        let mapper = AssetBalanceMapper()
+        let filter = NSPredicate.assetBalance(for: accountId)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: AnyCoreDataMapper(mapper),
+            predicate: { entity in
+                accountId.toHex() == entity.chainAccountId
             }
         )
 

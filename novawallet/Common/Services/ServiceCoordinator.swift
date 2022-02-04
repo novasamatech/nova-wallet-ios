@@ -2,6 +2,7 @@ import Foundation
 import SoraKeystore
 import SoraFoundation
 import SubstrateSdk
+import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     func updateOnAccountChange()
@@ -71,15 +72,17 @@ extension ServiceCoordinator {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
+
         let operationManager = OperationManagerFacade.sharedManager
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
         let walletRemoteSubscription = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationManager: operationManager,
             logger: logger
         )
 
