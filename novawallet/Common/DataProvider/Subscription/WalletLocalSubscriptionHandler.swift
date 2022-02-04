@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 protocol WalletLocalSubscriptionHandler {
     func handleAccountInfo(
@@ -12,6 +13,11 @@ protocol WalletLocalSubscriptionHandler {
         accountId: AccountId,
         chainId: ChainModel.Id,
         assetId: AssetModel.Id
+    )
+
+    func handleAccountBalance(
+        result: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId: AccountId
     )
 }
 
@@ -27,5 +33,10 @@ extension WalletLocalSubscriptionHandler {
         accountId _: AccountId,
         chainId _: ChainModel.Id,
         assetId _: AssetModel.Id
+    ) {}
+
+    func handleAccountBalance(
+        result _: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId _: AccountId
     ) {}
 }
