@@ -2,6 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 import SoraKeystore
+import BigInt
 
 final class WalletListInteractor {
     weak var presenter: WalletListInteractorOutputProtocol!
@@ -13,7 +14,8 @@ final class WalletListInteractor {
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
 
-    private var assetBalanceSubscriptions: [ChainAssetId: StreamableProvider<AssetBalance>] = [:]
+    private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
+    private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
@@ -73,6 +75,8 @@ final class WalletListInteractor {
     private func clearAccountSubscriptions() {
         assetBalanceSubscriptions.values.forEach { $0.removeObserver(self) }
         assetBalanceSubscriptions = [:]
+
+        assetBalanceIdMapping = [:]
     }
 
     private func handle(changes: [DataProviderChange<ChainModel>]) {
@@ -123,36 +127,49 @@ final class WalletListInteractor {
             return
         }
 
-        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
+        assetBalanceIdMapping = changes.reduce(into: assetBalanceIdMapping) { result, change in
             switch change {
             case let .insert(chain), let .update(chain):
-                let allChainAssetIds = result.keys
-
-                for chainAssetId in allChainAssetIds where chainAssetId.chainId == chain.chainId {
-                    result[chainAssetId]?.removeObserver(self)
-                    result[chainAssetId] = nil
-                }
-
-                guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
+                guard let accountId = selectedMetaAccount.fetch(
+                    for: chain.accountRequest()
+                )?.accountId else {
                     return
                 }
 
                 for asset in chain.assets {
-                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-
-                    result[chainAssetId] = subscribeToAssetBalanceProvider(
-                        for: accountId,
-                        chainId: chainAssetId.chainId,
-                        assetId: chainAssetId.assetId
+                    let assetBalanceRawId = AssetBalance.createIdentifier(
+                        for: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+                        accountId: accountId
                     )
+
+                    if result[assetBalanceRawId] == nil {
+                        result[assetBalanceRawId] = AssetBalanceId(
+                            chainId: chain.chainId,
+                            assetId: asset.assetId,
+                            accountId: accountId
+                        )
+                    }
                 }
             case let .delete(deletedIdentifier):
-                let allChainAssetIds = result.keys
+                result = result.filter { $0.value.chainId != deletedIdentifier }
+            }
+        }
 
-                for chainAssetId in allChainAssetIds where chainAssetId.chainId == deletedIdentifier {
-                    result[chainAssetId]?.removeObserver(self)
-                    result[chainAssetId] = nil
+        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
+            switch change {
+            case let .insert(chain), let .update(chain):
+                guard let accountId = selectedMetaAccount.fetch(
+                    for: chain.accountRequest()
+                )?.accountId else {
+                    return
                 }
+
+                if result[accountId] == nil {
+                    result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
+                }
+            case .delete:
+                // we might have the same account id used in other
+                break
             }
         }
     }
@@ -256,32 +273,88 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 }
 
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    func handleAssetBalance(
-        result: Result<AssetBalance?, Error>,
-        accountId _: AccountId,
-        chainId: ChainModel.Id,
-        assetId: AssetModel.Id
-    ) {
-        guard
-            let chain = availableChains[chainId],
-            let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
-            return
+    private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
+        let results = assetBalanceIdMapping.values.reduce(
+            into: [ChainAssetId: Result<BigUInt?, Error>]()
+        ) { accum, assetBalanceId in
+            guard assetBalanceId.accountId == accountId else {
+                return
+            }
+
+            let chainAssetId = ChainAssetId(
+                chainId: assetBalanceId.chainId,
+                assetId: assetBalanceId.assetId
+            )
+
+            accum[chainAssetId] = .failure(error)
         }
 
-        do {
-            let balance = try result.get()?.totalInPlank ?? 0
+        presenter.didReceiveBalance(results: results)
+    }
 
-            presenter.didReceiveBalance(
-                result: .success(balance),
-                chainId: chain.chainId,
-                assetId: asset.assetId
+    private func handleAccountBalanceChanges(
+        _ changes: [DataProviderChange<AssetBalance>],
+        accountId: AccountId
+    ) {
+        // prepopulate non existing balances with zeros
+        let initialItems = assetBalanceIdMapping.values.reduce(
+            into: [ChainAssetId: Result<BigUInt?, Error>]()
+        ) { accum, assetBalanceId in
+            guard assetBalanceId.accountId == accountId else {
+                return
+            }
+
+            let chainAssetId = ChainAssetId(
+                chainId: assetBalanceId.chainId,
+                assetId: assetBalanceId.assetId
             )
-        } catch {
-            presenter.didReceiveBalance(
-                result: .failure(error),
-                chainId: chain.chainId,
-                assetId: asset.assetId
-            )
+
+            accum[chainAssetId] = .success(nil)
+        }
+
+        let results = changes.reduce(
+            into: initialItems
+        ) { accum, change in
+            switch change {
+            case let .insert(balance), let .update(balance):
+                guard
+                    let assetBalanceId = assetBalanceIdMapping[balance.identifier],
+                    assetBalanceId.accountId == accountId else {
+                    return
+                }
+
+                let chainAssetId = ChainAssetId(
+                    chainId: assetBalanceId.chainId,
+                    assetId: assetBalanceId.assetId
+                )
+
+                accum[chainAssetId] = .success(balance.totalInPlank)
+            case let .delete(deletedIdentifier):
+                guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
+                    return
+                }
+
+                let chainAssetId = ChainAssetId(
+                    chainId: assetBalanceId.chainId,
+                    assetId: assetBalanceId.assetId
+                )
+
+                accum[chainAssetId] = .success(0)
+            }
+        }
+
+        presenter.didReceiveBalance(results: results)
+    }
+
+    func handleAccountBalance(
+        result: Result<[DataProviderChange<AssetBalance>], Error>,
+        accountId: AccountId
+    ) {
+        switch result {
+        case let .success(changes):
+            handleAccountBalanceChanges(changes, accountId: accountId)
+        case let .failure(error):
+            handleAccountBalanceError(error, accountId: accountId)
         }
     }
 }

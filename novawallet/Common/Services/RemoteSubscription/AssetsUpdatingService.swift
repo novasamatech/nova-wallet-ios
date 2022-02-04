@@ -82,7 +82,7 @@ final class AssetsUpdatingService {
 
     private func addSubscriptionIfNeeded(for chain: ChainModel) {
         guard let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId else {
-            logger.error("Couldn't create account for chain \(chain.chainId)")
+            logger.warning("Couldn't create account for chain \(chain.chainId)")
             return
         }
 
@@ -110,8 +110,7 @@ final class AssetsUpdatingService {
             return nil
         }
 
-        let transactionSubscription = asset.isUtility ?
-            try? createTransactionSubscription(for: accountId, chain: chain) : nil
+        let transactionSubscription = try? createTransactionSubscription(for: accountId, chain: chain)
 
         switch assetType {
         case .statemine:
@@ -210,7 +209,7 @@ final class AssetsUpdatingService {
 
     private func removeSubscription(for chainId: ChainModel.Id) {
         guard let assetSubscriptions = subscribedChains[chainId] else {
-            logger.error("Expected to remove subscription but not found for \(chainId)")
+            logger.warning("Expected to remove subscription but not found for \(chainId)")
             return
         }
 
