@@ -84,9 +84,13 @@ final class AccountInfoUpdatingService {
     private func addSubscriptionIfNeeded(for chain: ChainModel) {
         guard
             let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
-            let address = try? accountId.toAddress(using: chain.chainFormat),
-            let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
-            logger.error("Couldn't create account for chain \(chain.chainId)")
+            let address = try? accountId.toAddress(using: chain.chainFormat) else {
+            logger.warning("Couldn't create account for chain \(chain.chainId)")
+            return
+        }
+
+        guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
+            logger.warning("Native asset not found for chain \(chain.chainId)")
             return
         }
 
