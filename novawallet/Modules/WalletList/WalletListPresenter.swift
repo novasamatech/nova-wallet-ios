@@ -41,7 +41,7 @@ final class WalletListPresenter {
             return
         }
 
-        guard case let .success(priceMapping) = priceResult else {
+        guard case let .success(priceMapping) = priceResult, !balanceResults.isEmpty else {
             let viewModel = viewModelFactory.createHeaderViewModel(
                 from: name,
                 accountId: genericAccountId,
@@ -120,69 +120,94 @@ final class WalletListPresenter {
 
         let maybePrices = try? priceResult?.get()
         let viewModels: [WalletListGroupViewModel] = groups.allItems.compactMap { groupModel in
-            let chain = groupModel.chain
-
-            let assets = groupLists[chain.chainId]?.allItems ?? []
-
-            let filteredAssets: [WalletListAssetModel]
-
-            if hidesZeroBalances {
-                filteredAssets = assets.filter { asset in
-                    if let balance = try? asset.balanceResult?.get(), balance > 0 {
-                        return true
-                    } else {
-                        return false
-                    }
-                }
-
-                guard !filteredAssets.isEmpty else {
-                    return nil
-                }
-            } else {
-                filteredAssets = assets
-            }
-
-            let connected: Bool
-
-            if let chainState = connectionStates[chain.chainId], case .connected = chainState {
-                connected = true
-            } else {
-                connected = false
-            }
-
-            let assetInfoList: [WalletListAssetAccountInfo] = filteredAssets.map { asset in
-                let assetModel = asset.assetModel
-                let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
-
-                let assetInfo = assetModel.displayInfo(with: chain.icon)
-
-                let priceData: PriceData?
-
-                if let prices = maybePrices {
-                    priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
-                } else {
-                    priceData = nil
-                }
-
-                let balance = try? asset.balanceResult?.get()
-
-                return WalletListAssetAccountInfo(
-                    assetInfo: assetInfo,
-                    balance: balance,
-                    priceData: priceData
-                )
-            }
-
-            return viewModelFactory.createGroupViewModel(
-                for: chain,
-                assets: assetInfoList,
-                value: groupModel.chainValue,
-                connected: connected,
-                locale: selectedLocale
+            createGroupViewModel(
+                from: groupModel,
+                maybePrices: maybePrices,
+                hidesZeroBalances: hidesZeroBalances
             )
         }
 
-        view?.didReceiveGroups(viewModels: viewModels)
+        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
+            view?.didReceiveGroups(state: .empty)
+        } else {
+            view?.didReceiveGroups(state: .list(groups: viewModels))
+        }
+    }
+
+    private func createGroupViewModel(
+        from groupModel: WalletListGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?,
+        hidesZeroBalances: Bool
+    ) -> WalletListGroupViewModel? {
+        let chain = groupModel.chain
+
+        let assets = groupLists[chain.chainId]?.allItems ?? []
+
+        let filteredAssets: [WalletListAssetModel]
+
+        if hidesZeroBalances {
+            filteredAssets = assets.filter { asset in
+                if let balance = try? asset.balanceResult?.get(), balance > 0 {
+                    return true
+                } else {
+                    return false
+                }
+            }
+
+            guard !filteredAssets.isEmpty else {
+                return nil
+            }
+        } else {
+            filteredAssets = assets
+        }
+
+        let connected: Bool
+
+        if let chainState = connectionStates[chain.chainId], case .connected = chainState {
+            connected = true
+        } else {
+            connected = false
+        }
+
+        let assetInfoList: [WalletListAssetAccountInfo] = filteredAssets.map { asset in
+            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+        }
+
+        return viewModelFactory.createGroupViewModel(
+            for: chain,
+            assets: assetInfoList,
+            value: groupModel.chainValue,
+            connected: connected,
+            locale: selectedLocale
+        )
+    }
+
+    private func createAssetAccountInfo(
+        from asset: WalletListAssetModel,
+        chain: ChainModel,
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> WalletListAssetAccountInfo {
+        let assetModel = asset.assetModel
+        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
+
+        let assetInfo = assetModel.displayInfo(with: chain.icon)
+
+        let priceData: PriceData?
+
+        if let prices = maybePrices {
+            priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
+        } else {
+            priceData = nil
+        }
+
+        let balance = try? asset.balanceResult?.get()
+
+        return WalletListAssetAccountInfo(
+            assetId: asset.assetModel.assetId,
+            assetInfo: assetInfo,
+            balance: balance,
+            priceData: priceData
+        )
     }
 }
 
@@ -195,14 +220,14 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         wireframe.showWalletList(from: view)
     }
 
-    func selectAsset(at index: Int, in group: Int) {
-        let chainModel = groups.allItems[group].chain
-
-        guard let assetListModel = groupLists[chainModel.chainId]?.allItems[index] else {
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        guard
+            let chain = allChains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
             return
         }
 
-        wireframe.showAssetDetails(from: view, chain: chainModel, asset: assetListModel.assetModel)
+        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
     func refresh() {

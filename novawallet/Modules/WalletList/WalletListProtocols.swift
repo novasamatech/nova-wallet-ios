@@ -5,14 +5,14 @@ import BigInt
 
 protocol WalletListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel)
-    func didReceiveGroups(viewModels: [WalletListGroupViewModel])
+    func didReceiveGroups(state: WalletListGroupState)
     func didCompleteRefreshing()
 }
 
 protocol WalletListPresenterProtocol: AnyObject {
     func setup()
     func selectWallet()
-    func selectAsset(at index: Int, in group: Int)
+    func selectAsset(for chainAssetId: ChainAssetId)
     func refresh()
     func presentSettings()
 }

@@ -673,3 +673,4 @@
 "wallet.total.balance" = "Total balance";
 "assets.manage.hide.zero.balances" = "Hide assets with zero balances";
 "assets.manage.title" = "Filter";
+"wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\"\nfilter is turned off";
