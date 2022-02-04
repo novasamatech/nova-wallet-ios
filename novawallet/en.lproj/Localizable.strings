@@ -667,10 +667,10 @@
 "common.fee.retry.failed" = "Fee loading failed. Would you like to retry?";
 "dapp.search.query.section" = "Search";
 "dapp.search.app.section" = "DApps";
+"wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\" filter is turned off";
+"assets.manage.hide.zero.balances" = "Hide assets with zero balances";
 "wallet.send.dead.recipient.commission.asset.title" = "Recipient is not able to accept transfer";
 "wallet.send.dead.recipient.commission.asset.message" = "Your transfer will fail since the destination account does not have enough %@ to accept other token transfers";
-"common.era.format" = "\#%@";
+"common.era.format" = "#%@";
 "wallet.total.balance" = "Total balance";
-"assets.manage.hide.zero.balances" = "Hide assets with zero balances";
-"assets.manage.title" = "Filter";
-"wallet.list.empty.message" = "Your assets will appear here.\nMake sure the \"Hide zero balances\"\nfilter is turned off";
+"assets.manage.title" = "Filters";
