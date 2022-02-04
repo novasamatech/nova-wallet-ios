@@ -275,7 +275,7 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
 extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
         let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt, Error>]()
+            into: [ChainAssetId: Result<BigUInt?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -298,7 +298,7 @@ extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscri
     ) {
         // prepopulate non existing balances with zeros
         let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt, Error>]()
+            into: [ChainAssetId: Result<BigUInt?, Error>]()
         ) { accum, assetBalanceId in
             guard assetBalanceId.accountId == accountId else {
                 return
@@ -309,7 +309,7 @@ extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscri
                 assetId: assetBalanceId.assetId
             )
 
-            accum[chainAssetId] = .success(0)
+            accum[chainAssetId] = .success(nil)
         }
 
         let results = changes.reduce(

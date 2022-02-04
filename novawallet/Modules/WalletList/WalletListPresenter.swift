@@ -247,10 +247,8 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         allChains = [:]
         balanceResults = [:]
 
-        if !groups.allItems.isEmpty || !groups.lastDifferences.isEmpty {
-            groups = Self.createGroupsDiffCalculator(from: [])
-            groupLists = [:]
-        }
+        groups = Self.createGroupsDiffCalculator(from: [])
+        groupLists = [:]
 
         provideHeaderViewModel()
         provideAssetViewModels()
@@ -333,12 +331,21 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         provideAssetViewModels()
     }
 
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt, Error>]) {
+    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
         var assetsChanges: [ChainModel.Id: [DataProviderChange<WalletListAssetModel>]] = [:]
         var changedGroups: [ChainModel.Id: ChainModel] = [:]
 
         for (chainAssetId, result) in results {
-            balanceResults[chainAssetId] = result
+            switch result {
+            case let .success(maybeAmount):
+                if let amount = maybeAmount {
+                    balanceResults[chainAssetId] = .success(amount)
+                } else if balanceResults[chainAssetId] == nil {
+                    balanceResults[chainAssetId] = .success(0)
+                }
+            case let .failure(error):
+                balanceResults[chainAssetId] = .failure(error)
+            }
         }
 
         for chainAssetId in results.keys {
