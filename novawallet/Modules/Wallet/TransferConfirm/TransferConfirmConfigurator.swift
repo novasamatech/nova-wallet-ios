@@ -20,12 +20,14 @@ final class TransferConfirmConfigurator {
         chainAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         localizationManager: LocalizationManagerProtocol
     ) {
         viewModelFactory = TransferConfirmViewModelFactory(
             chainAccount: chainAccount,
             chainAsset: chainAsset,
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory
         )
 
         self.localizationManager = localizationManager

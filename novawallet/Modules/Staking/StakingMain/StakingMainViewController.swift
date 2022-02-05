@@ -19,6 +19,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     @IBOutlet private var iconButton: RoundedButton!
     @IBOutlet private var iconButtonWidth: NSLayoutConstraint!
 
+    private var backgroundView = MultigradientView.background
+
     let assetSelectionContainerView = UIView()
     let assetSelectionView: DetailsTriangularedView = {
         let view = UIFactory.default.createChainAssetSelectionView()
@@ -51,6 +53,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupBackgroundView()
         setupAssetSelectionView()
         setupNetworkInfoView()
         setupAlertsView()
@@ -103,6 +106,13 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     }
 
     // MARK: - Private functions
+
+    private func setupBackgroundView() {
+        view.insertSubview(backgroundView, at: 0)
+        backgroundView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
 
     private func setupAssetSelectionView() {
         assetSelectionContainerView.translatesAutoresizingMaskIntoConstraints = false

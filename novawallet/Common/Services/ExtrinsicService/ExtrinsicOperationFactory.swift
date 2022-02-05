@@ -89,6 +89,7 @@ final class ExtrinsicOperationFactory {
     let cryptoType: MultiassetCryptoType
     let chainFormat: ChainFormat
     let runtimeRegistry: RuntimeCodingServiceProtocol
+    let customExtensions: [ExtrinsicExtension]
     let engine: JSONRPCEngine
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
 
@@ -104,6 +105,7 @@ final class ExtrinsicOperationFactory {
         chainFormat = .ethereum
         cryptoType = .substrateEcdsa
         self.runtimeRegistry = runtimeRegistry
+        customExtensions = []
         self.engine = engine
         self.eraOperationFactory = eraOperationFactory
     }
@@ -113,6 +115,7 @@ final class ExtrinsicOperationFactory {
         chainFormat: ChainFormat,
         cryptoType: MultiassetCryptoType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
+        customExtensions: [ExtrinsicExtension],
         engine: JSONRPCEngine,
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory()
     ) {
@@ -120,6 +123,7 @@ final class ExtrinsicOperationFactory {
         self.chainFormat = chainFormat
         self.cryptoType = cryptoType
         self.runtimeRegistry = runtimeRegistry
+        self.customExtensions = customExtensions
         self.engine = engine
         self.eraOperationFactory = eraOperationFactory
     }
@@ -166,6 +170,7 @@ final class ExtrinsicOperationFactory {
         let currentCryptoType = cryptoType
         let currentAccountId = accountId
         let currentChainFormat = chainFormat
+        let currentExtensions = customExtensions
 
         let nonceOperation = createNonceOperation()
         let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
@@ -198,6 +203,10 @@ final class ExtrinsicOperationFactory {
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
                 .with(nonce: nonce + UInt32(index))
+
+                for customExtension in currentExtensions {
+                    builder = builder.adding(extrinsicExtension: customExtension)
+                }
 
                 let account = MultiAddress.accoundId(currentAccountId)
                 builder = try builder.with(address: account)

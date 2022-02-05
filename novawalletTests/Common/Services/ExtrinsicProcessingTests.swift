@@ -11,16 +11,16 @@ class ExtrinsicProcessingTests: XCTestCase {
 
     let transferSender = "5DRgrCCSuBFqbXMj6fSiZVBDEaDDcQCa4zXBKftPoRAGjb72"
     let transferReceiver = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
-    let chain = Chain.westend
 
     func testTransferSuccessfullProcessing() {
         do {
+            let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42)
             let addressFactory = SS58AddressFactory()
             let senderAccountId = try addressFactory.accountId(from: transferSender)
             let receiverAccountId = try addressFactory.accountId(from: transferReceiver)
 
             let coderFactory = try RuntimeCodingServiceStub.createWestendCodingFactory()
-            let processor = ExtrinsicProcessor(accountId: senderAccountId, isEthereumBased: false)
+            let processor = ExtrinsicProcessor(accountId: senderAccountId, chain: chain)
 
             let eventRecordsData = try Data(hexString: eventRecordsHex)
             let typeName = coderFactory.metadata.getStorageMetadata(for: .events)!.type.typeName

@@ -1,16 +1,27 @@
 import Foundation
+import RobinHood
 
 final class DAppBrowserStateDataSource {
     private(set) var chainStore: [String: ChainModel] = [:]
     private(set) var metadataStore: [String: PolkadotExtensionMetadata] = [:]
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
+    let dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>
     let operationQueue: OperationQueue
+    let dApp: DApp?
 
-    init(wallet: MetaAccountModel, chainRegistry: ChainRegistryProtocol, operationQueue: OperationQueue) {
+    init(
+        wallet: MetaAccountModel,
+        chainRegistry: ChainRegistryProtocol,
+        dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
+        operationQueue: OperationQueue,
+        dApp: DApp?
+    ) {
         self.wallet = wallet
         self.chainRegistry = chainRegistry
+        self.dAppSettingsRepository = dAppSettingsRepository
         self.operationQueue = operationQueue
+        self.dApp = dApp
     }
 
     func set(metadata: PolkadotExtensionMetadata, for key: String) {

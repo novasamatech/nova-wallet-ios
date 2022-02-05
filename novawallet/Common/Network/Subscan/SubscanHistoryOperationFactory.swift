@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import CommonWallet
 
 final class SubscanHistoryOperationFactory {
     struct MergeResult {
@@ -11,15 +12,15 @@ final class SubscanHistoryOperationFactory {
 
     let baseURL: URL
 
-    let filter: WalletRemoteHistoryFiltering?
+    let walletFilter: WalletHistoryFilter
 
-    init(baseURL: URL, filter: WalletRemoteHistoryFiltering? = nil) {
+    init(baseURL: URL, walletFilter: WalletHistoryFilter) {
         self.baseURL = baseURL
-        self.filter = filter
+        self.walletFilter = walletFilter
     }
 
     private func createTransfersOperationIfNeeded(
-        for context: TransactionHistoryContext,
+        for context: SubscanHistoryContext,
         address: String
     ) -> BaseOperation<SubscanTransferData>? {
         guard !context.transfers.isComplete else {
@@ -36,7 +37,7 @@ final class SubscanHistoryOperationFactory {
     }
 
     private func createRewardsOperationIfNeeded(
-        for context: TransactionHistoryContext,
+        for context: SubscanHistoryContext,
         address: String
     ) -> BaseOperation<SubscanRewardData>? {
         guard !context.rewards.isComplete else {
@@ -53,7 +54,7 @@ final class SubscanHistoryOperationFactory {
     }
 
     private func createExtrinsicsOperationIfNeeded(
-        for context: TransactionHistoryContext,
+        for context: SubscanHistoryContext,
         address: String
     ) -> BaseOperation<SubscanConcreteExtrinsicsData>? {
         guard !context.extrinsics.isComplete else {
@@ -76,7 +77,7 @@ final class SubscanHistoryOperationFactory {
         dependingOn transfersOperation: BaseOperation<SubscanTransferData>?,
         rewardsOperation: BaseOperation<SubscanRewardData>?,
         extrinsicsOperation: BaseOperation<SubscanConcreteExtrinsicsData>?,
-        context: TransactionHistoryContext
+        context: SubscanHistoryContext
     ) -> BaseOperation<MergeResult> {
         ClosureOperation<MergeResult> {
             let transferPageData = try transfersOperation?
@@ -152,7 +153,7 @@ final class SubscanHistoryOperationFactory {
 
     private func createMapOperation(
         dependingOn mergeOperation: BaseOperation<MergeResult>,
-        context: TransactionHistoryContext,
+        context: SubscanHistoryContext,
         filter: WalletRemoteHistoryFiltering?
     ) -> BaseOperation<WalletRemoteHistoryData> {
         ClosureOperation<WalletRemoteHistoryData> {
@@ -195,23 +196,35 @@ final class SubscanHistoryOperationFactory {
 
             return WalletRemoteHistoryData(
                 historyItems: finalItems,
-                context: nextContext
+                context: nextContext.toContext()
             )
         }
     }
 }
 
 extension SubscanHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
-    func createOperationWrapper(for context: TransactionHistoryContext, address: String, count _: Int)
+    func isComplete(pagination: Pagination) -> Bool {
+        SubscanHistoryContext(
+            context: pagination.context ?? [:],
+            defaultRow: pagination.count
+        ).byApplying(filter: walletFilter).isComplete
+    }
+
+    func createOperationWrapper(for address: String, pagination: Pagination)
         -> CompoundOperationWrapper<WalletRemoteHistoryData> {
-        guard !context.isComplete else {
-            let result = WalletRemoteHistoryData(historyItems: [], context: context)
+        guard !isComplete(pagination: pagination) else {
+            let result = WalletRemoteHistoryData(historyItems: [], context: pagination.context ?? [:])
             return CompoundOperationWrapper.createWithResult(result)
         }
 
-        let transfersOperation = createTransfersOperationIfNeeded(for: context, address: address)
-        let rewardsOperation = createRewardsOperationIfNeeded(for: context, address: address)
-        let extrinsicsOperation = createExtrinsicsOperationIfNeeded(for: context, address: address)
+        let subscanContext = SubscanHistoryContext(
+            context: pagination.context ?? [:],
+            defaultRow: pagination.count
+        ).byApplying(filter: walletFilter)
+
+        let transfersOperation = createTransfersOperationIfNeeded(for: subscanContext, address: address)
+        let rewardsOperation = createRewardsOperationIfNeeded(for: subscanContext, address: address)
+        let extrinsicsOperation = createExtrinsicsOperationIfNeeded(for: subscanContext, address: address)
 
         let sourceOperations: [Operation] = [transfersOperation, rewardsOperation, extrinsicsOperation]
             .compactMap { $0 }
@@ -220,12 +233,16 @@ extension SubscanHistoryOperationFactory: WalletRemoteHistoryFactoryProtocol {
             dependingOn: transfersOperation,
             rewardsOperation: rewardsOperation,
             extrinsicsOperation: extrinsicsOperation,
-            context: context
+            context: subscanContext
         )
 
         sourceOperations.forEach { mergeOperation.addDependency($0) }
 
-        let mapOperation = createMapOperation(dependingOn: mergeOperation, context: context, filter: filter)
+        let mapOperation = createMapOperation(
+            dependingOn: mergeOperation,
+            context: subscanContext,
+            filter: WalletRemoteHistoryClosureFilter.transfersInExtrinsics
+        )
 
         mapOperation.addDependency(mergeOperation)
 

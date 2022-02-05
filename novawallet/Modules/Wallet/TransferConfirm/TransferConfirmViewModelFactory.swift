@@ -8,20 +8,35 @@ final class TransferConfirmViewModelFactory {
     let chainAccount: ChainAccountResponse
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
 
     init(
         chainAccount: ChainAccountResponse,
         chainAsset: ChainAsset,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?
     ) {
         self.chainAccount = chainAccount
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.feeViewModelFactory = feeViewModelFactory
     }
 
-    private func getPriceDataFrom(_ transferInfo: TransferInfo) -> PriceData? {
+    private func getTransferPriceDataFrom(_ transferInfo: TransferInfo) -> PriceData? {
         let priceContext = BalanceContext(context: transferInfo.context ?? [:])
         let price = priceContext.price
+
+        guard price > 0.0 else { return nil }
+
+        return PriceData(price: price.stringWithPointSeparator, usdDayChange: nil)
+    }
+
+    private func getFeePriceDataFrom(_ transferInfo: TransferInfo) -> PriceData? {
+        let priceContext = FeeMetadataContext(
+            context: transferInfo.fees.first?.feeDescription.context ?? [:]
+        )
+
+        let price = priceContext.feeAssetPrice
 
         guard price > 0.0 else { return nil }
 
@@ -119,7 +134,7 @@ final class TransferConfirmViewModelFactory {
         let assetInfo = chainAsset.assetDisplayInfo
 
         let decimalAmount = payload.transferInfo.amount.decimalValue
-        let priceData = getPriceDataFrom(payload.transferInfo)
+        let priceData = getTransferPriceDataFrom(payload.transferInfo)
 
         let inputBalance = balanceViewModelFactory
             .balanceFromPrice(decimalAmount, priceData: priceData).value(for: locale)
@@ -176,9 +191,10 @@ extension TransferConfirmViewModelFactory: TransferConfirmationViewModelFactoryO
         let actionTitle = R.string.localizable.commonConfirm(preferredLanguages: locale.rLanguages)
         let title = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
 
-        let priceData = getPriceDataFrom(payload.transferInfo)
+        let priceData = getFeePriceDataFrom(payload.transferInfo)
 
-        let balanceData = balanceViewModelFactory.balanceFromPrice(fee, priceData: priceData).value(for: locale)
+        let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
+        let balanceData = viewModelFactory.balanceFromPrice(fee, priceData: priceData).value(for: locale)
 
         return ExtrinisicConfirmViewModel(
             title: title,

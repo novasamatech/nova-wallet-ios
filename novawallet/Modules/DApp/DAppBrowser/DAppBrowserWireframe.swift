@@ -5,10 +5,12 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
+        type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) {
         guard let confirmationView = DAppOperationConfirmViewFactory.createView(
             for: request,
+            type: type,
             delegate: delegate
         ) else {
             return
@@ -52,5 +54,9 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         authVew.controller.modalPresentationStyle = .custom
 
         view?.controller.present(authVew.controller, animated: true, completion: nil)
+    }
+
+    func close(view: DAppBrowserViewProtocol?) {
+        view?.controller.navigationController?.popViewController(animated: true)
     }
 }

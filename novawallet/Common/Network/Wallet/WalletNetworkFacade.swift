@@ -15,10 +15,10 @@ final class WalletNetworkFacade {
     let totalPriceId: String
     let totalPriceAssetInfo: AssetBalanceDisplayInfo
     let chainStorage: AnyDataProviderRepository<ChainStorageItem>
-    let localStorageRequestFactory: LocalStorageRequestFactoryProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let contactsOperationFactory: WalletContactOperationFactoryProtocol
     let accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+    let assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
 
     init(
         accountSettings: WalletAccountSettings,
@@ -32,10 +32,10 @@ final class WalletNetworkFacade {
         totalPriceId: String,
         totalPriceAssetInfo: AssetBalanceDisplayInfo,
         chainStorage: AnyDataProviderRepository<ChainStorageItem>,
-        localStorageRequestFactory: LocalStorageRequestFactoryProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         contactsOperationFactory: WalletContactOperationFactoryProtocol,
-        accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        accountsRepository: AnyDataProviderRepository<ManagedMetaAccountModel>,
+        assetBalanceRepository: AnyDataProviderRepository<AssetBalance>
     ) {
         self.accountSettings = accountSettings
         self.metaAccount = metaAccount
@@ -44,7 +44,6 @@ final class WalletNetworkFacade {
         self.storageFacade = storageFacade
         self.nodeOperationFactory = nodeOperationFactory
         self.subscanOperationFactory = subscanOperationFactory
-        self.localStorageRequestFactory = localStorageRequestFactory
         self.coingeckoOperationFactory = coingeckoOperationFactory
         self.totalPriceId = totalPriceId
         self.totalPriceAssetInfo = totalPriceAssetInfo
@@ -52,5 +51,6 @@ final class WalletNetworkFacade {
         self.repositoryFactory = repositoryFactory
         self.contactsOperationFactory = contactsOperationFactory
         self.accountsRepository = accountsRepository
+        self.assetBalanceRepository = assetBalanceRepository
     }
 }

@@ -3,7 +3,8 @@ import CommonWallet
 import IrohaCrypto
 
 extension SubscanRewardItemData: WalletRemoteHistoryItemProtocol {
-    var identifier: String { "\(recordId)-\(eventIndex)" }
+    var remoteIdentifier: String { "\(recordId)-\(eventIndex)" }
+    var localIdentifier: String { "\(recordId)-\(eventIndex)" }
     var itemBlockNumber: UInt64 { blockNumber }
     var itemExtrinsicIndex: UInt16 { extrinsicIndex }
     var itemTimestamp: Int64 { timestamp }
@@ -24,7 +25,8 @@ extension SubscanRewardItemData: WalletRemoteHistoryItemProtocol {
 }
 
 extension SubscanTransferItemData: WalletRemoteHistoryItemProtocol {
-    var identifier: String { hash }
+    var remoteIdentifier: String { hash }
+    var localIdentifier: String { hash }
     var itemBlockNumber: UInt64 { blockNumber }
     var itemExtrinsicIndex: UInt16 { extrinsicIndex.value }
     var itemTimestamp: Int64 { timestamp }
@@ -45,7 +47,8 @@ extension SubscanTransferItemData: WalletRemoteHistoryItemProtocol {
 }
 
 extension SubscanConcreteExtrinsicsItemData: WalletRemoteHistoryItemProtocol {
-    var identifier: String { hash }
+    var remoteIdentifier: String { hash }
+    var localIdentifier: String { hash }
     var itemBlockNumber: UInt64 { blockNumber }
     var itemExtrinsicIndex: UInt16 { extrinsicIndex.value }
     var itemTimestamp: Int64 { timestamp }
