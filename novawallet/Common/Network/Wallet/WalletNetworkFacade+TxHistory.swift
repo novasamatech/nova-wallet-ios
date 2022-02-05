@@ -56,8 +56,16 @@ extension WalletNetworkFacade {
 
         let chain = chainAsset.chain
 
+        let remoteAddress: AccountAddress
+
+        if chain.isEthereumBased {
+            remoteAddress = address.toEthereumAddressWithChecksum() ?? address
+        } else {
+            remoteAddress = address
+        }
+
         let remoteHistoryWrapper = remoteFactory.createOperationWrapper(
-            for: address,
+            for: remoteAddress,
             pagination: pagination
         )
 
