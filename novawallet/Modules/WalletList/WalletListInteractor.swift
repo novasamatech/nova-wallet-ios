@@ -239,7 +239,10 @@ final class WalletListInteractor {
             return
         }
 
-        let options = DataProviderObserverOptions(alwaysNotifyOnRefresh: true, waitsInProgressSyncOnAdd: true)
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: true,
+            waitsInProgressSyncOnAdd: false
+        )
 
         priceSubscription?.addObserver(
             self,
