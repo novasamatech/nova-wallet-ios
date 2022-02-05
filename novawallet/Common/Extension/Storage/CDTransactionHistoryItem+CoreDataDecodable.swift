@@ -7,12 +7,17 @@ extension CDTransactionHistoryItem: CoreDataCodable {
         let container = try decoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
         chainId = try container.decode(String.self, forKey: .chainId)
+        assetId = try container.decode(Int32.self, forKey: .assetId)
         identifier = try container.decode(String.self, forKey: .txHash)
         sender = try container.decode(String.self, forKey: .sender)
         receiver = try container.decodeIfPresent(String.self, forKey: .receiver)
+        amountInPlank = try container.decodeIfPresent(String.self, forKey: .amountInPlank)
         status = try container.decode(Int16.self, forKey: .status)
         timestamp = try container.decode(Int64.self, forKey: .timestamp)
-        fee = try container.decode(String.self, forKey: .fee)
+
+        if let fee = try container.decodeIfPresent(String.self, forKey: .fee) {
+            self.fee = fee
+        }
 
         let callPath = try container.decode(CallCodingPath.self, forKey: .callPath)
         callName = callPath.callName
@@ -37,9 +42,11 @@ extension CDTransactionHistoryItem: CoreDataCodable {
         var container = encoder.container(keyedBy: TransactionHistoryItem.CodingKeys.self)
 
         try container.encodeIfPresent(chainId, forKey: .chainId)
+        try container.encode(assetId, forKey: .assetId)
         try container.encodeIfPresent(identifier, forKey: .txHash)
         try container.encodeIfPresent(sender, forKey: .sender)
         try container.encodeIfPresent(receiver, forKey: .receiver)
+        try container.encodeIfPresent(amountInPlank, forKey: .amountInPlank)
         try container.encodeIfPresent(status, forKey: .status)
         try container.encodeIfPresent(timestamp, forKey: .timestamp)
         try container.encodeIfPresent(fee, forKey: .fee)

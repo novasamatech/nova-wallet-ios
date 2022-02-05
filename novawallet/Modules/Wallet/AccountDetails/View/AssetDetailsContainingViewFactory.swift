@@ -44,13 +44,31 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         return view
     }
 
+    func isTransfersEnable() -> Bool {
+        if let type = chainAsset.asset.type {
+            switch AssetType(rawValue: type) {
+            case .statemine, .none:
+                return true
+            case .orml:
+                if let extras = try? chainAsset.asset.typeExtras?.map(to: OrmlTokenExtras.self) {
+                    return extras.transfersEnabled ?? true
+                } else {
+                    return false
+                }
+            }
+        } else {
+            return true
+        }
+    }
+
     private func bindCommands(to view: AssetDetailsView) {
         guard let commandFactory = commandFactory else {
             return
         }
 
         let assetId = chainAsset.chainAssetId.walletId
-        let sendCommand: WalletCommandProtocol = commandFactory.prepareSendCommand(for: assetId)
+        let sendCommand: WalletCommandProtocol? = isTransfersEnable() ?
+            commandFactory.prepareSendCommand(for: assetId) : nil
         let receiveCommand: WalletCommandProtocol = commandFactory.prepareReceiveCommand(for: assetId)
 
         // TODO: Enable buy command when tokens ready

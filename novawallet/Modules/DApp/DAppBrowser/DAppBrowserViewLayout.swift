@@ -12,6 +12,12 @@ final class DAppBrowserViewLayout: UIView {
     var securityImageView: UIImageView { urlBar.controlContentView.imageView }
     var urlLabel: UILabel { urlBar.controlContentView.detailsLabel }
 
+    let closeBarItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconClose()!, style: .plain, target: nil, action: nil)
+        item.tintColor = R.color.colorWhite()
+        return item
+    }()
+
     let refreshBarItem: UIBarButtonItem = {
         let item = UIBarButtonItem(image: R.image.iconRefresh()!, style: .plain, target: nil, action: nil)
         item.tintColor = R.color.colorWhite()

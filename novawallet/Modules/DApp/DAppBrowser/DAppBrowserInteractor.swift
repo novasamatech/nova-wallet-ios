@@ -6,7 +6,7 @@ final class DAppBrowserInteractor {
 
     weak var presenter: DAppBrowserInteractorOutputProtocol!
 
-    private(set) var userQuery: DAppUserQuery
+    private(set) var userQuery: DAppSearchResult
     let dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
 
@@ -14,9 +14,10 @@ final class DAppBrowserInteractor {
     private(set) var state: DAppBrowserStateProtocol?
 
     init(
-        userQuery: DAppUserQuery,
+        userQuery: DAppSearchResult,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
+        dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
@@ -24,7 +25,9 @@ final class DAppBrowserInteractor {
         dataSource = DAppBrowserStateDataSource(
             wallet: wallet,
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            dAppSettingsRepository: dAppSettingsRepository,
+            operationQueue: operationQueue,
+            dApp: userQuery.dApp
         )
         self.logger = logger
     }
@@ -87,14 +90,20 @@ final class DAppBrowserInteractor {
     func provideModel() {
         let maybeUrl: URL? = {
             switch userQuery {
-            case let .url(url):
-                return url
-            case let .search(query):
-                if NSPredicate.urlPredicate.evaluate(with: query), let inputUrl = URL(string: query) {
+            case let .dApp(model):
+                return model.url
+            case let .query(string):
+                var urlComponents = URLComponents(string: string)
+
+                if urlComponents?.scheme == nil {
+                    urlComponents?.scheme = "https"
+                }
+
+                if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = urlComponents?.url {
                     return inputUrl
                 } else {
                     let querySet = CharacterSet.urlQueryAllowed
-                    guard let searchQuery = query.addingPercentEncoding(withAllowedCharacters: querySet) else {
+                    guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
                         return nil
                     }
 
@@ -167,8 +176,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         state?.handleOperation(response: response, dataSource: dataSource)
     }
 
-    func process(newQuery: String) {
-        userQuery = .search(newQuery)
+    func process(newQuery: DAppSearchResult) {
+        userQuery = newQuery
 
         state?.stateMachine = nil
         state = nil
@@ -209,10 +218,10 @@ extension DAppBrowserInteractor: DAppBrowserStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
-    func emit(signingRequest: DAppOperationRequest, nextState: DAppBrowserStateProtocol) {
+    func emit(signingRequest: DAppOperationRequest, type: DAppSigningType, nextState: DAppBrowserStateProtocol) {
         state = nextState
 
-        presenter.didReceiveConfirmation(request: signingRequest)
+        presenter.didReceiveConfirmation(request: signingRequest, type: type)
 
         nextState.setup(with: dataSource)
     }

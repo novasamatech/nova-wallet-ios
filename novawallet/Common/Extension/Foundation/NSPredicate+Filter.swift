@@ -2,13 +2,10 @@ import Foundation
 import IrohaCrypto
 
 extension NSPredicate {
-    // TODO: Remove
-    static func filterAccountBy(networkType: SNAddressType) -> NSPredicate {
-        let rawValue = Int16(networkType.rawValue)
-        return NSPredicate(format: "%K == %d", #keyPath(CDMetaAccount.order), rawValue)
-    }
-
-    static func filterTransactionsBy(address: String, chainId: ChainModel.Id) -> NSPredicate {
+    static func filterTransactionsBy(
+        address: String,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
         let senderPredicate = filterTransactionsBySender(address: address)
         let receiverPredicate = filterTransactionsByReceiver(address: address)
         let chainPredicate = filterTransactionsByChainId(chainId)
@@ -17,6 +14,48 @@ extension NSPredicate {
         return NSCompoundPredicate(andPredicateWithSubpredicates: [
             chainPredicate,
             NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        ])
+    }
+
+    static func filterTransactionsBy(
+        address: String,
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> NSPredicate {
+        let senderPredicate = filterTransactionsBySender(address: address)
+        let receiverPredicate = filterTransactionsByReceiver(address: address)
+        let chainPredicate = filterTransactionsByChainId(chainId)
+        let assetPredicate = filterTransactionsByAssetId(assetId)
+
+        let orPredicates = [senderPredicate, receiverPredicate]
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainPredicate,
+            assetPredicate,
+            NSCompoundPredicate(orPredicateWithSubpredicates: orPredicates)
+        ])
+    }
+
+    static func filterUtilityAssetTransactionsBy(
+        address: String,
+        chainId: ChainModel.Id,
+        utilityAssetId: UInt32
+    ) -> NSPredicate {
+        let senderPredicate = filterTransactionsBySender(address: address)
+        let receiverPredicate = filterTransactionsByReceiver(address: address)
+        let chainPredicate = filterTransactionsByChainId(chainId)
+        let assetPredicate = filterTransactionsByAssetId(utilityAssetId)
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            chainPredicate,
+            NSCompoundPredicate(
+                orPredicateWithSubpredicates: [
+                    senderPredicate,
+                    NSCompoundPredicate(andPredicateWithSubpredicates: [
+                        assetPredicate,
+                        receiverPredicate
+                    ])
+                ]
+            )
         ])
     }
 
@@ -30,6 +69,10 @@ extension NSPredicate {
 
     static func filterTransactionsByChainId(_ chainId: String) -> NSPredicate {
         NSPredicate(format: "%K == %@", #keyPath(CDTransactionHistoryItem.chainId), chainId)
+    }
+
+    static func filterTransactionsByAssetId(_ assetId: UInt32) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDTransactionHistoryItem.assetId), assetId)
     }
 
     static func filterContactsByTarget(address: String) -> NSPredicate {
@@ -98,5 +141,43 @@ extension NSPredicate {
 
     static func hasCrowloans() -> NSPredicate {
         NSPredicate(format: "%K == true", #keyPath(CDChain.hasCrowdloans))
+    }
+
+    static func assetBalance(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) -> NSPredicate {
+        let accountPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainAccountId),
+            accountId.toHex()
+        )
+
+        let chainIdPredicate = NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainId),
+            chainId
+        )
+
+        let assetIdPredicate = NSPredicate(
+            format: "%K == %d",
+            #keyPath(CDAssetBalance.assetId),
+            assetId
+        )
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [
+            accountPredicate, chainIdPredicate, assetIdPredicate
+        ])
+    }
+
+    static func assetBalance(
+        for accountId: AccountId
+    ) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDAssetBalance.chainAccountId),
+            accountId.toHex()
+        )
     }
 }

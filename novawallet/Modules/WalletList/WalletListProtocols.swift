@@ -1,18 +1,20 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 protocol WalletListViewProtocol: ControllerBackedProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel)
-    func didReceiveAssets(viewModel: [WalletListViewModel])
+    func didReceiveGroups(state: WalletListGroupState)
     func didCompleteRefreshing()
 }
 
 protocol WalletListPresenterProtocol: AnyObject {
     func setup()
     func selectWallet()
-    func selectAsset(at index: Int)
+    func selectAsset(for chainAssetId: ChainAssetId)
     func refresh()
+    func presentSettings()
 }
 
 protocol WalletListInteractorInputProtocol: AnyObject {
@@ -23,13 +25,15 @@ protocol WalletListInteractorInputProtocol: AnyObject {
 protocol WalletListInteractorOutputProtocol: AnyObject {
     func didReceive(genericAccountId: AccountId, name: String)
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>])
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, chainId: ChainModel.Id)
-    func didReceivePrices(result: Result<[ChainModel.Id: PriceData], Error>?)
+    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>])
+    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?)
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)
     func didChange(name: String)
+    func didReceive(hidesZeroBalances: Bool)
 }
 
 protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
-    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel)
+    func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
+    func showAssetsManage(from view: WalletListViewProtocol?)
 }

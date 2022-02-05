@@ -55,10 +55,14 @@ extension MockCrowdloanRemoteSubscriptionServiceProtocol {
 }
 
 extension MockRuntimeProviderProtocol {
-    func applyDefault(for chainId: ChainModel.Id) -> MockRuntimeProviderProtocol {
+    func applyDefault(
+        for chainId: ChainModel.Id,
+        specVersion: UInt32 = 9010,
+        txVersion: UInt32 = 5
+    ) -> MockRuntimeProviderProtocol {
         let codingFactory = try! RuntimeCodingServiceStub.createWestendCodingFactory(
-            specVersion: 9010,
-            txVersion: 5
+            specVersion: specVersion,
+            txVersion: txVersion
         )
 
         stub(self) { stub in

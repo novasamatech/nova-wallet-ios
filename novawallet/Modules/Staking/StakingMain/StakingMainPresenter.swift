@@ -264,10 +264,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
     }
 
-    func selectStory(at index: Int) {
-        wireframe.showStories(from: view, startingFrom: index)
-    }
-
     func performChangeValidatorsAction() {
         wireframe.showNominatorValidators(from: view)
     }

@@ -3,9 +3,10 @@ import XCTest
 import Cuckoo
 import SoraKeystore
 import SoraFoundation
+import RobinHood
 
 class DAppBrowserTests: XCTestCase {
-    let dAppURL = URL(string: "https://polkadot.js.org/apps")!
+    let dAppURL = "https://polkadot.js.org/apps"
 
     let dAppChain = ChainModelGenerator.generateChain(
         generatingAssets: 2,
@@ -35,10 +36,17 @@ class DAppBrowserTests: XCTestCase {
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [dAppChain])
 
+        let dAppSettingsRepository = storageFacade.createRepository(
+            filter: nil,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(DAppSettingsMapper())
+        )
+
         let interactor = DAppBrowserInteractor(
-            userQuery: .url(dAppURL),
+            userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
+            dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
             operationQueue: OperationQueue()
         )
 
@@ -71,7 +79,7 @@ class DAppBrowserTests: XCTestCase {
 
         wait(for: [loadingExpectation], timeout: 10)
 
-        XCTAssertEqual(loadedModel?.url, dAppURL)
+        XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
 
         if (interactor.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")

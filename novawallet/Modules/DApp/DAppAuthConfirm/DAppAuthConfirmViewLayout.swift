@@ -19,7 +19,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         label.textColor = R.color.colorWhite()
         label.font = .semiBoldTitle3
         label.textAlignment = .center
-        label.numberOfLines = 0
+        label.numberOfLines = 3
         return label
     }()
 
@@ -27,7 +27,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         let label = UILabel()
         label.textColor = R.color.colorLightGray()
         label.font = .regularFootnote
-        label.numberOfLines = 0
+        label.numberOfLines = 2
         label.textAlignment = .center
         return label
     }()
@@ -143,7 +143,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         denyButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.trailing.equalTo(self.snp.centerX).offset(-8.0)
-            make.top.equalTo(dappView.snp.bottom).offset(24.0)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
         }
 
@@ -151,7 +151,7 @@ final class DAppAuthConfirmViewLayout: UIView {
         allowButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.leading.equalTo(self.snp.centerX).offset(8.0)
-            make.top.equalTo(dappView.snp.bottom).offset(24.0)
+            make.bottom.equalTo(safeAreaLayoutGuide).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }

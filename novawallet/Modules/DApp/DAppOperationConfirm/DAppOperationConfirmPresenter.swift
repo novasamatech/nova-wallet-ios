@@ -48,7 +48,7 @@ final class DAppOperationConfirmPresenter {
 
     private func provideFeeViewModel() {
         guard let feeModel = feeModel, let confirmationModel = confirmationModel else {
-            view?.didReceive(feeViewModel: nil)
+            view?.didReceive(feeViewModel: .loading)
             return
         }
 
@@ -56,13 +56,36 @@ final class DAppOperationConfirmPresenter {
             let fee = BigUInt(feeModel.fee),
             let asset = confirmationModel.chain.utilityAssets().first,
             let feeDecimal = Decimal.fromSubstrateAmount(fee, precision: Int16(asset.precision)) else {
-            view?.didReceive(feeViewModel: nil)
+            view?.didReceive(feeViewModel: .loading)
             return
         }
 
-        let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
-            .value(for: selectedLocale)
-        view?.didReceive(feeViewModel: viewModel)
+        if fee > 0 {
+            let viewModel = balanceViewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
+                .value(for: selectedLocale)
+            view?.didReceive(feeViewModel: .loaded(value: viewModel))
+        } else {
+            view?.didReceive(feeViewModel: .empty)
+        }
+    }
+
+    private func showConfirmationError(_ error: ErrorContentConvertible) {
+        let rejectAction = AlertPresentableAction(
+            title: R.string.localizable.commonReject(preferredLanguages: selectedLocale.rLanguages)
+        ) { [weak self] in
+            self?.interactor.reject()
+        }
+
+        let errorContent = error.toErrorContent(for: selectedLocale)
+
+        let viewModel = AlertPresentableViewModel(
+            title: errorContent.title,
+            message: errorContent.message,
+            actions: [rejectAction],
+            closeAction: R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+        )
+
+        wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
 }
 
@@ -95,9 +118,11 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         case let .failure(error):
             confirmationModel = nil
 
-            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
-                logger?.error("Confirmation error: \(error)")
+            if let contentConvertible = error as? ErrorContentConvertible {
+                showConfirmationError(contentConvertible)
             }
+
+            logger?.error("Confirmation error: \(error)")
         }
 
         provideConfirmationViewModel()
@@ -108,11 +133,14 @@ extension DAppOperationConfirmPresenter: DAppOperationConfirmInteractorOutputPro
         switch feeResult {
         case let .success(fee):
             feeModel = fee
-        case let .failure(error):
+        case .failure:
             feeModel = nil
 
-            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
-                logger?.error("Fee error: \(error)")
+            wireframe.presentFeeStatus(
+                on: view,
+                locale: selectedLocale
+            ) { [weak self] in
+                self?.interactor.estimateFee()
             }
         }
 

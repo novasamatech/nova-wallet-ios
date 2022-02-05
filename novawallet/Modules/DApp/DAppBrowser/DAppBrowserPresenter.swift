@@ -55,6 +55,26 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func activateSearch(with query: String?) {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
     }
+
+    func close() {
+        let languages = localizationManager.selectedLocale.rLanguages
+
+        let closeViewModel = AlertPresentableAction(
+            title: R.string.localizable.commonClose(preferredLanguages: languages),
+            style: .destructive
+        ) { [weak self] in
+            self?.wireframe.close(view: self?.view)
+        }
+
+        let viewModel = AlertPresentableViewModel(
+            title: nil,
+            message: R.string.localizable.dappBrowserCloseConfirmation(preferredLanguages: languages),
+            actions: [closeViewModel],
+            closeAction: R.string.localizable.commonCancel(preferredLanguages: languages)
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
@@ -74,8 +94,8 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         view?.didReceive(response: response)
     }
 
-    func didReceiveConfirmation(request: DAppOperationRequest) {
-        wireframe.presentOperationConfirm(from: view, request: request, delegate: self)
+    func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType) {
+        wireframe.presentOperationConfirm(from: view, request: request, type: type, delegate: self)
     }
 
     func didReceiveAuth(request: DAppAuthRequest) {
@@ -90,8 +110,8 @@ extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
 }
 
 extension DAppBrowserPresenter: DAppSearchDelegate {
-    func didCompleteDAppSearchQuery(_ query: String) {
-        interactor.process(newQuery: query)
+    func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
+        interactor.process(newQuery: result)
     }
 }
 

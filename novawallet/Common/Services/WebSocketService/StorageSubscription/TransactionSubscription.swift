@@ -16,9 +16,8 @@ final class TransactionSubscription {
     let accountId: AccountId
     let chainModel: ChainModel
     let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
-    let contactOperationFactory: WalletContactOperationFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
@@ -27,19 +26,17 @@ final class TransactionSubscription {
         accountId: AccountId,
         chainModel: ChainModel,
         txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
-        contactOperationFactory: WalletContactOperationFactoryProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
         self.chainRegistry = chainRegistry
         self.accountId = accountId
         self.chainModel = chainModel
-        self.contactOperationFactory = contactOperationFactory
         self.storageRequestFactory = storageRequestFactory
         self.txStorage = txStorage
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.logger = logger
     }
@@ -95,15 +92,8 @@ final class TransactionSubscription {
                 codingFactoryOperation: coderFactoryOperation
             )
 
-            let contactSaveWrapper = createContactSaveWrapper(
-                dependingOn: parseOperation,
-                contactOperationFactory: contactOperationFactory,
-                chainFormat: chainModel.chainFormat
-            )
-
             txSaveOperation.addDependency(parseOperation)
             txSaveOperation.addDependency(coderFactoryOperation)
-            contactSaveWrapper.allOperations.forEach { $0.addDependency(parseOperation) }
 
             txSaveOperation.completionBlock = {
                 switch parseOperation.result {
@@ -124,7 +114,6 @@ final class TransactionSubscription {
             let operations: [Operation] = {
                 var array = [Operation]()
                 array.append(contentsOf: eventsWrapper.allOperations)
-                array.append(contentsOf: contactSaveWrapper.allOperations)
                 array.append(fetchBlockOperation)
                 array.append(coderFactoryOperation)
                 array.append(parseOperation)
@@ -132,7 +121,7 @@ final class TransactionSubscription {
                 return array
             }()
 
-            operationManager.enqueue(operations: operations, in: .transient)
+            operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
             logger.error("Block processing failed: \(error)")
         }
@@ -150,52 +139,20 @@ extension TransactionSubscription {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
             return try processingOperaton.extractNoCancellableResultData().compactMap { result in
-                TransactionHistoryItem.createFromSubscriptionResult(
+                guard let asset = chain.assets.first(
+                    where: { $0.assetId == result.processingResult.assetId }
+                ) else {
+                    return nil
+                }
+
+                return TransactionHistoryItem.createFromSubscriptionResult(
                     result,
                     accountId: accountId,
-                    chain: chain,
+                    chainAsset: ChainAsset(chain: chain, asset: asset),
                     runtimeJsonContext: runtimeJsonContext
                 )
             }
         }, { [] })
-    }
-
-    private func createContactSaveWrapper(
-        dependingOn processingOperaton: BaseOperation<[TransactionSubscriptionResult]>,
-        contactOperationFactory: WalletContactOperationFactoryProtocol,
-        chainFormat: ChainFormat
-    ) -> CompoundOperationWrapper<Void> {
-        let extractionOperation = ClosureOperation<Set<AccountAddress>> {
-            try processingOperaton.extractNoCancellableResultData()
-                .reduce(into: Set<AccountAddress>()) { result, item in
-                    if let peerId = item.processingResult.peerId {
-                        let address = try peerId.toAddress(using: chainFormat)
-                        result.insert(address)
-                    }
-                }
-        }
-
-        let saveOperation = OperationCombiningService(operationManager: operationManager) {
-            try extractionOperation.extractNoCancellableResultData().map { peerId in
-                contactOperationFactory.saveByAddressOperation(peerId)
-            }
-        }.longrunOperation()
-
-        saveOperation.addDependency(extractionOperation)
-
-        let mapOperation = ClosureOperation<Void> {
-            _ = try saveOperation.extractNoCancellableResultData()
-            return
-        }
-
-        mapOperation.addDependency(saveOperation)
-
-        let dependencies = [extractionOperation, saveOperation]
-
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: dependencies
-        )
     }
 
     private func createParseOperation(
@@ -218,10 +175,7 @@ extension TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let extrinsicProcessor = ExtrinsicProcessor(
-                accountId: accountId,
-                isEthereumBased: chain.isEthereumBased
-            )
+            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId, chain: chain)
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {

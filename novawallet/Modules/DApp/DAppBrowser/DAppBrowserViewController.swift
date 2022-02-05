@@ -43,7 +43,14 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private func configure() {
         navigationItem.titleView = rootView.urlBar
 
+        navigationItem.leftItemsSupplementBackButton = false
+        navigationItem.leftBarButtonItem = rootView.closeBarItem
+
+        rootView.closeBarItem.target = self
+        rootView.closeBarItem.action = #selector(actionClose)
+
         rootView.webView.uiDelegate = self
+        rootView.webView.allowsBackForwardNavigationGestures = true
 
         urlObservation = rootView.webView.observe(\.url, options: [.initial, .new]) { [weak self] _, change in
             guard let newValue = change.newValue, let url = newValue else {
@@ -128,6 +135,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     @objc private func actionSearch() {
         presenter.activateSearch(with: rootView.webView.url?.absoluteString)
+    }
+
+    @objc private func actionClose() {
+        presenter.close()
     }
 }
 

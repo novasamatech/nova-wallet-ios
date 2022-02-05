@@ -7145,6 +7145,648 @@ import Cuckoo
 @testable import novawallet
 
 
+ class MockAssetsManageViewProtocol: AssetsManageViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AssetsManageViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_AssetsManageViewProtocol
+     typealias Verification = __VerificationProxy_AssetsManageViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AssetsManageViewProtocol?
+
+     func enableDefaultImplementation(_ stub: AssetsManageViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(viewModel: AssetsManageViewModel)  {
+        
+    return cuckoo_manager.call("didReceive(viewModel: AssetsManageViewModel)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(viewModel: viewModel))
+        
+    }
+    
+
+	 struct __StubbingProxy_AssetsManageViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetsManageViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockAssetsManageViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetsManageViewModel)> where M1.MatchedType == AssetsManageViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AssetsManageViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageViewProtocol.self, method: "didReceive(viewModel: AssetsManageViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AssetsManageViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(AssetsManageViewModel), Void> where M1.MatchedType == AssetsManageViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(AssetsManageViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(viewModel: AssetsManageViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AssetsManageViewProtocolStub: AssetsManageViewProtocol {
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+     func didReceive(viewModel: AssetsManageViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockAssetsManagePresenterProtocol: AssetsManagePresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AssetsManagePresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_AssetsManagePresenterProtocol
+     typealias Verification = __VerificationProxy_AssetsManagePresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AssetsManagePresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: AssetsManagePresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func setHideZeroBalances(value: Bool)  {
+        
+    return cuckoo_manager.call("setHideZeroBalances(value: Bool)",
+            parameters: (value),
+            escapingParameters: (value),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setHideZeroBalances(value: value))
+        
+    }
+    
+    
+    
+     func apply()  {
+        
+    return cuckoo_manager.call("apply()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.apply())
+        
+    }
+    
+
+	 struct __StubbingProxy_AssetsManagePresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManagePresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func setHideZeroBalances<M1: Cuckoo.Matchable>(value: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManagePresenterProtocol.self, method: "setHideZeroBalances(value: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func apply() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManagePresenterProtocol.self, method: "apply()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AssetsManagePresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func setHideZeroBalances<M1: Cuckoo.Matchable>(value: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: value) { $0 }]
+	        return cuckoo_manager.verify("setHideZeroBalances(value: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func apply() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("apply()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AssetsManagePresenterProtocolStub: AssetsManagePresenterProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func setHideZeroBalances(value: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func apply()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockAssetsManageInteractorInputProtocol: AssetsManageInteractorInputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AssetsManageInteractorInputProtocol
+    
+     typealias Stubbing = __StubbingProxy_AssetsManageInteractorInputProtocol
+     typealias Verification = __VerificationProxy_AssetsManageInteractorInputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AssetsManageInteractorInputProtocol?
+
+     func enableDefaultImplementation(_ stub: AssetsManageInteractorInputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func save(hideZeroBalances: Bool)  {
+        
+    return cuckoo_manager.call("save(hideZeroBalances: Bool)",
+            parameters: (hideZeroBalances),
+            escapingParameters: (hideZeroBalances),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.save(hideZeroBalances: hideZeroBalances))
+        
+    }
+    
+
+	 struct __StubbingProxy_AssetsManageInteractorInputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageInteractorInputProtocol.self, method: "save(hideZeroBalances: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AssetsManageInteractorInputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func save<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return cuckoo_manager.verify("save(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AssetsManageInteractorInputProtocolStub: AssetsManageInteractorInputProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func save(hideZeroBalances: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockAssetsManageInteractorOutputProtocol: AssetsManageInteractorOutputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AssetsManageInteractorOutputProtocol
+    
+     typealias Stubbing = __StubbingProxy_AssetsManageInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_AssetsManageInteractorOutputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AssetsManageInteractorOutputProtocol?
+
+     func enableDefaultImplementation(_ stub: AssetsManageInteractorOutputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceive(hideZeroBalances: Bool)  {
+        
+    return cuckoo_manager.call("didReceive(hideZeroBalances: Bool)",
+            parameters: (hideZeroBalances),
+            escapingParameters: (hideZeroBalances),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(hideZeroBalances: hideZeroBalances))
+        
+    }
+    
+    
+    
+     func didSave()  {
+        
+    return cuckoo_manager.call("didSave()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didSave())
+        
+    }
+    
+
+	 struct __StubbingProxy_AssetsManageInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageInteractorOutputProtocol.self, method: "didReceive(hideZeroBalances: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didSave() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageInteractorOutputProtocol.self, method: "didSave()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AssetsManageInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(hideZeroBalances: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: hideZeroBalances) { $0 }]
+	        return cuckoo_manager.verify("didReceive(hideZeroBalances: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didSave() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didSave()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AssetsManageInteractorOutputProtocolStub: AssetsManageInteractorOutputProtocol {
+    
+
+    
+
+    
+     func didReceive(hideZeroBalances: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didSave()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockAssetsManageWireframeProtocol: AssetsManageWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = AssetsManageWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_AssetsManageWireframeProtocol
+     typealias Verification = __VerificationProxy_AssetsManageWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: AssetsManageWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: AssetsManageWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func close(view: AssetsManageViewProtocol?)  {
+        
+    return cuckoo_manager.call("close(view: AssetsManageViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close(view: view))
+        
+    }
+    
+
+	 struct __StubbingProxy_AssetsManageWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AssetsManageViewProtocol?)> where M1.OptionalMatchedType == AssetsManageViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AssetsManageViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAssetsManageWireframeProtocol.self, method: "close(view: AssetsManageViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_AssetsManageWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(AssetsManageViewProtocol?), Void> where M1.OptionalMatchedType == AssetsManageViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AssetsManageViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("close(view: AssetsManageViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class AssetsManageWireframeProtocolStub: AssetsManageWireframeProtocol {
+    
+
+    
+
+    
+     func close(view: AssetsManageViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+
  class MockChainSelectionViewProtocol: ChainSelectionViewProtocol, Cuckoo.ProtocolMock {
     
      typealias MocksType = ChainSelectionViewProtocol
@@ -14470,6 +15112,21 @@ import Cuckoo
         
     }
     
+    
+    
+     func close()  {
+        
+    return cuckoo_manager.call("close()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14492,6 +15149,11 @@ import Cuckoo
 	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
+	    }
+	    
+	    func close() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "close()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14528,6 +15190,12 @@ import Cuckoo
 	        return cuckoo_manager.verify("activateSearch(with: String?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func close() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("close()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -14546,6 +15214,10 @@ import Cuckoo
     }
     
      func activateSearch(with query: String?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func close()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14623,9 +15295,9 @@ import Cuckoo
     
     
     
-     func process(newQuery: String)  {
+     func process(newQuery: DAppSearchResult)  {
         
-    return cuckoo_manager.call("process(newQuery: String)",
+    return cuckoo_manager.call("process(newQuery: DAppSearchResult)",
             parameters: (newQuery),
             escapingParameters: (newQuery),
             superclassCall:
@@ -14690,9 +15362,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processConfirmation(response: DAppOperationResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: String)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppSearchResult)> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: newQuery) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
 	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse)> where M1.MatchedType == DAppAuthResponse {
@@ -14740,9 +15412,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
-	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: newQuery) { $0 }]
-	        return cuckoo_manager.verify("process(newQuery: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.__DoNotUse<(DAppSearchResult), Void> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: newQuery) { $0 }]
+	        return cuckoo_manager.verify("process(newQuery: DAppSearchResult)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14778,7 +15450,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func process(newQuery: String)   {
+     func process(newQuery: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14864,16 +15536,16 @@ import Cuckoo
     
     
     
-     func didReceiveConfirmation(request: DAppOperationRequest)  {
+     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)  {
         
-    return cuckoo_manager.call("didReceiveConfirmation(request: DAppOperationRequest)",
-            parameters: (request),
-            escapingParameters: (request),
+    return cuckoo_manager.call("didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)",
+            parameters: (request, type),
+            escapingParameters: (request, type),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveConfirmation(request: request))
+            defaultCall: __defaultImplStub!.didReceiveConfirmation(request: request, type: type))
         
     }
     
@@ -14916,9 +15588,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest)> where M1.MatchedType == DAppOperationRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveConfirmation(request: DAppOperationRequest)", parameterMatchers: matchers))
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest, DAppSigningType)> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest, DAppSigningType)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: type) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveAuth<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthRequest)> where M1.MatchedType == DAppAuthRequest {
@@ -14961,9 +15633,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func didReceiveConfirmation<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.__DoNotUse<(DAppOperationRequest), Void> where M1.MatchedType == DAppOperationRequest {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest)>] = [wrap(matchable: request) { $0 }]
-	        return cuckoo_manager.verify("didReceiveConfirmation(request: DAppOperationRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.__DoNotUse<(DAppOperationRequest, DAppSigningType), Void> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationRequest, DAppSigningType)>] = [wrap(matchable: request) { $0.0 }, wrap(matchable: type) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14993,7 +15665,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func didReceiveConfirmation(request: DAppOperationRequest)   {
+     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15030,16 +15702,16 @@ import Cuckoo
     
     
     
-     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)  {
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)  {
         
-    return cuckoo_manager.call("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)",
-            parameters: (view, request, delegate),
-            escapingParameters: (view, request, delegate),
+    return cuckoo_manager.call("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)",
+            parameters: (view, request, type, delegate),
+            escapingParameters: (view, request, type, delegate),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentOperationConfirm(from: view, request: request, delegate: delegate))
+            defaultCall: __defaultImplStub!.presentOperationConfirm(from: view, request: request, type: type, delegate: delegate))
         
     }
     
@@ -15070,6 +15742,21 @@ import Cuckoo
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.presentAuth(from: view, request: request, delegate: delegate))
+        
+    }
+    
+    
+    
+     func close(view: DAppBrowserViewProtocol?)  {
+        
+    return cuckoo_manager.call("close(view: DAppBrowserViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close(view: view))
         
     }
     
@@ -15112,9 +15799,9 @@ import Cuckoo
 	    }
 	    
 	    
-	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", parameterMatchers: matchers))
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, type: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppSigningType, M4.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: type) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)", parameterMatchers: matchers))
 	    }
 	    
 	    func presentSearch<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable>(from view: M1, initialQuery: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, String?, DAppSearchDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.OptionalMatchedType == String, M3.MatchedType == DAppSearchDelegate {
@@ -15125,6 +15812,11 @@ import Cuckoo
 	    func presentAuth<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppAuthRequest, M3.MatchedType == DAppAuthDelegate {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", parameterMatchers: matchers))
+	    }
+	    
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "close(view: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -15154,9 +15846,9 @@ import Cuckoo
 	
 	    
 	    @discardableResult
-	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppOperationConfirmDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return cuckoo_manager.verify("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentOperationConfirm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, request: M2, type: M3, delegate: M4) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppOperationRequest, M3.MatchedType == DAppSigningType, M4.MatchedType == DAppOperationConfirmDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppOperationRequest, DAppSigningType, DAppOperationConfirmDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: type) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return cuckoo_manager.verify("presentOperationConfirm(from: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15169,6 +15861,12 @@ import Cuckoo
 	    func presentAuth<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, request: M2, delegate: M3) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppAuthRequest, M3.MatchedType == DAppAuthDelegate {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppAuthRequest, DAppAuthDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: request) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
 	        return cuckoo_manager.verify("presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("close(view: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15192,7 +15890,7 @@ import Cuckoo
     
 
     
-     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, delegate: DAppOperationConfirmDelegate)   {
+     func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15201,6 +15899,10 @@ import Cuckoo
     }
     
      func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func close(view: DAppBrowserViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16124,16 +16826,16 @@ import SubstrateSdk
     
     
     
-     func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery)  {
+     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)  {
         
-    return cuckoo_manager.call("showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)",
-            parameters: (view, query),
-            escapingParameters: (view, query),
+    return cuckoo_manager.call("showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)",
+            parameters: (view, result),
+            escapingParameters: (view, result),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showBrowser(from: view, for: query))
+            defaultCall: __defaultImplStub!.showBrowser(from: view, for: result))
         
     }
     
@@ -16201,9 +16903,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showSearch(from: DAppListViewProtocol?, delegate: DAppSearchDelegate)", parameterMatchers: matchers))
 	    }
 	    
-	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for query: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppUserQuery)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppUserQuery {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppUserQuery)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: query) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)", parameterMatchers: matchers))
+	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppSearchResult)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -16250,9 +16952,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for query: M2) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?, DAppUserQuery), Void> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppUserQuery {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppUserQuery)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: query) { $0.1 }]
-	        return cuckoo_manager.verify("showBrowser(from: DAppListViewProtocol?, for: DAppUserQuery)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?, DAppSearchResult), Void> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
+	        return cuckoo_manager.verify("showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -16290,7 +16992,7 @@ import SubstrateSdk
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func showBrowser(from view: DAppListViewProtocol?, for query: DAppUserQuery)   {
+     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16303,6 +17005,1836 @@ import SubstrateSdk
     }
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import SubstrateSdk
+
+
+ class MockDAppOperationConfirmViewProtocol: DAppOperationConfirmViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmViewProtocol
+     typealias Verification = __VerificationProxy_DAppOperationConfirmViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmViewProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(confimationViewModel: DAppOperationConfirmViewModel)  {
+        
+    return cuckoo_manager.call("didReceive(confimationViewModel: DAppOperationConfirmViewModel)",
+            parameters: (confimationViewModel),
+            escapingParameters: (confimationViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(confimationViewModel: confimationViewModel))
+        
+    }
+    
+    
+    
+     func didReceive(feeViewModel: DAppOperationFeeViewModel)  {
+        
+    return cuckoo_manager.call("didReceive(feeViewModel: DAppOperationFeeViewModel)",
+            parameters: (feeViewModel),
+            escapingParameters: (feeViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(feeViewModel: feeViewModel))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppOperationConfirmViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppOperationConfirmViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(confimationViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationConfirmViewModel)> where M1.MatchedType == DAppOperationConfirmViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confimationViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmViewProtocol.self, method: "didReceive(confimationViewModel: DAppOperationConfirmViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(feeViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationFeeViewModel)> where M1.MatchedType == DAppOperationFeeViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationFeeViewModel)>] = [wrap(matchable: feeViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmViewProtocol.self, method: "didReceive(feeViewModel: DAppOperationFeeViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(confimationViewModel: M1) -> Cuckoo.__DoNotUse<(DAppOperationConfirmViewModel), Void> where M1.MatchedType == DAppOperationConfirmViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewModel)>] = [wrap(matchable: confimationViewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(confimationViewModel: DAppOperationConfirmViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(feeViewModel: M1) -> Cuckoo.__DoNotUse<(DAppOperationFeeViewModel), Void> where M1.MatchedType == DAppOperationFeeViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationFeeViewModel)>] = [wrap(matchable: feeViewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceive(feeViewModel: DAppOperationFeeViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmViewProtocolStub: DAppOperationConfirmViewProtocol {
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+     func didReceive(confimationViewModel: DAppOperationConfirmViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(feeViewModel: DAppOperationFeeViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppOperationConfirmPresenterProtocol: DAppOperationConfirmPresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmPresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmPresenterProtocol
+     typealias Verification = __VerificationProxy_DAppOperationConfirmPresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmPresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmPresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func confirm()  {
+        
+    return cuckoo_manager.call("confirm()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.confirm())
+        
+    }
+    
+    
+    
+     func reject()  {
+        
+    return cuckoo_manager.call("reject()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.reject())
+        
+    }
+    
+    
+    
+     func activateTxDetails()  {
+        
+    return cuckoo_manager.call("activateTxDetails()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateTxDetails())
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmPresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func confirm() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "confirm()", parameterMatchers: matchers))
+	    }
+	    
+	    func reject() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "reject()", parameterMatchers: matchers))
+	    }
+	    
+	    func activateTxDetails() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmPresenterProtocol.self, method: "activateTxDetails()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmPresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func confirm() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("confirm()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func reject() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("reject()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateTxDetails() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("activateTxDetails()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmPresenterProtocolStub: DAppOperationConfirmPresenterProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func confirm()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func reject()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func activateTxDetails()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppOperationConfirmInteractorInputProtocol: DAppOperationConfirmInteractorInputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmInteractorInputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmInteractorInputProtocol
+     typealias Verification = __VerificationProxy_DAppOperationConfirmInteractorInputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmInteractorInputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmInteractorInputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func estimateFee()  {
+        
+    return cuckoo_manager.call("estimateFee()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.estimateFee())
+        
+    }
+    
+    
+    
+     func confirm()  {
+        
+    return cuckoo_manager.call("confirm()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.confirm())
+        
+    }
+    
+    
+    
+     func reject()  {
+        
+    return cuckoo_manager.call("reject()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.reject())
+        
+    }
+    
+    
+    
+     func prepareTxDetails()  {
+        
+    return cuckoo_manager.call("prepareTxDetails()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.prepareTxDetails())
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmInteractorInputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func estimateFee() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorInputProtocol.self, method: "estimateFee()", parameterMatchers: matchers))
+	    }
+	    
+	    func confirm() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorInputProtocol.self, method: "confirm()", parameterMatchers: matchers))
+	    }
+	    
+	    func reject() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorInputProtocol.self, method: "reject()", parameterMatchers: matchers))
+	    }
+	    
+	    func prepareTxDetails() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorInputProtocol.self, method: "prepareTxDetails()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmInteractorInputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func estimateFee() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("estimateFee()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func confirm() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("confirm()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func reject() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("reject()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func prepareTxDetails() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("prepareTxDetails()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmInteractorInputProtocolStub: DAppOperationConfirmInteractorInputProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func estimateFee()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func confirm()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func reject()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func prepareTxDetails()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppOperationConfirmInteractorOutputProtocol: DAppOperationConfirmInteractorOutputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmInteractorOutputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_DAppOperationConfirmInteractorOutputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmInteractorOutputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmInteractorOutputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)  {
+        
+    return cuckoo_manager.call("didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)",
+            parameters: (modelResult),
+            escapingParameters: (modelResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(modelResult: modelResult))
+        
+    }
+    
+    
+    
+     func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)  {
+        
+    return cuckoo_manager.call("didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)",
+            parameters: (feeResult),
+            escapingParameters: (feeResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(feeResult: feeResult))
+        
+    }
+    
+    
+    
+     func didReceive(priceResult: Result<PriceData?, Error>)  {
+        
+    return cuckoo_manager.call("didReceive(priceResult: Result<PriceData?, Error>)",
+            parameters: (priceResult),
+            escapingParameters: (priceResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(priceResult: priceResult))
+        
+    }
+    
+    
+    
+     func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest)  {
+        
+    return cuckoo_manager.call("didReceive(responseResult: Result<DAppOperationResponse, Error>, for: DAppOperationRequest)",
+            parameters: (responseResult, request),
+            escapingParameters: (responseResult, request),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(responseResult: responseResult, for: request))
+        
+    }
+    
+    
+    
+     func didReceive(txDetailsResult: Result<JSON, Error>)  {
+        
+    return cuckoo_manager.call("didReceive(txDetailsResult: Result<JSON, Error>)",
+            parameters: (txDetailsResult),
+            escapingParameters: (txDetailsResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(txDetailsResult: txDetailsResult))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(modelResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppOperationConfirmModel, Error>)> where M1.MatchedType == Result<DAppOperationConfirmModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationConfirmModel, Error>)>] = [wrap(matchable: modelResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RuntimeDispatchInfo, Error>)> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(priceResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>)>] = [wrap(matchable: priceResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(priceResult: Result<PriceData?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(responseResult: M1, for request: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppOperationResponse, Error>, DAppOperationRequest)> where M1.MatchedType == Result<DAppOperationResponse, Error>, M2.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationResponse, Error>, DAppOperationRequest)>] = [wrap(matchable: responseResult) { $0.0 }, wrap(matchable: request) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(responseResult: Result<DAppOperationResponse, Error>, for: DAppOperationRequest)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(txDetailsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<JSON, Error>)> where M1.MatchedType == Result<JSON, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<JSON, Error>)>] = [wrap(matchable: txDetailsResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmInteractorOutputProtocol.self, method: "didReceive(txDetailsResult: Result<JSON, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(modelResult: M1) -> Cuckoo.__DoNotUse<(Result<DAppOperationConfirmModel, Error>), Void> where M1.MatchedType == Result<DAppOperationConfirmModel, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationConfirmModel, Error>)>] = [wrap(matchable: modelResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(feeResult: M1) -> Cuckoo.__DoNotUse<(Result<RuntimeDispatchInfo, Error>), Void> where M1.MatchedType == Result<RuntimeDispatchInfo, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<RuntimeDispatchInfo, Error>)>] = [wrap(matchable: feeResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(priceResult: M1) -> Cuckoo.__DoNotUse<(Result<PriceData?, Error>), Void> where M1.MatchedType == Result<PriceData?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<PriceData?, Error>)>] = [wrap(matchable: priceResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(priceResult: Result<PriceData?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(responseResult: M1, for request: M2) -> Cuckoo.__DoNotUse<(Result<DAppOperationResponse, Error>, DAppOperationRequest), Void> where M1.MatchedType == Result<DAppOperationResponse, Error>, M2.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppOperationResponse, Error>, DAppOperationRequest)>] = [wrap(matchable: responseResult) { $0.0 }, wrap(matchable: request) { $0.1 }]
+	        return cuckoo_manager.verify("didReceive(responseResult: Result<DAppOperationResponse, Error>, for: DAppOperationRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(txDetailsResult: M1) -> Cuckoo.__DoNotUse<(Result<JSON, Error>), Void> where M1.MatchedType == Result<JSON, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<JSON, Error>)>] = [wrap(matchable: txDetailsResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(txDetailsResult: Result<JSON, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmInteractorOutputProtocolStub: DAppOperationConfirmInteractorOutputProtocol {
+    
+
+    
+
+    
+     func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(priceResult: Result<PriceData?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(txDetailsResult: Result<JSON, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppOperationConfirmWireframeProtocol: DAppOperationConfirmWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmWireframeProtocol
+     typealias Verification = __VerificationProxy_DAppOperationConfirmWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func close(view: DAppOperationConfirmViewProtocol?)  {
+        
+    return cuckoo_manager.call("close(view: DAppOperationConfirmViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close(view: view))
+        
+    }
+    
+    
+    
+     func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)  {
+        
+    return cuckoo_manager.call("showTxDetails(from: DAppOperationConfirmViewProtocol?, json: JSON)",
+            parameters: (view, json),
+            escapingParameters: (view, json),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showTxDetails(from: view, json: json))
+        
+    }
+    
+    
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
+            parameters: (message, title, closeAction, view),
+            escapingParameters: (message, title, closeAction, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
+        
+    }
+    
+    
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
+        
+    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
+            parameters: (viewModel, style, view),
+            escapingParameters: (viewModel, style, view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationConfirmViewProtocol?)> where M1.OptionalMatchedType == DAppOperationConfirmViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmWireframeProtocol.self, method: "close(view: DAppOperationConfirmViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func showTxDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, json: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationConfirmViewProtocol?, JSON)> where M1.OptionalMatchedType == DAppOperationConfirmViewProtocol, M2.MatchedType == JSON {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewProtocol?, JSON)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: json) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmWireframeProtocol.self, method: "showTxDetails(from: DAppOperationConfirmViewProtocol?, json: JSON)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppOperationConfirmViewProtocol?), Void> where M1.OptionalMatchedType == DAppOperationConfirmViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("close(view: DAppOperationConfirmViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showTxDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, json: M2) -> Cuckoo.__DoNotUse<(DAppOperationConfirmViewProtocol?, JSON), Void> where M1.OptionalMatchedType == DAppOperationConfirmViewProtocol, M2.MatchedType == JSON {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationConfirmViewProtocol?, JSON)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: json) { $0.1 }]
+	        return cuckoo_manager.verify("showTxDetails(from: DAppOperationConfirmViewProtocol?, json: JSON)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
+	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
+	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmWireframeProtocolStub: DAppOperationConfirmWireframeProtocol {
+    
+
+    
+
+    
+     func close(view: DAppOperationConfirmViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppOperationConfirmDelegate: DAppOperationConfirmDelegate, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppOperationConfirmDelegate
+    
+     typealias Stubbing = __StubbingProxy_DAppOperationConfirmDelegate
+     typealias Verification = __VerificationProxy_DAppOperationConfirmDelegate
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppOperationConfirmDelegate?
+
+     func enableDefaultImplementation(_ stub: DAppOperationConfirmDelegate) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for request: DAppOperationRequest)  {
+        
+    return cuckoo_manager.call("didReceiveConfirmationResponse(_: DAppOperationResponse, for: DAppOperationRequest)",
+            parameters: (response, request),
+            escapingParameters: (response, request),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveConfirmationResponse(response, for: request))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppOperationConfirmDelegate: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceiveConfirmationResponse<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ response: M1, for request: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationResponse, DAppOperationRequest)> where M1.MatchedType == DAppOperationResponse, M2.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse, DAppOperationRequest)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: request) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppOperationConfirmDelegate.self, method: "didReceiveConfirmationResponse(_: DAppOperationResponse, for: DAppOperationRequest)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppOperationConfirmDelegate: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceiveConfirmationResponse<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(_ response: M1, for request: M2) -> Cuckoo.__DoNotUse<(DAppOperationResponse, DAppOperationRequest), Void> where M1.MatchedType == DAppOperationResponse, M2.MatchedType == DAppOperationRequest {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse, DAppOperationRequest)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: request) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveConfirmationResponse(_: DAppOperationResponse, for: DAppOperationRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppOperationConfirmDelegateStub: DAppOperationConfirmDelegate {
+    
+
+    
+
+    
+     func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for request: DAppOperationRequest)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+import Cuckoo
+@testable import novawallet
+
+import RobinHood
+
+
+ class MockDAppSearchViewProtocol: DAppSearchViewProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchViewProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchViewProtocol
+     typealias Verification = __VerificationProxy_DAppSearchViewProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchViewProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppSearchViewProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+    
+    
+     var isSetup: Bool {
+        get {
+            return cuckoo_manager.getter("isSetup",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.isSetup)
+        }
+        
+    }
+    
+    
+    
+     var controller: UIViewController {
+        get {
+            return cuckoo_manager.getter("controller",
+                superclassCall:
+                    
+                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                    ,
+                defaultCall: __defaultImplStub!.controller)
+        }
+        
+    }
+    
+
+    
+
+    
+    
+    
+     func didReceive(initialQuery: String)  {
+        
+    return cuckoo_manager.call("didReceive(initialQuery: String)",
+            parameters: (initialQuery),
+            escapingParameters: (initialQuery),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(initialQuery: initialQuery))
+        
+    }
+    
+    
+    
+     func didReceiveDApp(viewModels: [DAppViewModel])  {
+        
+    return cuckoo_manager.call("didReceiveDApp(viewModels: [DAppViewModel])",
+            parameters: (viewModels),
+            escapingParameters: (viewModels),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveDApp(viewModels: viewModels))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchViewProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppSearchViewProtocol, Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup")
+	    }
+	    
+	    
+	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockDAppSearchViewProtocol, UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller")
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(initialQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: initialQuery) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchViewProtocol.self, method: "didReceive(initialQuery: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveDApp<M1: Cuckoo.Matchable>(viewModels: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppViewModel])> where M1.MatchedType == [DAppViewModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppViewModel])>] = [wrap(matchable: viewModels) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchViewProtocol.self, method: "didReceiveDApp(viewModels: [DAppViewModel])", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchViewProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	    
+	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
+	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	    
+	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
+	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
+	    }
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(initialQuery: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: initialQuery) { $0 }]
+	        return cuckoo_manager.verify("didReceive(initialQuery: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveDApp<M1: Cuckoo.Matchable>(viewModels: M1) -> Cuckoo.__DoNotUse<([DAppViewModel]), Void> where M1.MatchedType == [DAppViewModel] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppViewModel])>] = [wrap(matchable: viewModels) { $0 }]
+	        return cuckoo_manager.verify("didReceiveDApp(viewModels: [DAppViewModel])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchViewProtocolStub: DAppSearchViewProtocol {
+    
+    
+     var isSetup: Bool {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (Bool).self)
+        }
+        
+    }
+    
+    
+     var controller: UIViewController {
+        get {
+            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
+        }
+        
+    }
+    
+
+    
+
+    
+     func didReceive(initialQuery: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveDApp(viewModels: [DAppViewModel])   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppSearchPresenterProtocol: DAppSearchPresenterProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchPresenterProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchPresenterProtocol
+     typealias Verification = __VerificationProxy_DAppSearchPresenterProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchPresenterProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppSearchPresenterProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func updateSearch(query: String)  {
+        
+    return cuckoo_manager.call("updateSearch(query: String)",
+            parameters: (query),
+            escapingParameters: (query),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.updateSearch(query: query))
+        
+    }
+    
+    
+    
+     func selectDApp(viewModel: DAppViewModel)  {
+        
+    return cuckoo_manager.call("selectDApp(viewModel: DAppViewModel)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.selectDApp(viewModel: viewModel))
+        
+    }
+    
+    
+    
+     func selectSearchQuery()  {
+        
+    return cuckoo_manager.call("selectSearchQuery()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.selectSearchQuery())
+        
+    }
+    
+    
+    
+     func cancel()  {
+        
+    return cuckoo_manager.call("cancel()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.cancel())
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchPresenterProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func updateSearch<M1: Cuckoo.Matchable>(query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: query) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "updateSearch(query: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func selectDApp<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppViewModel)> where M1.MatchedType == DAppViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "selectDApp(viewModel: DAppViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func selectSearchQuery() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "selectSearchQuery()", parameterMatchers: matchers))
+	    }
+	    
+	    func cancel() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchPresenterProtocol.self, method: "cancel()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchPresenterProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func updateSearch<M1: Cuckoo.Matchable>(query: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: query) { $0 }]
+	        return cuckoo_manager.verify("updateSearch(query: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func selectDApp<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(DAppViewModel), Void> where M1.MatchedType == DAppViewModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppViewModel)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("selectDApp(viewModel: DAppViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func selectSearchQuery() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("selectSearchQuery()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func cancel() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("cancel()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchPresenterProtocolStub: DAppSearchPresenterProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func updateSearch(query: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func selectDApp(viewModel: DAppViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func selectSearchQuery()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func cancel()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppSearchInteractorInputProtocol: DAppSearchInteractorInputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchInteractorInputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchInteractorInputProtocol
+     typealias Verification = __VerificationProxy_DAppSearchInteractorInputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchInteractorInputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppSearchInteractorInputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func setup()  {
+        
+    return cuckoo_manager.call("setup()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchInteractorInputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchInteractorInputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchInteractorInputProtocolStub: DAppSearchInteractorInputProtocol {
+    
+
+    
+
+    
+     func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppSearchInteractorOutputProtocol: DAppSearchInteractorOutputProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchInteractorOutputProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchInteractorOutputProtocol
+     typealias Verification = __VerificationProxy_DAppSearchInteractorOutputProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchInteractorOutputProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppSearchInteractorOutputProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didReceive(dAppsResult: Result<DAppList?, Error>)  {
+        
+    return cuckoo_manager.call("didReceive(dAppsResult: Result<DAppList?, Error>)",
+            parameters: (dAppsResult),
+            escapingParameters: (dAppsResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(dAppsResult: dAppsResult))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchInteractorOutputProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList?, Error>)> where M1.MatchedType == Result<DAppList?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList?, Error>)>] = [wrap(matchable: dAppsResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchInteractorOutputProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(dAppsResult: M1) -> Cuckoo.__DoNotUse<(Result<DAppList?, Error>), Void> where M1.MatchedType == Result<DAppList?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList?, Error>)>] = [wrap(matchable: dAppsResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchInteractorOutputProtocolStub: DAppSearchInteractorOutputProtocol {
+    
+
+    
+
+    
+     func didReceive(dAppsResult: Result<DAppList?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppSearchWireframeProtocol: DAppSearchWireframeProtocol, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchWireframeProtocol
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchWireframeProtocol
+     typealias Verification = __VerificationProxy_DAppSearchWireframeProtocol
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchWireframeProtocol?
+
+     func enableDefaultImplementation(_ stub: DAppSearchWireframeProtocol) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func close(from view: DAppSearchViewProtocol?)  {
+        
+    return cuckoo_manager.call("close(from: DAppSearchViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.close(from: view))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchWireframeProtocol: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func close<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppSearchViewProtocol?)> where M1.OptionalMatchedType == DAppSearchViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchWireframeProtocol.self, method: "close(from: DAppSearchViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchWireframeProtocol: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func close<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(DAppSearchViewProtocol?), Void> where M1.OptionalMatchedType == DAppSearchViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("close(from: DAppSearchViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchWireframeProtocolStub: DAppSearchWireframeProtocol {
+    
+
+    
+
+    
+     func close(from view: DAppSearchViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+}
+
+
+
+ class MockDAppSearchDelegate: DAppSearchDelegate, Cuckoo.ProtocolMock {
+    
+     typealias MocksType = DAppSearchDelegate
+    
+     typealias Stubbing = __StubbingProxy_DAppSearchDelegate
+     typealias Verification = __VerificationProxy_DAppSearchDelegate
+
+     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
+
+    
+    private var __defaultImplStub: DAppSearchDelegate?
+
+     func enableDefaultImplementation(_ stub: DAppSearchDelegate) {
+        __defaultImplStub = stub
+        cuckoo_manager.enableDefaultStubImplementation()
+    }
+    
+
+    
+
+    
+
+    
+    
+    
+     func didCompleteDAppSearchResult(_ result: DAppSearchResult)  {
+        
+    return cuckoo_manager.call("didCompleteDAppSearchResult(_: DAppSearchResult)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didCompleteDAppSearchResult(result))
+        
+    }
+    
+
+	 struct __StubbingProxy_DAppSearchDelegate: Cuckoo.StubbingProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	
+	     init(manager: Cuckoo.MockManager) {
+	        self.cuckoo_manager = manager
+	    }
+	    
+	    
+	    func didCompleteDAppSearchResult<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppSearchResult)> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchDelegate.self, method: "didCompleteDAppSearchResult(_: DAppSearchResult)", parameterMatchers: matchers))
+	    }
+	    
+	}
+
+	 struct __VerificationProxy_DAppSearchDelegate: Cuckoo.VerificationProxy {
+	    private let cuckoo_manager: Cuckoo.MockManager
+	    private let callMatcher: Cuckoo.CallMatcher
+	    private let sourceLocation: Cuckoo.SourceLocation
+	
+	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
+	        self.cuckoo_manager = manager
+	        self.callMatcher = callMatcher
+	        self.sourceLocation = sourceLocation
+	    }
+	
+	    
+	
+	    
+	    @discardableResult
+	    func didCompleteDAppSearchResult<M1: Cuckoo.Matchable>(_ result: M1) -> Cuckoo.__DoNotUse<(DAppSearchResult), Void> where M1.MatchedType == DAppSearchResult {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppSearchResult)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didCompleteDAppSearchResult(_: DAppSearchResult)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	}
+}
+
+ class DAppSearchDelegateStub: DAppSearchDelegate {
+    
+
+    
+
+    
+     func didCompleteDAppSearchResult(_ result: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -38883,21 +41415,6 @@ import SoraFoundation
     
     
     
-     func selectStory(at index: Int)  {
-        
-    return cuckoo_manager.call("selectStory(at: Int)",
-            parameters: (index),
-            escapingParameters: (index),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.selectStory(at: index))
-        
-    }
-    
-    
-    
      func networkInfoViewDidChangeExpansion(isExpanded: Bool)  {
         
     return cuckoo_manager.call("networkInfoViewDidChangeExpansion(isExpanded: Bool)",
@@ -38983,11 +41500,6 @@ import SoraFoundation
 	    func performAnalyticsAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performAnalyticsAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func selectStory<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "selectStory(at: Int)", parameterMatchers: matchers))
 	    }
 	    
 	    func networkInfoViewDidChangeExpansion<M1: Cuckoo.Matchable>(isExpanded: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
@@ -39090,12 +41602,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func selectStory<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return cuckoo_manager.verify("selectStory(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func networkInfoViewDidChangeExpansion<M1: Cuckoo.Matchable>(isExpanded: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isExpanded) { $0 }]
 	        return cuckoo_manager.verify("networkInfoViewDidChangeExpansion(isExpanded: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -39159,10 +41665,6 @@ import SoraFoundation
     }
     
      func performAnalyticsAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func selectStory(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -40416,21 +42918,6 @@ import SoraFoundation
     
     
     
-     func showStories(from view: ControllerBackedProtocol?, startingFrom index: Int)  {
-        
-    return cuckoo_manager.call("showStories(from: ControllerBackedProtocol?, startingFrom: Int)",
-            parameters: (view, index),
-            escapingParameters: (view, index),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showStories(from: view, startingFrom: index))
-        
-    }
-    
-    
-    
      func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)  {
         
     return cuckoo_manager.call("showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)",
@@ -40678,11 +43165,6 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "proceedToSelectValidatorsStart(from: StakingMainViewProtocol?, existingBonding: ExistingBonding)", parameterMatchers: matchers))
 	    }
 	    
-	    func showStories<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, startingFrom index: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, Int)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Int)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: index) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showStories(from: ControllerBackedProtocol?, startingFrom: Int)", parameterMatchers: matchers))
-	    }
-	    
 	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, maxReward: M2, avgReward: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, Decimal, Decimal)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Decimal, M3.MatchedType == Decimal {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Decimal, Decimal)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: maxReward) { $0.1 }, wrap(matchable: avgReward) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)", parameterMatchers: matchers))
@@ -40793,12 +43275,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func showStories<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, startingFrom index: M2) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, Int), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Int)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: index) { $0.1 }]
-	        return cuckoo_manager.verify("showStories(from: ControllerBackedProtocol?, startingFrom: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, maxReward: M2, avgReward: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, Decimal, Decimal), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == Decimal, M3.MatchedType == Decimal {
 	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, Decimal, Decimal)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: maxReward) { $0.1 }, wrap(matchable: avgReward) { $0.2 }]
 	        return cuckoo_manager.verify("showRewardDetails(from: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -40906,10 +43382,6 @@ import SoraFoundation
     }
     
      func proceedToSelectValidatorsStart(from view: StakingMainViewProtocol?, existingBonding: ExistingBonding)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func showStories(from view: ControllerBackedProtocol?, startingFrom index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -52148,845 +54620,6 @@ import SoraFoundation
     }
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-import Cuckoo
-@testable import novawallet
-
-import Foundation
-import SoraFoundation
-
-
- class MockStoriesViewProtocol: StoriesViewProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StoriesViewProtocol
-    
-     typealias Stubbing = __StubbingProxy_StoriesViewProtocol
-     typealias Verification = __VerificationProxy_StoriesViewProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StoriesViewProtocol?
-
-     func enableDefaultImplementation(_ stub: StoriesViewProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-    
-    
-     var isSetup: Bool {
-        get {
-            return cuckoo_manager.getter("isSetup",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.isSetup)
-        }
-        
-    }
-    
-    
-    
-     var controller: UIViewController {
-        get {
-            return cuckoo_manager.getter("controller",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.controller)
-        }
-        
-    }
-    
-    
-    
-    public var localizationManager: LocalizationManagerProtocol? {
-        get {
-            return cuckoo_manager.getter("localizationManager",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.localizationManager)
-        }
-        
-        set {
-            cuckoo_manager.setter("localizationManager",
-                value: newValue,
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.localizationManager = newValue)
-        }
-        
-    }
-    
-
-    
-
-    
-    
-    
-     func didRecieve(viewModel: [SlideViewModel], startingFrom slide: StaringIndex)  {
-        
-    return cuckoo_manager.call("didRecieve(viewModel: [SlideViewModel], startingFrom: StaringIndex)",
-            parameters: (viewModel, slide),
-            escapingParameters: (viewModel, slide),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didRecieve(viewModel: viewModel, startingFrom: slide))
-        
-    }
-    
-    
-    
-     func didRecieve(newSlideIndex index: Int)  {
-        
-    return cuckoo_manager.call("didRecieve(newSlideIndex: Int)",
-            parameters: (index),
-            escapingParameters: (index),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didRecieve(newSlideIndex: index))
-        
-    }
-    
-    
-    
-    public func applyLocalization()  {
-        
-    return cuckoo_manager.call("applyLocalization()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.applyLocalization())
-        
-    }
-    
-
-	 struct __StubbingProxy_StoriesViewProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    var isSetup: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStoriesViewProtocol, Bool> {
-	        return .init(manager: cuckoo_manager, name: "isSetup")
-	    }
-	    
-	    
-	    var controller: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStoriesViewProtocol, UIViewController> {
-	        return .init(manager: cuckoo_manager, name: "controller")
-	    }
-	    
-	    
-	    var localizationManager: Cuckoo.ProtocolToBeStubbedOptionalProperty<MockStoriesViewProtocol, LocalizationManagerProtocol> {
-	        return .init(manager: cuckoo_manager, name: "localizationManager")
-	    }
-	    
-	    
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(viewModel: M1, startingFrom slide: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([SlideViewModel], StaringIndex)> where M1.MatchedType == [SlideViewModel], M2.MatchedType == StaringIndex {
-	        let matchers: [Cuckoo.ParameterMatcher<([SlideViewModel], StaringIndex)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: slide) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesViewProtocol.self, method: "didRecieve(viewModel: [SlideViewModel], startingFrom: StaringIndex)", parameterMatchers: matchers))
-	    }
-	    
-	    func didRecieve<M1: Cuckoo.Matchable>(newSlideIndex index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesViewProtocol.self, method: "didRecieve(newSlideIndex: Int)", parameterMatchers: matchers))
-	    }
-	    
-	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesViewProtocol.self, method: "applyLocalization()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StoriesViewProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	    
-	    var isSetup: Cuckoo.VerifyReadOnlyProperty<Bool> {
-	        return .init(manager: cuckoo_manager, name: "isSetup", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	    
-	    var controller: Cuckoo.VerifyReadOnlyProperty<UIViewController> {
-	        return .init(manager: cuckoo_manager, name: "controller", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	    
-	    var localizationManager: Cuckoo.VerifyOptionalProperty<LocalizationManagerProtocol> {
-	        return .init(manager: cuckoo_manager, name: "localizationManager", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	
-	    
-	    @discardableResult
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(viewModel: M1, startingFrom slide: M2) -> Cuckoo.__DoNotUse<([SlideViewModel], StaringIndex), Void> where M1.MatchedType == [SlideViewModel], M2.MatchedType == StaringIndex {
-	        let matchers: [Cuckoo.ParameterMatcher<([SlideViewModel], StaringIndex)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: slide) { $0.1 }]
-	        return cuckoo_manager.verify("didRecieve(viewModel: [SlideViewModel], startingFrom: StaringIndex)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func didRecieve<M1: Cuckoo.Matchable>(newSlideIndex index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return cuckoo_manager.verify("didRecieve(newSlideIndex: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func applyLocalization() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("applyLocalization()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StoriesViewProtocolStub: StoriesViewProtocol {
-    
-    
-     var isSetup: Bool {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (Bool).self)
-        }
-        
-    }
-    
-    
-     var controller: UIViewController {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (UIViewController).self)
-        }
-        
-    }
-    
-    
-    public var localizationManager: LocalizationManagerProtocol? {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (LocalizationManagerProtocol?).self)
-        }
-        
-        set { }
-        
-    }
-    
-
-    
-
-    
-     func didRecieve(viewModel: [SlideViewModel], startingFrom slide: StaringIndex)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func didRecieve(newSlideIndex index: Int)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    public func applyLocalization()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockStoriesPresenterProtocol: StoriesPresenterProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StoriesPresenterProtocol
-    
-     typealias Stubbing = __StubbingProxy_StoriesPresenterProtocol
-     typealias Verification = __VerificationProxy_StoriesPresenterProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StoriesPresenterProtocol?
-
-     func enableDefaultImplementation(_ stub: StoriesPresenterProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func setup()  {
-        
-    return cuckoo_manager.call("setup()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setup())
-        
-    }
-    
-    
-    
-     func activateClose()  {
-        
-    return cuckoo_manager.call("activateClose()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.activateClose())
-        
-    }
-    
-    
-    
-     func activateWeb()  {
-        
-    return cuckoo_manager.call("activateWeb()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.activateWeb())
-        
-    }
-    
-    
-    
-     func proceedToNextStory()  {
-        
-    return cuckoo_manager.call("proceedToNextStory()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.proceedToNextStory())
-        
-    }
-    
-    
-    
-     func proceedToPreviousStory(startingFrom slide: StaringIndex)  {
-        
-    return cuckoo_manager.call("proceedToPreviousStory(startingFrom: StaringIndex)",
-            parameters: (slide),
-            escapingParameters: (slide),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.proceedToPreviousStory(startingFrom: slide))
-        
-    }
-    
-    
-    
-     func proceedToNextSlide()  {
-        
-    return cuckoo_manager.call("proceedToNextSlide()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.proceedToNextSlide())
-        
-    }
-    
-    
-    
-     func proceedToPreviousSlide()  {
-        
-    return cuckoo_manager.call("proceedToPreviousSlide()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.proceedToPreviousSlide())
-        
-    }
-    
-
-	 struct __StubbingProxy_StoriesPresenterProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
-	    }
-	    
-	    func activateClose() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "activateClose()", parameterMatchers: matchers))
-	    }
-	    
-	    func activateWeb() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "activateWeb()", parameterMatchers: matchers))
-	    }
-	    
-	    func proceedToNextStory() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "proceedToNextStory()", parameterMatchers: matchers))
-	    }
-	    
-	    func proceedToPreviousStory<M1: Cuckoo.Matchable>(startingFrom slide: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StaringIndex)> where M1.MatchedType == StaringIndex {
-	        let matchers: [Cuckoo.ParameterMatcher<(StaringIndex)>] = [wrap(matchable: slide) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "proceedToPreviousStory(startingFrom: StaringIndex)", parameterMatchers: matchers))
-	    }
-	    
-	    func proceedToNextSlide() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "proceedToNextSlide()", parameterMatchers: matchers))
-	    }
-	    
-	    func proceedToPreviousSlide() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesPresenterProtocol.self, method: "proceedToPreviousSlide()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StoriesPresenterProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func activateClose() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("activateClose()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func activateWeb() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("activateWeb()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func proceedToNextStory() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("proceedToNextStory()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func proceedToPreviousStory<M1: Cuckoo.Matchable>(startingFrom slide: M1) -> Cuckoo.__DoNotUse<(StaringIndex), Void> where M1.MatchedType == StaringIndex {
-	        let matchers: [Cuckoo.ParameterMatcher<(StaringIndex)>] = [wrap(matchable: slide) { $0 }]
-	        return cuckoo_manager.verify("proceedToPreviousStory(startingFrom: StaringIndex)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func proceedToNextSlide() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("proceedToNextSlide()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func proceedToPreviousSlide() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("proceedToPreviousSlide()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StoriesPresenterProtocolStub: StoriesPresenterProtocol {
-    
-
-    
-
-    
-     func setup()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func activateClose()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func activateWeb()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func proceedToNextStory()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func proceedToPreviousStory(startingFrom slide: StaringIndex)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func proceedToNextSlide()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func proceedToPreviousSlide()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockStoriesInteractorInputProtocol: StoriesInteractorInputProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StoriesInteractorInputProtocol
-    
-     typealias Stubbing = __StubbingProxy_StoriesInteractorInputProtocol
-     typealias Verification = __VerificationProxy_StoriesInteractorInputProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StoriesInteractorInputProtocol?
-
-     func enableDefaultImplementation(_ stub: StoriesInteractorInputProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func setup()  {
-        
-    return cuckoo_manager.call("setup()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.setup())
-        
-    }
-    
-
-	 struct __StubbingProxy_StoriesInteractorInputProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StoriesInteractorInputProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func setup() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StoriesInteractorInputProtocolStub: StoriesInteractorInputProtocol {
-    
-
-    
-
-    
-     func setup()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockStoriesInteractorOutputProtocol: StoriesInteractorOutputProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StoriesInteractorOutputProtocol
-    
-     typealias Stubbing = __StubbingProxy_StoriesInteractorOutputProtocol
-     typealias Verification = __VerificationProxy_StoriesInteractorOutputProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StoriesInteractorOutputProtocol?
-
-     func enableDefaultImplementation(_ stub: StoriesInteractorOutputProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func didReceive(storiesModel: StoriesModel)  {
-        
-    return cuckoo_manager.call("didReceive(storiesModel: StoriesModel)",
-            parameters: (storiesModel),
-            escapingParameters: (storiesModel),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceive(storiesModel: storiesModel))
-        
-    }
-    
-
-	 struct __StubbingProxy_StoriesInteractorOutputProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func didReceive<M1: Cuckoo.Matchable>(storiesModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StoriesModel)> where M1.MatchedType == StoriesModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(StoriesModel)>] = [wrap(matchable: storiesModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesInteractorOutputProtocol.self, method: "didReceive(storiesModel: StoriesModel)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StoriesInteractorOutputProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(storiesModel: M1) -> Cuckoo.__DoNotUse<(StoriesModel), Void> where M1.MatchedType == StoriesModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(StoriesModel)>] = [wrap(matchable: storiesModel) { $0 }]
-	        return cuckoo_manager.verify("didReceive(storiesModel: StoriesModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StoriesInteractorOutputProtocolStub: StoriesInteractorOutputProtocol {
-    
-
-    
-
-    
-     func didReceive(storiesModel: StoriesModel)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-}
-
-
-
- class MockStoriesWireframeProtocol: StoriesWireframeProtocol, Cuckoo.ProtocolMock {
-    
-     typealias MocksType = StoriesWireframeProtocol
-    
-     typealias Stubbing = __StubbingProxy_StoriesWireframeProtocol
-     typealias Verification = __VerificationProxy_StoriesWireframeProtocol
-
-     let cuckoo_manager = Cuckoo.MockManager.preconfiguredManager ?? Cuckoo.MockManager(hasParent: false)
-
-    
-    private var __defaultImplStub: StoriesWireframeProtocol?
-
-     func enableDefaultImplementation(_ stub: StoriesWireframeProtocol) {
-        __defaultImplStub = stub
-        cuckoo_manager.enableDefaultStubImplementation()
-    }
-    
-
-    
-
-    
-
-    
-    
-    
-     func close(view: StoriesViewProtocol?)  {
-        
-    return cuckoo_manager.call("close(view: StoriesViewProtocol?)",
-            parameters: (view),
-            escapingParameters: (view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.close(view: view))
-        
-    }
-    
-    
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
-        
-    return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
-            parameters: (url, view, style),
-            escapingParameters: (url, view, style),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showWeb(url: url, from: view, style: style))
-        
-    }
-    
-
-	 struct __StubbingProxy_StoriesWireframeProtocol: Cuckoo.StubbingProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	
-	     init(manager: Cuckoo.MockManager) {
-	        self.cuckoo_manager = manager
-	    }
-	    
-	    
-	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StoriesViewProtocol?)> where M1.OptionalMatchedType == StoriesViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StoriesViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesWireframeProtocol.self, method: "close(view: StoriesViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStoriesWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
-	    }
-	    
-	}
-
-	 struct __VerificationProxy_StoriesWireframeProtocol: Cuckoo.VerificationProxy {
-	    private let cuckoo_manager: Cuckoo.MockManager
-	    private let callMatcher: Cuckoo.CallMatcher
-	    private let sourceLocation: Cuckoo.SourceLocation
-	
-	     init(manager: Cuckoo.MockManager, callMatcher: Cuckoo.CallMatcher, sourceLocation: Cuckoo.SourceLocation) {
-	        self.cuckoo_manager = manager
-	        self.callMatcher = callMatcher
-	        self.sourceLocation = sourceLocation
-	    }
-	
-	    
-	
-	    
-	    @discardableResult
-	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(StoriesViewProtocol?), Void> where M1.OptionalMatchedType == StoriesViewProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(StoriesViewProtocol?)>] = [wrap(matchable: view) { $0 }]
-	        return cuckoo_manager.verify("close(view: StoriesViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	}
-}
-
- class StoriesWireframeProtocolStub: StoriesWireframeProtocol {
-    
-
-    
-
-    
-     func close(view: StoriesViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
