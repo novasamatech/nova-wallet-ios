@@ -55,8 +55,8 @@ final class RuntimeSyncService {
         filesOperationFactory: RuntimeFilesOperationFactoryProtocol,
         dataOperationFactory: DataOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
+        operationQueue: OperationQueue,
         retryStrategy: ReconnectionStrategyProtocol = ExponentialReconnection(),
-        maxConcurrentSyncRequests: Int = 8,
         dataHasher: StorageHasher = .twox256,
         logger: LoggerProtocol? = nil
     ) {
@@ -67,10 +67,6 @@ final class RuntimeSyncService {
         self.eventCenter = eventCenter
         self.dataHasher = dataHasher
         self.logger = logger
-
-        let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = maxConcurrentSyncRequests
-        operationQueue.qualityOfService = .userInitiated
         self.operationQueue = operationQueue
     }
 

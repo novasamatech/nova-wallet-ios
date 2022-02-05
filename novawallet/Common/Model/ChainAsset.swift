@@ -5,9 +5,11 @@ struct ChainAsset: Equatable {
     let asset: AssetModel
 }
 
-struct ChainAssetId: Equatable, Codable {
+struct ChainAssetId: Equatable, Codable, Hashable {
     let chainId: ChainModel.Id
     let assetId: AssetModel.Id
+
+    var stringValue: String { "\(chainId)-\(assetId)" }
 }
 
 extension ChainAsset {

@@ -5,25 +5,25 @@ import SoraFoundation
 struct DAppOperationConfirmViewFactory {
     static func createView(
         for request: DAppOperationRequest,
+        type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) -> DAppOperationConfirmViewProtocol? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-
-        guard
-            let connection = chainRegistry.getConnection(for: request.chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.chain.chainId),
-            let assetInfo = request.chain.utilityAssets().first?.displayInfo(with: request.chain.icon) else {
+        guard let assetInfo = request.chain.utilityAssets().first?.displayInfo(with: request.chain.icon) else {
             return nil
         }
 
-        let interactor = DAppOperationConfirmInteractor(
-            request: request,
-            runtimeProvider: runtimeProvider,
-            connection: connection,
-            keychain: Keychain(),
-            priceProviderFactory: PriceProviderFactory.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
+        let maybeInteractor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?
+
+        switch type {
+        case .extrinsic:
+            maybeInteractor = createExtrinsicInteractor(for: request)
+        case .bytes:
+            maybeInteractor = createSignBytesInteractor(for: request)
+        }
+
+        guard let interactor = maybeInteractor else {
+            return nil
+        }
 
         let wireframe = DAppOperationConfirmWireframe()
 
@@ -45,8 +45,38 @@ struct DAppOperationConfirmViewFactory {
         )
 
         presenter.view = view
-        interactor.presenter = presenter
+        maybeInteractor?.presenter = presenter
 
         return view
+    }
+
+    private static func createExtrinsicInteractor(
+        for request: DAppOperationRequest
+    ) -> DAppOperationConfirmInteractor? {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: request.chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.chain.chainId) else {
+            return nil
+        }
+
+        return DAppOperationConfirmInteractor(
+            request: request,
+            runtimeProvider: runtimeProvider,
+            connection: connection,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            priceProviderFactory: PriceProviderFactory.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+    }
+
+    private static func createSignBytesInteractor(
+        for request: DAppOperationRequest
+    ) -> DAppSignBytesConfirmInteractor {
+        DAppSignBytesConfirmInteractor(
+            request: request,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+        )
     }
 }

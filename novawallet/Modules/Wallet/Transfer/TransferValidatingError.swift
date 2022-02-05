@@ -1,12 +1,13 @@
 import Foundation
 import CommonWallet
 
-enum FearlessTransferValidatingError: Error {
+enum NovaTransferValidatingError: Error {
     case receiverBalanceTooLow
     case cantPayFee
+    case noReceiverAccount(assetSymbol: String)
 }
 
-extension FearlessTransferValidatingError: WalletErrorContentConvertible {
+extension NovaTransferValidatingError: WalletErrorContentConvertible {
     func toErrorContent(for locale: Locale?) -> WalletErrorContentProtocol {
         let title: String
         let message: String
@@ -22,6 +23,15 @@ extension FearlessTransferValidatingError: WalletErrorContentConvertible {
                 .walletSendDeadRecipientTitle(preferredLanguages: locale?.rLanguages)
             message = R.string.localizable
                 .walletFeeOverExistentialDeposit(preferredLanguages: locale?.rLanguages)
+        case let .noReceiverAccount(assetSymbol):
+            title = R.string.localizable.walletSendDeadRecipientCommissionAssetTitle(
+                preferredLanguages: locale?.rLanguages
+            )
+
+            message = R.string.localizable.walletSendDeadRecipientCommissionAssetMessage(
+                assetSymbol,
+                preferredLanguages: locale?.rLanguages
+            )
         }
 
         return ErrorContent(title: title, message: message)

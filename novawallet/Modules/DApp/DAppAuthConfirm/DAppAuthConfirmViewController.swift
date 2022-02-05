@@ -7,11 +7,13 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
 
     let presenter: DAppAuthConfirmPresenterProtocol
 
+    private var dAppName: String?
+
     init(presenter: DAppAuthConfirmPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
 
-        preferredContentSize = CGSize(width: 0.0, height: 402.0)
+        preferredContentSize = CGSize(width: 0.0, height: 432.0)
         self.localizationManager = localizationManager
     }
 
@@ -41,7 +43,8 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        rootView.titleLabel.text = R.string.localizable.dappAuthTitle(preferredLanguages: languages)
+        applyTitle()
+
         rootView.subtitleLabel.text = R.string.localizable.dappAuthSubtitle(preferredLanguages: languages)
 
         rootView.walletView.rowContentView.titleView.text = R.string.localizable.commonWallet(
@@ -58,6 +61,16 @@ final class DAppAuthConfirmViewController: UIViewController, ViewHolder {
         rootView.denyButton.imageWithTitleView?.title = R.string.localizable.commonReject(
             preferredLanguages: languages
         )
+    }
+
+    private func applyTitle() {
+        let languages = selectedLocale.rLanguages
+
+        let name = dAppName ?? R.string.localizable.commonDapp(preferredLanguages: languages)
+
+        let title = R.string.localizable.dappAuthTitle(name, preferredLanguages: languages)
+
+        rootView.titleLabel.text = title
     }
 
     @objc private func actionAllow() {
@@ -91,6 +104,11 @@ extension DAppAuthConfirmViewController: DAppAuthConfirmViewProtocol {
         )
 
         rootView.dappView.valueLabel.text = viewModel.dApp
+
+        dAppName = viewModel.origin
+        applyTitle()
+
+        view.setNeedsLayout()
     }
 }
 
@@ -103,9 +121,7 @@ extension DAppAuthConfirmViewController: Localizable {
 }
 
 extension DAppAuthConfirmViewController: ModalPresenterDelegate {
-    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { true }
+    func presenterShouldHide(_: ModalPresenterProtocol) -> Bool { false }
 
-    func presenterDidHide(_: ModalPresenterProtocol) {
-        presenter.deny()
-    }
+    func presenterDidHide(_: ModalPresenterProtocol) {}
 }

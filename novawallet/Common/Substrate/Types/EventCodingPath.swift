@@ -20,11 +20,15 @@ extension EventCodingPath {
         EventCodingPath(moduleName: "System", eventName: "ExtrinsicFailed")
     }
 
-    static var balanceDeposit: EventCodingPath {
+    static var balancesDeposit: EventCodingPath {
         EventCodingPath(moduleName: "Balances", eventName: "Deposit")
     }
 
     static var treasuryDeposit: EventCodingPath {
         EventCodingPath(moduleName: "Treasury", eventName: "Deposit")
+    }
+
+    static var balancesWithdraw: EventCodingPath {
+        EventCodingPath(moduleName: "Balances", eventName: "Withdraw")
     }
 }

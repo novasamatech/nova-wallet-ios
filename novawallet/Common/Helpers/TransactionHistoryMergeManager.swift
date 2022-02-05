@@ -60,24 +60,22 @@ enum TransactionHistoryMergeItem {
 
     func buildTransactionData(
         address: String,
-        assetId: String,
-        chainAssetInfo: ChainAssetDisplayInfo,
-        runtimeJsonContext: RuntimeJsonContext
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) -> AssetTransactionData {
         switch self {
         case let .local(item):
             return AssetTransactionData.createTransaction(
                 from: item,
                 address: address,
-                assetId: assetId,
-                chainAssetInfo: chainAssetInfo,
-                runtimeJsonContext: runtimeJsonContext
+                chainAsset: chainAsset,
+                utilityAsset: utilityAsset
             )
         case let .remote(item):
             return item.createTransactionForAddress(
                 address,
-                assetId: assetId,
-                chainAssetInfo: chainAssetInfo
+                assetId: chainAsset.chainAssetId.walletId,
+                chainAssetInfo: chainAsset.chainAssetInfo
             )
         }
     }
@@ -98,37 +96,36 @@ enum TransactionHistoryMergeItem {
 
 final class TransactionHistoryMergeManager {
     let address: String
-    let chainAssetInfo: ChainAssetDisplayInfo
-    let assetId: String
+    let chainAsset: ChainAsset
+    let utilityAsset: AssetModel
 
     init(
         address: String,
-        chainAssetInfo: ChainAssetDisplayInfo,
-        assetId: String
+        chainAsset: ChainAsset,
+        utilityAsset: AssetModel
     ) {
         self.address = address
-        self.chainAssetInfo = chainAssetInfo
-        self.assetId = assetId
+        self.chainAsset = chainAsset
+        self.utilityAsset = utilityAsset
     }
 
     func merge(
-        subscanItems: [WalletRemoteHistoryItemProtocol],
-        localItems: [TransactionHistoryItem],
-        runtimeJsonContext: RuntimeJsonContext
+        remoteItems: [WalletRemoteHistoryItemProtocol],
+        localItems: [TransactionHistoryItem]
     ) -> TransactionHistoryMergeResult {
-        let existingHashes = Set(subscanItems.map(\.identifier))
-        let minSubscanItem = subscanItems.last
+        let existingHashes = Set(remoteItems.map(\.localIdentifier))
+        let minRemoteItem = remoteItems.last
 
         let hashesToRemove: [String] = localItems.compactMap { item in
             if existingHashes.contains(item.txHash) {
                 return item.txHash
             }
 
-            guard let subscanItem = minSubscanItem else {
+            guard let remoteItem = minRemoteItem else {
                 return nil
             }
 
-            if item.timestamp < subscanItem.itemTimestamp {
+            if item.timestamp < remoteItem.itemTimestamp {
                 return item.txHash
             }
 
@@ -144,7 +141,7 @@ final class TransactionHistoryMergeManager {
             return TransactionHistoryMergeItem.local(item: item)
         }
 
-        let remoteMergeItems: [TransactionHistoryMergeItem] = subscanItems.map {
+        let remoteMergeItems: [TransactionHistoryMergeItem] = remoteItems.map {
             TransactionHistoryMergeItem.remote(remote: $0)
         }
 
@@ -153,9 +150,8 @@ final class TransactionHistoryMergeManager {
             .map { item in
                 item.buildTransactionData(
                     address: address,
-                    assetId: assetId,
-                    chainAssetInfo: chainAssetInfo,
-                    runtimeJsonContext: runtimeJsonContext
+                    chainAsset: chainAsset,
+                    utilityAsset: utilityAsset
                 )
             }
 

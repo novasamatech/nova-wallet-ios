@@ -53,6 +53,9 @@ final class SubqueryRewardOperationFactory {
              ) {
                 nodes {
                     id
+                    blockNumber
+                    extrinsicIdx
+                    extrinsicHash
                     timestamp
                     address
                     reward

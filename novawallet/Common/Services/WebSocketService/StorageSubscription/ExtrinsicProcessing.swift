@@ -7,7 +7,9 @@ struct ExtrinsicProcessingResult {
     let callPath: CallCodingPath
     let fee: BigUInt?
     let peerId: AccountId?
+    let amount: BigUInt?
     let isSuccess: Bool
+    let assetId: UInt32
 }
 
 protocol ExtrinsicProcessing {
@@ -21,158 +23,11 @@ protocol ExtrinsicProcessing {
 
 final class ExtrinsicProcessor {
     let accountId: Data
-    let isEthereumBased: Bool
+    let chain: ChainModel
 
-    init(accountId: Data, isEthereumBased: Bool) {
+    init(accountId: Data, chain: ChainModel) {
         self.accountId = accountId
-        self.isEthereumBased = isEthereumBased
-    }
-
-    private func matchStatus(
-        for index: UInt32,
-        eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
-    ) -> Bool? {
-        eventRecords.filter { record in
-            guard record.extrinsicIndex == index,
-                  let eventPath = metadata.createEventCodingPath(from: record.event) else {
-                return false
-            }
-
-            return [.extrisicSuccess, .extrinsicFailed].contains(eventPath)
-        }.first.map { metadata.createEventCodingPath(from: $0.event) == .extrisicSuccess }
-    }
-
-    private func findFee(
-        for index: UInt32,
-        eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
-    ) -> BigUInt {
-        eventRecords.compactMap { record in
-            guard record.extrinsicIndex == index,
-                  let eventPath = metadata.createEventCodingPath(from: record.event) else {
-                return nil
-            }
-
-            if eventPath == .balanceDeposit {
-                return try? record.event.params.map(to: BalanceDepositEvent.self).amount
-            }
-
-            if eventPath == .treasuryDeposit {
-                return try? record.event.params.map(to: TreasuryDepositEvent.self).amount
-            }
-
-            return nil
-        }.reduce(BigUInt(0)) { (totalFee: BigUInt, partialFee: BigUInt) in
-            totalFee + partialFee
-        }
-    }
-
-    private func matchTransfer(
-        extrinsicIndex: UInt32,
-        extrinsic: Extrinsic,
-        eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol,
-        runtimeJsonContext: RuntimeJsonContext
-    ) -> ExtrinsicProcessingResult? {
-        do {
-            let sender: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: runtimeJsonContext.toRawContext()
-            ).accountId
-
-            let parsingResult: (CallCodingPath, Bool, AccountId?) = try {
-                let call = try extrinsic.call.map(
-                    to: RuntimeCall<TransferCall>.self,
-                    with: runtimeJsonContext.toRawContext()
-                )
-                let callAccountId = call.args.dest.accountId
-                let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-                let isAccountMatched = accountId == sender || accountId == callAccountId
-
-                return (callPath, isAccountMatched, callAccountId)
-            }()
-
-            let callPath = parsingResult.0
-            let isAccountMatched = parsingResult.1
-            let callAccountId = parsingResult.2
-
-            guard
-                callPath.isTransfer,
-                isAccountMatched,
-                let isSuccess = matchStatus(
-                    for: extrinsicIndex,
-                    eventRecords: eventRecords,
-                    metadata: metadata
-                ) else {
-                return nil
-            }
-
-            let fee = findFee(
-                for: extrinsicIndex,
-                eventRecords: eventRecords,
-                metadata: metadata
-            )
-
-            let peerId = accountId == sender ? callAccountId : sender
-
-            return ExtrinsicProcessingResult(
-                extrinsic: extrinsic,
-                callPath: callPath,
-                fee: fee,
-                peerId: peerId,
-                isSuccess: isSuccess
-            )
-
-        } catch {
-            return nil
-        }
-    }
-
-    private func matchExtrinsic(
-        extrinsicIndex: UInt32,
-        extrinsic: Extrinsic,
-        eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol,
-        runtimeJsonContext: RuntimeJsonContext
-    ) -> ExtrinsicProcessingResult? {
-        do {
-            let sender: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: runtimeJsonContext.toRawContext()
-            ).accountId
-
-            let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
-            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == sender
-
-            guard
-                isAccountMatched,
-                let isSuccess = matchStatus(
-                    for: extrinsicIndex,
-                    eventRecords: eventRecords,
-                    metadata: metadata
-                ) else {
-                return nil
-            }
-
-            let fee = findFee(
-                for: extrinsicIndex,
-                eventRecords: eventRecords,
-                metadata: metadata
-            )
-
-            return ExtrinsicProcessingResult(
-                extrinsic: extrinsic,
-                callPath: callPath,
-                fee: fee,
-                peerId: nil,
-                isSuccess: isSuccess
-            )
-
-        } catch {
-            return nil
-        }
+        self.chain = chain
     }
 }
 
@@ -189,12 +44,31 @@ extension ExtrinsicProcessor: ExtrinsicProcessing {
 
             let runtimeJsonContext = coderFactory.createRuntimeJsonContext()
 
-            if let processingResult = matchTransfer(
+            if let processingResult = matchBalancesTransfer(
                 extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
                 eventRecords: eventRecords,
                 metadata: coderFactory.metadata,
-                runtimeJsonContext: runtimeJsonContext
+                context: runtimeJsonContext
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchAssetsTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                metadata: coderFactory.metadata,
+                context: runtimeJsonContext
+            ) {
+                return processingResult
+            }
+
+            if let processingResult = matchOrmlTransfer(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                codingFactory: coderFactory
             ) {
                 return processingResult
             }

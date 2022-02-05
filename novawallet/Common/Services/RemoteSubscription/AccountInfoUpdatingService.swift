@@ -18,7 +18,7 @@ final class AccountInfoUpdatingService {
     let storageFacade: StorageFacadeProtocol
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let logger: LoggerProtocol
 
     private var subscribedChains: [ChainModel.Id: SubscriptionInfo] = [:]
@@ -36,7 +36,7 @@ final class AccountInfoUpdatingService {
         storageFacade: StorageFacadeProtocol,
         storageRequestFactory: StorageRequestFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
         selectedMetaAccount = selectedAccount
@@ -45,7 +45,7 @@ final class AccountInfoUpdatingService {
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
         self.storageRequestFactory = storageRequestFactory
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.logger = logger
         repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
     }
@@ -85,7 +85,12 @@ final class AccountInfoUpdatingService {
         guard
             let accountId = selectedMetaAccount.fetch(for: chain.accountRequest())?.accountId,
             let address = try? accountId.toAddress(using: chain.chainFormat) else {
-            logger.error("Couldn't create account for chain \(chain.chainId)")
+            logger.warning("Couldn't create account for chain \(chain.chainId)")
+            return
+        }
+
+        guard let asset = chain.utilityAssets().first(where: { $0.type == nil }) else {
+            logger.warning("Native asset not found for chain \(chain.chainId)")
             return
         }
 
@@ -93,10 +98,9 @@ final class AccountInfoUpdatingService {
             return
         }
 
-        let txStorage = repositoryFactory.createTxRepository(for: address, chainId: chain.chainId)
-        let contactOperationFactory = WalletContactOperationFactory(
-            storageFacade: storageFacade,
-            targetAddress: address
+        let txStorage = repositoryFactory.createChainAddressTxRepository(
+            for: address,
+            chainId: chain.chainId
         )
 
         let transactionSubscription = TransactionSubscription(
@@ -104,14 +108,20 @@ final class AccountInfoUpdatingService {
             accountId: accountId,
             chainModel: chain,
             txStorage: txStorage,
-            contactOperationFactory: contactOperationFactory,
             storageRequestFactory: storageRequestFactory,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
             eventCenter: eventCenter,
             logger: logger
         )
 
+        let assetBalanceMapper = AssetBalanceMapper()
+        let assetRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(assetBalanceMapper))
+
         let subscriptionHandlingFactory = AccountInfoSubscriptionHandlingFactory(
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            accountId: accountId,
+            chainRegistry: chainRegistry,
+            assetRepository: AnyDataProviderRepository(assetRepository),
             transactionSubscription: transactionSubscription,
             eventCenter: eventCenter
         )
