@@ -52,7 +52,7 @@ extension WalletListPresenter {
             } else if balance2 > 0 {
                 return false
             } else {
-                return model1.assetModel.assetId < model2.assetModel.assetId
+                return model1.assetModel.symbol.lexicographicallyPrecedes(model2.assetModel.symbol)
             }
         }
     }
