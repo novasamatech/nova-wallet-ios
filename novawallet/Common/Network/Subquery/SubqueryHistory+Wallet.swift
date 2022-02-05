@@ -85,7 +85,9 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         chainAssetInfo: ChainAssetDisplayInfo
     ) -> AssetTransactionData {
         let status: AssetTransactionStatus = transfer.success ? .commited : .rejected
-        let peerAddress = address == transfer.sender ? transfer.receiver : transfer.sender
+
+        let isSender = address.caseInsensitiveCompare(transfer.sender) == .orderedSame
+        let peerAddress = isSender ? transfer.receiver : transfer.sender
         let accountId = try? peerAddress.toAccountId(using: chainAssetInfo.chain)
         let peerId = accountId?.toHex() ?? peerAddress
 
@@ -108,7 +110,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             context: nil
         )
 
-        let type: TransactionType = transfer.sender == address ? .outgoing : .incoming
+        let type: TransactionType = isSender ? .outgoing : .incoming
 
         return AssetTransactionData(
             transactionId: extrinsicHash,

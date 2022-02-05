@@ -1,36 +1,12 @@
-//
-//  EthereumAddressChecksum.swift
-//  novawalletTests
-//
-//  Created by Ruslan Rezin on 06.02.2022.
-//  Copyright © 2022 Nova Foundation. All rights reserved.
-//
-
 import XCTest
+@testable import novawallet
 
 class EthereumAddressChecksum: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    func testChecksumValid() {
+        XCTAssertTrue("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed".isEthereumChecksumValid())
+        XCTAssertTrue("0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359".isEthereumChecksumValid())
+        XCTAssertTrue("0xdbF03B407c01E7cD3CBea99509d93f8DDDC8C6FB".isEthereumChecksumValid())
+        XCTAssertTrue("0xD1220A0cf47c7B9Be7A2E6BA89F429762e7b9aDb".isEthereumChecksumValid())
     }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
 }
