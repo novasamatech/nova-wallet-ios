@@ -262,6 +262,8 @@
 		84100F3826A6085C00A5054E /* YourValidatorListDescSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3726A6085C00A5054E /* YourValidatorListDescSectionView.swift */; };
 		84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3926A60B0900A5054E /* YourValidatorListStatusSectionView.swift */; };
 		84100F3C26A60E4C00A5054E /* YourValidatorListWarningSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3B26A60E4C00A5054E /* YourValidatorListWarningSectionView.swift */; };
+		8410562C27AF1C15004F5CA3 /* Ethereum+Checksum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */; };
+		8410562E27AF22DA004F5CA3 /* EthereumAddressChecksum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */; };
 		8410DBCB26EA31DE00FE1738 /* AccountProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8410DBCA26EA31DE00FE1738 /* AccountProviderFactory.swift */; };
 		84113B6C255B2835009BD21A /* AccountCreateError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84113B6B255B2835009BD21A /* AccountCreateError.swift */; };
 		84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84113B90255B2CA0009BD21A /* MainTransitionHelper.swift */; };
@@ -2146,6 +2148,8 @@
 		84100F3726A6085C00A5054E /* YourValidatorListDescSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListDescSectionView.swift; sourceTree = "<group>"; };
 		84100F3926A60B0900A5054E /* YourValidatorListStatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListStatusSectionView.swift; sourceTree = "<group>"; };
 		84100F3B26A60E4C00A5054E /* YourValidatorListWarningSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListWarningSectionView.swift; sourceTree = "<group>"; };
+		8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Ethereum+Checksum.swift"; sourceTree = "<group>"; };
+		8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumAddressChecksum.swift; sourceTree = "<group>"; };
 		8410DBCA26EA31DE00FE1738 /* AccountProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountProviderFactory.swift; sourceTree = "<group>"; };
 		84113B6B255B2835009BD21A /* AccountCreateError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreateError.swift; sourceTree = "<group>"; };
 		84113B90255B2CA0009BD21A /* MainTransitionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTransitionHelper.swift; sourceTree = "<group>"; };
@@ -5535,6 +5539,7 @@
 			children = (
 				8467FD3A24EAD236005D486C /* SigningWrapperTests.swift */,
 				84F4A90F255001D2000CF0A3 /* KeystoreExportWrapperTests.swift */,
+				8410562D27AF22DA004F5CA3 /* EthereumAddressChecksum.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -6434,6 +6439,7 @@
 				84C515FA26D84F8C000DBA45 /* AccountImportWrapper.swift */,
 				F44225A02727466D00DF512E /* Data+Sha256.swift */,
 				843612C82790109100DC739E /* SigningWrapperFactory.swift */,
+				8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -11251,6 +11257,7 @@
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
 				D83B47B07C0D40A327AC44F7 /* CustomValidatorListViewFactory.swift in Sources */,
 				0E6C2939AFB3D125C760D5A0 /* CrowdloanContributionSetupProtocols.swift in Sources */,
+				8410562C27AF1C15004F5CA3 /* Ethereum+Checksum.swift in Sources */,
 				4E5CD7B8821FA5298EA1598E /* CrowdloanContributionSetupWireframe.swift in Sources */,
 				9081D43697D992F51E057ED2 /* CrowdloanContributionSetupPresenter.swift in Sources */,
 				F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */,
@@ -11401,6 +11408,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8410562E27AF22DA004F5CA3 /* EthereumAddressChecksum.swift in Sources */,
 				84B66A1826FE05B00038B963 /* ChainRegistryStub.swift in Sources */,
 				8467FD3924EACE08005D486C /* AccountCreationHelper.swift in Sources */,
 				8476CA0625EFB072003EEAE1 /* SingleValueProviderFactoryStub.swift in Sources */,
