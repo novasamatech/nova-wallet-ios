@@ -1,11 +1,14 @@
 import Foundation
 import RobinHood
+import BigInt
 
 struct TransactionHistoryItem: Codable {
     enum CodingKeys: String, CodingKey {
         case chainId
+        case assetId
         case sender
         case receiver
+        case amountInPlank
         case status
         case txHash
         case timestamp
@@ -23,12 +26,14 @@ struct TransactionHistoryItem: Codable {
     }
 
     let chainId: String
+    let assetId: UInt32
     let sender: String
     let receiver: String?
+    let amountInPlank: String?
     let status: Status
     let txHash: String
     let timestamp: Int64
-    let fee: String
+    let fee: String?
     let blockNumber: UInt64?
     let txIndex: UInt16?
     let callPath: CallCodingPath
@@ -37,4 +42,10 @@ struct TransactionHistoryItem: Codable {
 
 extension TransactionHistoryItem: Identifiable {
     var identifier: String { txHash }
+}
+
+extension TransactionHistoryItem {
+    var walletAssetId: String {
+        ChainAssetId(chainId: chainId, assetId: assetId).walletId
+    }
 }

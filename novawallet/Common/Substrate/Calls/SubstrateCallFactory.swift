@@ -4,10 +4,23 @@ import IrohaCrypto
 import BigInt
 
 protocol SubstrateCallFactoryProtocol {
-    func transfer(
+    func nativeTransfer(
         to receiver: AccountId,
         amount: BigUInt
     ) -> RuntimeCall<TransferCall>
+
+    func assetsTransfer(
+        to receiver: AccountId,
+        assetId: String,
+        amount: BigUInt
+    ) -> RuntimeCall<AssetsTransfer>
+
+    func ormlTransfer(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<OrmlTokenTransfer>
 
     func bond(
         amount: BigUInt,
@@ -107,12 +120,36 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         return RuntimeCall(moduleName: "Staking", callName: "payout_stakers", args: args)
     }
 
-    func transfer(
+    func assetsTransfer(
+        to receiver: AccountId,
+        assetId: String,
+        amount: BigUInt
+    ) -> RuntimeCall<AssetsTransfer> {
+        let args = AssetsTransfer(assetId: assetId, target: .accoundId(receiver), amount: amount)
+        return RuntimeCall(moduleName: "Assets", callName: "transfer", args: args)
+    }
+
+    func nativeTransfer(
         to receiver: AccountId,
         amount: BigUInt
     ) -> RuntimeCall<TransferCall> {
         let args = TransferCall(dest: .accoundId(receiver), value: amount)
         return RuntimeCall(moduleName: "Balances", callName: "transfer", args: args)
+    }
+
+    func ormlTransfer(
+        in moduleName: String,
+        currencyId: JSON,
+        receiverId: AccountId,
+        amount: BigUInt
+    ) -> RuntimeCall<OrmlTokenTransfer> {
+        let args = OrmlTokenTransfer(
+            dest: .accoundId(receiverId),
+            currencyId: currencyId,
+            amount: amount
+        )
+
+        return RuntimeCall(moduleName: moduleName, callName: "transfer", args: args)
     }
 
     func setPayee(for destination: RewardDestinationArg) -> RuntimeCall<SetPayeeCall> {

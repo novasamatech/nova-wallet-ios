@@ -2,6 +2,7 @@ import Foundation
 import SoraKeystore
 import SoraFoundation
 import SubstrateSdk
+import RobinHood
 
 protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
     func updateOnAccountChange()
@@ -10,15 +11,18 @@ protocol ServiceCoordinatorProtocol: ApplicationServiceProtocol {
 final class ServiceCoordinator {
     let walletSettings: SelectedWalletSettings
     let accountInfoService: AccountInfoUpdatingServiceProtocol
+    let assetsService: AssetsUpdatingServiceProtocol
     let githubPhishingService: ApplicationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
         accountInfoService: AccountInfoUpdatingServiceProtocol,
+        assetsService: AssetsUpdatingServiceProtocol,
         githubPhishingService: ApplicationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.accountInfoService = accountInfoService
+        self.assetsService = assetsService
         self.githubPhishingService = githubPhishingService
     }
 
@@ -41,6 +45,7 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
     func updateOnAccountChange() {
         if let seletedMetaAccount = walletSettings.value {
             accountInfoService.update(selectedMetaAccount: seletedMetaAccount)
+            assetsService.update(selectedMetaAccount: seletedMetaAccount)
         }
     }
 
@@ -50,11 +55,13 @@ extension ServiceCoordinator: ServiceCoordinatorProtocol {
 
         githubPhishingService.setup()
         accountInfoService.setup()
+        assetsService.setup()
     }
 
     func throttle() {
         githubPhishingService.throttle()
         accountInfoService.throttle()
+        assetsService.throttle()
     }
 }
 
@@ -65,14 +72,17 @@ extension ServiceCoordinator {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
+
         let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
         let walletRemoteSubscription = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationManager: operationManager,
             logger: logger
         )
 
@@ -88,13 +98,25 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationManager: operationManager,
+            operationQueue: operationQueue,
+            logger: logger
+        )
+
+        let assetsService = AssetsUpdatingService(
+            selectedAccount: walletSettings.value,
+            chainRegistry: chainRegistry,
+            remoteSubscriptionService: walletRemoteSubscription,
+            storageFacade: substrateStorageFacade,
+            storageRequestFactory: storageRequestFactory,
+            eventCenter: EventCenter.shared,
+            operationQueue: operationQueue,
             logger: logger
         )
 
         return ServiceCoordinator(
             walletSettings: walletSettings,
             accountInfoService: accountInfoService,
+            assetsService: assetsService,
             githubPhishingService: githubPhishingAPIService
         )
     }

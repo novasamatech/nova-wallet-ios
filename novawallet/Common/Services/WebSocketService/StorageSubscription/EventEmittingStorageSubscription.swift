@@ -29,7 +29,11 @@ final class EventEmittingStorageSubscription: BaseStorageChildSubscription {
         )
     }
 
-    override func handle(result: Result<DataProviderChange<ChainStorageItem>?, Error>, blockHash _: Data?) {
+    override func handle(
+        result: Result<DataProviderChange<ChainStorageItem>?, Error>,
+        remoteItem _: ChainStorageItem?,
+        blockHash _: Data?
+    ) {
         if case let .success(optionalChange) = result, let change = optionalChange {
             DispatchQueue.main.async {
                 let event = self.eventFactory(change)
