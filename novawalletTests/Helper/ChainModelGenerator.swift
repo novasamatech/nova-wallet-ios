@@ -18,7 +18,9 @@ enum ChainModelGenerator {
                 symbol: chainId.prefix(3).uppercased(),
                 precision: 12,
                 priceId: nil,
-                staking: hasStaking ? "relaychain" : nil
+                staking: hasStaking ? "relaychain" : nil,
+                type: nil,
+                typeExtras: nil
             )
 
             let node = ChainNodeModel(
@@ -63,6 +65,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
+                color: generateChainColor(),
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers,
@@ -87,7 +90,9 @@ enum ChainModelGenerator {
                 symbol: chainId.prefix(3).uppercased(),
                 precision: 12,
                 priceId: nil,
-                staking: hasStaking ? "relaychain" : nil
+                staking: hasStaking ? "relaychain" : nil,
+                type: nil,
+                typeExtras: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -131,6 +136,7 @@ enum ChainModelGenerator {
                 addressPrefix: UInt16(index),
                 types: types,
                 icon: URL(string: "https://github.com")!,
+                color: generateChainColor(),
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers
@@ -195,6 +201,7 @@ enum ChainModelGenerator {
             addressPrefix: addressPrefix,
             types: nil,
             icon: Constants.dummyURL,
+            color: generateChainColor(),
             options: options.isEmpty ? nil : options,
             externalApi: externalApi,
             explorers: explorers,
@@ -214,7 +221,9 @@ enum ChainModelGenerator {
             symbol: String(UUID().uuidString.prefix(3)),
             precision: assetPresicion,
             priceId: nil,
-            staking: hasStaking ? "relaychain" : nil
+            staking: hasStaking ? "relaychain" : nil,
+            type: nil,
+            typeExtras: nil
         )
     }
 
@@ -250,5 +259,9 @@ enum ChainModelGenerator {
         } else {
             return nil
         }
+    }
+
+    static func generateChainColor() -> String {
+        "linear-gradient(315deg, #D43079 0%, #F93C90 100%)"
     }
 }

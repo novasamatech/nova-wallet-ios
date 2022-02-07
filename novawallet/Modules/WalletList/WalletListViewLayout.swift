@@ -1,20 +1,21 @@
 import UIKit
 
 final class WalletListViewLayout: UIView {
-    let backgroundView: UIImageView = {
-        let view = UIImageView(image: R.image.backgroundImage())
-        view.contentMode = .scaleAspectFill
-        return view
-    }()
+    let backgroundView = MultigradientView.background
 
-    let tableView: UITableView = {
-        let view = UITableView()
-        view.separatorStyle = .none
+    let collectionView: UICollectionView = {
+        let flowLayout = WalletListFlowLayout()
+        flowLayout.scrollDirection = .vertical
+        flowLayout.minimumLineSpacing = 0
+        flowLayout.minimumInteritemSpacing = 0
+        flowLayout.sectionInset = .zero
+
+        let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         view.backgroundColor = .clear
+        view.contentInsetAdjustmentBehavior = .always
+        view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
+        view.refreshControl = UIRefreshControl()
 
-        let refreshControl = UIRefreshControl()
-        refreshControl.tintColor = R.color.colorWhite()
-        view.refreshControl = refreshControl
         return view
     }()
 
@@ -35,8 +36,8 @@ final class WalletListViewLayout: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(tableView)
-        tableView.snp.makeConstraints { make in
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }

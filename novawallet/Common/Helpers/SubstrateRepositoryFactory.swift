@@ -3,12 +3,26 @@ import RobinHood
 
 protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository() -> AnyDataProviderRepository<ChainStorageItem>
+    func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
-    func createTxRepository(
+
+    func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
+    ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
+    func createCustomAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
+    func createUtilityAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
 }
 
@@ -58,13 +72,61 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createTxRepository(
+    func createCustomAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let txFilter = NSPredicate.filterTransactionsBy(
+            address: address,
+            chainId: chainId,
+            assetId: assetId
+        )
+
+        return createTxRepository(for: txFilter)
+    }
+
+    func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
     ) -> AnyDataProviderRepository<TransactionHistoryItem> {
-        let txFilter = NSPredicate.filterTransactionsBy(address: address, chainId: chainId)
+        let txFilter = NSPredicate.filterTransactionsBy(
+            address: address,
+            chainId: chainId
+        )
+
+        return createTxRepository(for: txFilter)
+    }
+
+    func createUtilityAssetTxRepository(
+        for address: AccountAddress,
+        chainId: ChainModel.Id,
+        assetId: UInt32
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let txFilter = NSPredicate.filterUtilityAssetTransactionsBy(
+            address: address,
+            chainId: chainId,
+            utilityAssetId: assetId
+        )
+
+        return createTxRepository(for: txFilter)
+    }
+
+    func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance> {
+        let mapper = AssetBalanceMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        return AnyDataProviderRepository(repository)
+    }
+
+    private func createTxRepository(
+        for filter: NSPredicate
+    ) -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let sortDescriptor = NSSortDescriptor(
+            key: #keyPath(CDTransactionHistoryItem.timestamp),
+            ascending: false
+        )
         let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
-            storageFacade.createRepository(filter: txFilter)
+            storageFacade.createRepository(filter: filter, sortDescriptors: [sortDescriptor])
         return AnyDataProviderRepository(txStorage)
     }
 }

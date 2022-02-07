@@ -17,7 +17,7 @@ final class TransactionSubscription {
     let chainModel: ChainModel
     let txStorage: AnyDataProviderRepository<TransactionHistoryItem>
     let storageRequestFactory: StorageRequestFactoryProtocol
-    let operationManager: OperationManagerProtocol
+    let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let logger: LoggerProtocol
 
@@ -27,7 +27,7 @@ final class TransactionSubscription {
         chainModel: ChainModel,
         txStorage: AnyDataProviderRepository<TransactionHistoryItem>,
         storageRequestFactory: StorageRequestFactoryProtocol,
-        operationManager: OperationManagerProtocol,
+        operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
         logger: LoggerProtocol
     ) {
@@ -36,7 +36,7 @@ final class TransactionSubscription {
         self.chainModel = chainModel
         self.storageRequestFactory = storageRequestFactory
         self.txStorage = txStorage
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.eventCenter = eventCenter
         self.logger = logger
     }
@@ -121,7 +121,7 @@ final class TransactionSubscription {
                 return array
             }()
 
-            operationManager.enqueue(operations: operations, in: .transient)
+            operationQueue.addOperations(operations, waitUntilFinished: false)
         } catch {
             logger.error("Block processing failed: \(error)")
         }
@@ -139,10 +139,16 @@ extension TransactionSubscription {
             let codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
             let runtimeJsonContext = codingFactory.createRuntimeJsonContext()
             return try processingOperaton.extractNoCancellableResultData().compactMap { result in
-                TransactionHistoryItem.createFromSubscriptionResult(
+                guard let asset = chain.assets.first(
+                    where: { $0.assetId == result.processingResult.assetId }
+                ) else {
+                    return nil
+                }
+
+                return TransactionHistoryItem.createFromSubscriptionResult(
                     result,
                     accountId: accountId,
-                    chain: chain,
+                    chainAsset: ChainAsset(chain: chain, asset: asset),
                     runtimeJsonContext: runtimeJsonContext
                 )
             }
@@ -169,10 +175,7 @@ extension TransactionSubscription {
 
             let coderFactory = try coderOperation.extractNoCancellableResultData()
 
-            let extrinsicProcessor = ExtrinsicProcessor(
-                accountId: accountId,
-                isEthereumBased: chain.isEthereumBased
-            )
+            let extrinsicProcessor = ExtrinsicProcessor(accountId: accountId, chain: chain)
 
             return block.extrinsics.enumerated().compactMap { index, hexExtrinsic in
                 do {

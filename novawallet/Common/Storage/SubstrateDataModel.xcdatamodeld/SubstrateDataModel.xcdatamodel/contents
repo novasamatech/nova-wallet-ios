@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19461" systemVersion="20F71" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="20F71" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="CDAsset" representedClassName="CDAsset" syncable="YES" codeGenerationType="class">
         <attribute name="assetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="icon" optional="YES" attributeType="URI"/>
@@ -8,11 +8,23 @@
         <attribute name="priceId" optional="YES" attributeType="String"/>
         <attribute name="staking" optional="YES" attributeType="String"/>
         <attribute name="symbol" attributeType="String"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="typeExtras" optional="YES" attributeType="Binary"/>
         <relationship name="chain" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDChain" inverseName="assets" inverseEntity="CDChain"/>
+    </entity>
+    <entity name="CDAssetBalance" representedClassName="CDAssetBalance" syncable="YES" codeGenerationType="class">
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="chainAccountId" optional="YES" attributeType="String"/>
+        <attribute name="chainId" optional="YES" attributeType="String"/>
+        <attribute name="freeInPlank" optional="YES" attributeType="String"/>
+        <attribute name="frozenInPlank" optional="YES" attributeType="String"/>
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+        <attribute name="reservedInPlank" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
+        <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiType" optional="YES" attributeType="String"/>
         <attribute name="crowdloansApiUrl" optional="YES" attributeType="URI"/>
         <attribute name="explorers" optional="YES" attributeType="Binary"/>
@@ -81,6 +93,8 @@
         <attribute name="stash" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDTransactionHistoryItem" representedClassName="CDTransactionHistoryItem" syncable="YES" codeGenerationType="class">
+        <attribute name="amountInPlank" optional="YES" attributeType="String"/>
+        <attribute name="assetId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="blockNumber" optional="YES" attributeType="Integer 64" usesScalarValueType="NO"/>
         <attribute name="call" optional="YES" attributeType="Binary"/>
         <attribute name="callName" attributeType="String"/>
@@ -95,8 +109,9 @@
         <attribute name="txIndex" optional="YES" attributeType="Integer 16" usesScalarValueType="NO"/>
     </entity>
     <elements>
-        <element name="CDAsset" positionX="-36" positionY="90" width="128" height="149"/>
-        <element name="CDChain" positionX="-45" positionY="81" width="128" height="329"/>
+        <element name="CDAsset" positionX="-36" positionY="90" width="128" height="179"/>
+        <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
+        <element name="CDChain" positionX="-45" positionY="81" width="128" height="344"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
         <element name="CDContactItem" positionX="-45" positionY="81" width="128" height="118"/>
@@ -104,6 +119,6 @@
         <element name="CDRuntimeMetadataItem" positionX="-45" positionY="81" width="128" height="89"/>
         <element name="CDSingleValue" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDStashItem" positionX="-45" positionY="81" width="128" height="59"/>
-        <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="209"/>
+        <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="239"/>
     </elements>
 </model>

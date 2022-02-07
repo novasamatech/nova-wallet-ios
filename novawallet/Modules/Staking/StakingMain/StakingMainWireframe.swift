@@ -51,15 +51,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showStories(from view: ControllerBackedProtocol?, startingFrom index: Int) {
-        guard let storiesView = StoriesViewFactory.createView(with: index) else {
-            return
-        }
-
-        storiesView.controller.modalPresentationStyle = .overFullScreen
-        view?.controller.present(storiesView.controller, animated: true, completion: nil)
-    }
-
     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal) {
         let infoVew = ModalInfoFactory.createRewardDetails(for: maxReward, avgReward: avgReward)
 
