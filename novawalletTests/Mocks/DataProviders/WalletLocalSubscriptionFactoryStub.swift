@@ -4,10 +4,19 @@ import RobinHood
 import BigInt
 
 final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryProtocol {
-    let accountInfo: AccountInfo?
+    let balance: BigUInt?
 
     init(balance: BigUInt? = nil) {
-        self.accountInfo = balance.map { value in
+        self.balance = balance
+    }
+
+    func getAccountProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id
+    ) throws -> AnyDataProvider<DecodedAccountInfo> {
+        let localIdentifierFactory = LocalStorageKeyFactory()
+
+        let accountInfo = balance.map { value in
             AccountInfo(
                 nonce: 0,
                 data: AccountData(
@@ -18,13 +27,6 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
                 )
             )
         }
-    }
-
-    func getAccountProvider(
-        for accountId: AccountId,
-        chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedAccountInfo> {
-        let localIdentifierFactory = LocalStorageKeyFactory()
 
         let accountInfoModel: DecodedAccountInfo = try {
             let localKey = try localIdentifierFactory.createFromStoragePath(
@@ -41,5 +43,17 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
         }()
 
         return AnyDataProvider(DataProviderStub(models: [accountInfoModel]))
+    }
+
+    func getAssetBalanceProvider(
+        for accountId: AccountId,
+        chainId: ChainModel.Id,
+        assetId: AssetModel.Id
+    ) throws -> StreamableProvider<AssetBalance> {
+        throw CommonError.undefined
+    }
+
+    func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance> {
+        throw CommonError.undefined
     }
 }

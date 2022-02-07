@@ -33,13 +33,9 @@ final class TransferConfirmCommand: WalletCommandDecoratorProtocol, WalletComman
             return
         }
 
-        let balanceContext = BalanceContext(context: context)
+        let transferInfoContext = TransferInfoContext(context: context)
 
-        let transferAmount = payload.transferInfo.amount.decimalValue
-        let totalFee = payload.transferInfo.fees.reduce(Decimal(0.0)) { $0 + $1.value.decimalValue }
-        let totalAfterTransfer = balanceContext.total - (transferAmount + totalFee)
-
-        guard totalAfterTransfer < balanceContext.minimalBalance else {
+        guard transferInfoContext.accountWillBeDead else {
             try undelyingCommand?.execute()
             return
         }

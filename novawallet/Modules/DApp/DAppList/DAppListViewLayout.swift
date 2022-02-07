@@ -1,7 +1,7 @@
 import UIKit
 
 final class DAppListViewLayout: UIView {
-    let backgroundView: UIView = UIImageView(image: R.image.backgroundImage())
+    private let backgroundView = MultigradientView.background
 
     let collectionView: UICollectionView = {
         let flowLayout = DAppListFlowLayout()
