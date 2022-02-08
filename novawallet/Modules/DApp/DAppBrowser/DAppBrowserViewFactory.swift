@@ -14,7 +14,14 @@ struct DAppBrowserViewFactory {
             mapper: AnyCoreDataMapper(DAppSettingsMapper())
         )
 
+        let canDebugDApp = ApplicationConfig.shared.canDebugDApp
+        let transports: [DAppBrowserTransportProtocol] = [
+            DAppPolkadotExtensionTransport(),
+            DAppMetamaskTransport(isDebug: canDebugDApp)
+        ]
+
         let interactor = DAppBrowserInteractor(
+            transports: transports,
             userQuery: userQuery,
             wallet: SelectedWalletSettings.shared.value,
             chainRegistry: ChainRegistryFacade.sharedRegistry,

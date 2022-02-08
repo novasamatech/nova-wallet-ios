@@ -42,6 +42,7 @@ final class DAppBrowserWaitingAuthState: DAppBrowserBaseState {
         dataSource: DAppBrowserStateDataSource
     ) {
         let request = DAppAuthRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
             origin: message.request?.origin?.stringValue,
