@@ -945,6 +945,12 @@
 		849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849842FD26592C2B006BBB9F /* StatusSectionView.swift */; };
 		8498430326592D29006BBB9F /* CrowdloanStatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498430226592D29006BBB9F /* CrowdloanStatusSectionView.swift */; };
 		8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8498430826592E5D006BBB9F /* CrowdloansViewModel.swift */; };
+		849976B327B2430300B14A6C /* DAppMetamaskTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B227B2430300B14A6C /* DAppMetamaskTransport.swift */; };
+		849976B527B246B400B14A6C /* metamask-min.js in Resources */ = {isa = PBXBuildFile; fileRef = 849976B427B246B400B14A6C /* metamask-min.js */; };
+		849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B727B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift */; };
+		849976BA27B24C2200B14A6C /* DAppBrowserTransportProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976B927B24C2200B14A6C /* DAppBrowserTransportProtocol.swift */; };
+		849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976BB27B25A6600B14A6C /* DAppTransportModel.swift */; };
+		849976BE27B269A400B14A6C /* DAppTransports.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849976BD27B269A400B14A6C /* DAppTransports.swift */; };
 		849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */; };
 		849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF3279A7AC600AB6709 /* AssetType.swift */; };
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
@@ -2841,6 +2847,12 @@
 		849842FD26592C2B006BBB9F /* StatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusSectionView.swift; sourceTree = "<group>"; };
 		8498430226592D29006BBB9F /* CrowdloanStatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanStatusSectionView.swift; sourceTree = "<group>"; };
 		8498430826592E5D006BBB9F /* CrowdloansViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModel.swift; sourceTree = "<group>"; };
+		849976B227B2430300B14A6C /* DAppMetamaskTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskTransport.swift; sourceTree = "<group>"; };
+		849976B427B246B400B14A6C /* metamask-min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "metamask-min.js"; sourceTree = "<group>"; };
+		849976B727B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppPolkadotExtensionTransport.swift; sourceTree = "<group>"; };
+		849976B927B24C2200B14A6C /* DAppBrowserTransportProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserTransportProtocol.swift; sourceTree = "<group>"; };
+		849976BB27B25A6600B14A6C /* DAppTransportModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTransportModel.swift; sourceTree = "<group>"; };
+		849976BD27B269A400B14A6C /* DAppTransports.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTransports.swift; sourceTree = "<group>"; };
 		849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsUpdatingService.swift; sourceTree = "<group>"; };
 		849A4EF3279A7AC600AB6709 /* AssetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetType.swift; sourceTree = "<group>"; };
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
@@ -5189,6 +5201,7 @@
 		84452F6F25D5E2B300F47EC5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				849976B427B246B400B14A6C /* metamask-min.js */,
 				84D2F19A2771AA140040C680 /* nova_min.js */,
 				84452F7025D5E2B300F47EC5 /* runtime-westend.json */,
 				84452F7125D5E2B300F47EC5 /* runtime-polkadot.json */,
@@ -6804,6 +6817,7 @@
 			children = (
 				8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */,
 				8496ADD6276AFEED00306B24 /* DAppBrowserModel.swift */,
+				849976BB27B25A6600B14A6C /* DAppTransportModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -6850,6 +6864,17 @@
 				848919DA26FB663D004DBAD5 /* CrowdloansChainViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		849976B627B24BA200B14A6C /* Transports */ = {
+			isa = PBXGroup;
+			children = (
+				849976B227B2430300B14A6C /* DAppMetamaskTransport.swift */,
+				849976B727B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift */,
+				849976B927B24C2200B14A6C /* DAppBrowserTransportProtocol.swift */,
+				849976BD27B269A400B14A6C /* DAppTransports.swift */,
+			);
+			path = Transports;
 			sourceTree = "<group>";
 		};
 		849AFEB826DCCCA900B65924 /* Wallet */ = {
@@ -7910,6 +7935,7 @@
 		A7D3F0165AEEF4940B376CA5 /* DAppBrowser */ = {
 			isa = PBXGroup;
 			children = (
+				849976B627B24BA200B14A6C /* Transports */,
 				842BDB1F278C21FC00AB4B5A /* StateMachine */,
 				84D2F1AD2774CEBD0040C680 /* View */,
 				8496ADD8276AFF3400306B24 /* Model */,
@@ -9472,6 +9498,7 @@
 				AE398394272AFB4B00BC8A85 /* WalletManagementViewController.xib in Resources */,
 				842876A924AE049B00D91AD8 /* SelectionSubtitleTableViewCell.xib in Resources */,
 				84AE11CB273C007E00B294B7 /* novawallet.staging.xcconfig in Resources */,
+				849976B527B246B400B14A6C /* metamask-min.js in Resources */,
 				8468B86724F59DA700B76BC6 /* IconTitleHeaderView.xib in Resources */,
 				8409C27225227CA00049B5C8 /* WalletSingleActionAccessoryView.xib in Resources */,
 				84D2F46425EF6A5A008B914D /* RecommendedValidatorListHeaderView.xib in Resources */,
@@ -9794,6 +9821,7 @@
 				84FD3DC02541B10B00A234E3 /* TransactionDetailsViewModelFactory.swift in Sources */,
 				F4CE0FC727344F600094CD8A /* AcalaContributionConfirmProtocols.swift in Sources */,
 				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
+				849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */,
 				846E501B277ADB6B0049B659 /* DAppListState.swift in Sources */,
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
@@ -9879,6 +9907,7 @@
 				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
 				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
+				849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */,
 				845CB6EF26276104005F798B /* SubscanQueryService.swift in Sources */,
 				84D2F1B32775A3220040C680 /* ExtrinsicJSONProcessor.swift in Sources */,
 				849ABE5126276C3400011A2A /* SubscanQueryParams.swift in Sources */,
@@ -10304,6 +10333,7 @@
 				849013AC24A80984008F705E /* AppDelegate.swift in Sources */,
 				84CE69E82566750D00559427 /* ByteLengthProcessor.swift in Sources */,
 				8494D87A2525350000614D8F /* SubscanStatusData.swift in Sources */,
+				849976BE27B269A400B14A6C /* DAppTransports.swift in Sources */,
 				842876A724AE049B00D91AD8 /* SelectionListProtocols.swift in Sources */,
 				F4871DE626D63DC000D27F23 /* AnalyticsRewardDetailsModel.swift in Sources */,
 				AE6F7FE22685E812002BBC3E /* ValidatorListFilterWireframe.swift in Sources */,
@@ -10676,6 +10706,7 @@
 				AEA2C1B42681E99D0069492E /* ValidatorSearchProtocols.swift in Sources */,
 				7489BDA1D23D8DF73E7EB9BC /* UsernameSetupWireframe.swift in Sources */,
 				84D6D7F627A7D3060094FC33 /* WalletListTotalBalanceCell.swift in Sources */,
+				849976B327B2430300B14A6C /* DAppMetamaskTransport.swift in Sources */,
 				84E1CCFA260DCBF9001E81B5 /* SwitchAccount+UsernameSetupWireframe.swift in Sources */,
 				84CFF1E626526FBC00DB7CF7 /* StakingBondMoreInteractor.swift in Sources */,
 				AE39838A272AFAD500BC8A85 /* WalletManagementWireframe.swift in Sources */,
@@ -11335,6 +11366,7 @@
 				2B1E63AF98584341D670FB40 /* MoonbeamTermsViewController.swift in Sources */,
 				B1B0F4818510EB082ACA83AB /* MoonbeamTermsViewLayout.swift in Sources */,
 				97F1D128D46B072D68940FC4 /* MoonbeamTermsViewFactory.swift in Sources */,
+				849976BA27B24C2200B14A6C /* DAppBrowserTransportProtocol.swift in Sources */,
 				E04E3ABA985AA3D89AE20BF5 /* CrowdloanYourContributionsProtocols.swift in Sources */,
 				5E621A350A6DDD78597CC9E5 /* CrowdloanYourContributionsWireframe.swift in Sources */,
 				716F0819BAB14322E34E416C /* CrowdloanYourContributionsPresenter.swift in Sources */,

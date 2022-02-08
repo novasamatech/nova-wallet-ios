@@ -68,6 +68,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         }
 
         let request = DAppOperationRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
             chain: chain,
@@ -113,6 +114,7 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
         }
 
         let request = DAppOperationRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
             chain: chain,
