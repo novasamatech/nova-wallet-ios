@@ -42,7 +42,10 @@ class DAppBrowserTests: XCTestCase {
             mapper: AnyCoreDataMapper(DAppSettingsMapper())
         )
 
+        let transport = DAppPolkadotExtensionTransport()
+
         let interactor = DAppBrowserInteractor(
+            transports: [transport],
             userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
@@ -81,7 +84,7 @@ class DAppBrowserTests: XCTestCase {
 
         XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
 
-        if (interactor.state as? DAppBrowserWaitingAuthState) == nil {
+        if (transport.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")
         }
     }
