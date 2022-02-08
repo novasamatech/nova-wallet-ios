@@ -105,6 +105,7 @@ class DAppAuthConfirmTests: XCTestCase {
         )
 
         let request = DAppAuthRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: UUID().uuidString,
             wallet: walletSettings.value,
             origin: "DApp",
