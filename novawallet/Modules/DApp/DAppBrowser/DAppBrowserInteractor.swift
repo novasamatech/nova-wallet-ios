@@ -2,18 +2,22 @@ import UIKit
 import RobinHood
 
 final class DAppBrowserInteractor {
-    static let subscriptionName = "_nova_"
+    struct QueueMessage {
+        let transportName: String
+        let underliningMessage: Any
+    }
 
     weak var presenter: DAppBrowserInteractorOutputProtocol!
 
     private(set) var userQuery: DAppSearchResult
     let dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
+    let transports: [DAppBrowserTransportProtocol]
 
-    private(set) var messageQueue: [PolkadotExtensionMessage] = []
-    private(set) var state: DAppBrowserStateProtocol?
+    private(set) var messageQueue: [QueueMessage] = []
 
     init(
+        transports: [DAppBrowserTransportProtocol],
         userQuery: DAppSearchResult,
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
@@ -21,6 +25,7 @@ final class DAppBrowserInteractor {
         operationQueue: OperationQueue,
         logger: LoggerProtocol? = nil
     ) {
+        self.transports = transports
         self.userQuery = userQuery
         dataSource = DAppBrowserStateDataSource(
             wallet: wallet,
@@ -50,87 +55,79 @@ final class DAppBrowserInteractor {
     }
 
     private func completeSetupIfNeeded() {
-        if state == nil, !dataSource.chainStore.isEmpty {
-            state = DAppBrowserWaitingAuthState(stateMachine: self)
+        if !dataSource.chainStore.isEmpty {
+            transports.forEach { transport in
+                transport.delegate = self
+                transport.start(with: dataSource)
+            }
+
             provideModel()
         }
     }
 
-    private func createBridgeScriptOperation() -> BaseOperation<DAppBrowserScript> {
-        ClosureOperation<DAppBrowserScript> {
-            guard let url = R.file.nova_minJs.url() else {
-                throw DAppBrowserInteractorError.scriptFileMissing
+    func resolveUrl() -> URL? {
+        switch userQuery {
+        case let .dApp(model):
+            return model.url
+        case let .query(string):
+            var urlComponents = URLComponents(string: string)
+
+            if urlComponents?.scheme == nil {
+                urlComponents?.scheme = "https"
             }
 
-            let content = try String(contentsOf: url)
+            if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = urlComponents?.url {
+                return inputUrl
+            } else {
+                let querySet = CharacterSet.urlQueryAllowed
+                guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
+                    return nil
+                }
 
-            return DAppBrowserScript(content: content, insertionPoint: .atDocStart)
+                return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
+            }
         }
     }
 
-    private func createSubscriptionScript() -> DAppBrowserScript {
-        let content =
-            """
-            window.addEventListener("message", ({ data, source }) => {
-              // only allow messages from our window, by the loader
-              if (source !== window) {
-                return;
-              }
-
-              if (data.origin === "dapp-request") {
-                window.webkit.messageHandlers.\(Self.subscriptionName).postMessage(data);
-              }
-            });
-            """
-
-        let script = DAppBrowserScript(content: content, insertionPoint: .atDocEnd)
-        return script
-    }
-
     func provideModel() {
-        let maybeUrl: URL? = {
-            switch userQuery {
-            case let .dApp(model):
-                return model.url
-            case let .query(string):
-                var urlComponents = URLComponents(string: string)
-
-                if urlComponents?.scheme == nil {
-                    urlComponents?.scheme = "https"
-                }
-
-                if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = urlComponents?.url {
-                    return inputUrl
-                } else {
-                    let querySet = CharacterSet.urlQueryAllowed
-                    guard let searchQuery = string.addingPercentEncoding(withAllowedCharacters: querySet) else {
-                        return nil
-                    }
-
-                    return URL(string: "https://duckduckgo.com/?q=\(searchQuery)")
-                }
-            }
-        }()
-
-        guard let url = maybeUrl else {
+        guard let url = resolveUrl() else {
             presenter.didReceive(error: DAppBrowserInteractorError.invalidUrl)
             return
         }
 
-        let bridgeOperation = createBridgeScriptOperation()
-        let subscriptionScript = createSubscriptionScript()
+        let wrappers: [CompoundOperationWrapper<DAppTransportModel>] = transports.map { transport in
+            let bridgeOperation = transport.createBridgeScriptOperation()
+            let subscriptionScript = transport.createSubscriptionScript()
+            let transportName = transport.name
 
-        bridgeOperation.completionBlock = { [weak self] in
+            let mapOperation = ClosureOperation<DAppTransportModel> {
+                let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
+
+                return DAppTransportModel(
+                    name: transportName,
+                    scripts: [bridgeScript, subscriptionScript]
+                )
+            }
+
+            mapOperation.addDependency(bridgeOperation)
+
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
+        }
+
+        let mapOperation = ClosureOperation<DAppBrowserModel> {
+            let tranportModels = try wrappers.map { wrapper in
+                try wrapper.targetOperation.extractNoCancellableResultData()
+            }
+
+            return DAppBrowserModel(url: url, transports: tranportModels)
+        }
+
+        wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
+
+        mapOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
                 do {
-                    let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
-
-                    let model = DAppBrowserModel(
-                        url: url,
-                        subscriptionName: Self.subscriptionName,
-                        scripts: [bridgeScript, subscriptionScript]
-                    )
-
+                    let model = try mapOperation.extractNoCancellableResultData()
                     self?.presenter.didReceiveDApp(model: model)
                 } catch {
                     self?.presenter.didReceive(error: error)
@@ -138,17 +135,21 @@ final class DAppBrowserInteractor {
             }
         }
 
-        dataSource.operationQueue.addOperation(bridgeOperation)
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
 
     private func processMessageIfNeeded() {
-        guard let state = state, state.canHandleMessage(), let message = messageQueue.first else {
+        guard transports.allSatisfy({ $0.isIdle() }), let queueMessage = messageQueue.first else {
             return
         }
 
         messageQueue.removeFirst()
 
-        state.handle(message: message, dataSource: dataSource)
+        let transport = transports.first { $0.name == queueMessage.transportName }
+
+        transport?.process(message: queueMessage.underliningMessage)
     }
 }
 
@@ -157,84 +158,61 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
     }
 
-    func process(message: Any) {
+    func process(message: Any, forTransport name: String) {
         logger?.debug("Did receive message: \(message)")
 
-        guard
-            let dict = message as? NSDictionary,
-            let parsedMessage = try? dict.map(to: PolkadotExtensionMessage.self) else {
-            presenter.didReceive(error: DAppBrowserInteractorError.unexpectedMessageType)
-            return
-        }
-
-        messageQueue.append(parsedMessage)
+        let queueMessage = QueueMessage(transportName: name, underliningMessage: message)
+        messageQueue.append(queueMessage)
 
         processMessageIfNeeded()
     }
 
-    func processConfirmation(response: DAppOperationResponse) {
-        state?.handleOperation(response: response, dataSource: dataSource)
+    func processConfirmation(response: DAppOperationResponse, forTransport name: String) {
+        transports.first(where: { $0.name == name })?.processConfirmation(response: response)
     }
 
     func process(newQuery: DAppSearchResult) {
         userQuery = newQuery
 
-        state?.stateMachine = nil
-        state = nil
+        transports.forEach { $0.stop() }
         completeSetupIfNeeded()
     }
 
-    func processAuth(response: DAppAuthResponse) {
-        state?.handleAuth(response: response, dataSource: dataSource)
+    func processAuth(response: DAppAuthResponse, forTransport name: String) {
+        transports.first(where: { $0.name == name })?.processAuth(response: response)
     }
 
     func reload() {
-        state?.stateMachine = nil
-        state = nil
+        transports.forEach { $0.stop() }
         completeSetupIfNeeded()
     }
 }
 
-extension DAppBrowserInteractor: DAppBrowserStateMachineProtocol {
-    func emit(nextState: DAppBrowserStateProtocol) {
-        state = nextState
-
-        nextState.setup(with: dataSource)
+extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
+    func dAppTransport(
+        _ transport: DAppBrowserTransportProtocol,
+        didReceiveResponse response: PolkadotExtensionResponse
+    ) {
+        presenter.didReceive(response: response, forTransport: transport.name)
     }
 
-    func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol) {
-        state = nextState
-
-        presenter.didReceive(response: response)
-
-        nextState.setup(with: dataSource)
+    func dAppTransport(_: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest) {
+        presenter.didReceiveAuth(request: request)
     }
 
-    func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol) {
-        state = nextState
-
-        presenter.didReceiveAuth(request: authRequest)
-
-        nextState.setup(with: dataSource)
+    func dAppTransport(
+        _: DAppBrowserTransportProtocol,
+        didReceiveConfirmation request: DAppOperationRequest,
+        of type: DAppSigningType
+    ) {
+        presenter.didReceiveConfirmation(request: request, type: type)
     }
 
-    func emit(signingRequest: DAppOperationRequest, type: DAppSigningType, nextState: DAppBrowserStateProtocol) {
-        state = nextState
-
-        presenter.didReceiveConfirmation(request: signingRequest, type: type)
-
-        nextState.setup(with: dataSource)
-    }
-
-    func emit(error: Error, nextState: DAppBrowserStateProtocol) {
-        state = nextState
-
+    func dAppTransport(_: DAppBrowserTransportProtocol, didReceive error: Error) {
         presenter.didReceive(error: error)
-
-        nextState.setup(with: dataSource)
     }
 
-    func popMessage() {
+    func dAppTransportAsksPopMessage(_: DAppBrowserTransportProtocol) {
         processMessageIfNeeded()
     }
 }
