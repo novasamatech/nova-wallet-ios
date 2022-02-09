@@ -119,6 +119,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             )
 
             handler.bind(viewModel: transport)
+
+            handlers[transport.name] = handler
         }
     }
 
@@ -185,6 +187,15 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
 
     func didReceive(response: PolkadotExtensionResponse, forTransport _: String) {
         rootView.webView.evaluateJavaScript(response.content)
+    }
+
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: PolkadotExtensionResponse
+    ) {
+        setupTransports(transports)
+
+        rootView.webView.evaluateJavaScript(script.content)
     }
 }
 
