@@ -90,7 +90,7 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         }
     }
 
-    func createSubscriptionScript() -> DAppBrowserScript {
+    func createSubscriptionScript(for _: DAppBrowserStateDataSource) -> DAppBrowserScript? {
         let content =
             """
             window.addEventListener("message", ({ data, source }) => {

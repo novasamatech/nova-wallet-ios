@@ -1,6 +1,10 @@
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceive(response: PolkadotExtensionResponse, forTransport name: String)
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: PolkadotExtensionResponse
+    )
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
@@ -22,6 +26,10 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
 protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
     func didReceiveDApp(model: DAppBrowserModel)
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: PolkadotExtensionResponse
+    )
     func didReceive(response: PolkadotExtensionResponse, forTransport name: String)
     func didReceiveConfirmation(
         request: DAppOperationRequest,

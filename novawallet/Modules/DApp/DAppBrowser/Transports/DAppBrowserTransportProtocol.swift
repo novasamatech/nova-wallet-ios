@@ -7,7 +7,7 @@ protocol DAppBrowserTransportProtocol: AnyObject {
     var delegate: DAppBrowserTransportDelegate? { get set }
 
     func createBridgeScriptOperation() -> BaseOperation<DAppBrowserScript>
-    func createSubscriptionScript() -> DAppBrowserScript
+    func createSubscriptionScript(for dataSource: DAppBrowserStateDataSource) -> DAppBrowserScript?
 
     func start(with dataSource: DAppBrowserStateDataSource)
     func isIdle() -> Bool
@@ -34,4 +34,9 @@ protocol DAppBrowserTransportDelegate: AnyObject {
     func dAppTransport(_ transport: DAppBrowserTransportProtocol, didReceive error: Error)
 
     func dAppTransportAsksPopMessage(_ transport: DAppBrowserTransportProtocol)
+
+    func dAppAskReload(
+        _ transport: DAppBrowserTransportProtocol,
+        postExecutionScript: PolkadotExtensionResponse
+    )
 }

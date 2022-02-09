@@ -89,18 +89,19 @@ final class DAppBrowserInteractor {
         }
     }
 
-    func provideModel() {
-        guard let url = resolveUrl() else {
-            presenter.didReceive(error: DAppBrowserInteractorError.invalidUrl)
-            return
-        }
-
-        let wrappers: [CompoundOperationWrapper<DAppTransportModel>] = transports.map { transport in
+    func createTransportWrappers() -> [CompoundOperationWrapper<DAppTransportModel>] {
+        transports.map { transport in
             let bridgeOperation = transport.createBridgeScriptOperation()
-            let subscriptionScript = transport.createSubscriptionScript()
+            let maybeSubscriptionScript = transport.createSubscriptionScript(for: dataSource)
             let transportName = transport.name
 
             let mapOperation = ClosureOperation<DAppTransportModel> {
+                guard let subscriptionScript = maybeSubscriptionScript else {
+                    throw DAppBrowserStateError.unexpected(
+                        reason: "Selected wallet doesn't have an address for this network"
+                    )
+                }
+
                 let bridgeScript = try bridgeOperation.extractNoCancellableResultData()
 
                 return DAppTransportModel(
@@ -113,6 +114,15 @@ final class DAppBrowserInteractor {
 
             return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [bridgeOperation])
         }
+    }
+
+    func provideModel() {
+        guard let url = resolveUrl() else {
+            presenter.didReceive(error: DAppBrowserInteractorError.invalidUrl)
+            return
+        }
+
+        let wrappers = createTransportWrappers()
 
         let mapOperation = ClosureOperation<DAppBrowserModel> {
             let tranportModels = try wrappers.map { wrapper in
@@ -129,6 +139,36 @@ final class DAppBrowserInteractor {
                 do {
                     let model = try mapOperation.extractNoCancellableResultData()
                     self?.presenter.didReceiveDApp(model: model)
+                } catch {
+                    self?.presenter.didReceive(error: error)
+                }
+            }
+        }
+
+        let dependencies = wrappers.flatMap(\.allOperations)
+
+        dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
+    }
+
+    func provideTransportUpdate(with postExecutionScript: PolkadotExtensionResponse) {
+        let wrappers = createTransportWrappers()
+
+        let mapOperation = ClosureOperation<[DAppTransportModel]> {
+            try wrappers.map { wrapper in
+                try wrapper.targetOperation.extractNoCancellableResultData()
+            }
+        }
+
+        wrappers.forEach { mapOperation.addDependency($0.targetOperation) }
+
+        mapOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let models = try mapOperation.extractNoCancellableResultData()
+                    self?.presenter.didReceiveReplacement(
+                        transports: models,
+                        postExecution: postExecutionScript
+                    )
                 } catch {
                     self?.presenter.didReceive(error: error)
                 }
@@ -214,5 +254,12 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
 
     func dAppTransportAsksPopMessage(_: DAppBrowserTransportProtocol) {
         processMessageIfNeeded()
+    }
+
+    func dAppAskReload(
+        _: DAppBrowserTransportProtocol,
+        postExecutionScript: PolkadotExtensionResponse
+    ) {
+        provideTransportUpdate(with: postExecutionScript)
     }
 }

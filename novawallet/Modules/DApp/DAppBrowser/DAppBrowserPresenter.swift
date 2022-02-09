@@ -90,6 +90,13 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         view?.didReceive(viewModel: model)
     }
 
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: PolkadotExtensionResponse
+    ) {
+        view?.didReceiveReplacement(transports: transports, postExecution: script)
+    }
+
     func didReceive(response: PolkadotExtensionResponse, forTransport name: String) {
         view?.didReceive(response: response, forTransport: name)
     }
