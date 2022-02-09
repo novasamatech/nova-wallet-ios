@@ -127,9 +127,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var canDebugDApp: Bool {
         #if F_RELEASE
-            true
-        #else
             false
+        #else
+            true
         #endif
     }
 
