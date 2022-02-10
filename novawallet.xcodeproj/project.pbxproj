@@ -693,6 +693,12 @@
 		846E501B277ADB6B0049B659 /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501A277ADB6B0049B659 /* DAppListState.swift */; };
 		846E501D277ADB8C0049B659 /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501C277ADB8C0049B659 /* DAppViewModel.swift */; };
 		846E501F277ADD280049B659 /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */; };
+		846F757E27B53F5100536547 /* DAppMetamaskSigningState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */; };
+		846F758227B54D7A00536547 /* EthereumOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758027B54D7A00536547 /* EthereumOperationFactory.swift */; };
+		846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */; };
+		846F758527B54F8300536547 /* EthereumTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758427B54F8300536547 /* EthereumTransaction.swift */; };
+		846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758627B5550700536547 /* EthereumRpcRequest.swift */; };
+		846F758927B5584100536547 /* EthereumRpcResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758827B5584100536547 /* EthereumRpcResponse.swift */; };
 		8470D6CD253E3170009E9A5D /* AccountInfoSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */; };
 		8470D6D0253E321C009E9A5D /* StorageSubscriptionProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */; };
 		8470D6D2253E3382009E9A5D /* StorageSubscriptionContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */; };
@@ -1019,6 +1025,7 @@
 		84A2CD5325685A4100A9FB0D /* WalletHistoryViewFactoryOverriding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2CD5225685A4100A9FB0D /* WalletHistoryViewFactoryOverriding.swift */; };
 		84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3034826A834F900E64382 /* ValidatorInfoViewLayout.swift */; };
 		84A3772E27B502F20026D6D1 /* MetamaskTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3772D27B502F20026D6D1 /* MetamaskTransaction.swift */; };
+		84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */; };
 		84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */; };
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
@@ -2599,6 +2606,12 @@
 		846E501A277ADB6B0049B659 /* DAppListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		846E501C277ADB8C0049B659 /* DAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
+		846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskSigningState.swift; sourceTree = "<group>"; };
+		846F758027B54D7A00536547 /* EthereumOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumOperationFactory.swift; sourceTree = "<group>"; };
+		846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EthereumOperationFactor+Protocol.swift"; sourceTree = "<group>"; };
+		846F758427B54F8300536547 /* EthereumTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTransaction.swift; sourceTree = "<group>"; };
+		846F758627B5550700536547 /* EthereumRpcRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumRpcRequest.swift; sourceTree = "<group>"; };
+		846F758827B5584100536547 /* EthereumRpcResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumRpcResponse.swift; sourceTree = "<group>"; };
 		8470D6CC253E3170009E9A5D /* AccountInfoSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscription.swift; sourceTree = "<group>"; };
 		8470D6CF253E321C009E9A5D /* StorageSubscriptionProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionProtocols.swift; sourceTree = "<group>"; };
 		8470D6D1253E3382009E9A5D /* StorageSubscriptionContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageSubscriptionContainer.swift; sourceTree = "<group>"; };
@@ -2931,6 +2944,7 @@
 		84A2CD5225685A4100A9FB0D /* WalletHistoryViewFactoryOverriding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryViewFactoryOverriding.swift; sourceTree = "<group>"; };
 		84A3034826A834F900E64382 /* ValidatorInfoViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoViewLayout.swift; sourceTree = "<group>"; };
 		84A3772D27B502F20026D6D1 /* MetamaskTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetamaskTransaction.swift; sourceTree = "<group>"; };
+		84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppEthereumConfirmInteractor.swift; sourceTree = "<group>"; };
 		84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCodingPath.swift; sourceTree = "<group>"; };
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
@@ -4211,6 +4225,7 @@
 				3BB7BFB2477E9F3893126931 /* DAppOperationConfirmViewFactory.swift */,
 				840D92A6278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift */,
 				840D92A8278EEE5C0007B979 /* DAppOperationBaseInteractor.swift */,
+				84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */,
 			);
 			path = DAppOperationConfirm;
 			sourceTree = "<group>";
@@ -5774,6 +5789,18 @@
 			path = ViewModel;
 			sourceTree = "<group>";
 		};
+		846F757F27B54D7A00536547 /* Ethereum */ = {
+			isa = PBXGroup;
+			children = (
+				846F758027B54D7A00536547 /* EthereumOperationFactory.swift */,
+				846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */,
+				846F758427B54F8300536547 /* EthereumTransaction.swift */,
+				846F758627B5550700536547 /* EthereumRpcRequest.swift */,
+				846F758827B5584100536547 /* EthereumRpcResponse.swift */,
+			);
+			path = Ethereum;
+			sourceTree = "<group>";
+		};
 		8470D6CE253E31FB009E9A5D /* StorageSubscription */ = {
 			isa = PBXGroup;
 			children = (
@@ -6638,6 +6665,7 @@
 		8490150124AB6BEA008F705E /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				846F757F27B54D7A00536547 /* Ethereum */,
 				AECF10EE26E9EF4E005B54A0 /* Coingecko */,
 				849AFEBA26DCCD4000B65924 /* Subquery */,
 				849AFEB926DCCCE000B65924 /* Misc */,
@@ -6907,6 +6935,7 @@
 				849976C927B2F9E000B14A6C /* DAppMetamaskAuthorizingState.swift */,
 				849976CB27B3905E00B14A6C /* DAppMetamaskDeniedState.swift */,
 				849976CD27B3921800B14A6C /* DAppMetamaskAuthorizedState.swift */,
+				846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */,
 			);
 			path = MetamaskStates;
 			sourceTree = "<group>";
@@ -10059,6 +10088,7 @@
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
 				849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */,
 				84F13F0826F13898006725FF /* StakingAssetSettings.swift in Sources */,
+				84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */,
 				84F30EF1260001A600039D09 /* DataProviderChange+Helper.swift in Sources */,
 				F47BBD8026317B970087DA11 /* StakingBalanceViewModel.swift in Sources */,
 				84E1CD07260DCCE8001E81B5 /* SwitchAccount+AccountCreateWireframe.swift in Sources */,
@@ -10254,7 +10284,9 @@
 				AE528E4F26852E410058935A /* ValidatorSearchViewModelFactory.swift in Sources */,
 				84B72C712756092A0042118E /* ExportGenericViewLayout.swift in Sources */,
 				841AAC2526F692EF00F0A25E /* AddressConversion.swift in Sources */,
+				846F758927B5584100536547 /* EthereumRpcResponse.swift in Sources */,
 				8490147624A94A37008F705E /* RootInteractor.swift in Sources */,
+				846F757E27B53F5100536547 /* DAppMetamaskSigningState.swift in Sources */,
 				849E17E0279094E7002D1744 /* DAppSearchHeaderView.swift in Sources */,
 				F40966CE26B297D6008CD244 /* AnalyticsStakeProtocols.swift in Sources */,
 				F47F640B263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift in Sources */,
@@ -10932,6 +10964,7 @@
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,
 				844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */,
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
+				846F758227B54D7A00536547 /* EthereumOperationFactory.swift in Sources */,
 				F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */,
 				F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */,
 				848E6BDF276218E600C91022 /* GlowingView.swift in Sources */,
@@ -10953,6 +10986,7 @@
 				84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */,
 				06590486EED4050BADDD32C5 /* AccountManagementPresenter.swift in Sources */,
 				846A68292746234100D1A47A /* ChainConnection.swift in Sources */,
+				846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */,
 				AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */,
 				84DED3EF26661CC600A153BB /* CrowdloanFlow.swift in Sources */,
 				21322B4A297840739C389F17 /* AccountManagementInteractor.swift in Sources */,
@@ -10990,6 +11024,7 @@
 				846B32A126DCDB7300250E89 /* SubqueryRewardSource.swift in Sources */,
 				AE39839C272BFE2B00BC8A85 /* ImportChainAccount+AccountImportWireframe.swift in Sources */,
 				8436E94626C85405003D4EA7 /* RuntimeSnapshot.swift in Sources */,
+				846F758527B54F8300536547 /* EthereumTransaction.swift in Sources */,
 				847C965425536199002D288F /* ExportRestoreJsonProtocols.swift in Sources */,
 				844CB56826F9BF9800396E13 /* CrowdloanLocalSubscriptionFactory.swift in Sources */,
 				8409C26A2522192B0049B5C8 /* WalletFearlessDefinition.swift in Sources */,
@@ -11332,6 +11367,7 @@
 				C083E2FC291784BF60EE73BA /* CrowdloanListViewController.swift in Sources */,
 				5888936B3D13D92F1534E08B /* CrowdloanListViewLayout.swift in Sources */,
 				849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */,
+				846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */,
 				278F5341DC043EBED7C0733D /* CrowdloanListViewFactory.swift in Sources */,
 				7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */,
 				B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */,

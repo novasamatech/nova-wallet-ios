@@ -29,10 +29,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         )
     }
 
-    private func sendTransaction(
-        from message: MetamaskMessage,
-        dataSource _: DAppBrowserStateDataSource
-    ) throws {
+    private func sendTransaction(from message: MetamaskMessage) {
         guard let transactionInfo = message.object else {
             provideError(
                 for: message.identifier,
@@ -43,10 +40,10 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        stateMachine?.emit(
-            messageId: message.identifier,
-            signingOperation: transactionInfo, nextState: self
-        )
+        let requestId = message.identifier
+        let nextState = DAppMetamaskSigningState(stateMachine: stateMachine, requestId: requestId)
+
+        stateMachine?.emit(messageId: requestId, signingOperation: transactionInfo, nextState: nextState)
     }
 }
 
@@ -67,7 +64,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
             case .addEthereumChain:
                 try addChain(from: message)
             case .signTransaction:
-                break
+                sendTransaction(from: message)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)

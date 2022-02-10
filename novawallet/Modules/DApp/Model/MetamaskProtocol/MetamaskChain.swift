@@ -4,7 +4,7 @@ struct MetamaskChain: Codable {
     struct NativeCurrency: Codable {
         let name: String
         let symbol: String // 2-6 characters long
-        let decimals: Int
+        let decimals: Int16
     }
 
     let chainId: String // A 0x-prefixed hexadecimal string
