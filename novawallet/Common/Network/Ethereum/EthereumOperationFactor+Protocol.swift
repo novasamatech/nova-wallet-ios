@@ -55,7 +55,7 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
     func createTransactionsCountOperation(
         for accountAddress: Data,
         block: EthereumBlock
-    ) -> BaseOperation<BigUInt> {
+    ) -> BaseOperation<String> {
         let url = node
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -72,12 +72,14 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
             return request
         }
 
-        let resultFactory: AnyNetworkResultFactory<BigUInt> = createResultFactory()
+        let resultFactory: AnyNetworkResultFactory<String> = createResultFactory()
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
 
-    func createSendTransactionOperation(for transactionData: Data) -> BaseOperation<Data> {
+    func createSendTransactionOperation(
+        for transactionDataClosure: @escaping () throws -> Data
+    ) -> BaseOperation<Data> {
         let url = node
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -85,8 +87,8 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
             request.httpMethod = HttpMethod.post.rawValue
 
             let method = EthereumMethod.sendRawTransaction.rawValue
-            let param = transactionData.toHex(includePrefix: true)
-            let jsonRequest = EthereumRpcRequest(method: method, params: param)
+            let param = try transactionDataClosure().toHex(includePrefix: true)
+            let jsonRequest = EthereumRpcRequest(method: method, params: [param])
             request.httpBody = try JSONEncoder().encode(jsonRequest)
             request.setValue(
                 HttpContentType.json.rawValue,

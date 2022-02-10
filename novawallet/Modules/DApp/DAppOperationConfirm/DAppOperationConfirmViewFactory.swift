@@ -100,7 +100,8 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             chain: chain,
             ethereumOperationFactory: operationFactory,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
         )
     }
 }

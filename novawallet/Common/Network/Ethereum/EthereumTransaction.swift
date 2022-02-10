@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 struct EthereumTransaction: Codable {
     let from: String
@@ -7,17 +8,57 @@ struct EthereumTransaction: Codable {
     let gasPrice: String?
     let value: String?
     let data: String
+    let nonce: String?
 }
 
 extension EthereumTransaction {
-    static func gasEstimationTransaction(from tx: MetamaskTransaction) -> EthereumTransaction {
+    static func gasEstimationTransaction(
+        from transaction: MetamaskTransaction
+    ) -> EthereumTransaction {
         EthereumTransaction(
-            from: tx.from,
-            to: tx.to,
+            from: transaction.from,
+            to: transaction.to,
             gas: nil,
             gasPrice: nil,
-            value: tx.value,
-            data: tx.data
+            value: transaction.value,
+            data: transaction.data,
+            nonce: nil
+        )
+    }
+
+    func replacing(gas: String?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: to,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data,
+            nonce: nonce
+        )
+    }
+
+    func replacing(gasPrice: String?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: to,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data,
+            nonce: nonce
+        )
+    }
+
+    func replacing(nonce: String?) -> EthereumTransaction {
+        EthereumTransaction(
+            from: from,
+            to: to,
+            gas: gas,
+            gasPrice: gasPrice,
+            value: value,
+            data: data,
+            nonce: nonce
         )
     }
 }

@@ -11,9 +11,11 @@ protocol EthereumOperationFactoryProtocol {
     func createTransactionsCountOperation(
         for accountAddress: Data,
         block: EthereumBlock
-    ) -> BaseOperation<BigUInt>
+    ) -> BaseOperation<String>
 
-    func createSendTransactionOperation(for transactionData: Data) -> BaseOperation<Data>
+    func createSendTransactionOperation(
+        for transactionDataClosure: @escaping () throws -> Data
+    ) -> BaseOperation<Data>
 }
 
 enum EthereumBlock: String {
@@ -26,7 +28,7 @@ enum EthereumMethod: String {
     case estimateGas = "eth_estimateGas"
     case gasPrice = "eth_gasPrice"
     case transactionCount = "eth_getTransactionCount"
-    case sendRawTransaction = "eth_signTransaction"
+    case sendRawTransaction = "eth_sendRawTransaction"
 }
 
 final class EthereumOperationFactory {
