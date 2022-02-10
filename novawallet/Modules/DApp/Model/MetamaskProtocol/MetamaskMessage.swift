@@ -2,6 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct MetamaskMessage: Codable {
+    // swiftlint:disable:next type_name
     typealias Id = UInt64
 
     enum CodingKeys: String, CodingKey {
@@ -14,7 +15,6 @@ struct MetamaskMessage: Codable {
         case signTransaction
         case requestAccounts
         case addEthereumChain
-        case requestChainId
     }
 
     let identifier: Id

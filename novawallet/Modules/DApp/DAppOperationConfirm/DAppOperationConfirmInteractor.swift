@@ -6,6 +6,7 @@ import SoraKeystore
 
 final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
+    let chain: ChainModel
 
     let connection: ChainConnection
     let signingWrapperFactory: SigningWrapperFactoryProtocol
@@ -21,6 +22,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
 
     init(
         request: DAppOperationRequest,
+        chain: ChainModel,
         runtimeProvider: RuntimeProviderProtocol,
         connection: ChainConnection,
         signingWrapperFactory: SigningWrapperFactoryProtocol,
@@ -28,6 +30,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         operationQueue: OperationQueue
     ) {
         self.request = request
+        self.chain = chain
         self.runtimeProvider = runtimeProvider
         self.connection = connection
         self.signingWrapperFactory = signingWrapperFactory
@@ -35,7 +38,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
         self.operationQueue = operationQueue
     }
 
-    func processRequestAndContinueSetup(_ request: DAppOperationRequest) {
+    func processRequestAndContinueSetup(_ request: DAppOperationRequest, chain: ChainModel) {
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let extrinsicMappingOperation = ClosureOperation<PolkadotExtensionExtrinsic> {
@@ -44,7 +47,7 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
 
         let decodingWrapper = createParsedExtrinsicOperation(
             wallet: request.wallet,
-            chain: request.chain,
+            chain: chain,
             dependingOn: extrinsicMappingOperation,
             codingFactoryOperation: codingFactoryOperation
         )
@@ -71,11 +74,27 @@ final class DAppOperationConfirmInteractor: DAppOperationBaseInteractor {
     func completeSetup(for result: DAppOperationProcessedResult) {
         processedResult = result
 
+        let networkIconUrl: URL?
+        let assetPrecision: UInt16
+
+        if let asset = chain.utilityAssets().first {
+            networkIconUrl = asset.icon ?? chain.icon
+            assetPrecision = asset.precision
+        } else {
+            networkIconUrl = nil
+            assetPrecision = 0
+        }
+
         let confirmationModel = DAppOperationConfirmModel(
-            wallet: request.wallet,
-            chain: request.chain,
+            accountName: request.wallet.name,
+            walletAccountId: request.wallet.substrateAccountId,
+            chainAccountId: result.account.accountId,
+            chainAddress: result.account.toAddress() ?? "",
+            networkName: chain.name,
+            utilityAssetPrecision: Int16(bitPattern: assetPrecision),
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon
+            dAppIcon: request.dAppIcon,
+            networkIcon: networkIconUrl
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))

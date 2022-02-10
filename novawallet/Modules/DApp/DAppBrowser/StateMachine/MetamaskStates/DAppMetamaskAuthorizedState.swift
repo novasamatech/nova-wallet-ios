@@ -9,17 +9,43 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         provideResponse(for: messageId, results: addresses, nextState: self)
     }
 
-    private func addChain(
-        _ chain: MetamaskChain,
-        messageId _: MetamaskMessage.Id,
-        dataSource _: DAppBrowserStateDataSource
-    ) {
+    private func addChain(from message: MetamaskMessage) throws {
+        guard let chain = try message.object?.map(to: MetamaskChain.self) else {
+            provideError(
+                for: message.identifier,
+                errorMessage: PolkadotExtensionError.unsupported.rawValue,
+                nextState: self
+            )
+
+            return
+        }
+
         let reloadCommand = createReloadCommand()
 
         stateMachine?.emit(
             chain: chain,
             postExecutionScript: PolkadotExtensionResponse(content: reloadCommand),
             nextState: self
+        )
+    }
+
+    private func sendTransaction(
+        from message: MetamaskMessage,
+        dataSource _: DAppBrowserStateDataSource
+    ) throws {
+        guard let transactionInfo = message.object else {
+            provideError(
+                for: message.identifier,
+                errorMessage: PolkadotExtensionError.unsupported.rawValue,
+                nextState: self
+            )
+
+            return
+        }
+
+        stateMachine?.emit(
+            messageId: message.identifier,
+            signingOperation: transactionInfo, nextState: self
         )
     }
 }
@@ -39,20 +65,8 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
             case .requestAccounts:
                 try provideEthereumAddresses(message.identifier, from: dataSource)
             case .addEthereumChain:
-                guard let chain = try message.object?.map(to: MetamaskChain.self) else {
-                    provideError(
-                        for: message.identifier,
-                        errorMessage: PolkadotExtensionError.unsupported.rawValue,
-                        nextState: self
-                    )
-
-                    return
-                }
-
-                addChain(chain, messageId: message.identifier, dataSource: dataSource)
+                try addChain(from: message)
             case .signTransaction:
-                break
-            case .requestChainId:
                 break
             }
         } catch {

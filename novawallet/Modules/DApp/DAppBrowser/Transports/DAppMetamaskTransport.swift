@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 final class DAppMetamaskTransport {
     static let subscriptionName = "_metamask_"
@@ -13,6 +14,24 @@ final class DAppMetamaskTransport {
 
     init(isDebug: Bool) {
         self.isDebug = isDebug
+    }
+
+    private func createConfirmationRequest(
+        messageId: MetamaskMessage.Id,
+        from signingOperation: JSON
+    ) -> DAppOperationRequest? {
+        guard let dataSource = dataSource else {
+            return nil
+        }
+
+        return DAppOperationRequest(
+            transportName: DAppTransports.metamask,
+            identifier: "\(messageId)",
+            wallet: dataSource.wallet,
+            dApp: dataSource.dApp?.name ?? "",
+            dAppIcon: dataSource.dApp?.icon,
+            operationData: signingOperation
+        )
     }
 }
 
@@ -52,8 +71,8 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
     }
 
     func emit(
-        signingRequest: DAppOperationRequest,
-        type: DAppSigningType,
+        messageId: MetamaskMessage.Id,
+        signingOperation: JSON,
         nextState: DAppMetamaskStateProtocol
     ) {
         guard let dataSource = dataSource else {
@@ -62,9 +81,21 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
 
         state = nextState
 
-        delegate?.dAppTransport(self, didReceiveConfirmation: signingRequest, of: type)
+        if
+            let request = createConfirmationRequest(messageId: messageId, from: signingOperation),
+            let chain = chain {
+            delegate?.dAppTransport(
+                self,
+                didReceiveConfirmation: request, of: .ethereumTransaction(chain: chain)
+            )
+        } else {
+            delegate?.dAppTransport(
+                self,
+                didReceive: DAppBrowserStateError.unexpected(reason: "Can't create signing request")
+            )
 
-        nextState.setup(with: dataSource)
+            nextState.setup(with: dataSource)
+        }
     }
 
     func emit(
