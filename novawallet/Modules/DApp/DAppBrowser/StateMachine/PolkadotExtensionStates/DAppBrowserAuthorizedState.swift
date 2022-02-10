@@ -71,14 +71,14 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
-            chain: chain,
             dApp: message.url ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: jsonRequest
         )
 
-        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: .extrinsic)
-        stateMachine?.emit(signingRequest: request, type: .extrinsic, nextState: nextState)
+        let type: DAppSigningType = .extrinsic(chain: chain)
+        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: type)
+        stateMachine?.emit(signingRequest: request, type: type, nextState: nextState)
     }
 
     private func handleRawPayloadSigning(
@@ -117,14 +117,14 @@ final class DAppBrowserAuthorizedState: DAppBrowserBaseState {
             transportName: DAppTransports.polkadotExtension,
             identifier: message.identifier,
             wallet: dataSource.wallet,
-            chain: chain,
             dApp: message.url ?? "",
             dAppIcon: dataSource.dApp?.icon,
             operationData: .stringValue(payload.data)
         )
 
-        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: .bytes)
-        stateMachine?.emit(signingRequest: request, type: .bytes, nextState: nextState)
+        let type: DAppSigningType = .bytes(chain: chain)
+        let nextState = DAppBrowserSigningState(stateMachine: stateMachine, signingType: type)
+        stateMachine?.emit(signingRequest: request, type: type, nextState: nextState)
     }
 }
 

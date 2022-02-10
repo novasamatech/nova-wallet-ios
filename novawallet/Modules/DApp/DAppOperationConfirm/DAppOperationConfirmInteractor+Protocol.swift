@@ -4,9 +4,9 @@ import SubstrateSdk
 
 extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputProtocol {
     func setup() {
-        processRequestAndContinueSetup(request)
+        processRequestAndContinueSetup(request, chain: chain)
 
-        if let priceId = request.chain.utilityAssets().first?.priceId {
+        if let priceId = chain.utilityAssets().first?.priceId {
             priceProvider = subscribeToPrice(for: priceId)
         }
     }

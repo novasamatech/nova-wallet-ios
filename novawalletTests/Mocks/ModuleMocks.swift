@@ -14940,6 +14940,21 @@ import Cuckoo
         
     }
     
+    
+    
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: PolkadotExtensionResponse)  {
+        
+    return cuckoo_manager.call("didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)",
+            parameters: (transports, script),
+            escapingParameters: (transports, script),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveReplacement(transports: transports, postExecution: script))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14967,6 +14982,11 @@ import Cuckoo
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse, String)> where M1.MatchedType == PolkadotExtensionResponse, M2.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: PolkadotExtensionResponse, forTransport: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], PolkadotExtensionResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], PolkadotExtensionResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15007,6 +15027,12 @@ import Cuckoo
 	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.__DoNotUse<([DAppTransportModel], PolkadotExtensionResponse), Void> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], PolkadotExtensionResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -15037,6 +15063,10 @@ import Cuckoo
     }
     
      func didReceive(response: PolkadotExtensionResponse, forTransport name: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: PolkadotExtensionResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15521,6 +15551,21 @@ import Cuckoo
     
     
     
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: PolkadotExtensionResponse)  {
+        
+    return cuckoo_manager.call("didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)",
+            parameters: (transports, script),
+            escapingParameters: (transports, script),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveReplacement(transports: transports, postExecution: script))
+        
+    }
+    
+    
+    
      func didReceive(response: PolkadotExtensionResponse, forTransport name: String)  {
         
     return cuckoo_manager.call("didReceive(response: PolkadotExtensionResponse, forTransport: String)",
@@ -15583,6 +15628,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveDApp(model: DAppBrowserModel)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], PolkadotExtensionResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], PolkadotExtensionResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse, String)> where M1.MatchedType == PolkadotExtensionResponse, M2.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: PolkadotExtensionResponse, forTransport: String)", parameterMatchers: matchers))
@@ -15627,6 +15677,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.__DoNotUse<([DAppTransportModel], PolkadotExtensionResponse), Void> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == PolkadotExtensionResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], PolkadotExtensionResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveReplacement(transports: [DAppTransportModel], postExecution: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(PolkadotExtensionResponse, String), Void> where M1.MatchedType == PolkadotExtensionResponse, M2.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
 	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15658,6 +15714,10 @@ import Cuckoo
     }
     
      func didReceiveDApp(model: DAppBrowserModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: PolkadotExtensionResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
