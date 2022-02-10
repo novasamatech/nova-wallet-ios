@@ -84,28 +84,30 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         if
             let request = createConfirmationRequest(messageId: messageId, from: signingOperation),
             let chain = chain {
-            delegate?.dAppTransport(
-                self,
-                didReceiveConfirmation: request, of: .ethereumTransaction(chain: chain)
-            )
+            let type = DAppSigningType.ethereumTransaction(chain: chain)
+            delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
         } else {
-            delegate?.dAppTransport(
-                self,
-                didReceive: DAppBrowserStateError.unexpected(reason: "Can't create signing request")
-            )
-
-            nextState.setup(with: dataSource)
+            let error = DAppBrowserStateError.unexpected(reason: "Can't create signing request")
+            delegate?.dAppTransport(self, didReceive: error)
         }
+
+        nextState.setup(with: dataSource)
     }
 
     func emit(
         chain: MetamaskChain,
         postExecutionScript: PolkadotExtensionResponse,
-        nextState _: DAppMetamaskStateProtocol
+        nextState: DAppMetamaskStateProtocol
     ) {
+        guard let dataSource = dataSource else {
+            return
+        }
+
         self.chain = chain
 
         delegate?.dAppAskReload(self, postExecutionScript: postExecutionScript)
+
+        nextState.setup(with: dataSource)
     }
 
     func emit(error: Error, nextState: DAppMetamaskStateProtocol) {

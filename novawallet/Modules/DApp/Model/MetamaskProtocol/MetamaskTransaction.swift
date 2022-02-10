@@ -1,6 +1,6 @@
 import Foundation
 
-struct MetamaskTransaction {
+struct MetamaskTransaction: Codable {
     /**
      * 20 Bytes hex - The address the transaction is send from.
      */
@@ -9,18 +9,19 @@ struct MetamaskTransaction {
     /**
      *  20 Bytes - (optional) The address the transaction is directed to.
      */
+    // swiftlint:disable:next identifier_name
     let to: String?
 
     /**
      *  (optional, default: 90000) gas provided for the transaction execution.
      *  It will return unused gas.
      */
-    let gas: String
+    let gas: String?
 
     /**
      *  (optional, default: To-Be-Determined) Integer (in hex) of the gasPrice used for each paid gas
      */
-    let gasPrice: String
+    let gasPrice: String?
 
     /**
      * (optional) Integer (in hex) of the value sent with this transaction
@@ -32,9 +33,4 @@ struct MetamaskTransaction {
      * parameters. For details see Ethereum Contract ABI
      */
     let data: String
-
-    /**
-     *   (optional) Integer (hex) value containing number of transaction commited from the account
-     */
-    let nonce: String
 }
