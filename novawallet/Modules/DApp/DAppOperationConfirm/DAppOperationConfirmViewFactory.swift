@@ -20,7 +20,7 @@ struct DAppOperationConfirmViewFactory {
             maybeInteractor = createSignBytesInteractor(for: request, chain: chain)
         case let .ethereumTransaction(chain):
             maybeAssetInfo = chain.assetDisplayInfo
-            maybeInteractor = nil
+            maybeInteractor = createEthereumInteractor(for: request, chain: chain)
         }
 
         guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
@@ -83,6 +83,24 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             chain: chain,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+        )
+    }
+
+    private static func createEthereumInteractor(
+        for request: DAppOperationRequest,
+        chain: MetamaskChain
+    ) -> DAppEthereumConfirmInteractor? {
+        guard let rpcUrlString = chain.rpcUrls.first, let rpcUrl = URL(string: rpcUrlString) else {
+            return nil
+        }
+
+        let operationFactory = EthereumOperationFactory(node: rpcUrl)
+
+        return DAppEthereumConfirmInteractor(
+            request: request,
+            chain: chain,
+            ethereumOperationFactory: operationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
