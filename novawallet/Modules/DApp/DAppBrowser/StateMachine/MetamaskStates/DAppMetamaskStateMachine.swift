@@ -1,12 +1,13 @@
 import Foundation
+import SubstrateSdk
 
 protocol DAppMetamaskStateMachineProtocol: AnyObject {
     func emit(nextState: DAppMetamaskStateProtocol)
     func emit(response: PolkadotExtensionResponse, nextState: DAppMetamaskStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppMetamaskStateProtocol)
     func emit(
-        signingRequest: DAppOperationRequest,
-        type: DAppSigningType,
+        messageId: MetamaskMessage.Id,
+        signingOperation: JSON,
         nextState: DAppMetamaskStateProtocol
     )
     func emit(
