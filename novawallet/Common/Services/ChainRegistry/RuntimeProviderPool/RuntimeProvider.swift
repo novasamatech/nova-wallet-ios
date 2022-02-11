@@ -15,6 +15,9 @@ enum RuntimeProviderError: Error {
 }
 
 final class RuntimeProvider {
+    // timeout for fetch request in secods
+    static let requestTimeout: Int = 1_000_000_000
+
     struct PendingRequest {
         let resultClosure: (RuntimeCoderFactoryProtocol?) -> Void
         let queue: DispatchQueue?
@@ -160,7 +163,7 @@ final class RuntimeProvider {
                 semaphore.signal()
             }
 
-            semaphore.wait()
+            _ = semaphore.wait(timeout: .now() + .seconds(Self.requestTimeout))
 
             guard let factory = fetchedFactory else {
                 throw RuntimeProviderError.providerUnavailable
