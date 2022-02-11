@@ -89,15 +89,15 @@ final class DAppListHeaderView: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string.localizable.tabbarDappsTitle(
+        titleLabel.text = R.string.localizable.tabbarDappsTitle_2_4_3(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        decorationTitleLabel.text = R.string.localizable.dappDecorationTitle(
+        decorationTitleLabel.text = R.string.localizable.dappDecorationTitle_2_4_3(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        decorationSubtitleLabel.text = R.string.localizable.dappsDecorationSubtitle(
+        decorationSubtitleLabel.text = R.string.localizable.dappsDecorationSubtitle_2_4_3(
             preferredLanguages: selectedLocale.rLanguages
         )
 

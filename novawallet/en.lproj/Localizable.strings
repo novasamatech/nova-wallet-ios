@@ -674,3 +674,6 @@
 "common.era.format" = "#%@";
 "wallet.total.balance" = "Total balance";
 "assets.manage.title" = "Filters";
+"tabbar.dapps.title_2_4_3" = "Browser";
+"dapps.decoration.subtitle_2_4_3" = "Browse the web using\n your accounts from Nova Wallet";
+"dapp.decoration.title_2_4_3" = "Welcome\nto Nova browser";
