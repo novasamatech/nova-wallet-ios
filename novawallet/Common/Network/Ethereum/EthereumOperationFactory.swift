@@ -15,7 +15,7 @@ protocol EthereumOperationFactoryProtocol {
 
     func createSendTransactionOperation(
         for transactionDataClosure: @escaping () throws -> Data
-    ) -> BaseOperation<Data>
+    ) -> BaseOperation<String>
 }
 
 enum EthereumBlock: String {
