@@ -109,19 +109,31 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
                 data
             ] as [AnyObject]
 
+            guard let chainId = BigUInt.fromHexString(chain.chainId) else {
+                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "chainId")
+            }
+
             if let signature = maybeSignature {
-                let signatureList = [
-                    BigUInt(signature.vPart),
-                    BigUInt(signature.rPart.value),
-                    BigUInt(signature.sPart.value)
-                ] as [AnyObject]
+                let dPart: BigUInt
+
+                if signature.vPart >= 0, signature.vPart <= 3 {
+                    dPart = BigUInt(35)
+                } else if signature.vPart >= 27, signature.vPart <= 30 {
+                    dPart = BigUInt(8)
+                } else if signature.vPart >= 31, signature.vPart <= 34 {
+                    dPart = BigUInt(4)
+                } else {
+                    dPart = BigUInt(0)
+                }
+
+                let vPart = BigUInt(signature.vPart) + dPart + chainId + chainId
+                let rPart = BigUInt(signature.rPart.value)
+                let sPart = BigUInt(signature.sPart.value)
+
+                let signatureList = [vPart, rPart, sPart] as [AnyObject]
 
                 fields.append(contentsOf: signatureList)
             } else {
-                guard let chainId = BigUInt.fromHexString(chain.chainId) else {
-                    throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "chainId")
-                }
-
                 let chainList = [
                     chainId,
                     BigUInt(0),
@@ -297,7 +309,8 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
 
                 do {
                     let txHash = try sendOperation.extractNoCancellableResultData()
-                    let response = DAppOperationResponse(signature: txHash)
+                    let txHashData = try Data(hexString: txHash)
+                    let response = DAppOperationResponse(signature: txHashData)
                     strongSelf.presenter?.didReceive(
                         responseResult: .success(response),
                         for: strongSelf.request

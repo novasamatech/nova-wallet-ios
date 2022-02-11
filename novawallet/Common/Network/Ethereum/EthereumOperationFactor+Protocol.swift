@@ -79,7 +79,7 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
 
     func createSendTransactionOperation(
         for transactionDataClosure: @escaping () throws -> Data
-    ) -> BaseOperation<Data> {
+    ) -> BaseOperation<String> {
         let url = node
 
         let requestFactory = BlockNetworkRequestFactory {
@@ -98,7 +98,7 @@ extension EthereumOperationFactory: EthereumOperationFactoryProtocol {
             return request
         }
 
-        let resultFactory: AnyNetworkResultFactory<Data> = createResultFactory()
+        let resultFactory: AnyNetworkResultFactory<String> = createResultFactory()
 
         return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
     }
