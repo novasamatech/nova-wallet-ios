@@ -16,7 +16,7 @@ extension WalletListPresenter {
     static func createGroupsDiffCalculator(
         from groups: [WalletListGroupModel]
     ) -> ListDifferenceCalculator<WalletListGroupModel> {
-        ListDifferenceCalculator(initialItems: groups) { model1, model2 in
+        let sortingBlock: (WalletListGroupModel, WalletListGroupModel) -> Bool = { model1, model2 in
             if model1.chainValue > 0, model2.chainValue > 0 {
                 return model1.chainValue > model2.chainValue
             } else if model1.chainValue > 0 {
@@ -27,12 +27,16 @@ extension WalletListPresenter {
                 return model1.chain.name.lexicographicallyPrecedes(model2.chain.name)
             }
         }
+
+        let sortedGroups = groups.sorted(by: sortingBlock)
+
+        return ListDifferenceCalculator(initialItems: sortedGroups, sortBlock: sortingBlock)
     }
 
     static func createAssetsDiffCalculator(
         from assets: [WalletListAssetModel]
     ) -> ListDifferenceCalculator<WalletListAssetModel> {
-        ListDifferenceCalculator(initialItems: assets) { model1, model2 in
+        let sortingBlock: (WalletListAssetModel, WalletListAssetModel) -> Bool = { model1, model2 in
             let balance1 = (try? model1.balanceResult?.get()) ?? 0
             let balance2 = (try? model2.balanceResult?.get()) ?? 0
 
@@ -55,6 +59,10 @@ extension WalletListPresenter {
                 return model1.assetModel.symbol.lexicographicallyPrecedes(model2.assetModel.symbol)
             }
         }
+
+        let sortedAssets = assets.sorted(by: sortingBlock)
+
+        return ListDifferenceCalculator(initialItems: sortedAssets, sortBlock: sortingBlock)
     }
 
     func createAssetModels(for chainModel: ChainModel) -> [WalletListAssetModel] {
