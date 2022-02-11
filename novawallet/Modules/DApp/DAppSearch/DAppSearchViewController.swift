@@ -112,6 +112,10 @@ extension DAppSearchViewController: UITableViewDataSource {
         cell.bind(title: searchTitle ?? "")
         return cell
     }
+
+    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
+        64.0
+    }
 }
 
 extension DAppSearchViewController: UITableViewDelegate {
