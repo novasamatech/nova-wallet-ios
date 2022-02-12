@@ -15,9 +15,6 @@ enum RuntimeProviderError: Error {
 }
 
 final class RuntimeProvider {
-    // timeout for fetch request in secods
-    static let requestTimeout: Int = 1_000_000_000
-
     struct PendingRequest {
         let resultClosure: (RuntimeCoderFactoryProtocol?) -> Void
         let queue: DispatchQueue?
@@ -33,7 +30,7 @@ final class RuntimeProvider {
     let logger: LoggerProtocol?
 
     private(set) var snapshot: RuntimeSnapshot?
-    private(set) var pendingRequests: [PendingRequest] = []
+    private(set) var pendingRequests: [UUID: PendingRequest] = [:]
     private(set) var currentWrapper: CompoundOperationWrapper<RuntimeSnapshot?>?
     private var mutex = NSLock()
 
@@ -107,15 +104,30 @@ final class RuntimeProvider {
         }
     }
 
+    private func cancelRequest(for requestId: UUID) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let maybePendingRequest = pendingRequests[requestId]
+        pendingRequests[requestId] = nil
+
+        if let pendingRequest = maybePendingRequest {
+            deliver(snapshot: nil, to: pendingRequest)
+        }
+    }
+
     private func resolveRequests() {
         guard !pendingRequests.isEmpty else {
             return
         }
 
         let requests = pendingRequests
-        pendingRequests = []
+        pendingRequests = [:]
 
-        requests.forEach { deliver(snapshot: snapshot, to: $0) }
+        requests.forEach { deliver(snapshot: snapshot, to: $0.value) }
     }
 
     private func deliver(snapshot: RuntimeSnapshot?, to request: PendingRequest) {
@@ -134,6 +146,7 @@ final class RuntimeProvider {
     }
 
     private func fetchCoderFactory(
+        assigning requestId: UUID,
         runCompletionIn queue: DispatchQueue?,
         executing closure: @escaping (RuntimeCoderFactoryProtocol?) -> Void
     ) {
@@ -148,28 +161,27 @@ final class RuntimeProvider {
         if let snapshot = snapshot {
             deliver(snapshot: snapshot, to: request)
         } else {
-            pendingRequests.append(request)
+            pendingRequests[requestId] = request
         }
     }
 
     func fetchCoderFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol> {
-        ClosureOperation { [weak self] in
-            var fetchedFactory: RuntimeCoderFactoryProtocol?
+        let requestId = UUID()
 
-            let semaphore = DispatchSemaphore(value: 0)
-
-            self?.fetchCoderFactory(runCompletionIn: nil) { factory in
-                fetchedFactory = factory
-                semaphore.signal()
+        return AsyncClosureOperation(cancelationClosure: { [weak self] in
+            self?.cancelRequest(for: requestId)
+        }) { [weak self] responseClosure in
+            if let strongSelf = self {
+                strongSelf.fetchCoderFactory(assigning: requestId, runCompletionIn: nil) { maybeFactory in
+                    if let factory = maybeFactory {
+                        responseClosure(.success(factory))
+                    } else {
+                        responseClosure(nil)
+                    }
+                }
+            } else {
+                responseClosure(.failure(RuntimeProviderError.providerUnavailable))
             }
-
-            _ = semaphore.wait(timeout: .now() + .seconds(Self.requestTimeout))
-
-            guard let factory = fetchedFactory else {
-                throw RuntimeProviderError.providerUnavailable
-            }
-
-            return factory
         }
     }
 }
