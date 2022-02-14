@@ -1,9 +1,9 @@
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
-    func didReceive(response: PolkadotExtensionResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse, forTransport name: String)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
-        postExecution script: PolkadotExtensionResponse
+        postExecution script: DAppScriptResponse
     )
 }
 
@@ -28,9 +28,9 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     func didReceiveDApp(model: DAppBrowserModel)
     func didReceiveReplacement(
         transports: [DAppTransportModel],
-        postExecution script: PolkadotExtensionResponse
+        postExecution script: DAppScriptResponse
     )
-    func didReceive(response: PolkadotExtensionResponse, forTransport name: String)
+    func didReceive(response: DAppScriptResponse, forTransport name: String)
     func didReceiveConfirmation(
         request: DAppOperationRequest,
         type: DAppSigningType

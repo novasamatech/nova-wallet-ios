@@ -3,7 +3,7 @@ import SubstrateSdk
 
 protocol DAppMetamaskStateMachineProtocol: AnyObject {
     func emit(nextState: DAppMetamaskStateProtocol)
-    func emit(response: PolkadotExtensionResponse, nextState: DAppMetamaskStateProtocol)
+    func emit(response: DAppScriptResponse, nextState: DAppMetamaskStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppMetamaskStateProtocol)
     func emit(
         messageId: MetamaskMessage.Id,
@@ -12,7 +12,7 @@ protocol DAppMetamaskStateMachineProtocol: AnyObject {
     )
     func emit(
         chain: MetamaskChain,
-        postExecutionScript: PolkadotExtensionResponse,
+        postExecutionScript: DAppScriptResponse,
         nextState: DAppMetamaskStateProtocol
     )
     func emit(error: Error, nextState: DAppMetamaskStateProtocol)

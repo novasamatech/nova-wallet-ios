@@ -24,7 +24,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
 
         stateMachine?.emit(
             chain: chain,
-            postExecutionScript: PolkadotExtensionResponse(content: reloadCommand),
+            postExecutionScript: DAppScriptResponse(content: reloadCommand),
             nextState: self
         )
     }
