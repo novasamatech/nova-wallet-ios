@@ -326,6 +326,37 @@ class RuntimeProviderTests: XCTestCase {
         XCTAssertNoThrow(try fetchCoderFactoryOperation.extractNoCancellableResultData())
     }
 
+    func testCanCancelSnapshotRequest() throws {
+        // given
+
+        let runtimeProvider = performSetup(with: { _ in }, commonTypesFetchClosure: {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }, chainTypesFetchClosure: {
+            return CompoundOperationWrapper.createWithResult(nil)
+        }, runtimeMetadataClosure: {
+            nil
+        }, eventVisitorClosure: nil)
+
+        // when
+
+        runtimeProvider.setup()
+
+        let fetchCoderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + .milliseconds(500)) {
+            XCTAssertEqual(runtimeProvider.pendingRequests.count, 1)
+            fetchCoderFactoryOperation.cancel()
+        }
+
+        // then
+
+        OperationQueue().addOperations([fetchCoderFactoryOperation], waitUntilFinished: false)
+
+        XCTAssertNil(fetchCoderFactoryOperation.result)
+
+        XCTAssertTrue(runtimeProvider.pendingRequests.isEmpty)
+    }
+
     private func performSetup(
         with eventHandlingClosure: @escaping (EventProtocol) -> (),
         commonTypesFetchClosure: @escaping () -> CompoundOperationWrapper<Data?>,
