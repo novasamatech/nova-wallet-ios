@@ -10,17 +10,28 @@ final class DAppBrowserSigningState: DAppBrowserBaseState {
     }
 
     private func provideOperationResponse(with signature: Data, nextState: DAppBrowserStateProtocol) throws {
+        guard let msgType = signingType.msgType else {
+            return
+        }
+
         let identifier = (0 ... UInt32.max).randomElement() ?? 0
         let result = PolkadotExtensionSignerResult(
             identifier: UInt(identifier),
             signature: signature.toHex(includePrefix: true)
         )
 
-        try provideResponse(for: signingType.msgType, result: result, nextState: nextState)
+        try provideResponse(for: msgType, result: result, nextState: nextState)
     }
 
-    private func providerOperationError(_ error: PolkadotExtensionError, nextState: DAppBrowserStateProtocol) {
-        provideError(for: signingType.msgType, errorMessage: error.rawValue, nextState: nextState)
+    private func providerOperationError(
+        _ error: PolkadotExtensionError,
+        nextState: DAppBrowserStateProtocol
+    ) {
+        guard let msgType = signingType.msgType else {
+            return
+        }
+
+        provideError(for: msgType, errorMessage: error.rawValue, nextState: nextState)
     }
 }
 

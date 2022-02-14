@@ -19,6 +19,7 @@ abstract_target 'novawalletAll' do
   pod 'Kingfisher', :inhibit_warnings => true
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'Charts'
+  pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
 
   target 'novawalletTests' do
     inherit! :search_paths
