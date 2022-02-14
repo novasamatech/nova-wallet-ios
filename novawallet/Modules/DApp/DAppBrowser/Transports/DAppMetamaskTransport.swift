@@ -143,8 +143,12 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     }
 
     func createSubscriptionScript(for dataSource: DAppBrowserStateDataSource) -> DAppBrowserScript? {
-        guard let selectedAddress = dataSource.fetchEthereumAddresses().first else {
-            return nil
+        let addressComponent: String
+
+        if let selectedAddress = dataSource.fetchEthereumAddresses().first {
+            addressComponent = "address: \"\(selectedAddress)\","
+        } else {
+            addressComponent = ""
         }
 
         let config: String
@@ -153,7 +157,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
             config =
                 """
                 var config = {
-                    address: \"\(selectedAddress)\",
+                    \(addressComponent)
                     chainId: \"\(chainId)\",
                     rpcUrl: \"\(rpcUrl)\",
                     isDebug: \(isDebug)
@@ -163,7 +167,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
             config =
                 """
                 var config = {
-                    address: \"\(selectedAddress)\",
+                    \(addressComponent)
                     isDebug: \(isDebug)
                 };
                 """

@@ -10,18 +10,34 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
     }
 
     private func switchChain(from message: MetamaskMessage) throws {
-        let chain = MetamaskChain.etheremChain
+        guard let request = try message.object?.map(to: MetamaskSwitchChain.self) else {
+            let error = MetamaskError.invalidParams(with: "can't parse chain")
+            provideError(for: message.identifier, error: error, nextState: self)
+            return
+        }
 
-        let chainIdCommand = createSetChainIdCommand(chain.chainId)
-        let nullResponseCommand = createNullResponseCommand(for: message.identifier)
-        let reloadCommand = createReloadCommand()
-        let content = createContentWithCommands([chainIdCommand, nullResponseCommand, reloadCommand])
+        guard request.chainId != stateMachine?.chain?.chainId else {
+            provideNullResponse(to: message.identifier, nextState: self)
+            return
+        }
 
-        stateMachine?.emit(
-            chain: chain,
-            postExecutionScript: DAppScriptResponse(content: content),
-            nextState: self
-        )
+        let ethereumChain = MetamaskChain.etheremChain
+
+        if request.chainId == ethereumChain.chainId {
+            let chainIdCommand = createSetChainIdCommand(ethereumChain.chainId)
+            let nullResponseCommand = createNullResponseCommand(for: message.identifier)
+            let reloadCommand = createReloadCommand()
+            let content = createContentWithCommands([chainIdCommand, nullResponseCommand, reloadCommand])
+
+            stateMachine?.emit(
+                chain: ethereumChain,
+                postExecutionScript: DAppScriptResponse(content: content),
+                nextState: self
+            )
+        } else {
+            let error = MetamaskError.noChainSwitch
+            provideError(for: message.identifier, error: error, nextState: self)
+        }
     }
 
     private func addChain(from message: MetamaskMessage) throws {
@@ -31,13 +47,17 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        let reloadCommand = createReloadCommand()
+        if chain.chainId != stateMachine?.chain?.chainId {
+            let reloadCommand = createReloadCommand()
 
-        stateMachine?.emit(
-            chain: chain,
-            postExecutionScript: DAppScriptResponse(content: reloadCommand),
-            nextState: self
-        )
+            stateMachine?.emit(
+                chain: chain,
+                postExecutionScript: DAppScriptResponse(content: reloadCommand),
+                nextState: self
+            )
+        } else {
+            provideNullResponse(to: message.identifier, nextState: self)
+        }
     }
 
     private func sendTransaction(from message: MetamaskMessage) {
