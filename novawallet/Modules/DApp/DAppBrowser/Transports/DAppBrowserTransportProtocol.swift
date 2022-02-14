@@ -11,7 +11,7 @@ protocol DAppBrowserTransportProtocol: AnyObject {
 
     func start(with dataSource: DAppBrowserStateDataSource)
     func isIdle() -> Bool
-    func process(message: Any)
+    func process(message: Any, host: String)
     func processConfirmation(response: DAppOperationResponse)
     func processAuth(response: DAppAuthResponse)
     func stop()

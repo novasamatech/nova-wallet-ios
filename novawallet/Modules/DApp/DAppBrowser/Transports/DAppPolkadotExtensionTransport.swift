@@ -118,7 +118,7 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         state = DAppBrowserWaitingAuthState(stateMachine: self)
     }
 
-    func process(message: Any) {
+    func process(message: Any, host _: String) {
         guard
             let dict = message as? NSDictionary,
             let parsedMessage = try? dict.map(to: PolkadotExtensionMessage.self) else {

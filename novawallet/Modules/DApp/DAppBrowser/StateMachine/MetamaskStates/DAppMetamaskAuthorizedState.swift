@@ -56,7 +56,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
         true
     }
 
-    func handle(message: MetamaskMessage, dataSource: DAppBrowserStateDataSource) {
+    func handle(message: MetamaskMessage, host _: String, dataSource: DAppBrowserStateDataSource) {
         do {
             switch message.name {
             case .requestAccounts:
