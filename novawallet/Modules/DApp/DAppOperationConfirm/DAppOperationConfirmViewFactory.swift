@@ -8,20 +8,22 @@ struct DAppOperationConfirmViewFactory {
         type: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     ) -> DAppOperationConfirmViewProtocol? {
-        guard let assetInfo = request.chain.utilityAssets().first?.displayInfo(with: request.chain.icon) else {
-            return nil
-        }
-
         let maybeInteractor: (DAppOperationBaseInteractor & DAppOperationConfirmInteractorInputProtocol)?
+        let maybeAssetInfo: AssetBalanceDisplayInfo?
 
         switch type {
-        case .extrinsic:
-            maybeInteractor = createExtrinsicInteractor(for: request)
-        case .bytes:
-            maybeInteractor = createSignBytesInteractor(for: request)
+        case let .extrinsic(chain):
+            maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
+            maybeInteractor = createExtrinsicInteractor(for: request, chain: chain)
+        case let .bytes(chain):
+            maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
+            maybeInteractor = createSignBytesInteractor(for: request, chain: chain)
+        case let .ethereumTransaction(chain):
+            maybeAssetInfo = chain.assetDisplayInfo
+            maybeInteractor = createEthereumInteractor(for: request, chain: chain)
         }
 
-        guard let interactor = maybeInteractor else {
+        guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
             return nil
         }
 
@@ -45,24 +47,26 @@ struct DAppOperationConfirmViewFactory {
         )
 
         presenter.view = view
-        maybeInteractor?.presenter = presenter
+        interactor.presenter = presenter
 
         return view
     }
 
     private static func createExtrinsicInteractor(
-        for request: DAppOperationRequest
+        for request: DAppOperationRequest,
+        chain: ChainModel
     ) -> DAppOperationConfirmInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let connection = chainRegistry.getConnection(for: request.chain.chainId),
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.chain.chainId) else {
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             return nil
         }
 
         return DAppOperationConfirmInteractor(
             request: request,
+            chain: chain,
             runtimeProvider: runtimeProvider,
             connection: connection,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
@@ -72,11 +76,33 @@ struct DAppOperationConfirmViewFactory {
     }
 
     private static func createSignBytesInteractor(
-        for request: DAppOperationRequest
+        for request: DAppOperationRequest,
+        chain: ChainModel
     ) -> DAppSignBytesConfirmInteractor {
         DAppSignBytesConfirmInteractor(
             request: request,
+            chain: chain,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+        )
+    }
+
+    private static func createEthereumInteractor(
+        for request: DAppOperationRequest,
+        chain: MetamaskChain
+    ) -> DAppEthereumConfirmInteractor? {
+        guard let rpcUrlString = chain.rpcUrls.first, let rpcUrl = URL(string: rpcUrlString) else {
+            return nil
+        }
+
+        let operationFactory = EthereumOperationFactory(node: rpcUrl)
+
+        return DAppEthereumConfirmInteractor(
+            request: request,
+            chain: chain,
+            ethereumOperationFactory: operationFactory,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            serializationFactory: EthereumSerializationFactory()
         )
     }
 }
