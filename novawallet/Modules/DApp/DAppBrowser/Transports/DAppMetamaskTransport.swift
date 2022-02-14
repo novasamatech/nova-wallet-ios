@@ -195,7 +195,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
         state = DAppMetamaskWaitingAuthState(stateMachine: self)
     }
 
-    func process(message: Any) {
+    func process(message: Any, host: String) {
         guard
             let dict = message as? NSDictionary,
             let parsedMessage = try? dict.map(to: MetamaskMessage.self) else {
@@ -207,7 +207,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
             return
         }
 
-        state?.handle(message: parsedMessage, dataSource: dataSource)
+        state?.handle(message: parsedMessage, host: host, dataSource: dataSource)
     }
 
     func processConfirmation(response: DAppOperationResponse) {

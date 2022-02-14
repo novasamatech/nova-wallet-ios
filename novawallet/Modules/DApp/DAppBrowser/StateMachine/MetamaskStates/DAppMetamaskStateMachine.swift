@@ -24,7 +24,7 @@ protocol DAppMetamaskStateProtocol {
 
     func setup(with dataSource: DAppBrowserStateDataSource)
     func canHandleMessage() -> Bool
-    func handle(message: MetamaskMessage, dataSource: DAppBrowserStateDataSource)
+    func handle(message: MetamaskMessage, host: String, dataSource: DAppBrowserStateDataSource)
     func handleOperation(response: DAppOperationResponse, dataSource: DAppBrowserStateDataSource)
     func handleAuth(response: DAppAuthResponse, dataSource: DAppBrowserStateDataSource)
 }

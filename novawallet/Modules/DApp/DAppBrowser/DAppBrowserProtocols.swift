@@ -9,14 +9,14 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
-    func process(message: Any, forTransport name: String)
+    func process(message: Any, host: String, transport name: String)
     func activateSearch(with query: String?)
     func close()
 }
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
-    func process(message: Any, forTransport name: String)
+    func process(message: Any, host: String, transport name: String)
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse, forTransport name: String)
