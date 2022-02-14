@@ -70,9 +70,7 @@ extension EthereumSerializationFactory: EthereumSerializationFactoryProtocol {
             throw EthereumSerializationFactoryError.transactionBadField(name: "gasPrice")
         }
 
-        guard
-            let destination = transaction.to,
-            let toAddress = try? Data(hexString: destination) else {
+        guard let destination = transaction.to, let toAddress = try? Data(hexString: destination) else {
             throw EthereumSerializationFactoryError.transactionBadField(name: "to")
         }
 
