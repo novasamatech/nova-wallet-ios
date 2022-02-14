@@ -2,6 +2,8 @@ import Foundation
 import SubstrateSdk
 
 protocol DAppMetamaskStateMachineProtocol: AnyObject {
+    var chain: MetamaskChain? { get }
+
     func emit(nextState: DAppMetamaskStateProtocol)
     func emit(response: DAppScriptResponse, nextState: DAppMetamaskStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppMetamaskStateProtocol)
