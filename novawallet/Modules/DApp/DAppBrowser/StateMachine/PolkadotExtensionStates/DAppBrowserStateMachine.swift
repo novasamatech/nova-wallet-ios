@@ -2,7 +2,7 @@ import Foundation
 
 protocol DAppBrowserStateMachineProtocol: AnyObject {
     func emit(nextState: DAppBrowserStateProtocol)
-    func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol)
+    func emit(response: DAppScriptResponse, nextState: DAppBrowserStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppBrowserStateProtocol)
     func emit(
         signingRequest: DAppOperationRequest,

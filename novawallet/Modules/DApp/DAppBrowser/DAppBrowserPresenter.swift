@@ -92,12 +92,12 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 
     func didReceiveReplacement(
         transports: [DAppTransportModel],
-        postExecution script: PolkadotExtensionResponse
+        postExecution script: DAppScriptResponse
     ) {
         view?.didReceiveReplacement(transports: transports, postExecution: script)
     }
 
-    func didReceive(response: PolkadotExtensionResponse, forTransport name: String) {
+    func didReceive(response: DAppScriptResponse, forTransport name: String) {
         view?.didReceive(response: response, forTransport: name)
     }
 

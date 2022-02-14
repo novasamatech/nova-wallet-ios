@@ -9,7 +9,7 @@ class DAppMetamaskBaseState {
 
     func provideResponseWithCommands(_ commands: [String], nextState: DAppMetamaskStateProtocol) {
         let content = commands.joined(separator: "")
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -21,7 +21,7 @@ class DAppMetamaskBaseState {
     ) throws {
         let content = createResponseCommand(for: messageId, result: result)
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -42,7 +42,7 @@ class DAppMetamaskBaseState {
     ) {
         let content = createResponseCommand(for: messageId, results: results)
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -66,7 +66,7 @@ class DAppMetamaskBaseState {
             String(format: "window.ethereum.sendError(%ld, \"%@\")", messageId, errorMessage)
         )
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -74,7 +74,7 @@ class DAppMetamaskBaseState {
     func provideNullResponse(to messageId: MetamaskMessage.Id, nextState: DAppMetamaskStateProtocol) {
         let content = createNullResponseCommand(for: messageId)
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }

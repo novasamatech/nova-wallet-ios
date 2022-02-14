@@ -32,7 +32,7 @@ class DAppBrowserBaseState {
             format: "window.walletExtension.onAppResponse(\"%@\", %@, null)", messageType.rawValue, dataString
         )
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -47,7 +47,7 @@ class DAppBrowserBaseState {
             messageType.rawValue, errorMessage
         )
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }
@@ -67,7 +67,7 @@ class DAppBrowserBaseState {
             format: "window.walletExtension.onAppSubscription(\"%@\", %@)", requestId, dataString
         )
 
-        let response = PolkadotExtensionResponse(content: content)
+        let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
     }

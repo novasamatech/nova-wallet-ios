@@ -187,13 +187,13 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         setupUrl(viewModel.url)
     }
 
-    func didReceive(response: PolkadotExtensionResponse, forTransport _: String) {
+    func didReceive(response: DAppScriptResponse, forTransport _: String) {
         rootView.webView.evaluateJavaScript(response.content)
     }
 
     func didReceiveReplacement(
         transports: [DAppTransportModel],
-        postExecution script: PolkadotExtensionResponse
+        postExecution script: DAppScriptResponse
     ) {
         setupTransports(transports)
 

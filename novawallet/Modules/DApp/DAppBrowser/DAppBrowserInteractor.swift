@@ -151,7 +151,7 @@ final class DAppBrowserInteractor {
         dataSource.operationQueue.addOperations(dependencies + [mapOperation], waitUntilFinished: false)
     }
 
-    func provideTransportUpdate(with postExecutionScript: PolkadotExtensionResponse) {
+    func provideTransportUpdate(with postExecutionScript: DAppScriptResponse) {
         let wrappers = createTransportWrappers()
 
         let mapOperation = ClosureOperation<[DAppTransportModel]> {
@@ -232,7 +232,7 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
     func dAppTransport(
         _ transport: DAppBrowserTransportProtocol,
-        didReceiveResponse response: PolkadotExtensionResponse
+        didReceiveResponse response: DAppScriptResponse
     ) {
         presenter.didReceive(response: response, forTransport: transport.name)
     }
@@ -259,7 +259,7 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
 
     func dAppAskReload(
         _: DAppBrowserTransportProtocol,
-        postExecutionScript: PolkadotExtensionResponse
+        postExecutionScript: DAppScriptResponse
     ) {
         provideTransportUpdate(with: postExecutionScript)
     }
