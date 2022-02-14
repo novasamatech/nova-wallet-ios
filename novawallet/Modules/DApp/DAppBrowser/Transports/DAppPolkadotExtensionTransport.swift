@@ -18,7 +18,7 @@ extension DAppPolkadotExtensionTransport: DAppBrowserStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
-    func emit(response: PolkadotExtensionResponse, nextState: DAppBrowserStateProtocol) {
+    func emit(response: DAppScriptResponse, nextState: DAppBrowserStateProtocol) {
         guard let dataSource = dataSource else {
             return
         }

@@ -20,7 +20,7 @@ protocol DAppBrowserTransportProtocol: AnyObject {
 protocol DAppBrowserTransportDelegate: AnyObject {
     func dAppTransport(
         _ transport: DAppBrowserTransportProtocol,
-        didReceiveResponse response: PolkadotExtensionResponse
+        didReceiveResponse response: DAppScriptResponse
     )
 
     func dAppTransport(_ transport: DAppBrowserTransportProtocol, didReceiveAuth request: DAppAuthRequest)
@@ -37,6 +37,6 @@ protocol DAppBrowserTransportDelegate: AnyObject {
 
     func dAppAskReload(
         _ transport: DAppBrowserTransportProtocol,
-        postExecutionScript: PolkadotExtensionResponse
+        postExecutionScript: DAppScriptResponse
     )
 }

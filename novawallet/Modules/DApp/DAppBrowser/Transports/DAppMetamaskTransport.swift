@@ -46,7 +46,7 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
-    func emit(response: PolkadotExtensionResponse, nextState: DAppMetamaskStateProtocol) {
+    func emit(response: DAppScriptResponse, nextState: DAppMetamaskStateProtocol) {
         guard let dataSource = dataSource else {
             return
         }
@@ -96,7 +96,7 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
 
     func emit(
         chain: MetamaskChain,
-        postExecutionScript: PolkadotExtensionResponse,
+        postExecutionScript: DAppScriptResponse,
         nextState: DAppMetamaskStateProtocol
     ) {
         guard let dataSource = dataSource else {
