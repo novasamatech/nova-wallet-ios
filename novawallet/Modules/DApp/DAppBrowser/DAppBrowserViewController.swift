@@ -12,7 +12,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
 
-    private var scriptMessageHandler: DAppBrowserScriptHandler?
+    private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
     init(presenter: DAppBrowserPresenterProtocol) {
         self.presenter = presenter
@@ -92,11 +92,6 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
-
-        scriptMessageHandler = DAppBrowserScriptHandler(
-            contentController: rootView.webView.configuration.userContentController,
-            delegate: self
-        )
     }
 
     private func didChangeUrl(_ newUrl: URL) {
@@ -109,6 +104,42 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
 
         rootView.urlBar.setNeedsLayout()
+    }
+
+    private func setupTransports(_ transports: [DAppTransportModel]) {
+        let contentController = rootView.webView.configuration.userContentController
+        contentController.removeAllUserScripts()
+
+        scriptMessageHandlers = transports.reduce(
+            into: scriptMessageHandlers
+        ) { handlers, transport in
+            let handler = handlers[transport.name] ?? DAppBrowserScriptHandler(
+                contentController: contentController,
+                delegate: self
+            )
+
+            handler.bind(viewModel: transport)
+
+            handlers[transport.name] = handler
+        }
+    }
+
+    private func setupUrl(_ url: URL) {
+        rootView.urlLabel.text = url.host
+
+        if url.isTLSScheme {
+            rootView.securityImageView.image = R.image.iconBrowserSecurity()
+        } else {
+            rootView.securityImageView.image = nil
+        }
+
+        rootView.urlBar.setNeedsLayout()
+
+        rootView.goBackBarItem.isEnabled = false
+        rootView.goForwardBarItem.isEnabled = false
+
+        let request = URLRequest(url: url)
+        rootView.webView.load(request)
     }
 
     private func didChangeGoBack(_ newValue: Bool) {
@@ -144,33 +175,29 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
 extension DAppBrowserViewController: DAppBrowserScriptHandlerDelegate {
     func browserScriptHandler(_: DAppBrowserScriptHandler, didReceive message: WKScriptMessage) {
-        presenter.process(message: message.body)
+        let host = rootView.webView.url?.host ?? ""
+
+        presenter.process(message: message.body, host: host, transport: message.name)
     }
 }
 
 extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceive(viewModel: DAppBrowserModel) {
-        scriptMessageHandler?.bind(viewModel: viewModel)
-
-        rootView.urlLabel.text = viewModel.url.host
-
-        if viewModel.url.isTLSScheme {
-            rootView.securityImageView.image = R.image.iconBrowserSecurity()
-        } else {
-            rootView.securityImageView.image = nil
-        }
-
-        rootView.urlBar.setNeedsLayout()
-
-        rootView.goBackBarItem.isEnabled = false
-        rootView.goForwardBarItem.isEnabled = false
-
-        let request = URLRequest(url: viewModel.url)
-        rootView.webView.load(request)
+        setupTransports(viewModel.transports)
+        setupUrl(viewModel.url)
     }
 
-    func didReceive(response: PolkadotExtensionResponse) {
+    func didReceive(response: DAppScriptResponse, forTransport _: String) {
         rootView.webView.evaluateJavaScript(response.content)
+    }
+
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: DAppScriptResponse
+    ) {
+        setupTransports(transports)
+
+        rootView.webView.evaluateJavaScript(script.content)
     }
 }
 

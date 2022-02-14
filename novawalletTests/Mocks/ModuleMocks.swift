@@ -14927,16 +14927,31 @@ import Cuckoo
     
     
     
-     func didReceive(response: PolkadotExtensionResponse)  {
+     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
         
-    return cuckoo_manager.call("didReceive(response: PolkadotExtensionResponse)",
-            parameters: (response),
-            escapingParameters: (response),
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
+            parameters: (response, name),
+            escapingParameters: (response, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response))
+            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
+        
+    }
+    
+    
+    
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)  {
+        
+    return cuckoo_manager.call("didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)",
+            parameters: (transports, script),
+            escapingParameters: (transports, script),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveReplacement(transports: transports, postExecution: script))
         
     }
     
@@ -14964,9 +14979,14 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(viewModel: DAppBrowserModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse)> where M1.MatchedType == PolkadotExtensionResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], DAppScriptResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], DAppScriptResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15002,9 +15022,15 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(PolkadotExtensionResponse), Void> where M1.MatchedType == PolkadotExtensionResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
-	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.__DoNotUse<([DAppTransportModel], DAppScriptResponse), Void> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], DAppScriptResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -15036,7 +15062,11 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func didReceive(response: PolkadotExtensionResponse)   {
+     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15084,16 +15114,16 @@ import Cuckoo
     
     
     
-     func process(message: Any)  {
+     func process(message: Any, host: String, transport name: String)  {
         
-    return cuckoo_manager.call("process(message: Any)",
-            parameters: (message),
-            escapingParameters: (message),
+    return cuckoo_manager.call("process(message: Any, host: String, transport: String)",
+            parameters: (message, host, name),
+            escapingParameters: (message, host, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.process(message: message))
+            defaultCall: __defaultImplStub!.process(message: message, host: host, transport: name))
         
     }
     
@@ -15141,9 +15171,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Any)> where M1.MatchedType == Any {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any, host: String, transport: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
@@ -15179,9 +15209,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.__DoNotUse<(Any), Void> where M1.MatchedType == Any {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
-	        return cuckoo_manager.verify("process(message: Any)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.__DoNotUse<(Any, String, String), Void> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
+	        return cuckoo_manager.verify("process(message: Any, host: String, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15209,7 +15239,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func process(message: Any)   {
+     func process(message: Any, host: String, transport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15265,31 +15295,31 @@ import Cuckoo
     
     
     
-     func process(message: Any)  {
+     func process(message: Any, host: String, transport name: String)  {
         
-    return cuckoo_manager.call("process(message: Any)",
-            parameters: (message),
-            escapingParameters: (message),
+    return cuckoo_manager.call("process(message: Any, host: String, transport: String)",
+            parameters: (message, host, name),
+            escapingParameters: (message, host, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.process(message: message))
+            defaultCall: __defaultImplStub!.process(message: message, host: host, transport: name))
         
     }
     
     
     
-     func processConfirmation(response: DAppOperationResponse)  {
+     func processConfirmation(response: DAppOperationResponse, forTransport name: String)  {
         
-    return cuckoo_manager.call("processConfirmation(response: DAppOperationResponse)",
-            parameters: (response),
-            escapingParameters: (response),
+    return cuckoo_manager.call("processConfirmation(response: DAppOperationResponse, forTransport: String)",
+            parameters: (response, name),
+            escapingParameters: (response, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.processConfirmation(response: response))
+            defaultCall: __defaultImplStub!.processConfirmation(response: response, forTransport: name))
         
     }
     
@@ -15310,16 +15340,16 @@ import Cuckoo
     
     
     
-     func processAuth(response: DAppAuthResponse)  {
+     func processAuth(response: DAppAuthResponse, forTransport name: String)  {
         
-    return cuckoo_manager.call("processAuth(response: DAppAuthResponse)",
-            parameters: (response),
-            escapingParameters: (response),
+    return cuckoo_manager.call("processAuth(response: DAppAuthResponse, forTransport: String)",
+            parameters: (response, name),
+            escapingParameters: (response, name),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.processAuth(response: response))
+            defaultCall: __defaultImplStub!.processAuth(response: response, forTransport: name))
         
     }
     
@@ -15352,14 +15382,14 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Any)> where M1.MatchedType == Any {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(message: Any)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(message: Any, host: String, transport: String)", parameterMatchers: matchers))
 	    }
 	    
-	    func processConfirmation<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationResponse)> where M1.MatchedType == DAppOperationResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse)>] = [wrap(matchable: response) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processConfirmation(response: DAppOperationResponse)", parameterMatchers: matchers))
+	    func processConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationResponse, String)> where M1.MatchedType == DAppOperationResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processConfirmation(response: DAppOperationResponse, forTransport: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func process<M1: Cuckoo.Matchable>(newQuery: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppSearchResult)> where M1.MatchedType == DAppSearchResult {
@@ -15367,9 +15397,9 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(newQuery: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
-	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse)> where M1.MatchedType == DAppAuthResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse)>] = [wrap(matchable: response) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processAuth(response: DAppAuthResponse)", parameterMatchers: matchers))
+	    func processAuth<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse, String)> where M1.MatchedType == DAppAuthResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processAuth(response: DAppAuthResponse, forTransport: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func reload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -15400,15 +15430,15 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func process<M1: Cuckoo.Matchable>(message: M1) -> Cuckoo.__DoNotUse<(Any), Void> where M1.MatchedType == Any {
-	        let matchers: [Cuckoo.ParameterMatcher<(Any)>] = [wrap(matchable: message) { $0 }]
-	        return cuckoo_manager.verify("process(message: Any)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.__DoNotUse<(Any, String, String), Void> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
+	        return cuckoo_manager.verify("process(message: Any, host: String, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func processConfirmation<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppOperationResponse), Void> where M1.MatchedType == DAppOperationResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse)>] = [wrap(matchable: response) { $0 }]
-	        return cuckoo_manager.verify("processConfirmation(response: DAppOperationResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func processConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppOperationResponse, String), Void> where M1.MatchedType == DAppOperationResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppOperationResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return cuckoo_manager.verify("processConfirmation(response: DAppOperationResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15418,9 +15448,9 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func processAuth<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(DAppAuthResponse), Void> where M1.MatchedType == DAppAuthResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse)>] = [wrap(matchable: response) { $0 }]
-	        return cuckoo_manager.verify("processAuth(response: DAppAuthResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func processAuth<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppAuthResponse, String), Void> where M1.MatchedType == DAppAuthResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return cuckoo_manager.verify("processAuth(response: DAppAuthResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15442,11 +15472,11 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func process(message: Any)   {
+     func process(message: Any, host: String, transport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func processConfirmation(response: DAppOperationResponse)   {
+     func processConfirmation(response: DAppOperationResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15454,7 +15484,7 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func processAuth(response: DAppAuthResponse)   {
+     func processAuth(response: DAppAuthResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15521,16 +15551,31 @@ import Cuckoo
     
     
     
-     func didReceive(response: PolkadotExtensionResponse)  {
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)  {
         
-    return cuckoo_manager.call("didReceive(response: PolkadotExtensionResponse)",
-            parameters: (response),
-            escapingParameters: (response),
+    return cuckoo_manager.call("didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)",
+            parameters: (transports, script),
+            escapingParameters: (transports, script),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceive(response: response))
+            defaultCall: __defaultImplStub!.didReceiveReplacement(transports: transports, postExecution: script))
+        
+    }
+    
+    
+    
+     func didReceive(response: DAppScriptResponse, forTransport name: String)  {
+        
+    return cuckoo_manager.call("didReceive(response: DAppScriptResponse, forTransport: String)",
+            parameters: (response, name),
+            escapingParameters: (response, name),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(response: response, forTransport: name))
         
     }
     
@@ -15583,9 +15628,14 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveDApp(model: DAppBrowserModel)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(PolkadotExtensionResponse)> where M1.MatchedType == PolkadotExtensionResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: PolkadotExtensionResponse)", parameterMatchers: matchers))
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], DAppScriptResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], DAppScriptResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppScriptResponse, String)> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceive(response: DAppScriptResponse, forTransport: String)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(request: M1, type: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppOperationRequest, DAppSigningType)> where M1.MatchedType == DAppOperationRequest, M2.MatchedType == DAppSigningType {
@@ -15627,9 +15677,15 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
-	    func didReceive<M1: Cuckoo.Matchable>(response: M1) -> Cuckoo.__DoNotUse<(PolkadotExtensionResponse), Void> where M1.MatchedType == PolkadotExtensionResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(PolkadotExtensionResponse)>] = [wrap(matchable: response) { $0 }]
-	        return cuckoo_manager.verify("didReceive(response: PolkadotExtensionResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.__DoNotUse<([DAppTransportModel], DAppScriptResponse), Void> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
+	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], DAppScriptResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.__DoNotUse<(DAppScriptResponse, String), Void> where M1.MatchedType == DAppScriptResponse, M2.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppScriptResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
+	        return cuckoo_manager.verify("didReceive(response: DAppScriptResponse, forTransport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15661,7 +15717,11 @@ import Cuckoo
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func didReceive(response: PolkadotExtensionResponse)   {
+     func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(response: DAppScriptResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
