@@ -288,6 +288,7 @@
 		841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */; };
 		841AAC2F26F73E0C00F0A25E /* LocalStorageKeyFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841AAC2E26F73E0C00F0A25E /* LocalStorageKeyFactory.swift */; };
 		841B45292603D91800C08693 /* EraValidatorsServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */; };
+		841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6427BA332F000A16CE /* DAppListState.swift */; };
 		841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */; };
 		841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */; };
 		841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */; };
@@ -361,7 +362,6 @@
 		84293E67261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84293E66261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift */; };
 		84293E6C261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84293E6B261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
-		842BA36E27B64F1000D31EEF /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36B27B64F1000D31EEF /* DAppListState.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
 		842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB20278C222100AB4B5A /* DAppBrowserBaseState.swift */; };
@@ -692,9 +692,6 @@
 		846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5012277999FC0049B659 /* DAppAuthViewModel.swift */; };
 		846E501527799B3E0049B659 /* DAppAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */; };
 		846E5018277AD3D50049B659 /* DAppList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E5017277AD3D50049B659 /* DAppList.swift */; };
-		846E501B277ADB6B0049B659 /* DAppListState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501A277ADB6B0049B659 /* DAppListState.swift */; };
-		846E501D277ADB8C0049B659 /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501C277ADB8C0049B659 /* DAppViewModel.swift */; };
-		846E501F277ADD280049B659 /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */; };
 		846F757E27B53F5100536547 /* DAppMetamaskSigningState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */; };
 		846F758227B54D7A00536547 /* EthereumOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758027B54D7A00536547 /* EthereumOperationFactory.swift */; };
 		846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */; };
@@ -2200,6 +2197,7 @@
 		841AAC2C26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanRemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		841AAC2E26F73E0C00F0A25E /* LocalStorageKeyFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageKeyFactory.swift; sourceTree = "<group>"; };
 		841B45282603D91800C08693 /* EraValidatorsServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorsServiceStub.swift; sourceTree = "<group>"; };
+		841BFD6427BA332F000A16CE /* DAppListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetailsUpdater.swift; sourceTree = "<group>"; };
@@ -2273,7 +2271,6 @@
 		84293E66261BC50F008E5EDD /* TransactionDetailsViewModelFactory+RewardsAndSlashes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailsViewModelFactory+RewardsAndSlashes.swift"; sourceTree = "<group>"; };
 		84293E6B261BCCF1008E5EDD /* TransactionDetailsViewModelFactory+Extrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionDetailsViewModelFactory+Extrinsic.swift"; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
-		842BA36B27B64F1000D31EEF /* DAppListState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
 		842BDB20278C222100AB4B5A /* DAppBrowserBaseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserBaseState.swift; sourceTree = "<group>"; };
@@ -2609,8 +2606,6 @@
 		846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModelFactory.swift; sourceTree = "<group>"; };
 		846E5017277AD3D50049B659 /* DAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppList.swift; sourceTree = "<group>"; };
 		846E501A277ADB6B0049B659 /* DAppListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
-		846E501C277ADB8C0049B659 /* DAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
-		846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskSigningState.swift; sourceTree = "<group>"; };
 		846F758027B54D7A00536547 /* EthereumOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumOperationFactory.swift; sourceTree = "<group>"; };
 		846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EthereumOperationFactor+Protocol.swift"; sourceTree = "<group>"; };
@@ -4845,8 +4840,8 @@
 		842BA36927B64F1000D31EEF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				841BFD6427BA332F000A16CE /* DAppListState.swift */,
 				842BA36A27B64F1000D31EEF /* DAppViewModel.swift */,
-				842BA36B27B64F1000D31EEF /* DAppListState.swift */,
 				842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */,
 			);
 			path = ViewModel;
@@ -5745,6 +5740,14 @@
 			path = DApp;
 			sourceTree = "<group>";
 		};
+		846C309827BA2EF000C820D4 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				846E501A277ADB6B0049B659 /* DAppListState.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		846CA43124E3C6AA004F1B14 /* Pincode */ = {
 			isa = PBXGroup;
 			children = (
@@ -5793,16 +5796,6 @@
 				84C1FA17278D44DD008B2711 /* PolkadotExtensionPayload.swift */,
 			);
 			path = PolkadotExtensionProtocol;
-			sourceTree = "<group>";
-		};
-		846E5019277ADB510049B659 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				846E501A277ADB6B0049B659 /* DAppListState.swift */,
-				846E501C277ADB8C0049B659 /* DAppViewModel.swift */,
-				846E501E277ADD280049B659 /* DAppListViewModelFactory.swift */,
-			);
-			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		846F757F27B54D7A00536547 /* Ethereum */ = {
@@ -6049,6 +6042,7 @@
 				849013A924A80984008F705E /* Products */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				BFB3965A583F11EF3045E064 /* Frameworks */,
+				846C309827BA2EF000C820D4 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -9909,12 +9903,10 @@
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
 				AE8D028E2638074D00780D18 /* CIKeys.generated.swift in Sources */,
 				F40966B726B297D6008CD244 /* AnalyticsContainerViewController.swift in Sources */,
-				842BA36E27B64F1000D31EEF /* DAppListState.swift in Sources */,
 				84FD3DC02541B10B00A234E3 /* TransactionDetailsViewModelFactory.swift in Sources */,
 				F4CE0FC727344F600094CD8A /* AcalaContributionConfirmProtocols.swift in Sources */,
 				8490145224A93FD1008F705E /* FearlessLoadingViewPresenter.swift in Sources */,
 				849976B827B24BCB00B14A6C /* DAppPolkadotExtensionTransport.swift in Sources */,
-				846E501B277ADB6B0049B659 /* DAppListState.swift in Sources */,
 				844DBC71274E83F5009F8351 /* OnboardingMainBaseWireframe.swift in Sources */,
 				8490141A24A92F6D008F705E /* OnboardingMainProtocol.swift in Sources */,
 				84DBEA47265E98C300FDF73C /* AmountInputResult.swift in Sources */,
@@ -9975,6 +9967,7 @@
 				84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */,
 				846CA7722707A3060011124C /* SingleToMultiasset.xcmappingmodel in Sources */,
 				8425EA9525EA82CE00C307C9 /* AccountIdentity.swift in Sources */,
+				841BFD6527BA332F000A16CE /* DAppListState.swift in Sources */,
 				845BB8DB25E462B100E5FCDC /* SubstrateConstansts.swift in Sources */,
 				849014C824AA8A28008F705E /* BiometryAuth.swift in Sources */,
 				84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */,
