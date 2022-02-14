@@ -56,12 +56,6 @@ final class DAppBrowserViewLayout: UIView {
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.contentInset = UIEdgeInsets(
-            top: 0.0,
-            left: 0.0,
-            bottom: Constants.toolbarHeight,
-            right: 0.0
-        )
 
         return view
     }()
