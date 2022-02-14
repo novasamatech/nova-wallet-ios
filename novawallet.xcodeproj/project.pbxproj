@@ -292,6 +292,7 @@
 		841BFD6727BA4865000A16CE /* EthereumSerializationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */; };
 		841BFD6927BA55C2000A16CE /* metamask_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 841BFD6827BA55C2000A16CE /* metamask_min.js */; };
 		841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6A27BA5765000A16CE /* MetamaskError.swift */; };
+		841BFD6D27BA8E70000A16CE /* MetamaskSwitchChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841BFD6C27BA8E70000A16CE /* MetamaskSwitchChain.swift */; };
 		841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */; };
 		841E2E5027381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */; };
 		841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */; };
@@ -2203,6 +2204,7 @@
 		841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSerializationFactory.swift; sourceTree = "<group>"; };
 		841BFD6827BA55C2000A16CE /* metamask_min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = metamask_min.js; sourceTree = "<group>"; };
 		841BFD6A27BA5765000A16CE /* MetamaskError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetamaskError.swift; sourceTree = "<group>"; };
+		841BFD6C27BA8E70000A16CE /* MetamaskSwitchChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetamaskSwitchChain.swift; sourceTree = "<group>"; };
 		841E2E4D2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		841E2E4F27381B2A00F250C1 /* AccountInfoSubscriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfoSubscriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		841E2E512738444500F250C1 /* WalletDetailsUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetailsUpdater.swift; sourceTree = "<group>"; };
@@ -6963,6 +6965,7 @@
 				849976D127B3AC3000B14A6C /* MetamaskChain.swift */,
 				84A3772D27B502F20026D6D1 /* MetamaskTransaction.swift */,
 				841BFD6A27BA5765000A16CE /* MetamaskError.swift */,
+				841BFD6C27BA8E70000A16CE /* MetamaskSwitchChain.swift */,
 			);
 			path = MetamaskProtocol;
 			sourceTree = "<group>";
@@ -10816,6 +10819,7 @@
 				3E480EEAF501AEB5D543506D /* UsernameSetupPresenter.swift in Sources */,
 				84BE20A325E860DC00B4748C /* WebSocketServiceFactory.swift in Sources */,
 				84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */,
+				841BFD6D27BA8E70000A16CE /* MetamaskSwitchChain.swift in Sources */,
 				84D2F1AC2774B3A00040C680 /* DAppSearchBar.swift in Sources */,
 				8430AB002602338D005B1066 /* PendingNominatorState.swift in Sources */,
 				84B73ADA279D265A0071AE16 /* AssetsSubscriptionHandlingFactory.swift in Sources */,

@@ -15,6 +15,7 @@ struct DAppBrowserViewFactory {
         )
 
         let canDebugDApp = ApplicationConfig.shared.canDebugDApp
+
         let transports: [DAppBrowserTransportProtocol] = [
             DAppPolkadotExtensionTransport(),
             DAppMetamaskTransport(isDebug: canDebugDApp)
