@@ -132,7 +132,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
 
     func createBridgeScriptOperation() -> BaseOperation<DAppBrowserScript> {
         ClosureOperation<DAppBrowserScript> {
-            guard let url = R.file.metamaskMinJs.url() else {
+            guard let url = R.file.metamask_minJs.url() else {
                 throw DAppBrowserInteractorError.scriptFileMissing
             }
 

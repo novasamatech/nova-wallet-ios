@@ -29,8 +29,8 @@ struct MetamaskTransaction: Codable {
     let value: String?
 
     /**
-     * The compiled code of a contract OR the hash of the invoked method signature and encoded
+     * Optional the compiled code of a contract OR the hash of the invoked method signature and encoded
      * parameters. For details see Ethereum Contract ABI
      */
-    let data: String
+    let data: String?
 }

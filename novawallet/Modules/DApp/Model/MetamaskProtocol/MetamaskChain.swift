@@ -28,4 +28,15 @@ extension MetamaskChain {
             icon: icons?.first
         )
     }
+
+    static var etheremChain: MetamaskChain {
+        MetamaskChain(
+            chainId: "0x01",
+            chainName: "Ethereum Mainnet",
+            nativeCurrency: NativeCurrency(name: "Ether", symbol: "ETH", decimals: 18),
+            rpcUrls: ["https://mainnet.infura.io/v3/6b7733290b9a4156bf62a4ba105b76ec"],
+            blockExplorerUrls: nil,
+            iconUrls: nil
+        )
+    }
 }

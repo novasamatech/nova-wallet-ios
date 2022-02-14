@@ -36,8 +36,8 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
                 stateMachine?.emit(error: error, nextState: nextState)
             }
         } else {
-            let error = PolkadotExtensionError.rejected.rawValue
-            provideError(for: requestId, errorMessage: error, nextState: nextState)
+            let error = MetamaskError.rejected
+            provideError(for: requestId, error: error, nextState: nextState)
         }
     }
 

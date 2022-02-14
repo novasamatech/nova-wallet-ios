@@ -3,11 +3,14 @@ import BigInt
 
 struct EthereumTransaction: Codable {
     let from: String
+
+    // swiftlint:disable:next identifier_name
     let to: String?
+
     let gas: String?
     let gasPrice: String?
     let value: String?
-    let data: String
+    let data: String?
     let nonce: String?
 }
 

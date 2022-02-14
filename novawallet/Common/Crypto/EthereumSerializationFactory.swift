@@ -76,12 +76,28 @@ extension EthereumSerializationFactory: EthereumSerializationFactoryProtocol {
             throw EthereumSerializationFactoryError.transactionBadField(name: "to")
         }
 
-        guard let valueHex = transaction.value, let value = BigUInt.fromHexString(valueHex) else {
-            throw EthereumSerializationFactoryError.transactionBadField(name: "value")
+        let value: BigUInt
+
+        if let valueHex = transaction.value {
+            guard let gotValue = BigUInt.fromHexString(valueHex) else {
+                throw EthereumSerializationFactoryError.transactionBadField(name: "value")
+            }
+
+            value = gotValue
+        } else {
+            value = 0
         }
 
-        guard let data = try? Data(hexString: transaction.data) else {
-            throw EthereumSerializationFactoryError.transactionBadField(name: "data")
+        let data: Data
+
+        if let dataHex = transaction.data {
+            guard let parsedData = try? Data(hexString: dataHex) else {
+                throw EthereumSerializationFactoryError.transactionBadField(name: "data")
+            }
+
+            data = parsedData
+        } else {
+            data = Data()
         }
 
         var fields = [
