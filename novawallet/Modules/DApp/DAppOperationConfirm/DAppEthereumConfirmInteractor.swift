@@ -10,19 +10,22 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     let ethereumOperationFactory: EthereumOperationFactoryProtocol
     let operationQueue: OperationQueue
     let signingWrapperFactory: SigningWrapperFactoryProtocol
+    let serializationFactory: EthereumSerializationFactoryProtocol
 
     init(
         request: DAppOperationRequest,
         chain: MetamaskChain,
         ethereumOperationFactory: EthereumOperationFactoryProtocol,
         operationQueue: OperationQueue,
-        signingWrapperFactory: SigningWrapperFactoryProtocol
+        signingWrapperFactory: SigningWrapperFactoryProtocol,
+        serializationFactory: EthereumSerializationFactoryProtocol
     ) {
         self.request = request
         self.chain = chain
         self.ethereumOperationFactory = ethereumOperationFactory
         self.operationQueue = operationQueue
         self.signingWrapperFactory = signingWrapperFactory
+        self.serializationFactory = serializationFactory
     }
 
     private func createSigningTransactionWrapper(
@@ -68,86 +71,18 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
     private func createSerializationOperation(
         chain: MetamaskChain,
         dependingOn transactionOperation: BaseOperation<EthereumTransaction>,
-        signatureOperation: BaseOperation<EthereumSignature>?
+        signatureOperation: BaseOperation<EthereumSignature>?,
+        serializationFactory: EthereumSerializationFactoryProtocol
     ) -> BaseOperation<Data> {
         ClosureOperation {
             let transaction = try transactionOperation.extractNoCancellableResultData()
             let maybeSignature = try signatureOperation?.extractNoCancellableResultData()
 
-            guard let nonceHex = transaction.nonce, let nonce = BigUInt.fromHexString(nonceHex) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "nonce")
-            }
-
-            guard let gasHex = transaction.gas, let gas = BigUInt.fromHexString(gasHex) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "gas")
-            }
-
-            guard
-                let gasPriceHex = transaction.gasPrice,
-                let gasPrice = BigUInt.fromHexString(gasPriceHex) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "gasPrice")
-            }
-
-            guard let to = transaction.to, let toAddress = try? Data(hexString: to) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "gasPrice")
-            }
-
-            guard let valueHex = transaction.value, let value = BigUInt.fromHexString(valueHex) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "value")
-            }
-
-            guard let data = try? Data(hexString: transaction.data) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "data")
-            }
-
-            var fields = [
-                nonce,
-                gasPrice,
-                gas,
-                toAddress,
-                value,
-                data
-            ] as [AnyObject]
-
-            guard let chainId = BigUInt.fromHexString(chain.chainId) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "chainId")
-            }
-
-            if let signature = maybeSignature {
-                let dPart: BigUInt
-
-                if signature.vPart >= 0, signature.vPart <= 3 {
-                    dPart = BigUInt(35)
-                } else if signature.vPart >= 27, signature.vPart <= 30 {
-                    dPart = BigUInt(8)
-                } else if signature.vPart >= 31, signature.vPart <= 34 {
-                    dPart = BigUInt(4)
-                } else {
-                    dPart = BigUInt(0)
-                }
-
-                let vPart = BigUInt(signature.vPart) + dPart + chainId + chainId
-                let rPart = BigUInt(signature.rPart.value)
-                let sPart = BigUInt(signature.sPart.value)
-
-                let signatureList = [vPart, rPart, sPart] as [AnyObject]
-
-                fields.append(contentsOf: signatureList)
-            } else {
-                let chainList = [
-                    chainId,
-                    BigUInt(0),
-                    BigUInt(0)
-                ] as [AnyObject]
-
-                fields.append(contentsOf: chainList)
-            }
-
-            guard let serializedData = RLP.encode(fields) else {
-                throw DAppOperationConfirmInteractorError.extrinsicBadField(name: "signing data")
-            }
-
-            return serializedData
+            return try serializationFactory.serialize(
+                transaction: transaction,
+                chainId: chain.chainId,
+                signature: maybeSignature
+            )
         }
     }
 
@@ -271,7 +206,8 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
         let signatureDataOperation = createSerializationOperation(
             chain: chain,
             dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: nil
+            signatureOperation: nil,
+            serializationFactory: serializationFactory
         )
 
         signatureDataOperation.addDependency(transactionWrapper.targetOperation)
@@ -289,7 +225,8 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
         let serializationOperation = createSerializationOperation(
             chain: chain,
             dependingOn: transactionWrapper.targetOperation,
-            signatureOperation: signingOperation
+            signatureOperation: signingOperation,
+            serializationFactory: serializationFactory
         )
 
         serializationOperation.addDependency(transactionWrapper.targetOperation)
@@ -311,15 +248,11 @@ extension DAppEthereumConfirmInteractor: DAppOperationConfirmInteractorInputProt
                     let txHash = try sendOperation.extractNoCancellableResultData()
                     let txHashData = try Data(hexString: txHash)
                     let response = DAppOperationResponse(signature: txHashData)
-                    strongSelf.presenter?.didReceive(
-                        responseResult: .success(response),
-                        for: strongSelf.request
-                    )
+                    let result: Result<DAppOperationResponse, Error> = .success(response)
+                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
                 } catch {
-                    strongSelf.presenter?.didReceive(
-                        responseResult: .failure(error),
-                        for: strongSelf.request
-                    )
+                    let result: Result<DAppOperationResponse, Error> = .failure(error)
+                    strongSelf.presenter?.didReceive(responseResult: result, for: strongSelf.request)
                 }
             }
         }
