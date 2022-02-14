@@ -101,7 +101,8 @@ struct DAppOperationConfirmViewFactory {
             chain: chain,
             ethereumOperationFactory: operationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
-            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            serializationFactory: EthereumSerializationFactory()
         )
     }
 }
