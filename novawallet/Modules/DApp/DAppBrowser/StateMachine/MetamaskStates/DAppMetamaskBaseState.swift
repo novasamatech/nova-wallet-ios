@@ -7,8 +7,12 @@ class DAppMetamaskBaseState {
         self.stateMachine = stateMachine
     }
 
+    func createContentWithCommands(_ commands: [String]) -> String {
+        commands.joined(separator: "")
+    }
+
     func provideResponseWithCommands(_ commands: [String], nextState: DAppMetamaskStateProtocol) {
-        let content = commands.joined(separator: "")
+        let content = createContentWithCommands(commands)
         let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
@@ -59,11 +63,16 @@ class DAppMetamaskBaseState {
 
     func provideError(
         for messageId: MetamaskMessage.Id,
-        errorMessage: String,
+        error: MetamaskError,
         nextState: DAppMetamaskStateProtocol
     ) {
         let content = String(
-            String(format: "window.ethereum.sendError(%ld, \"%@\")", messageId, errorMessage)
+            String(
+                format: "window.ethereum.sendRpcError(%ld, %d, \"%@\")",
+                messageId,
+                error.code,
+                error.message
+            )
         )
 
         let response = DAppScriptResponse(content: content)

@@ -9,14 +9,25 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         provideResponse(for: messageId, results: addresses, nextState: self)
     }
 
+    private func switchChain(from message: MetamaskMessage) throws {
+        let chain = MetamaskChain.etheremChain
+
+        let chainIdCommand = createSetChainIdCommand(chain.chainId)
+        let nullResponseCommand = createNullResponseCommand(for: message.identifier)
+        let reloadCommand = createReloadCommand()
+        let content = createContentWithCommands([chainIdCommand, nullResponseCommand, reloadCommand])
+
+        stateMachine?.emit(
+            chain: chain,
+            postExecutionScript: DAppScriptResponse(content: content),
+            nextState: self
+        )
+    }
+
     private func addChain(from message: MetamaskMessage) throws {
         guard let chain = try message.object?.map(to: MetamaskChain.self) else {
-            provideError(
-                for: message.identifier,
-                errorMessage: PolkadotExtensionError.unsupported.rawValue,
-                nextState: self
-            )
-
+            let error = MetamaskError.invalidParams(with: "can't parse chain")
+            provideError(for: message.identifier, error: error, nextState: self)
             return
         }
 
@@ -31,11 +42,8 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
 
     private func sendTransaction(from message: MetamaskMessage) {
         guard let transactionInfo = message.object else {
-            provideError(
-                for: message.identifier,
-                errorMessage: PolkadotExtensionError.unsupported.rawValue,
-                nextState: self
-            )
+            let error = MetamaskError.invalidParams(with: "transaction missing")
+            provideError(for: message.identifier, error: error, nextState: self)
 
             return
         }
@@ -63,6 +71,8 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                 try provideEthereumAddresses(message.identifier, from: dataSource)
             case .addEthereumChain:
                 try addChain(from: message)
+            case .switchEthereumChain:
+                try switchChain(from: message)
             case .signTransaction:
                 sendTransaction(from: message)
             }

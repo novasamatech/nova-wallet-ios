@@ -56,11 +56,8 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
         } else {
             let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine)
 
-            provideError(
-                for: requestId,
-                errorMessage: PolkadotExtensionError.rejected.rawValue,
-                nextState: nextState
-            )
+            let error = MetamaskError.rejected
+            provideError(for: requestId, error: error, nextState: nextState)
         }
     }
 }
