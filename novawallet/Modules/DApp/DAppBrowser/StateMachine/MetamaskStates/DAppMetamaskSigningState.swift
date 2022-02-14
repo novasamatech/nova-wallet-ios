@@ -15,8 +15,9 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
-    func handle(message _: MetamaskMessage, dataSource _: DAppBrowserStateDataSource) {
-        let error = DAppBrowserStateError.unexpected(reason: "can't handle message while signing")
+    func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
+        let message = "can't handle message from \(host) while signing"
+        let error = DAppBrowserStateError.unexpected(reason: message)
 
         stateMachine?.emit(
             error: error,

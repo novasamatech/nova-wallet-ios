@@ -3,6 +3,7 @@ import RobinHood
 
 final class DAppBrowserInteractor {
     struct QueueMessage {
+        let host: String
         let transportName: String
         let underliningMessage: Any
     }
@@ -189,7 +190,7 @@ final class DAppBrowserInteractor {
 
         let transport = transports.first { $0.name == queueMessage.transportName }
 
-        transport?.process(message: queueMessage.underliningMessage)
+        transport?.process(message: queueMessage.underliningMessage, host: queueMessage.host)
     }
 }
 
@@ -198,10 +199,10 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
     }
 
-    func process(message: Any, forTransport name: String) {
-        logger?.debug("Did receive message: \(message)")
+    func process(message: Any, host: String, transport name: String) {
+        logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-        let queueMessage = QueueMessage(transportName: name, underliningMessage: message)
+        let queueMessage = QueueMessage(host: host, transportName: name, underliningMessage: message)
         messageQueue.append(queueMessage)
 
         processMessageIfNeeded()

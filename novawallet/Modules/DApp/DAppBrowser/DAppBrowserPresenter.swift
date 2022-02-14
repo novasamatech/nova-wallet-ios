@@ -48,8 +48,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         interactor.setup()
     }
 
-    func process(message: Any, forTransport name: String) {
-        interactor.process(message: message, forTransport: name)
+    func process(message: Any, host: String, transport name: String) {
+        interactor.process(message: message, host: host, transport: name)
     }
 
     func activateSearch(with query: String?) {

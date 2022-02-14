@@ -7,8 +7,9 @@ extension DAppMetamaskDeniedState: DAppMetamaskStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
-    func handle(message _: MetamaskMessage, dataSource _: DAppBrowserStateDataSource) {
-        let error = DAppBrowserStateError.unexpected(reason: "can't handle message when denied")
+    func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
+        let message = "can't handle message from \(host) when denied"
+        let error = DAppBrowserStateError.unexpected(reason: message)
 
         stateMachine?.emit(
             error: error,
