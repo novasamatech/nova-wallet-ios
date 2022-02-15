@@ -52,10 +52,10 @@ final class DAppOperationConfirmPresenter {
             return
         }
 
+        let assetPrecision = confirmationModel.utilityAssetPrecision
         guard
             let fee = BigUInt(feeModel.fee),
-            let asset = confirmationModel.chain.utilityAssets().first,
-            let feeDecimal = Decimal.fromSubstrateAmount(fee, precision: Int16(asset.precision)) else {
+            let feeDecimal = Decimal.fromSubstrateAmount(fee, precision: assetPrecision) else {
             view?.didReceive(feeViewModel: .loading)
             return
         }

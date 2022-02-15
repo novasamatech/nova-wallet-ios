@@ -25,20 +25,14 @@ class DAppListTests: XCTestCase {
         let view = MockDAppListViewProtocol()
         let wireframe = MockDAppListWireframeProtocol()
 
-        let dAppProvider = SingleValueProviderStub(
-            item: DAppListGenerator.createAnyDAppList()
-        )
-
         let interactor = DAppListInteractor(
             walletSettings: walletSettings,
-            eventCenter: EventCenter.shared,
-            dAppProvider: AnySingleValueProvider(dAppProvider)
+            eventCenter: EventCenter.shared
         )
 
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: DAppListViewModelFactory(),
             localizationManager: LocalizationManager.shared
         )
 
@@ -49,23 +43,7 @@ class DAppListTests: XCTestCase {
 
         let iconExpectation = XCTestExpectation()
 
-        let stateExpectation = XCTestExpectation()
-
-        var actualState: DAppListState? = nil
-
         stub(view) { stub in
-            stub.didReceive(state: any()).then { state in
-                guard case .loaded = state else {
-                    return
-                }
-
-                actualState = state
-
-                stateExpectation.fulfill()
-            }
-
-            stub.didCompleteRefreshing().thenDoNothing()
-
             stub.didReceiveAccount(icon: any()).then { _ in
                 iconExpectation.fulfill()
             }
@@ -75,13 +53,6 @@ class DAppListTests: XCTestCase {
 
         // then
 
-        wait(for: [iconExpectation, stateExpectation], timeout: 10.0)
-
-        switch actualState {
-        case .loading, .error, .none:
-            XCTFail("Unexpected final state")
-        case .loaded:
-            break
-        }
+        wait(for: [iconExpectation], timeout: 10.0)
     }
 }

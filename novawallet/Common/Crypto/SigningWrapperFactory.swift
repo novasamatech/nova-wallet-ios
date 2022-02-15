@@ -6,6 +6,10 @@ protocol SigningWrapperFactoryProtocol {
         for metaId: String,
         accountResponse: ChainAccountResponse
     ) -> SigningWrapperProtocol
+
+    func createSigningWrapper(
+        for ethereumAccountResponse: MetaEthereumAccountResponse
+    ) -> SigningWrapperProtocol
 }
 
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
@@ -20,5 +24,11 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         accountResponse: ChainAccountResponse
     ) -> SigningWrapperProtocol {
         SigningWrapper(keystore: keystore, metaId: metaId, accountResponse: accountResponse)
+    }
+
+    func createSigningWrapper(
+        for ethereumAccountResponse: MetaEthereumAccountResponse
+    ) -> SigningWrapperProtocol {
+        SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
     }
 }

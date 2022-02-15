@@ -60,6 +60,7 @@ final class PayoutValidatorsForNominatorFactory {
         {
           query {
             eraValidatorInfos(
+              orderBy: ERA_DESC,
               filter:{
                 \(eraFilter)
                 others:{contains:[{who:\"\(accountAddress)\"}]}
