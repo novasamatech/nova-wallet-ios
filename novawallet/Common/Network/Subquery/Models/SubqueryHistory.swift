@@ -56,7 +56,7 @@ struct SubqueryHistoryElement: Decodable {
     let identifier: String
     let blockNumber: UInt64
     let extrinsicIdx: UInt16?
-    let extrinsicHash: String
+    let extrinsicHash: String?
     let timestamp: String
     let address: String
     let reward: SubqueryRewardOrSlash?
