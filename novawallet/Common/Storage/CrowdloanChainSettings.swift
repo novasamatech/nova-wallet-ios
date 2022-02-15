@@ -21,16 +21,7 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
             self,
             runningInQueue: DispatchQueue.global(qos: .userInteractive)
         ) { [weak self] changes in
-            let chains: [ChainModel] = changes.compactMap { change in
-                switch change {
-                case let .insert(newItem):
-                    return newItem
-                case let .update(newItem):
-                    return newItem
-                case .delete:
-                    return nil
-                }
-            }
+            let chains: [ChainModel] = changes.allChangedItems()
 
             guard !chains.isEmpty else {
                 return
