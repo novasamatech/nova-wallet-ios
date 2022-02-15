@@ -61,6 +61,29 @@ final class DAppBrowserStateDataSource {
         return [substrateAccount] + chainAccounts
     }
 
+    func fetchEthereumAddresses() -> [AccountAddress] {
+        var addresses: [AccountAddress] = []
+
+        if let mainAddress = wallet.ethereumAddress {
+            addresses.append(mainAddress.toHex(includePrefix: true))
+        }
+
+        let chainAddresses: [AccountAddress] = wallet.chainAccounts.compactMap { account in
+            guard
+                let chain = chainStore[account.chainId],
+                chain.isEthereumBased,
+                account.cryptoType == MultiassetCryptoType.ethereumEcdsa.rawValue else {
+                return nil
+            }
+
+            return try? account.accountId.toAddress(using: chain.chainFormat)
+        }
+
+        addresses.append(contentsOf: chainAddresses)
+
+        return addresses
+    }
+
     private func createExtensionAccount(
         for accountId: AccountId,
         genesisHash: Data?,
