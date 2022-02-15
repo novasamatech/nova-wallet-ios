@@ -70,7 +70,9 @@ extension ValidatorInfoViewFactory {
         guard
             let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId)
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let eraValidatorService = state.eraValidatorService,
+            let rewardCalculationService = state.rewardCalculationService
         else { return nil }
 
         let storageRequestFactory = StorageRequestFactory(
@@ -80,8 +82,8 @@ extension ValidatorInfoViewFactory {
 
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
-            eraValidatorService: state.eraValidatorService,
-            rewardService: state.rewardCalculationService,
+            eraValidatorService: eraValidatorService,
+            rewardService: rewardCalculationService,
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,

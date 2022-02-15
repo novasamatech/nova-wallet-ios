@@ -46,7 +46,9 @@ struct YourValidatorListViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let eraValidatorService = state.eraValidatorService,
+            let rewardCalculationService = state.rewardCalculationService else {
             return nil
         }
 
@@ -71,8 +73,8 @@ struct YourValidatorListViewFactory {
 
         let validatorOperationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
-            eraValidatorService: state.eraValidatorService,
-            rewardService: state.rewardCalculationService,
+            eraValidatorService: eraValidatorService,
+            rewardService: rewardCalculationService,
             storageRequestFactory: storageRequestFactory,
             runtimeService: runtimeService,
             engine: connection,
@@ -84,7 +86,7 @@ struct YourValidatorListViewFactory {
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             accountRepositoryFactory: accountRepositoryFactory,
-            eraValidatorService: state.eraValidatorService,
+            eraValidatorService: eraValidatorService,
             validatorOperationFactory: validatorOperationFactory,
             operationManager: operationManager
         )

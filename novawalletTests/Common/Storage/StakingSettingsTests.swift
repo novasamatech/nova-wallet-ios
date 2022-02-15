@@ -130,12 +130,6 @@ class StakingSettingsTests: XCTestCase {
         let prefs = InMemorySettingsManager()
         let operationQueue = OperationQueue()
 
-        let settings = StakingAssetSettings(
-            storageFacade: facade,
-            settings: prefs,
-            operationQueue: operationQueue
-        )
-
         let chains: [ChainModel] = (0..<10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: 2,
@@ -143,6 +137,10 @@ class StakingSettingsTests: XCTestCase {
                 hasStaking: true
             )
         }
+
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set(chains))
+
+        let settings = StakingAssetSettings(chainRegistry: chainRegistry, settings: prefs)
 
         let saveOperation = repository.saveOperation({ chains }, { [] })
         operationQueue.addOperations([saveOperation], waitUntilFinished: true)

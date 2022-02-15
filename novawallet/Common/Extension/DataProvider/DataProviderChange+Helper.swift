@@ -12,4 +12,17 @@ extension Array {
             }
         }
     }
+
+    func allChangedItems<T>() -> [T] where Element == DataProviderChange<T> {
+        compactMap { change in
+            switch change {
+            case let .insert(newItem):
+                return newItem
+            case let .update(newItem):
+                return newItem
+            case .delete:
+                return nil
+            }
+        }
+    }
 }
