@@ -17,15 +17,27 @@ final class StakingAssetSettings: PersistentValueSettings<ChainAsset> {
     override func performSetup(completionClosure: @escaping (Result<ChainAsset?, Error>) -> Void) {
         let maybeChainAssetId = settings.stakingAsset
 
+        var completed: Bool = false
+        let mutex = NSLock()
+
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: DispatchQueue.global(qos: .userInteractive)
         ) { [weak self] changes in
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
             let chains: [ChainModel] = changes.allChangedItems()
 
-            guard !chains.isEmpty else {
+            guard !chains.isEmpty, !completed else {
                 return
             }
+
+            completed = true
 
             self?.completeSetup(
                 for: chains,

@@ -17,15 +17,26 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
     override func performSetup(completionClosure: @escaping (Result<ChainModel?, Error>) -> Void) {
         let maybeChainId = settings.crowdloanChainId
 
+        var completed: Bool = false
+        let mutex = NSLock()
+
         chainRegistry.chainsSubscribe(
             self,
             runningInQueue: DispatchQueue.global(qos: .userInteractive)
         ) { [weak self] changes in
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
             let chains: [ChainModel] = changes.allChangedItems()
 
-            guard !chains.isEmpty else {
+            guard !chains.isEmpty, !completed else {
                 return
             }
+
+            completed = true
 
             self?.completeSetup(for: chains, currentChainId: maybeChainId, completionClosure: completionClosure)
         }
