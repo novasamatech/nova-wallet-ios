@@ -7,12 +7,13 @@ final class SelectedWalletSettings: PersistentValueSettings<MetaAccountModel> {
         operationQueue: OperationManagerFacade.sharedDefaultQueue
     )
 
+    let storageFacade: StorageFacadeProtocol
+
     let operationQueue: OperationQueue
 
     init(storageFacade: StorageFacadeProtocol, operationQueue: OperationQueue) {
+        self.storageFacade = storageFacade
         self.operationQueue = operationQueue
-
-        super.init(storageFacade: storageFacade)
     }
 
     override func performSetup(completionClosure: @escaping (Result<MetaAccountModel?, Error>) -> Void) {

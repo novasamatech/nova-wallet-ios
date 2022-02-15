@@ -140,8 +140,8 @@ final class StakingMainInteractor: RuntimeConstantFetching, AnyCancellableCleani
                 validatorService: eraValidatorService
             )
 
-            sharedState.eraValidatorService.throttle()
-            sharedState.rewardCalculationService.throttle()
+            sharedState.eraValidatorService?.throttle()
+            sharedState.rewardCalculationService?.throttle()
 
             sharedState.replaceEraValidatorService(eraValidatorService)
             sharedState.replaceRewardCalculatorService(rewardCalculatorService)
@@ -294,13 +294,15 @@ final class StakingMainInteractor: RuntimeConstantFetching, AnyCancellableCleani
             return
         }
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let eraValidatorService = sharedState.eraValidatorService else {
             presenter.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
             return
         }
 
         let wrapper = eraInfoOperationFactory.networkStakingOperation(
-            for: sharedState.eraValidatorService,
+            for: eraValidatorService,
             runtimeService: runtimeService
         )
 

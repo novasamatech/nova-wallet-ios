@@ -4,8 +4,7 @@ import RobinHood
 
 protocol RuntimeSnapshotFactoryProtocol {
     func createRuntimeSnapshotWrapper(
-        for typesUsage: ChainModel.TypesUsage,
-        dataHasher: StorageHasher
+        for typesUsage: ChainModel.TypesUsage
     ) -> CompoundOperationWrapper<RuntimeSnapshot?>
 }
 
@@ -24,9 +23,7 @@ final class RuntimeSnapshotFactory {
         self.repository = repository
     }
 
-    private func createWrapperForCommonAndChainTypes(
-        _ dataHasher: StorageHasher
-    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+    private func createWrapperForCommonAndChainTypes() -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let baseTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chainId)
 
@@ -75,8 +72,8 @@ final class RuntimeSnapshotFactory {
             }
 
             return RuntimeSnapshot(
-                localCommonHash: try dataHasher.hash(data: commonTypes).toHex(),
-                localChainHash: try dataHasher.hash(data: chainTypes).toHex(),
+                localCommonHash: commonTypes.sha256().toHex(),
+                localChainHash: chainTypes.sha256().toHex(),
                 typeRegistryCatalog: catalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
@@ -92,9 +89,7 @@ final class RuntimeSnapshotFactory {
         return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
     }
 
-    private func createWrapperForCommonTypes(
-        _ dataHasher: StorageHasher
-    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+    private func createWrapperForCommonTypes() -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let commonTypesFetchOperation = filesOperationFactory.fetchCommonTypesOperation()
 
         let runtimeMetadataOperation = repository.fetchOperation(
@@ -140,7 +135,7 @@ final class RuntimeSnapshotFactory {
             }
 
             return RuntimeSnapshot(
-                localCommonHash: try dataHasher.hash(data: commonTypes).toHex(),
+                localCommonHash: commonTypes.sha256().toHex(),
                 localChainHash: nil,
                 typeRegistryCatalog: catalog,
                 specVersion: runtimeMetadataItem.version,
@@ -156,9 +151,7 @@ final class RuntimeSnapshotFactory {
         return CompoundOperationWrapper(targetOperation: snapshotOperation, dependencies: dependencies)
     }
 
-    private func createWrapperForChainTypes(
-        _ dataHasher: StorageHasher
-    ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
+    private func createWrapperForChainTypes() -> CompoundOperationWrapper<RuntimeSnapshot?> {
         let chainTypesFetchOperation = filesOperationFactory.fetchChainTypesOperation(for: chainId)
 
         let runtimeMetadataOperation = repository.fetchOperation(
@@ -205,7 +198,7 @@ final class RuntimeSnapshotFactory {
 
             return RuntimeSnapshot(
                 localCommonHash: nil,
-                localChainHash: try dataHasher.hash(data: ownTypes).toHex(),
+                localChainHash: ownTypes.sha256().toHex(),
                 typeRegistryCatalog: catalog,
                 specVersion: runtimeMetadataItem.version,
                 txVersion: runtimeMetadataItem.txVersion,
@@ -223,16 +216,15 @@ final class RuntimeSnapshotFactory {
 
 extension RuntimeSnapshotFactory: RuntimeSnapshotFactoryProtocol {
     func createRuntimeSnapshotWrapper(
-        for typesUsage: ChainModel.TypesUsage,
-        dataHasher: StorageHasher
+        for typesUsage: ChainModel.TypesUsage
     ) -> CompoundOperationWrapper<RuntimeSnapshot?> {
         switch typesUsage {
         case .onlyCommon:
-            return createWrapperForCommonTypes(dataHasher)
+            return createWrapperForCommonTypes()
         case .onlyOwn:
-            return createWrapperForChainTypes(dataHasher)
+            return createWrapperForChainTypes()
         case .both:
-            return createWrapperForCommonAndChainTypes(dataHasher)
+            return createWrapperForCommonAndChainTypes()
         }
     }
 }
