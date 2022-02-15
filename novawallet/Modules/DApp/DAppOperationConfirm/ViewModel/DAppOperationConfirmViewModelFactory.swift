@@ -15,37 +15,25 @@ final class DAppOperationConfirmViewModelFactory: DAppOperationConfirmViewModelF
             iconViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
         }
 
-        let walletIcon = try? NovaIconGenerator().generateFromAccountId(
-            model.wallet.substrateAccountId
-        )
+        let walletIcon = try? NovaIconGenerator().generateFromAccountId(model.walletAccountId)
 
-        let maybeAccountId: AccountId? = model.wallet.fetch(for: model.chain.accountRequest())?.accountId
-        let addressIcon: DrawableIcon?
-
-        if let accountId = maybeAccountId {
-            addressIcon = try? PolkadotIconGenerator().generateFromAccountId(accountId)
-        } else {
-            addressIcon = nil
-        }
-
-        let address = try? maybeAccountId?.toAddress(using: model.chain.chainFormat)
+        let addressIcon = try? PolkadotIconGenerator().generateFromAccountId(model.chainAccountId)
 
         let networkIcon: ImageViewModelProtocol?
 
-        if let asset = model.chain.utilityAssets().first {
-            let url = asset.icon ?? model.chain.icon
-            networkIcon = RemoteImageViewModel(url: url)
+        if let networkIconUrl = model.networkIcon {
+            networkIcon = RemoteImageViewModel(url: networkIconUrl)
         } else {
             networkIcon = nil
         }
 
         return DAppOperationConfirmViewModel(
             iconImageViewModel: iconViewModel,
-            walletName: model.wallet.name,
+            walletName: model.accountName,
             walletIcon: walletIcon,
-            address: address?.truncated ?? "",
+            address: model.chainAddress.truncated,
             addressIcon: addressIcon,
-            networkName: model.chain.name,
+            networkName: model.networkName,
             networkIconViewModel: networkIcon
         )
     }

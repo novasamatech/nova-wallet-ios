@@ -234,7 +234,7 @@ final class MainTabBarViewFactory: MainTabBarViewFactoryProtocol {
         let navigationController = FearlessNavigationController(rootViewController: dappsView.controller)
 
         let localizableTitle = LocalizableResource { locale in
-            R.string.localizable.tabbarDappsTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.tabbarDappsTitle_2_4_3(preferredLanguages: locale.rLanguages)
         }
 
         let currentTitle = localizableTitle.value(for: localizationManager.selectedLocale)

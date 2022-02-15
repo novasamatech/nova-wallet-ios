@@ -87,14 +87,17 @@ final class MortalEraOperationFactory {
 
             guard
                 let bestNumber = BigUInt.fromHexString(bestHeader.number),
-                let finalizedNumber = BigUInt.fromHexString(finalizedHeader.number),
-                bestNumber >= finalizedNumber else {
+                let finalizedNumber = BigUInt.fromHexString(finalizedHeader.number) else {
                 throw BaseOperationError.unexpectedDependentResult
             }
 
-            let blockNumber = bestNumber - finalizedNumber > Self.maxFinalityLag ? bestNumber : finalizedNumber
+            if bestNumber >= finalizedNumber {
+                let blockNumber = bestNumber - finalizedNumber > Self.maxFinalityLag ? bestNumber : finalizedNumber
 
-            return BlockNumber(blockNumber)
+                return BlockNumber(blockNumber)
+            } else {
+                return BlockNumber(finalizedNumber)
+            }
         }
 
         mapOperation.addDependency(finalizedHeaderWrapper.targetOperation)

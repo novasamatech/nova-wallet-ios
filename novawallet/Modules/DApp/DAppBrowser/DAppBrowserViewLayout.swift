@@ -56,12 +56,6 @@ final class DAppBrowserViewLayout: UIView {
 
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.scrollView.contentInsetAdjustmentBehavior = .always
-        view.scrollView.contentInset = UIEdgeInsets(
-            top: 0.0,
-            left: 0.0,
-            bottom: Constants.toolbarHeight,
-            right: 0.0
-        )
 
         return view
     }()
@@ -81,11 +75,6 @@ final class DAppBrowserViewLayout: UIView {
 
     private func setupLayout() {
         addSubview(webView)
-        webView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.equalToSuperview()
-        }
 
         addSubview(toolbarBackgroundView)
         toolbarBackgroundView.snp.makeConstraints { make in
@@ -99,6 +88,12 @@ final class DAppBrowserViewLayout: UIView {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
             make.height.equalTo(Constants.toolbarHeight)
+        }
+
+        webView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalTo(toolBar.snp.top)
         }
 
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)

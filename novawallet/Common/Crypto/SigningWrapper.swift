@@ -51,6 +51,15 @@ final class SigningWrapper: SigningWrapperProtocol {
         publicKeyData = accountResponse.publicKey
     }
 
+    init(keystore: KeystoreProtocol, ethereumAccountResponse: MetaEthereumAccountResponse) {
+        self.keystore = keystore
+        metaId = ethereumAccountResponse.metaId
+        accountId = ethereumAccountResponse.isChainAccount ? ethereumAccountResponse.address : nil
+        isEthereumBased = true
+        cryptoType = MultiassetCryptoType.ethereumEcdsa
+        publicKeyData = ethereumAccountResponse.publicKey
+    }
+
     func sign(_ originalData: Data) throws -> IRSignatureProtocol {
         let tag: String = isEthereumBased ?
             KeystoreTagV2.ethereumSecretKeyTagForMetaId(metaId, accountId: accountId) :
