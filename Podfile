@@ -9,7 +9,7 @@ abstract_target 'novawalletAll' do
   pod 'SoraKeystore', '~> 1.0.0'
   pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :commit => '5d364b42000925775361d2098276871e429bfc47'
   pod 'RobinHood', '~> 2.6.0'
-  pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'e64218560a1749d352cf881ff73afaf20f9ce435'
+  pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
   pod 'SoraFoundation', '~> 1.0.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift'
@@ -31,7 +31,7 @@ abstract_target 'novawalletAll' do
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'RobinHood', '~> 2.6.0'
-    pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'e64218560a1749d352cf881ff73afaf20f9ce435'
+    pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
     pod 'Sourcery', '~> 1.4'
 
   end
