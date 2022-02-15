@@ -101,12 +101,6 @@ class CrowdloadSettingsTests: XCTestCase {
         let prefs = InMemorySettingsManager()
         let operationQueue = OperationQueue()
 
-        let settings = CrowdloanChainSettings(
-            storageFacade: facade,
-            settings: prefs,
-            operationQueue: operationQueue
-        )
-
         let chains: [ChainModel] = (0..<10).map { index in
             ChainModelGenerator.generateChain(
                 generatingAssets: 2,
@@ -114,6 +108,10 @@ class CrowdloadSettingsTests: XCTestCase {
                 hasCrowdloans: true
             )
         }
+
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: Set(chains))
+
+        let settings = CrowdloanChainSettings(chainRegistry: chainRegistry, settings: prefs)
 
         let saveOperation = repository.saveOperation({ chains }, { [] })
         operationQueue.addOperations([saveOperation], waitUntilFinished: true)

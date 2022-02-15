@@ -28,4 +28,14 @@ final class CrowdloanSharedState {
 
         crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactory(storageFacade: storageFacade)
     }
+
+    init(
+        settings: CrowdloanChainSettings,
+        crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
+        crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
+    ) {
+        self.settings = settings
+        self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
+        self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
+    }
 }
