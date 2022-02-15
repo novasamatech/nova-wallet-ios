@@ -3,10 +3,10 @@ import RobinHood
 import SoraFoundation
 
 extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
-    func setup() {
+    private func continueSetup() {
         applicationHandler.delegate = self
 
-        guard let chain = settings.value else {
+        guard let chain = crowdloanState.settings.value else {
             presenter.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
             ))
@@ -23,8 +23,21 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
         setup(with: accountId, chain: chain)
     }
 
+    func setup() {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.crowdloanState.settings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case .success:
+                    self?.continueSetup()
+                case let .failure(error):
+                    self?.presenter?.didReceiveSelectedChain(result: .failure(error))
+                }
+            }
+        }
+    }
+
     func refresh() {
-        guard let chain = settings.value else {
+        guard let chain = crowdloanState.settings.value else {
             presenter.didReceiveSelectedChain(result: .failure(
                 PersistentValueSettingsError.missingValue
             ))
@@ -35,10 +48,10 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     }
 
     func saveSelected(chainModel: ChainModel) {
-        if settings.value?.chainId != chainModel.chainId {
+        if crowdloanState.settings.value?.chainId != chainModel.chainId {
             clear()
 
-            settings.save(value: chainModel, runningCompletionIn: .main) { [weak self] result in
+            crowdloanState.settings.save(value: chainModel, runningCompletionIn: .main) { [weak self] result in
                 switch result {
                 case .success:
                     self?.handleSelectionChange(to: chainModel)
@@ -50,7 +63,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     }
 
     func becomeOnline() {
-        guard let chain = settings.value else {
+        guard let chain = crowdloanState.settings.value else {
             return
         }
 
@@ -58,7 +71,7 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
     }
 
     func putOffline() {
-        guard let chain = settings.value else {
+        guard let chain = crowdloanState.settings.value else {
             return
         }
 
@@ -68,8 +81,12 @@ extension CrowdloanListInteractor: CrowdloanListInteractorInputProtocol {
 
 extension CrowdloanListInteractor: CrowdloanLocalStorageSubscriber, CrowdloanLocalSubscriptionHandler,
     AnyProviderAutoCleaning {
+    var crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol {
+        crowdloanState.crowdloanLocalSubscriptionFactory
+    }
+
     func handleBlockNumber(result: Result<BlockNumber?, Error>, chainId: ChainModel.Id) {
-        if let chain = settings.value, chain.chainId == chainId {
+        if let chain = crowdloanState.settings.value, chain.chainId == chainId {
             provideCrowdloans(for: chain)
             presenter.didReceiveBlockNumber(result: result)
         }
@@ -82,7 +99,7 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
         accountId: AccountId,
         chainId: ChainModel.Id
     ) {
-        if let chain = settings.value, chain.chainId == chainId {
+        if let chain = crowdloanState.settings.value, chain.chainId == chainId {
             logger?.debug("Did receive balance for accountId: \(accountId.toHex()))")
             presenter.didReceiveAccountInfo(result: result)
         }
@@ -90,6 +107,10 @@ extension CrowdloanListInteractor: WalletLocalStorageSubscriber, WalletLocalSubs
 }
 
 extension CrowdloanListInteractor: CrowdloanOffchainSubscriber, CrowdloanOffchainSubscriptionHandler {
+    var crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol {
+        crowdloanState.crowdloanOffchainProviderFactory
+    }
+
     func handleExternalContributions(
         result: Result<[ExternalContribution]?, Error>,
         chainId _: ChainModel.Id,

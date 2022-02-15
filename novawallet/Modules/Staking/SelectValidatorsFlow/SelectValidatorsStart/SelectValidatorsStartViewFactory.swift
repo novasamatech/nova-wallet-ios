@@ -58,7 +58,9 @@ final class SelectValidatorsStartViewFactory {
         guard
             let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let eraValidatorService = stakingState.eraValidatorService,
+            let rewardCalculationService = stakingState.rewardCalculationService else {
             return nil
         }
 
@@ -71,8 +73,8 @@ final class SelectValidatorsStartViewFactory {
 
         let operationFactory = ValidatorOperationFactory(
             chainInfo: chainAsset.chainAssetInfo,
-            eraValidatorService: stakingState.eraValidatorService,
-            rewardService: stakingState.rewardCalculationService,
+            eraValidatorService: eraValidatorService,
+            rewardService: rewardCalculationService,
             storageRequestFactory: storageOperationFactory,
             runtimeService: runtimeService,
             engine: connection,
