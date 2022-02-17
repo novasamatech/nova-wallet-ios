@@ -1,14 +1,26 @@
 import Foundation
 
-struct RMRKNft: Codable {
-    let collection: String
+struct RMRKNftV1: Codable {
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case collectionId
+        case name
+        case instance
+        case owner
+        case forsale
+        case metadata
+    }
+
+    let identifier: String
+    let collectionId: String
     let name: String
     let instance: String
     let owner: String
+    let forsale: Decimal?
     let metadata: String?
 }
 
-struct RMRKNftMetadata: Codable {
+struct RMRKNftMetadataV1: Codable {
     enum CodingKeys: String, CodingKey {
         case externalUrl = "external_url"
         case image
