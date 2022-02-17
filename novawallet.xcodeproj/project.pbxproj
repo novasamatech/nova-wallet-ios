@@ -974,6 +974,7 @@
 		8499FE6C27BD319300712589 /* RMRKV2OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */; };
 		8499FE6F27BE1AE800712589 /* BaseFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE6E27BE1AE800712589 /* BaseFetchOperationFactory.swift */; };
 		8499FE7127BE214A00712589 /* StorageKeyDecodingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */; };
+		8499FE7327BE305100712589 /* JSONListConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE7227BE305100712589 /* JSONListConvertible.swift */; };
 		849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */; };
 		849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF3279A7AC600AB6709 /* AssetType.swift */; };
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
@@ -2906,6 +2907,7 @@
 		8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2OperationFactory.swift; sourceTree = "<group>"; };
 		8499FE6E27BE1AE800712589 /* BaseFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFetchOperationFactory.swift; sourceTree = "<group>"; };
 		8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyDecodingOperation.swift; sourceTree = "<group>"; };
+		8499FE7227BE305100712589 /* JSONListConvertible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONListConvertible.swift; sourceTree = "<group>"; };
 		849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsUpdatingService.swift; sourceTree = "<group>"; };
 		849A4EF3279A7AC600AB6709 /* AssetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetType.swift; sourceTree = "<group>"; };
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
@@ -6364,6 +6366,7 @@
 				F436BB9D2726FBF7004B1794 /* Coordinator.swift */,
 				849C066E2765140B00394C82 /* AnyCancellableCleaning.swift */,
 				843612C2278FF0C700DC739E /* FeeRetryable.swift */,
+				8499FE7227BE305100712589 /* JSONListConvertible.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -11219,6 +11222,7 @@
 				64B508A1A3D820AA8DBCFAA3 /* AccountExportPasswordWireframe.swift in Sources */,
 				F462B351260C7DBE0005AB01 /* StakingRewardHistoryTableCell.swift in Sources */,
 				AE89720825F12143008EC414 /* ValidatorInfoViewModel.swift in Sources */,
+				8499FE7327BE305100712589 /* JSONListConvertible.swift in Sources */,
 				845B821726EF7FED00D25C72 /* SelectedWalletSettings.swift in Sources */,
 				84DC3CE12795DEBF0038E2ED /* SubqueryHistoryOperationFactory.swift in Sources */,
 				848FFE9A25E6E0E400652AA5 /* ValidatorExposure.swift in Sources */,
