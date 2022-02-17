@@ -973,6 +973,7 @@
 		8499FE6A27BD2FA900712589 /* RMRKNftV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE6927BD2FA900712589 /* RMRKNftV2.swift */; };
 		8499FE6C27BD319300712589 /* RMRKV2OperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */; };
 		8499FE6F27BE1AE800712589 /* BaseFetchOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE6E27BE1AE800712589 /* BaseFetchOperationFactory.swift */; };
+		8499FE7127BE214A00712589 /* StorageKeyDecodingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */; };
 		849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */; };
 		849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF3279A7AC600AB6709 /* AssetType.swift */; };
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
@@ -2904,6 +2905,7 @@
 		8499FE6927BD2FA900712589 /* RMRKNftV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKNftV2.swift; sourceTree = "<group>"; };
 		8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2OperationFactory.swift; sourceTree = "<group>"; };
 		8499FE6E27BE1AE800712589 /* BaseFetchOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFetchOperationFactory.swift; sourceTree = "<group>"; };
+		8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyDecodingOperation.swift; sourceTree = "<group>"; };
 		849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsUpdatingService.swift; sourceTree = "<group>"; };
 		849A4EF3279A7AC600AB6709 /* AssetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetType.swift; sourceTree = "<group>"; };
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
@@ -6518,6 +6520,7 @@
 				84E6D57B262E2CE8000EA3F5 /* OperationCombiningService.swift */,
 				AE2C32DB271D90DD00D57C91 /* MetaAccountOperationFactory.swift */,
 				84CC128527B8336900C8E6AB /* AsyncClosureOperation.swift */,
+				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -11524,6 +11527,7 @@
 				C80B2FDBD395CDEAD1B7E996 /* AnalyticsRewardDetailsViewLayout.swift in Sources */,
 				69EF1DC4093AC9AF06D71CF4 /* AnalyticsRewardDetailsViewFactory.swift in Sources */,
 				93434E8E407A6C63D8862A21 /* AssetSelectionProtocols.swift in Sources */,
+				8499FE7127BE214A00712589 /* StorageKeyDecodingOperation.swift in Sources */,
 				CDB78A5A733E4A4F1A2C48C8 /* AssetSelectionWireframe.swift in Sources */,
 				2FCB062A2D873BD72B795DB3 /* AssetSelectionPresenter.swift in Sources */,
 				BEA539EE97A287868FD8BE46 /* AssetSelectionViewFactory.swift in Sources */,
