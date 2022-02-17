@@ -59,7 +59,8 @@ final class StorageKeyDecodingOperation<T: JSONListConvertible>: BaseOperation<[
             }
         }
 
-        return try T.init(jsonList: values)
+        let context = codingFactory.createRuntimeJsonContext()
+        return try T(jsonList: values, context: context.toRawContext())
     }
 
     override func main() {
@@ -113,7 +114,7 @@ final class StorageKeyDecodingOperation<T: JSONListConvertible>: BaseOperation<[
                         codingFactory: factory
                     )
                 case .plain:
-                    return try T.init(jsonList: [])
+                    return try T(jsonList: [], context: nil)
                 }
             }
 
