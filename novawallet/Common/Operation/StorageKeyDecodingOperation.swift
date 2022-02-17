@@ -9,7 +9,7 @@ enum StorageKeyDecodingError: Error {
     case incompatibleHasher
 }
 
-final class StorageKeyDecodingOperation<T: Decodable>: BaseOperation<[T]> {
+final class StorageKeyDecodingOperation<T: JSONListConvertible>: BaseOperation<[T]> {
     let path: StorageCodingPath
 
     var codingFactory: RuntimeCoderFactoryProtocol?
@@ -29,34 +29,37 @@ final class StorageKeyDecodingOperation<T: Decodable>: BaseOperation<[T]> {
         from data: Data,
         keyTypes: [String],
         hashers: [StorageHasher],
-        codingFactory: RuntimeProviderFactoryProtocol
-    ) throws -> [JSON] {
+        codingFactory: RuntimeCoderFactoryProtocol
+    ) throws -> T {
         let decoder = try codingFactory.createDecoder(from: data)
 
-        let values: [JSON] = zip(keyTypes, hashers).reduce(([JSON](), decoder)) { (result, item) in
+        var values = [JSON]()
+
+        for (keyType, hasher) in zip(keyTypes, hashers) {
             switch hasher {
             case .blake128:
-                _ = decoder.readBytes(length: 16)
-                return nil
+                _ = try decoder.readBytes(length: 16)
             case .blake256:
-                _ = decoder.readBytes(length: 32)
-                return nil
+                _ = try decoder.readBytes(length: 32)
             case .blake128Concat:
-                _ = decoder.readBytes(length: 16)
-                return decoder.read(type: keyType)
+                _ = try decoder.readBytes(length: 16)
+                let value = try decoder.read(type: keyType)
+                values.append(value)
             case .twox128:
-                _ = decoder.readBytes(length: 16)
-                return nil
+                _ = try decoder.readBytes(length: 16)
             case .twox256:
-                _ = decoder.readBytes(length: 32)
-                return nil
+                _ = try decoder.readBytes(length: 32)
             case .twox64Concat:
-                _ = decoder.readBytes(length: 8)
-                return decoder.read(type: keyType)
+                _ = try decoder.readBytes(length: 8)
+                let value = try decoder.read(type: keyType)
+                values.append(value)
             case .identity:
-                return decoder.read(type: keyType)
+                let value = try decoder.read(type: keyType)
+                values.append(value)
             }
         }
+
+        return try T.init(jsonList: values)
     }
 
     override func main() {
@@ -86,18 +89,35 @@ final class StorageKeyDecodingOperation<T: Decodable>: BaseOperation<[T]> {
                 throw StorageKeyEncodingOperationError.invalidStoragePath
             }
 
-            switch entry.type {
-            case let .map(entry):
-                break
-            case let .doubleMap(entry):
-                break
-            case let .nMap(entry):
-                break
-            case .plain:
-                break
+            let models: [T] = try dataList.map { data in
+                switch entry.type {
+                case let .map(entry):
+                    return try extractKeys(
+                        from: data,
+                        keyTypes: [entry.key],
+                        hashers: [entry.hasher],
+                        codingFactory: factory
+                    )
+                case let .doubleMap(entry):
+                    return try extractKeys(
+                        from: data,
+                        keyTypes: [entry.key1, entry.key2],
+                        hashers: [entry.hasher, entry.key2Hasher],
+                        codingFactory: factory
+                    )
+                case let .nMap(entry):
+                    return try extractKeys(
+                        from: data,
+                        keyTypes: entry.keyVec,
+                        hashers: entry.hashers,
+                        codingFactory: factory
+                    )
+                case .plain:
+                    return try T.init(jsonList: [])
+                }
             }
 
-            result = .success([])
+            result = .success(models)
         } catch {
             result = .failure(error)
         }
