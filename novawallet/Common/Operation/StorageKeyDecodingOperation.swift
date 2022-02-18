@@ -33,30 +33,19 @@ final class StorageKeyDecodingOperation<T: JSONListConvertible>: BaseOperation<[
     ) throws -> T {
         let decoder = try codingFactory.createDecoder(from: data)
 
+        _ = try decoder.readBytes(length: StorageKeyFactory.keyModuleStoragePrefixSize)
+
         var values = [JSON]()
 
         for (keyType, hasher) in zip(keyTypes, hashers) {
-            switch hasher {
-            case .blake128:
-                _ = try decoder.readBytes(length: 16)
-            case .blake256:
-                _ = try decoder.readBytes(length: 32)
-            case .blake128Concat:
-                _ = try decoder.readBytes(length: 16)
-                let value = try decoder.read(type: keyType)
-                values.append(value)
-            case .twox128:
-                _ = try decoder.readBytes(length: 16)
-            case .twox256:
-                _ = try decoder.readBytes(length: 32)
-            case .twox64Concat:
-                _ = try decoder.readBytes(length: 8)
-                let value = try decoder.read(type: keyType)
-                values.append(value)
-            case .identity:
-                let value = try decoder.read(type: keyType)
-                values.append(value)
+            let skipSize = StorageKeyFactory.keyPrefixSize(for: hasher)
+
+            if skipSize > 0 {
+                _ = try decoder.readBytes(length: skipSize)
             }
+
+            let value = try decoder.read(type: keyType)
+            values.append(value)
         }
 
         let context = codingFactory.createRuntimeJsonContext()
