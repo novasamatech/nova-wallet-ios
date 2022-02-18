@@ -9,6 +9,21 @@ protocol UniquesOperationFactoryProtocol {
         operationManager: OperationManagerProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<[UniquesAccountKey]>
+
+    func createClassMetadataWrapper(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesClassMetadata]>
+
+    func createInstanceMetadataWrapper(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        instanceIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesInstanceMetadata]>
 }
 
 final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
@@ -63,5 +78,104 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
         let dependencies = [keyEncodingOperation, keysFetchOperation]
 
         return CompoundOperationWrapper(targetOperation: decodingOperation, dependencies: dependencies)
+    }
+
+    func createClassMetadataWrapper(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesClassMetadata]> {
+        let requestEngine = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let keyParams: () throws -> [StringScaleMapper<UInt32>] = {
+            let classIds = try classIdsClosure()
+            return classIds.map { StringScaleMapper(value: $0) }
+        }
+
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<UniquesClassMetadata>]> =
+            requestEngine.queryItems(
+                engine: connection,
+                keyParams: keyParams,
+                factory: codingFactoryClosure,
+                storagePath: .uniquesClassMetadata
+            )
+
+        let mapOperation = ClosureOperation<[UInt32: UniquesClassMetadata]> {
+            let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let classIds = try classIdsClosure()
+
+            let initialStorage = [UInt32: UniquesClassMetadata]()
+            return responses.enumerated().reduce(into: initialStorage) { result, item in
+                guard let value = item.element.value else {
+                    return
+                }
+
+                let classId = classIds[item.offset]
+
+                result[classId] = value
+            }
+        }
+
+        mapOperation.addDependency(fetchWrapper.targetOperation)
+
+        let dependencies = fetchWrapper.allOperations
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createInstanceMetadataWrapper(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        instanceIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesInstanceMetadata]> {
+        let requestEngine = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let keyParams1: () throws -> [StringScaleMapper<UInt32>] = {
+            let classIds = try classIdsClosure()
+            return classIds.map { StringScaleMapper(value: $0) }
+        }
+
+        let keyParams2: () throws -> [StringScaleMapper<UInt32>] = {
+            let instanceIds = try instanceIdsClosure()
+            return instanceIds.map { StringScaleMapper(value: $0) }
+        }
+
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<UniquesInstanceMetadata>]> =
+            requestEngine.queryItems(
+                engine: connection,
+                keyParams1: keyParams1,
+                keyParams2: keyParams2,
+                factory: { try codingFactoryClosure() },
+                storagePath: .uniquesInstanceMetadata
+            )
+
+        let mapOperation = ClosureOperation<[UInt32: UniquesInstanceMetadata]> {
+            let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let instanceIds = try instanceIdsClosure()
+
+            let initialStorage = [UInt32: UniquesInstanceMetadata]()
+            return responses.enumerated().reduce(into: initialStorage) { result, item in
+                guard let value = item.element.value else {
+                    return
+                }
+
+                let instanceId = instanceIds[item.offset]
+
+                result[instanceId] = value
+            }
+        }
+
+        mapOperation.addDependency(fetchWrapper.targetOperation)
+
+        let dependencies = fetchWrapper.allOperations
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }
