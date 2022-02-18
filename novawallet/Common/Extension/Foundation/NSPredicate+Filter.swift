@@ -180,4 +180,26 @@ extension NSPredicate {
             accountId.toHex()
         )
     }
+
+    static func nfts(for chainId: ChainModel.Id, ownerId: AccountId) -> NSPredicate {
+        let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.chainId), chainId)
+        let ownerPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.ownerId), ownerId.toHex())
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, ownerPredicate])
+    }
+
+    static func nfts(for type: UInt16) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDNft.type), type)
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)]) -> NSPredicate {
+        let predicates = chainAccounts.map { nfts(for: $0.0, ownerId: $0.1) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], type: UInt16) -> NSPredicate {
+        let chainAccountPredicate = nfts(for: chainAccounts)
+        let typePredicate = nfts(for: type)
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainAccountPredicate, typePredicate])
+    }
 }
