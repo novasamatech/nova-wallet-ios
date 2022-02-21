@@ -1,11 +1,14 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 protocol NftSyncServiceProtocol {
     func syncUp()
 }
 
 class BaseNftSyncService {
+    let repository: AnyDataProviderRepository<NftModel>
+    let operationQueue: OperationQueue
     let retryStrategy: ReconnectionStrategyProtocol
     let logger: LoggerProtocol?
 
@@ -18,7 +21,14 @@ class BaseNftSyncService {
         return scheduler
     }()
 
-    init(retryStrategy: ReconnectionStrategyProtocol, logger: LoggerProtocol?) {
+    init(
+        repository: AnyDataProviderRepository<NftModel>,
+        operationQueue: OperationQueue,
+        retryStrategy: ReconnectionStrategyProtocol,
+        logger: LoggerProtocol?
+    ) {
+        self.repository = repository
+        self.operationQueue = operationQueue
         self.retryStrategy = retryStrategy
         self.logger = logger
     }
@@ -37,8 +47,60 @@ class BaseNftSyncService {
         executeSync()
     }
 
-    func executeSync() {
+    func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
         fatalError("Must be implemented by child class")
+    }
+
+    func createChangesOperation(
+        dependingOn remoteOperation: BaseOperation<[NftModel]>,
+        localOperation: BaseOperation<[NftModel]>
+    ) -> BaseOperation<DataChangesDiffCalculator<NftModel>.Changes> {
+        ClosureOperation {
+            let remoteItems = try remoteOperation.extractNoCancellableResultData()
+            let localtems = try localOperation.extractNoCancellableResultData()
+
+            let diffCalculator = DataChangesDiffCalculator<NftModel>()
+            return diffCalculator.diff(newItems: remoteItems, oldItems: localtems)
+        }
+    }
+
+    func executeSync() {
+        let remoteFetchWrapper = createRemoteFetchWrapper()
+
+        let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+        localFetchOperation.addDependency(remoteFetchWrapper.targetOperation)
+
+        let changesOperation = createChangesOperation(
+            dependingOn: remoteFetchWrapper.targetOperation,
+            localOperation: localFetchOperation
+        )
+
+        changesOperation.addDependency(remoteFetchWrapper.targetOperation)
+        changesOperation.addDependency(localFetchOperation)
+
+        let saveOperation = repository.saveOperation({
+            let changes = try changesOperation.extractNoCancellableResultData()
+            return changes.newOrUpdatedItems
+        }, {
+            let changes = try changesOperation.extractNoCancellableResultData()
+            return changes.removedItems.map(\.identifier)
+        })
+
+        saveOperation.addDependency(changesOperation)
+
+        saveOperation.completionBlock = { [weak self] in
+            do {
+                _ = try saveOperation.extractNoCancellableResultData()
+                self?.complete(nil)
+            } catch {
+                self?.complete(error)
+            }
+        }
+
+        let operations = remoteFetchWrapper.allOperations +
+            [localFetchOperation, changesOperation, saveOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     func complete(_ error: Error?) {

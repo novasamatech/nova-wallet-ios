@@ -10,6 +10,18 @@ class NftSyncIntegrationTests: XCTestCase {
         performSyncTest(for: address, types: [.uniques])
     }
 
+    func testRMRKV1Sync() {
+        let address = "JEQCTc6gwgTPvsVD9CR1FsYEEEfYCV7EmixhCHaoDGR65By"
+
+        performSyncTest(for: address, types: [.rmrkV1])
+    }
+
+    func testRMRKV2Sync() {
+        let address = "EaVj8VBbNU29BVdJYnwTjakoh1wDpBAYp5e5hdcdvpEvEv9"
+
+        performSyncTest(for: address, types: [.rmrkV2])
+    }
+
     private func performSyncTest(for address: AccountAddress, types: Set<NftType>) {
         do {
             // given
