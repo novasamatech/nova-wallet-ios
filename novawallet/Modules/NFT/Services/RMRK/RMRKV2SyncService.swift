@@ -20,4 +20,6 @@ final class RMRKV2SyncService: BaseNftSyncService {
 
         super.init(retryStrategy: retryStrategy, logger: logger)
     }
+
+    override func executeSync() {}
 }

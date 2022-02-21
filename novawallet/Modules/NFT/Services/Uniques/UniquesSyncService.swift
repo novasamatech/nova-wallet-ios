@@ -169,7 +169,8 @@ final class UniquesSyncService: BaseNftSyncService {
             }
         }
 
-        let operations = remoteFetchWrapper.allOperations + [localFetchOperation, saveOperation]
+        let operations = remoteFetchWrapper.allOperations +
+            [localFetchOperation, changesOperation, saveOperation]
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
     }
