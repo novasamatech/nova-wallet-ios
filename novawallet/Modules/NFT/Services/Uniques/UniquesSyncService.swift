@@ -6,8 +6,6 @@ final class UniquesSyncService: BaseNftSyncService {
     let chainRegistry: ChainRegistryProtocol
     let ownerId: AccountId
     let chainId: ChainModel.Id
-    let operationQueue: OperationQueue
-    let repository: AnyDataProviderRepository<NftModel>
 
     init(
         chainRegistry: ChainRegistryProtocol,
@@ -19,12 +17,15 @@ final class UniquesSyncService: BaseNftSyncService {
         logger: LoggerProtocol? = Logger.shared
     ) {
         self.chainRegistry = chainRegistry
-        self.repository = repository
         self.ownerId = ownerId
         self.chainId = chainId
-        self.operationQueue = operationQueue
 
-        super.init(retryStrategy: retryStrategy, logger: logger)
+        super.init(
+            repository: repository,
+            operationQueue: operationQueue,
+            retryStrategy: retryStrategy,
+            logger: logger
+        )
     }
 
     private lazy var operationFactory: UniquesOperationFactoryProtocol = UniquesOperationFactory()
@@ -58,23 +59,15 @@ final class UniquesSyncService: BaseNftSyncService {
         }
     }
 
-    private func createChangesOperation(
-        dependingOn remoteOperation: BaseOperation<[NftModel]>,
-        localOperation: BaseOperation<[NftModel]>
-    ) -> BaseOperation<DataChangesDiffCalculator<NftModel>.Changes> {
-        ClosureOperation {
-            let remoteItems = try remoteOperation.extractNoCancellableResultData()
-            let localtems = try localOperation.extractNoCancellableResultData()
-
-            let diffCalculator = DataChangesDiffCalculator<NftModel>()
-            return diffCalculator.diff(newItems: remoteItems, oldItems: localtems)
+    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
+        guard let connection = chainRegistry.getConnection(for: chainId) else {
+            return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
         }
-    }
 
-    private func createRemoteFetchWrapper(
-        connection: ChainConnection,
-        runtimeProvider: RuntimeProviderProtocol
-    ) -> CompoundOperationWrapper<[NftModel]> {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
+            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
         let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
         let operationManager = OperationManager(operationQueue: operationQueue)
@@ -121,57 +114,5 @@ final class UniquesSyncService: BaseNftSyncService {
             instanceWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: remoteMapOperation, dependencies: dependencies)
-    }
-
-    override func executeSync() {
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            complete(ChainRegistryError.connectionUnavailable)
-            return
-        }
-
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            complete(ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
-
-        let remoteFetchWrapper = createRemoteFetchWrapper(
-            connection: connection,
-            runtimeProvider: runtimeProvider
-        )
-
-        let localFetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-        localFetchOperation.addDependency(remoteFetchWrapper.targetOperation)
-
-        let changesOperation = createChangesOperation(
-            dependingOn: remoteFetchWrapper.targetOperation,
-            localOperation: localFetchOperation
-        )
-
-        changesOperation.addDependency(remoteFetchWrapper.targetOperation)
-        changesOperation.addDependency(localFetchOperation)
-
-        let saveOperation = repository.saveOperation({
-            let changes = try changesOperation.extractNoCancellableResultData()
-            return changes.newOrUpdatedItems
-        }, {
-            let changes = try changesOperation.extractNoCancellableResultData()
-            return changes.removedItems.map(\.identifier)
-        })
-
-        saveOperation.addDependency(changesOperation)
-
-        saveOperation.completionBlock = { [weak self] in
-            do {
-                _ = try saveOperation.extractNoCancellableResultData()
-                self?.complete(nil)
-            } catch {
-                self?.complete(error)
-            }
-        }
-
-        let operations = remoteFetchWrapper.allOperations +
-            [localFetchOperation, changesOperation, saveOperation]
-
-        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 }

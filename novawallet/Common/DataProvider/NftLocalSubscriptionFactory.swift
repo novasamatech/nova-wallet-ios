@@ -66,7 +66,12 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     ) -> NftSyncServiceProtocol {
         let repository = createSyncRepository(for: chain, ownerId: ownerId, type: .rmrkV1)
 
-        return RMRKV1SyncService(chain: chain, repository: repository, operationQueue: operationQueue)
+        return RMRKV1SyncService(
+            ownerId: ownerId,
+            chain: chain,
+            repository: repository,
+            operationQueue: operationQueue
+        )
     }
 
     private func createRMRKV2Service(
@@ -75,7 +80,12 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     ) -> NftSyncServiceProtocol {
         let repository = createSyncRepository(for: chain, ownerId: ownerId, type: .rmrkV2)
 
-        return RMRKV2SyncService(chain: chain, repository: repository, operationQueue: operationQueue)
+        return RMRKV2SyncService(
+            ownerId: ownerId,
+            chain: chain,
+            repository: repository,
+            operationQueue: operationQueue
+        )
     }
 
     private func createService(
