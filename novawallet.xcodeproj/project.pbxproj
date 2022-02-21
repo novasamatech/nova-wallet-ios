@@ -991,6 +991,11 @@
 		8499FED827BFCABD00712589 /* NftModel+Identifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FED727BFCABD00712589 /* NftModel+Identifier.swift */; };
 		8499FEDA27BFDB8C00712589 /* NFTStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FED927BFDB8C00712589 /* NFTStreamableSource.swift */; };
 		8499FEDC27BFDD4300712589 /* NftLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEDB27BFDD4300712589 /* NftLocalSubscriptionFactory.swift */; };
+		8499FEDE27C0AB0200712589 /* NftSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEDD27C0AB0200712589 /* NftSource.swift */; };
+		8499FEE027C0AE3200712589 /* KnownChainIds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEDF27C0AE3200712589 /* KnownChainIds.swift */; };
+		8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE127C0AF4700712589 /* ChainModel+Nft.swift */; };
+		8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE327C1059700712589 /* RMRKV1SyncService.swift */; };
+		8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */; };
 		849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */; };
 		849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF3279A7AC600AB6709 /* AssetType.swift */; };
 		849A4EF6279A7AEF00AB6709 /* StateminAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */; };
@@ -2940,6 +2945,11 @@
 		8499FED727BFCABD00712589 /* NftModel+Identifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NftModel+Identifier.swift"; sourceTree = "<group>"; };
 		8499FED927BFDB8C00712589 /* NFTStreamableSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTStreamableSource.swift; sourceTree = "<group>"; };
 		8499FEDB27BFDD4300712589 /* NftLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		8499FEDD27C0AB0200712589 /* NftSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftSource.swift; sourceTree = "<group>"; };
+		8499FEDF27C0AE3200712589 /* KnownChainIds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnownChainIds.swift; sourceTree = "<group>"; };
+		8499FEE127C0AF4700712589 /* ChainModel+Nft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Nft.swift"; sourceTree = "<group>"; };
+		8499FEE327C1059700712589 /* RMRKV1SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1SyncService.swift; sourceTree = "<group>"; };
+		8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2SyncService.swift; sourceTree = "<group>"; };
 		849A4EF1279A787200AB6709 /* AssetsUpdatingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsUpdatingService.swift; sourceTree = "<group>"; };
 		849A4EF3279A7AC600AB6709 /* AssetType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetType.swift; sourceTree = "<group>"; };
 		849A4EF5279A7AEF00AB6709 /* StateminAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateminAssetExtras.swift; sourceTree = "<group>"; };
@@ -6328,6 +6338,7 @@
 				84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */,
 				8499FE7427BE490700712589 /* UniquesAccountKey.swift */,
 				8499FEC927BF8D2200712589 /* NftModel.swift */,
+				8499FEDF27C0AE3200712589 /* KnownChainIds.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -7076,9 +7087,12 @@
 		8499FED027BFA30800712589 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				84E8AC7327BB972500402635 /* RMRK */,
 				8499FE7727BE547C00712589 /* Uniques */,
 				8499FED327BFAA0000712589 /* BaseNftSyncService.swift */,
 				8499FED927BFDB8C00712589 /* NFTStreamableSource.swift */,
+				8499FEDD27C0AB0200712589 /* NftSource.swift */,
+				8499FEE127C0AF4700712589 /* ChainModel+Nft.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -7750,7 +7764,6 @@
 			children = (
 				8499FED027BFA30800712589 /* Services */,
 				8499FECD27BFA23F00712589 /* Model */,
-				84E8AC7327BB972500402635 /* RMRK */,
 			);
 			path = NFT;
 			sourceTree = "<group>";
@@ -7762,6 +7775,8 @@
 				8499FE6927BD2FA900712589 /* RMRKNftV2.swift */,
 				84E8AC7427BB975700402635 /* RMRKV1OperationFactory.swift */,
 				8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */,
+				8499FEE327C1059700712589 /* RMRKV1SyncService.swift */,
+				8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */,
 			);
 			path = RMRK;
 			sourceTree = "<group>";
@@ -10159,6 +10174,7 @@
 				8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */,
 				84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */,
 				8490150324AB6C01008F705E /* WalletNetworkOperationFactory.swift in Sources */,
+				8499FEDE27C0AB0200712589 /* NftSource.swift in Sources */,
 				84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */,
 				84364D5E252FD09100281F9A /* AssetDetailsViewModel.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
@@ -10840,11 +10856,13 @@
 				AEE5FB1626457AA9002B8FDC /* StakingRewardDestSetupPresenter.swift in Sources */,
 				8468B86E24F63D1400B76BC6 /* AddAccount+OnboardingMainWireframe.swift in Sources */,
 				84729741260A9C13009B86D0 /* DisplayAddress.swift in Sources */,
+				8499FEE027C0AE3200712589 /* KnownChainIds.swift in Sources */,
 				84F4386125D9A83100AEDA56 /* TimeInterval+Time.swift in Sources */,
 				844EFB5F265FCE180090ACB1 /* CrowdloanContributionInteractor.swift in Sources */,
 				8499FE6627BD15C800712589 /* DistributedUrlParser.swift in Sources */,
 				845BB8C025E4508800E5FCDC /* SS58FactoryExtensions.swift in Sources */,
 				F461740A260DFD3600E8FA3D /* StakingPayoutConfirmationViewLayout.swift in Sources */,
+				8499FEE227C0AF4700712589 /* ChainModel+Nft.swift in Sources */,
 				8428765424ADDE0200D91AD8 /* SettingsViewModelFactory.swift in Sources */,
 				843612C1278FE62900DC739E /* DAppOperationConfirmInteractorError.swift in Sources */,
 				F40966C326B297D6008CD244 /* AnalyticsContainerViewLayout.swift in Sources */,
@@ -10899,6 +10917,7 @@
 				84452F5325D5BD2A00F47EC5 /* RuntimeRegistryService.swift in Sources */,
 				AEDD7C0F269C81F500A8405F /* BlockWeights.swift in Sources */,
 				AEE4E34D25E915ED00D6DF31 /* RewardCalculatorServiceProtocol.swift in Sources */,
+				8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */,
 				849013DD24A927E2008F705E /* KeystoreExtensions.swift in Sources */,
 				AE20602C2636EA5800357578 /* MoonPayKeys.swift in Sources */,
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
@@ -11615,6 +11634,7 @@
 				F17C7FA0DB540A803558D1BB /* AnalyticsRewardDetailsPresenter.swift in Sources */,
 				EB544E8D26ABEE4ADE2F939F /* AnalyticsRewardDetailsInteractor.swift in Sources */,
 				EB7B660B0B1BAA915C004A8D /* AnalyticsRewardDetailsViewController.swift in Sources */,
+				8499FEE427C1059700712589 /* RMRKV1SyncService.swift in Sources */,
 				84B73AE0279E6A600071AE16 /* FeeMetadataContext.swift in Sources */,
 				C80B2FDBD395CDEAD1B7E996 /* AnalyticsRewardDetailsViewLayout.swift in Sources */,
 				69EF1DC4093AC9AF06D71CF4 /* AnalyticsRewardDetailsViewFactory.swift in Sources */,
