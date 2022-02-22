@@ -128,6 +128,48 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         wireframe.showSearch(from: view, delegate: self)
     }
 
+    func numberOfCategories() -> Int {
+        categories.count + 1
+    }
+
+    func category(at index: Int) -> String {
+        let category = CategoryIndex(uiIndex: index)
+
+        switch category {
+        case .all:
+            return R.string.localizable.commonAll(preferredLanguages: selectedLocale.rLanguages)
+        case let .custom(index):
+            return categories[index].name
+        }
+    }
+
+    func selectedCategoryIndex() -> Int {
+        selectedCategory.selectedIndex
+    }
+
+    func selectCategory(at index: Int) {
+        guard let dAppList = try? dAppsResult?.get() else {
+            return
+        }
+
+        let newCategory = CategoryIndex(uiIndex: index)
+
+        guard selectedCategory != newCategory else {
+            return
+        }
+
+        selectedCategory = newCategory
+
+        if let categoryIndex = selectedCategory.customIndex {
+            let categoryId = categories[categoryIndex].identifier
+            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
+        } else {
+            selectedDApps = viewModelFactory.createDApps(from: nil, dAppList: dAppList)
+        }
+
+        view?.didReceive(state: .loaded)
+    }
+
     func numberOfDApps() -> Int {
         selectedDApps.count
     }
