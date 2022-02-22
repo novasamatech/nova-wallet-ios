@@ -15,21 +15,33 @@ class DAppSearchTests: XCTestCase {
             item: dAppList
         )
 
+        let interactor = DAppSearchInteractor(dAppProvider: AnySingleValueProvider(dAppProvider))
+
         let presenter = DAppSearchPresenter(
+            interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: DAppListViewModelFactory(),
             initialQuery: "",
             delegate: delegate
         )
 
         presenter.view = view
+        interactor.presenter = presenter
 
         // when (setup test)
 
         let querySetupExpectation = XCTestExpectation()
+        let dAppSetupExpectatation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(initialQuery: any()).then { _ in
                 querySetupExpectation.fulfill()
+            }
+
+            when(stub).didReceiveDApp(viewModels: any()).then { viewModels in
+                if !viewModels.isEmpty {
+                    dAppSetupExpectatation.fulfill()
+                }
             }
         }
 
@@ -37,41 +49,81 @@ class DAppSearchTests: XCTestCase {
 
         // then (setup test)
 
-        wait(for: [querySetupExpectation], timeout: 10.0)
+        wait(for: [querySetupExpectation, dAppSetupExpectatation], timeout: 10.0)
 
         // when (search test)
 
+        let dAppName = dAppList.dApps.last!.name
+
+        let dAppSearchExpectation = XCTestExpectation()
+
+        var selectedDApp: DAppViewModel?
+
         stub(view) { stub in
             when(stub).didReceive(initialQuery: any()).thenDoNothing()
+
+            when(stub).didReceiveDApp(viewModels: any()).then { viewModels in
+                if let dApp = viewModels.last {
+                    selectedDApp = dApp
+                    dAppSearchExpectation.fulfill()
+                }
+            }
         }
 
-        let expectedSearchString = "test"
+        presenter.updateSearch(query: dAppName)
 
-        presenter.updateSearch(query: expectedSearchString)
+        // then (search test)
 
-        // when (query selection test)
+        wait(for: [dAppSearchExpectation], timeout: 10.0)
 
-        let selectionExpectation = XCTestExpectation()
-        let closeExpectation = XCTestExpectation()
+        // when (dApp selection test)
+
+        let dAppSelectionExpectation = XCTestExpectation()
+        let dAppSelectionCloseExpectation = XCTestExpectation()
 
         stub(delegate) { stub in
             when(stub).didCompleteDAppSearchResult(any()).then { result in
-                if case let .query(string) = result, string == expectedSearchString {
-                    selectionExpectation.fulfill()
+                if case .dApp = result {
+                    dAppSelectionExpectation.fulfill()
                 }
             }
         }
 
         stub(wireframe) { stub in
             when(stub).close(from: any()).then { _ in
-                closeExpectation.fulfill()
+                dAppSelectionCloseExpectation.fulfill()
+            }
+        }
+
+        presenter.selectDApp(viewModel: selectedDApp!)
+
+        // then (dApp selection test)
+
+        wait(for: [dAppSelectionExpectation, dAppSelectionCloseExpectation], timeout: 10.0)
+
+        // when (query selection test)
+
+        let querySelectionExpectation = XCTestExpectation()
+        let querySelectionCloseExpectation = XCTestExpectation()
+
+        stub(delegate) { stub in
+            when(stub).didCompleteDAppSearchResult(any()).then { result in
+                if case .query = result {
+                    querySelectionExpectation.fulfill()
+                }
+            }
+        }
+
+        stub(wireframe) { stub in
+            when(stub).close(from: any()).then { _ in
+                querySelectionCloseExpectation.fulfill()
             }
         }
 
         presenter.selectSearchQuery()
 
-        // then (query selection test)
+        // then (dApp selection test)
 
-        wait(for: [selectionExpectation, closeExpectation], timeout: 10.0)
+        wait(for: [querySelectionExpectation, querySelectionCloseExpectation], timeout: 10.0)
     }
 }
