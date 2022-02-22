@@ -1263,6 +1263,8 @@
 		84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */; };
 		84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */; };
 		84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift */; };
+		84EE780227C4C2A40027357F /* DAppListFeaturedHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE780127C4C2A40027357F /* DAppListFeaturedHeaderView.swift */; };
+		84EE780427C4CF9E0027357F /* DAppListItemsLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EE780327C4CF9E0027357F /* DAppListItemsLoadingView.swift */; };
 		84F0316F27302888003BDCF8 /* CoingeckoPriceListSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */; };
 		84F13F0826F13898006725FF /* StakingAssetSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0726F13898006725FF /* StakingAssetSettings.swift */; };
 		84F13F0A26F14122006725FF /* ChainAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F13F0926F14122006725FF /* ChainAsset.swift */; };
@@ -3159,6 +3161,8 @@
 		84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionAccount.swift; sourceTree = "<group>"; };
 		84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionExtrinsic.swift; sourceTree = "<group>"; };
 		84EC2D1C276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionSignerResult.swift; sourceTree = "<group>"; };
+		84EE780127C4C2A40027357F /* DAppListFeaturedHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListFeaturedHeaderView.swift; sourceTree = "<group>"; };
+		84EE780327C4CF9E0027357F /* DAppListItemsLoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListItemsLoadingView.swift; sourceTree = "<group>"; };
 		84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoingeckoPriceListSource.swift; sourceTree = "<group>"; };
 		84F13F0726F13898006725FF /* StakingAssetSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAssetSettings.swift; sourceTree = "<group>"; };
 		84F13F0926F14122006725FF /* ChainAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAsset.swift; sourceTree = "<group>"; };
@@ -7361,6 +7365,7 @@
 		84DA03D9275A31A000E8B326 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				84EE780327C4CF9E0027357F /* DAppListItemsLoadingView.swift */,
 				84DA03DA275A31B500E8B326 /* DAppListHeaderView.swift */,
 				8402CC9D275B946100E5BF30 /* DAppItemView.swift */,
 				8472072F277C335000F593DD /* DAppListFlowLayout.swift */,
@@ -7368,6 +7373,7 @@
 				8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */,
 				8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */,
 				84A04621277DE83E000B24DA /* DAppListErrorView.swift */,
+				84EE780127C4C2A40027357F /* DAppListFeaturedHeaderView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10066,6 +10072,7 @@
 				8490147524A94A37008F705E /* RootWireframe.swift in Sources */,
 				842876B424AE059700D91AD8 /* SocialMessage.swift in Sources */,
 				849014BC24AA87E4008F705E /* PinSetupInteractor.swift in Sources */,
+				84EE780227C4C2A40027357F /* DAppListFeaturedHeaderView.swift in Sources */,
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
 				842BDB28278C4CE500AB4B5A /* DAppBrowserWaitingAuthState.swift in Sources */,
 				840689FC26321F2700A017B1 /* StorageQuery.swift in Sources */,
@@ -10579,6 +10586,7 @@
 				8494D860252470F400614D8F /* WalletFearlessFormDefining.swift in Sources */,
 				AEA0C8AE267B818900F9666F /* SelectedValidatorListViewLayout.swift in Sources */,
 				84D8F15524D80CA100AF43E9 /* ModalPickerViewController.swift in Sources */,
+				84EE780427C4CF9E0027357F /* DAppListItemsLoadingView.swift in Sources */,
 				84F43BAA25DEB75000AEDA56 /* StakingMainViewModel.swift in Sources */,
 				84DD5F35263D86EF00425ACF /* AccountFetching.swift in Sources */,
 				849AFEB726DBC0BE00B65924 /* AssetTransactionData+HistoryItemData.swift in Sources */,

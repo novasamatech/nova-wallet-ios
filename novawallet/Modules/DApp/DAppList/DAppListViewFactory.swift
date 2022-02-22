@@ -3,9 +3,15 @@ import SoraFoundation
 
 struct DAppListViewFactory {
     static func createView() -> DAppListViewProtocol? {
+        let dAppsUrl = ApplicationConfig.shared.dAppsListURL
+        let dAppProvider: AnySingleValueProvider<DAppList> = JsonDataProviderFactory.shared.getJson(
+            for: dAppsUrl
+        )
+
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,
-            eventCenter: EventCenter.shared
+            eventCenter: EventCenter.shared,
+            dAppProvider: dAppProvider
         )
 
         let wireframe = DAppListWireframe()
@@ -15,6 +21,7 @@ struct DAppListViewFactory {
         let presenter = DAppListPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            viewModelFactory: DAppListViewModelFactory(),
             localizationManager: localizationManager
         )
 

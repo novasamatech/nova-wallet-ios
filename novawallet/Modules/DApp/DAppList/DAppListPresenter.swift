@@ -3,24 +3,59 @@ import SubstrateSdk
 import SoraFoundation
 
 final class DAppListPresenter {
+    enum CategoryIndex: Equatable {
+        case all
+        case custom(index: Int)
+
+        var selectedIndex: Int {
+            switch self {
+            case .all:
+                return 0
+            case let .custom(index):
+                return index + 1
+            }
+        }
+
+        var customIndex: Int? {
+            switch self {
+            case .all:
+                return nil
+            case let .custom(index):
+                return index
+            }
+        }
+
+        init(uiIndex: Int) {
+            if uiIndex == 0 {
+                self = .all
+            } else {
+                self = .custom(index: uiIndex - 1)
+            }
+        }
+    }
+
     weak var view: DAppListViewProtocol?
     let wireframe: DAppListWireframeProtocol
     let interactor: DAppListInteractorInputProtocol
-    let localizationManager: LocalizationManagerProtocol
-
-    var selectedLocale: Locale { localizationManager.selectedLocale }
+    let viewModelFactory: DAppListViewModelFactoryProtocol
 
     private var accountId: AccountId?
+    private var dAppsResult: Result<DAppList, Error>?
+    private var categories: [DAppCategory] = []
+    private var selectedDApps: [DAppViewModel] = []
+    private var selectedCategory: CategoryIndex = .all
 
     private lazy var iconGenerator = NovaIconGenerator()
 
     init(
         interactor: DAppListInteractorInputProtocol,
         wireframe: DAppListWireframeProtocol,
+        viewModelFactory: DAppListViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
         self.localizationManager = localizationManager
     }
 
@@ -36,11 +71,53 @@ final class DAppListPresenter {
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
     }
+
+    private func updateCategories() {
+        if let dAppList = try? dAppsResult?.get() {
+            let existingCategories = dAppList.dApps.reduce(into: Set<String>()) { result, dApp in
+                dApp.categories.forEach { result.insert($0) }
+            }
+
+            let maybeSelectedCategory = selectedCategory.customIndex.map { categories[$0] }
+            categories = dAppList.categories.filter { existingCategories.contains($0.identifier) }
+
+            let maybeNewCategoryIndex = categories.firstIndex { category in
+                category.identifier == maybeSelectedCategory?.identifier
+            }
+
+            selectedCategory = maybeNewCategoryIndex.map { CategoryIndex.custom(index: $0) } ?? .all
+
+            let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
+
+            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
+        } else {
+            categories = []
+            selectedDApps = []
+            selectedCategory = .all
+        }
+    }
+
+    private func updateState() {
+        switch dAppsResult {
+        case .success:
+            view?.didReceive(state: .loaded)
+        case .failure:
+            view?.didReceive(state: .error)
+        case .none:
+            view?.didReceive(state: .loading)
+        }
+    }
 }
 
 extension DAppListPresenter: DAppListPresenterProtocol {
     func setup() {
+        updateState()
+
         interactor.setup()
+    }
+
+    func refresh() {
+        interactor.refresh()
     }
 
     func activateAccount() {
@@ -49,6 +126,25 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
     func activateSearch() {
         wireframe.showSearch(from: view, delegate: self)
+    }
+
+    func numberOfDApps() -> Int {
+        selectedDApps.count
+    }
+
+    func dApp(at index: Int) -> DAppViewModel {
+        selectedDApps[index]
+    }
+
+    func selectDApp(at index: Int) {
+        guard case let .success(dAppList) = dAppsResult else {
+            return
+        }
+
+        let dAppViewModel = selectedDApps[index]
+        let dApp = dAppList.dApps[dAppViewModel.index]
+
+        wireframe.showBrowser(from: view, for: .dApp(model: dApp))
     }
 }
 
@@ -63,10 +159,38 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
     }
+
+    func didReceive(dAppsResult: Result<DAppList, Error>?) {
+        view?.didCompleteRefreshing()
+
+        guard dAppsResult != nil else {
+            return
+        }
+
+        if let currentResult = self.dAppsResult {
+            // ignore error if we already loaded some dapps
+            guard case .success = currentResult, case .failure = dAppsResult else {
+                return
+            }
+        }
+
+        self.dAppsResult = dAppsResult
+
+        updateCategories()
+        updateState()
+    }
 }
 
 extension DAppListPresenter: DAppSearchDelegate {
     func didCompleteDAppSearchResult(_ result: DAppSearchResult) {
         wireframe.showBrowser(from: view, for: result)
+    }
+}
+
+extension DAppListPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            updateState()
+        }
     }
 }
