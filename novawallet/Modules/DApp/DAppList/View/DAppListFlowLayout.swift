@@ -2,24 +2,11 @@ import Foundation
 import UIKit
 
 final class DAppListFlowLayout: UICollectionViewFlowLayout {
-    enum SectionType: Int {
-        case header
-        case dapps
-
-        var inset: UIEdgeInsets {
-            switch self {
-            case .header:
-                return .zero
-            case .dapps:
-                return UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
-            }
-        }
-    }
-
     enum CellType {
         case header
         case notLoaded
         case dAppHeader
+        case categories
         case dapp(index: Int)
 
         init?(indexPath: IndexPath) {
@@ -35,7 +22,12 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
                     return nil
                 }
             } else if indexPath.section == 1 {
-                self = .dapp(index: indexPath.row)
+                switch indexPath.row {
+                case 0:
+                    self = .categories
+                default:
+                    self = .dapp(index: indexPath.row - 1)
+                }
             } else {
                 return nil
             }
@@ -49,6 +41,8 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
                 return IndexPath(item: 1, section: 0)
             case .notLoaded:
                 return IndexPath(item: 2, section: 0)
+            case .categories:
+                return IndexPath(item: 0, section: 1)
             case let .dapp(index):
                 return IndexPath(item: index + 1, section: 1)
             }
@@ -123,7 +117,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
     }
 
     private func updateItemsBackgroundAttributesIfNeeded() {
-        let dAppSection = CellType.dapp(index: 0).indexPath.section
+        let dAppSection = CellType.categories.indexPath.section
         guard let collectionView = collectionView, collectionView.numberOfSections > dAppSection else {
             return
         }
@@ -145,18 +139,17 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         headerUsedFrame = headerLayoutFrame
 
-        let preferredHeight = CGFloat(numberOfItems) * DAppItemView.preferredHeight
+        let preferredHeight = CGFloat(numberOfItems - 1) * DAppItemView.preferredHeight +
+            DAppCategoriesView.preferredHeight
 
         itemsDecorationAttributes = UICollectionViewLayoutAttributes(
             forDecorationViewOfKind: Self.backgroundDecoration,
             with: IndexPath(item: 0, section: dAppSection)
         )
 
-        let dAppSectionInset = SectionType.dapps.inset
-
         let size = CGSize(
             width: collectionView.frame.width - 2 * UIConstants.horizontalInset,
-            height: preferredHeight + dAppSectionInset.top + Constants.decorationBottomInset
+            height: preferredHeight + Constants.decorationBottomInset
         )
 
         let origin = CGPoint(x: UIConstants.horizontalInset, y: headerLayoutFrame.maxY)
