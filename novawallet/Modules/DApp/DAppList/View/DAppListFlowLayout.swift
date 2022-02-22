@@ -2,10 +2,24 @@ import Foundation
 import UIKit
 
 final class DAppListFlowLayout: UICollectionViewFlowLayout {
+    enum SectionType: Int {
+        case header
+        case dapps
+
+        var inset: UIEdgeInsets {
+            switch self {
+            case .header:
+                return .zero
+            case .dapps:
+                return UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+            }
+        }
+    }
+
     enum CellType {
         case header
         case notLoaded
-        case categories
+        case dAppHeader
         case dapp(index: Int)
 
         init?(indexPath: IndexPath) {
@@ -14,17 +28,14 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
                 case 0:
                     self = .header
                 case 1:
+                    self = .dAppHeader
+                case 2:
                     self = .notLoaded
                 default:
                     return nil
                 }
             } else if indexPath.section == 1 {
-                switch indexPath.row {
-                case 0:
-                    self = .categories
-                default:
-                    self = .dapp(index: indexPath.row - 1)
-                }
+                self = .dapp(index: indexPath.row)
             } else {
                 return nil
             }
@@ -34,10 +45,10 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .header:
                 return IndexPath(item: 0, section: 0)
-            case .notLoaded:
+            case .dAppHeader:
                 return IndexPath(item: 1, section: 0)
-            case .categories:
-                return IndexPath(item: 0, section: 1)
+            case .notLoaded:
+                return IndexPath(item: 2, section: 0)
             case let .dapp(index):
                 return IndexPath(item: index + 1, section: 1)
             }
@@ -112,13 +123,12 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
     }
 
     private func updateItemsBackgroundAttributesIfNeeded() {
-        guard
-            let collectionView = collectionView,
-            collectionView.numberOfSections > CellType.categories.indexPath.section else {
+        let dAppSection = CellType.dapp(index: 0).indexPath.section
+        guard let collectionView = collectionView, collectionView.numberOfSections > dAppSection else {
             return
         }
 
-        let numberOfItems = collectionView.numberOfItems(inSection: CellType.categories.indexPath.section)
+        let numberOfItems = collectionView.numberOfItems(inSection: dAppSection)
 
         guard numberOfItems > 0 else {
             return
@@ -126,7 +136,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         guard
             let headerLayoutFrame = collectionView.layoutAttributesForItem(
-                at: CellType.header.indexPath
+                at: CellType.dAppHeader.indexPath
             )?.frame,
             headerUsedFrame != headerLayoutFrame
         else {
@@ -135,17 +145,18 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         headerUsedFrame = headerLayoutFrame
 
-        let preferredHeight = CGFloat(numberOfItems - 1) * DAppItemView.preferredHeight +
-            DAppCategoriesView.preferredHeight
+        let preferredHeight = CGFloat(numberOfItems) * DAppItemView.preferredHeight
 
         itemsDecorationAttributes = UICollectionViewLayoutAttributes(
             forDecorationViewOfKind: Self.backgroundDecoration,
-            with: IndexPath(item: 0, section: CellType.categories.indexPath.section)
+            with: IndexPath(item: 0, section: dAppSection)
         )
+
+        let dAppSectionInset = SectionType.dapps.inset
 
         let size = CGSize(
             width: collectionView.frame.width - 2 * UIConstants.horizontalInset,
-            height: preferredHeight + Constants.decorationBottomInset
+            height: preferredHeight + dAppSectionInset.top + Constants.decorationBottomInset
         )
 
         let origin = CGPoint(x: UIConstants.horizontalInset, y: headerLayoutFrame.maxY)

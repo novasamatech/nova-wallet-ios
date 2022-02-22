@@ -11,6 +11,16 @@ final class DAppListViewController: UIViewController, ViewHolder {
         rootView.collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     }
 
+    var loadingView: DAppListLoadingView? {
+        guard case .loading = state else {
+            return nil
+        }
+
+        return rootView.collectionView.cellForItem(
+            at: DAppListFlowLayout.CellType.notLoaded.indexPath
+        ) as? DAppListLoadingView
+    }
+
     init(presenter: DAppListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -19,6 +29,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
     }
 
     private var accountIcon: UIImage?
+
+    private var state: DAppListState?
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -37,12 +49,24 @@ final class DAppListViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        loadingView?.didDisappearSkeleton()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        loadingView?.didAppearSkeleton()
+    }
+
     private func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
-        rootView.collectionView.registerCellClass(DAppCategoriesView.self)
-        rootView.collectionView.registerCellClass(DAppListLoadingView.self)
+        rootView.collectionView.registerCellClass(DAppListItemsLoadingView.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
+        rootView.collectionView.registerCellClass(DAppListFeaturedHeaderView.self)
 
         collectionViewLayout?.register(
             DAppListDecorationView.self,
@@ -52,6 +76,12 @@ final class DAppListViewController: UIViewController, ViewHolder {
         collectionViewLayout?.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
+
+        rootView.collectionView.refreshControl?.addTarget(
+            self,
+            action: #selector(actionRefresh),
+            for: .valueChanged
+        )
     }
 
     private func updateIcon(for headerView: DAppListHeaderView, icon _: UIImage?) {
@@ -66,9 +96,13 @@ final class DAppListViewController: UIViewController, ViewHolder {
     @objc func actionSearch() {
         presenter.activateSearch()
     }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
+    }
 }
 
-extension DAppListViewController: UICollectionViewDelegate {
+extension DAppListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
@@ -77,11 +111,19 @@ extension DAppListViewController: UICollectionViewDelegate {
         }
 
         switch cellType {
-        case .header, .notLoaded, .categories:
+        case .header, .notLoaded, .dAppHeader:
             break
-        case .dapp:
-            break
+        case let .dapp(index):
+            presenter.selectDApp(at: index)
         }
+    }
+
+    func collectionView(
+        _: UICollectionView,
+        layout _: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        DAppListFlowLayout.SectionType(rawValue: section)?.inset ?? .zero
     }
 }
 
@@ -105,6 +147,63 @@ extension DAppListViewController: UICollectionViewDataSource {
         return view
     }
 
+    private func setupDAppView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view: DAppItemView = collectionView.dequeueReusableCellWithType(DAppItemView.self, for: indexPath)!
+
+        let dApp = presenter.dApp(at: indexPath.row)
+        view.bind(viewModel: dApp)
+
+        return view
+    }
+
+    private func setupDAppHeaderView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithType(DAppListFeaturedHeaderView.self, for: indexPath)!
+        cell.locale = selectedLocale
+
+        return cell
+    }
+
+    private func setupLoadingView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view = collectionView.dequeueReusableCellWithType(DAppListItemsLoadingView.self, for: indexPath)!
+
+        return view
+    }
+
+    private func setupErrorView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view = collectionView.dequeueReusableCellWithType(DAppListErrorView.self, for: indexPath)!
+        view.selectedLocale = selectedLocale
+
+        view.errorView.delegate = self
+
+        return view
+    }
+
+    private func setupLoadingOrErrorView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        switch state {
+        case .error:
+            return setupErrorView(using: collectionView, indexPath: indexPath)
+        case .loading:
+            return setupLoadingView(using: collectionView, indexPath: indexPath)
+        case .loaded, .none:
+            return UICollectionViewCell()
+        }
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -116,21 +215,45 @@ extension DAppListViewController: UICollectionViewDataSource {
         switch cellType {
         case .header:
             return setupHeaderView(using: collectionView, indexPath: indexPath)
-        default:
-            return UICollectionViewCell()
+        case .notLoaded:
+            return setupLoadingOrErrorView(using: collectionView, indexPath: indexPath)
+        case .dAppHeader:
+            return setupDAppHeaderView(using: collectionView, indexPath: indexPath)
+        case .dapp:
+            return setupDAppView(using: collectionView, indexPath: indexPath)
         }
     }
 
     func numberOfSections(in _: UICollectionView) -> Int {
-        1
+        switch state {
+        case .error, .loading:
+            return 1
+        case .loaded:
+            return 2
+        case .none:
+            return 0
+        }
     }
 
     func collectionView(_: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if section == DAppListFlowLayout.CellType.header.indexPath.section {
-            return 1
+            switch state {
+            case .error, .loading:
+                return 3
+            case .loaded:
+                return 2
+            case .none:
+                return 0
+            }
         } else {
-            return 0
+            return presenter.numberOfDApps()
         }
+    }
+}
+
+extension DAppListViewController: ErrorStateViewDelegate {
+    func didRetry(errorView _: ErrorStateView) {
+        presenter.refresh()
     }
 }
 
@@ -146,6 +269,16 @@ extension DAppListViewController: DAppListViewProtocol {
         if let headerView = rootView.findHeaderView() {
             updateIcon(for: headerView, icon: accountIcon)
         }
+    }
+
+    func didReceive(state: DAppListState) {
+        self.state = state
+
+        rootView.collectionView.reloadData()
+    }
+
+    func didCompleteRefreshing() {
+        rootView.collectionView.refreshControl?.endRefreshing()
     }
 }
 

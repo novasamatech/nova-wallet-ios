@@ -15989,6 +15989,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didReceive(state: DAppListState)  {
+        
+    return cuckoo_manager.call("didReceive(state: DAppListState)",
+            parameters: (state),
+            escapingParameters: (state),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(state: state))
+        
+    }
+    
+    
+    
+     func didCompleteRefreshing()  {
+        
+    return cuckoo_manager.call("didCompleteRefreshing()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didCompleteRefreshing())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16011,6 +16041,16 @@ import SubstrateSdk
 	    func didReceiveAccount<M1: Cuckoo.Matchable>(icon: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DrawableIcon)> where M1.MatchedType == DrawableIcon {
 	        let matchers: [Cuckoo.ParameterMatcher<(DrawableIcon)>] = [wrap(matchable: icon) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListViewProtocol.self, method: "didReceiveAccount(icon: DrawableIcon)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListState)> where M1.MatchedType == DAppListState {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListState)>] = [wrap(matchable: state) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListViewProtocol.self, method: "didReceive(state: DAppListState)", parameterMatchers: matchers))
+	    }
+	    
+	    func didCompleteRefreshing() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListViewProtocol.self, method: "didCompleteRefreshing()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16045,6 +16085,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceiveAccount(icon: DrawableIcon)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(state: M1) -> Cuckoo.__DoNotUse<(DAppListState), Void> where M1.MatchedType == DAppListState {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListState)>] = [wrap(matchable: state) { $0 }]
+	        return cuckoo_manager.verify("didReceive(state: DAppListState)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didCompleteRefreshing() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didCompleteRefreshing()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16071,6 +16123,14 @@ import SubstrateSdk
 
     
      func didReceiveAccount(icon: DrawableIcon)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(state: DAppListState)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didCompleteRefreshing()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16118,6 +16178,21 @@ import SubstrateSdk
     
     
     
+     func refresh()  {
+        
+    return cuckoo_manager.call("refresh()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.refresh())
+        
+    }
+    
+    
+    
      func activateAccount()  {
         
     return cuckoo_manager.call("activateAccount()",
@@ -16146,6 +16221,51 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func numberOfDApps() -> Int {
+        
+    return cuckoo_manager.call("numberOfDApps() -> Int",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.numberOfDApps())
+        
+    }
+    
+    
+    
+     func dApp(at index: Int) -> DAppViewModel {
+        
+    return cuckoo_manager.call("dApp(at: Int) -> DAppViewModel",
+            parameters: (index),
+            escapingParameters: (index),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.dApp(at: index))
+        
+    }
+    
+    
+    
+     func selectDApp(at index: Int)  {
+        
+    return cuckoo_manager.call("selectDApp(at: Int)",
+            parameters: (index),
+            escapingParameters: (index),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.selectDApp(at: index))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16160,6 +16280,11 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
+	    func refresh() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "refresh()", parameterMatchers: matchers))
+	    }
+	    
 	    func activateAccount() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateAccount()", parameterMatchers: matchers))
@@ -16168,6 +16293,21 @@ import SubstrateSdk
 	    func activateSearch() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateSearch()", parameterMatchers: matchers))
+	    }
+	    
+	    func numberOfDApps() -> Cuckoo.ProtocolStubFunction<(), Int> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "numberOfDApps() -> Int", parameterMatchers: matchers))
+	    }
+	    
+	    func dApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubFunction<(Int), DAppViewModel> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "dApp(at: Int) -> DAppViewModel", parameterMatchers: matchers))
+	    }
+	    
+	    func selectDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectDApp(at: Int)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16193,6 +16333,12 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func refresh() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("refresh()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func activateAccount() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateAccount()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -16202,6 +16348,24 @@ import SubstrateSdk
 	    func activateSearch() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateSearch()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func numberOfDApps() -> Cuckoo.__DoNotUse<(), Int> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("numberOfDApps() -> Int", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func dApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), DAppViewModel> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return cuckoo_manager.verify("dApp(at: Int) -> DAppViewModel", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func selectDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return cuckoo_manager.verify("selectDApp(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -16217,11 +16381,27 @@ import SubstrateSdk
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+     func refresh()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
      func activateAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
      func activateSearch()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func numberOfDApps() -> Int  {
+        return DefaultValueRegistry.defaultValue(for: (Int).self)
+    }
+    
+     func dApp(at index: Int) -> DAppViewModel  {
+        return DefaultValueRegistry.defaultValue(for: (DAppViewModel).self)
+    }
+    
+     func selectDApp(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16267,6 +16447,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func refresh()  {
+        
+    return cuckoo_manager.call("refresh()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.refresh())
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16279,6 +16474,11 @@ import SubstrateSdk
 	    func setup() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
+	    }
+	    
+	    func refresh() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "refresh()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16303,6 +16503,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("setup()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func refresh() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("refresh()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16313,6 +16519,10 @@ import SubstrateSdk
 
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func refresh()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16358,6 +16568,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didReceive(dAppsResult: Result<DAppList, Error>?)  {
+        
+    return cuckoo_manager.call("didReceive(dAppsResult: Result<DAppList, Error>?)",
+            parameters: (dAppsResult),
+            escapingParameters: (dAppsResult),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(dAppsResult: dAppsResult))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16370,6 +16595,11 @@ import SubstrateSdk
 	    func didReceive<M1: Cuckoo.Matchable>(accountIdResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountId, Error>)> where M1.MatchedType == Result<AccountId, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountId, Error>)>] = [wrap(matchable: accountIdResult) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceive(accountIdResult: Result<AccountId, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.OptionalMatchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList, Error>?)> where M1.OptionalMatchedType == Result<DAppList, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList, Error>?)>] = [wrap(matchable: dAppsResult) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList, Error>?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16394,6 +16624,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceive(accountIdResult: Result<AccountId, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.OptionalMatchable>(dAppsResult: M1) -> Cuckoo.__DoNotUse<(Result<DAppList, Error>?), Void> where M1.OptionalMatchedType == Result<DAppList, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList, Error>?)>] = [wrap(matchable: dAppsResult) { $0 }]
+	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList, Error>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16404,6 +16640,10 @@ import SubstrateSdk
 
     
      func didReceive(accountIdResult: Result<AccountId, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceive(dAppsResult: Result<DAppList, Error>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
