@@ -63,7 +63,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
 
     private func configureCollectionView() {
         rootView.collectionView.registerCellClass(DAppListHeaderView.self)
-        rootView.collectionView.registerCellClass(DAppListItemsLoadingView.self)
+        rootView.collectionView.registerCellClass(DAppListLoadingView.self)
+        rootView.collectionView.registerCellClass(DAppCategoriesView.self)
         rootView.collectionView.registerCellClass(DAppListErrorView.self)
         rootView.collectionView.registerCellClass(DAppItemView.self)
         rootView.collectionView.registerCellClass(DAppListFeaturedHeaderView.self)
@@ -102,7 +103,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
     }
 }
 
-extension DAppListViewController: UICollectionViewDelegateFlowLayout {
+extension DAppListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
@@ -111,19 +112,11 @@ extension DAppListViewController: UICollectionViewDelegateFlowLayout {
         }
 
         switch cellType {
-        case .header, .notLoaded, .dAppHeader:
+        case .header, .notLoaded, .dAppHeader, .categories:
             break
         case let .dapp(index):
             presenter.selectDApp(at: index)
         }
-    }
-
-    func collectionView(
-        _: UICollectionView,
-        layout _: UICollectionViewLayout,
-        insetForSectionAt section: Int
-    ) -> UIEdgeInsets {
-        DAppListFlowLayout.SectionType(rawValue: section)?.inset ?? .zero
     }
 }
 
@@ -147,13 +140,34 @@ extension DAppListViewController: UICollectionViewDataSource {
         return view
     }
 
+    private func setupCategoriesView(
+        using collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let view: DAppCategoriesView = collectionView.dequeueReusableCellWithType(
+            DAppCategoriesView.self,
+            for: indexPath
+        )!
+
+        view.delegate = self
+
+        let numberOfCategories = presenter.numberOfCategories()
+        let allCategories = (0 ..< numberOfCategories).map { presenter.category(at: $0) }
+
+        view.bind(categories: allCategories)
+
+        view.setSelectedIndex(presenter.selectedCategoryIndex(), animated: false)
+
+        return view
+    }
+
     private func setupDAppView(
         using collectionView: UICollectionView,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         let view: DAppItemView = collectionView.dequeueReusableCellWithType(DAppItemView.self, for: indexPath)!
 
-        let dApp = presenter.dApp(at: indexPath.row)
+        let dApp = presenter.dApp(at: indexPath.row - 1)
         view.bind(viewModel: dApp)
 
         return view
@@ -173,7 +187,7 @@ extension DAppListViewController: UICollectionViewDataSource {
         using collectionView: UICollectionView,
         indexPath: IndexPath
     ) -> UICollectionViewCell {
-        let view = collectionView.dequeueReusableCellWithType(DAppListItemsLoadingView.self, for: indexPath)!
+        let view = collectionView.dequeueReusableCellWithType(DAppListLoadingView.self, for: indexPath)!
 
         return view
     }
@@ -219,6 +233,8 @@ extension DAppListViewController: UICollectionViewDataSource {
             return setupLoadingOrErrorView(using: collectionView, indexPath: indexPath)
         case .dAppHeader:
             return setupDAppHeaderView(using: collectionView, indexPath: indexPath)
+        case .categories:
+            return setupCategoriesView(using: collectionView, indexPath: indexPath)
         case .dapp:
             return setupDAppView(using: collectionView, indexPath: indexPath)
         }
@@ -246,7 +262,7 @@ extension DAppListViewController: UICollectionViewDataSource {
                 return 0
             }
         } else {
-            return presenter.numberOfDApps()
+            return presenter.numberOfDApps() + 1
         }
     }
 }
@@ -254,6 +270,12 @@ extension DAppListViewController: UICollectionViewDataSource {
 extension DAppListViewController: ErrorStateViewDelegate {
     func didRetry(errorView _: ErrorStateView) {
         presenter.refresh()
+    }
+}
+
+extension DAppListViewController: DAppCategoriesViewDelegate {
+    func dAppCategories(view _: DAppCategoriesView, didSelectItemAt index: Int) {
+        presenter.selectCategory(at: index)
     }
 }
 

@@ -9,11 +9,19 @@ final class DAppListViewModelFactory {
     private func createDAppViewModel(
         from model: DApp,
         index: Int,
-        categories _: [String: DAppCategory]
+        categories: [String: DAppCategory]
     ) -> DAppViewModel {
-        let imageViewModel: ImageViewModelProtocol = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        let imageViewModel: ImageViewModelProtocol
 
-        let details = model.url.absoluteString
+        if let iconUrl = model.icon {
+            imageViewModel = RemoteImageViewModel(url: iconUrl)
+        } else {
+            imageViewModel = StaticImageViewModel(image: R.image.iconDefaultDapp()!)
+        }
+
+        let details = model.categories.map {
+            categories[$0]?.name ?? $0
+        }.joined(separator: ", ")
 
         return DAppViewModel(index: index, name: model.name, details: details, icon: imageViewModel)
     }
