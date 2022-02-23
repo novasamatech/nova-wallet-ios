@@ -5,7 +5,12 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
     let requestId: MetamaskMessage.Id
     let host: String
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain, requestId: MetamaskMessage.Id, host: String) {
+    init(
+        stateMachine: DAppMetamaskStateMachineProtocol?,
+        chain: MetamaskChain,
+        requestId: MetamaskMessage.Id,
+        host: String
+    ) {
         self.requestId = requestId
         self.host = host
 
@@ -47,23 +52,7 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
 
     func complete(_ approved: Bool, dataSource: DAppBrowserStateDataSource) {
         if approved {
-            let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
-
-            let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
-
-            guard let selectedAddress = addresses.first else {
-                provideResponse(for: requestId, results: [], nextState: nextState)
-                return
-            }
-
-            let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
-            let addressesCommand = createResponseCommand(for: requestId, results: addresses)
-
-            let content = createContentWithCommands([setSelectedAddressCommand, addressesCommand])
-            let response = DAppScriptResponse(content: content)
-
-            stateMachine?.emitReload(with: response, nextState: nextState)
-
+            approveAccountAccess(for: requestId, dataSource: dataSource)
         } else {
             let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine, chain: chain)
 
