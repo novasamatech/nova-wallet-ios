@@ -30,8 +30,16 @@ class DAppMetamaskBaseState {
         let ethereumChain = MetamaskChain.etheremChain
 
         if request.chainId == ethereumChain.chainId {
-            let reloadCommand = createReloadCommand()
-            let response = DAppScriptResponse(content: reloadCommand)
+            let changeChainCommands = createChangeChainCommands(
+                for: ethereumChain.chainId,
+                rpcUrl: ethereumChain.rpcUrls.first
+            )
+
+            let responseCommand = createNullResponseCommand(for: message.identifier)
+
+            let content = createContentWithCommands(changeChainCommands + [responseCommand])
+
+            let response = DAppScriptResponse(content: content)
 
             let nextState = nextStateSuccessClosure(ethereumChain)
             stateMachine?.emitReload(with: response, nextState: nextState)
@@ -57,8 +65,16 @@ class DAppMetamaskBaseState {
         }
 
         if newChain.chainId != chain.chainId {
-            let reloadCommand = createReloadCommand()
-            let response = DAppScriptResponse(content: reloadCommand)
+            let changeChainCommands = createChangeChainCommands(
+                for: newChain.chainId,
+                rpcUrl: newChain.rpcUrls.first
+            )
+
+            let responseCommand = createNullResponseCommand(for: message.identifier)
+
+            let content = createContentWithCommands(changeChainCommands + [responseCommand])
+
+            let response = DAppScriptResponse(content: content)
 
             let nextState = nextStateSuccessClosure(newChain)
             stateMachine?.emitReload(with: response, nextState: nextState)
@@ -154,7 +170,10 @@ class DAppMetamaskBaseState {
 
         if let rpcUrl = rpcUrl {
             commands.append(createSetRpcCommand(rpcUrl))
+            commands.append(createEventCommand(.connect(chainId: chainId)))
         }
+
+        commands.append(createEventCommand(.chainChanged(chainId: chainId)))
 
         return commands
     }
