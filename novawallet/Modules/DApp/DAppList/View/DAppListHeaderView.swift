@@ -145,7 +145,7 @@ final class DAppListHeaderView: UICollectionViewCell {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(decorationView.snp.bottom).offset(12.0)
             make.height.equalTo(52.0)
-            make.bottom.equalToSuperview().inset(12.0)
+            make.bottom.equalToSuperview().inset(0.0)
         }
     }
 }
