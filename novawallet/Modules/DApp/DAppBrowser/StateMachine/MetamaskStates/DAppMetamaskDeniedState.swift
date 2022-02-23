@@ -7,6 +7,10 @@ extension DAppMetamaskDeniedState: DAppMetamaskStateProtocol {
 
     func canHandleMessage() -> Bool { false }
 
+    func fetchSelectedAddress(from _: DAppBrowserStateDataSource) -> AccountAddress? {
+        nil
+    }
+
     func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
         let message = "can't handle message from \(host) when denied"
         let error = DAppBrowserStateError.unexpected(reason: message)
