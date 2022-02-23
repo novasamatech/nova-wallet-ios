@@ -5,11 +5,11 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
     let requestId: MetamaskMessage.Id
     let host: String
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, requestId: MetamaskMessage.Id, host: String) {
+    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain, requestId: MetamaskMessage.Id, host: String) {
         self.requestId = requestId
         self.host = host
 
-        super.init(stateMachine: stateMachine)
+        super.init(stateMachine: stateMachine, chain: chain)
     }
 
     func saveAuthAndComplete(
@@ -47,14 +47,22 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
 
     func complete(_ approved: Bool, dataSource: DAppBrowserStateDataSource) {
         if approved {
-            let addresses = dataSource.fetchEthereumAddresses()
+            let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
 
-            let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine)
+            let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
 
-            provideResponse(for: requestId, results: addresses, nextState: nextState)
+            guard let selectedAddress = addresses.first else {
+                provideResponse(for: requestId, results: [], nextState: nextState)
+                return
+            }
+
+            let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
+            let addressesCommand = createResponseCommand(for: requestId, results: addresses)
+
+            provideResponseWithCommands([setSelectedAddressCommand, addressesCommand], nextState: nextState)
 
         } else {
-            let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine)
+            let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine, chain: chain)
 
             let error = MetamaskError.rejected
             provideError(for: requestId, error: error, nextState: nextState)
@@ -66,6 +74,8 @@ extension DAppMetamaskAuthorizingState: DAppMetamaskStateProtocol {
     func setup(with _: DAppBrowserStateDataSource) {}
 
     func canHandleMessage() -> Bool { false }
+
+    func fetchSelectedAddress(from _: DAppBrowserStateDataSource) -> AccountAddress? { nil }
 
     func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
         let message = "can't handle message from \(host) while authorizing"

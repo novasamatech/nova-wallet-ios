@@ -5,59 +5,17 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         _ messageId: MetamaskMessage.Id,
         from dataSource: DAppBrowserStateDataSource
     ) throws {
-        let addresses = dataSource.fetchEthereumAddresses()
-        provideResponse(for: messageId, results: addresses, nextState: self)
-    }
+        let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
 
-    private func switchChain(from message: MetamaskMessage) throws {
-        guard let request = try message.object?.map(to: MetamaskSwitchChain.self) else {
-            let error = MetamaskError.invalidParams(with: "can't parse chain")
-            provideError(for: message.identifier, error: error, nextState: self)
+        guard let selectedAddress = addresses.first else {
+            provideResponse(for: messageId, results: [], nextState: self)
             return
         }
 
-        guard request.chainId != stateMachine?.chain?.chainId else {
-            provideNullResponse(to: message.identifier, nextState: self)
-            return
-        }
+        let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
+        let addressesCommand = createResponseCommand(for: messageId, results: addresses)
 
-        let ethereumChain = MetamaskChain.etheremChain
-
-        if request.chainId == ethereumChain.chainId {
-            let chainIdCommand = createSetChainIdCommand(ethereumChain.chainId)
-            let nullResponseCommand = createNullResponseCommand(for: message.identifier)
-            let reloadCommand = createReloadCommand()
-            let content = createContentWithCommands([chainIdCommand, nullResponseCommand, reloadCommand])
-
-            stateMachine?.emit(
-                chain: ethereumChain,
-                postExecutionScript: DAppScriptResponse(content: content),
-                nextState: self
-            )
-        } else {
-            let error = MetamaskError.noChainSwitch
-            provideError(for: message.identifier, error: error, nextState: self)
-        }
-    }
-
-    private func addChain(from message: MetamaskMessage) throws {
-        guard let chain = try message.object?.map(to: MetamaskChain.self) else {
-            let error = MetamaskError.invalidParams(with: "can't parse chain")
-            provideError(for: message.identifier, error: error, nextState: self)
-            return
-        }
-
-        if chain.chainId != stateMachine?.chain?.chainId {
-            let reloadCommand = createReloadCommand()
-
-            stateMachine?.emit(
-                chain: chain,
-                postExecutionScript: DAppScriptResponse(content: reloadCommand),
-                nextState: self
-            )
-        } else {
-            provideNullResponse(to: message.identifier, nextState: self)
-        }
+        provideResponseWithCommands([setSelectedAddressCommand, addressesCommand], nextState: self)
     }
 
     private func sendTransaction(from message: MetamaskMessage) {
@@ -69,7 +27,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         }
 
         let requestId = message.identifier
-        let nextState = DAppMetamaskSigningState(stateMachine: stateMachine, requestId: requestId)
+        let nextState = DAppMetamaskSigningState(stateMachine: stateMachine, chain: chain, requestId: requestId)
 
         stateMachine?.emit(messageId: requestId, signingOperation: transactionInfo, nextState: nextState)
     }
@@ -84,15 +42,33 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
         true
     }
 
+    func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress? {
+        dataSource.fetchEthereumAddresses().first?.toEthereumAddressWithChecksum()
+    }
+
     func handle(message: MetamaskMessage, host _: String, dataSource: DAppBrowserStateDataSource) {
         do {
             switch message.name {
             case .requestAccounts:
                 try provideEthereumAddresses(message.identifier, from: dataSource)
             case .addEthereumChain:
-                try addChain(from: message)
+                addChain(
+                    from: message,
+                    nextStateSuccessClosure: { newChain in
+                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
+                    }, nextStateFailureClosure: { _ in
+                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+                    }
+                )
             case .switchEthereumChain:
-                try switchChain(from: message)
+                switchChain(
+                    from: message,
+                    nextStateSuccessClosure: { newChain in
+                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
+                    }, nextStateFailureClosure: { _ in
+                        DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+                    }
+                )
             case .signTransaction:
                 sendTransaction(from: message)
             }
