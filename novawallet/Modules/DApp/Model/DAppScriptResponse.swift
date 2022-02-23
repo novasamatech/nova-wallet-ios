@@ -1,5 +1,5 @@
 import Foundation
 
-struct PolkadotExtensionResponse {
+struct DAppScriptResponse {
     let content: String
 }

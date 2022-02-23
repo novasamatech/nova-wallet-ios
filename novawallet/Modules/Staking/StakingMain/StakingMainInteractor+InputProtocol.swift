@@ -7,20 +7,22 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         commonSettings.stakingNetworkExpansion = isExpanded
     }
 
-    func setup() {
+    private func continueSetup() {
         setupSelectedAccountAndChainAsset()
         setupChainRemoteSubscription()
         setupAccountRemoteSubscription()
 
-        sharedState.eraValidatorService.setup()
-        sharedState.rewardCalculationService.setup()
+        sharedState.eraValidatorService?.setup()
+        sharedState.rewardCalculationService?.setup()
 
         provideNewChain()
         provideSelectedAccount()
 
         guard
             let chainId = selectedChainAsset?.chain.chainId,
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let eraValidatorService = sharedState.eraValidatorService,
+            let rewardCalculationService = sharedState.rewardCalculationService else {
             return
         }
 
@@ -31,8 +33,8 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         performStashControllerSubscription()
         performNominatorLimitsSubscripion()
 
-        provideRewardCalculator(from: sharedState.rewardCalculationService)
-        provideEraStakersInfo(from: sharedState.eraValidatorService)
+        provideRewardCalculator(from: rewardCalculationService)
+        provideEraStakersInfo(from: eraValidatorService)
 
         provideNetworkStakingInfo()
 
@@ -41,6 +43,43 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         applicationHandler.delegate = self
 
         presenter.networkInfoViewExpansion(isExpanded: commonSettings.stakingNetworkExpansion)
+    }
+
+    private func createInitialServices() {
+        guard let chainAsset = sharedState.settings.value else {
+            return
+        }
+
+        do {
+            let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
+                for: chainAsset.chain.chainId
+            )
+
+            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
+                for: chainAsset.chain.chainId,
+                assetPrecision: Int16(chainAsset.asset.precision),
+                validatorService: eraValidatorService
+            )
+
+            sharedState.replaceEraValidatorService(eraValidatorService)
+            sharedState.replaceRewardCalculatorService(rewardCalculatorService)
+        } catch {
+            logger?.error("Couldn't create shared state")
+        }
+    }
+
+    func setup() {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.stakingSettings.setup(runningCompletionIn: .main) { result in
+                switch result {
+                case .success:
+                    self?.createInitialServices()
+                    self?.continueSetup()
+                case let .failure(error):
+                    self?.logger?.error("Staking settings setup error: \(error)")
+                }
+            }
+        }
     }
 
     func save(chainAsset: ChainAsset) {
@@ -79,13 +118,15 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 
         guard
             let chainId = selectedChainAsset?.chain.chainId,
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+            let eraValidatorService = sharedState.eraValidatorService,
+            let rewardCalculationService = sharedState.rewardCalculationService else {
             return
         }
 
-        provideEraStakersInfo(from: sharedState.eraValidatorService)
+        provideEraStakersInfo(from: eraValidatorService)
         provideNetworkStakingInfo()
-        provideRewardCalculator(from: sharedState.rewardCalculationService)
+        provideRewardCalculator(from: rewardCalculationService)
         provideMaxNominatorsPerValidator(from: runtimeService)
     }
 
@@ -118,9 +159,15 @@ extension StakingMainInteractor: EventVisitorProtocol {
     }
 
     func processEraStakersInfoChanged(event _: EraStakersInfoChanged) {
+        guard
+            let eraValidatorService = sharedState.eraValidatorService,
+            let rewardCalculationService = sharedState.rewardCalculationService else {
+            return
+        }
+
         provideNetworkStakingInfo()
-        provideEraStakersInfo(from: sharedState.eraValidatorService)
-        provideRewardCalculator(from: sharedState.rewardCalculationService)
+        provideEraStakersInfo(from: eraValidatorService)
+        provideRewardCalculator(from: rewardCalculationService)
     }
 }
 

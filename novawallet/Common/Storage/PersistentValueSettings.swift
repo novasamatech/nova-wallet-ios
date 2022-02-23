@@ -5,12 +5,6 @@ enum PersistentValueSettingsError: Error {
 }
 
 class PersistentValueSettings<T> {
-    let storageFacade: StorageFacadeProtocol
-
-    init(storageFacade: StorageFacadeProtocol) {
-        self.storageFacade = storageFacade
-    }
-
     private let mutex = NSLock()
 
     var internalValue: T?

@@ -17,6 +17,14 @@ struct ChainAccountResponse {
     let isChainAccount: Bool
 }
 
+struct MetaEthereumAccountResponse {
+    let metaId: String
+    let address: AccountId
+    let publicKey: Data
+    let name: String
+    let isChainAccount: Bool
+}
+
 struct MetaChainAccountResponse {
     let metaId: String
     let chainAccount: ChainAccountResponse
@@ -105,6 +113,33 @@ extension MetaAccountModel {
             cryptoType: cryptoType,
             addressPrefix: request.addressPrefix,
             isEthereumBased: false,
+            isChainAccount: false
+        )
+    }
+
+    func fetchEthereum(for address: AccountId) -> MetaEthereumAccountResponse? {
+        if let chainAccount = chainAccounts.first(where: { $0.accountId == address }) {
+            return MetaEthereumAccountResponse(
+                metaId: metaId,
+                address: address,
+                publicKey: chainAccount.publicKey,
+                name: name,
+                isChainAccount: true
+            )
+        }
+
+        guard
+            let publicKey = ethereumPublicKey,
+            let ethereumAddress = ethereumAddress,
+            ethereumAddress == address else {
+            return nil
+        }
+
+        return MetaEthereumAccountResponse(
+            metaId: metaId,
+            address: address,
+            publicKey: publicKey,
+            name: name,
             isChainAccount: false
         )
     }

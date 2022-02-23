@@ -48,8 +48,8 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         interactor.setup()
     }
 
-    func process(message: Any) {
-        interactor.process(message: message)
+    func process(message: Any, host: String, transport name: String) {
+        interactor.process(message: message, host: host, transport: name)
     }
 
     func activateSearch(with query: String?) {
@@ -90,8 +90,15 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         view?.didReceive(viewModel: model)
     }
 
-    func didReceive(response: PolkadotExtensionResponse) {
-        view?.didReceive(response: response)
+    func didReceiveReplacement(
+        transports: [DAppTransportModel],
+        postExecution script: DAppScriptResponse
+    ) {
+        view?.didReceiveReplacement(transports: transports, postExecution: script)
+    }
+
+    func didReceive(response: DAppScriptResponse, forTransport name: String) {
+        view?.didReceive(response: response, forTransport: name)
     }
 
     func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType) {
@@ -104,8 +111,11 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
 }
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
-    func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for _: DAppOperationRequest) {
-        interactor.processConfirmation(response: response)
+    func didReceiveConfirmationResponse(
+        _ response: DAppOperationResponse,
+        for request: DAppOperationRequest
+    ) {
+        interactor.processConfirmation(response: response, forTransport: request.transportName)
     }
 }
 
@@ -116,7 +126,7 @@ extension DAppBrowserPresenter: DAppSearchDelegate {
 }
 
 extension DAppBrowserPresenter: DAppAuthDelegate {
-    func didReceiveAuthResponse(_ response: DAppAuthResponse, for _: DAppAuthRequest) {
-        interactor.processAuth(response: response)
+    func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest) {
+        interactor.processAuth(response: response, forTransport: request.transportName)
     }
 }

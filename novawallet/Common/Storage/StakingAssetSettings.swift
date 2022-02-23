@@ -3,87 +3,48 @@ import SoraKeystore
 import RobinHood
 
 final class StakingAssetSettings: PersistentValueSettings<ChainAsset> {
+    let chainRegistry: ChainRegistryProtocol
     let settings: SettingsManagerProtocol
-    let operationQueue: OperationQueue
 
     init(
-        storageFacade: StorageFacadeProtocol,
-        settings: SettingsManagerProtocol,
-        operationQueue: OperationQueue
+        chainRegistry: ChainRegistryProtocol,
+        settings: SettingsManagerProtocol
     ) {
+        self.chainRegistry = chainRegistry
         self.settings = settings
-        self.operationQueue = operationQueue
-
-        super.init(storageFacade: storageFacade)
     }
 
     override func performSetup(completionClosure: @escaping (Result<ChainAsset?, Error>) -> Void) {
-        let repository: AnyDataProviderRepository<ChainModel>
-        let mapper = AnyCoreDataMapper(ChainModelMapper())
-
         let maybeChainAssetId = settings.stakingAsset
 
-        if let chainAssetId = maybeChainAssetId {
-            let filter = NSCompoundPredicate(orPredicateWithSubpredicates: [
-                NSPredicate.chainBy(identifier: chainAssetId.chainId),
-                NSPredicate.relayChains()
-            ])
+        var completed: Bool = false
+        let mutex = NSLock()
 
-            repository = AnyDataProviderRepository(
-                storageFacade.createRepository(
-                    filter: filter,
-                    sortDescriptors: [NSSortDescriptor.chainsByOrder],
-                    mapper: mapper
-                )
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: DispatchQueue.global(qos: .userInteractive)
+        ) { [weak self] changes in
+
+            mutex.lock()
+
+            defer {
+                mutex.unlock()
+            }
+
+            let chains: [ChainModel] = changes.allChangedItems()
+
+            guard !chains.isEmpty, !completed else {
+                return
+            }
+
+            completed = true
+
+            self?.completeSetup(
+                for: chains,
+                currentChainAssetId: maybeChainAssetId,
+                completionClosure: completionClosure
             )
-        } else {
-            let filter = NSPredicate.relayChains()
-            repository = AnyDataProviderRepository(
-                storageFacade.createRepository(
-                    filter: filter,
-                    sortDescriptors: [NSSortDescriptor.chainsByOrder],
-                    mapper: mapper
-                )
-            )
         }
-
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let mappingOperation = ClosureOperation<ChainAsset?> {
-            let chains = try fetchOperation.extractNoCancellableResultData()
-
-            if
-                let selectedChain = chains.first(where: { $0.chainId == maybeChainAssetId?.chainId }),
-                let selectedAsset = selectedChain.assets.first(where: { $0.assetId == maybeChainAssetId?.assetId }) {
-                return ChainAsset(chain: selectedChain, asset: selectedAsset)
-            }
-
-            let maybeChain = chains.first { chain in
-                chain.assets.contains { $0.staking != nil }
-            }
-
-            let maybeAsset = maybeChain?.assets.first { $0.staking != nil }
-
-            if let chain = maybeChain, let asset = maybeAsset {
-                self.settings.stakingAsset = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-                return ChainAsset(chain: chain, asset: asset)
-            }
-
-            return nil
-        }
-
-        mappingOperation.addDependency(fetchOperation)
-
-        mappingOperation.completionBlock = {
-            do {
-                let result = try mappingOperation.extractNoCancellableResultData()
-                completionClosure(.success(result))
-            } catch {
-                completionClosure(.failure(error))
-            }
-        }
-
-        operationQueue.addOperations([fetchOperation, mappingOperation], waitUntilFinished: false)
     }
 
     override func performSave(
@@ -96,5 +57,38 @@ final class StakingAssetSettings: PersistentValueSettings<ChainAsset> {
         )
 
         completionClosure(.success(value))
+    }
+
+    private func completeSetup(
+        for chains: [ChainModel],
+        currentChainAssetId: ChainAssetId?,
+        completionClosure: @escaping (Result<ChainAsset?, Error>) -> Void
+    ) {
+        let chainAsset: ChainAsset?
+
+        if
+            let selectedChain = chains.first(where: { $0.chainId == currentChainAssetId?.chainId }),
+            let selectedAsset = selectedChain.assets.first(
+                where: { $0.assetId == currentChainAssetId?.assetId }
+            ) {
+            chainAsset = ChainAsset(chain: selectedChain, asset: selectedAsset)
+        } else {
+            let maybeChain = chains.first { chain in
+                chain.assets.contains { $0.staking != nil }
+            }
+
+            let maybeAsset = maybeChain?.assets.first { $0.staking != nil }
+
+            if let chain = maybeChain, let asset = maybeAsset {
+                settings.stakingAsset = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+                chainAsset = ChainAsset(chain: chain, asset: asset)
+            } else {
+                chainAsset = nil
+            }
+        }
+
+        chainRegistry.chainsUnsubscribe(self)
+
+        completionClosure(.success(chainAsset))
     }
 }
