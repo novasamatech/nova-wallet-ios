@@ -59,7 +59,10 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
             let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
             let addressesCommand = createResponseCommand(for: requestId, results: addresses)
 
-            provideResponseWithCommands([setSelectedAddressCommand, addressesCommand], nextState: nextState)
+            let content = createContentWithCommands([setSelectedAddressCommand, addressesCommand])
+            let response = DAppScriptResponse(content: content)
+
+            stateMachine?.emitReload(with: response, nextState: nextState)
 
         } else {
             let nextState = DAppMetamaskDeniedState(stateMachine: stateMachine, chain: chain)
