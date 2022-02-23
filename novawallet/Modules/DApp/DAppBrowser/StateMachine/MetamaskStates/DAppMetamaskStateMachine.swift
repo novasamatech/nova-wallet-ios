@@ -2,8 +2,6 @@ import Foundation
 import SubstrateSdk
 
 protocol DAppMetamaskStateMachineProtocol: AnyObject {
-    var chain: MetamaskChain? { get }
-
     func emit(nextState: DAppMetamaskStateProtocol)
     func emit(response: DAppScriptResponse, nextState: DAppMetamaskStateProtocol)
     func emit(authRequest: DAppAuthRequest, nextState: DAppMetamaskStateProtocol)
@@ -12,17 +10,16 @@ protocol DAppMetamaskStateMachineProtocol: AnyObject {
         signingOperation: JSON,
         nextState: DAppMetamaskStateProtocol
     )
-    func emit(
-        chain: MetamaskChain,
-        postExecutionScript: DAppScriptResponse,
-        nextState: DAppMetamaskStateProtocol
-    )
+    func emitReload(with postExecutionScript: DAppScriptResponse, nextState: DAppMetamaskStateProtocol)
     func emit(error: Error, nextState: DAppMetamaskStateProtocol)
     func popMessage()
 }
 
 protocol DAppMetamaskStateProtocol {
     var stateMachine: DAppMetamaskStateMachineProtocol? { get set }
+    var chain: MetamaskChain { get }
+
+    func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress?
 
     func setup(with dataSource: DAppBrowserStateDataSource)
     func canHandleMessage() -> Bool

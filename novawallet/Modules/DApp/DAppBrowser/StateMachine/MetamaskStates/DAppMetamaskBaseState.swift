@@ -2,9 +2,70 @@ import Foundation
 
 class DAppMetamaskBaseState {
     weak var stateMachine: DAppMetamaskStateMachineProtocol?
+    let chain: MetamaskChain
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?) {
+    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain) {
         self.stateMachine = stateMachine
+        self.chain = chain
+    }
+
+    func switchChain(
+        from message: MetamaskMessage,
+        nextStateSuccessClosure: (MetamaskChain) -> DAppMetamaskStateProtocol,
+        nextStateFailureClosure: (MetamaskError) -> DAppMetamaskStateProtocol
+    ) {
+        guard let request = try? message.object?.map(to: MetamaskSwitchChain.self) else {
+            let error = MetamaskError.invalidParams(with: "can't parse chain")
+            let nextState = nextStateFailureClosure(error)
+            provideError(for: message.identifier, error: error, nextState: nextState)
+            return
+        }
+
+        guard request.chainId != chain.chainId else {
+            let nextState = nextStateSuccessClosure(chain)
+            provideNullResponse(to: message.identifier, nextState: nextState)
+            return
+        }
+
+        let ethereumChain = MetamaskChain.etheremChain
+
+        if request.chainId == ethereumChain.chainId {
+            let reloadCommand = createReloadCommand()
+            let response = DAppScriptResponse(content: reloadCommand)
+
+            let nextState = nextStateSuccessClosure(ethereumChain)
+            stateMachine?.emitReload(with: response, nextState: nextState)
+        } else {
+            let error = MetamaskError.noChainSwitch
+
+            let nextState = nextStateFailureClosure(error)
+            provideError(for: message.identifier, error: error, nextState: nextState)
+        }
+    }
+
+    func addChain(
+        from message: MetamaskMessage,
+        nextStateSuccessClosure: (MetamaskChain) -> DAppMetamaskStateProtocol,
+        nextStateFailureClosure: (MetamaskError) -> DAppMetamaskStateProtocol
+    ) {
+        guard let newChain = try? message.object?.map(to: MetamaskChain.self) else {
+            let error = MetamaskError.invalidParams(with: "can't parse chain")
+
+            let nextState = nextStateFailureClosure(error)
+            provideError(for: message.identifier, error: error, nextState: nextState)
+            return
+        }
+
+        if newChain.chainId != chain.chainId {
+            let reloadCommand = createReloadCommand()
+            let response = DAppScriptResponse(content: reloadCommand)
+
+            let nextState = nextStateSuccessClosure(newChain)
+            stateMachine?.emitReload(with: response, nextState: nextState)
+        } else {
+            let nextState = nextStateSuccessClosure(chain)
+            provideNullResponse(to: message.identifier, nextState: nextState)
+        }
     }
 
     func createContentWithCommands(_ commands: [String]) -> String {
@@ -86,6 +147,16 @@ class DAppMetamaskBaseState {
         let response = DAppScriptResponse(content: content)
 
         stateMachine?.emit(response: response, nextState: nextState)
+    }
+
+    func createChangeChainCommands(for chainId: String, rpcUrl: String?) -> [String] {
+        var commands = [createSetChainIdCommand(chainId)]
+
+        if let rpcUrl = rpcUrl {
+            commands.append(createSetRpcCommand(rpcUrl))
+        }
+
+        return commands
     }
 
     func createNullResponseCommand(for messageId: MetamaskMessage.Id) -> String {

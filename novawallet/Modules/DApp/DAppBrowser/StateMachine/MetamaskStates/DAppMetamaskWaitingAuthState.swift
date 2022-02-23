@@ -39,7 +39,7 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
     ) {
         let addresses = dataSource.fetchEthereumAddresses()
 
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine)
+        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
 
         provideResponse(for: message.identifier, results: addresses, nextState: nextState)
     }
@@ -60,6 +60,7 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
 
         let nextState = DAppMetamaskAuthorizingState(
             stateMachine: stateMachine,
+            chain: chain,
             requestId: message.identifier,
             host: host
         )
@@ -75,14 +76,37 @@ extension DAppMetamaskWaitingAuthState: DAppMetamaskStateProtocol {
 
     func canHandleMessage() -> Bool { !isHandlingAuthMessage }
 
+    func fetchSelectedAddress(from _: DAppBrowserStateDataSource) -> AccountAddress? {
+        nil
+    }
+
     func handle(message: MetamaskMessage, host: String, dataSource: DAppBrowserStateDataSource) {
         switch message.name {
         case .requestAccounts:
             isHandlingAuthMessage = true
             handle(authMessage: message, host: host, dataSource: dataSource)
+        case .switchEthereumChain:
+            switchChain(
+                from: message,
+                nextStateSuccessClosure: { newChain in
+                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
+                },
+                nextStateFailureClosure: { _ in
+                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: chain)
+                }
+            )
+        case .addEthereumChain:
+            addChain(
+                from: message,
+                nextStateSuccessClosure: { newChain in
+                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
+                }, nextStateFailureClosure: { _ in
+                    DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: chain)
+                }
+            )
         default:
-            let error = "auth message expected but \(message.name) received from \(host)"
-            stateMachine?.emit(error: DAppBrowserStateError.unexpected(reason: error), nextState: self)
+            let errorMessage = "auth message expected but \(message.name) received from \(host)"
+            stateMachine?.emit(error: DAppBrowserStateError.unexpected(reason: errorMessage), nextState: self)
         }
     }
 
