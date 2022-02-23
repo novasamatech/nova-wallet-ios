@@ -37,11 +37,7 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
         for message: MetamaskMessage,
         dataSource: DAppBrowserStateDataSource
     ) {
-        let addresses = dataSource.fetchEthereumAddresses()
-
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
-
-        provideResponse(for: message.identifier, results: addresses, nextState: nextState)
+        approveAccountAccess(for: message.identifier, dataSource: dataSource)
     }
 
     private func completeByRequestingAuth(

@@ -9,6 +9,28 @@ class DAppMetamaskBaseState {
         self.chain = chain
     }
 
+    func approveAccountAccess(
+        for messageId: MetamaskMessage.Id,
+        dataSource: DAppBrowserStateDataSource
+    ) {
+        let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
+
+        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
+
+        guard let selectedAddress = addresses.first else {
+            provideResponse(for: messageId, results: [], nextState: nextState)
+            return
+        }
+
+        let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
+        let addressesCommand = createResponseCommand(for: messageId, results: addresses)
+
+        let content = createContentWithCommands([setSelectedAddressCommand, addressesCommand])
+        let response = DAppScriptResponse(content: content)
+
+        stateMachine?.emitReload(with: response, nextState: nextState)
+    }
+
     func switchChain(
         from message: MetamaskMessage,
         nextStateSuccessClosure: (MetamaskChain) -> DAppMetamaskStateProtocol,
