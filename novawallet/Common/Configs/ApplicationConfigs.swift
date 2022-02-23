@@ -23,6 +23,7 @@ protocol ApplicationConfigProtocol {
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
+    var canDebugDApp: Bool { get }
 }
 
 final class ApplicationConfig {
@@ -121,6 +122,14 @@ extension ApplicationConfig: ApplicationConfigProtocol {
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
+        #endif
+    }
+
+    var canDebugDApp: Bool {
+        #if F_RELEASE
+            false
+        #else
+            true
         #endif
     }
 

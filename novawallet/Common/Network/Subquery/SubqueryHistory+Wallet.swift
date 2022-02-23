@@ -7,7 +7,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         identifier
     }
 
-    var localIdentifier: String { extrinsicHash }
+    var localIdentifier: String { extrinsicHash ?? identifier }
 
     var itemBlockNumber: UInt64 {
         blockNumber
@@ -113,7 +113,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         let type: TransactionType = isSender ? .outgoing : .incoming
 
         return AssetTransactionData(
-            transactionId: extrinsicHash,
+            transactionId: extrinsicHash ?? identifier,
             status: status,
             assetId: assetId,
             peerId: peerId,
@@ -154,7 +154,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
             transactionId: identifier,
             status: .commited,
             assetId: assetId,
-            peerId: extrinsicHash,
+            peerId: extrinsicHash ?? "",
             peerFirstName: nil,
             peerLastName: nil,
             peerName: nil,
@@ -186,7 +186,7 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
         ) ?? 0
 
         return AssetTransactionData(
-            transactionId: extrinsicHash,
+            transactionId: extrinsicHash ?? identifier,
             status: status,
             assetId: assetId,
             peerId: peerId,
