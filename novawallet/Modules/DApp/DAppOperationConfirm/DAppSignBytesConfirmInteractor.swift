@@ -4,29 +4,52 @@ import SoraKeystore
 
 final class DAppSignBytesConfirmInteractor: DAppOperationBaseInteractor {
     let request: DAppOperationRequest
+    let chain: ChainModel
     let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     private(set) var account: ChainAccountResponse?
 
-    init(request: DAppOperationRequest, signingWrapperFactory: SigningWrapperFactoryProtocol) {
+    init(
+        request: DAppOperationRequest,
+        chain: ChainModel,
+        signingWrapperFactory: SigningWrapperFactoryProtocol
+    ) {
         self.request = request
+        self.chain = chain
         self.signingWrapperFactory = signingWrapperFactory
     }
 
     private func validateAndProvideConfirmationModel() {
         guard
-            let accountResponse = request.wallet.fetch(for: request.chain.accountRequest()) else {
+            let accountResponse = request.wallet.fetch(for: chain.accountRequest()),
+            let chainAddress = accountResponse.toAddress() else {
             presenter?.didReceive(feeResult: .failure(ChainAccountFetchingError.accountNotExists))
             return
         }
 
         account = accountResponse
 
+        let networkIconUrl: URL?
+        let assetPrecision: UInt16
+
+        if let asset = chain.utilityAssets().first {
+            networkIconUrl = asset.icon ?? chain.icon
+            assetPrecision = asset.precision
+        } else {
+            networkIconUrl = nil
+            assetPrecision = 0
+        }
+
         let confirmationModel = DAppOperationConfirmModel(
-            wallet: request.wallet,
-            chain: request.chain,
+            accountName: request.wallet.name,
+            walletAccountId: request.wallet.substrateAccountId,
+            chainAccountId: accountResponse.accountId,
+            chainAddress: chainAddress,
+            networkName: chain.name,
+            utilityAssetPrecision: Int16(bitPattern: assetPrecision),
             dApp: request.dApp,
-            dAppIcon: request.dAppIcon
+            dAppIcon: request.dAppIcon,
+            networkIcon: networkIconUrl
         )
 
         presenter?.didReceive(modelResult: .success(confirmationModel))

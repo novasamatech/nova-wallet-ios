@@ -28,10 +28,11 @@ class StakingMainTests: XCTestCase {
 
         walletSettings.save(value: selectedMetaAccount)
 
+        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [selectedChain])
+
         let stakingSettings = StakingAssetSettings(
-            storageFacade: substrateStorageFacade,
-            settings: InMemorySettingsManager(),
-            operationQueue: OperationQueue()
+            chainRegistry: chainRegistry,
+            settings: InMemorySettingsManager()
         )
 
         let selectedChainAsset = ChainAsset(chain: selectedChain, asset: selectedChain.assets.first!)
@@ -77,8 +78,6 @@ class StakingMainTests: XCTestCase {
         )
 
         let eraCountdownOperationFactory = EraCountdownOperationFactoryStub(eraCountdown: .testStub)
-
-        let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [selectedChain])
 
         let accountResponse = selectedMetaAccount.fetch(for: selectedChain.accountRequest())!
         let address = try accountResponse.accountId.toAddress(using: selectedChain.chainFormat)

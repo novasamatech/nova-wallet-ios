@@ -22,7 +22,7 @@ extension TransactionDetailsViewModelFactory {
 
         let context = HistoryRewardContext(context: data.context ?? [:])
 
-        if let validator = context.validator {
+        if let validator = context.validator, !validator.isEmpty {
             populateValidator(
                 in: &viewModels,
                 address: validator,

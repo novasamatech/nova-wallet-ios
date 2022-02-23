@@ -3,74 +3,43 @@ import SoraKeystore
 import RobinHood
 
 final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
+    let chainRegistry: ChainRegistryProtocol
     let settings: SettingsManagerProtocol
-    let operationQueue: OperationQueue
 
     init(
-        storageFacade: StorageFacadeProtocol,
-        settings: SettingsManagerProtocol,
-        operationQueue: OperationQueue
+        chainRegistry: ChainRegistryProtocol,
+        settings: SettingsManagerProtocol
     ) {
+        self.chainRegistry = chainRegistry
         self.settings = settings
-        self.operationQueue = operationQueue
-
-        super.init(storageFacade: storageFacade)
     }
 
     override func performSetup(completionClosure: @escaping (Result<ChainModel?, Error>) -> Void) {
-        let mapper = AnyCoreDataMapper(ChainModelMapper())
-
         let maybeChainId = settings.crowdloanChainId
 
-        let filter: NSPredicate = {
-            if let chainId = maybeChainId {
-                return NSCompoundPredicate(orPredicateWithSubpredicates: [
-                    NSPredicate.chainBy(identifier: chainId),
-                    NSPredicate.relayChains()
-                ])
+        var completed: Bool = false
+        let mutex = NSLock()
 
-            } else {
-                return NSPredicate.relayChains()
-            }
-        }()
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: DispatchQueue.global(qos: .userInteractive)
+        ) { [weak self] changes in
+            mutex.lock()
 
-        let repository = AnyDataProviderRepository(
-            storageFacade.createRepository(
-                filter: filter,
-                sortDescriptors: [NSSortDescriptor.chainsByOrder],
-                mapper: mapper
-            )
-        )
-
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let mappingOperation = ClosureOperation<ChainModel?> {
-            let chains = try fetchOperation.extractNoCancellableResultData()
-
-            if let selectedChain = chains.first(where: { $0.chainId == maybeChainId }) {
-                return selectedChain
+            defer {
+                mutex.unlock()
             }
 
-            if let firstRelayChain = chains.first(where: { $0.hasCrowdloans }) {
-                self.settings.crowdloanChainId = firstRelayChain.chainId
-                return firstRelayChain
+            let chains: [ChainModel] = changes.allChangedItems()
+
+            guard !chains.isEmpty, !completed else {
+                return
             }
 
-            return nil
+            completed = true
+
+            self?.completeSetup(for: chains, currentChainId: maybeChainId, completionClosure: completionClosure)
         }
-
-        mappingOperation.addDependency(fetchOperation)
-
-        mappingOperation.completionBlock = {
-            do {
-                let result = try mappingOperation.extractNoCancellableResultData()
-                completionClosure(.success(result))
-            } catch {
-                completionClosure(.failure(error))
-            }
-        }
-
-        operationQueue.addOperations([fetchOperation, mappingOperation], waitUntilFinished: false)
     }
 
     override func performSave(
@@ -80,5 +49,26 @@ final class CrowdloanChainSettings: PersistentValueSettings<ChainModel> {
     ) {
         settings.crowdloanChainId = value.chainId
         completionClosure(.success(value))
+    }
+
+    private func completeSetup(
+        for chains: [ChainModel],
+        currentChainId: ChainModel.Id?,
+        completionClosure: @escaping (Result<ChainModel?, Error>) -> Void
+    ) {
+        let selectedChain: ChainModel?
+
+        if let chain = chains.first(where: { $0.chainId == currentChainId }) {
+            selectedChain = chain
+        } else if let firstChain = chains.first(where: { $0.isRelaychain && $0.hasCrowdloans }) {
+            settings.crowdloanChainId = firstChain.chainId
+            selectedChain = firstChain
+        } else {
+            selectedChain = nil
+        }
+
+        chainRegistry.chainsUnsubscribe(self)
+
+        completionClosure(.success(selectedChain))
     }
 }

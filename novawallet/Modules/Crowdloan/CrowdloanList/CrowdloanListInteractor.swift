@@ -6,14 +6,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     weak var presenter: CrowdloanListInteractorOutputProtocol!
 
     let selectedMetaAccount: MetaAccountModel
+    let crowdloanState: CrowdloanSharedState
     let crowdloanOperationFactory: CrowdloanOperationFactoryProtocol
     let jsonDataProviderFactory: JsonDataProviderFactoryProtocol
-    let crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
     let crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol
-    let crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let settings: CrowdloanChainSettings
     let operationManager: OperationManagerProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let logger: LoggerProtocol?
@@ -30,7 +28,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
     deinit {
-        if let subscriptionId = blockNumberSubscriptionId, let chain = settings.value {
+        if let subscriptionId = blockNumberSubscriptionId, let chain = crowdloanState.settings.value {
             blockNumberSubscriptionId = nil
             crowdloanRemoteSubscriptionService.detach(for: subscriptionId, chainId: chain.chainId)
         }
@@ -38,12 +36,10 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
 
     init(
         selectedMetaAccount: MetaAccountModel,
-        settings: CrowdloanChainSettings,
+        crowdloanState: CrowdloanSharedState,
         chainRegistry: ChainRegistryProtocol,
         crowdloanOperationFactory: CrowdloanOperationFactoryProtocol,
         crowdloanRemoteSubscriptionService: CrowdloanRemoteSubscriptionServiceProtocol,
-        crowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol,
-        crowdloanLocalSubscriptionFactory: CrowdloanLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         jsonDataProviderFactory: JsonDataProviderFactoryProtocol,
         operationManager: OperationManagerProtocol,
@@ -51,14 +47,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         logger: LoggerProtocol? = nil
     ) {
         self.selectedMetaAccount = selectedMetaAccount
+        self.crowdloanState = crowdloanState
         self.crowdloanOperationFactory = crowdloanOperationFactory
         self.chainRegistry = chainRegistry
         self.jsonDataProviderFactory = jsonDataProviderFactory
-        self.crowdloanOffchainProviderFactory = crowdloanOffchainProviderFactory
-        self.crowdloanLocalSubscriptionFactory = crowdloanLocalSubscriptionFactory
         self.crowdloanRemoteSubscriptionService = crowdloanRemoteSubscriptionService
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
-        self.settings = settings
         self.operationManager = operationManager
         self.applicationHandler = applicationHandler
         self.logger = logger
@@ -310,7 +304,7 @@ extension CrowdloanListInteractor {
     }
 
     func clear() {
-        if let oldChain = settings.value {
+        if let oldChain = crowdloanState.settings.value {
             putOffline(with: oldChain)
         }
 

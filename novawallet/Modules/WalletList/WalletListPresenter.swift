@@ -5,6 +5,8 @@ import SoraFoundation
 import BigInt
 
 final class WalletListPresenter {
+    static let viewUpdatePeriod: TimeInterval = 1.0
+
     typealias ChainAssetPrice = (chainId: ChainModel.Id, assetId: AssetModel.Id, price: PriceData)
 
     weak var view: WalletListViewProtocol?
@@ -22,6 +24,12 @@ final class WalletListPresenter {
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+
+    private var scheduler: SchedulerProtocol?
+
+    deinit {
+        cancelViewUpdate()
+    }
 
     init(
         interactor: WalletListInteractorInputProtocol,
@@ -209,6 +217,27 @@ final class WalletListPresenter {
             priceData: priceData
         )
     }
+
+    private func updateView() {
+        cancelViewUpdate()
+
+        provideHeaderViewModel()
+        provideAssetViewModels()
+    }
+
+    private func scheduleViewUpdate() {
+        guard scheduler == nil else {
+            return
+        }
+
+        scheduler = Scheduler(with: self, callbackQueue: .main)
+        scheduler?.notifyAfter(Self.viewUpdatePeriod)
+    }
+
+    private func cancelViewUpdate() {
+        scheduler?.cancel()
+        scheduler = nil
+    }
 }
 
 extension WalletListPresenter: WalletListPresenterProtocol {
@@ -250,15 +279,13 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateView()
     }
 
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
         connectionStates[chainId] = state
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        scheduleViewUpdate()
     }
 
     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -285,8 +312,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
             groups.apply(changes: [.update(newItem: groupModel)])
         }
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateView()
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -327,8 +353,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateView()
     }
 
     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
@@ -381,27 +406,32 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateView()
     }
 
     func didChange(name: String) {
         self.name = name
 
-        provideHeaderViewModel()
+        updateView()
     }
 
     func didReceive(hidesZeroBalances: Bool) {
         self.hidesZeroBalances = hidesZeroBalances
 
-        provideAssetViewModels()
+        updateView()
     }
 }
 
 extension WalletListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            provideHeaderViewModel()
+            updateView()
         }
+    }
+}
+
+extension WalletListPresenter: SchedulerDelegate {
+    func didTrigger(scheduler _: SchedulerProtocol) {
+        updateView()
     }
 }
