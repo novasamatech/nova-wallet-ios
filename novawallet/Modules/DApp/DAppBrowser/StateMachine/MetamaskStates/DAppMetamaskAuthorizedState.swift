@@ -7,15 +7,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
     ) throws {
         let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
 
-        guard let selectedAddress = addresses.first else {
-            provideResponse(for: messageId, results: [], nextState: self)
-            return
-        }
-
-        let setSelectedAddressCommand = createSetAddressCommand(selectedAddress)
-        let addressesCommand = createResponseCommand(for: messageId, results: addresses)
-
-        provideResponseWithCommands([setSelectedAddressCommand, addressesCommand], nextState: self)
+        provideResponse(for: messageId, results: addresses, nextState: self)
     }
 
     private func sendTransaction(from message: MetamaskMessage) {
