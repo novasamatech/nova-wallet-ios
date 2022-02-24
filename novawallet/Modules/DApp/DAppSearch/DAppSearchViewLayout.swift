@@ -8,7 +8,6 @@ final class DAppSearchViewLayout: UIView {
         let view = UITableView()
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
-        view.contentInset = UIEdgeInsets(top: 8.0, left: 0, bottom: 0, right: 0)
         view.separatorStyle = .none
         return view
     }()
