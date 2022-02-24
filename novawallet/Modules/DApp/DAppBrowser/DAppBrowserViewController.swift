@@ -135,11 +135,11 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.urlBar.setNeedsLayout()
 
-        rootView.goBackBarItem.isEnabled = false
-        rootView.goForwardBarItem.isEnabled = false
-
         let request = URLRequest(url: url)
         rootView.webView.load(request)
+
+        rootView.goBackBarItem.isEnabled = rootView.webView.canGoBack
+        rootView.goForwardBarItem.isEnabled = rootView.webView.canGoForward
     }
 
     private func didChangeGoBack(_ newValue: Bool) {

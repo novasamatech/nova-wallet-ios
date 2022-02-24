@@ -8,7 +8,6 @@ final class DAppMetamaskTransport {
     weak var delegate: DAppBrowserTransportDelegate?
     private(set) var dataSource: DAppBrowserStateDataSource?
     private(set) var state: DAppMetamaskStateProtocol?
-    private(set) var chain: MetamaskChain?
 
     let isDebug: Bool
 
@@ -81,10 +80,8 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
 
         state = nextState
 
-        if
-            let request = createConfirmationRequest(messageId: messageId, from: signingOperation),
-            let chain = chain {
-            let type = DAppSigningType.ethereumTransaction(chain: chain)
+        if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
+            let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
             delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
         } else {
             let error = DAppBrowserStateError.unexpected(reason: "Can't create signing request")
@@ -94,16 +91,12 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         nextState.setup(with: dataSource)
     }
 
-    func emit(
-        chain: MetamaskChain,
-        postExecutionScript: DAppScriptResponse,
-        nextState: DAppMetamaskStateProtocol
-    ) {
+    func emitReload(with postExecutionScript: DAppScriptResponse, nextState: DAppMetamaskStateProtocol) {
         guard let dataSource = dataSource else {
             return
         }
 
-        self.chain = chain
+        state = nextState
 
         delegate?.dAppAskReload(self, postExecutionScript: postExecutionScript)
 
@@ -143,22 +136,28 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     }
 
     func createSubscriptionScript(for dataSource: DAppBrowserStateDataSource) -> DAppBrowserScript? {
+        guard let state = state else {
+            return nil
+        }
+
         let addressComponent: String
 
-        if let selectedAddress = dataSource.fetchEthereumAddresses().first {
+        if let selectedAddress = state.fetchSelectedAddress(from: dataSource) {
             addressComponent = "address: \"\(selectedAddress)\","
         } else {
             addressComponent = ""
         }
 
+        let chain = state.chain
+
         let config: String
 
-        if let chainId = chain?.chainId, let rpcUrl = chain?.rpcUrls.first {
+        if let rpcUrl = chain.rpcUrls.first {
             config =
                 """
                 var config = {
                     \(addressComponent)
-                    chainId: \"\(chainId)\",
+                    chainId: \"\(chain.chainId)\",
                     rpcUrl: \"\(rpcUrl)\",
                     isDebug: \(isDebug)
                 };
@@ -168,6 +167,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
                 """
                 var config = {
                     \(addressComponent)
+                    chainId: \"\(chain.chainId)\",
                     isDebug: \(isDebug)
                 };
                 """
@@ -196,7 +196,7 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     func start(with dataSource: DAppBrowserStateDataSource) {
         self.dataSource = dataSource
 
-        state = DAppMetamaskWaitingAuthState(stateMachine: self)
+        state = DAppMetamaskWaitingAuthState(stateMachine: self, chain: .etheremChain)
     }
 
     func process(message: Any, host: String) {
