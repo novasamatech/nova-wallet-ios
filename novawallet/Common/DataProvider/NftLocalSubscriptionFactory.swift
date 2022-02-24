@@ -7,6 +7,14 @@ protocol NftLocalSubscriptionFactoryProtocol {
 
 final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     NftLocalSubscriptionFactoryProtocol {
+    static let shared = NftLocalSubscriptionFactory(
+        chainRegistry: ChainRegistryFacade.sharedRegistry,
+        storageFacade: SubstrateDataStorageFacade.shared,
+        operationManager: OperationManagerFacade.sharedManager,
+        logger: Logger.shared,
+        operationQueue: OperationManagerFacade.sharedDefaultQueue
+    )
+
     typealias NftOption = (chain: ChainModel, ownerId: AccountId, type: NftType)
 
     let operationQueue: OperationQueue

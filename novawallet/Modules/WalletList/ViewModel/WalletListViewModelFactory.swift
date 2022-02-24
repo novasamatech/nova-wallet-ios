@@ -38,23 +38,28 @@ protocol WalletListViewModelFactoryProtocol {
         connected: Bool,
         locale: Locale
     ) -> WalletListAssetViewModel
+
+    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> WalletListNftsViewModel
 }
 
 final class WalletListViewModelFactory {
     let priceFormatter: LocalizableResource<TokenFormatter>
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
+    let quantityFormatter: LocalizableResource<NumberFormatter>
 
     private lazy var cssColorFactory = CSSGradientFactory()
 
     init(
         priceFormatter: LocalizableResource<TokenFormatter>,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        percentFormatter: LocalizableResource<NumberFormatter>
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.priceFormatter = priceFormatter
         self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
+        self.quantityFormatter = quantityFormatter
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -242,5 +247,12 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
             balanceAmount: balanceState,
             balanceValue: balanceValueState
         )
+    }
+
+    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> WalletListNftsViewModel {
+        let numberOfNfts = NSNumber(value: nfts.count)
+        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
+
+        return WalletListNftsViewModel(count: .loaded(value: count))
     }
 }

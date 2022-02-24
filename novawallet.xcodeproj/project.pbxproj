@@ -466,6 +466,7 @@
 		843C49D824DD98CC00B71DDA /* DerivationPathConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */; };
 		843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49DA24DF373000B71DDA /* AccountImportRequest.swift */; };
 		843C49DF24DF3CB300B71DDA /* AccountImportMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843C49DE24DF3CB300B71DDA /* AccountImportMetadata.swift */; };
+		843E9B2827C83985009C143A /* WalletListNftsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843E9B2727C83985009C143A /* WalletListNftsCell.swift */; };
 		843EC7A82701F63600C7DC7E /* PriceProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */; };
 		843F657126584D2C00829C14 /* JsonSingleProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */; };
 		843F657A265854A700829C14 /* CrowdloanDisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */; };
@@ -2417,6 +2418,7 @@
 		843C49D724DD98CC00B71DDA /* DerivationPathConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DerivationPathConstants.swift; sourceTree = "<group>"; };
 		843C49DA24DF373000B71DDA /* AccountImportRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportRequest.swift; sourceTree = "<group>"; };
 		843C49DE24DF3CB300B71DDA /* AccountImportMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountImportMetadata.swift; sourceTree = "<group>"; };
+		843E9B2727C83985009C143A /* WalletListNftsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListNftsCell.swift; sourceTree = "<group>"; };
 		843EC7A72701F63600C7DC7E /* PriceProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceProviderFactoryStub.swift; sourceTree = "<group>"; };
 		843F657026584D2C00829C14 /* JsonSingleProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonSingleProviderSource.swift; sourceTree = "<group>"; };
 		843F6579265854A700829C14 /* CrowdloanDisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanDisplayInfo.swift; sourceTree = "<group>"; };
@@ -7754,6 +7756,7 @@
 				84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */,
 				847F2D4127A96D9200AFD476 /* TokenGroupDecorationView.swift */,
 				8452585427ABF270004F9082 /* WalletListEmptyCell.swift */,
+				843E9B2727C83985009C143A /* WalletListNftsCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11557,6 +11560,7 @@
 				D3B48F82A875E301D749AC0B /* StakingUnbondConfirmViewController.swift in Sources */,
 				8472C5AE265CF9C500E2481B /* StakingRewardDestConfirmViewModel.swift in Sources */,
 				84378770264D1D2700E6AFD2 /* UsernameSetupInteractor.swift in Sources */,
+				843E9B2827C83985009C143A /* WalletListNftsCell.swift in Sources */,
 				3E1462D9E1C0D490E81FD288 /* StakingUnbondConfirmViewFactory.swift in Sources */,
 				9B4BE26140C63E07C256CC97 /* StakingRedeemProtocols.swift in Sources */,
 				AEE5FB1C264A610C002B8FDC /* StakingRewardDestSetupLayout.swift in Sources */,
