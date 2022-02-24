@@ -47,7 +47,8 @@ extension NftModelMapper: CoreDataMapperProtocol {
             name: entity.name,
             label: entity.label,
             media: entity.media,
-            price: entity.price
+            price: entity.price,
+            creationAt: entity.createdAt
         )
     }
 }
