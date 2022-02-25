@@ -182,7 +182,13 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
 
         groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
 
-        groupY += SectionType.nfts.insets.top + CellType.yourNfts.height + SectionType.nfts.insets.bottom
+        groupY += SectionType.nfts.insets.top + SectionType.nfts.insets.bottom
+
+        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+
+        if hasNfts {
+            groupY += CellType.yourNfts.height
+        }
 
         groupY += SectionType.settings.insets.top + Constants.settingsHeight +
             SectionType.settings.insets.bottom

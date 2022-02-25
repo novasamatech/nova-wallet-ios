@@ -261,10 +261,10 @@ final class WalletListPresenter {
     private func provideNftViewModel() {
         let allNfts = nftList.allItems
 
-        /* guard !allNfts.isEmpty else {
-             view?.didReceiveNft(viewModel: nil)
-             return
-         } */
+        guard !allNfts.isEmpty else {
+            view?.didReceiveNft(viewModel: nil)
+            return
+        }
 
         let nftViewModel = viewModelFactory.createNftsViewModel(from: allNfts, locale: selectedLocale)
         view?.didReceiveNft(viewModel: nftViewModel)

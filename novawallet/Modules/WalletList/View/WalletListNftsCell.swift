@@ -2,6 +2,14 @@ import UIKit
 import SoraUI
 
 final class WalletListNftsCell: UICollectionViewCell {
+    private enum Constants {
+        static let mediaSize = CGSize(width: 32.0, height: 32.0)
+        static let mediaStrokeSize: CGFloat = 2.0
+        static let mediaCornerRadius: CGFloat = 8.0
+        static let mediaSpacing: CGFloat = 20.0
+        static let mediaTrailing: CGFloat = 8.0
+    }
+
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
@@ -40,6 +48,8 @@ final class WalletListNftsCell: UICollectionViewCell {
         return imageView
     }()
 
+    private var mediaViews: [NftMediaView] = []
+
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
@@ -59,17 +69,83 @@ final class WalletListNftsCell: UICollectionViewCell {
     }
 
     func bind(viewModel: WalletListNftsViewModel) {
-        switch viewModel.count {
+        switch viewModel.totalCount {
         case let .cached(value), let .loaded(value):
             counterLabel.text = value
         case .loading:
             counterLabel.text = ""
         }
+
+        bind(mediaViewModels: viewModel.mediaViewModels)
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    private func bind(mediaViewModels: [NFTMediaViewModelProtocol]) {
+        let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
+
+        if numberOfImagesToCreate > 0 {
+            let newMediaViews = (0 ..< numberOfImagesToCreate).map { _ in createMediaView() }
+            mediaViews = updatingMediaViewList(mediaViews, appending: newMediaViews)
+        } else if numberOfImagesToCreate < 0 {
+            let viewsToClear = mediaViews.suffix(-numberOfImagesToCreate)
+            viewsToClear.forEach { $0.removeFromSuperview() }
+
+            mediaViews = Array(mediaViews.prefix(mediaViewModels.count))
+        }
+
+        let imageSize = CGSize(
+            width: Constants.mediaSize.width - 2 * Constants.mediaStrokeSize,
+            height: Constants.mediaSize.height - 2 * Constants.mediaStrokeSize
+        )
+
+        mediaViewModels.reversed().enumerated().forEach { index, viewModel in
+            mediaViews[index].bind(viewModel: viewModel, targetSize: imageSize, cornerRadius: Constants.mediaCornerRadius)
+        }
+    }
+
+    private func createMediaView() -> NftMediaView {
+        let mediaView = NftMediaView()
+        mediaView.applyFilledBackgroundStyle()
+        mediaView.fillColor = R.color.colorBlack()!
+        mediaView.highlightedFillColor = R.color.colorBlack()!
+        mediaView.cornerRadius = Constants.mediaCornerRadius
+
+        mediaView.contentInsets = UIEdgeInsets(
+            top: Constants.mediaStrokeSize,
+            left: Constants.mediaStrokeSize,
+            bottom: Constants.mediaStrokeSize,
+            right: Constants.mediaStrokeSize
+        )
+
+        return mediaView
+    }
+
+    private func updatingMediaViewList(_ list: [NftMediaView], appending: [NftMediaView]) -> [NftMediaView] {
+        let views = appending.reduce(list) { result, mediaView in
+            contentView.addSubview(mediaView)
+
+            if let previousView = result.last {
+                mediaView.snp.makeConstraints { make in
+                    make.trailing.equalTo(previousView.snp.trailing).offset(-Constants.mediaSpacing)
+                    make.centerY.equalToSuperview()
+                    make.size.equalTo(Constants.mediaSize)
+                }
+            } else {
+                mediaView.snp.makeConstraints { make in
+                    make.trailing.equalTo(accessoryImageView.snp.leading).offset(-Constants.mediaTrailing)
+                    make.centerY.equalToSuperview()
+                    make.size.equalTo(Constants.mediaSize)
+                }
+            }
+
+            return result + [mediaView]
+        }
+
+        return views
     }
 
     private func setupLayout() {

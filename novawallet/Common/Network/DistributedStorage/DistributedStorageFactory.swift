@@ -6,7 +6,7 @@ protocol DistributedStorageOperationFactoryProtocol {
 }
 
 final class DistributedStorageOperationFactory: BaseFetchOperationFactory {
-    static let ipfsBaseUrl = URL(string: "https://cloudflare-ipfs.com/ipfs")!
+    static let ipfsBaseUrl = URL(string: "https://rmrk.mypinata.cloud/ipfs")!
 
     private func resolveUrl(from storage: DistributedStorage) -> URL {
         switch storage {
