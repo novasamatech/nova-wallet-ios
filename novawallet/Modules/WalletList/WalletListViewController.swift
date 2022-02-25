@@ -12,6 +12,7 @@ final class WalletListViewController: UIViewController, ViewHolder {
 
     private var headerViewModel: WalletListHeaderViewModel?
     private var groupsState: WalletListGroupState = .list(groups: [])
+    private var nftViewModel: WalletListNftsViewModel?
 
     init(presenter: WalletListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
@@ -42,6 +43,7 @@ final class WalletListViewController: UIViewController, ViewHolder {
         rootView.collectionView.registerCellClass(WalletListAccountCell.self)
         rootView.collectionView.registerCellClass(WalletListSettingsCell.self)
         rootView.collectionView.registerCellClass(WalletListEmptyCell.self)
+        rootView.collectionView.registerCellClass(WalletListNftsCell.self)
         rootView.collectionView.registerClass(
             WalletListNetworkView.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader
@@ -97,7 +99,7 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
                 height: WalletListFlowLayout.Constants.assetHeaderHeight
             )
 
-        case .summary, .settings:
+        case .summary, .settings, .nfts:
             return .zero
         }
     }
@@ -139,6 +141,8 @@ extension WalletListViewController: UICollectionViewDataSource {
         switch WalletListFlowLayout.SectionType(section: section) {
         case .summary:
             return headerViewModel != nil ? 2 : 0
+        case .nfts:
+            return nftViewModel != nil ? 1 : 0
         case .settings:
             return groupsState.isEmpty ? 2 : 1
         case .assetGroup:
@@ -244,6 +248,24 @@ extension WalletListViewController: UICollectionViewDataSource {
         return cell
     }
 
+    private func provideYourNftsCell(
+        _ collectionView: UICollectionView,
+        indexPath: IndexPath
+    ) -> WalletListNftsCell {
+        let cell = collectionView.dequeueReusableCellWithType(
+            WalletListNftsCell.self,
+            for: indexPath
+        )!
+
+        cell.locale = selectedLocale
+
+        if let viewModel = nftViewModel {
+            cell.bind(viewModel: viewModel)
+        }
+
+        return cell
+    }
+
     func collectionView(
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
@@ -253,6 +275,8 @@ extension WalletListViewController: UICollectionViewDataSource {
             return provideAccountCell(collectionView, indexPath: indexPath)
         case .totalBalance:
             return provideTotalBalanceCell(collectionView, indexPath: indexPath)
+        case .yourNfts:
+            return provideYourNftsCell(collectionView, indexPath: indexPath)
         case .settings:
             return provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
@@ -303,6 +327,12 @@ extension WalletListViewController: WalletListViewProtocol {
 
     func didReceiveGroups(state: WalletListGroupState) {
         groupsState = state
+
+        rootView.collectionView.reloadData()
+    }
+
+    func didReceiveNft(viewModel: WalletListNftsViewModel?) {
+        nftViewModel = viewModel
 
         rootView.collectionView.reloadData()
     }
