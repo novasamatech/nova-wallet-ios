@@ -19,7 +19,8 @@ struct WalletListHeaderViewModel {
 }
 
 struct WalletListNftsViewModel {
-    let count: LoadableViewModelState<String>
+    let totalCount: LoadableViewModelState<String>
+    let mediaViewModels: [NFTMediaViewModelProtocol]
 }
 
 struct WalletPriceViewModel {
