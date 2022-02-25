@@ -8,7 +8,7 @@ class UniquesIntegrationTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = "48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
-        let accountAddress = "Hn7GWG6eevwpYCJhG2SAWXo2H2PoMiMk4uPPS5pVtcE8Miz"
+        let accountAddress = "HeHyyTFvRM851MZ5LE4FWH5cCAkP4oVmA2aeeMG1wMatwT7"
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             XCTFail("Can't find connection for \(chainId)")
@@ -56,7 +56,7 @@ class UniquesIntegrationTests: XCTestCase {
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
         let chainId = "48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
-        let accountAddress = "Hn7GWG6eevwpYCJhG2SAWXo2H2PoMiMk4uPPS5pVtcE8Miz"
+        let accountAddress = "HeHyyTFvRM851MZ5LE4FWH5cCAkP4oVmA2aeeMG1wMatwT7"
 
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             XCTFail("Can't find connection for \(chainId)")
