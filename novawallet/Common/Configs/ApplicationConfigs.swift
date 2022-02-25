@@ -24,6 +24,7 @@ protocol ApplicationConfigProtocol {
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
     var canDebugDApp: Bool { get }
+    var fileCachePath: String { get }
 }
 
 final class ApplicationConfig {
@@ -131,6 +132,11 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             true
         #endif
+    }
+
+    var fileCachePath: String {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("files-cache").path
     }
 
     var commonTypesURL: URL {

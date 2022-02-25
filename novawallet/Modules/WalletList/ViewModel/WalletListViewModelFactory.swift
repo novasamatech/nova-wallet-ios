@@ -47,6 +47,7 @@ final class WalletListViewModelFactory {
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
     let quantityFormatter: LocalizableResource<NumberFormatter>
+    let nftDownloadService: NftFileDownloadServiceProtocol
 
     private lazy var cssColorFactory = CSSGradientFactory()
 
@@ -54,12 +55,14 @@ final class WalletListViewModelFactory {
         priceFormatter: LocalizableResource<TokenFormatter>,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         percentFormatter: LocalizableResource<NumberFormatter>,
-        quantityFormatter: LocalizableResource<NumberFormatter>
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        nftDownloadService: NftFileDownloadServiceProtocol
     ) {
         self.priceFormatter = priceFormatter
         self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
         self.quantityFormatter = quantityFormatter
+        self.nftDownloadService = nftDownloadService
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -253,6 +256,20 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
         let numberOfNfts = NSNumber(value: nfts.count)
         let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
 
-        return WalletListNftsViewModel(count: .loaded(value: count))
+        let viewModels: [NFTMediaViewModelProtocol] = nfts.filter { nft in
+            nft.media != nil || nft.metadata != nil
+        }.prefix(3).compactMap { nft in
+            if let media = nft.media, let url = URL(string: media) {
+                return RemoteImageViewModel(url: url)
+            }
+
+            if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
+                return NFTImageViewModel(metadataReference: metadataString, downloadService: nftDownloadService)
+            }
+
+            return nil
+        }
+
+        return WalletListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
     }
 }

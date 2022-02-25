@@ -16,12 +16,20 @@ struct WalletListViewFactory {
 
         let wireframe = WalletListWireframe(walletUpdater: WalletDetailsUpdater.shared)
 
+        let nftDownloadService = NftFileDownloadService(
+            cacheBasePath: ApplicationConfig.shared.fileCachePath,
+            fileRepository: FileRepository(),
+            fileDownloadFactory: FileDownloadOperationFactory(),
+            operationQueue: OperationManagerFacade.fileDownloadQueue
+        )
+
         let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
         let viewModelFactory = WalletListViewModelFactory(
             priceFormatter: priceFormatter,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource(),
-            quantityFormatter: NumberFormatter.quantity.localizableResource()
+            quantityFormatter: NumberFormatter.quantity.localizableResource(),
+            nftDownloadService: nftDownloadService
         )
         let localizationManager = LocalizationManager.shared
 
