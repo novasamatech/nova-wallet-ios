@@ -11,12 +11,16 @@ final class WalletListInteractor {
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
+    let logger: LoggerProtocol?
 
     private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
     private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
     private var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private var nftSubscription: StreamableProvider<NftModel>?
+    private var nftChainIds: Set<ChainModel.Id>?
     private var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
     private var availableChains: [ChainModel.Id: ChainModel] = [:]
 
@@ -24,20 +28,25 @@ final class WalletListInteractor {
         selectedWalletSettings: SelectedWalletSettings,
         chainRegistry: ChainRegistryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        settingsManager: SettingsManagerProtocol
+        settingsManager: SettingsManagerProtocol,
+        logger: LoggerProtocol? = nil
     ) {
         self.selectedWalletSettings = selectedWalletSettings
         self.chainRegistry = chainRegistry
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
+        self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
+        self.logger = logger
     }
 
     private func resetWallet() {
         clearAccountSubscriptions()
+        clearNftSubscription()
 
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -54,6 +63,8 @@ final class WalletListInteractor {
         presenter.didReceiveChainModelChanges(changes)
 
         updateAccountInfoSubscription(from: changes)
+
+        setupNftSubscription(from: Array(availableChains.values))
     }
 
     private func providerWalletInfo() {
@@ -79,6 +90,13 @@ final class WalletListInteractor {
         assetBalanceIdMapping = [:]
     }
 
+    private func clearNftSubscription() {
+        nftSubscription?.removeObserver(self)
+        nftSubscription = nil
+
+        nftChainIds = nil
+    }
+
     private func handle(changes: [DataProviderChange<ChainModel>]) {
         guard let selectedMetaAccount = selectedWalletSettings.value else {
             return
@@ -98,6 +116,8 @@ final class WalletListInteractor {
         updateAccountInfoSubscription(from: actualChanges)
         updateConnectionStatus(from: changes)
         updatePriceSubscription(from: changes)
+
+        setupNftSubscription(from: Array(availableChains.values))
     }
 
     private func updateAvailableChains(from changes: [DataProviderChange<ChainModel>]) {
@@ -172,6 +192,23 @@ final class WalletListInteractor {
                 break
             }
         }
+    }
+
+    private func setupNftSubscription(from allChains: [ChainModel]) {
+        let nftChains = allChains.filter { !$0.nftSources.isEmpty }
+
+        let newNftChainIds = Set(nftChains.map(\.chainId))
+
+        guard !newNftChainIds.isEmpty, newNftChainIds != nftChainIds else {
+            return
+        }
+
+        clearNftSubscription()
+
+        presenter.didResetNftProvider()
+
+        nftChainIds = newNftChainIds
+        nftSubscription = subscribeToNftProvider(for: selectedWalletSettings.value, chains: nftChains)
     }
 
     private func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
@@ -358,6 +395,23 @@ extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscri
             handleAccountBalanceChanges(changes, accountId: accountId)
         case let .failure(error):
             handleAccountBalanceError(error, accountId: accountId)
+        }
+    }
+}
+
+extension WalletListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHandler {
+    func handleNfts(result: Result<[DataProviderChange<NftModel>], Error>, wallet: MetaAccountModel) {
+        let selectedWalletId = selectedWalletSettings.value.identifier
+        guard wallet.identifier == selectedWalletId else {
+            logger?.warning("Unexpected nft changes for not selected wallet")
+            return
+        }
+
+        switch result {
+        case let .success(changes):
+            presenter.didReceiveNft(changes: changes)
+        case let .failure(error):
+            presenter.didReceiveNft(error: error)
         }
     }
 }

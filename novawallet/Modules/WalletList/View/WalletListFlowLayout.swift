@@ -7,6 +7,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         static let accountHeight: CGFloat = 56.0
         static let totalBalanceHeight: CGFloat = 96.0
         static let settingsHeight: CGFloat = 56.0
+        static let nftsHeight = 56.0
         static let assetHeight: CGFloat = 56.0
         static let assetHeaderHeight: CGFloat = 40.0
         static let emptyStateCellHeight: CGFloat = 198
@@ -15,6 +16,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
 
     enum SectionType: CaseIterable {
         case summary
+        case nfts
         case settings
         case assetGroup
 
@@ -23,6 +25,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             case 0:
                 self = .summary
             case 1:
+                self = .nfts
+            case 2:
                 self = .settings
             default:
                 self = .assetGroup
@@ -33,10 +37,12 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .summary:
                 return 0
-            case .settings:
+            case .nfts:
                 return 1
-            case .assetGroup:
+            case .settings:
                 return 2
+            case .assetGroup:
+                return 3
             }
         }
 
@@ -56,7 +62,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .summary:
                 return 10.0
-            case .settings, .assetGroup:
+            case .settings, .assetGroup, .nfts:
                 return 0
             }
         }
@@ -64,6 +70,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         var insets: UIEdgeInsets {
             switch self {
             case .summary:
+                return UIEdgeInsets(top: 0, left: 0, bottom: 8.0, right: 0)
+            case .nfts:
                 return UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
             case .settings:
                 return .zero
@@ -81,6 +89,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
     enum CellType {
         case account
         case totalBalance
+        case yourNfts
         case settings
         case asset(index: Int)
         case emptyState
@@ -90,6 +99,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             case 0:
                 self = indexPath.row == 0 ? .account : .totalBalance
             case 1:
+                self = .yourNfts
+            case 2:
                 self = indexPath.row == 0 ? .settings : .emptyState
             default:
                 self = .asset(index: indexPath.row)
@@ -102,6 +113,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
                 return Constants.accountHeight
             case .totalBalance:
                 return Constants.totalBalanceHeight
+            case .yourNfts:
+                return Constants.nftsHeight
             case .settings:
                 return Constants.settingsHeight
             case .emptyState:
@@ -168,6 +181,14 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         }
 
         groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
+
+        groupY += SectionType.nfts.insets.top + SectionType.nfts.insets.bottom
+
+        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+
+        if hasNfts {
+            groupY += CellType.yourNfts.height
+        }
 
         groupY += SectionType.settings.insets.top + Constants.settingsHeight +
             SectionType.settings.insets.bottom

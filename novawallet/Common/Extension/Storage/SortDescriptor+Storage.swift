@@ -21,4 +21,8 @@ extension NSSortDescriptor {
     static var chainsByOrder: NSSortDescriptor {
         NSSortDescriptor(key: #keyPath(CDChain.order), ascending: true)
     }
+
+    static var nftsByCreationDesc: NSSortDescriptor {
+        NSSortDescriptor(key: #keyPath(CDNft.createdAt), ascending: false)
+    }
 }
