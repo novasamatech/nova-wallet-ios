@@ -84,7 +84,7 @@ final class WalletListNftsCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func bind(mediaViewModels: [NFTMediaViewModelProtocol]) {
+    private func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
@@ -103,7 +103,11 @@ final class WalletListNftsCell: UICollectionViewCell {
         )
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
-            mediaViews[index].bind(viewModel: viewModel, targetSize: imageSize, cornerRadius: Constants.mediaCornerRadius)
+            mediaViews[index].bind(
+                viewModel: viewModel,
+                targetSize: imageSize,
+                cornerRadius: Constants.mediaCornerRadius
+            )
         }
     }
 
