@@ -344,6 +344,8 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
 
+        nftList = Self.createNftDiffCalculator()
+
         updateView()
     }
 
