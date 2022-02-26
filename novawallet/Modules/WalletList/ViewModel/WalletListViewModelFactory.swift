@@ -256,15 +256,15 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
         let numberOfNfts = NSNumber(value: nfts.count)
         let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
 
-        let viewModels: [NFTMediaViewModelProtocol] = nfts.filter { nft in
+        let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
             nft.media != nil || nft.metadata != nil
         }.prefix(3).compactMap { nft in
             if let media = nft.media, let url = URL(string: media) {
-                return RemoteImageViewModel(url: url)
+                return NftImageViewModel(url: url)
             }
 
             if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
-                return NFTImageViewModel(metadataReference: metadataString, downloadService: nftDownloadService)
+                return NftMediaViewModel(metadataReference: metadataString, downloadService: nftDownloadService)
             }
 
             return nil
