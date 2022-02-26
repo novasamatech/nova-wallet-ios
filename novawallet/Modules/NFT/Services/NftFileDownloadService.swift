@@ -73,20 +73,29 @@ final class NftFileDownloadService {
         let localUrl = URL(fileURLWithPath: localFilePath)
 
         let remoteUrl = DistributedStorageOperationFactory.ipfsBaseUrl.appendingPathComponent(ipfsHash)
-        let remoteDownloadOperation = fileDownloadFactory.createFileDownloadOperation(from: remoteUrl, to: localUrl)
-        remoteDownloadOperation.configurationBlock = {
-            let localFileExistense = try? localCheckOperation.targetOperation.extractNoCancellableResultData()
-            if localFileExistense != nil {
-                remoteDownloadOperation.cancel()
-            }
-        }
 
+        let remoteDownloadOperation = fileDownloadFactory.createFileDownloadOperation(from: remoteUrl, to: localUrl)
         remoteDownloadOperation.addDependency(localCheckOperation.targetOperation)
 
         let localJsonWrapper = createLocalJsonWrapper(for: localFilePath)
         localJsonWrapper.addDependency(operations: [remoteDownloadOperation])
 
+        remoteDownloadOperation.configurationBlock = {
+            let json = try? localCheckOperation.targetOperation.extractNoCancellableResultData()
+
+            if json != nil {
+                remoteDownloadOperation.cancel()
+                localJsonWrapper.cancel()
+            }
+        }
+
         let mapOperation = ClosureOperation<JSON> {
+            if
+                case let .success(optionalJson) = localCheckOperation.targetOperation.result,
+                let json = optionalJson {
+                return json
+            }
+
             if case let .failure(error) = remoteDownloadOperation.result {
                 throw error
             }
@@ -100,7 +109,9 @@ final class NftFileDownloadService {
 
         mapOperation.addDependency(localJsonWrapper.targetOperation)
 
-        let dependencies = localCheckOperation.allOperations + [remoteDownloadOperation] + localJsonWrapper.allOperations
+        let dependencies = localCheckOperation.allOperations + [remoteDownloadOperation] +
+            localJsonWrapper.allOperations
+
         let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
 
         return wrapper
