@@ -112,11 +112,20 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
-            presenter.selectAsset(for: viewModel.chainAssetId)
+        let cellType = WalletListFlowLayout.CellType(indexPath: indexPath)
+
+        switch cellType {
+        case .account, .totalBalance, .settings, .emptyState:
+            break
+        case .asset:
+            if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
+                indexPath.section
+            ) {
+                let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
+                presenter.selectAsset(for: viewModel.chainAssetId)
+            }
+        case .yourNfts:
+            presenter.selectNfts()
         }
     }
 

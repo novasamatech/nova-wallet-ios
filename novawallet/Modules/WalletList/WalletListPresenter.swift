@@ -318,6 +318,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
+    func selectNfts() {
+        wireframe.showNfts(from: view)
+    }
+
     func refresh() {
         interactor.refresh()
     }
