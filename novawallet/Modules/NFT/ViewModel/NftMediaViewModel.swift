@@ -2,13 +2,15 @@ import UIKit
 import RobinHood
 import Kingfisher
 
-struct NftMediaDisplaySettings {
+struct NftMediaDisplaySettings: Equatable {
     let targetSize: CGSize
     let cornerRadius: CGFloat
     let animated: Bool
 }
 
 protocol NftMediaViewModelProtocol {
+    var identifier: String { get }
+
     func loadMedia(on imageView: UIImageView, displaySettings: NftMediaDisplaySettings, completion: ((Error?) -> Void)?)
     func cancel(on imageView: UIImageView)
 }
@@ -42,6 +44,8 @@ final class NftMediaViewModel {
 }
 
 extension NftMediaViewModel: NftMediaViewModelProtocol {
+    var identifier: String { metadataReference }
+
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
