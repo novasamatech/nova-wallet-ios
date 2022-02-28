@@ -47,4 +47,8 @@ final class WalletListWireframe: WalletListWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showNfts(from _: WalletListViewProtocol?) {
+        // TODO: #263ebca
+    }
 }

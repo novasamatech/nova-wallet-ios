@@ -13,6 +13,7 @@ final class WalletListNftsCell: UICollectionViewCell {
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
+        view.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
         return view
     }()
 
@@ -54,6 +55,16 @@ final class WalletListNftsCell: UICollectionViewCell {
         didSet {
             if oldValue != locale {
                 setupLocalization()
+            }
+        }
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            if isHighlighted {
+                backgroundBlurView.set(highlighted: true, animated: false)
+            } else {
+                backgroundBlurView.set(highlighted: false, animated: oldValue)
             }
         }
     }
