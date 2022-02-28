@@ -13,6 +13,7 @@ final class WalletListNftsCell: UICollectionViewCell {
     let backgroundBlurView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
+        view.overlayView.highlightedFillColor = R.color.colorAccentSelected()!
         return view
     }()
 
@@ -58,6 +59,16 @@ final class WalletListNftsCell: UICollectionViewCell {
         }
     }
 
+    override var isHighlighted: Bool {
+        didSet {
+            if isHighlighted {
+                backgroundBlurView.set(highlighted: true, animated: false)
+            } else {
+                backgroundBlurView.set(highlighted: false, animated: oldValue)
+            }
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -79,12 +90,16 @@ final class WalletListNftsCell: UICollectionViewCell {
         bind(mediaViewModels: viewModel.mediaViewModels)
     }
 
+    func refresh() {
+        mediaViews.forEach { $0.refreshMediaIfNeeded() }
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func bind(mediaViewModels: [NFTMediaViewModelProtocol]) {
+    private func bind(mediaViewModels: [NftMediaViewModelProtocol]) {
         let numberOfImagesToCreate = mediaViewModels.count - mediaViews.count
 
         if numberOfImagesToCreate > 0 {
@@ -103,7 +118,11 @@ final class WalletListNftsCell: UICollectionViewCell {
         )
 
         mediaViewModels.reversed().enumerated().forEach { index, viewModel in
-            mediaViews[index].bind(viewModel: viewModel, targetSize: imageSize, cornerRadius: Constants.mediaCornerRadius)
+            mediaViews[index].bind(
+                viewModel: viewModel,
+                targetSize: imageSize,
+                cornerRadius: Constants.mediaCornerRadius
+            )
         }
     }
 
