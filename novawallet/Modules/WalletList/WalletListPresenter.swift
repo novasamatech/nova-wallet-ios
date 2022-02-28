@@ -28,8 +28,6 @@ final class WalletListPresenter {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
 
-    private(set) var assetGroupViewModels: [WalletListGroupViewModel] = []
-
     private var scheduler: SchedulerProtocol?
 
     deinit {
@@ -279,6 +277,10 @@ final class WalletListPresenter {
         provideAssetViewModels()
     }
 
+    private func updateHeaderView() {
+        provideHeaderViewModel()
+    }
+
     private func updateNftView() {
         provideHeaderViewModel()
         provideNftViewModel()
@@ -490,7 +492,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
     func didChange(name: String) {
         self.name = name
 
-        updateAssetsView()
+        updateHeaderView()
     }
 
     func didReceive(hidesZeroBalances: Bool) {
