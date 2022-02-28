@@ -91,7 +91,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         case totalBalance
         case yourNfts
         case settings
-        case asset(index: Int)
+        case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
 
         init(indexPath: IndexPath) {
@@ -103,7 +103,24 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             case 2:
                 self = indexPath.row == 0 ? .settings : .emptyState
             default:
-                self = .asset(index: indexPath.row)
+                self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
+            }
+        }
+
+        var indexPath: IndexPath {
+            switch self {
+            case .account:
+                return IndexPath(item: 0, section: 0)
+            case .totalBalance:
+                return IndexPath(item: 1, section: 0)
+            case .yourNfts:
+                return IndexPath(item: 0, section: 1)
+            case .settings:
+                return IndexPath(item: 0, section: 2)
+            case .emptyState:
+                return IndexPath(item: 1, section: 2)
+            case let .asset(sectionIndex, itemIndex):
+                return IndexPath(item: itemIndex, section: sectionIndex)
             }
         }
 
