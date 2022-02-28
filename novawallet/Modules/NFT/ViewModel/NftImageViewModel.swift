@@ -26,7 +26,7 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         var options: KingfisherOptionsInfo = [
             .processor(processor),
             .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteImageSerializer(targetSize: targetSize)),
+            .cacheSerializer(RemoteImageSerializer.shared),
             .cacheOriginalImage,
             .diskCacheExpiration(.days(1))
         ]
