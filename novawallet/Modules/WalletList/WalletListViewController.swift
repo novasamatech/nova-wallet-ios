@@ -69,6 +69,11 @@ final class WalletListViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionRefresh() {
+        let nftIndexPath = WalletListFlowLayout.CellType.yourNfts.indexPath
+        if let nftCell = rootView.collectionView.cellForItem(at: nftIndexPath) as? WalletListNftsCell {
+            nftCell.refresh()
+        }
+
         presenter.refresh()
     }
 
@@ -107,11 +112,20 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
 
-        if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
-            indexPath.section
-        ) {
-            let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
-            presenter.selectAsset(for: viewModel.chainAssetId)
+        let cellType = WalletListFlowLayout.CellType(indexPath: indexPath)
+
+        switch cellType {
+        case .account, .totalBalance, .settings, .emptyState:
+            break
+        case .asset:
+            if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
+                indexPath.section
+            ) {
+                let viewModel = groupsState.groups[groupIndex].assets[indexPath.row]
+                presenter.selectAsset(for: viewModel.chainAssetId)
+            }
+        case .yourNfts:
+            presenter.selectNfts()
         }
     }
 
@@ -281,7 +295,7 @@ extension WalletListViewController: UICollectionViewDataSource {
             return provideSettingsCell(collectionView, indexPath: indexPath)
         case .emptyState:
             return provideEmptyStateCell(collectionView, indexPath: indexPath)
-        case let .asset(assetIndex):
+        case let .asset(_, assetIndex):
             return provideAssetCell(collectionView, indexPath: indexPath, assetIndex: assetIndex)
         }
     }
@@ -322,19 +336,43 @@ extension WalletListViewController: WalletListViewProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel) {
         headerViewModel = viewModel
 
-        rootView.collectionView.reloadData()
+        let headerSection = WalletListFlowLayout.SectionType.summary.index
+
+        UIView.performWithoutAnimation {
+            rootView.collectionView.reloadSections([headerSection])
+        }
     }
 
     func didReceiveGroups(state: WalletListGroupState) {
+        let oldState = groupsState
         groupsState = state
 
-        rootView.collectionView.reloadData()
+        if
+            case let .list(oldGroups) = oldState,
+            case let .list(newGroups) = groupsState,
+            oldGroups.count == newGroups.count {
+            let sections: IndexSet = (0 ..< newGroups.count).reduce(IndexSet()) { result, index in
+                let sectionIndex = WalletListFlowLayout.SectionType.assetsStartingSection + index
+                return result.union([sectionIndex])
+            }
+
+            UIView.performWithoutAnimation {
+                rootView.collectionView.reloadSections(sections)
+            }
+
+        } else {
+            rootView.collectionView.reloadData()
+        }
     }
 
     func didReceiveNft(viewModel: WalletListNftsViewModel?) {
         nftViewModel = viewModel
 
-        rootView.collectionView.reloadData()
+        let nftSection = WalletListFlowLayout.SectionType.nfts.index
+
+        UIView.performWithoutAnimation {
+            rootView.collectionView.reloadSections([nftSection])
+        }
     }
 
     func didCompleteRefreshing() {
