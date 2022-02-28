@@ -11,7 +11,7 @@ final class NftMediaView: RoundedView {
             if oldValue != contentInsets {
                 updateLayout()
 
-                if skeletonView != nil {
+                if isLoading {
                     setupSkeleton()
                 }
             }
@@ -23,6 +23,7 @@ final class NftMediaView: RoundedView {
     private var lastError: Error?
 
     private var skeletonView: SkrullableView?
+    private var isLoading: Bool = false
 
     deinit {
         viewModel?.cancel(on: contentView)
@@ -42,19 +43,27 @@ final class NftMediaView: RoundedView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if skeletonView != nil {
+        if isLoading {
             setupSkeleton()
         }
     }
 
     func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize, cornerRadius: CGFloat) {
-        self.viewModel?.cancel(on: contentView)
-        contentView.image = nil
+        let newSettings = NftMediaDisplaySettings(targetSize: targetSize, cornerRadius: cornerRadius, animated: true)
 
-        self.viewModel = viewModel
+        if
+            self.viewModel?.identifier != viewModel.identifier ||
+            mediaSettings != newSettings {
+            self.viewModel?.cancel(on: contentView)
+            contentView.image = nil
 
-        mediaSettings = NftMediaDisplaySettings(targetSize: targetSize, cornerRadius: cornerRadius, animated: true)
-        loadMedia()
+            self.viewModel = viewModel
+            mediaSettings = newSettings
+
+            loadMedia()
+        } else {
+            refreshMediaIfNeeded()
+        }
     }
 
     func refreshMediaIfNeeded() {
@@ -103,19 +112,22 @@ final class NftMediaView: RoundedView {
     }
 
     func startSkeletonIfNeeded() {
-        guard skeletonView == nil else {
+        guard !isLoading else {
             return
         }
 
+        isLoading = true
         contentView.alpha = 0.0
 
         setupSkeleton()
     }
 
     func stopSkeletonIfNeeded() {
-        guard skeletonView != nil else {
+        guard isLoading else {
             return
         }
+
+        isLoading = false
 
         skeletonView?.stopSkrulling()
         skeletonView?.removeFromSuperview()

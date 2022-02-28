@@ -28,6 +28,8 @@ final class WalletListPresenter {
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
 
+    private(set) var assetGroupViewModels: [WalletListGroupViewModel] = []
+
     private var scheduler: SchedulerProtocol?
 
     deinit {
@@ -270,12 +272,16 @@ final class WalletListPresenter {
         view?.didReceiveNft(viewModel: nftViewModel)
     }
 
-    private func updateView() {
+    private func updateAssetsView() {
         cancelViewUpdate()
 
         provideHeaderViewModel()
-        provideNftViewModel()
         provideAssetViewModels()
+    }
+
+    private func updateNftView() {
+        provideHeaderViewModel()
+        provideNftViewModel()
     }
 
     private func scheduleViewUpdate() {
@@ -325,7 +331,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
     func didReceiveNft(changes: [DataProviderChange<NftModel>]) {
         nftList.apply(changes: changes)
 
-        updateView()
+        updateNftView()
     }
 
     func didReceiveNft(error _: Error) {}
@@ -346,7 +352,8 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         nftList = Self.createNftDiffCalculator()
 
-        updateView()
+        updateAssetsView()
+        updateNftView()
     }
 
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
@@ -379,7 +386,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
             groups.apply(changes: [.update(newItem: groupModel)])
         }
 
-        updateView()
+        updateAssetsView()
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -420,7 +427,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        updateView()
+        updateAssetsView()
     }
 
     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
@@ -473,32 +480,33 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        updateView()
+        updateAssetsView()
     }
 
     func didChange(name: String) {
         self.name = name
 
-        updateView()
+        updateAssetsView()
     }
 
     func didReceive(hidesZeroBalances: Bool) {
         self.hidesZeroBalances = hidesZeroBalances
 
-        updateView()
+        updateAssetsView()
     }
 }
 
 extension WalletListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            updateView()
+            updateAssetsView()
+            updateNftView()
         }
     }
 }
 
 extension WalletListPresenter: SchedulerDelegate {
     func didTrigger(scheduler _: SchedulerProtocol) {
-        updateView()
+        updateAssetsView()
     }
 }

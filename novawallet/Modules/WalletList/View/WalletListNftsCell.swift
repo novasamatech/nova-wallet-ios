@@ -79,6 +79,10 @@ final class WalletListNftsCell: UICollectionViewCell {
         bind(mediaViewModels: viewModel.mediaViewModels)
     }
 
+    func refresh() {
+        mediaViews.forEach { $0.refreshMediaIfNeeded() }
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")

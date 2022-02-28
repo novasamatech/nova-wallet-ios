@@ -4,6 +4,8 @@ import Kingfisher
 final class NftImageViewModel: NftMediaViewModelProtocol {
     let url: URL
 
+    var identifier: String { url.absoluteString }
+
     init(url: URL) {
         self.url = url
     }

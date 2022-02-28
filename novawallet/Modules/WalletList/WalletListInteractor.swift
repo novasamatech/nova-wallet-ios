@@ -208,7 +208,9 @@ final class WalletListInteractor {
         presenter.didResetNftProvider()
 
         nftChainIds = newNftChainIds
+
         nftSubscription = subscribeToNftProvider(for: selectedWalletSettings.value, chains: nftChains)
+        nftSubscription?.refresh()
     }
 
     private func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
@@ -309,6 +311,8 @@ extension WalletListInteractor: WalletListInteractorInputProtocol {
         } else {
             presenter.didReceivePrices(result: nil)
         }
+
+        nftSubscription?.refresh()
     }
 }
 
