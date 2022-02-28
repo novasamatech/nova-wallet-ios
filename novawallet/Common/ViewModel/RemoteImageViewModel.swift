@@ -13,14 +13,14 @@ final class RemoteImageViewModel: NSObject {
 
 extension RemoteImageViewModel: ImageViewModelProtocol {
     func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius: CGFloat, animated: Bool) {
-        let processor = SVGProcessor(targetSize: targetSize)
+        let processor = SVGImageProcessor(targetSize: targetSize)
             |> DownsamplingImageProcessor(size: targetSize)
             |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
 
         var options: KingfisherOptionsInfo = [
             .processor(processor),
             .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteSerializer(targetSize: targetSize)),
+            .cacheSerializer(RemoteImageSerializer.shared),
             .cacheOriginalImage,
             .diskCacheExpiration(.days(1))
         ]
@@ -54,13 +54,13 @@ final class WalletRemoteImageViewModel: WalletImageViewModelProtocol {
     var image: UIImage?
 
     func loadImage(with completionBlock: @escaping (UIImage?, Error?) -> Void) {
-        let processor = SVGProcessor(targetSize: size)
+        let processor = SVGImageProcessor(targetSize: size)
             |> ResizingImageProcessor(referenceSize: size, mode: .aspectFit)
 
         let options: KingfisherOptionsInfo = [
             .processor(processor),
             .scaleFactor(UIScreen.main.scale),
-            .cacheSerializer(RemoteSerializer(targetSize: size)),
+            .cacheSerializer(RemoteImageSerializer.shared),
             .cacheOriginalImage,
             .diskCacheExpiration(.days(1))
         ]
@@ -85,35 +85,31 @@ final class WalletRemoteImageViewModel: WalletImageViewModelProtocol {
     }
 }
 
-private final class RemoteSerializer: CacheSerializer {
-    let targetSize: CGSize
+final class RemoteImageSerializer: CacheSerializer {
+    static let shared = RemoteImageSerializer()
 
-    init(targetSize: CGSize) {
-        self.targetSize = targetSize
+    func data(with image: KFCrossPlatformImage, original: Data?) -> Data? {
+        DefaultCacheSerializer.default.data(with: image, original: original)
     }
 
-    func data(with _: KFCrossPlatformImage, original: Data?) -> Data? {
-        original
-    }
-
-    func image(with data: Data, options _: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
-        if let uiImage = UIImage(data: data) {
+    func image(with data: Data, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
+        if let uiImage = DefaultCacheSerializer.default.image(with: data, options: options) {
             return uiImage
         } else {
             let imsvg = SVGKImage(data: data)
-            imsvg?.scaleToFit(inside: targetSize)
             return imsvg?.uiImage ?? UIImage()
         }
     }
 }
 
-private final class SVGProcessor: ImageProcessor {
-    let identifier: String = "io.novafoundation.novawallet.kf.svg.processor"
+final class SVGImageProcessor: ImageProcessor {
+    let identifier: String
 
-    let serializer: RemoteSerializer
+    let serializer: RemoteImageSerializer
 
     init(targetSize: CGSize) {
-        serializer = RemoteSerializer(targetSize: targetSize)
+        identifier = "io.novafoundation.novawallet.kf.svg.processor(\(targetSize)"
+        serializer = RemoteImageSerializer.shared
     }
 
     func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
