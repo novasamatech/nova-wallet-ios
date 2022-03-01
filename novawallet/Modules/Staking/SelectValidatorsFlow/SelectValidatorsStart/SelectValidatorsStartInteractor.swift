@@ -36,18 +36,22 @@ final class SelectValidatorsStartInteractor: RuntimeConstantFetching {
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
+
+    private func provideMaxNominations() {
+        fetchConstant(
+            for: .maxNominations,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager,
+            fallbackValue: SubstrateConstants.maxNominations
+        ) { [weak self] (result: Result<Int, Error>) in
+            self?.presenter.didReceiveMaxNominations(result: result)
+        }
+    }
 }
 
 extension SelectValidatorsStartInteractor: SelectValidatorsStartInteractorInputProtocol {
     func setup() {
         prepareRecommendedValidatorList()
-
-        fetchConstant(
-            for: .maxNominations,
-            runtimeCodingService: runtimeService,
-            operationManager: operationManager
-        ) { [weak self] (result: Result<Int, Error>) in
-            self?.presenter.didReceiveMaxNominations(result: result)
-        }
+        provideMaxNominations()
     }
 }
