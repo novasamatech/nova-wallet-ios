@@ -2,6 +2,9 @@ import Foundation
 import RobinHood
 
 struct NftModel: Identifiable, Equatable {
+    // swiftlint:disable:next type_name
+    typealias Id = String
+
     let identifier: String
     let chainId: String
     let ownerId: AccountId
