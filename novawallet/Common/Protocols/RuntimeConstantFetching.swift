@@ -6,6 +6,7 @@ protocol RuntimeConstantFetching {
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
+        fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall
 
@@ -13,6 +14,7 @@ protocol RuntimeConstantFetching {
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
+        fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall
 }
@@ -25,8 +27,41 @@ extension RuntimeConstantFetching {
         operationManager: OperationManagerProtocol,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
+        fetchConstant(
+            for: path,
+            runtimeCodingService: runtimeCodingService,
+            operationManager: operationManager,
+            fallbackValue: nil,
+            closure: closure
+        )
+    }
+
+    @discardableResult
+    func fetchCompoundConstant<T: Decodable>(
+        for path: ConstantCodingPath,
+        runtimeCodingService: RuntimeCodingServiceProtocol,
+        operationManager: OperationManagerProtocol,
+        closure: @escaping (Result<T, Error>) -> Void
+    ) -> CancellableCall {
+        fetchCompoundConstant(
+            for: path,
+            runtimeCodingService: runtimeCodingService,
+            operationManager: operationManager,
+            fallbackValue: nil,
+            closure: closure
+        )
+    }
+
+    @discardableResult
+    func fetchConstant<T: LosslessStringConvertible & Equatable>(
+        for path: ConstantCodingPath,
+        runtimeCodingService: RuntimeCodingServiceProtocol,
+        operationManager: OperationManagerProtocol,
+        fallbackValue: T?,
+        closure: @escaping (Result<T, Error>) -> Void
+    ) -> CancellableCall {
         let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
-        let constOperation = PrimitiveConstantOperation<T>(path: path)
+        let constOperation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
         constOperation.configurationBlock = {
             do {
                 constOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
@@ -57,10 +92,11 @@ extension RuntimeConstantFetching {
         for path: ConstantCodingPath,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         operationManager: OperationManagerProtocol,
+        fallbackValue: T?,
         closure: @escaping (Result<T, Error>) -> Void
     ) -> CancellableCall {
         let codingFactoryOperation = runtimeCodingService.fetchCoderFactoryOperation()
-        let constOperation = StorageConstantOperation<T>(path: path)
+        let constOperation = StorageConstantOperation<T>(path: path, fallbackValue: fallbackValue)
         constOperation.configurationBlock = {
             do {
                 constOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()

@@ -172,7 +172,7 @@ extension DAppSearchViewController: UITableViewDataSource {
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .dapps:
-            title = R.string.localizable.dappSearchAppSection(
+            title = R.string.localizable.dappListFeaturedWebsites(
                 preferredLanguages: selectedLocale.rLanguages
             )
         }

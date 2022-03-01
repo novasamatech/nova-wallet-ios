@@ -5,6 +5,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
     enum CellType {
         case header
         case notLoaded
+        case dAppHeader
         case categories
         case dapp(index: Int)
 
@@ -14,6 +15,8 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
                 case 0:
                     self = .header
                 case 1:
+                    self = .dAppHeader
+                case 2:
                     self = .notLoaded
                 default:
                     return nil
@@ -34,8 +37,10 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .header:
                 return IndexPath(item: 0, section: 0)
-            case .notLoaded:
+            case .dAppHeader:
                 return IndexPath(item: 1, section: 0)
+            case .notLoaded:
+                return IndexPath(item: 2, section: 0)
             case .categories:
                 return IndexPath(item: 0, section: 1)
             case let .dapp(index):
@@ -112,13 +117,12 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
     }
 
     private func updateItemsBackgroundAttributesIfNeeded() {
-        guard
-            let collectionView = collectionView,
-            collectionView.numberOfSections > CellType.categories.indexPath.section else {
+        let dAppSection = CellType.categories.indexPath.section
+        guard let collectionView = collectionView, collectionView.numberOfSections > dAppSection else {
             return
         }
 
-        let numberOfItems = collectionView.numberOfItems(inSection: CellType.categories.indexPath.section)
+        let numberOfItems = collectionView.numberOfItems(inSection: dAppSection)
 
         guard numberOfItems > 0 else {
             return
@@ -126,7 +130,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         guard
             let headerLayoutFrame = collectionView.layoutAttributesForItem(
-                at: CellType.header.indexPath
+                at: CellType.dAppHeader.indexPath
             )?.frame,
             headerUsedFrame != headerLayoutFrame
         else {
@@ -140,7 +144,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
 
         itemsDecorationAttributes = UICollectionViewLayoutAttributes(
             forDecorationViewOfKind: Self.backgroundDecoration,
-            with: IndexPath(item: 0, section: CellType.categories.indexPath.section)
+            with: IndexPath(item: 0, section: dAppSection)
         )
 
         let size = CGSize(
