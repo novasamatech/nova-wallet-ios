@@ -1,4 +1,5 @@
 import RobinHood
+
 protocol DAppSearchViewProtocol: ControllerBackedProtocol {
     func didReceive(initialQuery: String)
     func didReceiveDApp(viewModels: [DAppViewModel])
