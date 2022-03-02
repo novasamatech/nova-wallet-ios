@@ -29,7 +29,7 @@ final class NftListViewModelFactory {
     }
 
     private func createPrice(from model: NftChainModel, locale: Locale) -> BalanceViewModelProtocol? {
-        if let priceString = model.nft.price, let priceInPlanks = BigUInt(priceString) {
+        if let priceString = model.nft.price, let priceInPlanks = BigUInt(priceString), priceInPlanks > 0 {
             let assetInfo = model.chainAsset.assetDisplayInfo
             let priceDecimal = Decimal.fromSubstrateAmount(priceInPlanks, precision: assetInfo.assetPrecision) ?? 0
 

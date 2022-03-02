@@ -3,6 +3,11 @@ import SoraFoundation
 import RobinHood
 
 final class NftListViewController: UIViewController, ViewHolder {
+    private enum Constants {
+        static let cellWithoutPriceHeight: CGFloat = 224.0
+        static let cellWithPriceHeight: CGFloat = 262.0
+    }
+
     typealias RootViewType = NftListViewLayout
 
     let presenter: NftListPresenterProtocol
@@ -48,6 +53,7 @@ final class NftListViewController: UIViewController, ViewHolder {
         rootView.collectionView.delegate = self
 
         rootView.collectionView.registerCellClass(NftListItemCell.self)
+        rootView.collectionView.registerCellClass(NftListItemWithPriceCell.self)
     }
 
     private func setupLocalization() {
@@ -56,14 +62,22 @@ final class NftListViewController: UIViewController, ViewHolder {
 }
 
 extension NftListViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt _: IndexPath) -> CGSize {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout _: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
         let contentInsets = NftListViewLayout.contentInsets
         let horizontalSpacing = NftListViewLayout.horizontalSpacing
         let spacing: CGFloat = contentInsets.left + contentInsets.right + horizontalSpacing
 
         let itemWidth = (collectionView.frame.width - spacing) / 2.0
 
-        return CGSize(width: itemWidth, height: NftListItemCell.height)
+        let viewModel = presenter.nft(at: indexPath.item)
+        let hasPrice = viewModel.price != nil
+        let itemHeight = hasPrice ? Constants.cellWithPriceHeight : Constants.cellWithoutPriceHeight
+
+        return CGSize(width: itemWidth, height: itemHeight)
     }
 }
 
@@ -72,13 +86,26 @@ extension NftListViewController: UICollectionViewDataSource {
         presenter.numberOfItems()
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithType(NftListItemCell.self, for: indexPath)!
-
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         let viewModel = presenter.nft(at: indexPath.item)
-        cell.bind(viewModel: viewModel)
+        let hasPrice = viewModel.price != nil
 
-        return cell
+        let resultCell: UICollectionViewCell
+
+        if hasPrice {
+            let cell = collectionView.dequeueReusableCellWithType(NftListItemWithPriceCell.self, for: indexPath)!
+            cell.bind(viewModel: viewModel)
+            resultCell = cell
+        } else {
+            let cell = collectionView.dequeueReusableCellWithType(NftListItemCell.self, for: indexPath)!
+            cell.bind(viewModel: viewModel)
+            resultCell = cell
+        }
+
+        return resultCell
     }
 }
 
