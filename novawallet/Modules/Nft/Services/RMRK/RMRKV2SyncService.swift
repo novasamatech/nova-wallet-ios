@@ -66,6 +66,7 @@ final class RMRKV2SyncService: BaseNftSyncService {
                         collectionId: remoteItem.collectionId,
                         instanceId: nil,
                         metadata: metadata,
+                        totalIssuance: nil,
                         name: remoteItem.name,
                         label: remoteItem.rarity,
                         media: remoteItem.image,

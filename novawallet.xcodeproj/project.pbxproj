@@ -1356,6 +1356,7 @@
 		84F1CB3A27CEB9850095D523 /* NftListItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3927CEB9850095D523 /* NftListItemCell.swift */; };
 		84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */; };
 		84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */; };
+		84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */; };
 		84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */; };
 		84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */; };
 		84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */; };
@@ -3344,6 +3345,7 @@
 		84F1CB3927CEB9850095D523 /* NftListItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListItemCell.swift; sourceTree = "<group>"; };
 		84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListItemWithPriceCell.swift; sourceTree = "<group>"; };
 		84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedLabelView.swift; sourceTree = "<group>"; };
+		84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UniquesClassDetails.swift; sourceTree = "<group>"; };
 		84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequestFactory.swift; sourceTree = "<group>"; };
 		84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPrefs.swift; sourceTree = "<group>"; };
 		84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -5251,6 +5253,7 @@
 				84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */,
 				8499FEC327BEC5F400712589 /* UniquesClassMetadata.swift */,
 				8499FEC527BEC68000712589 /* UniquesInstanceMetadata.swift */,
+				84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -11745,6 +11748,7 @@
 				D565DB5ED3B8B4D9BCFB4C21 /* CustomValidatorListPresenter.swift in Sources */,
 				8AEF593AFE8F59F7DC0A5753 /* CustomValidatorListInteractor.swift in Sources */,
 				F47D328226C260CC00CF35A2 /* FWPieChartView.swift in Sources */,
+				84F1CB4027CF6BEF0095D523 /* UniquesClassDetails.swift in Sources */,
 				78D94A761EFECED60F38232D /* CustomValidatorListViewController.swift in Sources */,
 				7401E7CAEEE6890BE74ACCE1 /* CustomValidatorListViewLayout.swift in Sources */,
 				D83B47B07C0D40A327AC44F7 /* CustomValidatorListViewFactory.swift in Sources */,
