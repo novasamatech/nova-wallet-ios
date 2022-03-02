@@ -2,6 +2,8 @@ import UIKit
 import SoraUI
 
 final class NftListItemWithPriceCell: NftListItemCell {
+    var locale = Locale.current
+
     let priceBackgroundView: BorderedContainerView = {
         let view = BorderedContainerView()
         view.borderType = .top
@@ -38,6 +40,7 @@ final class NftListItemWithPriceCell: NftListItemCell {
 
     private func applyPrice(_ viewModel: BalanceViewModelProtocol?) {
         if let viewModel = viewModel {
+            tokensLabel.textColor = R.color.colorWhite()!
             tokensLabel.text = viewModel.amount
 
             if let fiatPrice = viewModel.price {
@@ -47,7 +50,9 @@ final class NftListItemWithPriceCell: NftListItemCell {
             }
 
         } else {
-            tokensLabel.text = ""
+            tokensLabel.textColor = R.color.colorWhite48()!
+            tokensLabel.text = R.string.localizable.nftListNotListed(preferredLanguages: locale.rLanguages)
+
             fiatLabel.text = ""
         }
     }
@@ -63,14 +68,14 @@ final class NftListItemWithPriceCell: NftListItemCell {
         priceBackgroundView.addSubview(tokensLabel)
         tokensLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.top.equalToSuperview().inset(8.0)
+            make.top.equalToSuperview().inset(10.0)
         }
 
         priceBackgroundView.addSubview(fiatLabel)
         fiatLabel.snp.makeConstraints { make in
             make.leading.equalTo(tokensLabel.snp.trailing).offset(6.0)
             make.trailing.equalToSuperview()
-            make.top.equalToSuperview().inset(8.0)
+            make.centerY.equalTo(tokensLabel)
         }
     }
 }
