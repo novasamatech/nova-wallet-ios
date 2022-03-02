@@ -10,6 +10,7 @@ class NftListItemCell: UICollectionViewCell {
     let blurBackgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
+        view.overlayView.highlightedFillColor = R.color.colorHighlightedAccent()!
         return view
     }()
 
@@ -29,21 +30,24 @@ class NftListItemCell: UICollectionViewCell {
         return label
     }()
 
-    let subtitleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .regularSmall
-        return label
-    }()
-
-    let subtitleBackgroundView: RoundedView = {
-        let view = RoundedView()
-        view.applyFilledBackgroundStyle()
-        view.fillColor = R.color.colorWhite16()!
-        view.highlightedFillColor = R.color.colorWhite16()!
-        view.cornerRadius = 4.0
+    let subtitleView: BorderedLabelView = {
+        let view = BorderedLabelView()
+        view.titleLabel.textColor = R.color.colorTransparentText()!
+        view.titleLabel.font = .regularSmall
+        view.contentInsets = UIEdgeInsets(top: 1, left: 6.0, bottom: 2.0, right: 6.0)
+        view.backgroundView.cornerRadius = 4.0
         return view
     }()
+
+    override var isHighlighted: Bool {
+        didSet {
+            if isHighlighted {
+                blurBackgroundView.set(highlighted: true, animated: false)
+            } else {
+                blurBackgroundView.set(highlighted: false, animated: oldValue)
+            }
+        }
+    }
 
     private var viewModel: NftListViewModel?
 
@@ -83,17 +87,11 @@ class NftListItemCell: UICollectionViewCell {
             make.top.equalTo(mediaView.snp.bottom).offset(12.0)
         }
 
-        contentView.addSubview(subtitleBackgroundView)
-        subtitleBackgroundView.snp.makeConstraints { make in
+        contentView.addSubview(subtitleView)
+        subtitleView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(8.0)
             make.trailing.lessThanOrEqualToSuperview().inset(8.0)
             make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
-        }
-
-        subtitleBackgroundView.addSubview(subtitleLabel)
-        subtitleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(6.0)
-            make.top.bottom.equalToSuperview().inset(1.0)
         }
     }
 }
@@ -104,7 +102,7 @@ extension NftListItemCell: NftListItemViewProtocol {
     }
 
     func setLabel(_ label: String?) {
-        subtitleLabel.text = label
+        subtitleView.titleLabel.text = label
     }
 
     func setMedia(_ media: NftMediaViewModelProtocol?) {
