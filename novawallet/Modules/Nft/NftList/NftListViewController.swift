@@ -81,7 +81,6 @@ final class NftListViewController: UIViewController, ViewHolder {
         rootView.collectionView.dataSource = self
         rootView.collectionView.delegate = self
 
-        rootView.collectionView.registerCellClass(NftListItemCell.self)
         rootView.collectionView.registerCellClass(NftListItemWithPriceCell.self)
     }
 
@@ -98,7 +97,7 @@ extension NftListViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout _: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
+        sizeForItemAt _: IndexPath
     ) -> CGSize {
         let contentInsets = NftListViewLayout.contentInsets
         let horizontalSpacing = NftListViewLayout.horizontalSpacing
@@ -106,11 +105,7 @@ extension NftListViewController: UICollectionViewDelegateFlowLayout {
 
         let itemWidth = (collectionView.frame.width - spacing) / 2.0
 
-        let viewModel = presenter.nft(at: indexPath.item)
-        let hasPrice = viewModel.price != nil
-        let itemHeight = hasPrice ? Constants.cellWithPriceHeight : Constants.cellWithoutPriceHeight
-
-        return CGSize(width: itemWidth, height: itemHeight)
+        return CGSize(width: itemWidth, height: Constants.cellWithPriceHeight)
     }
 }
 
@@ -124,21 +119,12 @@ extension NftListViewController: UICollectionViewDataSource {
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         let viewModel = presenter.nft(at: indexPath.item)
-        let hasPrice = viewModel.price != nil
 
-        let resultCell: UICollectionViewCell
+        let cell = collectionView.dequeueReusableCellWithType(NftListItemWithPriceCell.self, for: indexPath)!
+        cell.locale = selectedLocale
+        cell.bind(viewModel: viewModel)
 
-        if hasPrice {
-            let cell = collectionView.dequeueReusableCellWithType(NftListItemWithPriceCell.self, for: indexPath)!
-            cell.bind(viewModel: viewModel)
-            resultCell = cell
-        } else {
-            let cell = collectionView.dequeueReusableCellWithType(NftListItemCell.self, for: indexPath)!
-            cell.bind(viewModel: viewModel)
-            resultCell = cell
-        }
-
-        return resultCell
+        return cell
     }
 }
 
