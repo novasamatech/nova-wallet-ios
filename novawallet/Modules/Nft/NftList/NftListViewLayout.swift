@@ -26,6 +26,15 @@ final class NftListViewLayout: UIView {
         return view
     }()
 
+    let counterView: BorderedLabelView = {
+        let view = BorderedLabelView()
+        view.titleLabel.textColor = R.color.colorWhite()!
+        view.titleLabel.font = .regularFootnote
+        view.contentInsets = UIEdgeInsets(top: 2.0, left: 8.0, bottom: 2.0, right: 8.0)
+        view.backgroundView.cornerRadius = 6.0
+        return view
+    }()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
