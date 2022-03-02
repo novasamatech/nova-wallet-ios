@@ -1,13 +1,11 @@
 import UIKit
 import SoraUI
 
-final class NftListItemCell: UICollectionViewCell {
+class NftListItemCell: UICollectionViewCell {
     private enum Constants {
         static let imageSize = CGSize(width: 154.0, height: 154.0)
         static let imageCornerRadius: CGFloat = 8.0
     }
-
-    static var height: CGFloat { 224.0 }
 
     let blurBackgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
@@ -18,6 +16,7 @@ final class NftListItemCell: UICollectionViewCell {
     let mediaView: NftMediaView = {
         let view = NftMediaView()
         view.contentInsets = .zero
+        view.applyFilledBackgroundStyle()
         view.fillColor = .clear
         view.highlightedFillColor = .clear
         return view
