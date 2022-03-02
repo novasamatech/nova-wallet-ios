@@ -679,3 +679,5 @@
 "dapp.decoration.title_2_4_3" = "Добро пожаловать\nв Nova браузер";
 "dapp.list.featured.websites" = "Популярные сайты";
 "wallet.list.your.nfts.title" = "Ваши NFT";
+"nft.list.item.limited.format" = "#%@ Выпуск из %@";
+"nft.list.item.unlimited" = "Неограниченный выпуск";

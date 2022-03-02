@@ -16,7 +16,12 @@ struct NftListViewFactory {
             operationQueue: OperationManagerFacade.fileDownloadQueue
         )
 
-        let viewModelFactory = NftListViewModelFactory(nftDownloadService: nftDownloadService)
+        let quantityFormatter = NumberFormatter.quantity.localizableResource()
+
+        let viewModelFactory = NftListViewModelFactory(
+            nftDownloadService: nftDownloadService,
+            quantityFormatter: quantityFormatter
+        )
 
         let localizationManager = LocalizationManager.shared
 
@@ -27,7 +32,11 @@ struct NftListViewFactory {
             locale: localizationManager.selectedLocale
         )
 
-        let view = NftListViewController(presenter: presenter, localizationManager: localizationManager)
+        let view = NftListViewController(
+            presenter: presenter,
+            localizationManager: localizationManager,
+            quantityFormatter: quantityFormatter
+        )
 
         presenter.view = view
         interactor.presenter = presenter

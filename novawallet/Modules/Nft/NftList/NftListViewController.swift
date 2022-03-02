@@ -17,7 +17,7 @@ final class NftListViewController: UIViewController, ViewHolder {
     init(
         presenter: NftListPresenterProtocol,
         localizationManager: LocalizationManagerProtocol,
-        quantityFormatter: LocalizableResource<NumberFormatter> = NumberFormatter.quantity.localizableResource()
+        quantityFormatter: LocalizableResource<NumberFormatter>
     ) {
         self.presenter = presenter
         quantityFormater = quantityFormatter

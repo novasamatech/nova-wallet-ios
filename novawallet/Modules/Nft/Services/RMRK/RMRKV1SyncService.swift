@@ -62,8 +62,9 @@ final class RMRKV1SyncService: BaseNftSyncService {
                         collectionId: remoteItem.collectionId,
                         instanceId: remoteItem.instance,
                         metadata: metadata,
+                        totalIssuance: remoteItem.collection?.max,
                         name: remoteItem.name,
-                        label: nil,
+                        label: remoteItem.serialNumber,
                         media: nil,
                         price: price
                     )

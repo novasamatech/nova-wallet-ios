@@ -99,6 +99,8 @@ class NftListItemCell: UICollectionViewCell {
 extension NftListItemCell: NftListItemViewProtocol {
     func setName(_ name: String?) {
         titleLabel.text = name
+
+        setNeedsLayout()
     }
 
     func setLabel(_ label: String?) {
