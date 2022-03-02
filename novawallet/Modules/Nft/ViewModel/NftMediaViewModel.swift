@@ -6,6 +6,7 @@ struct NftMediaDisplaySettings: Equatable {
     let targetSize: CGSize
     let cornerRadius: CGFloat
     let animated: Bool
+    let isAspectFit: Bool
 }
 
 protocol NftMediaViewModelProtocol {
