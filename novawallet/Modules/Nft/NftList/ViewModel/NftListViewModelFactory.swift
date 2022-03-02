@@ -68,12 +68,25 @@ final class NftListViewModelFactory {
         let name = model.name ?? model.instanceId
         let label = model.label ?? model.collectionId
 
-        if let mediaString = model.media, !mediaString.isEmpty, let url = URL(string: mediaString) {
-            let viewModel = NftImageViewModel(url: url)
-            return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: viewModel)
+        let mediaViewModel: NftMediaViewModelProtocol?
+
+        if
+            let imageUrlString = model.media,
+            !imageUrlString.isEmpty,
+            let imageUrl = URL(string: imageUrlString) {
+            mediaViewModel = NftImageViewModel(url: imageUrl)
+        } else if
+            let metadataData = model.metadata,
+            let metadataReference = String(data: metadataData, encoding: .utf8) {
+            mediaViewModel = NftMediaViewModel(
+                metadataReference: metadataReference,
+                downloadService: nftDownloadService
+            )
         } else {
-            return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: nil)
+            mediaViewModel = nil
         }
+
+        return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: mediaViewModel)
     }
 
     private func createUniquesMetadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
