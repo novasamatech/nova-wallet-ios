@@ -103,7 +103,7 @@ extension NftListItemCell: NftListItemViewProtocol {
     }
 
     func setLabel(_ label: String?) {
-        subtitleView.titleLabel.text = label
+        subtitleView.titleLabel.text = label?.uppercased()
 
         let shouldHideSubtitle = label == nil
         subtitleView.isHidden = shouldHideSubtitle
