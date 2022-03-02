@@ -1,14 +1,26 @@
 import UIKit
+import SnapKit
 
 final class NftListViewLayout: UIView {
+    static let contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 16.0)
+    static let horizontalSpacing: CGFloat = 11.0
+    static let verticalSpacing: CGFloat = 18.0
+
     let backgroundView = MultigradientView.background
+
+    let navBarBlurView: UIView = {
+        let blurView = TriangularedBlurView()
+        blurView.cornerCut = []
+        return blurView
+    }()
+
+    var navBarBlurViewHeightConstraint: Constraint!
 
     let collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
-        view.contentInset = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0)
         view.refreshControl = UIRefreshControl()
 
         return view
@@ -26,6 +38,12 @@ final class NftListViewLayout: UIView {
     }
 
     private func setupLayout() {
+        collectionView.contentInset = Self.contentInsets
+
+        let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+        flowLayout?.minimumInteritemSpacing = Self.horizontalSpacing
+        flowLayout?.minimumLineSpacing = Self.verticalSpacing
+
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -34,6 +52,13 @@ final class NftListViewLayout: UIView {
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        addSubview(navBarBlurView)
+        navBarBlurView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            self.navBarBlurViewHeightConstraint = make.height.equalTo(0).constraint
+            self.navBarBlurViewHeightConstraint.activate()
         }
     }
 }

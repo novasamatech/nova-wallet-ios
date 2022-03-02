@@ -33,7 +33,11 @@ final class NftListInteractor {
             switch change {
             case let .insert(newItem), let .update(newItem):
                 if let nftChain = nfts[newItem.identifier] {
-                    let newNftChain = NftChainModel(nft: newItem, chainAsset: nftChain.chainAsset, price: nftChain.price)
+                    let newNftChain = NftChainModel(
+                        nft: newItem,
+                        chainAsset: nftChain.chainAsset,
+                        price: nftChain.price
+                    )
                     return .update(newItem: newNftChain)
                 } else if let chainAsset = getNftChainAsset(for: newItem.chainId) {
                     let price = getNftPrice(for: newItem.chainId)
@@ -63,10 +67,13 @@ final class NftListInteractor {
         return nftChanges
     }
 
-    private func updateNftsFromPrice(_ priceData: PriceData, priceId: AssetModel.PriceId) -> [DataProviderChange<NftChainModel>]  {
+    private func updateNftsFromPrice(
+        _ priceData: PriceData,
+        priceId: AssetModel.PriceId
+    ) -> [DataProviderChange<NftChainModel>] {
         nftPrices[priceId] = priceData
 
-        let changeModels: [NftChainModel] = nfts.compactMap { (_, nftChainModel) in
+        let changeModels: [NftChainModel] = nfts.compactMap { _, nftChainModel in
             guard nftChainModel.chainAsset.asset.priceId == priceId else {
                 return nil
             }
@@ -97,7 +104,8 @@ final class NftListInteractor {
             let removals = removeNfts(for: change)
             nftChanges.append(contentsOf: removals)
 
-            hasChanges = hasChanges || updateNftChains(from: change)
+            let newHasChanges = updateNftChains(from: change)
+            hasChanges = hasChanges || newHasChanges
         }
 
         if !nftChanges.isEmpty {
@@ -214,9 +222,7 @@ extension NftListInteractor: NftListInteractorInputProtocol {
         subscribeChains()
     }
 
-    func refresh() {
-
-    }
+    func refresh() {}
 }
 
 extension NftListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -234,7 +240,7 @@ extension NftListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscription
 }
 
 extension NftListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionHandler {
-    func handleNfts(result: Result<[DataProviderChange<NftModel>], Error>, wallet: MetaAccountModel) {
+    func handleNfts(result: Result<[DataProviderChange<NftModel>], Error>, wallet _: MetaAccountModel) {
         switch result {
         case let .success(changes):
             let changes = updateNftsFromModel(changes: changes)

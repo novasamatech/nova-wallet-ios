@@ -10,7 +10,6 @@ final class NftListStaticViewModel {
         label: String,
         media: NftMediaViewModelProtocol?
     ) {
-        self.identifier = identifier
         self.name = name
         self.label = label
         self.media = media
@@ -26,5 +25,5 @@ extension NftListStaticViewModel: NftListMetadataViewModelProtocol {
         completion?(nil)
     }
 
-    func cancel(on view: NftListItemViewProtocol) {}
+    func cancel(on _: NftListItemViewProtocol) {}
 }

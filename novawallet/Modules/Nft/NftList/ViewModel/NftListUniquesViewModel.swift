@@ -12,7 +12,6 @@ final class NftListUniquesViewModel {
         metadataReference: String,
         metadataService: NftFileDownloadServiceProtocol
     ) {
-        self.identifier = identifier
         self.metadataReference = metadataReference
         self.metadataService = metadataService
     }
@@ -22,10 +21,14 @@ final class NftListUniquesViewModel {
         view.setName(name)
 
         let label = json.label?.stringValue
-        view.setName(label)
+        view.setLabel(label)
     }
 
-    private func handle(result: Result<JSON, Error>, on view: NftListItemViewProtocol, completion: ((Error?) -> Void)?) {
+    private func handle(
+        result: Result<JSON, Error>,
+        on view: NftListItemViewProtocol,
+        completion: ((Error?) -> Void)?
+    ) {
         switch result {
         case let .success(json):
             provideData(from: json, to: view)
@@ -67,7 +70,7 @@ extension NftListUniquesViewModel: NftListMetadataViewModelProtocol {
         }
     }
 
-    func cancel(on view: NftListItemViewProtocol) {
+    func cancel(on _: NftListItemViewProtocol) {
         let operationToCancel = loadingOperation
         loadingOperation = nil
         operationToCancel?.cancel()

@@ -189,6 +189,8 @@ extension NftFileDownloadService: NftFileDownloadServiceProtocol {
             }
         }
 
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+
         return wrapper
     }
 }

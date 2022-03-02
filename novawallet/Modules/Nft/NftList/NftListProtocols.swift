@@ -1,9 +1,14 @@
 import RobinHood
 
-protocol NftListViewProtocol: ControllerBackedProtocol {}
+protocol NftListViewProtocol: ControllerBackedProtocol {
+    func didReceive(changes: [ListDifference<NftListViewModel>])
+}
 
 protocol NftListPresenterProtocol: AnyObject {
     func setup()
+
+    func numberOfItems() -> Int
+    func nft(at index: Int) -> NftListViewModel
 }
 
 protocol NftListInteractorInputProtocol: AnyObject {
