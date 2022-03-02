@@ -68,7 +68,7 @@ final class NftListViewModelFactory {
         let name = model.name ?? model.instanceId
         let label = model.label ?? model.collectionId
 
-        if let mediaString = model.media, let url = URL(string: mediaString) {
+        if let mediaString = model.media, !mediaString.isEmpty, let url = URL(string: mediaString) {
             let viewModel = NftImageViewModel(url: url)
             return NftListStaticViewModel(name: name ?? "", label: label ?? "", media: viewModel)
         } else {

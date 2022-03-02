@@ -112,6 +112,8 @@ extension NftListItemCell: NftListItemViewProtocol {
     func setMedia(_ media: NftMediaViewModelProtocol?) {
         if let media = media {
             mediaView.bind(viewModel: media, targetSize: Constants.imageSize, cornerRadius: Constants.imageCornerRadius)
+        } else {
+            mediaView.bindPlaceholder()
         }
     }
 }

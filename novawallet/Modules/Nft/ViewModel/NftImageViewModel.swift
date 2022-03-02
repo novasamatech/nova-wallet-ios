@@ -13,7 +13,7 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
-        completion: ((Error?) -> Void)?
+        completion: ((Bool, Error?) -> Void)?
     ) {
         let targetSize = displaySettings.targetSize
         let cornerRadius = displaySettings.cornerRadius
@@ -45,13 +45,14 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
 
         imageView.kf.setImage(
             with: url,
-            options: options, completionHandler: { result in
+            options: options,
+            completionHandler: { result in
                 switch result {
                 case .success:
-                    completion?(nil)
+                    completion?(true, nil)
                 case let .failure(error):
                     if !error.isTaskCancelled {
-                        completion?(error)
+                        completion?(true, error)
                     }
                 }
             }
