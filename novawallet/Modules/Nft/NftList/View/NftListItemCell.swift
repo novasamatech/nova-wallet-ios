@@ -100,12 +100,13 @@ class NftListItemCell: UICollectionViewCell {
 extension NftListItemCell: NftListItemViewProtocol {
     func setName(_ name: String?) {
         titleLabel.text = name
-
-        setNeedsLayout()
     }
 
     func setLabel(_ label: String?) {
         subtitleView.titleLabel.text = label
+
+        let shouldHideSubtitle = label == nil
+        subtitleView.isHidden = shouldHideSubtitle
     }
 
     func setMedia(_ media: NftMediaViewModelProtocol?) {

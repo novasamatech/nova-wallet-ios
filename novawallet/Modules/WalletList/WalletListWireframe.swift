@@ -53,6 +53,7 @@ final class WalletListWireframe: WalletListWireframeProtocol {
             return
         }
 
+        nftListView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
     }
 }
