@@ -1355,6 +1355,7 @@
 		84F1CB3727CE5EC30095D523 /* NftListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3627CE5EC30095D523 /* NftListViewModelFactory.swift */; };
 		84F1CB3A27CEB9850095D523 /* NftListItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3927CEB9850095D523 /* NftListItemCell.swift */; };
 		84F1CB3C27CF42B80095D523 /* NftListItemWithPriceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */; };
+		84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */; };
 		84F2FEFA25E797E8008338D5 /* StorageRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */; };
 		84F2FEFF25E7ADE7008338D5 /* ValidatorPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */; };
 		84F2FF0725E7AF8F008338D5 /* EraValidatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */; };
@@ -3342,6 +3343,7 @@
 		84F1CB3627CE5EC30095D523 /* NftListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListViewModelFactory.swift; sourceTree = "<group>"; };
 		84F1CB3927CEB9850095D523 /* NftListItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListItemCell.swift; sourceTree = "<group>"; };
 		84F1CB3B27CF42B80095D523 /* NftListItemWithPriceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListItemWithPriceCell.swift; sourceTree = "<group>"; };
+		84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedLabelView.swift; sourceTree = "<group>"; };
 		84F2FEF925E797E8008338D5 /* StorageRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRequestFactory.swift; sourceTree = "<group>"; };
 		84F2FEFE25E7ADE7008338D5 /* ValidatorPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPrefs.swift; sourceTree = "<group>"; };
 		84F2FF0625E7AF8F008338D5 /* EraValidatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorInfo.swift; sourceTree = "<group>"; };
@@ -6747,6 +6749,7 @@
 				847F2D4527A9DB8E00AFD476 /* MultigradientView.swift */,
 				847F2D4727A9DDC700AFD476 /* MultigradientView+Default.swift */,
 				847F2D5827AB201200AFD476 /* GradientIconView.swift */,
+				84F1CB3D27CF4F5A0095D523 /* BorderedLabelView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10406,6 +10409,7 @@
 				848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */,
 				8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */,
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
+				84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */,
 				849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */,
 				84F13F0826F13898006725FF /* StakingAssetSettings.swift in Sources */,
 				84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */,

@@ -12,8 +12,15 @@ final class NftListViewController: UIViewController, ViewHolder {
 
     let presenter: NftListPresenterProtocol
 
-    init(presenter: NftListPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    let quantityFormater: LocalizableResource<NumberFormatter>
+
+    init(
+        presenter: NftListPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol,
+        quantityFormatter: LocalizableResource<NumberFormatter> = NumberFormatter.quantity.localizableResource()
+    ) {
         self.presenter = presenter
+        quantityFormater = quantityFormatter
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -46,6 +53,23 @@ final class NftListViewController: UIViewController, ViewHolder {
         let navBarHeight = navigationBar.bounds.height
         let blurHeight = statusBarHeight + navBarHeight
         rootView.navBarBlurViewHeightConstraint.update(offset: blurHeight)
+    }
+
+    private func updateCounter() {
+        let numberOfItems = presenter.numberOfItems()
+
+        if
+            let counterString = quantityFormater.value(for: selectedLocale).string(
+                from: NSNumber(value: numberOfItems)
+            ) {
+            rootView.counterView.titleLabel.text = counterString
+
+            let barItem = UIBarButtonItem(customView: rootView.counterView)
+            navigationItem.rightBarButtonItem = barItem
+        } else {
+            rootView.counterView.titleLabel.text = ""
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     private func configureCollectionView() {
@@ -126,6 +150,8 @@ extension NftListViewController: NftListViewProtocol {
                 }
             }
         }
+
+        updateCounter()
     }
 }
 
@@ -133,6 +159,7 @@ extension NftListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
+            updateCounter()
         }
     }
 }
