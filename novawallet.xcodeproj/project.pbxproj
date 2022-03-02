@@ -1748,7 +1748,6 @@
 		EDC02F2FDCDB55519DB0273D /* AnalyticsRewardDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761FDEBB414B1CFAD6992352 /* AnalyticsRewardDetailsTests.swift */; };
 		EE6FC6EFB089A94EF105F2CC /* StakingRewardPayoutsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 934678CCA0EF35B6AE4AE8A1 /* StakingRewardPayoutsTests.swift */; };
 		EF02C9661F03C8EF58182997 /* StakingAmountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB76FEC075A6FE1D246BA5DD /* StakingAmountViewController.swift */; };
-		EF628C77943492D37A5AE5E6 /* NftListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EAAAE535BD2FEC3E62F832 /* NftListTests.swift */; };
 		EF707B3A929EFA51B874E43A /* AddConnectionPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F90A8AA378E1DE4FCEE10F6 /* AddConnectionPresenter.swift */; };
 		F022F1444E0F75CCA42F4648 /* YourValidatorListProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31780E84948D7FE632ECB02 /* YourValidatorListProtocols.swift */; };
 		F0675F495766D07473B065F7 /* CrowdloanYourContributionsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3251EE6FFC95D656BA2146F4 /* CrowdloanYourContributionsInteractor.swift */; };
@@ -2021,7 +2020,6 @@
 		219B9B1D97460F022D40D63E /* DAppTxDetailsWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsWireframe.swift; sourceTree = "<group>"; };
 		21BCBFCBE606A354CB652289 /* DAppAuthConfirmViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppAuthConfirmViewController.swift; sourceTree = "<group>"; };
 		2222D628B9EA092D1C6B1CAE /* ChainSelectionPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChainSelectionPresenter.swift; sourceTree = "<group>"; };
-		22EAAAE535BD2FEC3E62F832 /* NftListTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftListTests.swift; sourceTree = "<group>"; };
 		2377F8FB07B47637346249F5 /* StakingRewardDetailsViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingRewardDetailsViewFactory.swift; sourceTree = "<group>"; };
 		23A74BDB54D503FA2BFBEF35 /* StakingUnbondSetupProtocols.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingUnbondSetupProtocols.swift; sourceTree = "<group>"; };
 		23BC71941B91D3E372CDB11C /* CrowdloanContributionSetupViewLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionSetupViewLayout.swift; sourceTree = "<group>"; };
@@ -3989,14 +3987,6 @@
 			path = StakingUnbondSetup;
 			sourceTree = "<group>";
 		};
-		03866D401757C11B9D5DC0EC /* NftList */ = {
-			isa = PBXGroup;
-			children = (
-				22EAAAE535BD2FEC3E62F832 /* NftListTests.swift */,
-			);
-			path = NftList;
-			sourceTree = "<group>";
-		};
 		04F3A39DC84AA3CC794EC7B9 /* ReferralCrowdloan */ = {
 			isa = PBXGroup;
 			children = (
@@ -4579,7 +4569,6 @@
 				16DD59F69357C331C07AD8BF /* CrowdloanYourContributions */,
 				95D068F6BEF07335B108DAAB /* AdvancedWallet */,
 				6607815E771817BBBD8EEFCB /* AssetsManage */,
-				03866D401757C11B9D5DC0EC /* NftList */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -12069,7 +12058,6 @@
 				4A83E8B5CC4B87B95CB4E10B /* DAppTxDetailsTests.swift in Sources */,
 				35C9108EA2DBA4E37D4BA6B7 /* DAppAuthConfirmTests.swift in Sources */,
 				D4C93294D28AA773683628BB /* AssetsManageTests.swift in Sources */,
-				EF628C77943492D37A5AE5E6 /* NftListTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
