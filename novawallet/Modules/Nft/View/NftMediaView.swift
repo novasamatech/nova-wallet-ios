@@ -49,7 +49,13 @@ final class NftMediaView: RoundedView {
     }
 
     func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize, cornerRadius: CGFloat) {
-        let newSettings = NftMediaDisplaySettings(targetSize: targetSize, cornerRadius: cornerRadius, animated: true)
+        let isAspectFit = contentView.contentMode == .scaleAspectFit
+        let newSettings = NftMediaDisplaySettings(
+            targetSize: targetSize,
+            cornerRadius: cornerRadius,
+            animated: true,
+            isAspectFit: isAspectFit
+        )
 
         if
             self.viewModel?.identifier != viewModel.identifier ||

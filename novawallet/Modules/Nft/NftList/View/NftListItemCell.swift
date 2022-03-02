@@ -17,6 +17,7 @@ class NftListItemCell: UICollectionViewCell {
     let mediaView: NftMediaView = {
         let view = NftMediaView()
         view.contentInsets = .zero
+        view.contentView.contentMode = .scaleAspectFit
         view.applyFilledBackgroundStyle()
         view.fillColor = .clear
         view.highlightedFillColor = .clear
