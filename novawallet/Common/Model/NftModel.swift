@@ -16,7 +16,7 @@ struct NftModel: Identifiable, Equatable {
     let media: String?
     let price: String?
     let type: UInt16
-    let creationAt: Date?
+    let createdAt: Date?
 
     init(
         identifier: String,
@@ -30,7 +30,7 @@ struct NftModel: Identifiable, Equatable {
         label: String? = nil,
         media: String? = nil,
         price: String? = nil,
-        creationAt: Date? = nil
+        createdAt: Date? = nil
     ) {
         self.identifier = identifier
         self.type = type
@@ -43,6 +43,6 @@ struct NftModel: Identifiable, Equatable {
         self.label = label
         self.media = media
         self.price = price
-        self.creationAt = creationAt
+        self.createdAt = createdAt
     }
 }

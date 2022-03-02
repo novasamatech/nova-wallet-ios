@@ -6,7 +6,6 @@ protocol NftListViewModelFactoryProtocol {
 }
 
 final class NftListViewModelFactory {
-
     let nftDownloadService: NftFileDownloadServiceProtocol
 
     init(nftDownloadService: NftFileDownloadServiceProtocol) {
@@ -54,7 +53,9 @@ final class NftListViewModelFactory {
     }
 
     private func createUniquesMetadata(from model: NftModel) -> NftListMetadataViewModelProtocol {
-        if let metadataReferenceData = model.metadata, let reference = String(data: metadataReferenceData, encoding: .utf8) {
+        if
+            let metadataReferenceData = model.metadata,
+            let reference = String(data: metadataReferenceData, encoding: .utf8) {
             return NftListUniquesViewModel(metadataReference: reference, metadataService: nftDownloadService)
         } else {
             return createStaticMetadata(from: model)
@@ -62,7 +63,9 @@ final class NftListViewModelFactory {
     }
 
     private func createRMRKV1Metadata(from model: NftModel) -> NftListMetadataViewModelProtocol {
-        if let metadataReferenceData = model.metadata, let reference = String(data: metadataReferenceData, encoding: .utf8) {
+        if
+            let metadataReferenceData = model.metadata,
+            let reference = String(data: metadataReferenceData, encoding: .utf8) {
             let mediaViewModel = NftMediaViewModel(metadataReference: reference, downloadService: nftDownloadService)
 
             let name = model.name ?? model.instanceId
@@ -92,6 +95,11 @@ extension NftListViewModelFactory: NftListViewModelFactoryProtocol {
         let price = createPrice(from: model, locale: locale)
         let metadata = createMedatadaViewModel(from: model)
 
-        return NftListViewModel(identifier: identifier, metadataViewModel: metadata, price: price)
+        return NftListViewModel(
+            identifier: identifier,
+            metadataViewModel: metadata,
+            price: price,
+            createdAt: model.nft.createdAt ?? Date()
+        )
     }
 }
