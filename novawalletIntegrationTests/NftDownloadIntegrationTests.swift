@@ -18,7 +18,7 @@ class NftDownloadIntegrationTests: XCTestCase {
         )
 
         let expectation = XCTestExpectation()
-        var requestResult: Result<URL, Error>?
+        var requestResult: Result<URL?, Error>?
 
         // when
 
@@ -32,7 +32,7 @@ class NftDownloadIntegrationTests: XCTestCase {
 
         // then
 
-        guard case let .success(url) = requestResult else {
+        guard case let .success(optUrl) = requestResult, let url = optUrl else {
             XCTFail("Unexpected result \(requestResult.debugDescription)")
             return
         }
