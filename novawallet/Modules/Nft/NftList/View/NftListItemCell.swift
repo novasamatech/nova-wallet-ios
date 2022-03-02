@@ -34,7 +34,7 @@ class NftListItemCell: UICollectionViewCell {
     let subtitleView: BorderedLabelView = {
         let view = BorderedLabelView()
         view.titleLabel.textColor = R.color.colorTransparentText()!
-        view.titleLabel.font = .regularSmall
+        view.titleLabel.font = .semiBoldSmall
         view.contentInsets = UIEdgeInsets(top: 1, left: 6.0, bottom: 2.0, right: 6.0)
         view.backgroundView.cornerRadius = 4.0
         return view
@@ -92,7 +92,7 @@ class NftListItemCell: UICollectionViewCell {
         subtitleView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(8.0)
             make.trailing.lessThanOrEqualToSuperview().inset(8.0)
-            make.top.equalTo(titleLabel.snp.bottom).offset(4.0)
+            make.top.equalTo(titleLabel.snp.bottom).offset(6.0)
         }
     }
 }
