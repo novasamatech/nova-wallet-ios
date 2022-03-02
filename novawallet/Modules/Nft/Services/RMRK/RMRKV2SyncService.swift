@@ -27,7 +27,7 @@ final class RMRKV2SyncService: BaseNftSyncService {
         )
     }
 
-    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
+    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         do {
             let ownerId = self.ownerId
             let address = try ownerId.toAddress(using: chain.chainFormat)
@@ -36,7 +36,7 @@ final class RMRKV2SyncService: BaseNftSyncService {
             let birdsOperation = operationFactory.fetchBirdNfts(for: address)
             let itemsOperation = operationFactory.fetchItemNfts(for: address)
 
-            let mapOperation = ClosureOperation<[NftModel]> {
+            let mapOperation = ClosureOperation<[RemoteNftModel]> {
                 let birds = try birdsOperation.extractNoCancellableResultData()
                 let items = try itemsOperation.extractNoCancellableResultData()
 
@@ -58,7 +58,7 @@ final class RMRKV2SyncService: BaseNftSyncService {
 
                     let price = remoteItem.forsale.map(\.stringWithPointSeparator)
 
-                    return NftModel(
+                    return RemoteNftModel(
                         identifier: identifier,
                         type: NftType.rmrkV2.rawValue,
                         chainId: chainId,

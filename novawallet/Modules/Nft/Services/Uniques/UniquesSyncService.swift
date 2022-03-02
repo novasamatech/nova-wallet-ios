@@ -37,8 +37,8 @@ final class UniquesSyncService: BaseNftSyncService {
         classDetailsWrapper: CompoundOperationWrapper<[UInt32: UniquesClassDetails]>,
         chainId: String,
         ownerId: AccountId
-    ) -> BaseOperation<[NftModel]> {
-        ClosureOperation<[NftModel]> {
+    ) -> BaseOperation<[RemoteNftModel]> {
+        ClosureOperation<[RemoteNftModel]> {
             let accountKeys = try accountKeysWrapper.targetOperation.extractNoCancellableResultData()
             let instanceStore = try instanceWrapper.targetOperation.extractNoCancellableResultData()
             let classStore = try classWrapper.targetOperation.extractNoCancellableResultData()
@@ -61,7 +61,7 @@ final class UniquesSyncService: BaseNftSyncService {
                 let instanceId = String(accountKey.instanceId)
                 let collectionId = String(accountKey.classId)
 
-                return NftModel(
+                return RemoteNftModel(
                     identifier: identifier,
                     type: NftType.uniques.rawValue,
                     chainId: chainId,
@@ -75,7 +75,7 @@ final class UniquesSyncService: BaseNftSyncService {
         }
     }
 
-    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
+    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
         }
