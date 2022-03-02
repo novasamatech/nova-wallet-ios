@@ -37,6 +37,10 @@ extension NftListPresenter: NftListPresenterProtocol {
         interactor.setup()
     }
 
+    func refresh() {
+        interactor.refresh()
+    }
+
     func numberOfItems() -> Int {
         viewModels.allItems.count
     }
@@ -48,6 +52,8 @@ extension NftListPresenter: NftListPresenterProtocol {
 
 extension NftListPresenter: NftListInteractorOutputProtocol {
     func didReceiveNft(changes: [DataProviderChange<NftChainModel>]) {
+        view?.didCompleteRefreshing()
+
         let viewModelChanges: [DataProviderChange<NftListViewModel>] = changes.map { change in
             switch change {
             case let .insert(newItem):
