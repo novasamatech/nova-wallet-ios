@@ -40,10 +40,15 @@ final class NftListViewController: UIViewController, ViewHolder {
 
         configureCollectionView()
         setupLocalization()
+        setupHandlers()
 
         setupNavigationBarStyle()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.collectionView.refreshControl?.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
     }
 
     private func setupNavigationBarStyle() {
@@ -82,6 +87,10 @@ final class NftListViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string.localizable.walletListYourNftsTitle(preferredLanguages: selectedLocale.rLanguages)
+    }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
     }
 }
 
@@ -152,6 +161,10 @@ extension NftListViewController: NftListViewProtocol {
         }
 
         updateCounter()
+    }
+
+    func didCompleteRefreshing() {
+        rootView.collectionView.refreshControl?.endRefreshing()
     }
 }
 

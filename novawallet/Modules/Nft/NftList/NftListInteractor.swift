@@ -222,7 +222,9 @@ extension NftListInteractor: NftListInteractorInputProtocol {
         subscribeChains()
     }
 
-    func refresh() {}
+    func refresh() {
+        nftProvider?.refresh()
+    }
 }
 
 extension NftListInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
