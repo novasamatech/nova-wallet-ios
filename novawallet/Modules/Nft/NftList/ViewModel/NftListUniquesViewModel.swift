@@ -5,23 +5,23 @@ import SubstrateSdk
 final class NftListUniquesViewModel {
     let metadataReference: String
     let metadataService: NftFileDownloadServiceProtocol
+    let label: String
 
     private var loadingOperation: CancellableCall?
 
     init(
         metadataReference: String,
-        metadataService: NftFileDownloadServiceProtocol
+        metadataService: NftFileDownloadServiceProtocol,
+        label: String
     ) {
         self.metadataReference = metadataReference
         self.metadataService = metadataService
+        self.label = label
     }
 
     func provideData(from json: JSON, to view: NftListItemViewProtocol) {
         let name = json.name?.stringValue
         view.setName(name)
-
-        let label = json.label?.stringValue
-        view.setLabel(label)
     }
 
     private func handle(
@@ -44,6 +44,8 @@ extension NftListUniquesViewModel: NftListMetadataViewModelProtocol {
         guard loadingOperation == nil else {
             return
         }
+
+        view.setLabel(label)
 
         let mediaViewModel = NftMediaViewModel(
             metadataReference: metadataReference,

@@ -11,6 +11,7 @@ struct NftModel: Identifiable, Equatable {
     let collectionId: String?
     let instanceId: String?
     let metadata: Data?
+    let totalIssuance: Int32?
     let name: String?
     let label: String?
     let media: String?
@@ -26,6 +27,7 @@ struct NftModel: Identifiable, Equatable {
         collectionId: String? = nil,
         instanceId: String? = nil,
         metadata: Data? = nil,
+        totalIssuance: Int32? = nil,
         name: String? = nil,
         label: String? = nil,
         media: String? = nil,
@@ -39,6 +41,7 @@ struct NftModel: Identifiable, Equatable {
         self.collectionId = collectionId
         self.instanceId = instanceId
         self.metadata = metadata
+        self.totalIssuance = totalIssuance
         self.name = name
         self.label = label
         self.media = media
