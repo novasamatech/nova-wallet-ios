@@ -24,6 +24,13 @@ protocol UniquesOperationFactoryProtocol {
         operationManager: OperationManagerProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<[UInt32: UniquesInstanceMetadata]>
+
+    func createClassDetails(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesClassDetails]>
 }
 
 final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
@@ -170,6 +177,52 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
                 let instanceId = instanceIds[item.offset]
 
                 result[instanceId] = value
+            }
+        }
+
+        mapOperation.addDependency(fetchWrapper.targetOperation)
+
+        let dependencies = fetchWrapper.allOperations
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createClassDetails(
+        for classIdsClosure: @escaping () throws -> [UInt32],
+        connection: JSONRPCEngine,
+        operationManager: OperationManagerProtocol,
+        codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
+    ) -> CompoundOperationWrapper<[UInt32: UniquesClassDetails]> {
+        let requestEngine = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let keyParams: () throws -> [StringScaleMapper<UInt32>] = {
+            let classIds = try classIdsClosure()
+            return classIds.map { StringScaleMapper(value: $0) }
+        }
+
+        let fetchWrapper: CompoundOperationWrapper<[StorageResponse<UniquesClassDetails>]> =
+            requestEngine.queryItems(
+                engine: connection,
+                keyParams: keyParams,
+                factory: codingFactoryClosure,
+                storagePath: .uniquesClassDetails
+            )
+
+        let mapOperation = ClosureOperation<[UInt32: UniquesClassDetails]> {
+            let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+            let classIds = try classIdsClosure()
+
+            let initialStorage = [UInt32: UniquesClassDetails]()
+            return responses.enumerated().reduce(into: initialStorage) { result, item in
+                guard let value = item.element.value else {
+                    return
+                }
+
+                let classId = classIds[item.offset]
+
+                result[classId] = value
             }
         }
 

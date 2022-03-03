@@ -48,7 +48,12 @@ final class WalletListWireframe: WalletListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showNfts(from _: WalletListViewProtocol?) {
-        // TODO: #263ebca
+    func showNfts(from view: WalletListViewProtocol?) {
+        guard let nftListView = NftListViewFactory.createView() else {
+            return
+        }
+
+        nftListView.controller.hidesBottomBarWhenPushed = true
+        view?.controller.navigationController?.pushViewController(nftListView.controller, animated: true)
     }
 }

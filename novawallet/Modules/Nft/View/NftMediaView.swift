@@ -25,6 +25,8 @@ final class NftMediaView: RoundedView {
     private var skeletonView: SkrullableView?
     private var isLoading: Bool = false
 
+    private var placeholderView: ImagePlaceholderView?
+
     deinit {
         viewModel?.cancel(on: contentView)
     }
@@ -49,7 +51,13 @@ final class NftMediaView: RoundedView {
     }
 
     func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize, cornerRadius: CGFloat) {
-        let newSettings = NftMediaDisplaySettings(targetSize: targetSize, cornerRadius: cornerRadius, animated: true)
+        let isAspectFit = contentView.contentMode == .scaleAspectFit
+        let newSettings = NftMediaDisplaySettings(
+            targetSize: targetSize,
+            cornerRadius: cornerRadius,
+            animated: true,
+            isAspectFit: isAspectFit
+        )
 
         if
             self.viewModel?.identifier != viewModel.identifier ||
@@ -66,6 +74,18 @@ final class NftMediaView: RoundedView {
         }
     }
 
+    func bindPlaceholder() {
+        lastError = nil
+
+        contentView.image = nil
+
+        viewModel?.cancel(on: contentView)
+        viewModel = nil
+
+        stopSkeletonIfNeeded()
+        setupPlaceholderView()
+    }
+
     func refreshMediaIfNeeded() {
         if lastError != nil {
             lastError = nil
@@ -79,15 +99,25 @@ final class NftMediaView: RoundedView {
             return
         }
 
-        if contentView.image == nil {
-            startSkeletonIfNeeded()
-        }
+        lastError = nil
+        contentView.image = nil
 
-        viewModel?.loadMedia(on: contentView, displaySettings: mediaSettings) { [weak self] optionalError in
+        removePlaceholderView()
+        startSkeletonIfNeeded()
+
+        viewModel?.loadMedia(
+            on: contentView,
+            displaySettings: mediaSettings
+        ) { [weak self] isResolved, optionalError in
             self?.lastError = optionalError
 
-            if self?.contentView.image != nil {
+            if optionalError == nil {
                 self?.stopSkeletonIfNeeded()
+            }
+
+            if !isResolved {
+                self?.stopSkeletonIfNeeded()
+                self?.setupPlaceholderView()
             }
         }
     }
@@ -192,5 +222,29 @@ final class NftMediaView: RoundedView {
                 size: targetSize
             ).round(cornerRadii, mode: .allCorners)
         ]
+    }
+
+    private func setupPlaceholderView() {
+        guard placeholderView == nil else {
+            return
+        }
+
+        let placeholderView = ImagePlaceholderView()
+        addSubview(placeholderView)
+
+        placeholderView.snp.makeConstraints { make in
+            make.edges.equalTo(contentView)
+        }
+
+        self.placeholderView = placeholderView
+    }
+
+    private func removePlaceholderView() {
+        guard placeholderView != nil else {
+            return
+        }
+
+        placeholderView?.removeFromSuperview()
+        placeholderView = nil
     }
 }

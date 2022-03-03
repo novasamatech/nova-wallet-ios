@@ -1,11 +1,8 @@
 import Foundation
 import RobinHood
 
-struct NftModel: Identifiable, Equatable {
-    // swiftlint:disable:next type_name
-    typealias Id = String
-
-    let identifier: Id
+struct RemoteNftModel: Equatable, Identifiable {
+    let identifier: NftModel.Id
     let chainId: String
     let ownerId: AccountId
     let collectionId: String?
@@ -17,7 +14,6 @@ struct NftModel: Identifiable, Equatable {
     let media: String?
     let price: String?
     let type: UInt16
-    let createdAt: Date?
 
     init(
         identifier: String,
@@ -31,8 +27,7 @@ struct NftModel: Identifiable, Equatable {
         name: String? = nil,
         label: String? = nil,
         media: String? = nil,
-        price: String? = nil,
-        createdAt: Date? = nil
+        price: String? = nil
     ) {
         self.identifier = identifier
         self.type = type
@@ -46,22 +41,20 @@ struct NftModel: Identifiable, Equatable {
         self.label = label
         self.media = media
         self.price = price
-        self.createdAt = createdAt
     }
 
-    init(remoteModel: RemoteNftModel) {
-        identifier = remoteModel.identifier
-        type = remoteModel.type
-        chainId = remoteModel.chainId
-        ownerId = remoteModel.ownerId
-        collectionId = remoteModel.collectionId
-        instanceId = remoteModel.instanceId
-        metadata = remoteModel.metadata
-        totalIssuance = remoteModel.totalIssuance
-        name = remoteModel.name
-        label = remoteModel.label
-        media = remoteModel.media
-        price = remoteModel.price
-        createdAt = nil
+    init(localModel: NftModel) {
+        identifier = localModel.identifier
+        type = localModel.type
+        chainId = localModel.chainId
+        ownerId = localModel.ownerId
+        collectionId = localModel.collectionId
+        instanceId = localModel.instanceId
+        metadata = localModel.metadata
+        totalIssuance = localModel.totalIssuance
+        name = localModel.name
+        label = localModel.label
+        media = localModel.media
+        price = localModel.price
     }
 }

@@ -2,11 +2,11 @@ import Foundation
 import SubstrateSdk
 import RobinHood
 
-final class RMRKV2SyncService: BaseNftSyncService {
+final class RMRKV1SyncService: BaseNftSyncService {
     let ownerId: AccountId
     let chain: ChainModel
 
-    private lazy var operationFactory = RMRKV2OperationFactory()
+    private lazy var operationFactory = RMRKV1OperationFactory()
 
     init(
         ownerId: AccountId,
@@ -27,23 +27,19 @@ final class RMRKV2SyncService: BaseNftSyncService {
         )
     }
 
-    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
+    override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         do {
             let ownerId = self.ownerId
             let address = try ownerId.toAddress(using: chain.chainFormat)
             let chainId = chain.chainId
 
-            let birdsOperation = operationFactory.fetchBirdNfts(for: address)
-            let itemsOperation = operationFactory.fetchItemNfts(for: address)
+            let fetchOperation = operationFactory.fetchNfts(for: address)
 
-            let mapOperation = ClosureOperation<[NftModel]> {
-                let birds = try birdsOperation.extractNoCancellableResultData()
-                let items = try itemsOperation.extractNoCancellableResultData()
-
-                let remoteItems = birds + items
+            let mapOperation = ClosureOperation<[RemoteNftModel]> {
+                let remoteItems = try fetchOperation.extractNoCancellableResultData()
 
                 return remoteItems.map { remoteItem in
-                    let identifier = NftModel.rmrkv2Identifier(
+                    let identifier = NftModel.rmrkv1Identifier(
                         for: chainId,
                         identifier: remoteItem.identifier
                     )
@@ -58,27 +54,26 @@ final class RMRKV2SyncService: BaseNftSyncService {
 
                     let price = remoteItem.forsale.map(\.stringWithPointSeparator)
 
-                    return NftModel(
+                    return RemoteNftModel(
                         identifier: identifier,
-                        type: NftType.rmrkV2.rawValue,
+                        type: NftType.rmrkV1.rawValue,
                         chainId: chainId,
                         ownerId: ownerId,
                         collectionId: remoteItem.collectionId,
-                        instanceId: nil,
+                        instanceId: remoteItem.instance,
                         metadata: metadata,
+                        totalIssuance: remoteItem.collection?.max,
                         name: remoteItem.name,
-                        label: remoteItem.rarity,
-                        media: remoteItem.image,
+                        label: remoteItem.serialNumber,
+                        media: nil,
                         price: price
                     )
                 }
             }
 
-            let dependencies = [birdsOperation, itemsOperation]
+            mapOperation.addDependency(fetchOperation)
 
-            dependencies.forEach { mapOperation.addDependency($0) }
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }

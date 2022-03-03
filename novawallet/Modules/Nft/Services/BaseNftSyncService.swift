@@ -47,19 +47,22 @@ class BaseNftSyncService {
         executeSync()
     }
 
-    func createRemoteFetchWrapper() -> CompoundOperationWrapper<[NftModel]> {
+    func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         fatalError("Must be implemented by child class")
     }
 
     func createChangesOperation(
-        dependingOn remoteOperation: BaseOperation<[NftModel]>,
+        dependingOn remoteOperation: BaseOperation<[RemoteNftModel]>,
         localOperation: BaseOperation<[NftModel]>
-    ) -> BaseOperation<DataChangesDiffCalculator<NftModel>.Changes> {
+    ) -> BaseOperation<DataChangesDiffCalculator<RemoteNftModel>.Changes> {
         ClosureOperation {
             let remoteItems = try remoteOperation.extractNoCancellableResultData()
             let localtems = try localOperation.extractNoCancellableResultData()
+                .map { localModel in
+                    RemoteNftModel(localModel: localModel)
+                }
 
-            let diffCalculator = DataChangesDiffCalculator<NftModel>()
+            let diffCalculator = DataChangesDiffCalculator<RemoteNftModel>()
             return diffCalculator.diff(newItems: remoteItems, oldItems: localtems)
         }
     }
@@ -80,7 +83,9 @@ class BaseNftSyncService {
 
         let saveOperation = repository.saveOperation({
             let changes = try changesOperation.extractNoCancellableResultData()
-            return changes.newOrUpdatedItems
+            return changes.newOrUpdatedItems.map { remoteModel in
+                NftModel(remoteModel: remoteModel)
+            }
         }, {
             let changes = try changesOperation.extractNoCancellableResultData()
             return changes.removedItems.map(\.identifier)
