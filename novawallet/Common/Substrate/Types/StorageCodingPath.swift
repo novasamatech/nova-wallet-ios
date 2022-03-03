@@ -165,4 +165,8 @@ extension StorageCodingPath {
     static var uniquesInstanceMetadata: StorageCodingPath {
         StorageCodingPath(moduleName: "Uniques", itemName: "InstanceMetadataOf")
     }
+
+    static var uniquesClassDetails: StorageCodingPath {
+        StorageCodingPath(moduleName: "Uniques", itemName: "Class")
+    }
 }

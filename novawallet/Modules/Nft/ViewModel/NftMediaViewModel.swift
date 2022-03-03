@@ -6,12 +6,13 @@ struct NftMediaDisplaySettings: Equatable {
     let targetSize: CGSize
     let cornerRadius: CGFloat
     let animated: Bool
+    let isAspectFit: Bool
 }
 
 protocol NftMediaViewModelProtocol {
     var identifier: String { get }
 
-    func loadMedia(on imageView: UIImageView, displaySettings: NftMediaDisplaySettings, completion: ((Error?) -> Void)?)
+    func loadMedia(on imageView: UIImageView, displaySettings: NftMediaDisplaySettings, completion: ((Bool, Error?) -> Void)?)
     func cancel(on imageView: UIImageView)
 }
 
@@ -28,17 +29,21 @@ final class NftMediaViewModel {
     }
 
     private func handle(
-        result: Result<URL, Error>,
+        result: Result<URL?, Error>,
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
-        completion: ((Error?) -> Void)?
+        completion: ((Bool, Error?) -> Void)?
     ) {
         switch result {
-        case let .success(url):
-            remoteImageViewModel = NftImageViewModel(url: url)
-            remoteImageViewModel?.loadMedia(on: imageView, displaySettings: displaySettings, completion: completion)
+        case let .success(optinalUrl):
+            if let url = optinalUrl {
+                remoteImageViewModel = NftImageViewModel(url: url)
+                remoteImageViewModel?.loadMedia(on: imageView, displaySettings: displaySettings, completion: completion)
+            } else {
+                completion?(false, nil)
+            }
         case let .failure(error):
-            completion?(error)
+            completion?(true, error)
         }
     }
 }
@@ -49,7 +54,7 @@ extension NftMediaViewModel: NftMediaViewModelProtocol {
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
-        completion: ((Error?) -> Void)?
+        completion: ((Bool, Error?) -> Void)?
     ) {
         guard loadingOperation == nil else {
             return

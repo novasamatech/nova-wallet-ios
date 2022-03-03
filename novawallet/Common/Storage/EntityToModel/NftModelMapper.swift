@@ -22,6 +22,7 @@ extension NftModelMapper: CoreDataMapperProtocol {
         entity.collectionId = model.collectionId
         entity.instanceId = model.instanceId
         entity.metadata = model.metadata
+        entity.totalIssuance = model.totalIssuance.map { NSNumber(value: $0) }
         entity.name = model.name
         entity.label = model.label
         entity.price = model.price
@@ -44,11 +45,12 @@ extension NftModelMapper: CoreDataMapperProtocol {
             collectionId: entity.collectionId,
             instanceId: entity.instanceId,
             metadata: entity.metadata,
+            totalIssuance: entity.totalIssuance?.int32Value,
             name: entity.name,
             label: entity.label,
             media: entity.media,
             price: entity.price,
-            creationAt: entity.createdAt
+            createdAt: entity.createdAt
         )
     }
 }
