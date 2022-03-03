@@ -113,11 +113,11 @@ extension WalletListPresenter {
 
     static func createNftDiffCalculator() -> ListDifferenceCalculator<NftModel> {
         let sortingBlock: (NftModel, NftModel) -> Bool = { model1, model2 in
-            guard let creationAt1 = model1.creationAt, let creationAt2 = model2.creationAt else {
+            guard let createdAt1 = model1.createdAt, let createdAt2 = model2.createdAt else {
                 return true
             }
 
-            return creationAt1.compare(creationAt2) == .orderedDescending
+            return createdAt1.compare(createdAt2) == .orderedDescending
         }
 
         return ListDifferenceCalculator(initialItems: [], sortBlock: sortingBlock)

@@ -13,14 +13,22 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
     func loadMedia(
         on imageView: UIImageView,
         displaySettings: NftMediaDisplaySettings,
-        completion: ((Error?) -> Void)?
+        completion: ((Bool, Error?) -> Void)?
     ) {
         let targetSize = displaySettings.targetSize
         let cornerRadius = displaySettings.cornerRadius
         let animated = displaySettings.animated
 
+        let scaleProcessor: ImageProcessor
+
+        if displaySettings.isAspectFit {
+            scaleProcessor = ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFit)
+        } else {
+            scaleProcessor = DownsamplingImageProcessor(size: targetSize)
+        }
+
         let processor = SVGImageProcessor(targetSize: targetSize)
-            |> DownsamplingImageProcessor(size: targetSize)
+            |> scaleProcessor
             |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
 
         var options: KingfisherOptionsInfo = [
@@ -37,13 +45,14 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
 
         imageView.kf.setImage(
             with: url,
-            options: options, completionHandler: { result in
+            options: options,
+            completionHandler: { result in
                 switch result {
                 case .success:
-                    completion?(nil)
+                    completion?(true, nil)
                 case let .failure(error):
                     if !error.isTaskCancelled {
-                        completion?(error)
+                        completion?(true, error)
                     }
                 }
             }

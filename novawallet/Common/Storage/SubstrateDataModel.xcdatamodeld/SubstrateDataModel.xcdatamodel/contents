@@ -85,6 +85,7 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="ownerId" attributeType="String"/>
         <attribute name="price" optional="YES" attributeType="String"/>
+        <attribute name="totalIssuance" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO"/>
         <attribute name="type" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="CDPhishingItem" representedClassName="CDPhishingItem" syncable="YES" codeGenerationType="class">
@@ -129,11 +130,11 @@
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
         <element name="CDContactItem" positionX="-45" positionY="81" width="128" height="118"/>
+        <element name="CDNft" positionX="-36" positionY="153" width="128" height="224"/>
         <element name="CDPhishingItem" positionX="-36" positionY="90" width="128" height="74"/>
         <element name="CDRuntimeMetadataItem" positionX="-45" positionY="81" width="128" height="89"/>
         <element name="CDSingleValue" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDStashItem" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="239"/>
-        <element name="CDNft" positionX="-36" positionY="153" width="128" height="209"/>
     </elements>
 </model>
