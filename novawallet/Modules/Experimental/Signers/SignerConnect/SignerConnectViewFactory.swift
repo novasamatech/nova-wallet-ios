@@ -5,14 +5,22 @@ import SoraFoundation
 
 struct SignerConnectViewFactory {
     static func createBeaconView(for info: BeaconConnectionInfo) -> SignerConnectViewProtocol? {
-        let settings = SettingsManager.shared
+        let selectedChain = Chain.westend
+        let selectedWallet = SelectedWalletSettings.shared.value
 
-        guard let selectedAccount = settings.selectedAccount else {
+        let request = ChainAccountRequest(
+            chainId: selectedChain.genesisHash,
+            addressPrefix: UInt16(selectedChain.addressType.rawValue),
+            isEthereumBased: false
+        )
+
+        guard let selectedAccount = try? selectedWallet?.fetch(for: request)?.toAccountItem() else {
             return nil
         }
 
         let interactor = SignerConnectInteractor(
             selectedAccount: selectedAccount,
+            chain: selectedChain,
             info: info,
             logger: Logger.shared
         )
@@ -24,7 +32,7 @@ struct SignerConnectViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             viewModelFactory: viewModelFactory,
-            chain: settings.selectedConnection.type.chain
+            chain: selectedChain
         )
 
         let view = SignerConnectViewController(

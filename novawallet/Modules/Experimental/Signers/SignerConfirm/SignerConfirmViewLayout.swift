@@ -32,7 +32,7 @@ final class SignerConfirmViewLayout: UIView {
         return control
     }()
 
-    let extrinsicView = UIFactory.default.createMultilinedTriangularedView(filled: false)
+    let extrinsicView = UIFactory.default.createMultilinedTriangularedView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

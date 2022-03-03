@@ -548,6 +548,20 @@
 		84563D0524F466470055591D /* ManagedAccountItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84563D0424F466470055591D /* ManagedAccountItem.swift */; };
 		84563D0724F4674A0055591D /* ManagedAccountItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84563D0624F4674A0055591D /* ManagedAccountItemMapper.swift */; };
 		84563D0924F46B7F0055591D /* ManagedAccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */; };
+		8456C09427D0B255001282DE /* QRScannerWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08627D0B255001282DE /* QRScannerWireframe.swift */; };
+		8456C09527D0B255001282DE /* QRScannerViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08727D0B255001282DE /* QRScannerViewFactory.swift */; };
+		8456C09627D0B256001282DE /* QRScannerViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08827D0B255001282DE /* QRScannerViewLayout.swift */; };
+		8456C09727D0B256001282DE /* QRScannerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08927D0B255001282DE /* QRScannerPresenter.swift */; };
+		8456C09827D0B256001282DE /* QRScannerProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08A27D0B255001282DE /* QRScannerProtocols.swift */; };
+		8456C09927D0B256001282DE /* QRScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08B27D0B255001282DE /* QRScannerViewController.swift */; };
+		8456C09A27D0B256001282DE /* BeaconQRDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08D27D0B255001282DE /* BeaconQRDelegate.swift */; };
+		8456C09B27D0B256001282DE /* QRMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08E27D0B255001282DE /* QRMatching.swift */; };
+		8456C09C27D0B256001282DE /* BeaconQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C08F27D0B255001282DE /* BeaconQuery.swift */; };
+		8456C09D27D0B256001282DE /* BeaconConnectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C09027D0B255001282DE /* BeaconConnectionInfo.swift */; };
+		8456C09E27D0B256001282DE /* Tzip10Matcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C09127D0B255001282DE /* Tzip10Matcher.swift */; };
+		8456C09F27D0B256001282DE /* QRCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C09327D0B255001282DE /* QRCaptureService.swift */; };
+		8456C0A127D0B46A001282DE /* TransferDataValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C0A027D0B469001282DE /* TransferDataValidatorFactory.swift */; };
+		8456C0A327D0B4E2001282DE /* ApplicationSettingsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8456C0A227D0B4E2001282DE /* ApplicationSettingsPresentable.swift */; };
 		8457F91026EB8288006803E1 /* StorageMigrator+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8457F90F26EB8288006803E1 /* StorageMigrator+Sync.swift */; };
 		8457F91326EB90B1006803E1 /* AccountItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8457F91226EB90B1006803E1 /* AccountItemMapper.swift */; };
 		84585A2F251BFC8400390F7A /* TriangularedButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */; };
@@ -2494,6 +2508,20 @@
 		84563D0424F466470055591D /* ManagedAccountItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAccountItem.swift; sourceTree = "<group>"; };
 		84563D0624F4674A0055591D /* ManagedAccountItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAccountItemMapper.swift; sourceTree = "<group>"; };
 		84563D0824F46B7F0055591D /* ManagedAccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedAccountItemMapperTests.swift; sourceTree = "<group>"; };
+		8456C08627D0B255001282DE /* QRScannerWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerWireframe.swift; sourceTree = "<group>"; };
+		8456C08727D0B255001282DE /* QRScannerViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerViewFactory.swift; sourceTree = "<group>"; };
+		8456C08827D0B255001282DE /* QRScannerViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerViewLayout.swift; sourceTree = "<group>"; };
+		8456C08927D0B255001282DE /* QRScannerPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerPresenter.swift; sourceTree = "<group>"; };
+		8456C08A27D0B255001282DE /* QRScannerProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerProtocols.swift; sourceTree = "<group>"; };
+		8456C08B27D0B255001282DE /* QRScannerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRScannerViewController.swift; sourceTree = "<group>"; };
+		8456C08D27D0B255001282DE /* BeaconQRDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconQRDelegate.swift; sourceTree = "<group>"; };
+		8456C08E27D0B255001282DE /* QRMatching.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRMatching.swift; sourceTree = "<group>"; };
+		8456C08F27D0B255001282DE /* BeaconQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconQuery.swift; sourceTree = "<group>"; };
+		8456C09027D0B255001282DE /* BeaconConnectionInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BeaconConnectionInfo.swift; sourceTree = "<group>"; };
+		8456C09127D0B255001282DE /* Tzip10Matcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tzip10Matcher.swift; sourceTree = "<group>"; };
+		8456C09327D0B255001282DE /* QRCaptureService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRCaptureService.swift; sourceTree = "<group>"; };
+		8456C0A027D0B469001282DE /* TransferDataValidatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransferDataValidatorFactory.swift; sourceTree = "<group>"; };
+		8456C0A227D0B4E2001282DE /* ApplicationSettingsPresentable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationSettingsPresentable.swift; sourceTree = "<group>"; };
 		8457F90F26EB8288006803E1 /* StorageMigrator+Sync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageMigrator+Sync.swift"; sourceTree = "<group>"; };
 		8457F91226EB90B1006803E1 /* AccountItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapper.swift; sourceTree = "<group>"; };
 		84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriangularedButton+Style.swift"; sourceTree = "<group>"; };
@@ -5444,6 +5472,41 @@
 			path = CrowdloanList;
 			sourceTree = "<group>";
 		};
+		8456C08527D0B255001282DE /* QRScanner */ = {
+			isa = PBXGroup;
+			children = (
+				8456C08627D0B255001282DE /* QRScannerWireframe.swift */,
+				8456C08727D0B255001282DE /* QRScannerViewFactory.swift */,
+				8456C08827D0B255001282DE /* QRScannerViewLayout.swift */,
+				8456C08927D0B255001282DE /* QRScannerPresenter.swift */,
+				8456C08A27D0B255001282DE /* QRScannerProtocols.swift */,
+				8456C08B27D0B255001282DE /* QRScannerViewController.swift */,
+				8456C08C27D0B255001282DE /* Matchers */,
+				8456C09227D0B255001282DE /* Service */,
+			);
+			path = QRScanner;
+			sourceTree = "<group>";
+		};
+		8456C08C27D0B255001282DE /* Matchers */ = {
+			isa = PBXGroup;
+			children = (
+				8456C08D27D0B255001282DE /* BeaconQRDelegate.swift */,
+				8456C08E27D0B255001282DE /* QRMatching.swift */,
+				8456C08F27D0B255001282DE /* BeaconQuery.swift */,
+				8456C09027D0B255001282DE /* BeaconConnectionInfo.swift */,
+				8456C09127D0B255001282DE /* Tzip10Matcher.swift */,
+			);
+			path = Matchers;
+			sourceTree = "<group>";
+		};
+		8456C09227D0B255001282DE /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				8456C09327D0B255001282DE /* QRCaptureService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
 		8457F91126EB9088006803E1 /* EntityToModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -6191,6 +6254,7 @@
 		849013D224A9268D008F705E /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				8456C08527D0B255001282DE /* QRScanner */,
 				8499FE7E27BE7BDE00712589 /* Experimental */,
 				846B49A92769EEC80066B875 /* DApp */,
 				AE39837C272AF7E700BC8A85 /* WalletManagement */,
@@ -6381,6 +6445,7 @@
 		8490142624A935FE008F705E /* Protocols */ = {
 			isa = PBXGroup;
 			children = (
+				8456C0A227D0B4E2001282DE /* ApplicationSettingsPresentable.swift */,
 				843910D8253F8DFB00E3C217 /* StatusPresentable.swift */,
 				842876B524AE05C700D91AD8 /* EmailPresentable.swift */,
 				8428766824ADF27D00D91AD8 /* AuthorizationPresentable.swift */,
@@ -7716,6 +7781,7 @@
 		84DD5F50263DEB9500425ACF /* Validators */ = {
 			isa = PBXGroup;
 			children = (
+				8456C0A027D0B469001282DE /* TransferDataValidatorFactory.swift */,
 				84DD5F63263DFAB700425ACF /* ErrorConditionViolation.swift */,
 				84DD5F76263DFD9C00425ACF /* WarningConditionViolation.swift */,
 				84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */,
@@ -10186,6 +10252,7 @@
 				84BE207825E7D62100B4748C /* ActiveEraInfo.swift in Sources */,
 				8490150324AB6C01008F705E /* WalletNetworkOperationFactory.swift in Sources */,
 				84D2F1B12775999F0040C680 /* DAppParsedExtrinsic.swift in Sources */,
+				8456C09527D0B255001282DE /* QRScannerViewFactory.swift in Sources */,
 				84364D5E252FD09100281F9A /* AssetDetailsViewModel.swift in Sources */,
 				845BB8C925E45D1500E5FCDC /* BondCall.swift in Sources */,
 				F40966B926B297D6008CD244 /* AnalyticsRewardsViewModel.swift in Sources */,
@@ -10291,6 +10358,7 @@
 				F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */,
 				F4D054662729944800210294 /* MoonbeamMakeSignatureRequest.swift in Sources */,
 				843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */,
+				8456C09F27D0B256001282DE /* QRCaptureService.swift in Sources */,
 				843612BB278FD6E000DC739E /* DAppSigningType.swift in Sources */,
 				AE2C84D525EF989A00986716 /* ValidatorInfoWireframe.swift in Sources */,
 				F471897626C297AA006487AD /* AnalyticsValidatorsPage.swift in Sources */,
@@ -10299,6 +10367,7 @@
 				84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */,
 				F409670026B29A58008CD244 /* FWLineChartView.swift in Sources */,
 				842876C124AE2A5C00D91AD8 /* ConnectionItem.swift in Sources */,
+				8456C09827D0B256001282DE /* QRScannerProtocols.swift in Sources */,
 				841BFD6B27BA5765000A16CE /* MetamaskError.swift in Sources */,
 				84EBC55024F660A700459D15 /* EventCenter.swift in Sources */,
 				849ABE862628154900011A2A /* SubscanRawExtrinsicData.swift in Sources */,
@@ -10356,6 +10425,7 @@
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
 				8490147524A94A37008F705E /* RootWireframe.swift in Sources */,
+				8456C09B27D0B256001282DE /* QRMatching.swift in Sources */,
 				842876B424AE059700D91AD8 /* SocialMessage.swift in Sources */,
 				849014BC24AA87E4008F705E /* PinSetupInteractor.swift in Sources */,
 				845BB8D125E45F1300E5FCDC /* NominateCall.swift in Sources */,
@@ -10723,6 +10793,7 @@
 				8401AEC72642A71D000B03E3 /* StakingRebondConfirmationPresenter.swift in Sources */,
 				844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */,
 				84893C0324DA8641008F6A3F /* AccountCreationRequest.swift in Sources */,
+				8456C09927D0B256001282DE /* QRScannerViewController.swift in Sources */,
 				8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */,
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
@@ -11009,6 +11080,7 @@
 				849E17DE279093B4002D1744 /* DAppSearchDAppTableViewCell.swift in Sources */,
 				847F2D4D27AA68DD00AFD476 /* WalletListAssetModel.swift in Sources */,
 				84BEE22325646AC000D05EB3 /* SelectedUsernameChanged.swift in Sources */,
+				8456C09C27D0B256001282DE /* BeaconQuery.swift in Sources */,
 				8467FD4124ED3C72005D486C /* AlignableContentControl.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
@@ -11027,6 +11099,7 @@
 				84DEAA7B265DB987000DDADE /* CrowdloanContributeCall.swift in Sources */,
 				F44225A12727466D00DF512E /* Data+Sha256.swift in Sources */,
 				8467FD5124EFD11E005D486C /* UserDataModel.xcdatamodeld in Sources */,
+				8456C0A127D0B46A001282DE /* TransferDataValidatorFactory.swift in Sources */,
 				84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */,
 				849DEC5925ED756F00C64C19 /* SubstrateCallFactory.swift in Sources */,
 				843612BD278FE54D00DC739E /* DAppOperationConfirmInteractor+Protocol.swift in Sources */,
@@ -11164,6 +11237,7 @@
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
 				844CB57226F9EB2000396E13 /* RuntimeCodingService.swift in Sources */,
 				84B73AD8279C2EDA0071AE16 /* AssetAccountSubscription.swift in Sources */,
+				8456C09727D0B256001282DE /* QRScannerPresenter.swift in Sources */,
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,
 				844DBC64274D2BD6009F8351 /* ModalPickerClosureContext.swift in Sources */,
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
@@ -11276,10 +11350,12 @@
 				846A682C274693F700D1A47A /* CrowdloanExternalContributionSource.swift in Sources */,
 				AE39838E272AFAEF00BC8A85 /* WalletManagementInteractor.swift in Sources */,
 				AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */,
+				8456C09D27D0B256001282DE /* BeaconConnectionInfo.swift in Sources */,
 				84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */,
 				84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */,
 				B893A2515909AB6915196317 /* NetworkInfoViewController.swift in Sources */,
 				607699C7CEEDA3598613DCA0 /* NetworkInfoViewFactory.swift in Sources */,
+				8456C09427D0B255001282DE /* QRScannerWireframe.swift in Sources */,
 				8401AEC62642A71D000B03E3 /* StakingRebondConfirmationLayout.swift in Sources */,
 				847F2D5127AAB4BC00AFD476 /* GradientModel.swift in Sources */,
 				84981CC32666D95F00C4C691 /* GradientButton+Style.swift in Sources */,
@@ -11288,6 +11364,7 @@
 				68FC03E9D94736F7B87EA008 /* AddConnectionProtocols.swift in Sources */,
 				84364D5C252FB65C00281F9A /* AssetDetailsContainingViewFactory.swift in Sources */,
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
+				8456C09A27D0B256001282DE /* BeaconQRDelegate.swift in Sources */,
 				84265E062523D7BE005EEE2D /* WalletInputAmountView.swift in Sources */,
 				8499FEB727BE7BDF00712589 /* SignerOperationRequest.swift in Sources */,
 				612FCA358D3DD9405477C445 /* AddConnectionWireframe.swift in Sources */,
@@ -11319,6 +11396,7 @@
 				84F51077263C027F005D15AE /* SingleValueProviderSubscriber+Default.swift in Sources */,
 				8499FEBE27BE7BDF00712589 /* SignerConnectViewController.swift in Sources */,
 				846A2C4B2529F99400731018 /* AccountRepositoryFactory.swift in Sources */,
+				8456C0A327D0B4E2001282DE /* ApplicationSettingsPresentable.swift in Sources */,
 				AE528E4D26852C380058935A /* ValidatorSearchViewModel.swift in Sources */,
 				F408E9B626B807200043CFE0 /* AnalyticsRewardsHeaderView.swift in Sources */,
 				842BDB30278C57EB00AB4B5A /* DAppBrowserSigningState.swift in Sources */,
@@ -11405,6 +11483,7 @@
 				84E4932727325D4E000534F2 /* WalletListViewModelFactory.swift in Sources */,
 				8401AEC02642A71D000B03E3 /* StakingRebondConfirmationViewModelFactory.swift in Sources */,
 				8472C5AD265CF9C500E2481B /* StakingRewardDestConfirmViewModelFactory.swift in Sources */,
+				8456C09E27D0B256001282DE /* Tzip10Matcher.swift in Sources */,
 				F40966F526B299FC008CD244 /* SubqueryRewardsSource.swift in Sources */,
 				AF8193D9F818638254854232 /* StakingMainProtocols.swift in Sources */,
 				C46EEF6A9A9A601694E72DB1 /* StakingMainWireframe.swift in Sources */,
@@ -11631,6 +11710,7 @@
 				3DF50E6F78F1B1052625BA7D /* ChainSelectionPresenter.swift in Sources */,
 				59745D3C9602745E1417D2F6 /* ChainSelectionInteractor.swift in Sources */,
 				849976D227B3AC3000B14A6C /* MetamaskChain.swift in Sources */,
+				8456C09627D0B256001282DE /* QRScannerViewLayout.swift in Sources */,
 				47995121910705DAE2967AF2 /* ChainSelectionViewController.swift in Sources */,
 				9659B32D4622C8D9679298DF /* ChainSelectionViewFactory.swift in Sources */,
 				B58B2D9494687F357821D53D /* AnalyticsValidatorsProtocols.swift in Sources */,

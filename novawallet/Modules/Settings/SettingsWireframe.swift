@@ -58,6 +58,17 @@ final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentab
         }
     }
 
+    func showExperimental(from view: ControllerBackedProtocol?) {
+        guard let experimental = ExperimentalListViewFactory.createView() else {
+            return
+        }
+
+        if let navigationController = view?.controller.navigationController {
+            experimental.controller.hidesBottomBarWhenPushed = true
+            navigationController.pushViewController(experimental.controller, animated: true)
+        }
+    }
+
     // MARK: Private
 
     private func showPinSetup(from view: ControllerBackedProtocol?) {

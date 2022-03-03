@@ -18,9 +18,9 @@ extension ExperimentalOption {
     var icon: UIImage? {
         switch self {
         case .notifications:
-            return R.image.iconNotificationsList()
+            return R.image.iconDefaultDapp()!
         case .signer:
-            return R.image.iconSignerConnectList()
+            return R.image.iconDefaultDapp()!
         }
     }
 }

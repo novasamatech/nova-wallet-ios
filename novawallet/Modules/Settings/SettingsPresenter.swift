@@ -91,6 +91,8 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         switch row {
         case .wallets:
             wireframe.showAccountSelection(from: view)
+        case .experimental:
+            wireframe.showExperimental(from: view)
         case .language:
             wireframe.showLanguageSelection(from: view)
         case .changePin:

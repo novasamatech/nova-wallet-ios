@@ -3,15 +3,18 @@ import UIKit
 final class SignerConnectViewLayout: UIView {
     let contentView = ScrollableContainerView()
 
-    let appView: IconWithSubtitleView = {
-        let view = IconWithSubtitleView()
+    let appView: IconDetailsView = {
+        let view = IconDetailsView()
+        view.stackView.axis = .vertical
+        view.stackView.spacing = 16.0
         return view
     }()
 
     let accountView: DetailsTriangularedView = UIFactory.default.createAccountView(for: .options, filled: false)
 
-    let statusView: StatusRowView = {
-        let view = StatusRowView()
+    let statusView: RowView<TitleValueView> = {
+        let contentView = TitleValueView()
+        let view = RowView(contentView: contentView, preferredHeight: 48.0)
         return view
     }()
 
@@ -41,7 +44,9 @@ final class SignerConnectViewLayout: UIView {
     }
 
     private func applyLocale() {
-        statusView.locale = locale
+        statusView.rowContentView.titleLabel.text = R.string.localizable.commonStatus(
+            preferredLanguages: locale.rLanguages
+        )
 
         connectionInfoView.titleLabel.text = R.string.localizable
             .signerConnectConnectedTo(preferredLanguages: locale.rLanguages)

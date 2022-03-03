@@ -26,7 +26,10 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
         locale: Locale
     ) -> [(SettingsSection, [SettingsCellViewModel])] {
         [
-            (.general, [createCommonViewViewModel(row: .wallets, locale: locale)]),
+            (.general, [
+                createCommonViewViewModel(row: .wallets, locale: locale),
+                createCommonViewViewModel(row: .experimental, locale: locale)
+            ]),
             (.preferences, [createLanguageViewModel(from: language, locale: locale)]),
             (.security, [createCommonViewViewModel(row: .changePin, locale: locale)]),
             (.community, [
