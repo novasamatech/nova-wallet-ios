@@ -1,21 +1,26 @@
 import UIKit
-import BeaconSDK
+import BeaconCore
+import BeaconClientWallet
+import BeaconBlockchainSubstrate
+import BeaconTransportP2PMatrix
 import IrohaCrypto
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 final class SignerConnectInteractor {
     weak var presenter: SignerConnectInteractorOutputProtocol!
 
-    private var client: Beacon.Client?
+    private var client: Beacon.WalletClient?
 
     let selectedAccount: AccountItem
+    let chain: Chain
     let peer: Beacon.P2PPeer
     let connectionInfo: BeaconConnectionInfo
     let logger: LoggerProtocol?
 
     init(
         selectedAccount: AccountItem,
+        chain: Chain,
         info: BeaconConnectionInfo,
         logger: LoggerProtocol? = nil
     ) {
@@ -30,15 +35,17 @@ final class SignerConnectInteractor {
         )
 
         self.selectedAccount = selectedAccount
+        self.chain = chain
         connectionInfo = info
         self.logger = logger
     }
 
     deinit {
         client?.remove([.p2p(peer)], completion: { _ in })
+        client?.disconnect(completion: { _ in })
     }
 
-    private func connect(using client: Beacon.Client) {
+    private func connect(using client: Beacon.WalletClient) {
         self.client = client
 
         logger?.debug("Did create client")
@@ -75,12 +82,13 @@ final class SignerConnectInteractor {
 
     private func startListenRequests() {
         logger?.debug("Will start listen requests")
-        client?.listen { [weak self] result in
+
+        client?.listen { [weak self] (result: Result<BeaconRequest<Substrate>, Beacon.Error>) in
             self?.onBeaconRequest(result: result)
         }
     }
 
-    private func onBeaconRequest(result: Result<Beacon.Request, Beacon.Error>) {
+    private func onBeaconRequest(result: Result<BeaconRequest<Substrate>, Beacon.Error>) {
         switch result {
         case let .success(request):
             DispatchQueue.main.async {
@@ -95,60 +103,64 @@ final class SignerConnectInteractor {
         }
     }
 
-    private func handle(request: Beacon.Request) {
+    private func handle(request: BeaconRequest<Substrate>) {
         switch request {
         case let .permission(permission):
             handle(permission: permission)
-        case let .broadcast(broadcast):
-            handle(broadcast: broadcast)
-        case let .operation(operation):
-            handle(operation: operation)
-        case let .signPayload(signPaload):
-            handle(signPayload: signPaload)
+        case let .blockchain(substrateRequest):
+            handle(blockchainRequest: substrateRequest)
         }
     }
 
-    private func handle(permission: Beacon.Request.Permission) {
+    private func handle(permission: PermissionSubstrateRequest) {
         logger?.debug("Permission request: \(permission)")
 
-        guard let accountId = try? SS58AddressFactory().accountId(from: selectedAccount.address) else {
-            logger?.error("Can't extract accountId")
-            return
-        }
+        do {
+            let account = Substrate.Account(
+                network: Substrate.Network(
+                    genesisHash: chain.genesisHash,
+                    name: nil,
+                    rpcURL: nil
+                ),
+                addressPrefix: Int(chain.addressType.rawValue),
+                publicKey: selectedAccount.publicKeyData.toHex(includePrefix: true)
+            )
+            let content = try PermissionSubstrateResponse(from: permission, accounts: [account])
 
-        let response = Beacon.Response.Permission(from: permission, publicKey: accountId.toHex())
+            let response = BeaconResponse<Substrate>.permission(content)
 
-        client?.respond(with: Beacon.Response.permission(response)) { [weak self] result in
-            switch result {
-            case .success:
-                self?.logger?.debug("Permission response submitted")
-            case let .failure(error):
-                self?.logger?.error("Did receive permission error: \(error)")
+            client?.respond(with: response) { [weak self] result in
+                switch result {
+                case .success:
+                    self?.logger?.debug("Permission response submitted")
+                case let .failure(error):
+                    self?.logger?.error("Did receive permission error: \(error)")
+                }
             }
+        } catch {
+            logger?.error("Unexpected permission error: \(error)")
         }
     }
 
-    private func handle(broadcast: Beacon.Request.Broadcast) {
-        logger?.info("Broadcast request: \(broadcast)")
-    }
-
-    private func handle(operation: Beacon.Request.Operation) {
-        logger?.info("Operation request: \(operation)")
-    }
-
-    private func handle(signPayload: Beacon.Request.SignPayload) {
+    private func handle(blockchainRequest: BlockchainSubstrateRequest) {
         guard let client = client else {
             return
         }
 
-        logger?.info("Signing request: \(signPayload)")
+        switch blockchainRequest {
+        case let .transfer(content):
+            logger?.error("Unsupported transfer request")
+        case let .sign(content):
 
-        do {
-            let request = try BeaconSigningRequest(client: client, request: signPayload)
-            presenter.didReceive(request: request)
-        } catch {
-            logger?.error("Did receive signing error: \(error)")
-            presenter.didReceiveProtocol(error: error)
+            logger?.info("Signing request: \(content)")
+
+            do {
+                let request = try BeaconSigningRequest(client: client, request: content)
+                presenter.didReceive(request: request)
+            } catch {
+                logger?.error("Did receive signing error: \(error)")
+                presenter.didReceiveProtocol(error: error)
+            }
         }
     }
 
@@ -166,13 +178,24 @@ extension SignerConnectInteractor: SignerConnectInteractorInputProtocol, Account
     }
 
     func connect() {
-        Beacon.Client.create(with: Beacon.Client.Configuration(name: "Fearless")) { [weak self] result in
-            switch result {
-            case let .success(client):
-                self?.connect(using: client)
-            case let .failure(error):
-                self?.logger?.error("Could not create Beacon client, got error: \(error)")
+        do {
+            let matrixFactory = try Transport.P2P.Matrix.factory()
+            let matrixConnection = Beacon.Connection.p2p(.init(client: matrixFactory))
+
+            Beacon.WalletClient.create(with: Beacon.WalletClient.Configuration(
+                name: "Nova Wallet",
+                blockchains: [Substrate.factory],
+                connections: [matrixConnection]
+            )) { [weak self] result in
+                switch result {
+                case let .success(client):
+                    self?.connect(using: client)
+                case let .failure(error):
+                    self?.logger?.error("Could not create Beacon client, got error: \(error)")
+                }
             }
+        } catch {
+            logger?.error("Could not create matrix transport, got error: \(error)")
         }
     }
 }

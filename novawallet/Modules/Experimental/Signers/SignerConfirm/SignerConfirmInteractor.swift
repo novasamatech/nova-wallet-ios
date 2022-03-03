@@ -1,6 +1,6 @@
 import UIKit
 import RobinHood
-import FearlessUtils
+import SubstrateSdk
 
 enum SignerConfirmInteractorError: Error {
     case requestParseError

@@ -53,18 +53,15 @@ final class SignerConnectViewController: UIViewController, ViewHolder {
 
 extension SignerConnectViewController: SignerConnectViewProtocol {
     func didReceive(viewModel: SignerConnectViewModel) {
-        iconViewModel?.cancel(on: rootView.appView.iconView)
-        rootView.appView.iconView.image = nil
+        iconViewModel?.cancel(on: rootView.appView.imageView)
+        rootView.appView.imageView.image = nil
 
-        let size = CGSize(
-            width: IconWithSubtitleView.Constants.iconSize,
-            height: IconWithSubtitleView.Constants.iconSize
-        )
+        let size = CGSize(width: 64, height: 64)
 
         iconViewModel = viewModel.icon
-        viewModel.icon?.loadImage(on: rootView.appView.iconView, targetSize: size, animated: true)
+        viewModel.icon?.loadImage(on: rootView.appView.imageView, targetSize: size, animated: true)
 
-        rootView.appView.subtitleLabel.text = viewModel.title
+        rootView.appView.detailsLabel.text = viewModel.title
         rootView.connectionInfoView.valueLabel.text = viewModel.connection
 
         rootView.accountView.subtitle = viewModel.accountName
@@ -80,25 +77,21 @@ extension SignerConnectViewController: SignerConnectViewProtocol {
     func didReceive(status: SignerConnectStatus) {
         switch status {
         case .active:
-            rootView.statusView.detailsLabel.text = R.string.localizable.signerConnectStatusActive(
+            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusActive(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            rootView.statusView.statusIndicatorView.fillColor = R.color.colorGreen()!
         case .connecting:
-            rootView.statusView.detailsLabel.text = R.string.localizable.signerConnectStatusConnecting(
+            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusConnecting(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            rootView.statusView.statusIndicatorView.fillColor = R.color.colorLightGray()!
         case .inactive:
-            rootView.statusView.detailsLabel.text = R.string.localizable.signerConnectStatusInactive(
+            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusInactive(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            rootView.statusView.statusIndicatorView.fillColor = R.color.colorLightGray()!
         case .failed:
-            rootView.statusView.detailsLabel.text = R.string.localizable.signerConnectStatusFailed(
+            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusFailed(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            rootView.statusView.statusIndicatorView.fillColor = R.color.colorRed()!
         }
     }
 }

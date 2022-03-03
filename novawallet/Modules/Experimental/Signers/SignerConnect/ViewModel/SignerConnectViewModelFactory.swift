@@ -1,5 +1,5 @@
 import Foundation
-import FearlessUtils
+import SubstrateSdk
 
 protocol SignerConnectViewModelFactoryProtocol {
     func createViewModel(
@@ -36,7 +36,7 @@ final class SignerConnectViewModelFactory: SignerConnectViewModelFactoryProtocol
 
     private func createImageViewModel(from icon: String?) -> ImageViewModelProtocol? {
         let defaultIconClosure: () -> ImageViewModelProtocol? = {
-            let defaultIcon = R.image.iconDAppDefault()
+            let defaultIcon = R.image.iconDefaultDapp()
             return defaultIcon.map { WalletStaticImageViewModel(staticImage: $0) }
         }
 

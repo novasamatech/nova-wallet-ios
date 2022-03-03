@@ -14,6 +14,7 @@ enum SettingsRow {
     case github
     case terms
     case privacyPolicy
+    case experimental
 }
 
 extension SettingsRow {
@@ -22,6 +23,8 @@ extension SettingsRow {
         switch self {
         case .wallets:
             return R.string.localizable.profileWalletsTitle(preferredLanguages: locale.rLanguages)
+        case .experimental:
+            return R.string.localizable.experimentalTitle(preferredLanguages: locale.rLanguages)
         case .language:
             return R.string.localizable.profileLanguageTitle(preferredLanguages: locale.rLanguages)
         case .changePin:
@@ -51,6 +54,8 @@ extension SettingsRow {
         switch self {
         case .wallets:
             return R.image.iconWallets()
+        case .experimental:
+            return R.image.iconStar()
         case .language:
             return R.image.iconLanguage()
         case .changePin:

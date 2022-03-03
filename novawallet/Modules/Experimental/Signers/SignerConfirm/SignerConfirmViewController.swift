@@ -80,7 +80,6 @@ extension SignerConfirmViewController: SignerConfirmViewProtocol {
 
         rootView.extrinsicView.subtitleLabel.text = viewModel.extrinsicString
 
-        rootView.extrinsicView.invalidateLayout()
         rootView.extrinsicView.setNeedsLayout()
     }
 

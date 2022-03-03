@@ -33,7 +33,7 @@ final class ExperimentalListViewController: UIViewController, ViewHolder {
     }
 
     private func configure() {
-        rootView.tableView.registerClassForCell(SingleTitleTableViewCell.self)
+        rootView.tableView.registerClassForCell(MultilineTableViewCell.self)
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
         rootView.tableView.rowHeight = 48.0
@@ -52,13 +52,11 @@ extension ExperimentalListViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithType(SingleTitleTableViewCell.self)!
+        let cell = tableView.dequeueReusableCellWithType(MultilineTableViewCell.self)!
+        cell.titleLabel.numberOfLines = 1
 
         let option = options[indexPath.row]
-        cell.bind(
-            title: option.title(for: selectedLocale),
-            icon: option.icon
-        )
+        cell.bind(title: option.title(for: selectedLocale))
         return cell
     }
 }
