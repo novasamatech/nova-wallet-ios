@@ -19,6 +19,8 @@ protocol NftFileDownloadServiceProtocol {
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<JSON, Error>) -> Void
     ) -> CancellableCall?
+
+    func imageUrl(from metadataReference: String) -> URL?
 }
 
 final class NftFileDownloadService {
@@ -128,18 +130,11 @@ extension NftFileDownloadService: NftFileDownloadServiceProtocol {
 
         let fetchWrapper = createLoadMetadataWrapper(for: ipfsHash)
 
-        let mapOperation = ClosureOperation<URL?> {
+        let mapOperation = ClosureOperation<URL?> { [weak self] in
             let metadata = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
             if let image = metadata.image?.stringValue {
-                let parseResult = DistributedUrlParser().parse(url: image)
-
-                switch parseResult {
-                case let .ipfs(hash):
-                    return DistributedStorageOperationFactory.ipfsBaseUrl.appendingPathComponent(hash)
-                case .none:
-                    return nil
-                }
+                return self?.imageUrl(from: image)
             } else {
                 return nil
             }
@@ -192,5 +187,16 @@ extension NftFileDownloadService: NftFileDownloadServiceProtocol {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
 
         return wrapper
+    }
+
+    func imageUrl(from metadataReference: String) -> URL? {
+        let parseResult = DistributedUrlParser().parse(url: metadataReference)
+
+        switch parseResult {
+        case let .ipfs(hash):
+            return DistributedStorageOperationFactory.ipfsBaseUrl.appendingPathComponent(hash)
+        case .none:
+            return nil
+        }
     }
 }

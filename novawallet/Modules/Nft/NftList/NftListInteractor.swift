@@ -1,6 +1,10 @@
 import UIKit
 import RobinHood
 
+enum NftListInteractorError: Error {
+    case nftUnavailable
+}
+
 final class NftListInteractor {
     weak var presenter: NftListInteractorOutputProtocol!
 
@@ -224,6 +228,15 @@ extension NftListInteractor: NftListInteractorInputProtocol {
 
     func refresh() {
         nftProvider?.refresh()
+    }
+
+    func getNftForId(_ identifier: NftModel.Id) {
+        guard let nft = nfts[identifier] else {
+            presenter.didReceive(error: NftListInteractorError.nftUnavailable)
+            return
+        }
+
+        presenter.didReceiveNft(nft)
     }
 }
 

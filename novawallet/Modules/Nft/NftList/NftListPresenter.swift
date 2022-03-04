@@ -48,9 +48,18 @@ extension NftListPresenter: NftListPresenterProtocol {
     func nft(at index: Int) -> NftListViewModel {
         viewModels.allItems[index]
     }
+
+    func selectNft(at index: Int) {
+        let identifier = viewModels.allItems[index].identifier
+        interactor.getNftForId(identifier)
+    }
 }
 
 extension NftListPresenter: NftListInteractorOutputProtocol {
+    func didReceiveNft(_ model: NftChainModel) {
+        wireframe.showNftDetails(from: view, model: model)
+    }
+
     func didReceiveNft(changes: [DataProviderChange<NftChainModel>]) {
         view?.didCompleteRefreshing()
 
@@ -71,5 +80,7 @@ extension NftListPresenter: NftListInteractorOutputProtocol {
         view?.didReceive(changes: viewModels.lastDifferences)
     }
 
-    func didReceive(error _: Error) {}
+    func didReceive(error: Error) {
+        _ = wireframe.present(error: error, from: view, locale: locale)
+    }
 }

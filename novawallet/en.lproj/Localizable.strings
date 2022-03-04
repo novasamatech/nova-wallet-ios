@@ -682,3 +682,4 @@
 "nft.list.item.limited.format" = "#%@ EDITION OF %@";
 "nft.list.item.unlimited" = "UNLIMITED SERIES";
 "nft.list.not.listed" = "Not listed";
+"common.price" = "Price";
