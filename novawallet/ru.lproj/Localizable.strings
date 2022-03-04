@@ -682,3 +682,4 @@
 "nft.list.item.limited.format" = "#%@ ВЫПУСК ИЗ %@";
 "nft.list.item.unlimited" = "НЕОГРАНИЧЕННЫЙ ВЫПУСК";
 "nft.list.not.listed" = "Нет в продаже";
+"common.price" = "Price";
