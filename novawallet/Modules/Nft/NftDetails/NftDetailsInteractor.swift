@@ -36,10 +36,10 @@ class NftDetailsInteractor {
 
             let optionAccount = metaAccounts.first { metaAccount in
                 metaAccount.substrateAccountId == accountId ||
-                metaAccount.ethereumAddress == accountId ||
-                metaAccount.chainAccounts.contains { chainAccount in
-                    chainAccount.accountId == accountId && chainAccount.chainId == chain.chainId
-                }
+                    metaAccount.ethereumAddress == accountId ||
+                    metaAccount.chainAccounts.contains { chainAccount in
+                        chainAccount.accountId == accountId && chainAccount.chainId == chain.chainId
+                    }
             }
 
             let address = try accountId.toAddress(using: chain.chainFormat)
