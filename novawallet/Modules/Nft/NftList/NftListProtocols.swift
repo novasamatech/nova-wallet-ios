@@ -11,16 +11,22 @@ protocol NftListPresenterProtocol: AnyObject {
 
     func numberOfItems() -> Int
     func nft(at index: Int) -> NftListViewModel
+
+    func selectNft(at index: Int)
 }
 
 protocol NftListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func getNftForId(_ identifier: NftModel.Id)
 }
 
 protocol NftListInteractorOutputProtocol: AnyObject {
+    func didReceiveNft(_ model: NftChainModel)
     func didReceiveNft(changes: [DataProviderChange<NftChainModel>])
     func didReceive(error: Error)
 }
 
-protocol NftListWireframeProtocol: AnyObject {}
+protocol NftListWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showNftDetails(from view: NftListViewProtocol?, model: NftChainModel)
+}

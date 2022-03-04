@@ -107,6 +107,12 @@ extension NftListViewController: UICollectionViewDelegateFlowLayout {
 
         return CGSize(width: itemWidth, height: Constants.cellWithPriceHeight)
     }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+
+        presenter.selectNft(at: indexPath.item)
+    }
 }
 
 extension NftListViewController: UICollectionViewDataSource {
