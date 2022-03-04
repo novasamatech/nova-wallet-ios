@@ -19,13 +19,13 @@ extension NftDetailsPresenter: NftDetailsPresenterProtocol {
 }
 
 extension NftDetailsPresenter: NftDetailsInteractorOutputProtocol {
-    func didReceiveName(result: Result<String, Error>) {}
-    func didReceiveLabel(result: Result<NftDetailsLabel, Error>) {}
-    func didReceiveDescription(result: Result<String, Error>) {}
-    func didReceiveMedia(result: Result<NftMediaViewModelProtocol, Error>) {}
-    func didReceiveChain(result: Result<ChainModel, Error>) {}
-    func didReceivePrice(result: Result<PriceData?, Error>) {}
-    func didReceiveCollection(result: Result<NftDetailsCollection?, Error>) {}
-    func didReceiveOwner(result: Result<DisplayAddress, Error>) {}
-    func didReceiveIssuer(result: Result<DisplayAddress?, Error>) {}
+    func didReceiveName(result _: Result<String?, Error>) {}
+    func didReceiveLabel(result _: Result<NftDetailsLabel?, Error>) {}
+    func didReceiveDescription(result _: Result<String?, Error>) {}
+    func didReceiveMedia(result _: Result<NftMediaViewModelProtocol?, Error>) {}
+    func didReceiveChainAsset(result _: Result<ChainAsset, Error>) {}
+    func didReceivePrice(result _: Result<PriceData?, Error>) {}
+    func didReceiveCollection(result _: Result<NftDetailsCollection?, Error>) {}
+    func didReceiveOwner(result _: Result<DisplayAddress, Error>) {}
+    func didReceiveIssuer(result _: Result<DisplayAddress?, Error>) {}
 }
