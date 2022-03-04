@@ -43,7 +43,6 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
 
     private func provideInstanceMetadata() {
         if let metadata = nftChainModel.nft.metadata {
-
             guard let metadataReference = String(data: metadata, encoding: .utf8) else {
                 let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
                 presenter.didReceiveName(result: .failure(error))
@@ -131,7 +130,6 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             let classId = UInt32(collectionId),
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) {
-
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
             let classDetailsWrapper = operationFactory.createClassDetails(
@@ -140,7 +138,8 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 operationManager: OperationManager(operationQueue: operationQueue),
                 codingFactoryClosure: {
                     try codingFactoryOperation.extractNoCancellableResultData()
-                })
+                }
+            )
 
             classDetailsWrapper.addDependency(operations: [codingFactoryOperation])
 
@@ -175,7 +174,6 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             let classId = UInt32(collectionId),
             let connection = chainRegistry.getConnection(for: chain.chainId),
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) {
-
             let codingFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
             let classMetadataWrapper = operationFactory.createClassMetadataWrapper(
@@ -184,7 +182,8 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 operationManager: OperationManager(operationQueue: operationQueue),
                 codingFactoryClosure: {
                     try codingFactoryOperation.extractNoCancellableResultData()
-                })
+                }
+            )
 
             classMetadataWrapper.addDependency(operations: [codingFactoryOperation])
 
@@ -218,7 +217,6 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             let instanceIdString = nftChainModel.nft.instanceId,
             let instanceId = UInt32(instanceIdString),
             let totalIssuance = nftChainModel.nft.totalIssuance {
-
             let label: NftDetailsLabel = .limited(
                 serialNumber: instanceId,
                 totalIssuance: UInt32(bitPattern: totalIssuance)

@@ -2,7 +2,7 @@ import UIKit
 import CommonWallet
 
 final class NftDetailsViewLayout: UIView {
-    let containerView: ScrollableContainerView  = {
+    let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .center
