@@ -102,7 +102,7 @@ class NftDetailsInteractor {
         presenter.didReceive(description: description)
     }
 
-    func provideInstanceMetadata() {
+    func provideInstanceMetadata(_ shouldProvideMedia: Bool = true) {
         if let metadata = nftChainModel.nft.metadata {
             guard let metadataReference = String(data: metadata, encoding: .utf8) else {
                 let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
@@ -110,12 +110,14 @@ class NftDetailsInteractor {
                 return
             }
 
-            let mediaViewModel = NftMediaViewModel(
-                metadataReference: metadataReference,
-                downloadService: nftMetadataService
-            )
+            if shouldProvideMedia {
+                let mediaViewModel = NftMediaViewModel(
+                    metadataReference: metadataReference,
+                    downloadService: nftMetadataService
+                )
 
-            presenter.didReceive(media: mediaViewModel)
+                presenter.didReceive(media: mediaViewModel)
+            }
 
             nftMetadataService.downloadMetadata(
                 for: metadataReference,
