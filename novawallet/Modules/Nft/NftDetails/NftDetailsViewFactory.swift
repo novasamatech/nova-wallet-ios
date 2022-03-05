@@ -63,7 +63,12 @@ struct NftDetailsViewFactory {
                 operationQueue: operationQueue
             )
         case .rmrkV2:
-            return nil
+            return createRMRKV2Interactor(
+                from: nftChainModel,
+                accountRepository: AnyDataProviderRepository(accountRepository),
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
         case .uniques:
             return createUniquesInteractor(
                 from: nftChainModel,
@@ -87,6 +92,20 @@ struct NftDetailsViewFactory {
             nftMetadataService: nftMetadataService,
             operationFactory: RMRKV1OperationFactory(),
             accountRepository: accountRepository,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createRMRKV2Interactor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> RMRKV2DetailsInteractor? {
+        RMRKV2DetailsInteractor(
+            nftChainModel: nftChainModel,
+            accountRepository: accountRepository,
+            nftMetadataService: nftMetadataService,
             operationQueue: operationQueue
         )
     }

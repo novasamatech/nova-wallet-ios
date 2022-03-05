@@ -1099,6 +1099,7 @@
 		84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB427D39DCA00495267 /* NetworkViewModel.swift */; };
 		84AE7AB727D3AC4B00495267 /* RMRKV1DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */; };
 		84AE7AB927D3F96300495267 /* RMRKV1Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB827D3F96300495267 /* RMRKV1Collection.swift */; };
+		84AE7ABB27D411CE00495267 /* RMRKV2DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7ABA27D411CE00495267 /* RMRKV2DetailsInteractor.swift */; };
 		84AEEE6A27A9204C005EBA77 /* WalletListSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE6927A9204C005EBA77 /* WalletListSettingsCell.swift */; };
 		84AEEE6C27A92AEF005EBA77 /* WalletListFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */; };
 		84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */; };
@@ -3110,6 +3111,7 @@
 		84AE7AB427D39DCA00495267 /* NetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewModel.swift; sourceTree = "<group>"; };
 		84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1DetailsInteractor.swift; sourceTree = "<group>"; };
 		84AE7AB827D3F96300495267 /* RMRKV1Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1Collection.swift; sourceTree = "<group>"; };
+		84AE7ABA27D411CE00495267 /* RMRKV2DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV2DetailsInteractor.swift; sourceTree = "<group>"; };
 		84AEEE6927A9204C005EBA77 /* WalletListSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListSettingsCell.swift; sourceTree = "<group>"; };
 		84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListFlowLayout.swift; sourceTree = "<group>"; };
 		84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiDataTypeMapper.swift; sourceTree = "<group>"; };
@@ -9118,6 +9120,7 @@
 				B3CC9CAB00B604CD1AC5B4D8 /* NftDetailsViewFactory.swift */,
 				843CE3A927D22B5200436F4E /* UniquesDetailsInteractor.swift */,
 				84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */,
+				84AE7ABA27D411CE00495267 /* RMRKV2DetailsInteractor.swift */,
 			);
 			path = NftDetails;
 			sourceTree = "<group>";
@@ -10926,6 +10929,7 @@
 				F40966C226B297D6008CD244 /* AnalyticsPeriod.swift in Sources */,
 				F477CD9026306DC6004DF739 /* StakingManageCell.swift in Sources */,
 				AEA2C1B62681E9B20069492E /* ValidatorSearchViewFactory.swift in Sources */,
+				84AE7ABB27D411CE00495267 /* RMRKV2DetailsInteractor.swift in Sources */,
 				AEE4E35225E945AA00D6DF31 /* RewardCalculatorFacade.swift in Sources */,
 				AE4A71D42607B1440017C663 /* NetworkStakingInfoViewModel.swift in Sources */,
 				8439398A2636E8840087658D /* YourValidatorListViewLayout.swift in Sources */,
