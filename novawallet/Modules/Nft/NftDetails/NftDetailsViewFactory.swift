@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SoraFoundation
 
 struct NftDetailsViewFactory {
     static func createView(from model: NftChainModel) -> NftDetailsViewProtocol? {
@@ -26,9 +27,26 @@ struct NftDetailsViewFactory {
 
         let wireframe = NftDetailsWireframe()
 
-        let presenter = NftDetailsPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
 
-        let view = NftDetailsViewController(presenter: presenter)
+        let assetInfo = model.chainAsset.assetDisplayInfo
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
+
+        let quantityFormatter = NumberFormatter.quantity.localizableResource()
+
+        let presenter = NftDetailsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            balanceViewModelFactory: balanceViewModelFactory,
+            quantityFactory: quantityFormatter,
+            chainAsset: model.chainAsset,
+            localizationManager: localizationManager
+        )
+
+        let view = NftDetailsViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter

@@ -2,9 +2,15 @@ import UIKit
 import CommonWallet
 
 final class NftDetailsViewLayout: UIView {
+    static var mediaSize: CGSize {
+        CGSize(
+            width: UIScreen.main.bounds.width,
+            height: 175.0
+        )
+    }
+
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
-        view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .center
         return view
     }()
@@ -46,6 +52,26 @@ final class NftDetailsViewLayout: UIView {
 
     let nftContentView = UIView()
 
+    let stackTableView = StackTableView()
+
+    let ownerCell = StackInfoTableCell()
+    let networkCell: StackNetworkCell = {
+        let view = StackNetworkCell()
+        view.borderView.borderType = []
+        return view
+    }()
+
+    private(set) var collectionCell: StackTableCell?
+    private(set) var issuerCell: StackInfoTableCell?
+
+    var locale = Locale.current {
+        didSet {
+            if oldValue != locale {
+                setupLocalization()
+            }
+        }
+    }
+
     private(set) var priceView: NftDetailsPriceView?
 
     override init(frame: CGRect) {
@@ -75,12 +101,85 @@ final class NftDetailsViewLayout: UIView {
 
         self.priceView = priceView
 
+        setupPriceLocalization()
+
         return priceView
+    }
+
+    func setupIssuerViewIfNeeded() -> StackInfoTableCell {
+        if let issuerCell = issuerCell {
+            return issuerCell
+        }
+
+        let issuerCell = StackInfoTableCell()
+        stackTableView.stackView.insertArranged(view: issuerCell, before: networkCell)
+        self.issuerCell = issuerCell
+
+        setupIssuerLocalization()
+
+        return issuerCell
+    }
+
+    func setupCollectionViewIfNeeded() -> StackTableCell {
+        if let collectionCell = collectionCell {
+            return collectionCell
+        }
+
+        let collectionCell = StackTableCell()
+        stackTableView.stackView.insertArranged(view: collectionCell, before: ownerCell)
+        self.collectionCell = collectionCell
+
+        setupCollectionLocalization()
+
+        return collectionCell
     }
 
     func removePriceViewIfNeeded() {
         priceView?.removeFromSuperview()
         priceView = nil
+    }
+
+    func removeIssueViewIfNeeded() {
+        issuerCell?.removeFromSuperview()
+        issuerCell = nil
+    }
+
+    func removeCollectionViewIfNeeded() {
+        collectionCell?.removeFromSuperview()
+        collectionCell = nil
+    }
+
+    private func setupLocalization() {
+        setupPriceLocalization()
+
+        ownerCell.titleLabel.text = R.string.localizable.nftOwnerTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        networkCell.titleLabel.text = R.string.localizable.commonNetwork(
+            preferredLanguages: locale.rLanguages
+        )
+
+        setupIssuerLocalization()
+        setupCollectionLocalization()
+    }
+
+    private func setupPriceLocalization() {
+        priceView?.titleLabel.text = R.string.localizable.commonPrice(
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    private func setupIssuerLocalization() {
+        issuerCell?.titleLabel.text = R.string.localizable.nftIssuerTitle(
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    private func setupCollectionLocalization() {
+        collectionCell?.titleLabel.text = R.string.localizable.nftCollectionTitle(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func setupLayout() {
@@ -91,7 +190,7 @@ final class NftDetailsViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(mediaView)
         mediaView.snp.makeConstraints { make in
-            make.height.equalTo(175.0)
+            make.size.equalTo(Self.mediaSize)
         }
 
         containerView.stackView.addArrangedSubview(nftContentView)
@@ -99,7 +198,7 @@ final class NftDetailsViewLayout: UIView {
             make.width.equalToSuperview()
         }
 
-        containerView.stackView.setCustomSpacing(24.0, after: nftContentView)
+        containerView.stackView.setCustomSpacing(24.0, after: mediaView)
 
         nftContentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
@@ -120,5 +219,13 @@ final class NftDetailsViewLayout: UIView {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalToSuperview().inset(16.0)
         }
+
+        containerView.stackView.addArrangedSubview(stackTableView)
+        stackTableView.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
+        }
+
+        stackTableView.stackView.addArrangedSubview(ownerCell)
+        stackTableView.stackView.addArrangedSubview(networkCell)
     }
 }
