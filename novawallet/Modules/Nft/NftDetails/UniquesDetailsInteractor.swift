@@ -4,68 +4,25 @@ import SubstrateSdk
 
 final class UniquesDetailsInteractor: NftDetailsInteractor {
     let operationFactory: UniquesOperationFactoryProtocol
-    let metadataService: NftFileDownloadServiceProtocol
     let chainRegistry: ChainRegistryProtocol
 
     init(
         nftChainModel: NftChainModel,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
         operationFactory: UniquesOperationFactoryProtocol,
-        metadataService: NftFileDownloadServiceProtocol,
+        nftMetadataService: NftFileDownloadServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         operationQueue: OperationQueue
     ) {
         self.operationFactory = operationFactory
-        self.metadataService = metadataService
         self.chainRegistry = chainRegistry
 
         super.init(
             nftChainModel: nftChainModel,
             accountRepository: accountRepository,
+            nftMetadataService: nftMetadataService,
             operationQueue: operationQueue
         )
-    }
-
-    private func provideInstanceInfo(from json: JSON) {
-        let name = json.name?.stringValue
-        presenter.didReceive(name: name)
-
-        let description = json.description?.stringValue
-        presenter.didReceive(description: description)
-    }
-
-    private func provideInstanceMetadata() {
-        if let metadata = nftChainModel.nft.metadata {
-            guard let metadataReference = String(data: metadata, encoding: .utf8) else {
-                let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
-                presenter.didReceive(error: error)
-                return
-            }
-
-            let mediaViewModel = NftMediaViewModel(
-                metadataReference: metadataReference,
-                downloadService: metadataService
-            )
-
-            presenter.didReceive(media: mediaViewModel)
-
-            metadataService.downloadMetadata(
-                for: metadataReference,
-                dispatchQueue: .main
-            ) { [weak self] result in
-                switch result {
-                case let .success(json):
-                    self?.provideInstanceInfo(from: json)
-                case let .failure(error):
-                    self?.presenter.didReceive(error: error)
-                }
-            }
-
-        } else {
-            presenter.didReceive(name: nil)
-            presenter.didReceive(media: nil)
-            presenter.didReceive(description: nil)
-        }
     }
 
     private func provideCollectionInfo(from json: JSON) {
@@ -74,7 +31,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
         let imageUrl: URL?
 
         if let imageReference = json.image?.stringValue {
-            imageUrl = metadataService.imageUrl(from: imageReference)
+            imageUrl = nftMetadataService.imageUrl(from: imageReference)
         } else {
             imageUrl = nil
         }
@@ -87,7 +44,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
 
     private func provideCollectionInfo(for dataReference: Data) {
         if let metadataReference = String(data: dataReference, encoding: .utf8) {
-            _ = metadataService.downloadMetadata(
+            _ = nftMetadataService.downloadMetadata(
                 for: metadataReference,
                 dispatchQueue: .main
             ) { [weak self] result in
