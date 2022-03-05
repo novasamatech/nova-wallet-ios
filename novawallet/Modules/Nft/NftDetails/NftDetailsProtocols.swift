@@ -1,9 +1,22 @@
 import BigInt
+import CommonWallet
 
-protocol NftDetailsViewProtocol: ControllerBackedProtocol {}
+protocol NftDetailsViewProtocol: ControllerBackedProtocol {
+    func didReceive(name: String?)
+    func didReceive(label: String?)
+    func didReceive(description: String?)
+    func didReceive(media: NftMediaViewModelProtocol?)
+    func didReceive(price: BalanceViewModelProtocol?)
+    func didReceive(collectionViewModel: StackCellViewModel?)
+    func didReceive(ownerViewModel: DisplayAddressViewModel)
+    func didReceive(issuerViewModel: DisplayAddressViewModel?)
+    func didReceive(networkViewModel: NetworkViewModel)
+}
 
 protocol NftDetailsPresenterProtocol: AnyObject {
     func setup()
+    func selectOwner()
+    func selectIssuer()
 }
 
 protocol NftDetailsInteractorInputProtocol: AnyObject {
@@ -11,15 +24,15 @@ protocol NftDetailsInteractorInputProtocol: AnyObject {
 }
 
 protocol NftDetailsInteractorOutputProtocol: AnyObject {
-    func didReceiveName(result: Result<String?, Error>)
-    func didReceiveLabel(result: Result<NftDetailsLabel?, Error>)
-    func didReceiveDescription(result: Result<String?, Error>)
-    func didReceiveMedia(result: Result<NftMediaViewModelProtocol?, Error>)
-    func didReceiveChainAsset(result: Result<ChainAsset, Error>)
-    func didReceivePrice(result: Result<PriceData?, Error>)
-    func didReceiveCollection(result: Result<NftDetailsCollection?, Error>)
-    func didReceiveOwner(result: Result<DisplayAddress, Error>)
-    func didReceiveIssuer(result: Result<DisplayAddress?, Error>)
+    func didReceive(name: String?)
+    func didReceive(label: NftDetailsLabel?)
+    func didReceive(description: String?)
+    func didReceive(media: NftMediaViewModelProtocol?)
+    func didReceive(price: BigUInt?, tokenPriceData: PriceData?)
+    func didReceive(collection: NftDetailsCollection?)
+    func didReceive(owner: DisplayAddress)
+    func didReceive(issuer: DisplayAddress?)
+    func didReceive(error: Error)
 }
 
-protocol NftDetailsWireframeProtocol: AnyObject {}
+protocol NftDetailsWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {}

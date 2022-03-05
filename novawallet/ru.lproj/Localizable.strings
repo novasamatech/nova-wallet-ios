@@ -683,3 +683,6 @@
 "nft.list.item.unlimited" = "НЕОГРАНИЧЕННЫЙ ВЫПУСК";
 "nft.list.not.listed" = "Нет в продаже";
 "common.price" = "Price";
+"nft.owner.title" = "Владелец";
+"nft.issuer.title" = "Создатель";
+"nft.collection.title" = "Коллекция";
