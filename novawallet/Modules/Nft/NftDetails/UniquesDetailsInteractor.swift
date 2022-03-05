@@ -28,28 +28,26 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
 
     private func provideInstanceInfo(from json: JSON) {
         let name = json.name?.stringValue
-        presenter.didReceiveName(result: .success(name))
+        presenter.didReceive(name: name)
 
         let description = json.description?.stringValue
-        presenter.didReceiveDescription(result: .success(description))
-
-        if let imageReference = json.image?.stringValue {
-            let mediaViewModel = NftMediaViewModel(metadataReference: imageReference, downloadService: metadataService)
-            presenter.didReceiveMedia(result: .success(mediaViewModel))
-        } else {
-            presenter.didReceiveMedia(result: .success(nil))
-        }
+        presenter.didReceive(description: description)
     }
 
     private func provideInstanceMetadata() {
         if let metadata = nftChainModel.nft.metadata {
             guard let metadataReference = String(data: metadata, encoding: .utf8) else {
                 let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
-                presenter.didReceiveName(result: .failure(error))
-                presenter.didReceiveMedia(result: .failure(error))
-                presenter.didReceiveDescription(result: .failure(error))
+                presenter.didReceive(error: error)
                 return
             }
+
+            let mediaViewModel = NftMediaViewModel(
+                metadataReference: metadataReference,
+                downloadService: metadataService
+            )
+
+            presenter.didReceive(media: mediaViewModel)
 
             metadataService.downloadMetadata(
                 for: metadataReference,
@@ -59,16 +57,14 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 case let .success(json):
                     self?.provideInstanceInfo(from: json)
                 case let .failure(error):
-                    self?.presenter.didReceiveName(result: .failure(error))
-                    self?.presenter.didReceiveMedia(result: .failure(error))
-                    self?.presenter.didReceiveDescription(result: .failure(error))
+                    self?.presenter.didReceive(error: error)
                 }
             }
 
         } else {
-            presenter.didReceiveName(result: .success(nil))
-            presenter.didReceiveMedia(result: .success(nil))
-            presenter.didReceiveDescription(result: .success(nil))
+            presenter.didReceive(name: nil)
+            presenter.didReceive(media: nil)
+            presenter.didReceive(description: nil)
         }
     }
 
@@ -86,7 +82,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
         let collectionName = name ?? nftChainModel.nft.collectionId ?? ""
         let collection = NftDetailsCollection(name: collectionName, imageUrl: imageUrl)
 
-        presenter.didReceiveCollection(result: .success(collection))
+        presenter.didReceive(collection: collection)
     }
 
     private func provideCollectionInfo(for dataReference: Data) {
@@ -99,15 +95,12 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 case let .success(json):
                     self?.provideCollectionInfo(from: json)
                 case let .failure(error):
-                    self?.presenter.didReceiveCollection(
-                        result: .failure(error)
-                    )
+                    self?.presenter.didReceive(error: error)
                 }
             }
         } else {
-            presenter.didReceiveCollection(
-                result: .failure(NftDetailsInteractorError.unsupportedMetadata(dataReference))
-            )
+            let error = NftDetailsInteractorError.unsupportedMetadata(dataReference)
+            presenter.didReceive(error: error)
         }
     }
 
@@ -116,9 +109,9 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             DispatchQueue.main.async {
                 switch result {
                 case let .success(address):
-                    self?.presenter.didReceiveIssuer(result: .success(address))
+                    self?.presenter.didReceive(issuer: address)
                 case let .failure(error):
-                    self?.presenter.didReceiveIssuer(result: .failure(error))
+                    self?.presenter.didReceive(error: error)
                 }
             }
         }
@@ -151,10 +144,10 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                         if let issuer = metadata[classId]?.issuer {
                             self?.provideIssuer(for: issuer)
                         } else {
-                            self?.presenter.didReceiveIssuer(result: .success(nil))
+                            self?.presenter.didReceive(issuer: nil)
                         }
                     } catch {
-                        self?.presenter.didReceiveIssuer(result: .failure(error))
+                        self?.presenter.didReceive(error: error)
                     }
                 }
             }
@@ -164,7 +157,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             operationQueue.addOperations(operations, waitUntilFinished: false)
 
         } else {
-            presenter.didReceiveIssuer(result: .success(nil))
+            presenter.didReceive(issuer: nil)
         }
     }
 
@@ -195,10 +188,10 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                         if let data = metadata[classId]?.data {
                             self?.provideCollectionInfo(for: data)
                         } else {
-                            self?.presenter.didReceiveCollection(result: .success(nil))
+                            self?.presenter.didReceive(collection: nil)
                         }
                     } catch {
-                        self?.presenter.didReceiveCollection(result: .failure(error))
+                        self?.presenter.didReceive(error: error)
                     }
                 }
             }
@@ -208,7 +201,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             operationQueue.addOperations(operations, waitUntilFinished: false)
 
         } else {
-            presenter.didReceiveCollection(result: .success(nil))
+            presenter.didReceive(collection: nil)
         }
     }
 
@@ -222,20 +215,20 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 totalIssuance: UInt32(bitPattern: totalIssuance)
             )
 
-            presenter.didReceiveLabel(result: .success(label))
+            presenter.didReceive(label: label)
         } else {
-            presenter.didReceiveLabel(result: .success(.unlimited))
+            presenter.didReceive(label: .unlimited)
         }
     }
 }
 
 extension UniquesDetailsInteractor: NftDetailsInteractorInputProtocol {
     func setup() {
-        provideChainAsset()
         provideInstanceMetadata()
         provideLabel()
         provideOwner()
         provideClassMetadata()
+        provideClassDetails()
         providePrice()
     }
 }

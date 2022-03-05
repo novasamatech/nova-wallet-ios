@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import BigInt
 
 enum NftDetailsInteractorError: Error {
     case unsupportedMetadata(_ data: Data)
@@ -72,15 +73,20 @@ class NftDetailsInteractor {
             for: nftChainModel.nft.ownerId,
             chain: nftChainModel.chainAsset.chain
         ) { [weak self] result in
-            self?.presenter.didReceiveOwner(result: result)
+            switch result {
+            case let .success(owner):
+                self?.presenter.didReceive(owner: owner)
+            case let .failure(error):
+                self?.presenter.didReceive(error: error)
+            }
         }
     }
 
-    func provideChainAsset() {
-        presenter.didReceiveChainAsset(result: .success(nftChainModel.chainAsset))
-    }
-
     func providePrice() {
-        presenter.didReceivePrice(result: .success(nftChainModel.price))
+        if let priceString = nftChainModel.nft.price, let price = BigUInt(priceString) {
+            presenter.didReceive(price: price, tokenPriceData: nftChainModel.price)
+        } else {
+            presenter.didReceive(price: nil, tokenPriceData: nftChainModel.price)
+        }
     }
 }
