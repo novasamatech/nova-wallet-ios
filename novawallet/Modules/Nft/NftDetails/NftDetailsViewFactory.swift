@@ -4,26 +4,9 @@ import SoraFoundation
 
 struct NftDetailsViewFactory {
     static func createView(from model: NftChainModel) -> NftDetailsViewProtocol? {
-        let mapper = MetaAccountMapper()
-        let accountRepository = UserDataStorageFacade.shared.createRepository(
-            mapper: AnyCoreDataMapper(mapper)
-        )
-
-        let nftDownloadService = NftFileDownloadService(
-            cacheBasePath: ApplicationConfig.shared.fileCachePath,
-            fileRepository: FileRepository(),
-            fileDownloadFactory: FileDownloadOperationFactory(),
-            operationQueue: OperationManagerFacade.fileDownloadQueue
-        )
-
-        let interactor = UniquesDetailsInteractor(
-            nftChainModel: model,
-            accountRepository: AnyDataProviderRepository(accountRepository),
-            operationFactory: UniquesOperationFactory(),
-            metadataService: nftDownloadService,
-            chainRegistry: ChainRegistryFacade.sharedRegistry,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
+        guard let interactor = createInteractor(from: model) else {
+            return nil
+        }
 
         let wireframe = NftDetailsWireframe()
 
@@ -52,5 +35,75 @@ struct NftDetailsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        from nftChainModel: NftChainModel
+    ) -> (NftDetailsInteractor & NftDetailsInteractorInputProtocol)? {
+        let mapper = MetaAccountMapper()
+        let accountRepository = UserDataStorageFacade.shared.createRepository(
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let nftMetadataService = NftFileDownloadService(
+            cacheBasePath: ApplicationConfig.shared.fileCachePath,
+            fileRepository: FileRepository(),
+            fileDownloadFactory: FileDownloadOperationFactory(),
+            operationQueue: OperationManagerFacade.fileDownloadQueue
+        )
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+
+        switch NftType(rawValue: nftChainModel.nft.type) {
+        case .rmrkV1:
+            return createRMRKV1Interactor(
+                from: nftChainModel,
+                accountRepository: AnyDataProviderRepository(accountRepository),
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
+        case .rmrkV2:
+            return nil
+        case .uniques:
+            return createUniquesInteractor(
+                from: nftChainModel,
+                accountRepository: AnyDataProviderRepository(accountRepository),
+                nftMetadataService: nftMetadataService,
+                operationQueue: operationQueue
+            )
+        case .none:
+            return nil
+        }
+    }
+
+    private static func createRMRKV1Interactor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> RMRKV1DetailsInteractor? {
+        RMRKV1DetailsInteractor(
+            nftChainModel: nftChainModel,
+            nftMetadataService: nftMetadataService,
+            operationFactory: RMRKV1OperationFactory(),
+            accountRepository: accountRepository,
+            operationQueue: operationQueue
+        )
+    }
+
+    private static func createUniquesInteractor(
+        from nftChainModel: NftChainModel,
+        accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
+        operationQueue: OperationQueue
+    ) -> UniquesDetailsInteractor? {
+        UniquesDetailsInteractor(
+            nftChainModel: nftChainModel,
+            accountRepository: AnyDataProviderRepository(accountRepository),
+            operationFactory: UniquesOperationFactory(),
+            nftMetadataService: nftMetadataService,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            operationQueue: operationQueue
+        )
     }
 }

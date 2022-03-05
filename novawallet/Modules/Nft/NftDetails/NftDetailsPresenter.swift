@@ -72,6 +72,7 @@ final class NftDetailsPresenter {
         let assetInfo = chainAsset.assetDisplayInfo
         if
             let price = price,
+            price > 0,
             let priceDecimal = Decimal.fromSubstrateAmount(
                 price,
                 precision: assetInfo.assetPrecision

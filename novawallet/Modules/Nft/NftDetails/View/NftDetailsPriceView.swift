@@ -71,5 +71,7 @@ final class NftDetailsPriceView: RoundedView {
             make.centerY.equalTo(tokenLabel.snp.centerY)
             make.trailing.equalToSuperview().inset(16.0)
         }
+
+        tokenLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
     }
 }
