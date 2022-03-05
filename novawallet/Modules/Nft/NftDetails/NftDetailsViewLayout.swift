@@ -94,6 +94,7 @@ final class NftDetailsViewLayout: UIView {
 
         let priceView = NftDetailsPriceView()
         containerView.stackView.insertArranged(view: priceView, after: nftContentView)
+        containerView.stackView.setCustomSpacing(12.0, after: priceView)
 
         priceView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2.0 * UIConstants.horizontalInset)

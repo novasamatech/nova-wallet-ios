@@ -1097,6 +1097,8 @@
 		84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB027D38C9400495267 /* DisplayAddressViewModel.swift */; };
 		84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB227D399CF00495267 /* StackNetworkCell.swift */; };
 		84AE7AB527D39DCA00495267 /* NetworkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB427D39DCA00495267 /* NetworkViewModel.swift */; };
+		84AE7AB727D3AC4B00495267 /* RMRKV1DetailsInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */; };
+		84AE7AB927D3F96300495267 /* RMRKV1Collection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AB827D3F96300495267 /* RMRKV1Collection.swift */; };
 		84AEEE6A27A9204C005EBA77 /* WalletListSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE6927A9204C005EBA77 /* WalletListSettingsCell.swift */; };
 		84AEEE6C27A92AEF005EBA77 /* WalletListFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */; };
 		84AF378A272349DA007408D6 /* SiDataTypeMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */; };
@@ -3106,6 +3108,8 @@
 		84AE7AB027D38C9400495267 /* DisplayAddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayAddressViewModel.swift; sourceTree = "<group>"; };
 		84AE7AB227D399CF00495267 /* StackNetworkCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackNetworkCell.swift; sourceTree = "<group>"; };
 		84AE7AB427D39DCA00495267 /* NetworkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewModel.swift; sourceTree = "<group>"; };
+		84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1DetailsInteractor.swift; sourceTree = "<group>"; };
+		84AE7AB827D3F96300495267 /* RMRKV1Collection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMRKV1Collection.swift; sourceTree = "<group>"; };
 		84AEEE6927A9204C005EBA77 /* WalletListSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListSettingsCell.swift; sourceTree = "<group>"; };
 		84AEEE6B27A92AEF005EBA77 /* WalletListFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListFlowLayout.swift; sourceTree = "<group>"; };
 		84AF3789272349DA007408D6 /* SiDataTypeMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SiDataTypeMapper.swift; sourceTree = "<group>"; };
@@ -7956,6 +7960,7 @@
 				8499FE6B27BD319300712589 /* RMRKV2OperationFactory.swift */,
 				8499FEE327C1059700712589 /* RMRKV1SyncService.swift */,
 				8499FEE527C105DB00712589 /* RMRKV2SyncService.swift */,
+				84AE7AB827D3F96300495267 /* RMRKV1Collection.swift */,
 			);
 			path = RMRK;
 			sourceTree = "<group>";
@@ -9112,6 +9117,7 @@
 				A0F285548A6F98B3EB3F170C /* NftDetailsViewLayout.swift */,
 				B3CC9CAB00B604CD1AC5B4D8 /* NftDetailsViewFactory.swift */,
 				843CE3A927D22B5200436F4E /* UniquesDetailsInteractor.swift */,
+				84AE7AB627D3AC4B00495267 /* RMRKV1DetailsInteractor.swift */,
 			);
 			path = NftDetails;
 			sourceTree = "<group>";
@@ -10398,6 +10404,7 @@
 				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
 				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
+				84AE7AB927D3F96300495267 /* RMRKV1Collection.swift in Sources */,
 				84AE7AAF27D38B1800495267 /* DrawableIconViewModel.swift in Sources */,
 				849976D027B3AC0100B14A6C /* MetamaskEvent.swift in Sources */,
 				849976BC27B25A6600B14A6C /* DAppTransportModel.swift in Sources */,
@@ -11530,6 +11537,7 @@
 				8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */,
 				F40966BC26B297D6008CD244 /* AnalyticsRewardsViewModelFactory.swift in Sources */,
 				84EE780627C4DF130027357F /* DAppSearchInteractor.swift in Sources */,
+				84AE7AB727D3AC4B00495267 /* RMRKV1DetailsInteractor.swift in Sources */,
 				2AFF4BA0274D1E4D00D790B4 /* UsernameSetupViewController.swift in Sources */,
 				843A2C6F26A8548B00266F53 /* RowView.swift in Sources */,
 				84EBAB06265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift in Sources */,

@@ -1,6 +1,7 @@
 import UIKit
 import RobinHood
 import BigInt
+import SubstrateSdk
 
 enum NftDetailsInteractorError: Error {
     case unsupportedMetadata(_ data: Data)
@@ -12,16 +13,19 @@ class NftDetailsInteractor {
     let nftChainModel: NftChainModel
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
     let operationQueue: OperationQueue
+    let nftMetadataService: NftFileDownloadServiceProtocol
 
     var chain: ChainModel { nftChainModel.chainAsset.chain }
 
     init(
         nftChainModel: NftChainModel,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
+        nftMetadataService: NftFileDownloadServiceProtocol,
         operationQueue: OperationQueue
     ) {
         self.nftChainModel = nftChainModel
         self.accountRepository = accountRepository
+        self.nftMetadataService = nftMetadataService
         self.operationQueue = operationQueue
     }
 
@@ -87,6 +91,48 @@ class NftDetailsInteractor {
             presenter.didReceive(price: price, tokenPriceData: nftChainModel.price)
         } else {
             presenter.didReceive(price: nil, tokenPriceData: nftChainModel.price)
+        }
+    }
+
+    private func provideInstanceInfo(from json: JSON) {
+        let name = json.name?.stringValue
+        presenter.didReceive(name: name)
+
+        let description = json.description?.stringValue
+        presenter.didReceive(description: description)
+    }
+
+    func provideInstanceMetadata() {
+        if let metadata = nftChainModel.nft.metadata {
+            guard let metadataReference = String(data: metadata, encoding: .utf8) else {
+                let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
+                presenter.didReceive(error: error)
+                return
+            }
+
+            let mediaViewModel = NftMediaViewModel(
+                metadataReference: metadataReference,
+                downloadService: nftMetadataService
+            )
+
+            presenter.didReceive(media: mediaViewModel)
+
+            nftMetadataService.downloadMetadata(
+                for: metadataReference,
+                dispatchQueue: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(json):
+                    self?.provideInstanceInfo(from: json)
+                case let .failure(error):
+                    self?.presenter.didReceive(error: error)
+                }
+            }
+
+        } else {
+            presenter.didReceive(name: nil)
+            presenter.didReceive(media: nil)
+            presenter.didReceive(description: nil)
         }
     }
 }
