@@ -9,9 +9,14 @@ final class NftDetailsViewLayout: UIView {
         )
     }
 
+    var refreshControl: UIRefreshControl? {
+        containerView.scrollView.refreshControl
+    }
+
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.alignment = .center
+        view.scrollView.refreshControl = UIRefreshControl()
         return view
     }()
 

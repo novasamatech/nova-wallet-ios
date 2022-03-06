@@ -12,6 +12,14 @@ final class NftDetailsPresenter {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let quantityFactory: LocalizableResource<NumberFormatter>
 
+    private(set) var loadingProgress: NftDetailsProgress = [] {
+        didSet {
+            if oldValue != .all, loadingProgress == .all {
+                view?.didCompleteRefreshing()
+            }
+        }
+    }
+
     private lazy var polkadotIconGenerator = PolkadotIconGenerator()
     private lazy var gradientFactory = CSSGradientFactory()
 
@@ -171,6 +179,14 @@ extension NftDetailsPresenter: NftDetailsPresenterProtocol {
         interactor.setup()
     }
 
+    func refresh() {
+        provideNetwork()
+
+        loadingProgress = []
+
+        interactor.refresh()
+    }
+
     func selectOwner() {
         guard let owner = owner else {
             return
@@ -190,24 +206,34 @@ extension NftDetailsPresenter: NftDetailsPresenterProtocol {
 
 extension NftDetailsPresenter: NftDetailsInteractorOutputProtocol {
     func didReceive(name: String?) {
+        loadingProgress.formUnion(.name)
+
         view?.didReceive(name: name)
     }
 
     func didReceive(label: NftDetailsLabel?) {
+        loadingProgress.formUnion(.label)
+
         self.label = label
 
         updateLabelViewModel()
     }
 
     func didReceive(description: String?) {
+        loadingProgress.formUnion(.description)
+
         view?.didReceive(description: description)
     }
 
     func didReceive(media: NftMediaViewModelProtocol?) {
+        loadingProgress.formUnion(.media)
+
         view?.didReceive(media: media)
     }
 
     func didReceive(price: BigUInt?, tokenPriceData: PriceData?) {
+        loadingProgress.formUnion(.price)
+
         self.price = price
         self.tokenPriceData = tokenPriceData
 
@@ -215,16 +241,22 @@ extension NftDetailsPresenter: NftDetailsInteractorOutputProtocol {
     }
 
     func didReceive(collection: NftDetailsCollection?) {
+        loadingProgress.formUnion(.collection)
+
         provideCollection(with: collection)
     }
 
     func didReceive(owner: DisplayAddress) {
+        loadingProgress.formUnion(.owner)
+
         self.owner = owner
 
         provideOwner(with: owner)
     }
 
     func didReceive(issuer: DisplayAddress?) {
+        loadingProgress.formUnion(.issuer)
+
         self.issuer = issuer
 
         provideIssuer(with: issuer)

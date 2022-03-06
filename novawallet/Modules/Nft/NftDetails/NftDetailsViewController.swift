@@ -37,6 +37,7 @@ final class NftDetailsViewController: UIViewController, ViewHolder {
 
     private func setupHandlers() {
         rootView.ownerCell.addTarget(self, action: #selector(actionOwner), for: .touchUpInside)
+        rootView.refreshControl?.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
     }
 
     private func createStackViewModel(
@@ -65,6 +66,10 @@ final class NftDetailsViewController: UIViewController, ViewHolder {
 
     @objc func actionIssuer() {
         presenter.selectIssuer()
+    }
+
+    @objc func actionRefresh() {
+        presenter.refresh()
     }
 }
 
@@ -141,6 +146,10 @@ extension NftDetailsViewController: NftDetailsViewProtocol {
 
     func didReceive(networkViewModel: NetworkViewModel) {
         rootView.networkCell.bind(viewModel: networkViewModel)
+    }
+
+    func didCompleteRefreshing() {
+        rootView.refreshControl?.endRefreshing()
     }
 }
 

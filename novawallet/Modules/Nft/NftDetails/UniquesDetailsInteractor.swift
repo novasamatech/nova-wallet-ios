@@ -6,6 +6,9 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
     let operationFactory: UniquesOperationFactoryProtocol
     let chainRegistry: ChainRegistryProtocol
 
+    private(set) var classDetailsOperation: CancellableCall?
+    private(set) var classMetadataOperation: CancellableCall?
+
     init(
         nftChainModel: NftChainModel,
         accountRepository: AnyDataProviderRepository<MetaAccountModel>,
@@ -25,6 +28,11 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
         )
     }
 
+    deinit {
+        classDetailsOperation?.cancel()
+        classMetadataOperation?.cancel()
+    }
+
     private func provideCollectionInfo(from json: JSON) {
         let name = json.name?.stringValue
 
@@ -39,42 +47,58 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
         let collectionName = name ?? nftChainModel.nft.collectionId ?? ""
         let collection = NftDetailsCollection(name: collectionName, imageUrl: imageUrl)
 
-        presenter.didReceive(collection: collection)
+        presenter?.didReceive(collection: collection)
     }
 
     private func provideCollectionInfo(for dataReference: Data) {
+        guard classMetadataOperation == nil else {
+            return
+        }
+
         if let metadataReference = String(data: dataReference, encoding: .utf8) {
-            _ = nftMetadataService.downloadMetadata(
+            classMetadataOperation = nftMetadataService.downloadMetadata(
                 for: metadataReference,
                 dispatchQueue: .main
             ) { [weak self] result in
+                self?.classMetadataOperation = nil
+
                 switch result {
                 case let .success(json):
                     self?.provideCollectionInfo(from: json)
                 case let .failure(error):
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         } else {
             let error = NftDetailsInteractorError.unsupportedMetadata(dataReference)
-            presenter.didReceive(error: error)
+            presenter?.didReceive(error: error)
         }
     }
 
     private func provideIssuer(for issuerId: AccountId) {
-        fetchDisplayAddress(for: issuerId, chain: chain) { [weak self] result in
+        guard classDetailsOperation == nil else {
+            return
+        }
+
+        classDetailsOperation = fetchDisplayAddress(for: issuerId, chain: chain) { [weak self] result in
+            self?.classDetailsOperation = nil
+
             DispatchQueue.main.async {
                 switch result {
                 case let .success(address):
-                    self?.presenter.didReceive(issuer: address)
+                    self?.presenter?.didReceive(issuer: address)
                 case let .failure(error):
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
         }
     }
 
     private func provideClassDetails() {
+        guard classDetailsOperation == nil else {
+            return
+        }
+
         if
             let collectionId = nftChainModel.nft.collectionId,
             let classId = UInt32(collectionId),
@@ -93,32 +117,43 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
 
             classDetailsWrapper.addDependency(operations: [codingFactoryOperation])
 
+            let allWrapper = CompoundOperationWrapper(
+                targetOperation: classDetailsWrapper.targetOperation,
+                dependencies: [codingFactoryOperation] + classDetailsWrapper.dependencies
+            )
+
+            classDetailsOperation = allWrapper
+
             classDetailsWrapper.targetOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
+                    self?.classDetailsOperation = nil
+
                     do {
                         let metadata = try classDetailsWrapper.targetOperation.extractNoCancellableResultData()
 
                         if let issuer = metadata[classId]?.issuer {
                             self?.provideIssuer(for: issuer)
                         } else {
-                            self?.presenter.didReceive(issuer: nil)
+                            self?.presenter?.didReceive(issuer: nil)
                         }
                     } catch {
-                        self?.presenter.didReceive(error: error)
+                        self?.presenter?.didReceive(error: error)
                     }
                 }
             }
 
-            let operations = [codingFactoryOperation] + classDetailsWrapper.allOperations
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
+            operationQueue.addOperations(allWrapper.allOperations, waitUntilFinished: false)
 
         } else {
-            presenter.didReceive(issuer: nil)
+            presenter?.didReceive(issuer: nil)
         }
     }
 
     private func provideClassMetadata() {
+        guard classMetadataOperation == nil else {
+            return
+        }
+
         if
             let collectionId = nftChainModel.nft.collectionId,
             let classId = UInt32(collectionId),
@@ -137,18 +172,27 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
 
             classMetadataWrapper.addDependency(operations: [codingFactoryOperation])
 
+            let allWrapper = CompoundOperationWrapper(
+                targetOperation: classMetadataWrapper.targetOperation,
+                dependencies: [codingFactoryOperation] + classMetadataWrapper.dependencies
+            )
+
+            classMetadataOperation = allWrapper
+
             classMetadataWrapper.targetOperation.completionBlock = { [weak self] in
                 DispatchQueue.main.async {
+                    self?.classMetadataOperation = nil
+
                     do {
                         let metadata = try classMetadataWrapper.targetOperation.extractNoCancellableResultData()
 
                         if let data = metadata[classId]?.data {
                             self?.provideCollectionInfo(for: data)
                         } else {
-                            self?.presenter.didReceive(collection: nil)
+                            self?.presenter?.didReceive(collection: nil)
                         }
                     } catch {
-                        self?.presenter.didReceive(error: error)
+                        self?.presenter?.didReceive(error: error)
                     }
                 }
             }
@@ -158,7 +202,7 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
             operationQueue.addOperations(operations, waitUntilFinished: false)
 
         } else {
-            presenter.didReceive(collection: nil)
+            presenter?.didReceive(collection: nil)
         }
     }
 
@@ -172,20 +216,28 @@ final class UniquesDetailsInteractor: NftDetailsInteractor {
                 totalIssuance: UInt32(bitPattern: totalIssuance)
             )
 
-            presenter.didReceive(label: label)
+            presenter?.didReceive(label: label)
         } else {
-            presenter.didReceive(label: .unlimited)
+            presenter?.didReceive(label: .unlimited)
         }
     }
-}
 
-extension UniquesDetailsInteractor: NftDetailsInteractorInputProtocol {
-    func setup() {
+    private func load() {
         provideInstanceMetadata()
         provideLabel()
         provideOwner()
         provideClassMetadata()
         provideClassDetails()
         providePrice()
+    }
+}
+
+extension UniquesDetailsInteractor: NftDetailsInteractorInputProtocol {
+    func setup() {
+        load()
+    }
+
+    func refresh() {
+        load()
     }
 }
