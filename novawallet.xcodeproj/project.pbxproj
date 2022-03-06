@@ -1522,7 +1522,6 @@
 		A2F7908210A0398EDBBA89BD /* NftDetailsViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3CC9CAB00B604CD1AC5B4D8 /* NftDetailsViewFactory.swift */; };
 		A32E1373E3671D518FFC3BC2 /* YourValidatorListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90CEC70F101AA25A4C00021 /* YourValidatorListViewController.swift */; };
 		A565F118B7ED356099662F03 /* ExportMnemonicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32C2DC4CC106A3509BE651D /* ExportMnemonicTests.swift */; };
-		A7153AFAD066FC41022CE272 /* NftDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA679DF44E1A867E4BCC7390 /* NftDetailsTests.swift */; };
 		A76B05966CE772DD4B822A3C /* AccountCreateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17717EAA891DDB5A0223718F /* AccountCreateTests.swift */; };
 		A871B6ABACAE8A811010F792 /* StakingPayoutConfirmationWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5ACCFD31E14AF4D30955288 /* StakingPayoutConfirmationWireframe.swift */; };
 		A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B6244A9538B39AFCD3A6F3A /* SelectValidatorsStartPresenter.swift */; };
@@ -3984,7 +3983,6 @@
 		F8D0AFE0AC8152E50CEF7E87 /* DAppTxDetailsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppTxDetailsTests.swift; sourceTree = "<group>"; };
 		F972542A9E393928B378E8E6 /* AdvancedWalletTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdvancedWalletTests.swift; sourceTree = "<group>"; };
 		FA59CE2C7AE548ACA9D66FD7 /* CrowdloanContributionConfirmWireframe.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmWireframe.swift; sourceTree = "<group>"; };
-		FA679DF44E1A867E4BCC7390 /* NftDetailsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftDetailsTests.swift; sourceTree = "<group>"; };
 		FAC9CCFF86335A09F9AA7F47 /* DAppOperationConfirmTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DAppOperationConfirmTests.swift; sourceTree = "<group>"; };
 		FBFDF844248CD43AAD13139F /* StakingPayoutConfirmationInteractor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StakingPayoutConfirmationInteractor.swift; sourceTree = "<group>"; };
 		FE0641B2354E6F236CB9A132 /* NftDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NftDetailsPresenter.swift; sourceTree = "<group>"; };
@@ -4619,7 +4617,6 @@
 				16DD59F69357C331C07AD8BF /* CrowdloanYourContributions */,
 				95D068F6BEF07335B108DAAB /* AdvancedWallet */,
 				6607815E771817BBBD8EEFCB /* AssetsManage */,
-				D232FB1A708602156ECAC98A /* NftDetails */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -9085,14 +9082,6 @@
 			path = StakingMain;
 			sourceTree = "<group>";
 		};
-		D232FB1A708602156ECAC98A /* NftDetails */ = {
-			isa = PBXGroup;
-			children = (
-				FA679DF44E1A867E4BCC7390 /* NftDetailsTests.swift */,
-			);
-			path = NftDetails;
-			sourceTree = "<group>";
-		};
 		D5FF95FE026FFD0875E56413 /* AddConnection */ = {
 			isa = PBXGroup;
 			children = (
@@ -12189,7 +12178,6 @@
 				4A83E8B5CC4B87B95CB4E10B /* DAppTxDetailsTests.swift in Sources */,
 				35C9108EA2DBA4E37D4BA6B7 /* DAppAuthConfirmTests.swift in Sources */,
 				D4C93294D28AA773683628BB /* AssetsManageTests.swift in Sources */,
-				A7153AFAD066FC41022CE272 /* NftDetailsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
