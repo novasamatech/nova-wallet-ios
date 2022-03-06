@@ -6,7 +6,7 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
             let mediaString = nftChainModel.nft.media,
             let url = URL(string: mediaString) {
             let mediaViewModel = NftImageViewModel(url: url)
-            presenter.didReceive(media: mediaViewModel)
+            presenter?.didReceive(media: mediaViewModel)
 
             provideInstanceMetadata(false)
         } else {
@@ -15,15 +15,26 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
     }
 
     private func provideLabel() {
-        presenter.didReceive(label: .unlimited)
+        presenter?.didReceive(label: .unlimited)
+    }
+
+    private func load() {
+        provideOwner()
+        providePrice()
+        provideModelInstance()
+        provideLabel()
+
+        presenter?.didReceive(collection: nil)
+        presenter?.didReceive(issuer: nil)
     }
 }
 
 extension RMRKV2DetailsInteractor: NftDetailsInteractorInputProtocol {
     func setup() {
-        provideOwner()
-        providePrice()
-        provideModelInstance()
-        provideLabel()
+        load()
+    }
+
+    func refresh() {
+        load()
     }
 }
