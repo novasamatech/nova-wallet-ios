@@ -1,5 +1,6 @@
 import UIKit
 import CommonWallet
+import SnapKit
 
 final class NftDetailsViewLayout: UIView {
     static var mediaSize: CGSize {
@@ -13,10 +14,19 @@ final class NftDetailsViewLayout: UIView {
         containerView.scrollView.refreshControl
     }
 
+    let navBarBlurView: UIView = {
+        let blurView = TriangularedBlurView()
+        blurView.cornerCut = []
+        return blurView
+    }()
+
+    var navBarBlurViewHeightConstraint: Constraint!
+
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.alignment = .center
         view.scrollView.refreshControl = UIRefreshControl()
+        view.scrollView.contentInsetAdjustmentBehavior = .automatic
         return view
     }()
 
@@ -233,5 +243,12 @@ final class NftDetailsViewLayout: UIView {
 
         stackTableView.stackView.addArrangedSubview(ownerCell)
         stackTableView.stackView.addArrangedSubview(networkCell)
+
+        addSubview(navBarBlurView)
+        navBarBlurView.snp.makeConstraints { make in
+            make.leading.top.trailing.equalToSuperview()
+            self.navBarBlurViewHeightConstraint = make.height.equalTo(0).constraint
+            self.navBarBlurViewHeightConstraint.activate()
+        }
     }
 }
