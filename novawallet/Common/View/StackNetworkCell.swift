@@ -53,6 +53,10 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
         borderView.strokeColor = R.color.colorWhite8()!
 
         isUserInteractionEnabled = false
+
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        rowContentView.valueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 
     private func setupLayout() {
