@@ -8,7 +8,7 @@ enum NftDetailsInteractorError: Error {
 }
 
 class NftDetailsInteractor {
-    weak var presenter: NftDetailsInteractorOutputProtocol!
+    weak var presenter: NftDetailsInteractorOutputProtocol?
 
     let nftChainModel: NftChainModel
     let accountRepository: AnyDataProviderRepository<MetaAccountModel>
@@ -16,6 +16,9 @@ class NftDetailsInteractor {
     let nftMetadataService: NftFileDownloadServiceProtocol
 
     var chain: ChainModel { nftChainModel.chainAsset.chain }
+
+    private(set) var ownerOperation: CancellableCall?
+    private(set) var instanceOperation: CancellableCall?
 
     init(
         nftChainModel: NftChainModel,
@@ -29,11 +32,16 @@ class NftDetailsInteractor {
         self.operationQueue = operationQueue
     }
 
+    deinit {
+        ownerOperation?.cancel()
+        instanceOperation?.cancel()
+    }
+
     func fetchDisplayAddress(
         for accountId: AccountId,
         chain: ChainModel,
         completion: @escaping ((Result<DisplayAddress, Error>) -> Void)
-    ) {
+    ) -> CancellableCall {
         let allAccountsOperation = accountRepository.fetchAllOperation(with: RepositoryFetchOptions())
 
         let mapOperation = ClosureOperation<DisplayAddress> {
@@ -70,43 +78,51 @@ class NftDetailsInteractor {
         mapOperation.addDependency(allAccountsOperation)
 
         operationQueue.addOperations([allAccountsOperation, mapOperation], waitUntilFinished: false)
+
+        return mapOperation
     }
 
     func provideOwner() {
-        fetchDisplayAddress(
+        guard ownerOperation == nil else {
+            return
+        }
+
+        ownerOperation = fetchDisplayAddress(
             for: nftChainModel.nft.ownerId,
             chain: nftChainModel.chainAsset.chain
         ) { [weak self] result in
+            self?.ownerOperation = nil
+
             switch result {
             case let .success(owner):
-                self?.presenter.didReceive(owner: owner)
+                self?.presenter?.didReceive(owner: owner)
             case let .failure(error):
-                self?.presenter.didReceive(error: error)
+                self?.presenter?.didReceive(error: error)
             }
         }
     }
 
     func providePrice() {
         if let priceString = nftChainModel.nft.price, let price = BigUInt(priceString) {
-            presenter.didReceive(price: price, tokenPriceData: nftChainModel.price)
+            presenter?.didReceive(price: price, tokenPriceData: nftChainModel.price)
         } else {
-            presenter.didReceive(price: nil, tokenPriceData: nftChainModel.price)
+            presenter?.didReceive(price: nil, tokenPriceData: nftChainModel.price)
         }
     }
 
     private func provideInstanceInfo(from json: JSON) {
         let name = json.name?.stringValue
-        presenter.didReceive(name: name)
+        presenter?.didReceive(name: name)
 
         let description = json.description?.stringValue
-        presenter.didReceive(description: description)
+        presenter?.didReceive(description: description)
     }
 
     func provideInstanceMetadata(_ shouldProvideMedia: Bool = true) {
         if let metadata = nftChainModel.nft.metadata {
             guard let metadataReference = String(data: metadata, encoding: .utf8) else {
                 let error = NftDetailsInteractorError.unsupportedMetadata(metadata)
-                presenter.didReceive(error: error)
+                presenter?.didReceive(error: error)
                 return
             }
 
@@ -116,25 +132,31 @@ class NftDetailsInteractor {
                     downloadService: nftMetadataService
                 )
 
-                presenter.didReceive(media: mediaViewModel)
+                presenter?.didReceive(media: mediaViewModel)
             }
 
-            nftMetadataService.downloadMetadata(
+            guard instanceOperation == nil else {
+                return
+            }
+
+            instanceOperation = nftMetadataService.downloadMetadata(
                 for: metadataReference,
                 dispatchQueue: .main
             ) { [weak self] result in
+                self?.instanceOperation = nil
+
                 switch result {
                 case let .success(json):
                     self?.provideInstanceInfo(from: json)
                 case let .failure(error):
-                    self?.presenter.didReceive(error: error)
+                    self?.presenter?.didReceive(error: error)
                 }
             }
 
         } else {
-            presenter.didReceive(name: nil)
-            presenter.didReceive(media: nil)
-            presenter.didReceive(description: nil)
+            presenter?.didReceive(name: nil)
+            presenter?.didReceive(media: nil)
+            presenter?.didReceive(description: nil)
         }
     }
 }

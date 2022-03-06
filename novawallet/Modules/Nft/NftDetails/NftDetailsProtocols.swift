@@ -11,16 +11,19 @@ protocol NftDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(ownerViewModel: DisplayAddressViewModel)
     func didReceive(issuerViewModel: DisplayAddressViewModel?)
     func didReceive(networkViewModel: NetworkViewModel)
+    func didCompleteRefreshing()
 }
 
 protocol NftDetailsPresenterProtocol: AnyObject {
     func setup()
+    func refresh()
     func selectOwner()
     func selectIssuer()
 }
 
 protocol NftDetailsInteractorInputProtocol: AnyObject {
     func setup()
+    func refresh()
 }
 
 protocol NftDetailsInteractorOutputProtocol: AnyObject {
