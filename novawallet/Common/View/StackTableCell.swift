@@ -51,5 +51,9 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
         borderView.strokeColor = R.color.colorWhite8()!
 
         isUserInteractionEnabled = false
+
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        valueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        valueView.detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 }

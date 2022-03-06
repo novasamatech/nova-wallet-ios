@@ -59,5 +59,9 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         borderView.strokeColor = R.color.colorWhite8()!
 
         contentInsets = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        valueView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        valueView.detailsView.detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 }
