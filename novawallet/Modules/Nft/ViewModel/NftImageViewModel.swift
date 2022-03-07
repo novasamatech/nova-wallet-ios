@@ -27,7 +27,7 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             scaleProcessor = DownsamplingImageProcessor(size: targetSize)
         }
 
-        let processor = SVGImageProcessor(targetSize: targetSize)
+        let processor = SVGImageProcessor()
             |> scaleProcessor
             |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
 
