@@ -18,10 +18,10 @@ final class NftDetailsViewLayout: UIView {
     var navBarBlurViewHeightConstraint: Constraint!
 
     let containerView: ScrollableContainerView = {
-        let view = ScrollableContainerView()
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: false)
         view.stackView.alignment = .center
         view.scrollView.refreshControl = UIRefreshControl()
-        view.scrollView.contentInsetAdjustmentBehavior = .automatic
+        view.scrollView.contentInsetAdjustmentBehavior = .always
         return view
     }()
 
