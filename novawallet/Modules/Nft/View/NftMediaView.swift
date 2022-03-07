@@ -50,7 +50,7 @@ final class NftMediaView: RoundedView {
         }
     }
 
-    func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize, cornerRadius: CGFloat) {
+    func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize? = nil, cornerRadius: CGFloat? = nil) {
         let isAspectFit = contentView.contentMode == .scaleAspectFit
         let newSettings = NftMediaDisplaySettings(
             targetSize: targetSize,
@@ -175,8 +175,8 @@ final class NftMediaView: RoundedView {
 
         let skeletons = createSkeletons(
             for: spaceSize,
-            targetSize: mediaSettings.targetSize,
-            cornerRadius: mediaSettings.cornerRadius
+            targetSize: mediaSettings.targetSize ?? spaceSize,
+            cornerRadius: mediaSettings.cornerRadius ?? 0.0
         )
 
         let builder = Skrull(size: spaceSize, decorations: [], skeletons: skeletons)

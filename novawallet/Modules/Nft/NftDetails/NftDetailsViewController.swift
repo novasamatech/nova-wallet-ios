@@ -99,11 +99,8 @@ extension NftDetailsViewController: NftDetailsViewProtocol {
 
     func didReceive(media: NftMediaViewModelProtocol?) {
         if let media = media {
-            rootView.mediaView.bind(
-                viewModel: media,
-                targetSize: NftDetailsViewLayout.mediaSize,
-                cornerRadius: 0.0
-            )
+            let size = CGSize(width: UIScreen.main.bounds.width, height: NftImageViewModel.dynamicHeight)
+            rootView.mediaView.bind(viewModel: media, targetSize: size)
         } else {
             rootView.mediaView.bindPlaceholder()
         }
