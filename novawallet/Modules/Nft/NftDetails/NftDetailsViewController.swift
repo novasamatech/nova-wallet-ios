@@ -39,6 +39,8 @@ final class NftDetailsViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.ownerCell.addTarget(self, action: #selector(actionOwner), for: .touchUpInside)
         rootView.refreshControl?.addTarget(self, action: #selector(actionRefresh), for: .valueChanged)
+
+        rootView.mediaView.delegate = self
     }
 
     private func setupNavigationBarStyle() {
@@ -101,8 +103,10 @@ extension NftDetailsViewController: NftDetailsViewProtocol {
         if let media = media {
             let size = CGSize(width: UIScreen.main.bounds.width, height: NftImageViewModel.dynamicHeight)
             rootView.mediaView.bind(viewModel: media, targetSize: size)
+            rootView.setupMediaContentLayout()
         } else {
             rootView.mediaView.bindPlaceholder()
+            rootView.setupMediaPlaceholderLayout()
         }
     }
 
@@ -165,5 +169,15 @@ extension NftDetailsViewController: Localizable {
         if isViewLoaded {
             setupLocalization()
         }
+    }
+}
+
+extension NftDetailsViewController: NftMediaViewDelegate {
+    func nftMediaDidLoad(_: NftMediaView) {
+        rootView.setupMediaContentLayout()
+    }
+
+    func nftMediaDidPlaceholderFallback(_: NftMediaView) {
+        rootView.setupMediaPlaceholderLayout()
     }
 }
