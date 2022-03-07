@@ -3,6 +3,8 @@ import CommonWallet
 import SnapKit
 
 final class NftDetailsViewLayout: UIView {
+    static let mediaPlaceholderHeight: CGFloat = 175.0
+
     var refreshControl: UIRefreshControl? {
         containerView.scrollView.refreshControl
     }
@@ -156,6 +158,19 @@ final class NftDetailsViewLayout: UIView {
     func removeCollectionViewIfNeeded() {
         collectionCell?.removeFromSuperview()
         collectionCell = nil
+    }
+
+    func setupMediaContentLayout() {
+        mediaView.snp.remakeConstraints { make in
+            make.width.equalToSuperview()
+        }
+    }
+
+    func setupMediaPlaceholderLayout() {
+        mediaView.snp.remakeConstraints { make in
+            make.width.equalToSuperview()
+            make.height.equalTo(Self.mediaPlaceholderHeight)
+        }
     }
 
     private func setupLocalization() {
