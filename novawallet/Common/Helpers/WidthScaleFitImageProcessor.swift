@@ -14,9 +14,9 @@ final class WidthScaleFitProcessor: ImageProcessor {
 
             if let maxHeight = maxHeight, maxHeight < height {
                 let width = (maxHeight / kFCrossPlatformImage.size.height) * kFCrossPlatformImage.size.width
-                scaleProcessor = DownsamplingImageProcessor(size: CGSize(width: width, height: maxHeight))
+                scaleProcessor = ResizingImageProcessor(referenceSize: CGSize(width: width, height: maxHeight))
             } else {
-                scaleProcessor = DownsamplingImageProcessor(size: CGSize(width: preferredWidth, height: height))
+                scaleProcessor = ResizingImageProcessor(referenceSize: CGSize(width: preferredWidth, height: height))
             }
 
             return scaleProcessor.process(item: item, options: options)
@@ -32,7 +32,7 @@ final class WidthScaleFitProcessor: ImageProcessor {
         self.preferredWidth = preferredWidth
         self.maxHeight = maxHeight
 
-        let baseIdentifier = "io.novafoundation.novawallet.kf.width.scale.processor"
+        let baseIdentifier = "io.novafoundation.novawallet.kf.width.resize.processor"
 
         if let maxHeight = maxHeight {
             identifier = baseIdentifier + "(\(preferredWidth), \(maxHeight))"
