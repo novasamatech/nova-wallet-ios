@@ -1,6 +1,11 @@
 import UIKit
 import SoraUI
 
+protocol NftMediaViewDelegate: AnyObject {
+    func nftMediaDidLoad(_ view: NftMediaView)
+    func nftMediaDidPlaceholderFallback(_ view: NftMediaView)
+}
+
 final class NftMediaView: RoundedView {
     let contentView: UIImageView = {
         UIImageView()
@@ -17,6 +22,8 @@ final class NftMediaView: RoundedView {
             }
         }
     }
+
+    weak var delegate: NftMediaViewDelegate?
 
     private var viewModel: NftMediaViewModelProtocol?
     private var mediaSettings: NftMediaDisplaySettings?
@@ -113,11 +120,19 @@ final class NftMediaView: RoundedView {
 
             if optionalError == nil {
                 self?.stopSkeletonIfNeeded()
+
+                if isResolved, let strongSelf = self {
+                    strongSelf.delegate?.nftMediaDidLoad(strongSelf)
+                }
             }
 
             if !isResolved {
                 self?.stopSkeletonIfNeeded()
                 self?.setupPlaceholderView()
+
+                if let strongSelf = self {
+                    strongSelf.delegate?.nftMediaDidPlaceholderFallback(strongSelf)
+                }
             }
         }
     }
