@@ -3,13 +3,6 @@ import CommonWallet
 import SnapKit
 
 final class NftDetailsViewLayout: UIView {
-    static var mediaSize: CGSize {
-        CGSize(
-            width: UIScreen.main.bounds.width,
-            height: 175.0
-        )
-    }
-
     var refreshControl: UIRefreshControl? {
         containerView.scrollView.refreshControl
     }
@@ -206,7 +199,7 @@ final class NftDetailsViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(mediaView)
         mediaView.snp.makeConstraints { make in
-            make.size.equalTo(Self.mediaSize)
+            make.width.equalToSuperview()
         }
 
         containerView.stackView.addArrangedSubview(nftContentView)
