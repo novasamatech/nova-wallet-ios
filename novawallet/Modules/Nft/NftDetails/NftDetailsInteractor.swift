@@ -77,9 +77,11 @@ class NftDetailsInteractor {
 
         mapOperation.addDependency(allAccountsOperation)
 
-        operationQueue.addOperations([allAccountsOperation, mapOperation], waitUntilFinished: false)
+        let wrapper = CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [allAccountsOperation])
 
-        return mapOperation
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        return wrapper
     }
 
     func provideOwner() {
