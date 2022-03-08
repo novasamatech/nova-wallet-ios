@@ -2725,7 +2725,6 @@
 		846E5012277999FC0049B659 /* DAppAuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModel.swift; sourceTree = "<group>"; };
 		846E501427799B3E0049B659 /* DAppAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthViewModelFactory.swift; sourceTree = "<group>"; };
 		846E5017277AD3D50049B659 /* DAppList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppList.swift; sourceTree = "<group>"; };
-		846E501A277ADB6B0049B659 /* DAppListState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListState.swift; sourceTree = "<group>"; };
 		846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskSigningState.swift; sourceTree = "<group>"; };
 		846F758027B54D7A00536547 /* EthereumOperationFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumOperationFactory.swift; sourceTree = "<group>"; };
 		846F758127B54D7A00536547 /* EthereumOperationFactor+Protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "EthereumOperationFactor+Protocol.swift"; sourceTree = "<group>"; };
@@ -5978,14 +5977,6 @@
 			path = DApp;
 			sourceTree = "<group>";
 		};
-		846C309827BA2EF000C820D4 /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				846E501A277ADB6B0049B659 /* DAppListState.swift */,
-			);
-			name = "Recovered References";
-			sourceTree = "<group>";
-		};
 		846CA43124E3C6AA004F1B14 /* Pincode */ = {
 			isa = PBXGroup;
 			children = (
@@ -6280,7 +6271,6 @@
 				849013A924A80984008F705E /* Products */,
 				2698CD398B0412EB85D620AB /* Pods */,
 				BFB3965A583F11EF3045E064 /* Frameworks */,
-				846C309827BA2EF000C820D4 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
