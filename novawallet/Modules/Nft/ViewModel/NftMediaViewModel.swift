@@ -3,8 +3,8 @@ import RobinHood
 import Kingfisher
 
 struct NftMediaDisplaySettings: Equatable {
-    let targetSize: CGSize
-    let cornerRadius: CGFloat
+    let targetSize: CGSize?
+    let cornerRadius: CGFloat?
     let animated: Bool
     let isAspectFit: Bool
 }
@@ -12,7 +12,12 @@ struct NftMediaDisplaySettings: Equatable {
 protocol NftMediaViewModelProtocol {
     var identifier: String { get }
 
-    func loadMedia(on imageView: UIImageView, displaySettings: NftMediaDisplaySettings, completion: ((Bool, Error?) -> Void)?)
+    func loadMedia(
+        on imageView: UIImageView,
+        displaySettings: NftMediaDisplaySettings,
+        completion: ((Bool, Error?) -> Void)?
+    )
+
     func cancel(on imageView: UIImageView)
 }
 

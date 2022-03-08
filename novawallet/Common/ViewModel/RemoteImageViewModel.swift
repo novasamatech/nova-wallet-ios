@@ -13,7 +13,7 @@ final class RemoteImageViewModel: NSObject {
 
 extension RemoteImageViewModel: ImageViewModelProtocol {
     func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius: CGFloat, animated: Bool) {
-        let processor = SVGImageProcessor(targetSize: targetSize)
+        let processor = SVGImageProcessor()
             |> DownsamplingImageProcessor(size: targetSize)
             |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
 
@@ -54,7 +54,7 @@ final class WalletRemoteImageViewModel: WalletImageViewModelProtocol {
     var image: UIImage?
 
     func loadImage(with completionBlock: @escaping (UIImage?, Error?) -> Void) {
-        let processor = SVGImageProcessor(targetSize: size)
+        let processor = SVGImageProcessor()
             |> ResizingImageProcessor(referenceSize: size, mode: .aspectFit)
 
         let options: KingfisherOptionsInfo = [
@@ -88,12 +88,14 @@ final class WalletRemoteImageViewModel: WalletImageViewModelProtocol {
 final class RemoteImageSerializer: CacheSerializer {
     static let shared = RemoteImageSerializer()
 
+    private lazy var internalCache = FormatIndicatedCacheSerializer.png
+
     func data(with image: KFCrossPlatformImage, original: Data?) -> Data? {
-        DefaultCacheSerializer.default.data(with: image, original: original)
+        internalCache.data(with: image, original: original)
     }
 
     func image(with data: Data, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
-        if let uiImage = DefaultCacheSerializer.default.image(with: data, options: options) {
+        if let uiImage = internalCache.image(with: data, options: options) {
             return uiImage
         } else {
             let imsvg = SVGKImage(data: data)
@@ -107,8 +109,8 @@ final class SVGImageProcessor: ImageProcessor {
 
     let serializer: RemoteImageSerializer
 
-    init(targetSize: CGSize) {
-        identifier = "io.novafoundation.novawallet.kf.svg.processor(\(targetSize)"
+    init() {
+        identifier = "io.novafoundation.novawallet.kf.svg.processor"
         serializer = RemoteImageSerializer.shared
     }
 
@@ -117,7 +119,6 @@ final class SVGImageProcessor: ImageProcessor {
         case let .image(image):
             return image
         case let .data(data):
-
             return serializer.image(with: data, options: options)
         }
     }

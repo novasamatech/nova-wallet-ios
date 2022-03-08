@@ -682,3 +682,7 @@
 "nft.list.item.limited.format" = "#%@ EDITION OF %@";
 "nft.list.item.unlimited" = "UNLIMITED SERIES";
 "nft.list.not.listed" = "Not listed";
+"common.price" = "Price";
+"nft.owner.title" = "Owned by";
+"nft.issuer.title" = "Created by";
+"nft.collection.title" = "Collection";

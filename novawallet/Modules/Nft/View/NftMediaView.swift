@@ -1,6 +1,11 @@
 import UIKit
 import SoraUI
 
+protocol NftMediaViewDelegate: AnyObject {
+    func nftMediaDidLoad(_ view: NftMediaView)
+    func nftMediaDidPlaceholderFallback(_ view: NftMediaView)
+}
+
 final class NftMediaView: RoundedView {
     let contentView: UIImageView = {
         UIImageView()
@@ -17,6 +22,8 @@ final class NftMediaView: RoundedView {
             }
         }
     }
+
+    weak var delegate: NftMediaViewDelegate?
 
     private var viewModel: NftMediaViewModelProtocol?
     private var mediaSettings: NftMediaDisplaySettings?
@@ -50,7 +57,7 @@ final class NftMediaView: RoundedView {
         }
     }
 
-    func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize, cornerRadius: CGFloat) {
+    func bind(viewModel: NftMediaViewModelProtocol, targetSize: CGSize? = nil, cornerRadius: CGFloat? = nil) {
         let isAspectFit = contentView.contentMode == .scaleAspectFit
         let newSettings = NftMediaDisplaySettings(
             targetSize: targetSize,
@@ -113,11 +120,19 @@ final class NftMediaView: RoundedView {
 
             if optionalError == nil {
                 self?.stopSkeletonIfNeeded()
+
+                if isResolved, let strongSelf = self {
+                    strongSelf.delegate?.nftMediaDidLoad(strongSelf)
+                }
             }
 
             if !isResolved {
                 self?.stopSkeletonIfNeeded()
                 self?.setupPlaceholderView()
+
+                if let strongSelf = self {
+                    strongSelf.delegate?.nftMediaDidPlaceholderFallback(strongSelf)
+                }
             }
         }
     }
@@ -175,8 +190,8 @@ final class NftMediaView: RoundedView {
 
         let skeletons = createSkeletons(
             for: spaceSize,
-            targetSize: mediaSettings.targetSize,
-            cornerRadius: mediaSettings.cornerRadius
+            targetSize: mediaSettings.targetSize ?? spaceSize,
+            cornerRadius: mediaSettings.cornerRadius ?? 0.0
         )
 
         let builder = Skrull(size: spaceSize, decorations: [], skeletons: skeletons)
