@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 
 class BaseFetchOperationFactory {
-    func createFetchOperation<T>(from url: URL) -> BaseOperation<T> where T: Decodable {
+    func createFetchOperation<T>(from url: URL, shouldUseCache: Bool = true) -> BaseOperation<T> where T: Decodable {
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
 
@@ -10,6 +10,10 @@ class BaseFetchOperationFactory {
                 HttpContentType.json.rawValue,
                 forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
             )
+
+            if !shouldUseCache {
+                request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+            }
 
             request.httpMethod = HttpMethod.get.rawValue
             return request
