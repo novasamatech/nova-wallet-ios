@@ -15,11 +15,11 @@ final class RMRKV2OperationFactory: BaseFetchOperationFactory {
 extension RMRKV2OperationFactory: RMRKV2NftOperationFactoryProtocol {
     func fetchBirdNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]> {
         let url = Self.baseURL.appendingPathComponent(Self.birdsPath).appendingPathComponent(address)
-        return createFetchOperation(from: url)
+        return createFetchOperation(from: url, shouldUseCache: false)
     }
 
     func fetchItemNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]> {
         let url = Self.baseURL.appendingPathComponent(Self.itemsPath).appendingPathComponent(address)
-        return createFetchOperation(from: url)
+        return createFetchOperation(from: url, shouldUseCache: false)
     }
 }
