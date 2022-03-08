@@ -2,6 +2,8 @@ import UIKit
 import Kingfisher
 
 final class NftImageViewModel: NftMediaViewModelProtocol {
+    static let dynamicHeight: CGFloat = -1.0
+
     let url: URL
 
     var identifier: String { url.absoluteString }
@@ -19,20 +21,29 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         let cornerRadius = displaySettings.cornerRadius
         let animated = displaySettings.animated
 
-        let scaleProcessor: ImageProcessor
+        var compoundProcessor: ImageProcessor = SVGImageProcessor()
 
-        if displaySettings.isAspectFit {
-            scaleProcessor = ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFit)
-        } else {
-            scaleProcessor = DownsamplingImageProcessor(size: targetSize)
+        if let targetSize = targetSize {
+            let scaleProcessor: ImageProcessor
+
+            if targetSize.height == Self.dynamicHeight {
+                scaleProcessor = WidthScaleFitProcessor(preferredWidth: targetSize.width, maxHeight: nil)
+            } else if displaySettings.isAspectFit {
+                scaleProcessor = ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFit)
+            } else {
+                scaleProcessor = DownsamplingImageProcessor(size: targetSize)
+            }
+
+            compoundProcessor = compoundProcessor.append(another: scaleProcessor)
         }
 
-        let processor = SVGImageProcessor(targetSize: targetSize)
-            |> scaleProcessor
-            |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
+        if let cornerRadius = cornerRadius, cornerRadius > 0 {
+            let cornerRadiusProcessor = RoundCornerImageProcessor(cornerRadius: cornerRadius)
+            compoundProcessor = compoundProcessor.append(another: cornerRadiusProcessor)
+        }
 
         var options: KingfisherOptionsInfo = [
-            .processor(processor),
+            .processor(compoundProcessor),
             .scaleFactor(UIScreen.main.scale),
             .cacheSerializer(RemoteImageSerializer.shared),
             .cacheOriginalImage,

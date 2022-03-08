@@ -3,7 +3,7 @@ import SoraUI
 
 final class WalletListNftsCell: UICollectionViewCell {
     private enum Constants {
-        static let mediaSize = CGSize(width: 32.0, height: 32.0)
+        static let mediaSize = CGSize(width: 34.0, height: 34.0)
         static let mediaStrokeSize: CGFloat = 2.0
         static let mediaCornerRadius: CGFloat = 8.0
         static let mediaSpacing: CGFloat = 20.0

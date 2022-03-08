@@ -6,6 +6,8 @@ final class ScrollableContainerView: UIView {
 
     private var scrollBottom: NSLayoutConstraint!
 
+    let respectsSafeArea: Bool
+
     var scrollBottomOffset: CGFloat {
         get {
             -scrollBottom.constant
@@ -20,7 +22,9 @@ final class ScrollableContainerView: UIView {
         }
     }
 
-    init(axis: NSLayoutConstraint.Axis) {
+    init(axis: NSLayoutConstraint.Axis, respectsSafeArea: Bool = true) {
+        self.respectsSafeArea = respectsSafeArea
+
         super.init(frame: .zero)
 
         configureScrollView()
@@ -28,6 +32,8 @@ final class ScrollableContainerView: UIView {
     }
 
     override init(frame: CGRect) {
+        respectsSafeArea = true
+
         super.init(frame: frame)
 
         configureScrollView()
@@ -46,7 +52,12 @@ final class ScrollableContainerView: UIView {
 
         scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         scrollView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
-        scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+
+        if respectsSafeArea {
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        } else {
+            scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        }
 
         let bottomConstraint = scrollView.bottomAnchor.constraint(equalTo: bottomAnchor)
         bottomConstraint.isActive = true
