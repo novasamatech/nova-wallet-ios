@@ -88,6 +88,14 @@ final class NftListViewController: UIViewController, ViewHolder {
         title = R.string.localizable.walletListYourNftsTitle(preferredLanguages: selectedLocale.rLanguages)
     }
 
+    private func preferredItemWidth(from totalWidth: CGFloat) -> CGFloat {
+        let contentInsets = NftListViewLayout.contentInsets
+        let horizontalSpacing = NftListViewLayout.horizontalSpacing
+        let spacing: CGFloat = contentInsets.left + contentInsets.right + horizontalSpacing
+
+        return (totalWidth - spacing) / 2.0
+    }
+
     @objc func actionRefresh() {
         presenter.refresh()
     }
@@ -99,11 +107,7 @@ extension NftListViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         sizeForItemAt _: IndexPath
     ) -> CGSize {
-        let contentInsets = NftListViewLayout.contentInsets
-        let horizontalSpacing = NftListViewLayout.horizontalSpacing
-        let spacing: CGFloat = contentInsets.left + contentInsets.right + horizontalSpacing
-
-        let itemWidth = (collectionView.frame.width - spacing) / 2.0
+        let itemWidth = preferredItemWidth(from: collectionView.frame.width)
 
         return CGSize(width: itemWidth, height: Constants.cellWithPriceHeight)
     }
@@ -128,7 +132,10 @@ extension NftListViewController: UICollectionViewDataSource {
 
         let cell = collectionView.dequeueReusableCellWithType(NftListItemWithPriceCell.self, for: indexPath)!
         cell.locale = selectedLocale
-        cell.bind(viewModel: viewModel)
+
+        let itemWidth = preferredItemWidth(from: collectionView.frame.width)
+
+        cell.bind(viewModel: viewModel, preferredWidth: itemWidth)
 
         return cell
     }
