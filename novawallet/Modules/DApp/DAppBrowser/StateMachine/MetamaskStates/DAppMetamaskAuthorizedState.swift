@@ -5,7 +5,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         _ messageId: MetamaskMessage.Id,
         from dataSource: DAppBrowserStateDataSource
     ) throws {
-        let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
+        let addresses = dataSource.fetchEthereumAddresses(for: chain.chainId).compactMap { $0.toEthereumAddressWithChecksum() }
 
         provideResponse(for: messageId, results: addresses, nextState: self)
     }
@@ -35,7 +35,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
     }
 
     func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress? {
-        dataSource.fetchEthereumAddresses().first?.toEthereumAddressWithChecksum()
+        dataSource.fetchEthereumAddresses(for: chain.chainId).first?.toEthereumAddressWithChecksum()
     }
 
     func handle(message: MetamaskMessage, host _: String, dataSource: DAppBrowserStateDataSource) {

@@ -13,7 +13,9 @@ class DAppMetamaskBaseState {
         for messageId: MetamaskMessage.Id,
         dataSource: DAppBrowserStateDataSource
     ) {
-        let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
+        let addresses = dataSource.fetchEthereumAddresses(for: chain.chainId).compactMap {
+            $0.toEthereumAddressWithChecksum()
+        }
 
         let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
 
@@ -58,8 +60,10 @@ class DAppMetamaskBaseState {
             )
 
             let responseCommand = createNullResponseCommand(for: message.identifier)
+            let reloadCommand = createReloadCommand()
+            let commands = changeChainCommands + [responseCommand, reloadCommand]
 
-            let content = createContentWithCommands(changeChainCommands + [responseCommand])
+            let content = createContentWithCommands(commands)
 
             let response = DAppScriptResponse(content: content)
 
@@ -93,8 +97,10 @@ class DAppMetamaskBaseState {
             )
 
             let responseCommand = createNullResponseCommand(for: message.identifier)
+            let reloadCommand = createReloadCommand()
+            let commands = changeChainCommands + [responseCommand, reloadCommand]
 
-            let content = createContentWithCommands(changeChainCommands + [responseCommand])
+            let content = createContentWithCommands(commands)
 
             let response = DAppScriptResponse(content: content)
 
