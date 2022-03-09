@@ -22,6 +22,7 @@ final class NftDetailsViewLayout: UIView {
         view.stackView.alignment = .center
         view.scrollView.refreshControl = UIRefreshControl()
         view.scrollView.contentInsetAdjustmentBehavior = .always
+        view.scrollView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
         return view
     }()
 

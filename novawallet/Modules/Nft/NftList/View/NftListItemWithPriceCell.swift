@@ -32,10 +32,10 @@ final class NftListItemWithPriceCell: NftListItemCell {
         setupLayout()
     }
 
-    override func bind(viewModel: NftListViewModel) {
+    override func bind(viewModel: NftListViewModel, preferredWidth: CGFloat) {
         applyPrice(viewModel.price)
 
-        super.bind(viewModel: viewModel)
+        super.bind(viewModel: viewModel, preferredWidth: preferredWidth)
     }
 
     private func applyPrice(_ viewModel: BalanceViewModelProtocol?) {

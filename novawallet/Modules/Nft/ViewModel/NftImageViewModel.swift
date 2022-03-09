@@ -31,7 +31,10 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             } else if displaySettings.isAspectFit {
                 scaleProcessor = ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFit)
             } else {
-                scaleProcessor = DownsamplingImageProcessor(size: targetSize)
+                let resizeProcessor = ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFill)
+                let cropProcessor = CroppingImageProcessor(size: targetSize)
+
+                scaleProcessor = resizeProcessor |> cropProcessor
             }
 
             compoundProcessor = compoundProcessor.append(another: scaleProcessor)

@@ -12,10 +12,14 @@ final class RemoteImageViewModel: NSObject {
 }
 
 extension RemoteImageViewModel: ImageViewModelProtocol {
-    func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius: CGFloat, animated: Bool) {
-        let processor = SVGImageProcessor()
-            |> DownsamplingImageProcessor(size: targetSize)
-            |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
+    func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius: CGFloat?, animated: Bool) {
+        var processor: ImageProcessor = SVGImageProcessor() |>
+            ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFill) |>
+            CroppingImageProcessor(size: targetSize)
+
+        if let cornerRadius = cornerRadius, cornerRadius > 0 {
+            processor = processor |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
+        }
 
         var options: KingfisherOptionsInfo = [
             .processor(processor),

@@ -31,6 +31,7 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
         viewModel?.imageViewModel?.loadImage(
             on: iconImageView,
             targetSize: CGSize(width: imageSize, height: imageSize),
+            cornerRadius: imageSize / 2.0,
             animated: true
         )
     }
