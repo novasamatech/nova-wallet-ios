@@ -18,7 +18,7 @@ final class WalletStaticImageViewModel: WalletImageViewModelProtocol {
 }
 
 extension WalletStaticImageViewModel: ImageViewModelProtocol {
-    func loadImage(on imageView: UIImageView, targetSize _: CGSize, cornerRadius _: CGFloat, animated _: Bool) {
+    func loadImage(on imageView: UIImageView, targetSize _: CGSize, cornerRadius _: CGFloat?, animated _: Bool) {
         imageView.image = staticImage
     }
 
