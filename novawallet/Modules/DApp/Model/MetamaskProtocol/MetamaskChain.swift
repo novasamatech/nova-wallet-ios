@@ -39,4 +39,17 @@ extension MetamaskChain {
             iconUrls: nil
         )
     }
+
+    func appending(iconUrl: String) -> MetamaskChain {
+        let iconUrls = (self.iconUrls ?? []) + [iconUrl]
+
+        return MetamaskChain(
+            chainId: chainId,
+            chainName: chainName,
+            nativeCurrency: nativeCurrency,
+            rpcUrls: rpcUrls,
+            blockExplorerUrls: blockExplorerUrls,
+            iconUrls: iconUrls
+        )
+    }
 }
