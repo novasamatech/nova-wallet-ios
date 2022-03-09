@@ -16,7 +16,7 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
     func canHandleMessage() -> Bool { false }
 
     func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress? {
-        dataSource.fetchEthereumAddresses().first?.toEthereumAddressWithChecksum()
+        dataSource.fetchEthereumAddresses(for: chain.chainId).first?.toEthereumAddressWithChecksum()
     }
 
     func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
