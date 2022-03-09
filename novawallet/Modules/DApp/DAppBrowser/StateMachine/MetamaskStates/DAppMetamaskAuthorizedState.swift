@@ -5,7 +5,9 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         _ messageId: MetamaskMessage.Id,
         from dataSource: DAppBrowserStateDataSource
     ) throws {
-        let addresses = dataSource.fetchEthereumAddresses().compactMap { $0.toEthereumAddressWithChecksum() }
+        let addresses = dataSource.fetchEthereumAddresses(for: chain.chainId).compactMap {
+            $0.toEthereumAddressWithChecksum()
+        }
 
         provideResponse(for: messageId, results: addresses, nextState: self)
     }
@@ -35,7 +37,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
     }
 
     func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress? {
-        dataSource.fetchEthereumAddresses().first?.toEthereumAddressWithChecksum()
+        dataSource.fetchEthereumAddresses(for: chain.chainId).first?.toEthereumAddressWithChecksum()
     }
 
     func handle(message: MetamaskMessage, host _: String, dataSource: DAppBrowserStateDataSource) {
@@ -46,6 +48,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
             case .addEthereumChain:
                 addChain(
                     from: message,
+                    dataSource: dataSource,
                     nextStateSuccessClosure: { newChain in
                         DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
                     }, nextStateFailureClosure: { _ in
@@ -55,6 +58,7 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
             case .switchEthereumChain:
                 switchChain(
                     from: message,
+                    dataSource: dataSource,
                     nextStateSuccessClosure: { newChain in
                         DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: newChain)
                     }, nextStateFailureClosure: { _ in
