@@ -84,6 +84,7 @@ extension DAppMetamaskWaitingAuthState: DAppMetamaskStateProtocol {
         case .switchEthereumChain:
             switchChain(
                 from: message,
+                dataSource: dataSource,
                 nextStateSuccessClosure: { newChain in
                     DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
                 },
@@ -94,6 +95,7 @@ extension DAppMetamaskWaitingAuthState: DAppMetamaskStateProtocol {
         case .addEthereumChain:
             addChain(
                 from: message,
+                dataSource: dataSource,
                 nextStateSuccessClosure: { newChain in
                     DAppMetamaskWaitingAuthState(stateMachine: stateMachine, chain: newChain)
                 }, nextStateFailureClosure: { _ in
