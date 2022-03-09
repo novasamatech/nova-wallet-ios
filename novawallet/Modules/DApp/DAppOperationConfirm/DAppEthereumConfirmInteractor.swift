@@ -122,6 +122,14 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             return
         }
 
+        let networkUrl: URL?
+
+        if let iconUrlString = chain.iconUrls?.first, let url = URL(string: iconUrlString) {
+            networkUrl = url
+        } else {
+            networkUrl = nil
+        }
+
         let model = DAppOperationConfirmModel(
             accountName: request.wallet.name,
             walletAccountId: request.wallet.substrateAccountId,
@@ -131,7 +139,7 @@ final class DAppEthereumConfirmInteractor: DAppOperationBaseInteractor {
             utilityAssetPrecision: chain.nativeCurrency.decimals,
             dApp: request.dApp,
             dAppIcon: request.dAppIcon,
-            networkIcon: request.dAppIcon
+            networkIcon: networkUrl
         )
 
         presenter?.didReceive(modelResult: .success(model))

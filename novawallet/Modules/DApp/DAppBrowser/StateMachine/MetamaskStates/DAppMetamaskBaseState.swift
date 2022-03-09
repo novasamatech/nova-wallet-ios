@@ -9,6 +9,25 @@ class DAppMetamaskBaseState {
         self.chain = chain
     }
 
+    func extendingMetamaskChainWithSubstrate(_ chain: MetamaskChain, dataSource: DAppBrowserStateDataSource) -> MetamaskChain {
+        if let substrateChain = dataSource.fetchChainByEthereumChainId(chain.chainId) {
+            return chain.appending(iconUrl: substrateChain.icon.absoluteString)
+        } else {
+            return chain
+        }
+    }
+
+    private func createChain(
+        from message: MetamaskMessage,
+        dataSource: DAppBrowserStateDataSource
+    ) -> MetamaskChain? {
+        guard let newChain = try? message.object?.map(to: MetamaskChain.self) else {
+            return nil
+        }
+
+        return extendingMetamaskChainWithSubstrate(newChain, dataSource: dataSource)
+    }
+
     func approveAccountAccess(
         for messageId: MetamaskMessage.Id,
         dataSource: DAppBrowserStateDataSource
@@ -35,6 +54,7 @@ class DAppMetamaskBaseState {
 
     func switchChain(
         from message: MetamaskMessage,
+        dataSource: DAppBrowserStateDataSource,
         nextStateSuccessClosure: (MetamaskChain) -> DAppMetamaskStateProtocol,
         nextStateFailureClosure: (MetamaskError) -> DAppMetamaskStateProtocol
     ) {
@@ -51,7 +71,10 @@ class DAppMetamaskBaseState {
             return
         }
 
-        let ethereumChain = MetamaskChain.etheremChain
+        let ethereumChain = extendingMetamaskChainWithSubstrate(
+            MetamaskChain.etheremChain,
+            dataSource: dataSource
+        )
 
         if request.chainId == ethereumChain.chainId {
             let changeChainCommands = createChangeChainCommands(
@@ -79,10 +102,11 @@ class DAppMetamaskBaseState {
 
     func addChain(
         from message: MetamaskMessage,
+        dataSource: DAppBrowserStateDataSource,
         nextStateSuccessClosure: (MetamaskChain) -> DAppMetamaskStateProtocol,
         nextStateFailureClosure: (MetamaskError) -> DAppMetamaskStateProtocol
     ) {
-        guard let newChain = try? message.object?.map(to: MetamaskChain.self) else {
+        guard let newChain = createChain(from: message, dataSource: dataSource) else {
             let error = MetamaskError.invalidParams(with: "can't parse chain")
 
             let nextState = nextStateFailureClosure(error)
