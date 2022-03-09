@@ -3,8 +3,9 @@ import SoraUI
 
 class NftListItemCell: UICollectionViewCell {
     private enum Constants {
-        static let imageSize = CGSize(width: 154.0, height: 154.0)
+        static let imageHeight = 154.0
         static let imageCornerRadius: CGFloat = 8.0
+        static let imageHorizontalInset: CGFloat = 6.0
     }
 
     let blurBackgroundView: TriangularedBlurView = {
@@ -17,7 +18,7 @@ class NftListItemCell: UICollectionViewCell {
     let mediaView: NftMediaView = {
         let view = NftMediaView()
         view.contentInsets = .zero
-        view.contentView.contentMode = .scaleAspectFit
+        view.contentView.contentMode = .scaleAspectFill
         view.applyFilledBackgroundStyle()
         view.fillColor = .clear
         view.highlightedFillColor = .clear
@@ -52,15 +53,18 @@ class NftListItemCell: UICollectionViewCell {
 
     private var viewModel: NftListViewModel?
 
+    private var preferredWidth: CGFloat?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
     }
 
-    func bind(viewModel: NftListViewModel) {
+    func bind(viewModel: NftListViewModel, preferredWidth: CGFloat) {
         self.viewModel?.metadataViewModel.cancel(on: self)
         self.viewModel = viewModel
+        self.preferredWidth = preferredWidth
 
         self.viewModel?.metadataViewModel.load(on: self, completion: nil)
     }
@@ -78,8 +82,9 @@ class NftListItemCell: UICollectionViewCell {
 
         contentView.addSubview(mediaView)
         mediaView.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview().inset(6.0)
-            make.size.equalTo(Constants.imageSize)
+            make.top.equalToSuperview().inset(6)
+            make.leading.trailing.equalToSuperview().inset(Constants.imageHorizontalInset)
+            make.height.equalTo(Constants.imageHeight)
         }
 
         contentView.addSubview(titleLabel)
@@ -110,8 +115,10 @@ extension NftListItemCell: NftListItemViewProtocol {
     }
 
     func setMedia(_ media: NftMediaViewModelProtocol?) {
-        if let media = media {
-            mediaView.bind(viewModel: media, targetSize: Constants.imageSize, cornerRadius: Constants.imageCornerRadius)
+        if let media = media, let preferredWidth = preferredWidth {
+            let imageWidth = preferredWidth - 2 * Constants.imageHorizontalInset
+            let imageSize = CGSize(width: imageWidth, height: Constants.imageHeight)
+            mediaView.bind(viewModel: media, targetSize: imageSize, cornerRadius: Constants.imageCornerRadius)
         } else {
             mediaView.bindPlaceholder()
         }

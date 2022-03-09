@@ -15,7 +15,7 @@ final class DrawableIconViewModel {
 }
 
 extension DrawableIconViewModel: ImageViewModelProtocol {
-    func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius _: CGFloat, animated _: Bool) {
+    func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius _: CGFloat?, animated _: Bool) {
         if let image = image {
             imageView.image = image
             return
