@@ -216,9 +216,8 @@ class CrowdloanListTests: XCTestCase {
         chainRegistry: ChainRegistryProtocol
     ) -> CrowdloanListInteractor? {
         let settings = CrowdloanChainSettings(
-            storageFacade: SubstrateStorageTestFacade(),
-            settings: InMemorySettingsManager(),
-            operationQueue: OperationQueue()
+            chainRegistry: chainRegistry,
+            settings: InMemorySettingsManager()
         )
 
         settings.save(value: selectedChain)
@@ -253,15 +252,19 @@ class CrowdloanListTests: XCTestCase {
         let crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactoryStub(
             externalContributions: externalContributions
         )
+
+        let crowdloanState = CrowdloanSharedState(
+            settings: settings,
+            crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionService,
+            crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory
+        )
         
         return CrowdloanListInteractor(
             selectedMetaAccount: selectedAccount,
-            settings: settings,
+            crowdloanState: crowdloanState,
             chainRegistry: chainRegistry,
             crowdloanOperationFactory: crowdloanOperationFactory,
             crowdloanRemoteSubscriptionService: crowdloanRemoteSubscriptionService,
-            crowdloanOffchainProviderFactory: crowdloanOffchainProviderFactory,
-            crowdloanLocalSubscriptionFactory: crowdloanLocalSubscriptionService,
             walletLocalSubscriptionFactory: walletLocalSubscriptionService,
             jsonDataProviderFactory: jsonProviderFactory,
             operationManager: OperationManagerFacade.sharedManager,

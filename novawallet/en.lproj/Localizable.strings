@@ -677,4 +677,12 @@
 "tabbar.dapps.title_2_4_3" = "Browser";
 "dapps.decoration.subtitle_2_4_3" = "Browse the web using\n your accounts from Nova Wallet";
 "dapp.decoration.title_2_4_3" = "Welcome\nto Nova browser";
+"wallet.list.your.nfts.title" = "Your NFTs";
+"nft.list.item.limited.format" = "#%@ Edition of %@";
+"nft.list.item.unlimited" = "Unlimited series";
+"nft.issuer.title" = "Created by";
+"nft.owner.title" = "Owned by";
+"nft.collection.title" = "Collection";
+"common.price" = "Price";
+"nft.list.not.listed" = "Not listed";
 "dapp.list.featured.websites" = "Featured websites";

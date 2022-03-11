@@ -8,7 +8,7 @@ final class StaticImageViewModel: ImageViewModelProtocol {
         self.image = image
     }
 
-    func loadImage(on imageView: UIImageView, targetSize _: CGSize, animated _: Bool) {
+    func loadImage(on imageView: UIImageView, targetSize _: CGSize, cornerRadius _: CGFloat?, animated _: Bool) {
         imageView.image = image
     }
 

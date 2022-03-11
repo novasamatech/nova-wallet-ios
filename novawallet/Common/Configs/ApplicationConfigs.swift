@@ -23,6 +23,8 @@ protocol ApplicationConfigProtocol {
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
     var learnControllerAccountURL: URL { get }
+    var canDebugDApp: Bool { get }
+    var fileCachePath: String { get }
 }
 
 final class ApplicationConfig {
@@ -122,6 +124,19 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/dapps/dapps_dev.json")!
         #endif
+    }
+
+    var canDebugDApp: Bool {
+        #if F_RELEASE
+            false
+        #else
+            true
+        #endif
+    }
+
+    var fileCachePath: String {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("files-cache").path
     }
 
     var commonTypesURL: URL {

@@ -116,13 +116,15 @@ PODS:
     - CocoaLumberjack (~> 3.0)
   - SwiftFormat/CLI (0.47.13)
   - SwiftLint (0.43.1)
+  - SwiftRLP (1.1):
+    - BigInt (~> 5.0)
   - SwiftyBeaver (1.9.3)
   - TweetNacl (1.0.2)
   - xxHash-Swift (1.0.13)
 
 DEPENDENCIES:
   - Charts
-  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `e64218560a1749d352cf881ff73afaf20f9ce435`)
+  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `da686d69620aea28dc1aef0fbaf322e2c4b5c84e`)
   - Cuckoo
   - FireMock
   - Kingfisher
@@ -134,10 +136,12 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
   - Sourcery (~> 1.4)
+  - Starscream (from `https://github.com/ERussel/Starscream.git`, commit `b9e69390d96e71427463469f47cdafb8c0db1b21`)
   - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `02b0e2f658331f177e35af81449066ef97bf5401`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
+  - SwiftRLP (from `https://github.com/ERussel/SwiftRLP.git`)
   - SwiftyBeaver
 
 SPEC REPOS:
@@ -160,7 +164,6 @@ SPEC REPOS:
     - SoraFoundation
     - SoraKeystore
     - Sourcery
-    - Starscream
     - SwiftFormat
     - SwiftLint
     - SwiftyBeaver
@@ -169,31 +172,42 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonWallet:
-    :commit: e64218560a1749d352cf881ff73afaf20f9ce435
+    :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
   SoraUI:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
+  Starscream:
+    :commit: b9e69390d96e71427463469f47cdafb8c0db1b21
+    :git: https://github.com/ERussel/Starscream.git
   SubstrateSdk:
     :commit: 02b0e2f658331f177e35af81449066ef97bf5401
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
+  SwiftRLP:
+    :git: https://github.com/ERussel/SwiftRLP.git
 
 CHECKOUT OPTIONS:
   CommonWallet:
-    :commit: e64218560a1749d352cf881ff73afaf20f9ce435
+    :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
   SoraUI:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
+  Starscream:
+    :commit: b9e69390d96e71427463469f47cdafb8c0db1b21
+    :git: https://github.com/ERussel/Starscream.git
   SubstrateSdk:
     :commit: 02b0e2f658331f177e35af81449066ef97bf5401
     :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
+  SwiftRLP:
+    :commit: 809e68a002d19ee3d8bbeb72577224b7513e7e8e
+    :git: https://github.com/ERussel/SwiftRLP.git
 
 SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
@@ -221,10 +235,11 @@ SPEC CHECKSUMS:
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
+  SwiftRLP: f58417bfceecd45394fc619ccad14cf16e4ae6c1
   SwiftyBeaver: 2e8acd6fc90c6d0a27055867a290794926d57c02
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 6900f4cc6ec91915e19f01fd3ab69e993ec9d1ce
+PODFILE CHECKSUM: 23b2b140421c6fff0e9a14a2470c7d310b39194a
 
 COCOAPODS: 1.11.2

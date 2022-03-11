@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import BigInt
 
 final class DAppBrowserStateDataSource {
     private(set) var chainStore: [String: ChainModel] = [:]
@@ -59,6 +60,57 @@ final class DAppBrowserStateDataSource {
         }
 
         return [substrateAccount] + chainAccounts
+    }
+
+    func fetchChainByEthereumChainId(_ chainId: String) -> ChainModel? {
+        guard let addressPrefixValue = BigUInt.fromHexString(chainId) else {
+            return nil
+        }
+
+        let addressPrefix = UInt16(addressPrefixValue)
+
+        return chainStore.values.first { model in
+            model.isEthereumBased && model.addressPrefix == addressPrefix
+        }
+    }
+
+    func fetchEthereumAddresses(for ethereumChainId: String?) -> [AccountAddress] {
+        var addresses: [AccountAddress] = []
+
+        let selectedAddress: String?
+
+        if
+            let ethereumChainId = ethereumChainId,
+            let chain = fetchChainByEthereumChainId(ethereumChainId) {
+            selectedAddress = wallet.fetch(for: chain.accountRequest())?.toAddress()
+        } else {
+            selectedAddress = nil
+        }
+
+        if let address = selectedAddress {
+            addresses.append(address)
+        }
+
+        if let mainAddress = wallet.ethereumAddress?.toHex(includePrefix: true), mainAddress != selectedAddress {
+            addresses.append(mainAddress)
+        }
+
+        let chainAddresses: [AccountAddress] = wallet.chainAccounts.compactMap { account in
+            guard
+                let chain = chainStore[account.chainId],
+                chain.isEthereumBased,
+                account.cryptoType == MultiassetCryptoType.ethereumEcdsa.rawValue,
+                let address = try? account.accountId.toAddress(using: chain.chainFormat),
+                address != selectedAddress else {
+                return nil
+            }
+
+            return address
+        }
+
+        addresses.append(contentsOf: chainAddresses)
+
+        return addresses
     }
 
     private func createExtensionAccount(

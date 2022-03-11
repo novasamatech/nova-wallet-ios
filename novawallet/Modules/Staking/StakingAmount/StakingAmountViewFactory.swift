@@ -89,7 +89,8 @@ final class StakingAmountViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let rewardCalculationService = state.rewardCalculationService else {
             return nil
         }
 
@@ -128,7 +129,7 @@ final class StakingAmountViewFactory {
             repository: accountRepository,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            rewardService: state.rewardCalculationService,
+            rewardService: rewardCalculationService,
             operationManager: operationManager
         )
 
