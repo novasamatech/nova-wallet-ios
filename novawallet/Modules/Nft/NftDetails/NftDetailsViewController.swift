@@ -92,7 +92,7 @@ extension NftDetailsViewController: NftDetailsViewProtocol {
 
     func didReceive(label: String?) {
         rootView.subtitleView.isHidden = label == nil
-        rootView.subtitleView.titleLabel.text = label
+        rootView.subtitleView.titleLabel.text = label?.uppercased()
     }
 
     func didReceive(description: String?) {
