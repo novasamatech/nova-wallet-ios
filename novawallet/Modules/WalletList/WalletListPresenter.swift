@@ -3,8 +3,11 @@ import RobinHood
 import SubstrateSdk
 import SoraFoundation
 import BigInt
+import CommonWallet
 
 final class WalletListPresenter {
+    static let viewUpdatePeriod: TimeInterval = 1.0
+
     typealias ChainAssetPrice = (chainId: ChainModel.Id, assetId: AssetModel.Id, price: PriceData)
 
     weak var view: WalletListViewProtocol?
@@ -15,6 +18,8 @@ final class WalletListPresenter {
     private(set) var groups: ListDifferenceCalculator<WalletListGroupModel>
     private(set) var groupLists: [ChainModel.Id: ListDifferenceCalculator<WalletListAssetModel>] = [:]
 
+    private(set) var nftList: ListDifferenceCalculator<NftModel>
+
     private var genericAccountId: AccountId?
     private var name: String?
     private var hidesZeroBalances: Bool?
@@ -22,6 +27,12 @@ final class WalletListPresenter {
     private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
     private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
     private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+
+    private var scheduler: SchedulerProtocol?
+
+    deinit {
+        cancelViewUpdate()
+    }
 
     init(
         interactor: WalletListInteractorInputProtocol,
@@ -33,6 +44,7 @@ final class WalletListPresenter {
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
         groups = Self.createGroupsDiffCalculator(from: [])
+        nftList = Self.createNftDiffCalculator()
         self.localizationManager = localizationManager
     }
 
@@ -73,14 +85,23 @@ final class WalletListPresenter {
             case let .cached(items):
                 guard
                     let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }),
-                    case let .success(balance) = balanceResults[chainAssetId] else {
+                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
                     return .cached(value: items)
+                }
+
+                let nftBalance = calculateNftBalance(for: ChainAsset(chain: chain, asset: asset))
+
+                let totalBalance: BigUInt
+
+                if case let .success(assetBalance) = balanceResults[chainAssetId] {
+                    totalBalance = nftBalance + assetBalance
+                } else {
+                    totalBalance = nftBalance
                 }
 
                 let newItem = WalletListAssetAccountPrice(
                     assetInfo: asset.displayInfo,
-                    balance: balance,
+                    balance: totalBalance,
                     price: keyValue.value
                 )
 
@@ -88,18 +109,29 @@ final class WalletListPresenter {
             case let .loaded(items):
                 guard
                     let chain = allChains[chainId],
-                    let asset = chain.assets.first(where: { $0.assetId == assetId }),
-                    case let .success(balance) = balanceResults[chainAssetId] else {
+                    let asset = chain.assets.first(where: { $0.assetId == assetId }) else {
                     return .cached(value: items)
                 }
 
-                let newItem = WalletListAssetAccountPrice(
-                    assetInfo: asset.displayInfo,
-                    balance: balance,
-                    price: keyValue.value
-                )
+                let nftBalance = calculateNftBalance(for: ChainAsset(chain: chain, asset: asset))
 
-                return .loaded(value: items + [newItem])
+                if case let .success(assetBalance) = balanceResults[chainAssetId] {
+                    let newItem = WalletListAssetAccountPrice(
+                        assetInfo: asset.displayInfo,
+                        balance: nftBalance + assetBalance,
+                        price: keyValue.value
+                    )
+
+                    return .loaded(value: items + [newItem])
+                } else {
+                    let newItem = WalletListAssetAccountPrice(
+                        assetInfo: asset.displayInfo,
+                        balance: nftBalance,
+                        price: keyValue.value
+                    )
+
+                    return .cached(value: items + [newItem])
+                }
             }
         }
 
@@ -111,6 +143,22 @@ final class WalletListPresenter {
         )
 
         view?.didReceiveHeader(viewModel: viewModel)
+    }
+
+    private func calculateNftBalance(for chainAsset: ChainAsset) -> BigUInt {
+        guard chainAsset.asset.isUtility else {
+            return 0
+        }
+
+        return nftList.allItems.compactMap { nft in
+            guard nft.chainId == chainAsset.chain.chainId, let price = nft.price else {
+                return nil
+            }
+
+            return BigUInt(price)
+        }.reduce(BigUInt(0)) { total, value in
+            total + value
+        }
     }
 
     private func provideAssetViewModels() {
@@ -209,6 +257,48 @@ final class WalletListPresenter {
             priceData: priceData
         )
     }
+
+    private func provideNftViewModel() {
+        let allNfts = nftList.allItems
+
+        guard !allNfts.isEmpty else {
+            view?.didReceiveNft(viewModel: nil)
+            return
+        }
+
+        let nftViewModel = viewModelFactory.createNftsViewModel(from: allNfts, locale: selectedLocale)
+        view?.didReceiveNft(viewModel: nftViewModel)
+    }
+
+    private func updateAssetsView() {
+        cancelViewUpdate()
+
+        provideHeaderViewModel()
+        provideAssetViewModels()
+    }
+
+    private func updateHeaderView() {
+        provideHeaderViewModel()
+    }
+
+    private func updateNftView() {
+        provideHeaderViewModel()
+        provideNftViewModel()
+    }
+
+    private func scheduleViewUpdate() {
+        guard scheduler == nil else {
+            return
+        }
+
+        scheduler = Scheduler(with: self, callbackQueue: .main)
+        scheduler?.notifyAfter(Self.viewUpdatePeriod)
+    }
+
+    private func cancelViewUpdate() {
+        scheduler?.cancel()
+        scheduler = nil
+    }
 }
 
 extension WalletListPresenter: WalletListPresenterProtocol {
@@ -230,6 +320,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
         wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
     }
 
+    func selectNfts() {
+        wireframe.showNfts(from: view)
+    }
+
     func refresh() {
         interactor.refresh()
     }
@@ -240,6 +334,18 @@ extension WalletListPresenter: WalletListPresenterProtocol {
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {
+    func didReceiveNft(changes: [DataProviderChange<NftModel>]) {
+        nftList.apply(changes: changes)
+
+        updateNftView()
+    }
+
+    func didReceiveNft(error _: Error) {}
+
+    func didResetNftProvider() {
+        nftList = Self.createNftDiffCalculator()
+    }
+
     func didReceive(genericAccountId: AccountId, name: String) {
         self.genericAccountId = genericAccountId
         self.name = name
@@ -250,15 +356,16 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         groups = Self.createGroupsDiffCalculator(from: [])
         groupLists = [:]
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        nftList = Self.createNftDiffCalculator()
+
+        updateAssetsView()
+        updateNftView()
     }
 
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
         connectionStates[chainId] = state
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        scheduleViewUpdate()
     }
 
     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -285,8 +392,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
             groups.apply(changes: [.update(newItem: groupModel)])
         }
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateAssetsView()
     }
 
     func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
@@ -327,8 +433,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateAssetsView()
     }
 
     func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
@@ -381,27 +486,33 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
 
         groups.apply(changes: groupChanges)
 
-        provideHeaderViewModel()
-        provideAssetViewModels()
+        updateAssetsView()
     }
 
     func didChange(name: String) {
         self.name = name
 
-        provideHeaderViewModel()
+        updateHeaderView()
     }
 
     func didReceive(hidesZeroBalances: Bool) {
         self.hidesZeroBalances = hidesZeroBalances
 
-        provideAssetViewModels()
+        updateAssetsView()
     }
 }
 
 extension WalletListPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            provideHeaderViewModel()
+            updateAssetsView()
+            updateNftView()
         }
+    }
+}
+
+extension WalletListPresenter: SchedulerDelegate {
+    func didTrigger(scheduler _: SchedulerProtocol) {
+        updateAssetsView()
     }
 }
