@@ -70,9 +70,9 @@ class DAppOperationConfirmTests: XCTestCase {
         let jsonRequest = try JSONDecoder().decode(JSON.self, from: jsonData)
 
         let request = DAppOperationRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: UUID().uuidString,
             wallet: wallet,
-            chain: chain,
             dApp: "Test",
             dAppIcon: nil,
             operationData: jsonRequest
@@ -106,6 +106,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let interactor = DAppOperationConfirmInteractor(
             request: request,
+            chain: chain,
             runtimeProvider: runtimeProvider,
             connection: connection,
             signingWrapperFactory: signingWrapperFactory,
@@ -214,9 +215,9 @@ class DAppOperationConfirmTests: XCTestCase {
         let signingWrapperFactory = DummySigningWrapperFactory()
 
         let request = DAppOperationRequest(
+            transportName: DAppTransports.polkadotExtension,
             identifier: UUID().uuidString,
             wallet: wallet,
-            chain: chain,
             dApp: "Test",
             dAppIcon: nil,
             operationData: jsonRequest
@@ -224,6 +225,7 @@ class DAppOperationConfirmTests: XCTestCase {
 
         let interactor = DAppSignBytesConfirmInteractor(
             request: request,
+            chain: chain,
             signingWrapperFactory: signingWrapperFactory
         )
 

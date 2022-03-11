@@ -51,7 +51,8 @@ struct StakingRewardDestConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()),
+            let rewardCalculationService = state.rewardCalculationService else {
             return nil
         }
 
@@ -81,7 +82,7 @@ struct StakingRewardDestConfirmViewFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicServiceFactory: extrinsicServiceFactory,
-            calculatorService: state.rewardCalculationService,
+            calculatorService: rewardCalculationService,
             runtimeService: runtimeService,
             operationManager: operationManager,
             accountRepositoryFactory: accountRepositoryFactory,

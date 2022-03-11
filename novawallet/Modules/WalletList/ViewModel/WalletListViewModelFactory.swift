@@ -38,23 +38,31 @@ protocol WalletListViewModelFactoryProtocol {
         connected: Bool,
         locale: Locale
     ) -> WalletListAssetViewModel
+
+    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> WalletListNftsViewModel
 }
 
 final class WalletListViewModelFactory {
     let priceFormatter: LocalizableResource<TokenFormatter>
     let assetFormatterFactory: AssetBalanceFormatterFactoryProtocol
     let percentFormatter: LocalizableResource<NumberFormatter>
+    let quantityFormatter: LocalizableResource<NumberFormatter>
+    let nftDownloadService: NftFileDownloadServiceProtocol
 
     private lazy var cssColorFactory = CSSGradientFactory()
 
     init(
         priceFormatter: LocalizableResource<TokenFormatter>,
         assetFormatterFactory: AssetBalanceFormatterFactoryProtocol,
-        percentFormatter: LocalizableResource<NumberFormatter>
+        percentFormatter: LocalizableResource<NumberFormatter>,
+        quantityFormatter: LocalizableResource<NumberFormatter>,
+        nftDownloadService: NftFileDownloadServiceProtocol
     ) {
         self.priceFormatter = priceFormatter
         self.assetFormatterFactory = assetFormatterFactory
         self.percentFormatter = percentFormatter
+        self.quantityFormatter = quantityFormatter
+        self.nftDownloadService = nftDownloadService
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -242,5 +250,26 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
             balanceAmount: balanceState,
             balanceValue: balanceValueState
         )
+    }
+
+    func createNftsViewModel(from nfts: [NftModel], locale: Locale) -> WalletListNftsViewModel {
+        let numberOfNfts = NSNumber(value: nfts.count)
+        let count = quantityFormatter.value(for: locale).string(from: numberOfNfts) ?? ""
+
+        let viewModels: [NftMediaViewModelProtocol] = nfts.filter { nft in
+            nft.media != nil || nft.metadata != nil
+        }.prefix(3).compactMap { nft in
+            if let media = nft.media, let url = URL(string: media) {
+                return NftImageViewModel(url: url)
+            }
+
+            if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
+                return NftMediaViewModel(metadataReference: metadataString, downloadService: nftDownloadService)
+            }
+
+            return nil
+        }
+
+        return WalletListNftsViewModel(totalCount: .loaded(value: count), mediaViewModels: viewModels)
     }
 }

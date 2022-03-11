@@ -1,6 +1,7 @@
 import Foundation
 
 struct DAppAuthRequest {
+    let transportName: String
     let identifier: String
     let wallet: MetaAccountModel
     let origin: String?

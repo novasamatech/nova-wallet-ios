@@ -18,6 +18,11 @@ struct WalletListHeaderViewModel {
     let icon: DrawableIcon?
 }
 
+struct WalletListNftsViewModel {
+    let totalCount: LoadableViewModelState<String>
+    let mediaViewModels: [NftMediaViewModelProtocol]
+}
+
 struct WalletPriceViewModel {
     let amount: String
     let change: ValueDirection<String>
