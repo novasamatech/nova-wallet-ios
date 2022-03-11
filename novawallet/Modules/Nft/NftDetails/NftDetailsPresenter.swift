@@ -68,7 +68,7 @@ final class NftDetailsPresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
         case let .custom(string):
-            labelString = string.uppercased()
+            labelString = string
         case .none:
             labelString = nil
         }
