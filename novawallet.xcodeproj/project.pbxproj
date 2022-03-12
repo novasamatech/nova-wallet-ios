@@ -389,6 +389,8 @@
 		842A737727DC7AEB006EE1EA /* NetworkViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737627DC7AEB006EE1EA /* NetworkViewModelFactory.swift */; };
 		842A737927DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737827DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift */; };
 		842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */; };
+		842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737D27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift */; };
+		842A738027DCD427006EE1EA /* OperationDetailsRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -2405,6 +2407,8 @@
 		842A737627DC7AEB006EE1EA /* NetworkViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewModelFactory.swift; sourceTree = "<group>"; };
 		842A737827DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayAddressViewModelFactory.swift; sourceTree = "<group>"; };
 		842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsTransferView.swift; sourceTree = "<group>"; };
+		842A737D27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsExtrinsicView.swift; sourceTree = "<group>"; };
+		842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsRewardView.swift; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -5084,6 +5088,8 @@
 			isa = PBXGroup;
 			children = (
 				842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */,
+				842A737D27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift */,
+				842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11048,6 +11054,7 @@
 				84CA68DD26BEA60A003B9453 /* ConnectionFactory.swift in Sources */,
 				F40966B626B297D6008CD244 /* AnalyticsRewardsPresenter.swift in Sources */,
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
+				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
 				84DF21AD25363D28005454AE /* WalletAssetId+Chain.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,
 				84A2C90724E09DC20020D3B7 /* AccountOperationFactoryError+Presentable.swift in Sources */,
@@ -11462,6 +11469,7 @@
 				AE39838C272AFAE100BC8A85 /* WalletManagementPresenter.swift in Sources */,
 				8D9BC9C36DC891CDD900A895 /* AccountConfirmViewController.swift in Sources */,
 				E14F809C3917EFA4B5388AC8 /* AccountConfirmViewFactory.swift in Sources */,
+				842A738027DCD427006EE1EA /* OperationDetailsRewardView.swift in Sources */,
 				9D5926790B055C56FB74B282 /* AccountManagementProtocols.swift in Sources */,
 				848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */,
 				84F18D4E27A18C1400CA7554 /* OrmlAccountSubscription.swift in Sources */,

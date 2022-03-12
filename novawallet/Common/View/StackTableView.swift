@@ -6,7 +6,7 @@ final class StackTableView: RoundedView {
         let view = UIStackView()
         view.axis = .vertical
         view.alignment = .fill
-        view.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 8.0, right: 0.0)
+        view.layoutMargins = UIEdgeInsets(top: 4.0, left: 0.0, bottom: 4.0, right: 0.0)
         view.isLayoutMarginsRelativeArrangement = true
         return view
     }()

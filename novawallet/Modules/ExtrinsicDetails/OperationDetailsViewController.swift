@@ -94,9 +94,47 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         viewModel: OperationTransferViewModel,
         networkViewModel: NetworkViewModel
     ) {
-        let transferView = rootView.setupTransferView()
+        let transferView: OperationDetailsTransferView = rootView.setupLocalizableView()
         transferView.locale = selectedLocale
         transferView.bind(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        let sendButton = rootView.setupActionButton()
+        sendButton.imageWithTitleView?.title = R.string.localizable.txDetailsSendTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
+    private func applyExtrinsic(
+        viewModel: OperationExtrinsicViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let extrinsicView: OperationDetailsExtrinsicView = rootView.setupLocalizableView()
+        extrinsicView.locale = selectedLocale
+        extrinsicView.bind(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        rootView.removeActionButton()
+    }
+
+    private func applyReward(
+        viewModel: OperationRewardViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
+        rewardView.locale = selectedLocale
+        rewardView.bindReward(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        rootView.removeActionButton()
+    }
+
+    private func applySlash(
+        viewModel: OperationSlashViewModel,
+        networkViewModel: NetworkViewModel
+    ) {
+        let rewardView: OperationDetailsRewardView = rootView.setupLocalizableView()
+        rewardView.locale = selectedLocale
+        rewardView.bindSlash(viewModel: viewModel, networkViewModel: networkViewModel)
+
+        rootView.removeActionButton()
     }
 }
 
@@ -113,11 +151,11 @@ extension OperationDetailsViewController: OperationDetailsViewProtocol {
         case let .transfer(transferViewModel):
             applyTransfer(viewModel: transferViewModel, networkViewModel: networkViewModel)
         case let .extrinsic(extrinsicViewModel):
-            break
+            applyExtrinsic(viewModel: extrinsicViewModel, networkViewModel: networkViewModel)
         case let .reward(rewardViewModel):
-            break
+            applyReward(viewModel: rewardViewModel, networkViewModel: networkViewModel)
         case let .slash(slashViewModel):
-            break
+            applySlash(viewModel: slashViewModel, networkViewModel: networkViewModel)
         }
     }
 }
