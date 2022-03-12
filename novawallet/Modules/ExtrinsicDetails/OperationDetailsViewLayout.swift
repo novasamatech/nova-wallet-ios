@@ -1,5 +1,6 @@
 import UIKit
 import CommonWallet
+import SoraUI
 
 final class OperationDetailsViewLayout: UIView {
     enum Constants {
@@ -56,6 +57,8 @@ final class OperationDetailsViewLayout: UIView {
         return view
     }()
 
+    private(set) var actionButton: TriangularedButton?
+
     private var operationView: LocalizableView?
 
     override init(frame: CGRect) {
@@ -71,22 +74,59 @@ final class OperationDetailsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setupTransferView() -> OperationDetailsTransferView {
-        if let transferView = operationView as? OperationDetailsTransferView {
-            return transferView
+    func setupLocalizableView<T: LocalizableView>() -> T {
+        if let targetView = operationView as? T {
+            return targetView
         }
 
         operationView?.removeFromSuperview()
 
-        let transferView = OperationDetailsTransferView()
-        operationView = transferView
+        let targetView = T()
+        operationView = targetView
 
-        containerView.stackView.addArrangedSubview(transferView)
-        transferView.snp.makeConstraints { make in
+        containerView.stackView.addArrangedSubview(targetView)
+        targetView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
         }
 
-        return transferView
+        return targetView
+    }
+
+    func setupActionButton() -> TriangularedButton {
+        if let actionButton = actionButton {
+            return actionButton
+        }
+
+        let actionButton = TriangularedButton()
+        actionButton.applyDefaultStyle()
+        actionButton.applyEnabledStyle()
+        actionButton.triangularedView?.sideLength = 12.0
+        self.actionButton = actionButton
+
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+                .offset(-UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
+        containerView.snp.remakeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
+        }
+
+        return actionButton
+    }
+
+    func removeActionButton() {
+        actionButton?.removeFromSuperview()
+        actionButton = nil
+
+        containerView.snp.remakeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
     }
 
     private func setupLayout() {
