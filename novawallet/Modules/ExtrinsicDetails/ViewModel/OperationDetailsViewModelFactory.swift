@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 protocol OperationDetailsViewModelFactoryProtocol {
     func createViewModel(
@@ -32,18 +33,73 @@ final class OperationDetailsViewModelFactory {
         self.quantityFormatter = quantityFormatter
     }
 
+    private func createIconViewModel(
+        from model: OperationDetailsModel.OperationData,
+        assetInfo: AssetBalanceDisplayInfo
+    ) -> ImageViewModelProtocol? {
+        switch model {
+        case let .transfer(data):
+            let image = data.outgoing ?
+                R.image.iconOutgoingTransfer()! :
+                R.image.iconIncomingTransfer()!
+
+            if
+                let tintedImage = image.withRenderingMode(.alwaysTemplate)
+                .tinted(with: R.color.colorTransparentText()!) {
+                return StaticImageViewModel(image: tintedImage)
+            } else {
+                return nil
+            }
+        case .reward, .slash:
+            let image = R.image.iconRewardOperation()!
+            return StaticImageViewModel(image: image)
+        case .extrinsic:
+            if let url = assetInfo.icon {
+                return RemoteImageViewModel(url: url)
+            } else {
+                return nil
+            }
+        }
+    }
+
+    private func createAmount(
+        from model: OperationDetailsModel.OperationData,
+        assetInfo: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> String {
+        let amount: BigUInt
+        let prefix: String
+
+        switch model {
+        case let .transfer(model):
+            amount = model.amount
+            prefix = model.outgoing ? "−" : "+"
+        case let .extrinsic(model):
+            amount = model.fee
+            prefix = "−"
+        case let .reward(model):
+            amount = model.amount
+            prefix = "+"
+        case let .slash(model):
+            amount = model.amount
+            prefix = "−"
+        }
+
+        return Decimal.fromSubstrateAmount(
+            amount,
+            precision: assetInfo.assetPrecision
+        ).map { amountDecimal in
+            let amountString = balanceViewModelFactory.amountFromValue(amountDecimal)
+                .value(for: locale)
+            return prefix + amountString
+        } ?? ""
+    }
+
     private func createTransferViewModel(
         from model: OperationTransferModel,
         assetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationTransferViewModel {
-        let amountString = Decimal.fromSubstrateAmount(
-            model.amount,
-            precision: assetInfo.assetPrecision
-        ).map { amount in
-            balanceViewModelFactory.amountFromValue(amount).value(for: locale)
-        } ?? ""
-
         let feeString = Decimal.fromSubstrateAmount(
             model.fee,
             precision: assetInfo.assetPrecision
@@ -55,7 +111,6 @@ final class OperationDetailsViewModelFactory {
         let recepient = displayAddressViewModelFactory.createViewModel(from: model.receiver)
 
         return OperationTransferViewModel(
-            amount: amountString,
             fee: feeString,
             isOutgoing: model.outgoing,
             sender: sender,
@@ -65,21 +120,11 @@ final class OperationDetailsViewModelFactory {
     }
 
     private func createExtrinsicViewModel(
-        from model: OperationExtrinsicModel,
-        assetInfo: AssetBalanceDisplayInfo,
-        locale: Locale
+        from model: OperationExtrinsicModel
     ) -> OperationExtrinsicViewModel {
-        let feeString = Decimal.fromSubstrateAmount(
-            model.fee,
-            precision: assetInfo.assetPrecision
-        ).map { amount in
-            balanceViewModelFactory.amountFromValue(amount).value(for: locale)
-        } ?? ""
-
         let sender = displayAddressViewModelFactory.createViewModel(from: model.sender)
 
         return OperationExtrinsicViewModel(
-            fee: feeString,
             sender: sender,
             transactionHash: model.txHash,
             module: model.module.displayModule,
@@ -89,16 +134,8 @@ final class OperationDetailsViewModelFactory {
 
     private func createRewardViewModel(
         from model: OperationRewardModel,
-        assetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationRewardViewModel {
-        let amountString = Decimal.fromSubstrateAmount(
-            model.amount,
-            precision: assetInfo.assetPrecision
-        ).map { amount in
-            balanceViewModelFactory.amountFromValue(amount).value(for: locale)
-        } ?? ""
-
         let validatorViewModel = model.validator.map { model in
             displayAddressViewModelFactory.createViewModel(from: model)
         }
@@ -117,7 +154,6 @@ final class OperationDetailsViewModelFactory {
 
         return OperationRewardViewModel(
             eventId: model.eventId,
-            amount: amountString,
             validator: validatorViewModel,
             era: eraString
         )
@@ -125,16 +161,8 @@ final class OperationDetailsViewModelFactory {
 
     private func createSlashViewModel(
         from model: OperationSlashModel,
-        assetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationSlashViewModel {
-        let amountString = Decimal.fromSubstrateAmount(
-            model.amount,
-            precision: assetInfo.assetPrecision
-        ).map { amount in
-            balanceViewModelFactory.amountFromValue(amount).value(for: locale)
-        } ?? ""
-
         let validatorViewModel = model.validator.map { model in
             displayAddressViewModelFactory.createViewModel(from: model)
         }
@@ -153,7 +181,6 @@ final class OperationDetailsViewModelFactory {
 
         return OperationSlashViewModel(
             eventId: model.eventId,
-            amount: amountString,
             validator: validatorViewModel,
             era: eraString
         )
@@ -174,17 +201,11 @@ final class OperationDetailsViewModelFactory {
 
             return .transfer(viewModel)
         case let .extrinsic(model):
-            let viewModel = createExtrinsicViewModel(
-                from: model,
-                assetInfo: assetInfo,
-                locale: locale
-            )
-
+            let viewModel = createExtrinsicViewModel(from: model)
             return .extrinsic(viewModel)
         case let .reward(model):
             let viewModel = createRewardViewModel(
                 from: model,
-                assetInfo: assetInfo,
                 locale: locale
             )
 
@@ -192,7 +213,6 @@ final class OperationDetailsViewModelFactory {
         case let .slash(model):
             let viewModel = createSlashViewModel(
                 from: model,
-                assetInfo: assetInfo,
                 locale: locale
             )
 
@@ -209,16 +229,25 @@ extension OperationDetailsViewModelFactory: OperationDetailsViewModelFactoryProt
     ) -> OperationDetailsViewModel {
         let timeString = dateFormatter.value(for: locale).string(from: model.time)
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
+
+        let assetInfo = chainAsset.assetDisplayInfo
+
         let contentViewModel = createContentViewModel(
             from: model.operation,
             assetInfo: chainAsset.assetDisplayInfo,
             locale: locale
         )
 
+        let amount = createAmount(from: model.operation, assetInfo: assetInfo, locale: locale)
+
+        let iconViewModel = createIconViewModel(from: model.operation, assetInfo: assetInfo)
+
         return OperationDetailsViewModel(
             time: timeString,
             status: model.status,
+            amount: amount,
             networkViewModel: networkViewModel,
+            iconViewModel: iconViewModel,
             content: contentViewModel
         )
     }

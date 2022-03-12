@@ -686,3 +686,6 @@
 "common.price" = "Price";
 "nft.list.not.listed" = "Not listed";
 "dapp.list.featured.websites" = "Featured websites";
+"common.sender" = "Sender";
+"common.recipient" = "Recipient";
+"common.tx.id" = "Transaction ID";

@@ -146,7 +146,7 @@ final class OperationDetailsInteractor: AccountFetching {
         _ completion: @escaping (OperationDetailsModel.OperationData?) -> Void
     ) {
         let precision = Int16(bitPattern: chainAsset.asset.precision)
-        let fee: BigUInt = txData.fees.first?.amount.decimalValue.toSubstrateAmount(
+        let fee: BigUInt = txData.amount.decimalValue.toSubstrateAmount(
             precision: precision
         ) ?? 0
 
