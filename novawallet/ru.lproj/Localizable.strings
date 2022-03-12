@@ -686,3 +686,6 @@
 "common.price" = "Цена";
 "nft.list.not.listed" = "Без цены";
 "dapp.list.featured.websites" = "Популярные сайты";
+"common.sender" = "Отправитель";
+"common.recipient" = "Получатель";
+"common.tx.id" = "Идентификатор транзакции";
