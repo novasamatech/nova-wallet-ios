@@ -7,7 +7,7 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
 
     var iconImageView: UIImageView { rowContentView.valueView.imageView }
 
-    private var viewModel: StackCellViewModel?
+    private var imageViewModel: ImageViewModelProtocol?
 
     convenience init() {
         self.init(frame: .zero)
@@ -20,15 +20,23 @@ class StackTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsView>> {
     }
 
     func bind(viewModel: StackCellViewModel?) {
-        self.viewModel?.imageViewModel?.cancel(on: iconImageView)
+        bind(details: viewModel?.details, imageViewModel: viewModel?.imageViewModel)
+    }
 
-        self.viewModel = viewModel
+    func bind(details: String) {
+        bind(details: details, imageViewModel: nil)
+    }
 
-        detailsLabel.text = viewModel?.details
+    private func bind(details: String?, imageViewModel: ImageViewModelProtocol?) {
+        self.imageViewModel?.cancel(on: iconImageView)
+
+        self.imageViewModel = imageViewModel
+
+        detailsLabel.text = details
         iconImageView.image = nil
 
         let imageSize = rowContentView.valueView.iconWidth
-        viewModel?.imageViewModel?.loadImage(
+        imageViewModel?.loadImage(
             on: iconImageView,
             targetSize: CGSize(width: imageSize, height: imageSize),
             cornerRadius: imageSize / 2.0,

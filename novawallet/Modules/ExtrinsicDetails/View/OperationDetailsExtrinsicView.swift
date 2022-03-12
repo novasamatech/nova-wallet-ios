@@ -1,28 +1,24 @@
 import UIKit
 
-final class OperationDetailsTransferView: LocalizableView {
+final class OperationDetailsExtrinsicView: LocalizableView {
     let senderTableView = StackTableView()
-    let recepientTableView = StackTableView()
-    let transactionTableView = StackTableView()
+
+    let transactionTableView: StackTableView = {
+        let view = StackTableView()
+        return view
+    }()
 
     let senderView = StackInfoTableCell()
-    let networkView = StackNetworkCell()
-    let networkFeeView: StackTableCell = {
+    let networkView: StackNetworkCell = {
+        let view = StackNetworkCell()
+        view.borderView.borderType = []
+        return view
+    }()
+
+    let transactionHashView = StackInfoTableCell()
+    let moduleView = StackTableCell()
+    let callView: StackTableCell = {
         let view = StackTableCell()
-        view.borderView.borderType = []
-        return view
-    }()
-
-    let recepientView: StackInfoTableCell = {
-        let view = StackInfoTableCell()
-        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        view.borderView.borderType = []
-        return view
-    }()
-
-    let transactionHashView: StackInfoTableCell = {
-        let view = StackInfoTableCell()
-        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
         view.borderView.borderType = []
         return view
     }()
@@ -49,18 +45,16 @@ final class OperationDetailsTransferView: LocalizableView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: OperationTransferViewModel, networkViewModel: NetworkViewModel) {
+    func bind(viewModel: OperationExtrinsicViewModel, networkViewModel: NetworkViewModel) {
         networkView.bind(viewModel: networkViewModel)
 
         senderView.detailsLabel.lineBreakMode = viewModel.sender.lineBreakMode
         senderView.bind(viewModel: viewModel.sender.cellViewModel)
 
-        networkFeeView.bind(details: viewModel.fee)
-
-        recepientView.detailsLabel.lineBreakMode = viewModel.recepient.lineBreakMode
-        recepientView.bind(viewModel: viewModel.recepient.cellViewModel)
-
         transactionHashView.bind(details: viewModel.transactionHash)
+
+        moduleView.bind(details: viewModel.module)
+        callView.bind(details: viewModel.call)
     }
 
     private func setupLocalization() {
@@ -71,15 +65,15 @@ final class OperationDetailsTransferView: LocalizableView {
         networkView.titleLabel.text = R.string.localizable.commonNetwork(preferredLanguages: locale.rLanguages
         )
 
-        networkFeeView.titleLabel.text = R.string.localizable.commonNetworkFee(
-            preferredLanguages: locale.rLanguages
-        )
-
-        recepientView.titleLabel.text = R.string.localizable.commonRecipient(
-            preferredLanguages: locale.rLanguages
-        )
-
         transactionHashView.titleLabel.text = R.string.localizable.commonTxId(
+            preferredLanguages: locale.rLanguages
+        )
+
+        moduleView.titleLabel.text = R.string.localizable.commonModule(
+            preferredLanguages: locale.rLanguages
+        )
+
+        callView.titleLabel.text = R.string.localizable.commonClose(
             preferredLanguages: locale.rLanguages
         )
     }
@@ -92,23 +86,16 @@ final class OperationDetailsTransferView: LocalizableView {
 
         senderTableView.stackView.addArrangedSubview(senderView)
         senderTableView.stackView.addArrangedSubview(networkView)
-        senderTableView.stackView.addArrangedSubview(networkFeeView)
-
-        addSubview(recepientTableView)
-        recepientTableView.snp.makeConstraints { make in
-            make.top.equalTo(senderTableView.snp.bottom).offset(12.0)
-            make.leading.trailing.equalToSuperview()
-        }
-
-        recepientTableView.stackView.addArrangedSubview(recepientView)
 
         addSubview(transactionTableView)
         transactionTableView.snp.makeConstraints { make in
-            make.top.equalTo(recepientTableView.snp.bottom).offset(12.0)
+            make.top.equalTo(senderView.snp.bottom).offset(12.0)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
 
         transactionTableView.stackView.addArrangedSubview(transactionHashView)
+        transactionTableView.stackView.addArrangedSubview(moduleView)
+        transactionTableView.stackView.addArrangedSubview(callView)
     }
 }
