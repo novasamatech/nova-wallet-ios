@@ -388,6 +388,7 @@
 		842A737527DB8338006EE1EA /* OperationDetailsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737427DB8338006EE1EA /* OperationDetailsViewModelFactory.swift */; };
 		842A737727DC7AEB006EE1EA /* NetworkViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737627DC7AEB006EE1EA /* NetworkViewModelFactory.swift */; };
 		842A737927DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737827DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift */; };
+		842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -2403,6 +2404,7 @@
 		842A737427DB8338006EE1EA /* OperationDetailsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsViewModelFactory.swift; sourceTree = "<group>"; };
 		842A737627DC7AEB006EE1EA /* NetworkViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewModelFactory.swift; sourceTree = "<group>"; };
 		842A737827DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayAddressViewModelFactory.swift; sourceTree = "<group>"; };
+		842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsTransferView.swift; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -5076,6 +5078,14 @@
 				842A737427DB8338006EE1EA /* OperationDetailsViewModelFactory.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		842A737A27DCC444006EE1EA /* View */ = {
+			isa = PBXGroup;
+			children = (
+				842A737B27DCC488006EE1EA /* OperationDetailsTransferView.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		842BA36927B64F1000D31EEF /* ViewModel */ = {
@@ -8374,6 +8384,7 @@
 		96566FFD869F45400C4963A1 /* ExtrinsicDetails */ = {
 			isa = PBXGroup;
 			children = (
+				842A737A27DCC444006EE1EA /* View */,
 				842A736927DB7A17006EE1EA /* ViewModel */,
 				842A735C27DB2EB3006EE1EA /* Model */,
 				7F2670E15D23CF30931389E3 /* OperationDetailsProtocols.swift */,
@@ -11445,6 +11456,7 @@
 				849A4EF2279A787200AB6709 /* AssetsUpdatingService.swift in Sources */,
 				84B018AC26E01A4100C75E28 /* StakingStateView.swift in Sources */,
 				849E2332254AEFB400B1F6D4 /* InvoiceScanConfigurator.swift in Sources */,
+				842A737C27DCC489006EE1EA /* OperationDetailsTransferView.swift in Sources */,
 				8472C5B2265CF9C500E2481B /* StakingRewardDestConfirmInteractor.swift in Sources */,
 				846CA77A27099B1E0011124C /* StakingAnalyticsLocalSubscriptionFactory.swift in Sources */,
 				AE39838C272AFAE100BC8A85 /* WalletManagementPresenter.swift in Sources */,

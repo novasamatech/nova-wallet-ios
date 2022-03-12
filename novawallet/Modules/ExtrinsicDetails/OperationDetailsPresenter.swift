@@ -47,7 +47,15 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
 }
 
 extension OperationDetailsPresenter: OperationDetailsInteractorOutputProtocol {
-    func didReceiveDetails(result _: Result<OperationDetailsModel, Error>) {}
+    func didReceiveDetails(result: Result<OperationDetailsModel, Error>) {
+        switch result {
+        case let .success(model):
+            self.model = model
+            updateView()
+        case let .failure(error):
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        }
+    }
 }
 
 extension OperationDetailsPresenter: Localizable {

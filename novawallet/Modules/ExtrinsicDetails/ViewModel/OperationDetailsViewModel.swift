@@ -10,6 +10,8 @@ struct OperationDetailsViewModel {
 
     let time: String
     let status: OperationDetailsModel.Status
+    let amount: String
     let networkViewModel: NetworkViewModel
+    let iconViewModel: ImageViewModelProtocol?
     let content: ContentViewModel
 }

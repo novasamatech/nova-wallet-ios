@@ -1,3 +1,4 @@
+import CommonWallet
 protocol OperationDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: OperationDetailsViewModel)
 }
@@ -14,4 +15,4 @@ protocol OperationDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(result: Result<OperationDetailsModel, Error>)
 }
 
-protocol OperationDetailsWireframeProtocol: AnyObject {}
+protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable {}
