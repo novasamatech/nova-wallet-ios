@@ -14,11 +14,17 @@ struct OperationDetailsViewFactory {
             mapper: AnyCoreDataMapper(mapper)
         )
 
+        let transactionLocalSubscriptionFactory = TransactionLocalSubscriptionFactory(
+            storageFacade: SubstrateDataStorageFacade.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let interactor = OperationDetailsInteractor(
             txData: txData,
             chainAsset: chainAsset,
             wallet: SelectedWalletSettings.shared.value,
             walletRepository: AnyDataProviderRepository(walletRepository),
+            transactionLocalSubscriptionFactory: transactionLocalSubscriptionFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 

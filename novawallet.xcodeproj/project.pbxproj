@@ -393,6 +393,9 @@
 		842A738027DCD427006EE1EA /* OperationDetailsRewardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */; };
 		842A738227DDF273006EE1EA /* UIAlertController+OperationId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738127DDF273006EE1EA /* UIAlertController+OperationId.swift */; };
 		842A738427DDF55A006EE1EA /* OperationIdOptionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738327DDF55A006EE1EA /* OperationIdOptionsPresentable.swift */; };
+		842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738527DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift */; };
+		842A738827DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */; };
+		842A738A27DE14B3006EE1EA /* TransactionLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -2411,6 +2414,9 @@
 		842A737F27DCD427006EE1EA /* OperationDetailsRewardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationDetailsRewardView.swift; sourceTree = "<group>"; };
 		842A738127DDF273006EE1EA /* UIAlertController+OperationId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+OperationId.swift"; sourceTree = "<group>"; };
 		842A738327DDF55A006EE1EA /* OperationIdOptionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OperationIdOptionsPresentable.swift; sourceTree = "<group>"; };
+		842A738527DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionLocalStorageHandler.swift; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -5812,6 +5818,7 @@
 				84CB224F270360AC0041C8C1 /* StakingLocalSubscriptionFactory.swift */,
 				846CA77927099B1E0011124C /* StakingAnalyticsLocalSubscriptionFactory.swift */,
 				8499FEDB27BFDD4300712589 /* NftLocalSubscriptionFactory.swift */,
+				842A738527DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift */,
 			);
 			path = DataProvider;
 			sourceTree = "<group>";
@@ -7576,6 +7583,8 @@
 				8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */,
 				844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */,
 				844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */,
+				842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */,
+				842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -11068,6 +11077,7 @@
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
 				8490148424AA27C1008F705E /* OperationManagerFacade.swift in Sources */,
+				842A738827DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift in Sources */,
 				8499FE7527BE490700712589 /* UniquesAccountKey.swift in Sources */,
 				2AD0A19025D3D1E100312428 /* GitHubPhishingServiceFactory.swift in Sources */,
 				AEF505A92620249F0098574D /* UIColor+HEX.swift in Sources */,
@@ -11255,6 +11265,7 @@
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				8490152B24ABD0A2008F705E /* WalletCommonConfigurator.swift in Sources */,
+				842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */,
 				F40966CC26B297D6008CD244 /* AnalyticsStakeWireframe.swift in Sources */,
 				8428765F24ADE0BB00D91AD8 /* UserSettings.swift in Sources */,
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
@@ -11288,6 +11299,7 @@
 				84D331AF2519E8080078D044 /* TriangularedView+Style.swift in Sources */,
 				84C74365251E4D60009576C6 /* SigningWrapperProtocol.swift in Sources */,
 				844CB56A26F9C57D00396E13 /* WalletLocalStorageSubscriber.swift in Sources */,
+				842A738A27DE14B3006EE1EA /* TransactionLocalStorageHandler.swift in Sources */,
 				8454C2652632B0EF00657DAD /* EventCodingPath.swift in Sources */,
 				843910D4253F8DAD00E3C217 /* NetworkAvailabilityLayerPresenter.swift in Sources */,
 				AEE5FB1226457A88002B8FDC /* StakingRewardDestSetupWireframe.swift in Sources */,
