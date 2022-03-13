@@ -92,7 +92,12 @@ extension UIAlertController {
                 return nil
             }
 
-            return UIAlertAction(title: namedTemplate.name, style: .default) { _ in
+            let title = R.string.localizable.commmonViewInFormat(
+                namedTemplate.name,
+                preferredLanguages: locale.rLanguages
+            )
+
+            return UIAlertAction(title: title, style: .default) { _ in
                 urlClosure(url)
             }
         } ?? []
