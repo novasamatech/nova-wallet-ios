@@ -690,3 +690,4 @@
 "common.recipient" = "Recipient";
 "common.tx.id" = "Transaction ID";
 "tx.details.send.title" = "Send to this contact";
+"commmon.view.in.format" = "View in %@";

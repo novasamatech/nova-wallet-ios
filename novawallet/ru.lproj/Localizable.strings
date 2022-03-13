@@ -690,3 +690,4 @@
 "common.recipient" = "Получатель";
 "common.tx.id" = "Идентификатор транзакции";
 "tx.details.send.title" = "Отправить контакту";
+"commmon.view.in.format" = "Открыть в %@";
