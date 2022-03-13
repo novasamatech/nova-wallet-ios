@@ -102,6 +102,30 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         sendButton.imageWithTitleView?.title = R.string.localizable.txDetailsSendTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        transferView.senderView.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        transferView.recepientView.addTarget(
+            self,
+            action: #selector(actionRecepient),
+            for: .touchUpInside
+        )
+
+        transferView.transactionHashView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+
+        sendButton.addTarget(
+            self,
+            action: #selector(actionSend),
+            for: .touchUpInside
+        )
     }
 
     private func applyExtrinsic(
@@ -113,6 +137,18 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         extrinsicView.bind(viewModel: viewModel, networkViewModel: networkViewModel)
 
         rootView.removeActionButton()
+
+        extrinsicView.senderView.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        extrinsicView.transactionHashView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
     }
 
     private func applyReward(
@@ -124,6 +160,18 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         rewardView.bindReward(viewModel: viewModel, networkViewModel: networkViewModel)
 
         rootView.removeActionButton()
+
+        rewardView.validatorView?.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        rewardView.eventIdView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
     }
 
     private func applySlash(
@@ -135,6 +183,34 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
         rewardView.bindSlash(viewModel: viewModel, networkViewModel: networkViewModel)
 
         rootView.removeActionButton()
+
+        rewardView.validatorView?.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        rewardView.eventIdView.addTarget(
+            self,
+            action: #selector(actionOperationId),
+            for: .touchUpInside
+        )
+    }
+
+    @objc func actionSender() {
+        presenter.showSenderActions()
+    }
+
+    @objc func actionOperationId() {
+        presenter.showOperationActions()
+    }
+
+    @objc func actionRecepient() {
+        presenter.showRecepientActions()
+    }
+
+    @objc func actionSend() {
+        presenter.send()
     }
 }
 

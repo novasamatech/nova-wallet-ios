@@ -15,7 +15,12 @@ final class OperationDetailsExtrinsicView: LocalizableView {
         return view
     }()
 
-    let transactionHashView = StackInfoTableCell()
+    let transactionHashView: StackInfoTableCell = {
+        let view = StackInfoTableCell()
+        view.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        return view
+    }()
+
     let moduleView = StackTableCell()
     let callView: StackTableCell = {
         let view = StackTableCell()
@@ -73,7 +78,7 @@ final class OperationDetailsExtrinsicView: LocalizableView {
             preferredLanguages: locale.rLanguages
         )
 
-        callView.titleLabel.text = R.string.localizable.commonClose(
+        callView.titleLabel.text = R.string.localizable.commonCall(
             preferredLanguages: locale.rLanguages
         )
     }
@@ -89,7 +94,7 @@ final class OperationDetailsExtrinsicView: LocalizableView {
 
         addSubview(transactionTableView)
         transactionTableView.snp.makeConstraints { make in
-            make.top.equalTo(senderView.snp.bottom).offset(12.0)
+            make.top.equalTo(senderTableView.snp.bottom).offset(12.0)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
