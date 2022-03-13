@@ -124,7 +124,17 @@ extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
         }
     }
 
-    func send() {}
+    func send() {
+        if case let .transfer(transferModel) = model?.operation {
+            let peer = transferModel.outgoing ? transferModel.receiver : transferModel.sender
+
+            wireframe.showSend(
+                from: view,
+                displayAddress: peer,
+                chainAsset: chainAsset
+            )
+        }
+    }
 }
 
 extension OperationDetailsPresenter: OperationDetailsInteractorOutputProtocol {

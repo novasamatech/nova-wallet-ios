@@ -6,7 +6,8 @@ import RobinHood
 struct OperationDetailsViewFactory {
     static func createView(
         for txData: AssetTransactionData,
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        commandFactory: WalletCommandFactoryProtocol?
     ) -> OperationDetailsViewProtocol? {
         let mapper = MetaAccountMapper()
         let walletRepository = UserDataStorageFacade.shared.createRepository(
@@ -22,6 +23,7 @@ struct OperationDetailsViewFactory {
         )
 
         let wireframe = OperationDetailsWireframe()
+        wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
 
