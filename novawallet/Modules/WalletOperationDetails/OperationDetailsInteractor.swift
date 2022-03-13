@@ -16,20 +16,25 @@ final class OperationDetailsInteractor: AccountFetching {
     var chain: ChainModel { chainAsset.chain }
 
     let walletRepository: AnyDataProviderRepository<MetaAccountModel>
+    let transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let wallet: MetaAccountModel
+
+    private var transactionProvider: StreamableProvider<TransactionHistoryItem>?
 
     init(
         txData: AssetTransactionData,
         chainAsset: ChainAsset,
         wallet: MetaAccountModel,
         walletRepository: AnyDataProviderRepository<MetaAccountModel>,
+        transactionLocalSubscriptionFactory: TransactionLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.txData = txData
         self.chainAsset = chainAsset
         self.wallet = wallet
         self.walletRepository = walletRepository
+        self.transactionLocalSubscriptionFactory = transactionLocalSubscriptionFactory
         self.operationQueue = operationQueue
     }
 
@@ -285,5 +290,31 @@ final class OperationDetailsInteractor: AccountFetching {
 extension OperationDetailsInteractor: OperationDetailsInteractorInputProtocol {
     func setup() {
         provideModel(overridingBy: nil)
+
+        transactionProvider = subscribeToTransaction(
+            for: txData.transactionId,
+            chainId: chain.chainId
+        )
+    }
+}
+
+extension OperationDetailsInteractor: TransactionLocalStorageSubscriber,
+    TransactionLocalSubscriptionHandler {
+    func handleTransactions(result: Result<[DataProviderChange<TransactionHistoryItem>], Error>) {
+        switch result {
+        case let .success(changes):
+            if let transaction = changes.reduceToLastChange() {
+                switch transaction.status {
+                case .success:
+                    provideModel(overridingBy: .completed)
+                case .failed:
+                    provideModel(overridingBy: .failed)
+                case .pending:
+                    provideModel(overridingBy: .pending)
+                }
+            }
+        case let .failure(error):
+            presenter?.didReceiveDetails(result: .failure(error))
+        }
     }
 }
