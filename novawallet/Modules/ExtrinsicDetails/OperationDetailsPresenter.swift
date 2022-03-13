@@ -38,12 +38,93 @@ final class OperationDetailsPresenter {
 
         view?.didReceive(viewModel: viewModel)
     }
+
+    private func presentAddressOptions(_ address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            explorers: chainAsset.chain.explorers,
+            locale: selectedLocale
+        )
+    }
+
+    private func presentTransactionHashOptions(_ transactionHash: String) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentTransactionHashOptions(
+            from: view,
+            transactionHash: transactionHash,
+            explorers: chainAsset.chain.explorers,
+            locale: selectedLocale
+        )
+    }
+
+    private func presentEventIdOptions(_ eventId: String) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentEventIdOptions(
+            from: view,
+            eventId: eventId,
+            explorers: chainAsset.chain.explorers,
+            locale: selectedLocale
+        )
+    }
 }
 
 extension OperationDetailsPresenter: OperationDetailsPresenterProtocol {
     func setup() {
         interactor.setup()
     }
+
+    func showSenderActions() {
+        switch model?.operation {
+        case let .transfer(transferModel):
+            presentAddressOptions(transferModel.sender.address)
+        case let .extrinsic(extrinsicModel):
+            presentAddressOptions(extrinsicModel.sender.address)
+        case let .reward(internalModel):
+            if let validator = internalModel.validator {
+                presentAddressOptions(validator.address)
+            }
+        case let .slash(internalModel):
+            if let validator = internalModel.validator {
+                presentAddressOptions(validator.address)
+            }
+        case .none:
+            break
+        }
+    }
+
+    func showRecepientActions() {
+        if case let .transfer(transferModel) = model?.operation {
+            presentAddressOptions(transferModel.receiver.address)
+        }
+    }
+
+    func showOperationActions() {
+        switch model?.operation {
+        case let .transfer(transferModel):
+            presentTransactionHashOptions(transferModel.txHash)
+        case let .extrinsic(extrinsicModel):
+            presentTransactionHashOptions(extrinsicModel.txHash)
+        case let .reward(rewardModel):
+            presentEventIdOptions(rewardModel.eventId)
+        case let .slash(slashModel):
+            presentEventIdOptions(slashModel.eventId)
+        case .none:
+            break
+        }
+    }
+
+    func send() {}
 }
 
 extension OperationDetailsPresenter: OperationDetailsInteractorOutputProtocol {

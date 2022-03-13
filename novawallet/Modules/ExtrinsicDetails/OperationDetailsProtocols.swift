@@ -5,6 +5,11 @@ protocol OperationDetailsViewProtocol: ControllerBackedProtocol {
 
 protocol OperationDetailsPresenterProtocol: AnyObject {
     func setup()
+
+    func showSenderActions()
+    func showRecepientActions()
+    func showOperationActions()
+    func send()
 }
 
 protocol OperationDetailsInteractorInputProtocol: AnyObject {
@@ -15,4 +20,5 @@ protocol OperationDetailsInteractorOutputProtocol: AnyObject {
     func didReceiveDetails(result: Result<OperationDetailsModel, Error>)
 }
 
-protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
+    AddressOptionsPresentable, OperationIdOptionsPresentable {}
