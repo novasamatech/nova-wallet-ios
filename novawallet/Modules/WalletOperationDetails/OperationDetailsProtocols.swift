@@ -21,4 +21,10 @@ protocol OperationDetailsInteractorOutputProtocol: AnyObject {
 }
 
 protocol OperationDetailsWireframeProtocol: AlertPresentable, ErrorPresentable,
-    AddressOptionsPresentable, OperationIdOptionsPresentable {}
+    AddressOptionsPresentable, OperationIdOptionsPresentable {
+    func showSend(
+        from view: OperationDetailsViewProtocol?,
+        displayAddress: DisplayAddress,
+        chainAsset: ChainAsset
+    )
+}
