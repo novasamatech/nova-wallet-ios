@@ -50,7 +50,7 @@ final class StackTableView: RoundedView {
     }
 
     func insertArrangedSubview(_ view: StackTableViewCellProtocol, at index: Int) {
-        stackView.insertSubview(view, at: index)
+        stackView.insertArrangedSubview(view, at: index)
         updateLayout()
     }
 
