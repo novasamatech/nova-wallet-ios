@@ -9,11 +9,7 @@ final class OperationDetailsExtrinsicView: LocalizableView {
     }()
 
     let senderView = StackInfoTableCell()
-    let networkView: StackNetworkCell = {
-        let view = StackNetworkCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let networkView = StackNetworkCell()
 
     let transactionHashView: StackInfoTableCell = {
         let view = StackInfoTableCell()
@@ -22,11 +18,7 @@ final class OperationDetailsExtrinsicView: LocalizableView {
     }()
 
     let moduleView = StackTableCell()
-    let callView: StackTableCell = {
-        let view = StackTableCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let callView = StackTableCell()
 
     var locale = Locale.current {
         didSet {
@@ -89,8 +81,8 @@ final class OperationDetailsExtrinsicView: LocalizableView {
             make.top.trailing.leading.equalToSuperview()
         }
 
-        senderTableView.stackView.addArrangedSubview(senderView)
-        senderTableView.stackView.addArrangedSubview(networkView)
+        senderTableView.addArrangedSubview(senderView)
+        senderTableView.addArrangedSubview(networkView)
 
         addSubview(transactionTableView)
         transactionTableView.snp.makeConstraints { make in
@@ -99,8 +91,8 @@ final class OperationDetailsExtrinsicView: LocalizableView {
             make.bottom.equalToSuperview()
         }
 
-        transactionTableView.stackView.addArrangedSubview(transactionHashView)
-        transactionTableView.stackView.addArrangedSubview(moduleView)
-        transactionTableView.stackView.addArrangedSubview(callView)
+        transactionTableView.addArrangedSubview(transactionHashView)
+        transactionTableView.addArrangedSubview(moduleView)
+        transactionTableView.addArrangedSubview(callView)
     }
 }

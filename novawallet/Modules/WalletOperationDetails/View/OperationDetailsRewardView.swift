@@ -11,18 +11,10 @@ final class OperationDetailsRewardView: LocalizableView {
     private(set) var validatorView: StackInfoTableCell?
     private(set) var eraView: StackTableCell?
 
-    let networkView: StackNetworkCell = {
-        let view = StackNetworkCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let networkView = StackNetworkCell()
 
     let eventIdView = StackInfoTableCell()
-    let typeView: StackTableCell = {
-        let view = StackTableCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let typeView = StackTableCell()
 
     var locale = Locale.current {
         didSet {
@@ -133,7 +125,7 @@ final class OperationDetailsRewardView: LocalizableView {
         }
 
         let validatorView = StackInfoTableCell()
-        stakingTableView.stackView.insertArrangedSubview(validatorView, at: 0)
+        stakingTableView.insertArrangedSubview(validatorView, at: 0)
 
         self.validatorView = validatorView
 
@@ -145,6 +137,7 @@ final class OperationDetailsRewardView: LocalizableView {
     private func removeValidatorView() {
         validatorView?.removeFromSuperview()
         validatorView = nil
+        stakingTableView.updateLayout()
     }
 
     private func setupEraView() -> StackTableCell {
@@ -153,7 +146,7 @@ final class OperationDetailsRewardView: LocalizableView {
         }
 
         let eraView = StackTableCell()
-        stakingTableView.stackView.insertArranged(view: eraView, before: networkView)
+        stakingTableView.insertArranged(view: eraView, before: networkView)
 
         self.eraView = eraView
 
@@ -165,6 +158,7 @@ final class OperationDetailsRewardView: LocalizableView {
     private func removeEraView() {
         eraView?.removeFromSuperview()
         eraView = nil
+        stakingTableView.updateLayout()
     }
 
     private func setupLayout() {
@@ -173,7 +167,7 @@ final class OperationDetailsRewardView: LocalizableView {
             make.top.trailing.leading.equalToSuperview()
         }
 
-        stakingTableView.stackView.addArrangedSubview(networkView)
+        stakingTableView.addArrangedSubview(networkView)
 
         addSubview(eventTableView)
         eventTableView.snp.makeConstraints { make in
@@ -182,7 +176,7 @@ final class OperationDetailsRewardView: LocalizableView {
             make.bottom.equalToSuperview()
         }
 
-        eventTableView.stackView.addArrangedSubview(eventIdView)
-        eventTableView.stackView.addArrangedSubview(typeView)
+        eventTableView.addArrangedSubview(eventIdView)
+        eventTableView.addArrangedSubview(typeView)
     }
 }
