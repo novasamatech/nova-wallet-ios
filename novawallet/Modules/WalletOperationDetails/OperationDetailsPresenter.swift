@@ -9,7 +9,7 @@ final class OperationDetailsPresenter {
 
     let chainAsset: ChainAsset
 
-    private var model: OperationDetailsModel?
+    private(set) var model: OperationDetailsModel?
 
     init(
         interactor: OperationDetailsInteractorInputProtocol,

@@ -9,9 +9,11 @@ struct OperationDetailsViewFactory {
         chainAsset: ChainAsset,
         commandFactory: WalletCommandFactoryProtocol?
     ) -> OperationDetailsViewProtocol? {
-        let mapper = MetaAccountMapper()
-        let walletRepository = UserDataStorageFacade.shared.createRepository(
-            mapper: AnyCoreDataMapper(mapper)
+        let storageFacade = UserDataStorageFacade.shared
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
+        let walletRepository = accountRepositoryFactory.createMetaAccountRepository(
+            for: nil,
+            sortDescriptors: []
         )
 
         let transactionLocalSubscriptionFactory = TransactionLocalSubscriptionFactory(
