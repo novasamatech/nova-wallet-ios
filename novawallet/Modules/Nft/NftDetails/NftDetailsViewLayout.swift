@@ -66,11 +66,7 @@ final class NftDetailsViewLayout: UIView {
     let stackTableView = StackTableView()
 
     let ownerCell = StackInfoTableCell()
-    let networkCell: StackNetworkCell = {
-        let view = StackNetworkCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let networkCell = StackNetworkCell()
 
     private(set) var collectionCell: StackTableCell?
     private(set) var issuerCell: StackInfoTableCell?
@@ -124,7 +120,7 @@ final class NftDetailsViewLayout: UIView {
         }
 
         let issuerCell = StackInfoTableCell()
-        stackTableView.stackView.insertArranged(view: issuerCell, before: networkCell)
+        stackTableView.insertArranged(view: issuerCell, before: networkCell)
         self.issuerCell = issuerCell
 
         setupIssuerLocalization()
@@ -138,7 +134,7 @@ final class NftDetailsViewLayout: UIView {
         }
 
         let collectionCell = StackTableCell()
-        stackTableView.stackView.insertArranged(view: collectionCell, before: ownerCell)
+        stackTableView.insertArranged(view: collectionCell, before: ownerCell)
         self.collectionCell = collectionCell
 
         setupCollectionLocalization()
@@ -154,11 +150,13 @@ final class NftDetailsViewLayout: UIView {
     func removeIssueViewIfNeeded() {
         issuerCell?.removeFromSuperview()
         issuerCell = nil
+        stackTableView.updateLayout()
     }
 
     func removeCollectionViewIfNeeded() {
         collectionCell?.removeFromSuperview()
         collectionCell = nil
+        stackTableView.updateLayout()
     }
 
     func setupMediaContentLayout() {
@@ -250,8 +248,8 @@ final class NftDetailsViewLayout: UIView {
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
         }
 
-        stackTableView.stackView.addArrangedSubview(ownerCell)
-        stackTableView.stackView.addArrangedSubview(networkCell)
+        stackTableView.addArrangedSubview(ownerCell)
+        stackTableView.addArrangedSubview(networkCell)
 
         addSubview(navBarBlurView)
         navBarBlurView.snp.makeConstraints { make in
