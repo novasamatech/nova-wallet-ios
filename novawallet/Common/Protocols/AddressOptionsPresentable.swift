@@ -5,13 +5,6 @@ protocol AddressOptionsPresentable {
     func presentAccountOptions(
         from view: ControllerBackedProtocol,
         address: String,
-        chain: Chain,
-        locale: Locale
-    )
-
-    func presentAccountOptions(
-        from view: ControllerBackedProtocol,
-        address: String,
         explorers: [ChainModel.Explorer]?,
         locale: Locale
     )
@@ -45,29 +38,6 @@ extension AddressOptionsPresentable {
             animated: true,
             completion: nil
         )
-    }
-
-    func presentAccountOptions(
-        from view: ControllerBackedProtocol,
-        address: String,
-        chain: Chain,
-        locale: Locale
-    ) {
-        let copyClosure = { copyAddress(from: view, address: address, locale: locale) }
-
-        let urlClosure = { (url: URL) in
-            present(from: view, url: url)
-        }
-
-        let controller = UIAlertController.presentAccountOptions(
-            address,
-            chain: chain,
-            locale: locale,
-            copyClosure: copyClosure,
-            urlClosure: urlClosure
-        )
-
-        view.controller.present(controller, animated: true, completion: nil)
     }
 
     func presentAccountOptions(
