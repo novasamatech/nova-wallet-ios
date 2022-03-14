@@ -12,12 +12,16 @@ final class RemoteImageViewModel: NSObject {
 }
 
 extension RemoteImageViewModel: ImageViewModelProtocol {
-    func loadImage(on imageView: UIImageView, targetSize: CGSize, cornerRadius: CGFloat?, animated: Bool) {
+    func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
         var processor: ImageProcessor = SVGImageProcessor() |>
-            ResizingImageProcessor(referenceSize: targetSize, mode: .aspectFill) |>
-            CroppingImageProcessor(size: targetSize)
+            ResizingImageProcessor(referenceSize: settings.targetSize, mode: .aspectFill) |>
+            CroppingImageProcessor(size: settings.targetSize)
 
-        if let cornerRadius = cornerRadius, cornerRadius > 0 {
+        if let tintColor = settings.tintColor {
+            processor = processor |> NovaTintImageProcessor(tintColor: tintColor)
+        }
+
+        if let cornerRadius = settings.cornerRadius, cornerRadius > 0 {
             processor = processor |> RoundCornerImageProcessor(cornerRadius: cornerRadius)
         }
 

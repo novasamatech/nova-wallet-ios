@@ -3,6 +3,17 @@ import IrohaCrypto
 
 extension NSPredicate {
     static func filterTransactionsBy(
+        transactionId: String,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
+        let transactionIdFilter = filterTransactionsBy(transactionId: transactionId)
+        let chainIdFilter = filterTransactionsByChainId(chainId)
+
+        let subfilters = [chainIdFilter, transactionIdFilter]
+        return NSCompoundPredicate(andPredicateWithSubpredicates: subfilters)
+    }
+
+    static func filterTransactionsBy(
         address: String,
         chainId: ChainModel.Id
     ) -> NSPredicate {
@@ -57,6 +68,14 @@ extension NSPredicate {
                 ]
             )
         ])
+    }
+
+    static func filterTransactionsBy(transactionId: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDTransactionHistoryItem.identifier),
+            transactionId
+        )
     }
 
     static func filterTransactionsBySender(address: String) -> NSPredicate {

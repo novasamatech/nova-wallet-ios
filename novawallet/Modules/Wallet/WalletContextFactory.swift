@@ -172,17 +172,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         )
 
         TransactionHistoryConfigurator(
-            chainFormat: chain.chainFormat,
+            chainAsset: chainAsset,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
-
-        TransactionDetailsConfigurator(
-            chainAccount: chainAccountResponse,
-            selectedAsset: asset,
-            utilityAsset: utilityAsset,
-            explorers: chain.explorers
-        ).configure(builder: builder.transactionDetailsModuleBuilder)
 
         let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
         contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
