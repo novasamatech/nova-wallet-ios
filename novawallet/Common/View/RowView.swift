@@ -15,6 +15,8 @@ class RowView<T: UIView>: BackgroundedContentControl {
 
     var rowContentView: T! { contentView as? T }
 
+    var roundedBackgroundView: RoundedView! { backgroundView as? RoundedView }
+
     init(contentView: T? = nil, preferredHeight: CGFloat? = nil) {
         self.preferredHeight = preferredHeight
 
@@ -91,10 +93,14 @@ class RowView<T: UIView>: BackgroundedContentControl {
             right: UIConstants.horizontalInset
         )
 
-        let shapeView = ShapeView()
+        let shapeView = RoundedView()
+        shapeView.shadowOpacity = 0.0
+        shapeView.strokeWidth = 0.0
         shapeView.isUserInteractionEnabled = false
         shapeView.fillColor = .clear
         shapeView.highlightedFillColor = R.color.colorHighlightedAccent()!
+        shapeView.cornerRadius = 0.0
+        shapeView.roundingCorners = []
         backgroundView = shapeView
 
         borderView.isUserInteractionEnabled = false

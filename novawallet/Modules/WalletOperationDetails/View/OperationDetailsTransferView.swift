@@ -7,23 +7,17 @@ final class OperationDetailsTransferView: LocalizableView {
 
     let senderView = StackInfoTableCell()
     let networkView = StackNetworkCell()
-    let networkFeeView: StackTableCell = {
-        let view = StackTableCell()
-        view.borderView.borderType = []
-        return view
-    }()
+    let networkFeeView = StackTableCell()
 
     let recepientView: StackInfoTableCell = {
         let view = StackInfoTableCell()
         view.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        view.borderView.borderType = []
         return view
     }()
 
     let transactionHashView: StackInfoTableCell = {
         let view = StackInfoTableCell()
         view.detailsLabel.lineBreakMode = .byTruncatingMiddle
-        view.borderView.borderType = []
         return view
     }()
 
@@ -90,9 +84,9 @@ final class OperationDetailsTransferView: LocalizableView {
             make.top.trailing.leading.equalToSuperview()
         }
 
-        senderTableView.stackView.addArrangedSubview(senderView)
-        senderTableView.stackView.addArrangedSubview(networkView)
-        senderTableView.stackView.addArrangedSubview(networkFeeView)
+        senderTableView.addArrangedSubview(senderView)
+        senderTableView.addArrangedSubview(networkView)
+        senderTableView.addArrangedSubview(networkFeeView)
 
         addSubview(recepientTableView)
         recepientTableView.snp.makeConstraints { make in
@@ -100,7 +94,7 @@ final class OperationDetailsTransferView: LocalizableView {
             make.leading.trailing.equalToSuperview()
         }
 
-        recepientTableView.stackView.addArrangedSubview(recepientView)
+        recepientTableView.addArrangedSubview(recepientView)
 
         addSubview(transactionTableView)
         transactionTableView.snp.makeConstraints { make in
@@ -109,6 +103,6 @@ final class OperationDetailsTransferView: LocalizableView {
             make.bottom.equalToSuperview()
         }
 
-        transactionTableView.stackView.addArrangedSubview(transactionHashView)
+        transactionTableView.addArrangedSubview(transactionHashView)
     }
 }

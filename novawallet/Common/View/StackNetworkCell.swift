@@ -72,3 +72,5 @@ class StackNetworkCell: RowView<GenericTitleValueView<UILabel, UIStackView>> {
         }
     }
 }
+
+extension StackNetworkCell: StackTableViewCellProtocol {}
