@@ -74,3 +74,5 @@ class StackInfoTableCell: RowView<GenericTitleValueView<UILabel, IconDetailsGene
         valueView.detailsView.detailsLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 }
+
+extension StackInfoTableCell: StackTableViewCellProtocol {}
