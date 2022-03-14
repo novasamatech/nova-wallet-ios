@@ -44,6 +44,15 @@ final class AssetIconView: UIView {
         viewModel?.loadImage(on: imageView, targetSize: size, animated: true)
     }
 
+    func bind(viewModel: ImageViewModelProtocol?, settings: ImageViewModelSettings) {
+        self.viewModel?.cancel(on: imageView)
+
+        self.viewModel = viewModel
+
+        imageView.image = nil
+        viewModel?.loadImage(on: imageView, settings: settings, animated: true)
+    }
+
     private func updateInsets() {
         imageView.snp.updateConstraints { make in
             make.top.equalToSuperview().inset(contentInsets.top)
