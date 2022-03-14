@@ -46,10 +46,13 @@ final class OperationDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func applyIcon(from viewModel: OperationDetailsViewModel) {
-        rootView.iconView.bind(
-            viewModel: viewModel.iconViewModel,
-            size: OperationDetailsViewLayout.Constants.imageSize
+        let settings = ImageViewModelSettings(
+            targetSize: OperationDetailsViewLayout.Constants.imageSize,
+            cornerRadius: nil,
+            tintColor: R.color.colorTransparentText()
         )
+
+        rootView.iconView.bind(viewModel: viewModel.iconViewModel, settings: settings)
     }
 
     private func applyAmount(from viewModel: OperationDetailsViewModel) {

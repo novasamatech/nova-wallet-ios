@@ -43,13 +43,7 @@ final class OperationDetailsViewModelFactory {
                 R.image.iconOutgoingTransfer()! :
                 R.image.iconIncomingTransfer()!
 
-            if
-                let tintedImage = image.withRenderingMode(.alwaysTemplate)
-                .tinted(with: R.color.colorTransparentText()!) {
-                return StaticImageViewModel(image: tintedImage)
-            } else {
-                return nil
-            }
+            return StaticImageViewModel(image: image)
         case .reward, .slash:
             let image = R.image.iconRewardOperation()!
             return StaticImageViewModel(image: image)
