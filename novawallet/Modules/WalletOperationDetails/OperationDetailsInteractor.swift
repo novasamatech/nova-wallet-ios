@@ -259,7 +259,7 @@ final class OperationDetailsInteractor: AccountFetching {
         }
     }
 
-    private func provideViewModel(
+    private func provideModel(
         for operationData: OperationDetailsModel.OperationData,
         overridingBy newStatus: OperationDetailsModel.Status?
     ) {
@@ -278,7 +278,7 @@ final class OperationDetailsInteractor: AccountFetching {
     private func provideModel(overridingBy newStatus: OperationDetailsModel.Status?) {
         extractOperationData { [weak self] operationData in
             if let operationData = operationData {
-                self?.provideViewModel(for: operationData, overridingBy: newStatus)
+                self?.provideModel(for: operationData, overridingBy: newStatus)
             } else {
                 let error = OperationDetailsInteractorError.unsupportTxType
                 self?.presenter?.didReceiveDetails(result: .failure(error))
