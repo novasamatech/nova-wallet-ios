@@ -9,14 +9,15 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
         displayAddress: DisplayAddress,
         chainAsset: ChainAsset
     ) {
-        guard let commandFactory = commandFactory else {
+        guard let transferView = TransferSetupViewFactory.createView(
+            from: chainAsset,
+            recepient: displayAddress
+        ) else {
             return
         }
 
-        try? TransferSetupCommand(
-            commandFactory: commandFactory,
-            chainAsset: chainAsset,
-            recepient: displayAddress
-        ).execute()
+        let command = commandFactory?.preparePresentationCommand(for: transferView.controller)
+        command?.presentationStyle = .push(hidesBottomBar: true)
+        try? command?.execute()
     }
 }
