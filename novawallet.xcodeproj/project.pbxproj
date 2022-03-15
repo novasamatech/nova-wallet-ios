@@ -606,7 +606,6 @@
 		8457F91326EB90B1006803E1 /* AccountItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8457F91226EB90B1006803E1 /* AccountItemMapper.swift */; };
 		84585A2F251BFC8400390F7A /* TriangularedButton+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */; };
 		84585A31251C0B9300390F7A /* NetworkInfoMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84585A30251C0B9300390F7A /* NetworkInfoMode.swift */; };
-		84585A34251CE2E300390F7A /* ContactsLocalSearchEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84585A33251CE2E300390F7A /* ContactsLocalSearchEngine.swift */; };
 		8459A9C827469E4B000D6278 /* AcalaContributionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */; };
 		8459A9CA2746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */; };
 		8459A9CC2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */; };
@@ -990,7 +989,6 @@
 		84963D6E26F91826003FE8E4 /* RemoteSubscriptionRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */; };
 		84963D7026F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84963D6F26F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift */; };
 		84969732251CE71500C39524 /* WalletAssetId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84969731251CE71500C39524 /* WalletAssetId.swift */; };
-		84969734251CE9CD00C39524 /* ContactsConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84969733251CE9CD00C39524 /* ContactsConfigurator.swift */; };
 		8496ADD7276AFEED00306B24 /* DAppBrowserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADD6276AFEED00306B24 /* DAppBrowserModel.swift */; };
 		8496ADDA276AFF4600306B24 /* DAppBrowserScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */; };
 		8496ADDE276B123200306B24 /* PolkadotExtentionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */; };
@@ -1458,12 +1456,6 @@
 		84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */; };
 		84FAB0672542D06B00319F74 /* WalletContactOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0662542D06B00319F74 /* WalletContactOperationFactory.swift */; };
 		84FAB0692542EBDE00319F74 /* SearchData+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0682542EBDE00319F74 /* SearchData+Contacts.swift */; };
-		84FAB06B2542F2C700319F74 /* ContactsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB06A2542F2C700319F74 /* ContactsViewModelFactory.swift */; };
-		84FAB06D254303DA00319F74 /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB06C254303DA00319F74 /* ContactViewModel.swift */; };
-		84FAB072254366ED00319F74 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB071254366ED00319F74 /* ContactTableViewCell.swift */; };
-		84FAB07425436D6300319F74 /* ContactsConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB07325436D6300319F74 /* ContactsConstants.swift */; };
-		84FAB076254378FC00319F74 /* ContactsListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB075254378FC00319F74 /* ContactsListViewModelFactory.swift */; };
-		84FAB0782543791A00319F74 /* ContactContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0772543791A00319F74 /* ContactContext.swift */; };
 		84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0802543A7EE00319F74 /* ReceiveConfigurator.swift */; };
 		84FACB1725F559F200F32ED4 /* WestendStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1625F559F200F32ED4 /* WestendStub.swift */; };
 		84FACB1F25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */; };
@@ -2640,7 +2632,6 @@
 		8457F91226EB90B1006803E1 /* AccountItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapper.swift; sourceTree = "<group>"; };
 		84585A2E251BFC8400390F7A /* TriangularedButton+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TriangularedButton+Style.swift"; sourceTree = "<group>"; };
 		84585A30251C0B9300390F7A /* NetworkInfoMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInfoMode.swift; sourceTree = "<group>"; };
-		84585A33251CE2E300390F7A /* ContactsLocalSearchEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsLocalSearchEngine.swift; sourceTree = "<group>"; };
 		8459A9C727469E4B000D6278 /* AcalaContributionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaContributionSource.swift; sourceTree = "<group>"; };
 		8459A9C92746A1BC000D6278 /* CrowdloanOffchainSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriber.swift; sourceTree = "<group>"; };
 		8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainSubscriptionHandler.swift; sourceTree = "<group>"; };
@@ -3030,7 +3021,6 @@
 		84963D6D26F91826003FE8E4 /* RemoteSubscriptionRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteSubscriptionRequests.swift; sourceTree = "<group>"; };
 		84963D6F26F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		84969731251CE71500C39524 /* WalletAssetId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAssetId.swift; sourceTree = "<group>"; };
-		84969733251CE9CD00C39524 /* ContactsConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsConfigurator.swift; sourceTree = "<group>"; };
 		8496ADD6276AFEED00306B24 /* DAppBrowserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserModel.swift; sourceTree = "<group>"; };
 		8496ADD9276AFF4600306B24 /* DAppBrowserScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserScript.swift; sourceTree = "<group>"; };
 		8496ADDD276B123200306B24 /* PolkadotExtentionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtentionMessage.swift; sourceTree = "<group>"; };
@@ -3498,12 +3488,6 @@
 		84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDContactItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
 		84FAB0662542D06B00319F74 /* WalletContactOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletContactOperationFactory.swift; sourceTree = "<group>"; };
 		84FAB0682542EBDE00319F74 /* SearchData+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchData+Contacts.swift"; sourceTree = "<group>"; };
-		84FAB06A2542F2C700319F74 /* ContactsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewModelFactory.swift; sourceTree = "<group>"; };
-		84FAB06C254303DA00319F74 /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
-		84FAB071254366ED00319F74 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
-		84FAB07325436D6300319F74 /* ContactsConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsConstants.swift; sourceTree = "<group>"; };
-		84FAB075254378FC00319F74 /* ContactsListViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListViewModelFactory.swift; sourceTree = "<group>"; };
-		84FAB0772543791A00319F74 /* ContactContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactContext.swift; sourceTree = "<group>"; };
 		84FAB0802543A7EE00319F74 /* ReceiveConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiveConfigurator.swift; sourceTree = "<group>"; };
 		84FACB1625F559F200F32ED4 /* WestendStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WestendStub.swift; sourceTree = "<group>"; };
 		84FACB1E25F55EC900F32ED4 /* RuntimeCodingServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCodingServiceStub.swift; sourceTree = "<group>"; };
@@ -5737,20 +5721,6 @@
 			path = EntityToModel;
 			sourceTree = "<group>";
 		};
-		84585A32251CE1BF00390F7A /* Contacts */ = {
-			isa = PBXGroup;
-			children = (
-				84FAB070254366D100319F74 /* View */,
-				84585A33251CE2E300390F7A /* ContactsLocalSearchEngine.swift */,
-				84969733251CE9CD00C39524 /* ContactsConfigurator.swift */,
-				84FAB06A2542F2C700319F74 /* ContactsViewModelFactory.swift */,
-				84FAB06C254303DA00319F74 /* ContactViewModel.swift */,
-				84FAB075254378FC00319F74 /* ContactsListViewModelFactory.swift */,
-				84FAB0772543791A00319F74 /* ContactContext.swift */,
-			);
-			path = Contacts;
-			sourceTree = "<group>";
-		};
 		845BB8B625E4464D00E5FCDC /* ExtrinsicService */ = {
 			isa = PBXGroup;
 			children = (
@@ -7002,7 +6972,6 @@
 				2A90206F273E72DE00F2D584 /* Model */,
 				84364D53252FAD5C00281F9A /* AccountDetails */,
 				8494D8612524752500614D8F /* Commands */,
-				84585A32251CE1BF00390F7A /* Contacts */,
 				8490151924ABC343008F705E /* History */,
 				35542AFCBEC3F0BD298F5030 /* HistoryFilter */,
 				849E2330254AEF9F00B1F6D4 /* InvoiceScan */,
@@ -8285,15 +8254,6 @@
 				84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */,
 			);
 			path = Repositories;
-			sourceTree = "<group>";
-		};
-		84FAB070254366D100319F74 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				84FAB071254366ED00319F74 /* ContactTableViewCell.swift */,
-				84FAB07325436D6300319F74 /* ContactsConstants.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		84FAB07F2543A7D700319F74 /* Receive */ = {
@@ -10642,7 +10602,6 @@
 				8443FDB12554B7640092893D /* TitledMnemonicView.swift in Sources */,
 				84D97EB5251FC58100F07405 /* TransferConfigurator.swift in Sources */,
 				AE2C84CA25EF986E00986716 /* ValidatorInfoProtocols.swift in Sources */,
-				84FAB076254378FC00319F74 /* ContactsListViewModelFactory.swift in Sources */,
 				F40966CF26B297D7008CD244 /* AnalyticsStakeViewFactory.swift in Sources */,
 				844518D127CAB6FC00D0C52B /* NftImageViewModel.swift in Sources */,
 				AEAC690426EB891900346599 /* Logger+FearlessUtils.swift in Sources */,
@@ -10845,7 +10804,6 @@
 				F40966CE26B297D6008CD244 /* AnalyticsStakeProtocols.swift in Sources */,
 				F47F640B263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift in Sources */,
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
-				84FAB06D254303DA00319F74 /* ContactViewModel.swift in Sources */,
 				F40966DC26B29839008CD244 /* SubqueryStakeData.swift in Sources */,
 				8490149924AA7892008F705E /* SharingPresentable.swift in Sources */,
 				84754C9C2513B26000854599 /* AccountPickerTableViewCell.swift in Sources */,
@@ -10890,7 +10848,6 @@
 				F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */,
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
 				8467F4C526B1E4E200C5B6F4 /* StakingDurationFetching.swift in Sources */,
-				84FAB072254366ED00319F74 /* ContactTableViewCell.swift in Sources */,
 				F4A6C9E4265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift in Sources */,
 				8419377F25441D5E00CFA50C /* ReceiveHeaderView.swift in Sources */,
 				84452F5825D5C30600F47EC5 /* FilesRepository.swift in Sources */,
@@ -11089,7 +11046,6 @@
 				F4D6FF4126B3E4C2002313AF /* AnalyticsRewardsWireframe.swift in Sources */,
 				F4A12BF7260B61E900392C33 /* StakingManageOption.swift in Sources */,
 				843A2C7726A86FD000266F53 /* TitleStatusView.swift in Sources */,
-				84FAB07425436D6300319F74 /* ContactsConstants.swift in Sources */,
 				8409C268252218FF0049B5C8 /* WalletFearlessDefinitionFactory.swift in Sources */,
 				8409C27B25228AA10049B5C8 /* TransferConfirmAccessoryViewFactory.swift in Sources */,
 				84AE7AA927D3700E00495267 /* StackTableCell.swift in Sources */,
@@ -11591,7 +11547,6 @@
 				F4F65C3D26D8B9DD002EE838 /* FWYAxisChartFormatter.swift in Sources */,
 				847C963525534E41002D288F /* UIFactory.swift in Sources */,
 				F40966D026B297D7008CD244 /* AnalyticsStakeInteractor.swift in Sources */,
-				84585A34251CE2E300390F7A /* ContactsLocalSearchEngine.swift in Sources */,
 				F3D2AC37709EAF088A594B73 /* AccountManagementViewController.swift in Sources */,
 				84CA68D526BE9E62003B9453 /* ChainRegistry.swift in Sources */,
 				84DC3CE32795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift in Sources */,
@@ -11608,11 +11563,8 @@
 				84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */,
 				8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */,
 				F47BBD562630B9EF0087DA11 /* StakingBalanceInteractor.swift in Sources */,
-				84FAB06B2542F2C700319F74 /* ContactsViewModelFactory.swift in Sources */,
-				84FAB0782543791A00319F74 /* ContactContext.swift in Sources */,
 				84D2F1A5277437D30040C680 /* DAppIconView.swift in Sources */,
 				844DBC742750F12C009F8351 /* AdvancedWalletSettings.swift in Sources */,
-				84969734251CE9CD00C39524 /* ContactsConfigurator.swift in Sources */,
 				AE3983A5272C0BC800BC8A85 /* ImportChainAccount+AccountImportPresenter.swift in Sources */,
 				843461CF26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift in Sources */,
 				F458D3982642911B0055CB75 /* ControllerAccountViewModel.swift in Sources */,
