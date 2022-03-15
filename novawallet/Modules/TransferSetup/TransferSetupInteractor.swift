@@ -1,7 +1,5 @@
 import UIKit
 
-final class TransferSetupInteractor {
-    weak var presenter: TransferSetupInteractorOutputProtocol!
-}
+final class TransferSetupInteractor: TransferInteractor {}
 
 extension TransferSetupInteractor: TransferSetupInteractorInputProtocol {}
