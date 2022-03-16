@@ -691,3 +691,5 @@
 "common.tx.id" = "Transaction ID";
 "tx.details.send.title" = "Send to this contact";
 "commmon.view.in.format" = "View in %@";
+"wallet.transfer.token.format" = "Send %@ on";
+"common.transferable.prefix" = "Transferable:";

@@ -691,3 +691,5 @@
 "common.tx.id" = "Идентификатор транзакции";
 "tx.details.send.title" = "Отправить контакту";
 "commmon.view.in.format" = "Открыть в %@";
+"wallet.transfer.token.format" = "Отправить %@ в";
+"common.transferable.prefix" = "Доступно:";
