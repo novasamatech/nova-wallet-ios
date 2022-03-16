@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import CommonWallet
 
 final class TransferSetupViewController: UIViewController, ViewHolder {
     typealias RootViewType = TransferSetupViewLayout
@@ -52,10 +53,13 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
 extension TransferSetupViewController: TransferSetupViewProtocol {
     func didReceiveChainAsset(viewModel: ChainAssetViewModel) {
+        let assetViewModel = viewModel.assetViewModel
         rootView.tokenLabel.text = R.string.localizable.walletTransferTokenFormat(
-            viewModel.assetViewModel.symbol.uppercased(),
+            assetViewModel.symbol,
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        rootView.amountInputView.bind(assetViewModel: assetViewModel)
 
         let networkViewModel = viewModel.networkViewModel
         rootView.networkView.nameLabel.text = networkViewModel.name.uppercased()
@@ -79,6 +83,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
         rootView.networkFeeView.bind(viewModel: viewModel)
     }
+
+    func didReceiveAmount(inputViewModel _: AmountInputViewModelProtocol) {}
 }
 
 extension TransferSetupViewController: Localizable {

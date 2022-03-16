@@ -1,9 +1,11 @@
 import BigInt
+import CommonWallet
 
 protocol TransferSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveTransferableBalance(viewModel: String)
     func didReceiveChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
 }
 
 protocol TransferSetupPresenterProtocol: AnyObject {
