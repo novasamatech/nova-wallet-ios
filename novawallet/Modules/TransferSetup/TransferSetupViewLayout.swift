@@ -3,6 +3,9 @@ import UIKit
 final class TransferSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
         return view
     }()
 
@@ -11,6 +14,37 @@ final class TransferSetupViewLayout: UIView {
         button.applyDefaultStyle()
         return button
     }()
+
+    let tokenLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()
+        label.font = .boldTitle2
+        label.minimumScaleFactor = 0.5
+        return label
+    }()
+
+    let networkView = WalletChainView()
+
+    let networkContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
+
+    let recepientTitleLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorTransparentText()
+        label.font = .regularFootnote
+        return label
+    }()
+
+    let networkFeeView: NetworkFeeView = {
+        let view = NetworkFeeView()
+        view.borderType = []
+        return view
+    }()
+
+    let amountView = TitleHorizontalMultiValueView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -37,6 +71,38 @@ final class TransferSetupViewLayout: UIView {
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
+        }
+
+        containerView.stackView.addArrangedSubview(networkContainerView)
+        networkContainerView.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
+            make.height.equalTo(32.0)
+        }
+
+        networkContainerView.addSubview(tokenLabel)
+        tokenLabel.snp.makeConstraints { make in
+            make.leading.centerY.equalToSuperview()
+        }
+
+        networkContainerView.addSubview(networkView)
+        networkView.snp.makeConstraints { make in
+            make.leading.equalTo(tokenLabel.snp.trailing).offset(10.0)
+            make.centerY.equalToSuperview()
+            make.trailing.lessThanOrEqualToSuperview()
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: networkContainerView)
+
+        containerView.stackView.addArrangedSubview(recepientTitleLabel)
+
+        containerView.stackView.addArrangedSubview(amountView)
+        amountView.snp.makeConstraints { make in
+            make.height.equalTo(34.0)
+        }
+
+        containerView.stackView.addArrangedSubview(networkFeeView)
+        networkFeeView.snp.makeConstraints { make in
+            make.height.equalTo(48.0)
         }
     }
 }

@@ -6,7 +6,7 @@ import SubstrateSdk
 class TransferInteractor {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
-    let selectedAccount: MetaChainAccountResponse
+    let selectedAccount: ChainAccountResponse
     let chain: ChainModel
     let asset: AssetModel
     let runtimeService: RuntimeCodingServiceProtocol
@@ -35,8 +35,10 @@ class TransferInteractor {
     private var recepientSendingAssetProvider: StreamableProvider<AssetBalance>?
     private var recepientUtilityAssetProvider: StreamableProvider<AssetBalance>?
 
+    var isUtilityTransfer: Bool { chain.utilityAssets().first?.assetId == asset.assetId }
+
     init(
-        selectedAccount: MetaChainAccountResponse,
+        selectedAccount: ChainAccountResponse,
         chain: ChainModel,
         asset: AssetModel,
         runtimeService: RuntimeCodingServiceProtocol,
@@ -62,7 +64,7 @@ class TransferInteractor {
     deinit {
         cancelCodingFactoryOperation()
 
-        clearSendingAssetRemoteRecepientSubscriptions()
+        clearSendingAssetRemoteRecepientSubscription()
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
@@ -84,6 +86,8 @@ class TransferInteractor {
 
                     let codingFactory = try operation.extractNoCancellableResultData()
                     try self?.extractAssetStorageInfo(using: codingFactory)
+
+                    self?.continueSetup()
                 } catch {
                     self?.presenter?.didReceiveSetup(error: error)
                 }
@@ -101,9 +105,7 @@ class TransferInteractor {
             codingFactory: codingFactory
         )
 
-        if
-            let utilityAsset = chain.utilityAssets().first,
-            utilityAsset.assetId != asset.assetId {
+        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
             utilityAssetInfo = try AssetStorageInfo.extract(
                 from: utilityAsset,
                 codingFactory: codingFactory
@@ -118,22 +120,22 @@ class TransferInteractor {
         setupUtilityAssetBalanceProviderIfNeeded()
         setupSendingAssetPriceProviderIfNeeded()
         setupUtilityAssetBalanceProviderIfNeeded()
+
+        presenter?.didCompleteSetup()
     }
 
     private func setupSendingAssetBalanceProvider() {
         sendingAssetProvider = subscribeToAssetBalanceProvider(
-            for: selectedAccount.chainAccount.accountId,
+            for: selectedAccount.accountId,
             chainId: chain.chainId,
             assetId: asset.assetId
         )
     }
 
     private func setupUtilityAssetBalanceProviderIfNeeded() {
-        if
-            let utilityAsset = chain.utilityAssets().first,
-            asset.assetId != utilityAsset.assetId {
+        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
             utilityAssetProvider = subscribeToAssetBalanceProvider(
-                for: selectedAccount.chainAccount.accountId,
+                for: selectedAccount.accountId,
                 chainId: chain.chainId,
                 assetId: utilityAsset.assetId
             )
@@ -149,14 +151,12 @@ class TransferInteractor {
 
             sendingAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
         } else {
-            presenter?.didReceiveSendingAssetPrice(result: .success(nil))
+            presenter?.didReceiveSendingAssetPrice(nil)
         }
     }
 
     private func setupUtilityAssetPriceProviderIfNeeded() {
-        guard
-            let utilityAsset = chain.utilityAssets().first,
-            asset.assetId != utilityAsset.assetId else {
+        guard !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first else {
             return
         }
 
@@ -168,7 +168,7 @@ class TransferInteractor {
 
             utilityAssetPriceProvider = subscribeToPrice(for: priceId, options: options)
         } else {
-            presenter?.didReceiveUtilityAssetPrice(result: .success(nil))
+            presenter?.didReceiveUtilityAssetPrice(nil)
         }
     }
 
@@ -254,7 +254,7 @@ class TransferInteractor {
         )
     }
 
-    private func clearSendingAssetRemoteRecepientSubscriptions() {
+    private func clearSendingAssetRemoteRecepientSubscription() {
         guard
             let sendingAssetInfo = sendingAssetInfo,
             let recepientAccountId = recepientAccountId,
@@ -266,14 +266,14 @@ class TransferInteractor {
             from: sendingAssetSubscriptionId,
             assetStorageInfo: sendingAssetInfo,
             accountId: recepientAccountId,
-            chainAsset: ChainAsset(chain: chain, asset: asset),
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             completion: nil
         )
 
         self.sendingAssetSubscriptionId = nil
     }
 
-    private func clearSendingAssetLocaleRecepientSubscriptions() {
+    private func clearSendingAssetLocaleRecepientSubscription() {
         recepientSendingAssetProvider?.removeObserver(self)
         recepientSendingAssetProvider = nil
     }
@@ -290,7 +290,7 @@ class TransferInteractor {
             from: utilityAssetSubscriptionId,
             assetStorageInfo: utilityAssetInfo,
             accountId: recepientAccountId,
-            chainAsset: ChainAsset(chain: chain, asset: asset),
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
             completion: nil
         )
 
@@ -317,7 +317,7 @@ extension TransferInteractor {
             if let recepient = recepient {
                 recepientAccountId = try recepient.toAccountId()
             } else {
-                recepientAccountId = selectedAccount.chainAccount.accountId
+                recepientAccountId = selectedAccount.accountId
             }
 
             let identifier = String(amount) + "-" + recepientAccountId.toHex()
@@ -333,7 +333,7 @@ extension TransferInteractor {
                 ) ?? builder
             }
         } catch {
-            presenter?.didReceiveFee(result: .failure(error))
+            presenter?.didReceiveSetup(error: error)
         }
     }
 
@@ -344,12 +344,12 @@ extension TransferInteractor {
             return
         }
 
-        clearSendingAssetRemoteRecepientSubscriptions()
+        clearSendingAssetRemoteRecepientSubscription()
         clearUtilityAssetRemoteRecepientSubscriptions()
-        clearSendingAssetLocaleRecepientSubscriptions()
+        clearSendingAssetLocaleRecepientSubscription()
         clearUtilityAssetLocaleRecepientSubscriptions()
 
-        self.recepientAccountId = newRecepientAccountId
+        recepientAccountId = newRecepientAccountId
 
         subscribeSendingRecepientAssetBalance()
         subscribeUtilityRecepientAssetBalance()
@@ -359,24 +359,42 @@ extension TransferInteractor {
 extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
-        accountId _: AccountId,
+        accountId: AccountId,
         chainId _: ChainModel.Id,
         assetId: AssetModel.Id
     ) {
-        if asset.assetId == assetId {
-            presenter?.didReceiveSendingAssetBalance(result: result)
-        } else if chain.utilityAssets().first?.assetId == assetId {
-            presenter?.didReceiveUtilityAssetBalance(result: result)
+        switch result {
+        case let .success(balance):
+            if accountId == selectedAccount.accountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetSenderBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetSenderBalance(balance)
+                }
+            } else if accountId == recepientAccountId {
+                if asset.assetId == assetId {
+                    presenter?.didReceiveSendingAssetRecepientBalance(balance)
+                } else if chain.utilityAssets().first?.assetId == assetId {
+                    presenter?.didReceiveUtilityAssetRecepientBalance(balance)
+                }
+            }
+        case let .failure(error):
+            presenter?.didReceiveSetup(error: error)
         }
     }
 }
 
 extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
-        if asset.priceId == priceId {
-            presenter?.didReceiveSendingAssetPrice(result: result)
-        } else if chain.utilityAssets().first?.priceId == priceId {
-            presenter?.didReceiveUtilityAssetPrice(result: result)
+        switch result {
+        case let .success(priceData):
+            if asset.priceId == priceId {
+                presenter?.didReceiveSendingAssetPrice(priceData)
+            } else if chain.utilityAssets().first?.priceId == priceId {
+                presenter?.didReceiveUtilityAssetPrice(priceData)
+            }
+        case let .failure(error):
+            presenter?.didReceiveSetup(error: error)
         }
     }
 }
@@ -389,9 +407,9 @@ extension TransferInteractor: ExtrinsicFeeProxyDelegate {
         switch result {
         case let .success(info):
             let fee = BigUInt(info.fee) ?? 0
-            presenter?.didReceiveFee(result: .success(fee))
+            presenter?.didReceiveFee(fee)
         case let .failure(error):
-            presenter?.didReceiveFee(result: .failure(error))
+            presenter?.didReceiveSetup(error: error)
         }
     }
 }
