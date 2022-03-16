@@ -13,7 +13,7 @@ protocol WalletRemoteSubscriptionWrapperProtocol {
         from subscriptionId: UUID,
         assetStorageInfo: AssetStorageInfo,
         accountId: AccountId,
-        chainAsset: ChainAsset,
+        chainAssetId: ChainAssetId,
         completion: RemoteSubscriptionClosure?
     )
 }
@@ -123,7 +123,7 @@ final class WalletRemoteSubscriptionWrapper {
     }
 }
 
-extension WalletRemoteSubscriptionWrapper {
+extension WalletRemoteSubscriptionWrapper: WalletRemoteSubscriptionWrapperProtocol {
     func subscribe(
         using assetStorageInfo: AssetStorageInfo,
         accountId: AccountId,
@@ -145,7 +145,7 @@ extension WalletRemoteSubscriptionWrapper {
                 chainAssetId: chainAsset.chainAssetId,
                 completion: completion
             )
-        case let .orml(currencyId, currencyData, module):
+        case let .orml(_, currencyData, _):
             return subscribeOrml(
                 using: currencyData,
                 accountId: accountId,

@@ -37,10 +37,49 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        rootView.recepientTitleLabel.text = R.string.localizable.commonRecipient(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
     }
 }
 
-extension TransferSetupViewController: TransferSetupViewProtocol {}
+extension TransferSetupViewController: TransferSetupViewProtocol {
+    func didReceiveChainAsset(viewModel: ChainAssetViewModel) {
+        rootView.tokenLabel.text = R.string.localizable.walletTransferTokenFormat(
+            viewModel.assetViewModel.symbol.uppercased(),
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        let networkViewModel = viewModel.networkViewModel
+        rootView.networkView.nameLabel.text = networkViewModel.name.uppercased()
+        rootView.networkView.iconView.bind(gradient: networkViewModel.gradient)
+
+        let imageSize = CGSize(width: 24.0, height: 24.0)
+        rootView.networkView.iconView.bind(iconViewModel: networkViewModel.icon, size: imageSize)
+    }
+
+    func didReceiveTransferableBalance(viewModel: String) {
+        let detailsTitleLabel = rootView.amountView.detailsTitleLabel
+        let detailsValueLabel = rootView.amountView.detailsValueLabel
+
+        detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        detailsValueLabel.text = viewModel
+    }
+
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeView.bind(viewModel: viewModel)
+    }
+}
 
 extension TransferSetupViewController: Localizable {
     func applyLocalization() {

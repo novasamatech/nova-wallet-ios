@@ -1,6 +1,10 @@
 import BigInt
 
-protocol TransferSetupViewProtocol: ControllerBackedProtocol {}
+protocol TransferSetupViewProtocol: ControllerBackedProtocol {
+    func didReceiveTransferableBalance(viewModel: String)
+    func didReceiveChainAsset(viewModel: ChainAssetViewModel)
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+}
 
 protocol TransferSetupPresenterProtocol: AnyObject {
     func setup()
@@ -13,11 +17,16 @@ protocol TransferSetupInteractorInputProtocol: AnyObject {
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
-    func didReceiveSendingAssetBalance(result: Result<AssetBalance?, Error>)
-    func didReceiveUtilityAssetBalance(result: Result<AssetBalance?, Error>)
-    func didReceiveFee(result: Result<BigUInt, Error>)
-    func didReceiveSendingAssetPrice(result: Result<PriceData?, Error>)
-    func didReceiveUtilityAssetPrice(result: Result<PriceData?, Error>)
+    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance?)
+    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance?)
+    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance?)
+    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance?)
+    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveSendingAssetPrice(_ price: PriceData?)
+    func didReceiveUtilityAssetPrice(_ price: PriceData?)
+    func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
+    func didReceiveSendingAssetMinBalance(_ value: BigUInt)
+    func didCompleteSetup()
     func didReceiveSetup(error: Error)
 }
 
