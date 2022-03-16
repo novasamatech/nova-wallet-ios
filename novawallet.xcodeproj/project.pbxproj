@@ -1254,6 +1254,7 @@
 		84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */; };
 		84D1ABDE27E1B5240073C631 /* AssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABDD27E1B5240073C631 /* AssetViewModel.swift */; };
 		84D1ABE027E1CB870073C631 /* TitleHorizontalMultiValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABDF27E1CB870073C631 /* TitleHorizontalMultiValueView.swift */; };
+		84D1ABE227E1E8060073C631 /* NewAmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABE127E1E8060073C631 /* NewAmountInputView.swift */; };
 		84D1F2FB260F51770077DDFE /* SwitchAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1F2FA260F51770077DDFE /* SwitchAccount.swift */; };
 		84D1F31E260F585E0077DDFE /* AddAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1F31D260F585E0077DDFE /* AddAccount.swift */; };
 		84D2F19B2771AA140040C680 /* nova_min.js in Resources */ = {isa = PBXBuildFile; fileRef = 84D2F19A2771AA140040C680 /* nova_min.js */; };
@@ -3293,6 +3294,7 @@
 		84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetViewModel.swift; sourceTree = "<group>"; };
 		84D1ABDD27E1B5240073C631 /* AssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetViewModel.swift; sourceTree = "<group>"; };
 		84D1ABDF27E1CB870073C631 /* TitleHorizontalMultiValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleHorizontalMultiValueView.swift; sourceTree = "<group>"; };
+		84D1ABE127E1E8060073C631 /* NewAmountInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAmountInputView.swift; sourceTree = "<group>"; };
 		84D1F2FA260F51770077DDFE /* SwitchAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchAccount.swift; sourceTree = "<group>"; };
 		84D1F31D260F585E0077DDFE /* AddAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAccount.swift; sourceTree = "<group>"; };
 		84D2F19A2771AA140040C680 /* nova_min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = nova_min.js; sourceTree = "<group>"; };
@@ -4807,6 +4809,7 @@
 				840DCBF025DFEE4800D45C6A /* AmountInputView.swift */,
 				840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */,
 				8401620A25E144D50087A5F3 /* AmountInputAccessoryView.swift */,
+				84D1ABE127E1E8060073C631 /* NewAmountInputView.swift */,
 			);
 			path = AmountInputView;
 			sourceTree = "<group>";
@@ -11830,6 +11833,7 @@
 				C7D77690E10875CF1856EBA1 /* StakingRewardPayoutsProtocols.swift in Sources */,
 				2918DCAEB91F8276446873C8 /* StakingRewardPayoutsWireframe.swift in Sources */,
 				AB5E2A2B4CC823E6F6515ADD /* StakingRewardPayoutsPresenter.swift in Sources */,
+				84D1ABE227E1E8060073C631 /* NewAmountInputView.swift in Sources */,
 				84100F3C26A60E4C00A5054E /* YourValidatorListWarningSectionView.swift in Sources */,
 				58F693958EF69F59D7C9760E /* StakingRewardPayoutsInteractor.swift in Sources */,
 				50758C9BBB27AE5732FF78BA /* StakingRewardPayoutsViewController.swift in Sources */,

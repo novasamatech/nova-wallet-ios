@@ -53,9 +53,13 @@ final class TransferSetupPresenter {
 
     private func updateChainAssetViewModel() {
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
+
+        let assetIconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
+        let assetIconViewModel = RemoteImageViewModel(url: assetIconUrl)
+
         let assetViewModel = AssetViewModel(
             symbol: chainAsset.asset.symbol,
-            imageViewModel: nil
+            imageViewModel: assetIconViewModel
         )
 
         let viewModel = ChainAssetViewModel(
