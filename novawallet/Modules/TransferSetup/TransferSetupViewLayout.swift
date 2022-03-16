@@ -46,6 +46,8 @@ final class TransferSetupViewLayout: UIView {
 
     let amountView = TitleHorizontalMultiValueView()
 
+    let amountInputView = NewAmountInputView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -98,6 +100,11 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in
             make.height.equalTo(34.0)
+        }
+
+        containerView.stackView.addArrangedSubview(amountInputView)
+        amountInputView.snp.makeConstraints { make in
+            make.height.equalTo(64)
         }
 
         containerView.stackView.addArrangedSubview(networkFeeView)
