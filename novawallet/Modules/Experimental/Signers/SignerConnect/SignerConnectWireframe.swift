@@ -1,13 +1,27 @@
 import Foundation
+import SoraUI
 
 final class SignerConnectWireframe: SignerConnectWireframeProtocol {
-    func showConfirmation(from view: SignerConnectViewProtocol?, request: SignerOperationRequestProtocol) {
-        guard let confirmView = SignerConfirmViewFactory.createView(from: request) else {
+    func showConfirmation(
+        from view: SignerConnectViewProtocol?,
+        request: DAppOperationRequest,
+        signingType: DAppSigningType,
+        delegate: DAppOperationConfirmDelegate
+    ) {
+        guard let confirmView = DAppOperationConfirmViewFactory.createView(
+            for: request,
+            type: signingType,
+            delegate: delegate
+        ) else {
             return
         }
 
-        let navigationController = FearlessNavigationController(rootViewController: confirmView.controller)
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless
+        )
 
-        view?.controller.present(navigationController, animated: true, completion: nil)
+        confirmView.controller.modalTransitioningFactory = factory
+        confirmView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(confirmView.controller, animated: true, completion: nil)
     }
 }

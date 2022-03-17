@@ -21,10 +21,10 @@ abstract_target 'novawalletAll' do
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
   pod 'Base58Swift', :git => 'https://github.com/keefertaylor/Base58Swift.git', :tag => '2.1.14'
-  pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => '2b8a5c01de0c43398a85efd5456f053f4094f48a'
-  pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => '2b8a5c01de0c43398a85efd5456f053f4094f48a'
-  pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => '2b8a5c01de0c43398a85efd5456f053f4094f48a'
-  pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => '2b8a5c01de0c43398a85efd5456f053f4094f48a'
+  pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
+  pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
+  pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
+  pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
 
   target 'novawalletTests' do
     inherit! :search_paths

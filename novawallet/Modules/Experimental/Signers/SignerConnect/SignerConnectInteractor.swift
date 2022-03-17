@@ -12,16 +12,20 @@ final class SignerConnectInteractor {
 
     private var client: Beacon.WalletClient?
 
-    let selectedAccount: AccountItem
-    let chain: Chain
+    let wallet: MetaAccountModel
     let peer: Beacon.P2PPeer
     let connectionInfo: BeaconConnectionInfo
+    let chainRegistry: ChainRegistryProtocol
     let logger: LoggerProtocol?
 
+    private var availableChains: [Data: ChainModel] = [:]
+    private var pendingRequests: [String: BlockchainSubstrateRequest] = [:]
+    private var isSetuping: Bool = true
+
     init(
-        selectedAccount: AccountItem,
-        chain: Chain,
+        wallet: MetaAccountModel,
         info: BeaconConnectionInfo,
+        chainRegistry: ChainRegistryProtocol,
         logger: LoggerProtocol? = nil
     ) {
         peer = Beacon.P2PPeer(
@@ -34,15 +38,50 @@ final class SignerConnectInteractor {
             appURL: nil
         )
 
-        self.selectedAccount = selectedAccount
-        self.chain = chain
+        self.wallet = wallet
         connectionInfo = info
+        self.chainRegistry = chainRegistry
         self.logger = logger
     }
 
     deinit {
         client?.remove([.p2p(peer)], completion: { _ in })
         client?.disconnect(completion: { _ in })
+    }
+
+    private func subscribeChains() {
+        chainRegistry.chainsSubscribe(
+            self,
+            runningInQueue: .main
+        ) { [weak self] changes in
+            self?.process(changes: changes)
+        }
+    }
+
+    private func process(changes: [DataProviderChange<ChainModel>]) {
+        changes.forEach { change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                if let rawId = try? Data(hexString: newItem.identifier) {
+                    availableChains[rawId] = newItem
+                }
+            case let .delete(deletedIdentifier):
+                if let rawId = try? Data(hexString: deletedIdentifier) {
+                    availableChains[rawId] = nil
+                }
+            }
+        }
+
+        if !changes.isEmpty, isSetuping {
+            completeSetup()
+        }
+    }
+
+    private func completeSetup() {
+        isSetuping = false
+
+        presenter.didReceiveApp(metadata: connectionInfo)
+        presenter.didReceive(wallet: wallet)
     }
 
     private func connect(using client: Beacon.WalletClient) {
@@ -116,16 +155,45 @@ final class SignerConnectInteractor {
         logger?.debug("Permission request: \(permission)")
 
         do {
-            let account = Substrate.Account(
-                network: Substrate.Network(
-                    genesisHash: chain.genesisHash,
-                    name: nil,
-                    rpcURL: nil
-                ),
-                addressPrefix: Int(chain.addressType.rawValue),
-                publicKey: selectedAccount.publicKeyData.toHex(includePrefix: true)
-            )
-            let content = try PermissionSubstrateResponse(from: permission, accounts: [account])
+            let accounts: [Substrate.Account] = try permission.networks.compactMap { network in
+                let rawId = try Data(hexString: network.genesisHash)
+
+                if let chain = availableChains[rawId] {
+                    guard
+                        let accountResponse = wallet.fetch(for: chain.accountRequest()),
+                        let address = accountResponse.toAddress() else {
+                        return nil
+                    }
+
+                    return try Substrate.Account(
+                        network: Substrate.Network(
+                            genesisHash: network.genesisHash,
+                            name: chain.name,
+                            rpcURL: chain.nodes.first?.url.absoluteString
+                        ),
+                        publicKey: accountResponse.publicKey.toHex(includePrefix: true),
+                        address: address
+                    )
+                } else {
+                    guard let address = try? wallet.substrateAccountId.toAddress(
+                        using: .substrate(42)
+                    ) else {
+                        return nil
+                    }
+
+                    return try Substrate.Account(
+                        network: Substrate.Network(
+                            genesisHash: network.genesisHash,
+                            name: nil,
+                            rpcURL: nil
+                        ),
+                        publicKey: wallet.substratePublicKey.toHex(includePrefix: true),
+                        address: address
+                    )
+                }
+            }
+
+            let content = PermissionSubstrateResponse(from: permission, accounts: accounts)
 
             let response = BeaconResponse<Substrate>.permission(content)
 
@@ -143,24 +211,31 @@ final class SignerConnectInteractor {
     }
 
     private func handle(blockchainRequest: BlockchainSubstrateRequest) {
-        guard let client = client else {
-            return
-        }
-
         switch blockchainRequest {
-        case let .transfer(content):
+        case let .transfer:
             logger?.error("Unsupported transfer request")
-        case let .sign(content):
+        case let .signPayload(content):
 
             logger?.info("Signing request: \(content)")
 
-            do {
-                let request = try BeaconSigningRequest(client: client, request: content)
-                presenter.didReceive(request: request)
-            } catch {
-                logger?.error("Did receive signing error: \(error)")
-                presenter.didReceiveProtocol(error: error)
+            guard let (signingType, operationJson) = createOperation(from: content) else {
+                logger?.error("Can't parse operation data from signed payload")
+                return
             }
+
+            let dAppUrl = connectionInfo.icon.flatMap { URL(string: $0) }
+            let signingRequest = DAppOperationRequest(
+                transportName: "beacon",
+                identifier: blockchainRequest.id,
+                wallet: wallet,
+                dApp: connectionInfo.name,
+                dAppIcon: dAppUrl,
+                operationData: operationJson
+            )
+
+            pendingRequests[blockchainRequest.id] = blockchainRequest
+
+            presenter.didReceive(request: signingRequest, signingType: signingType)
         }
     }
 
@@ -169,18 +244,141 @@ final class SignerConnectInteractor {
             self?.presenter.didReceiveConnection(result: result)
         }
     }
+
+    private func createOperation(
+        from content: SignPayloadSubstrateRequest
+    ) -> (DAppSigningType, JSON)? {
+        switch content.payload {
+        case let .raw(rawPayload):
+            if
+                let addressPrefix = try? SS58AddressFactory().type(fromAddress: content.address),
+                let chain = availableChains.values.sorted(by: { $0.order < $1.order }).first(
+                    where: {
+                        $0.addressPrefix == addressPrefix.uint16Value &&
+                            chainRegistry.getRuntimeProvider(for: $0.chainId) != nil
+                    }
+                ) {
+                let signingType = DAppSigningType.rawExtrinsic(chain: chain)
+                return (signingType, JSON.stringValue(rawPayload.data))
+            } else {
+                return nil
+            }
+        case let .json(json):
+            let extensionModel = PolkadotExtensionExtrinsic(
+                address: content.address,
+                blockHash: json.blockHash,
+                blockNumber: json.blockNumber,
+                era: json.era,
+                genesisHash: json.genesisHash,
+                method: json.method,
+                nonce: json.nonce,
+                specVersion: json.specVersion,
+                tip: json.tip,
+                transactionVersion: json.transactionVersion,
+                signedExtensions: json.signedExtensions,
+                version: UInt(json.version)
+            )
+
+            if
+                let rawId = try? Data(hexString: json.genesisHash),
+                let chain = availableChains[rawId],
+                let rawJson = try? extensionModel.toScaleCompatibleJSON(with: nil) {
+                return (DAppSigningType.extrinsic(chain: chain), rawJson)
+            } else {
+                return nil
+            }
+        }
+    }
+
+    private func submitPayloadSignature(
+        _ signatureData: Data,
+        request: SignPayloadSubstrateRequest
+    ) {
+        do {
+            let content = try ReturnSignPayloadSubstrateResponse(
+                from: request,
+                signature: signatureData.toHex(includePrefix: true)
+            )
+
+            let response = BeaconResponse<Substrate>.blockchain(
+                .signPayload(SignPayloadSubstrateResponse.return(content))
+            )
+
+            client?.respond(with: response) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self?.logger?.info("Signature submited")
+                    case let .failure(error):
+                        self?.logger?.error("Signature submition failed: \(error)")
+                    }
+                }
+            }
+        } catch {
+            let errorType = Beacon.ErrorType<Substrate>.aborted
+
+            let remoteRequest = BlockchainSubstrateRequest.signPayload(request)
+
+            let errorContent = ErrorBeaconResponse<Substrate>.init(
+                from: remoteRequest,
+                errorType: errorType,
+                description: nil
+            )
+
+            let response = BeaconResponse<Substrate>.error(errorContent)
+            client?.respond(with: response, completion: { _ in })
+
+            logger?.info("Signing aborted: \(error)")
+        }
+    }
+
+    private func submitSignature(_ signatureData: Data, for request: BlockchainSubstrateRequest) {
+        switch request {
+        case .transfer:
+            logger?.warning("Transfer signing is not supported")
+        case let .signPayload(content):
+            submitPayloadSignature(signatureData, request: content)
+        }
+    }
+
+    private func submitRejection(request: BlockchainSubstrateRequest) {
+        let errorType = Beacon.ErrorType<Substrate>.aborted
+        let errorContent: ErrorBeaconResponse<Substrate>
+
+        switch request {
+        case let .transfer(content):
+            let remoteRequest = BlockchainSubstrateRequest.transfer(content)
+
+            errorContent = ErrorBeaconResponse<Substrate>.init(
+                from: remoteRequest,
+                errorType: errorType,
+                description: nil
+            )
+        case let .signPayload(content):
+            let remoteRequest = BlockchainSubstrateRequest.signPayload(content)
+
+            errorContent = ErrorBeaconResponse<Substrate>.init(
+                from: remoteRequest,
+                errorType: errorType,
+                description: nil
+            )
+        }
+
+        let response = BeaconResponse<Substrate>.error(errorContent)
+        client?.respond(with: response, completion: { _ in })
+
+        logger?.info("Signing rejected")
+    }
 }
 
 extension SignerConnectInteractor: SignerConnectInteractorInputProtocol, AccountFetching {
     func setup() {
-        presenter.didReceiveApp(metadata: connectionInfo)
-        presenter.didReceive(account: .success(selectedAccount))
+        subscribeChains()
     }
 
     func connect() {
         do {
-            let matrixFactory = try Transport.P2P.Matrix.factory()
-            let matrixConnection = Beacon.Connection.p2p(.init(client: matrixFactory))
+            let matrixConnection = try Transport.P2P.Matrix.connection()
 
             Beacon.WalletClient.create(with: Beacon.WalletClient.Configuration(
                 name: "Nova Wallet",
@@ -196,6 +394,19 @@ extension SignerConnectInteractor: SignerConnectInteractorInputProtocol, Account
             }
         } catch {
             logger?.error("Could not create matrix transport, got error: \(error)")
+        }
+    }
+
+    func processSigning(response: DAppOperationResponse, for request: DAppOperationRequest) {
+        guard let blockchainRequest = pendingRequests[request.identifier] else {
+            logger?.warning("Can't find pending request for id: \(request.identifier)")
+            return
+        }
+
+        if let signature = response.signature {
+            submitSignature(signature, for: blockchainRequest)
+        } else {
+            submitRejection(request: blockchainRequest)
         }
     }
 }

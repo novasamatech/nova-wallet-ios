@@ -5,34 +5,25 @@ import SoraFoundation
 
 struct SignerConnectViewFactory {
     static func createBeaconView(for info: BeaconConnectionInfo) -> SignerConnectViewProtocol? {
-        let selectedChain = Chain.westend
-        let selectedWallet = SelectedWalletSettings.shared.value
-
-        let request = ChainAccountRequest(
-            chainId: selectedChain.genesisHash,
-            addressPrefix: UInt16(selectedChain.addressType.rawValue),
-            isEthereumBased: false
-        )
-
-        guard let selectedAccount = try? selectedWallet?.fetch(for: request)?.toAccountItem() else {
+        guard let selectedWallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
         let interactor = SignerConnectInteractor(
-            selectedAccount: selectedAccount,
-            chain: selectedChain,
+            wallet: selectedWallet,
             info: info,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
             logger: Logger.shared
         )
 
         let wireframe = SignerConnectWireframe()
 
         let viewModelFactory = SignerConnectViewModelFactory()
+
         let presenter = SignerConnectPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            viewModelFactory: viewModelFactory,
-            chain: selectedChain
+            viewModelFactory: viewModelFactory
         )
 
         let view = SignerConnectViewController(

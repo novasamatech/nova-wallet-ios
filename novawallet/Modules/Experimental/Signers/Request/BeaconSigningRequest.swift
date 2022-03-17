@@ -4,25 +4,31 @@ import BeaconClientWallet
 import BeaconBlockchainSubstrate
 
 final class BeaconSigningRequest: SignerOperationRequestProtocol {
-    let request: SignSubstrateRequest
+    let request: SignPayloadSubstrateRequest
     let client: Beacon.WalletClient
     let signingPayload: Data
 
-    init(client: Beacon.WalletClient, request: SignSubstrateRequest) throws {
+    init(client: Beacon.WalletClient, request: SignPayloadSubstrateRequest) throws {
         self.request = request
         self.client = client
-        signingPayload = try Data(hexString: request.payload)
+
+        switch request.payload {
+        case let .json(json):
+            signingPayload = Data()
+        case let .raw(raw):
+            signingPayload = try Data(hexString: raw.data)
+        }
     }
 
     func submit(signature: Data, completion closure: @escaping (Result<Void, Error>) -> Void) {
         do {
-            let content = try ReturnSignSubstrateResponse(
+            let content = try ReturnSignPayloadSubstrateResponse(
                 from: request,
-                payload: signature.toHex(includePrefix: true)
+                signature: signature.toHex(includePrefix: true)
             )
 
             let response = BeaconResponse<Substrate>.blockchain(
-                .sign(SignSubstrateResponse.return(content))
+                .signPayload(SignPayloadSubstrateResponse.return(content))
             )
 
             client.respond(with: response) { result in
@@ -38,7 +44,7 @@ final class BeaconSigningRequest: SignerOperationRequestProtocol {
         } catch {
             let errorType = Beacon.ErrorType<Substrate>.aborted
 
-            let remoteRequest = BlockchainSubstrateRequest.sign(request)
+            let remoteRequest = BlockchainSubstrateRequest.signPayload(request)
 
             let errorContent = ErrorBeaconResponse<Substrate>.init(
                 from: remoteRequest,
