@@ -693,3 +693,4 @@
 "commmon.view.in.format" = "Открыть в %@";
 "wallet.transfer.token.format" = "Отправить %@ в";
 "common.transferable.prefix" = "Доступно:";
+"common.paste" = "Вставить";

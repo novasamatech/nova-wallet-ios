@@ -38,6 +38,11 @@ final class TransferSetupViewLayout: UIView {
         return label
     }()
 
+    let recepientInputView: AccountInputView = {
+        let view = AccountInputView()
+        return view
+    }()
+
     let networkFeeView: NetworkFeeView = {
         let view = NetworkFeeView()
         view.borderType = []
@@ -96,6 +101,9 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.setCustomSpacing(16.0, after: networkContainerView)
 
         containerView.stackView.addArrangedSubview(recepientTitleLabel)
+        containerView.stackView.setCustomSpacing(8.0, after: recepientTitleLabel)
+        containerView.stackView.addArrangedSubview(recepientInputView)
+        containerView.stackView.setCustomSpacing(8.0, after: recepientInputView)
 
         containerView.stackView.addArrangedSubview(amountView)
         amountView.snp.makeConstraints { make in
@@ -109,7 +117,7 @@ final class TransferSetupViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(networkFeeView)
         networkFeeView.snp.makeConstraints { make in
-            make.height.equalTo(48.0)
+            make.height.equalTo(64.0)
         }
     }
 }
