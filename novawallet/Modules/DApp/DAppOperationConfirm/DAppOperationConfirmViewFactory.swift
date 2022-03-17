@@ -21,6 +21,9 @@ struct DAppOperationConfirmViewFactory {
         case let .ethereumTransaction(chain):
             maybeAssetInfo = chain.assetDisplayInfo
             maybeInteractor = createEthereumInteractor(for: request, chain: chain)
+        case let .rawExtrinsic(chain):
+            maybeAssetInfo = chain.utilityAssets().first?.displayInfo(with: chain.icon)
+            maybeInteractor = createSignRawExtrinsicInteractor(for: request, chain: chain)
         }
 
         guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
@@ -83,6 +86,25 @@ struct DAppOperationConfirmViewFactory {
             request: request,
             chain: chain,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain())
+        )
+    }
+
+    private static func createSignRawExtrinsicInteractor(
+        for request: DAppOperationRequest,
+        chain: ChainModel
+    ) -> DAppSignRawExtrinsicConfirmInteractor? {
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        return DAppSignRawExtrinsicConfirmInteractor(
+            request: request,
+            chain: chain,
+            signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
+            runtimeProvider: runtimeProvider,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 

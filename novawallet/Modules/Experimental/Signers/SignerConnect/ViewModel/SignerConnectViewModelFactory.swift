@@ -4,18 +4,20 @@ import SubstrateSdk
 protocol SignerConnectViewModelFactoryProtocol {
     func createViewModel(
         from metadata: BeaconConnectionInfo,
-        account: AccountItem
+        wallet: MetaAccountModel
     ) throws -> SignerConnectViewModel
 }
 
 final class SignerConnectViewModelFactory: SignerConnectViewModelFactoryProtocol {
     func createViewModel(
         from metadata: BeaconConnectionInfo,
-        account: AccountItem
+        wallet: MetaAccountModel
     ) throws -> SignerConnectViewModel {
         let iconViewModel = createImageViewModel(from: metadata.icon)
 
-        let accountIcon = try PolkadotIconGenerator().generateFromAddress(account.address)
+        let accountIcon = try NovaIconGenerator().generateFromAccountId(
+            wallet.substrateAccountId
+        )
 
         let host: String? = {
             guard let appUrl = metadata.appUrl else {
@@ -29,7 +31,7 @@ final class SignerConnectViewModelFactory: SignerConnectViewModelFactoryProtocol
             title: metadata.name,
             icon: iconViewModel,
             connection: host ?? metadata.relayServer,
-            accountName: account.username,
+            accountName: wallet.name,
             accountIcon: accountIcon
         )
     }

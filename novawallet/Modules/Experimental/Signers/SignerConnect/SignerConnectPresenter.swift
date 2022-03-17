@@ -5,30 +5,27 @@ final class SignerConnectPresenter {
     let wireframe: SignerConnectWireframeProtocol
     let interactor: SignerConnectInteractorInputProtocol
     let viewModelFactory: SignerConnectViewModelFactoryProtocol
-    let chain: Chain
 
     private var metadata: BeaconConnectionInfo?
-    private var account: AccountItem?
+    private var wallet: MetaAccountModel?
 
     init(
         interactor: SignerConnectInteractorInputProtocol,
         wireframe: SignerConnectWireframeProtocol,
-        viewModelFactory: SignerConnectViewModelFactoryProtocol,
-        chain: Chain
+        viewModelFactory: SignerConnectViewModelFactoryProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        self.chain = chain
     }
 
     private func provideViewModel() {
-        guard let metadata = metadata, let account = account else {
+        guard let metadata = metadata, let wallet = wallet else {
             return
         }
 
         do {
-            let viewModel = try viewModelFactory.createViewModel(from: metadata, account: account)
+            let viewModel = try viewModelFactory.createViewModel(from: metadata, wallet: wallet)
             view?.didReceive(viewModel: viewModel)
         } catch {
             wireframe.presentErrorOrUndefined(error: error, from: view, locale: view?.selectedLocale)
@@ -43,18 +40,7 @@ extension SignerConnectPresenter: SignerConnectPresenterProtocol {
         interactor.connect()
     }
 
-    func presentAccountOptions() {
-        guard let view = view, let account = account else {
-            return
-        }
-
-        wireframe.presentAccountOptions(
-            from: view,
-            address: account.address,
-            chain: chain,
-            locale: view.selectedLocale
-        )
-    }
+    func presentAccountOptions() {}
 
     func presentConnectionDetails() {
         guard let metadata = metadata else {
@@ -77,18 +63,19 @@ extension SignerConnectPresenter: SignerConnectPresenterProtocol {
 }
 
 extension SignerConnectPresenter: SignerConnectInteractorOutputProtocol {
-    func didReceive(request: SignerOperationRequestProtocol) {
-        wireframe.showConfirmation(from: view, request: request)
+    func didReceive(request: DAppOperationRequest, signingType: DAppSigningType) {
+        wireframe.showConfirmation(
+            from: view,
+            request: request,
+            signingType: signingType,
+            delegate: self
+        )
     }
 
-    func didReceive(account: Result<AccountItem?, Error>) {
-        switch account {
-        case let .success(account):
-            self.account = account
-            provideViewModel()
-        case let .failure(error):
-            wireframe.presentErrorOrUndefined(error: error, from: view, locale: view?.selectedLocale)
-        }
+    func didReceive(wallet: MetaAccountModel) {
+        self.wallet = wallet
+
+        provideViewModel()
     }
 
     func didReceiveApp(metadata: BeaconConnectionInfo) {
@@ -107,5 +94,14 @@ extension SignerConnectPresenter: SignerConnectInteractorOutputProtocol {
 
     func didReceiveProtocol(error: Error) {
         wireframe.presentErrorOrUndefined(error: error, from: view, locale: view?.selectedLocale)
+    }
+}
+
+extension SignerConnectPresenter: DAppOperationConfirmDelegate {
+    func didReceiveConfirmationResponse(
+        _ response: DAppOperationResponse,
+        for request: DAppOperationRequest
+    ) {
+        interactor.processSigning(response: response, for: request)
     }
 }

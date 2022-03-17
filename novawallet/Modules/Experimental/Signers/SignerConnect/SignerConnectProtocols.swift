@@ -14,16 +14,22 @@ protocol SignerConnectPresenterProtocol: AnyObject {
 protocol SignerConnectInteractorInputProtocol: AnyObject {
     func setup()
     func connect()
+    func processSigning(response: DAppOperationResponse, for request: DAppOperationRequest)
 }
 
 protocol SignerConnectInteractorOutputProtocol: AnyObject {
-    func didReceive(account: Result<AccountItem?, Error>)
+    func didReceive(wallet: MetaAccountModel)
     func didReceiveApp(metadata: BeaconConnectionInfo)
     func didReceiveConnection(result: Result<Void, Error>)
-    func didReceive(request: SignerOperationRequestProtocol)
+    func didReceive(request: DAppOperationRequest, signingType: DAppSigningType)
     func didReceiveProtocol(error: Error)
 }
 
 protocol SignerConnectWireframeProtocol: AlertPresentable, ErrorPresentable, AddressOptionsPresentable {
-    func showConfirmation(from view: SignerConnectViewProtocol?, request: SignerOperationRequestProtocol)
+    func showConfirmation(
+        from view: SignerConnectViewProtocol?,
+        request: DAppOperationRequest,
+        signingType: DAppSigningType,
+        delegate: DAppOperationConfirmDelegate
+    )
 }
