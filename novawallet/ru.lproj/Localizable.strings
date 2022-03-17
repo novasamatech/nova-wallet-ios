@@ -700,3 +700,17 @@
 "common.from" = "From";
 "common.tx.raw" = "Transaction raw data";
 "common.transaction" = "Transaction";
+"wallet.list.your.nfts.title" = "Ваши NFT";
+"nft.list.item.limited.format" = "#%@ Издание из %@";
+"nft.list.item.unlimited" = "Неограниченная серия";
+"nft.issuer.title" = "Создатель";
+"nft.owner.title" = "Владелец";
+"nft.collection.title" = "Коллекция";
+"common.price" = "Цена";
+"nft.list.not.listed" = "Без цены";
+"dapp.list.featured.websites" = "Популярные сайты";
+"common.sender" = "Отправитель";
+"common.recipient" = "Получатель";
+"common.tx.id" = "Идентификатор транзакции";
+"tx.details.send.title" = "Отправить контакту";
+"commmon.view.in.format" = "Открыть в %@";

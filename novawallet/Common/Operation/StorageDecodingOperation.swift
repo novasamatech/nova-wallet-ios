@@ -235,8 +235,11 @@ final class StorageConstantOperation<T: Decodable>: BaseOperation<T>, ConstantDe
 
     let path: ConstantCodingPath
 
-    init(path: ConstantCodingPath) {
+    let fallbackValue: T?
+
+    init(path: ConstantCodingPath, fallbackValue: T? = nil) {
         self.path = path
+        self.fallbackValue = fallbackValue
 
         super.init()
     }
@@ -260,7 +263,14 @@ final class StorageConstantOperation<T: Decodable>: BaseOperation<T>, ConstantDe
             let item: T = try decode(at: path, codingFactory: factory).map(to: T.self)
             result = .success(item)
         } catch {
-            result = .failure(error)
+            if
+                let storageError = error as? StorageDecodingOperationError,
+                storageError == .invalidStoragePath,
+                let fallbackValue = fallbackValue {
+                result = .success(fallbackValue)
+            } else {
+                result = .failure(error)
+            }
         }
     }
 }
@@ -270,8 +280,11 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
 
     let path: ConstantCodingPath
 
-    init(path: ConstantCodingPath) {
+    let fallbackValue: T?
+
+    init(path: ConstantCodingPath, fallbackValue: T? = nil) {
         self.path = path
+        self.fallbackValue = fallbackValue
 
         super.init()
     }
@@ -296,7 +309,14 @@ final class PrimitiveConstantOperation<T: LosslessStringConvertible & Equatable>
                 .map(to: StringScaleMapper<T>.self)
             result = .success(item.value)
         } catch {
-            result = .failure(error)
+            if
+                let storageError = error as? StorageDecodingOperationError,
+                storageError == .invalidStoragePath,
+                let fallbackValue = fallbackValue {
+                result = .success(fallbackValue)
+            } else {
+                result = .failure(error)
+            }
         }
     }
 }

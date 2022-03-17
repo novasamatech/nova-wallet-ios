@@ -153,4 +153,20 @@ extension StorageCodingPath {
     static var ormlTokenLocks: StorageCodingPath {
         StorageCodingPath(moduleName: "Tokens", itemName: "Locks")
     }
+
+    static var uniquesAccount: StorageCodingPath {
+        StorageCodingPath(moduleName: "Uniques", itemName: "Account")
+    }
+
+    static var uniquesClassMetadata: StorageCodingPath {
+        StorageCodingPath(moduleName: "Uniques", itemName: "ClassMetadataOf")
+    }
+
+    static var uniquesInstanceMetadata: StorageCodingPath {
+        StorageCodingPath(moduleName: "Uniques", itemName: "InstanceMetadataOf")
+    }
+
+    static var uniquesClassDetails: StorageCodingPath {
+        StorageCodingPath(moduleName: "Uniques", itemName: "Class")
+    }
 }

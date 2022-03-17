@@ -3,6 +3,17 @@ import IrohaCrypto
 
 extension NSPredicate {
     static func filterTransactionsBy(
+        transactionId: String,
+        chainId: ChainModel.Id
+    ) -> NSPredicate {
+        let transactionIdFilter = filterTransactionsBy(transactionId: transactionId)
+        let chainIdFilter = filterTransactionsByChainId(chainId)
+
+        let subfilters = [chainIdFilter, transactionIdFilter]
+        return NSCompoundPredicate(andPredicateWithSubpredicates: subfilters)
+    }
+
+    static func filterTransactionsBy(
         address: String,
         chainId: ChainModel.Id
     ) -> NSPredicate {
@@ -57,6 +68,14 @@ extension NSPredicate {
                 ]
             )
         ])
+    }
+
+    static func filterTransactionsBy(transactionId: String) -> NSPredicate {
+        NSPredicate(
+            format: "%K == %@",
+            #keyPath(CDTransactionHistoryItem.identifier),
+            transactionId
+        )
     }
 
     static func filterTransactionsBySender(address: String) -> NSPredicate {
@@ -179,5 +198,27 @@ extension NSPredicate {
             #keyPath(CDAssetBalance.chainAccountId),
             accountId.toHex()
         )
+    }
+
+    static func nfts(for chainId: ChainModel.Id, ownerId: AccountId) -> NSPredicate {
+        let chainPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.chainId), chainId)
+        let ownerPredicate = NSPredicate(format: "%K == %@", #keyPath(CDNft.ownerId), ownerId.toHex())
+
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainPredicate, ownerPredicate])
+    }
+
+    static func nfts(for type: UInt16) -> NSPredicate {
+        NSPredicate(format: "%K == %d", #keyPath(CDNft.type), type)
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)]) -> NSPredicate {
+        let predicates = chainAccounts.map { nfts(for: $0.0, ownerId: $0.1) }
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
+
+    static func nfts(for chainAccounts: [(ChainModel.Id, AccountId)], type: UInt16) -> NSPredicate {
+        let chainAccountPredicate = nfts(for: chainAccounts)
+        let typePredicate = nfts(for: type)
+        return NSCompoundPredicate(andPredicateWithSubpredicates: [chainAccountPredicate, typePredicate])
     }
 }
