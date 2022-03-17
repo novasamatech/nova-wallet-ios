@@ -47,6 +47,7 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
+        rootView.recepientInputView.locale = selectedLocale
         rootView.networkFeeView.locale = selectedLocale
     }
 }

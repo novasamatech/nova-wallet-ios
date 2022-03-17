@@ -202,12 +202,14 @@ class NewAmountInputView: BackgroundedContentControl {
             self.contentView = contentView
         }
 
-        addSubview(symbolLabel)
+        contentView?.addSubview(symbolLabel)
+        contentView?.addSubview(priceLabel)
         addSubview(textField)
-        addSubview(priceLabel)
 
         textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidBegin)
         textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidEnd)
+
+        contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 16.0)
     }
 
     private func lazyIconViewOrCreateIfNeeded() -> AssetIconView {

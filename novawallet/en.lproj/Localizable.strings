@@ -693,3 +693,4 @@
 "commmon.view.in.format" = "View in %@";
 "wallet.transfer.token.format" = "Send %@ on";
 "common.transferable.prefix" = "Transferable:";
+"common.paste" = "Paste";
