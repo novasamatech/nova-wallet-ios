@@ -700,3 +700,17 @@
 "common.from" = "From";
 "common.tx.raw" = "Transaction raw data";
 "common.transaction" = "Transaction";
+"wallet.list.your.nfts.title" = "Your NFTs";
+"nft.list.item.limited.format" = "#%@ Edition of %@";
+"nft.list.item.unlimited" = "Unlimited series";
+"nft.issuer.title" = "Created by";
+"nft.owner.title" = "Owned by";
+"nft.collection.title" = "Collection";
+"common.price" = "Price";
+"nft.list.not.listed" = "Not listed";
+"dapp.list.featured.websites" = "Featured websites";
+"common.sender" = "Sender";
+"common.recipient" = "Recipient";
+"common.tx.id" = "Transaction ID";
+"tx.details.send.title" = "Send to this contact";
+"commmon.view.in.format" = "View in %@";

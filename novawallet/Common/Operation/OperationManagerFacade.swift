@@ -22,5 +22,11 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let fileDownloadQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 10
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }

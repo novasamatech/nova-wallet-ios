@@ -3,10 +3,10 @@ import Foundation
 final class DAppMetamaskSigningState: DAppMetamaskBaseState {
     let requestId: MetamaskMessage.Id
 
-    init(stateMachine: DAppMetamaskStateMachineProtocol?, requestId: MetamaskMessage.Id) {
+    init(stateMachine: DAppMetamaskStateMachineProtocol?, chain: MetamaskChain, requestId: MetamaskMessage.Id) {
         self.requestId = requestId
 
-        super.init(stateMachine: stateMachine)
+        super.init(stateMachine: stateMachine, chain: chain)
     }
 }
 
@@ -14,6 +14,10 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
     func setup(with _: DAppBrowserStateDataSource) {}
 
     func canHandleMessage() -> Bool { false }
+
+    func fetchSelectedAddress(from dataSource: DAppBrowserStateDataSource) -> AccountAddress? {
+        dataSource.fetchEthereumAddresses(for: chain.chainId).first?.toEthereumAddressWithChecksum()
+    }
 
     func handle(message: MetamaskMessage, host: String, dataSource _: DAppBrowserStateDataSource) {
         let message = "can't handle message from \(host) while signing"
@@ -26,7 +30,7 @@ extension DAppMetamaskSigningState: DAppMetamaskStateProtocol {
     }
 
     func handleOperation(response: DAppOperationResponse, dataSource _: DAppBrowserStateDataSource) {
-        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine)
+        let nextState = DAppMetamaskAuthorizedState(stateMachine: stateMachine, chain: chain)
 
         if let signature = response.signature {
             do {

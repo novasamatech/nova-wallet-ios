@@ -9,20 +9,22 @@ enum TransactionHistoryViewModelFactoryError: Error {
 }
 
 final class TransactionHistoryViewModelFactory {
-    let chainFormat: ChainFormat
+    let chainAsset: ChainAsset
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
 
+    var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
+
     let iconGenerator = PolkadotIconGenerator()
 
     init(
-        chainFormat: ChainFormat,
+        chainAsset: ChainAsset,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
         assets: [WalletAsset]
     ) {
-        self.chainFormat = chainFormat
+        self.chainAsset = chainAsset
         self.amountFormatterFactory = amountFormatterFactory
         self.dateFormatter = dateFormatter
         self.assets = assets
@@ -66,7 +68,11 @@ final class TransactionHistoryViewModelFactory {
             imageViewModel = nil
         }
 
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
 
@@ -108,7 +114,11 @@ final class TransactionHistoryViewModelFactory {
             imageViewModel = nil
         }
 
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         let title = txType == .reward ?
             R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
@@ -154,7 +164,11 @@ final class TransactionHistoryViewModelFactory {
             imageViewModel = nil
         }
 
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         return HistoryItemViewModel(
             title: data.peerLastName?.displayCall ?? "",
