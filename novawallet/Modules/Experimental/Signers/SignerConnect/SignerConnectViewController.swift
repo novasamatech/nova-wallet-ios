@@ -62,37 +62,42 @@ extension SignerConnectViewController: SignerConnectViewProtocol {
         viewModel.icon?.loadImage(on: rootView.appView.imageView, targetSize: size, animated: true)
 
         rootView.appView.detailsLabel.text = viewModel.title
-        rootView.connectionInfoView.valueLabel.text = viewModel.connection
 
-        rootView.accountView.subtitle = viewModel.accountName
-        rootView.accountView.iconImage = viewModel.accountIcon.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: UIConstants.smallAddressIconSize,
-            contentScale: UIScreen.main.scale
+        rootView.connectionInfoView.bind(details: viewModel.connection)
+
+        let viewModel = StackCellViewModel(
+            details: viewModel.accountName,
+            imageViewModel: DrawableIconViewModel(icon: viewModel.accountIcon)
         )
+
+        rootView.accountView.bind(viewModel: viewModel)
 
         rootView.setNeedsLayout()
     }
 
     func didReceive(status: SignerConnectStatus) {
+        let details: String
+
         switch status {
         case .active:
-            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusActive(
+            details = R.string.localizable.signerConnectStatusActive(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .connecting:
-            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusConnecting(
+            details = R.string.localizable.signerConnectStatusConnecting(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .inactive:
-            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusInactive(
+            details = R.string.localizable.signerConnectStatusInactive(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .failed:
-            rootView.statusView.rowContentView.valueLabel.text = R.string.localizable.signerConnectStatusFailed(
+            details = R.string.localizable.signerConnectStatusFailed(
                 preferredLanguages: selectedLocale.rLanguages
             )
         }
+
+        rootView.statusView.bind(details: details)
     }
 }
 

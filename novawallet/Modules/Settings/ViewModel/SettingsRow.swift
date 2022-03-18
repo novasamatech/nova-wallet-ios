@@ -55,7 +55,7 @@ extension SettingsRow {
         case .wallets:
             return R.image.iconWallets()
         case .experimental:
-            return R.image.iconStar()
+            return R.image.iconExperimental()
         case .language:
             return R.image.iconLanguage()
         case .changePin:
