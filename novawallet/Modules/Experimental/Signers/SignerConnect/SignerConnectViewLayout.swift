@@ -10,20 +10,13 @@ final class SignerConnectViewLayout: UIView {
         return view
     }()
 
-    let accountView: DetailsTriangularedView = UIFactory.default.createAccountView(for: .options, filled: false)
+    let tableView = StackTableView()
 
-    let statusView: RowView<TitleValueView> = {
-        let contentView = TitleValueView()
-        let view = RowView(contentView: contentView, preferredHeight: 48.0)
-        return view
-    }()
+    let accountView = StackTableCell()
 
-    let connectionInfoView: TitleValueView = {
-        let view = TitleValueView()
-        view.titleLabel.textColor = R.color.colorLightGray()
-        view.valueLabel.textColor = R.color.colorWhite()
-        return view
-    }()
+    let statusView = StackTableCell()
+
+    let connectionInfoView = StackTableCell()
 
     var locale = Locale.current {
         didSet {
@@ -44,13 +37,15 @@ final class SignerConnectViewLayout: UIView {
     }
 
     private func applyLocale() {
-        statusView.rowContentView.titleLabel.text = R.string.localizable.commonStatus(
+        statusView.titleLabel.text = R.string.localizable.commonStatus(
             preferredLanguages: locale.rLanguages
         )
 
         connectionInfoView.titleLabel.text = R.string.localizable
             .signerConnectConnectedTo(preferredLanguages: locale.rLanguages)
-        accountView.title = R.string.localizable.accountInfoTitle(preferredLanguages: locale.rLanguages)
+        accountView.titleLabel.text = R.string.localizable.accountInfoTitle(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func setupLayout() {
@@ -65,25 +60,15 @@ final class SignerConnectViewLayout: UIView {
             make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
         }
 
-        contentView.stackView.setCustomSpacing(8.0, after: appView)
+        contentView.stackView.setCustomSpacing(16.0, after: appView)
 
-        contentView.stackView.addArrangedSubview(accountView)
-        accountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
-
-        contentView.stackView.setCustomSpacing(16.0, after: accountView)
-
-        contentView.stackView.addArrangedSubview(statusView)
-        statusView.snp.makeConstraints { make in
-            make.width.equalTo(self)
-        }
-
-        contentView.stackView.addArrangedSubview(connectionInfoView)
-        connectionInfoView.snp.makeConstraints { make in
+        contentView.stackView.addArrangedSubview(tableView)
+        tableView.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
         }
+
+        tableView.addArrangedSubview(accountView)
+        tableView.addArrangedSubview(statusView)
+        tableView.addArrangedSubview(connectionInfoView)
     }
 }
