@@ -30,8 +30,17 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.recepientInputView.addTarget(
+            self,
+            action: #selector(actionRecepientAddressChange),
+            for: .editingChanged
+        )
     }
 
     private func setupLocalization() {
@@ -49,6 +58,11 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
         rootView.recepientInputView.locale = selectedLocale
         rootView.networkFeeView.locale = selectedLocale
+    }
+
+    @objc func actionRecepientAddressChange() {
+        let partialAddress = rootView.recepientInputView.textField.text ?? ""
+        presenter.updateRecepient(partialAddress: partialAddress)
     }
 }
 
@@ -86,6 +100,14 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
     }
 
     func didReceiveAmount(inputViewModel _: AmountInputViewModelProtocol) {}
+
+    func didReceiveAccountState(viewModel: AccountFieldStateViewModel) {
+        rootView.recepientInputView.bind(fieldStateViewModel: viewModel)
+    }
+
+    func didReceiveAccountInput(viewModel: InputViewModelProtocol) {
+        rootView.recepientInputView.bind(inputViewModel: viewModel)
+    }
 }
 
 extension TransferSetupViewController: Localizable {
