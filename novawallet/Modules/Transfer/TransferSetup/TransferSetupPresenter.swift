@@ -240,6 +240,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         refreshFee()
         updateAmountPriceView()
     }
+
+    func proceed() {
+        
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
