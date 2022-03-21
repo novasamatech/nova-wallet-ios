@@ -99,6 +99,14 @@ final class TransferSetupPresenter {
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
 
+    private func provideAmountInputViewModelIfRate() {
+        guard case .rate = inputResult else {
+            return
+        }
+
+        provideAmountInputViewModel()
+    }
+
     private func provideAmountInputViewModel() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
 
@@ -148,6 +156,23 @@ final class TransferSetupPresenter {
         }
     }
 
+    private func updateAmountPriceView() {
+        if chainAsset.asset.priceId != nil {
+            let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+
+            let priceData = sendingAssetPrice ?? PriceData(price: "0", usdDayChange: nil)
+
+            let price = sendingBalanceViewModelFactory.priceFromAmount(
+                inputAmount,
+                priceData: priceData
+            ).value(for: selectedLocale)
+
+            view?.didReceiveAmountInputPrice(viewModel: price)
+        } else {
+            view?.didReceiveAmountInputPrice(viewModel: nil)
+        }
+    }
+
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
         let feeValue = isUtilityTransfer ? (fee ?? 0) : 0
@@ -183,6 +208,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         updateFeeView()
         provideRecepientStateViewModel()
         provideRecepientInputViewModel()
+        updateAmountPriceView()
 
         interactor.setup()
     }
@@ -202,6 +228,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         inputResult = .absolute(newValue)
 
         refreshFee()
+        updateAmountPriceView()
     }
 
     func selectAmountPercentage(_ percentage: Float) {
@@ -210,6 +237,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideAmountInputViewModel()
 
         refreshFee()
+        updateAmountPriceView()
     }
 }
 
@@ -236,6 +264,8 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         self.fee = fee
 
         updateFeeView()
+        provideAmountInputViewModelIfRate()
+        updateAmountPriceView()
     }
 
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -244,6 +274,8 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         if isUtilityTransfer {
             updateFeeView()
         }
+
+        updateAmountPriceView()
     }
 
     func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
@@ -272,6 +304,7 @@ extension TransferSetupPresenter: Localizable {
             provideRecepientStateViewModel()
             provideRecepientInputViewModel()
             provideAmountInputViewModel()
+            updateAmountPriceView()
         }
     }
 }

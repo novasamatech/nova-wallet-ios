@@ -7,6 +7,7 @@ class NewAmountInputView: BackgroundedContentControl {
         let label = UILabel()
         label.font = .regularFootnote
         label.textColor = R.color.colorTransparentText()
+        label.textAlignment = .right
         return label
     }()
 
@@ -110,6 +111,12 @@ class NewAmountInputView: BackgroundedContentControl {
         self.inputViewModel = inputViewModel
 
         textField.text = inputViewModel.displayAmount
+    }
+
+    func bind(priceViewModel: String?) {
+        priceLabel.text = priceViewModel
+
+        setNeedsLayout()
     }
 
     // MARK: Layout
