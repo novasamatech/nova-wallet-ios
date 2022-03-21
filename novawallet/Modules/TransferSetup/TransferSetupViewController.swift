@@ -41,6 +41,12 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionRecepientAddressChange),
             for: .editingChanged
         )
+
+        rootView.amountInputView.addTarget(
+            self,
+            action: #selector(actionAmountChange),
+            for: .editingChanged
+        )
     }
 
     private func setupLocalization() {
@@ -77,9 +83,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc func actionAmountChange() {
-        if let amount = rootView.amountInputView.inputViewModel?.decimalAmount {
-            presenter.updateAmount(amount)
-        }
+        let amount = rootView.amountInputView.inputViewModel?.decimalAmount
+        presenter.updateAmount(amount)
     }
 }
 

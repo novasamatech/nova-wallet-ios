@@ -15,7 +15,7 @@ protocol TransferSetupViewProtocol: ControllerBackedProtocol {
 protocol TransferSetupPresenterProtocol: AnyObject {
     func setup()
     func updateRecepient(partialAddress: String)
-    func updateAmount(_ newValue: Decimal)
+    func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
 }
 

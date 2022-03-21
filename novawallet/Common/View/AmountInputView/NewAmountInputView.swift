@@ -108,6 +108,9 @@ class NewAmountInputView: BackgroundedContentControl {
     }
 
     func bind(inputViewModel: AmountInputViewModelProtocol) {
+        self.inputViewModel?.observable.remove(observer: self)
+        inputViewModel.observable.add(observer: self)
+
         self.inputViewModel = inputViewModel
 
         textField.text = inputViewModel.displayAmount
@@ -225,12 +228,6 @@ class NewAmountInputView: BackgroundedContentControl {
             action: #selector(actionEditingDidBeginEnd),
             for: .editingDidEnd
         )
-
-        textField.addTarget(
-            self,
-            action: #selector(actionEditingChanged),
-            for: .editingChanged
-        )
     }
 
     private func configureContentViewIfNeeded() {
@@ -276,10 +273,6 @@ class NewAmountInputView: BackgroundedContentControl {
             roundedBackgroundView?.strokeWidth = 0.0
         }
     }
-
-    @objc private func actionEditingChanged() {
-        sendActions(for: .editingChanged)
-    }
 }
 
 extension NewAmountInputView: UITextFieldDelegate {
@@ -289,5 +282,13 @@ extension NewAmountInputView: UITextFieldDelegate {
         replacementString string: String
     ) -> Bool {
         inputViewModel?.didReceiveReplacement(string, for: range) ?? false
+    }
+}
+
+extension NewAmountInputView: AmountInputViewModelObserver {
+    func amountInputDidChange() {
+        textField.text = inputViewModel?.displayAmount
+
+        sendActions(for: .editingChanged)
     }
 }
