@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import CommonWallet
 
 class NewAmountInputView: BackgroundedContentControl {
     let priceLabel: UILabel = {
@@ -75,6 +76,8 @@ class NewAmountInputView: BackgroundedContentControl {
         return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
 
+    private(set) var inputViewModel: AmountInputViewModelProtocol?
+
     override public init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -101,6 +104,12 @@ class NewAmountInputView: BackgroundedContentControl {
         symbolLabel.text = assetViewModel.symbol
 
         setNeedsLayout()
+    }
+
+    func bind(inputViewModel: AmountInputViewModelProtocol) {
+        self.inputViewModel = inputViewModel
+
+        textField.text = inputViewModel.displayAmount
     }
 
     // MARK: Layout
@@ -177,6 +186,7 @@ class NewAmountInputView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureTextFieldHandlers()
     }
 
     private func configureBackgroundViewIfNeeded() {
@@ -194,6 +204,28 @@ class NewAmountInputView: BackgroundedContentControl {
         }
     }
 
+    private func configureTextFieldHandlers() {
+        textField.delegate = self
+
+        textField.addTarget(
+            self,
+            action: #selector(actionEditingDidBeginEnd),
+            for: .editingDidBegin
+        )
+
+        textField.addTarget(
+            self,
+            action: #selector(actionEditingDidBeginEnd),
+            for: .editingDidEnd
+        )
+
+        textField.addTarget(
+            self,
+            action: #selector(actionEditingChanged),
+            for: .editingChanged
+        )
+    }
+
     private func configureContentViewIfNeeded() {
         if contentView == nil {
             let contentView = UIView()
@@ -205,9 +237,6 @@ class NewAmountInputView: BackgroundedContentControl {
         contentView?.addSubview(symbolLabel)
         contentView?.addSubview(priceLabel)
         addSubview(textField)
-
-        textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidBegin)
-        textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidEnd)
 
         contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 16.0)
     }
@@ -233,11 +262,25 @@ class NewAmountInputView: BackgroundedContentControl {
 
     // MARK: Action
 
-    @objc private func actionEditingChanged() {
+    @objc private func actionEditingDidBeginEnd() {
         if textField.isFirstResponder {
             roundedBackgroundView?.strokeWidth = 0.5
         } else {
             roundedBackgroundView?.strokeWidth = 0.0
         }
+    }
+
+    @objc private func actionEditingChanged() {
+        sendActions(for: .editingChanged)
+    }
+}
+
+extension NewAmountInputView: UITextFieldDelegate {
+    func textField(
+        _: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        inputViewModel?.didReceiveReplacement(string, for: range) ?? false
     }
 }
