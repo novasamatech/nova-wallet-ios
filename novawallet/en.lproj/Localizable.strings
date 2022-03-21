@@ -694,3 +694,4 @@
 "wallet.transfer.token.format" = "Send %@ on";
 "common.transferable.prefix" = "Transferable:";
 "common.paste" = "Paste";
+"amount.too.low" = "Amount is too low";
