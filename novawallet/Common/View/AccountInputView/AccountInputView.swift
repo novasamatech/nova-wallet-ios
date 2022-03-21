@@ -8,11 +8,21 @@ class AccountInputView: BackgroundedContentControl {
         textField.font = .regularSubheadline
         textField.textColor = R.color.colorWhite()
         textField.tintColor = R.color.colorWhite()
-        textField.textAlignment = .left
         textField.clearButtonMode = .whileEditing
+
+        var attributes = textField.defaultTextAttributes
+        let currentStyle = attributes[.paragraphStyle] as? NSParagraphStyle
+        let paragraphStyle = (currentStyle?.mutableCopy() as? NSMutableParagraphStyle) ??
+            NSMutableParagraphStyle()
+        paragraphStyle.lineBreakMode = .byTruncatingMiddle
+
+        attributes[.paragraphStyle] = paragraphStyle
+        textField.defaultTextAttributes = attributes
 
         textField.keyboardType = .default
         textField.returnKeyType = .done
+        textField.autocorrectionType = .no
+        textField.autocapitalizationType = .none
 
         return textField
     }()
