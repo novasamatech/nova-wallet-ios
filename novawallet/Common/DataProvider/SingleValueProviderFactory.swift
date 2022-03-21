@@ -239,19 +239,12 @@ extension SingleValueProviderFactory: SingleValueProviderFactoryProtocol {
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             facade.createRepository()
 
-        let trigger = DataProviderProxyTrigger()
-
         let operationFactory = SubqueryRewardOperationFactory(url: url)
 
-        let source = SubqueryRewardSource(
+        let source = SubqueryTotalRewardSource(
             address: address,
             assetPrecision: chain.addressType.precision,
-            targetIdentifier: identifier,
-            repository: AnyDataProviderRepository(repository),
-            operationFactory: operationFactory,
-            trigger: trigger,
-            operationManager: operationManager,
-            logger: Logger.shared
+            operationFactory: operationFactory
         )
 
         let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)
@@ -259,8 +252,7 @@ extension SingleValueProviderFactory: SingleValueProviderFactoryProtocol {
         let provider = SingleValueProvider(
             targetIdentifier: identifier,
             source: anySource,
-            repository: AnyDataProviderRepository(repository),
-            updateTrigger: trigger
+            repository: AnyDataProviderRepository(repository)
         )
 
         providers[identifier] = WeakWrapper(target: provider)
