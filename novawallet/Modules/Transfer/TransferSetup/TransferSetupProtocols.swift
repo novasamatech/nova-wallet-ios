@@ -17,6 +17,7 @@ protocol TransferSetupPresenterProtocol: AnyObject {
     func updateRecepient(partialAddress: String)
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
+    func proceed()
 }
 
 protocol TransferSetupInteractorInputProtocol: AnyObject {

@@ -694,3 +694,4 @@
 "wallet.transfer.token.format" = "Отправить %@ в";
 "common.transferable.prefix" = "Доступно:";
 "common.paste" = "Вставить";
+"amount.too.low" = "Сумма слишком мала";
