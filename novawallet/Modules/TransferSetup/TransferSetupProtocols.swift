@@ -7,6 +7,7 @@ protocol TransferSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveAmountInputPrice(viewModel: String?)
     func didReceiveAccountState(viewModel: AccountFieldStateViewModel)
     func didReceiveAccountInput(viewModel: InputViewModelProtocol)
 }

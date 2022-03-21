@@ -120,6 +120,10 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
     }
 
+    func didReceiveAmountInputPrice(viewModel: String?) {
+        rootView.amountInputView.bind(priceViewModel: viewModel)
+    }
+
     func didReceiveAccountState(viewModel: AccountFieldStateViewModel) {
         rootView.recepientInputView.bind(fieldStateViewModel: viewModel)
     }
