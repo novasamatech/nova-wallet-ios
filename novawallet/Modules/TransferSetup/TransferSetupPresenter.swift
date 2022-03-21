@@ -208,6 +208,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         updateFeeView()
         provideRecepientStateViewModel()
         provideRecepientInputViewModel()
+        provideAmountInputViewModel()
         updateAmountPriceView()
 
         interactor.setup()
@@ -224,8 +225,8 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         provideRecepientStateViewModel()
     }
 
-    func updateAmount(_ newValue: Decimal) {
-        inputResult = .absolute(newValue)
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { .absolute($0) }
 
         refreshFee()
         updateAmountPriceView()
