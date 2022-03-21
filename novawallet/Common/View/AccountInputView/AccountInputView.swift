@@ -1,5 +1,6 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
 class AccountInputView: BackgroundedContentControl {
     let textField: UITextField = {
@@ -10,7 +11,8 @@ class AccountInputView: BackgroundedContentControl {
         textField.textAlignment = .left
         textField.clearButtonMode = .whileEditing
 
-        textField.keyboardType = .asciiCapableNumberPad
+        textField.keyboardType = .default
+        textField.returnKeyType = .done
 
         return textField
     }()
@@ -18,7 +20,7 @@ class AccountInputView: BackgroundedContentControl {
     let pasteButton: RoundedButton = {
         let button = RoundedButton()
         button.applyAccessoryStyle()
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)
+        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
         button.imageWithTitleView?.titleFont = .semiBoldFootnote
 
         return button
@@ -28,7 +30,7 @@ class AccountInputView: BackgroundedContentControl {
         let button = RoundedButton()
         button.applyAccessoryStyle()
 
-        let icon = R.image.iconScanQr()?.tinted(with: R.color.colorAccent()!)
+        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorAccent()!)
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)
@@ -43,6 +45,8 @@ class AccountInputView: BackgroundedContentControl {
         view.alignment = .fill
         return view
     }()
+
+    let pasteboardService = PasteboardHandler(pasteboard: UIPasteboard.general)
 
     var roundedBackgroundView: RoundedView? {
         backgroundView as? RoundedView
@@ -68,6 +72,9 @@ class AccountInputView: BackgroundedContentControl {
         }
     }
 
+    private var fieldStateViewModel: AccountFieldStateViewModel?
+    private var inputViewModel: InputViewModelProtocol?
+
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: 48.0)
     }
@@ -77,6 +84,23 @@ class AccountInputView: BackgroundedContentControl {
 
         configure()
         setupLocalization()
+    }
+
+    func bind(fieldStateViewModel: AccountFieldStateViewModel) {
+        self.fieldStateViewModel?.icon?.cancel(on: iconView)
+        self.fieldStateViewModel = fieldStateViewModel
+
+        iconView.image = R.image.iconAddressPlaceholder()
+
+        fieldStateViewModel.icon?.loadImage(on: iconView, targetSize: iconSize, animated: true)
+    }
+
+    func bind(inputViewModel: InputViewModelProtocol) {
+        if textField.text != inputViewModel.inputHandler.value {
+            textField.text = inputViewModel.inputHandler.value
+        }
+
+        self.inputViewModel = inputViewModel
     }
 
     @available(*, unavailable)
@@ -166,6 +190,10 @@ class AccountInputView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
+        configureTextFieldHandlers()
+        configurePasteHandlers()
+
+        updatePasteButtonState()
     }
 
     private func configureBackgroundViewIfNeeded() {
@@ -200,27 +228,115 @@ class AccountInputView: BackgroundedContentControl {
 
         addSubview(stackView)
 
-        textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidBegin)
-        textField.addTarget(self, action: #selector(actionEditingChanged), for: .editingDidEnd)
-
         contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+    }
+
+    private func configureTextFieldHandlers() {
+        textField.addTarget(self, action: #selector(actionEditingBeginEnd), for: .editingDidBegin)
+        textField.addTarget(self, action: #selector(actionEditingBeginEnd), for: .editingDidEnd)
+        textField.addTarget(
+            self,
+            action: #selector(actionEditingChanged(_:)),
+            for: .editingChanged
+        )
+
+        textField.delegate = self
+    }
+
+    private func configurePasteHandlers() {
+        pasteButton.addTarget(self, action: #selector(actionPaste), for: .touchUpInside)
+
+        pasteboardService.delegate = self
+    }
+
+    private func updatePasteButtonState() {
+        if pasteboardService.pasteboard.hasStrings, !textField.isFirstResponder {
+            pasteButton.isHidden = false
+        } else {
+            pasteButton.isHidden = true
+        }
     }
 
     // MARK: Action
 
-    @objc private func actionEditingChanged() {
+    @objc private func actionEditingChanged(_ sender: UITextField) {
+        if inputViewModel?.inputHandler.value != sender.text {
+            sender.text = inputViewModel?.inputHandler.value
+        }
+
+        sendActions(for: .editingChanged)
+    }
+
+    @objc private func actionEditingBeginEnd() {
         if textField.isFirstResponder {
             roundedBackgroundView?.strokeWidth = 0.5
 
             scanButton.isHidden = true
-            pasteButton.isHidden = true
         } else {
             roundedBackgroundView?.strokeWidth = 0.0
 
             scanButton.isHidden = false
-            pasteButton.isHidden = false
         }
 
+        updatePasteButtonState()
+
         setNeedsLayout()
+    }
+
+    @objc func actionPaste() {
+        if
+            let pasteString = pasteboardService.pasteboard.string,
+            let inputViewModel = inputViewModel,
+            inputViewModel.inputHandler.value != pasteString {
+            let currentValue = inputViewModel.inputHandler.value as NSString
+            let currentLength = currentValue.length
+            let range = NSRange(location: 0, length: currentLength)
+
+            if inputViewModel.inputHandler.didReceiveReplacement(pasteString, for: range) {
+                textField.text = pasteString
+                sendActions(for: .editingChanged)
+            }
+        }
+    }
+}
+
+extension AccountInputView: UITextFieldDelegate {
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
+        guard let inputViewModel = inputViewModel else {
+            return true
+        }
+
+        let shouldApply = inputViewModel.inputHandler.didReceiveReplacement(string, for: range)
+
+        if !shouldApply, textField.text != inputViewModel.inputHandler.value {
+            textField.text = inputViewModel.inputHandler.value
+        }
+
+        return shouldApply
+    }
+
+    func textFieldShouldClear(_: UITextField) -> Bool {
+        inputViewModel?.inputHandler.changeValue(to: "")
+
+        return true
+    }
+
+    func textFieldShouldReturn(_: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+extension AccountInputView: PasteboardHandlerDelegate {
+    func didReceivePasteboardChange(notification _: Notification) {
+        updatePasteButtonState()
+    }
+
+    func didReceivePasteboardRemove(notification _: Notification) {
+        updatePasteButtonState()
     }
 }

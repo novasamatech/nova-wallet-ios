@@ -10,6 +10,16 @@ struct TransferSetupViewFactory {
             return nil
         }
 
+        let walletSettings = SelectedWalletSettings.shared
+
+        guard
+            let selectedAccount = walletSettings.value.fetch(
+                for: chainAsset.chain.accountRequest()
+            ),
+            let senderAccountAddress = selectedAccount.toAddress() else {
+            return nil
+        }
+
         let wireframe = TransferSetupWireframe()
 
         let localizationManager = LocalizationManager.shared
@@ -40,6 +50,7 @@ struct TransferSetupViewFactory {
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
+            senderAccountAddress: senderAccountAddress,
             localizationManager: localizationManager
         )
 
@@ -54,7 +65,9 @@ struct TransferSetupViewFactory {
         return view
     }
 
-    private static func createInteractor(for chainAsset: ChainAsset) -> TransferSetupInteractor? {
+    private static func createInteractor(
+        for chainAsset: ChainAsset
+    ) -> TransferSetupInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
         guard

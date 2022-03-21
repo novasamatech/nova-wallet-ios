@@ -1,15 +1,19 @@
 import BigInt
 import CommonWallet
+import SoraFoundation
 
 protocol TransferSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveTransferableBalance(viewModel: String)
     func didReceiveChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
+    func didReceiveAccountState(viewModel: AccountFieldStateViewModel)
+    func didReceiveAccountInput(viewModel: InputViewModelProtocol)
 }
 
 protocol TransferSetupPresenterProtocol: AnyObject {
     func setup()
+    func updateRecepient(partialAddress: String)
 }
 
 protocol TransferSetupInteractorInputProtocol: AnyObject {
