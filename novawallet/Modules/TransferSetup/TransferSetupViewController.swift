@@ -58,11 +58,28 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
         rootView.recepientInputView.locale = selectedLocale
         rootView.networkFeeView.locale = selectedLocale
+
+        setupAmountInpuAccessoryView(for: selectedLocale)
+    }
+
+    private func setupAmountInpuAccessoryView(for locale: Locale) {
+        let accessoryView = UIFactory.default.createAmountAccessoryView(
+            for: self,
+            locale: locale
+        )
+
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
     @objc func actionRecepientAddressChange() {
         let partialAddress = rootView.recepientInputView.textField.text ?? ""
         presenter.updateRecepient(partialAddress: partialAddress)
+    }
+
+    @objc func actionAmountChange() {
+        if let amount = rootView.amountInputView.inputViewModel?.decimalAmount {
+            presenter.updateAmount(amount)
+        }
     }
 }
 
@@ -99,7 +116,9 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
-    func didReceiveAmount(inputViewModel _: AmountInputViewModelProtocol) {}
+    func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
+        rootView.amountInputView.bind(inputViewModel: inputViewModel)
+    }
 
     func didReceiveAccountState(viewModel: AccountFieldStateViewModel) {
         rootView.recepientInputView.bind(fieldStateViewModel: viewModel)
@@ -115,5 +134,17 @@ extension TransferSetupViewController: Localizable {
         if isSetup {
             setupLocalization()
         }
+    }
+}
+
+extension TransferSetupViewController: AmountInputAccessoryViewDelegate {
+    func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
+        rootView.amountInputView.textField.resignFirstResponder()
+
+        presenter.selectAmountPercentage(percentage)
+    }
+
+    func didSelectDone(on _: AmountInputAccessoryView) {
+        rootView.amountInputView.textField.resignFirstResponder()
     }
 }

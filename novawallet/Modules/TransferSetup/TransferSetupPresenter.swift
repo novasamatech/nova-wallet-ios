@@ -26,6 +26,8 @@ final class TransferSetupPresenter {
 
     private(set) var fee: BigUInt?
 
+    var inputResult: AmountInputResult?
+
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
     let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
@@ -97,6 +99,16 @@ final class TransferSetupPresenter {
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
 
+    private func provideAmountInputViewModel() {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+
+        let viewModel = sendingBalanceViewModelFactory.createBalanceInputViewModel(
+            inputAmount
+        ).value(for: selectedLocale)
+
+        view?.didReceiveAmount(inputViewModel: viewModel)
+    }
+
     private func updateFeeView() {
         let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = fee, let assetInfo = optAssetInfo {
@@ -135,6 +147,34 @@ final class TransferSetupPresenter {
             view?.didReceiveTransferableBalance(viewModel: viewModel)
         }
     }
+
+    private func balanceMinusFee() -> Decimal {
+        let balanceValue = senderSendingAssetBalance?.transferable ?? 0
+        let feeValue = isUtilityTransfer ? (fee ?? 0) : 0
+
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        guard
+            let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
+            let fee = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
+            return 0
+        }
+
+        return balance - fee
+    }
+
+    private func refreshFee() {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let assetInfo = chainAsset.assetDisplayInfo
+
+        guard let amount = inputAmount.toSubstrateAmount(
+            precision: assetInfo.assetPrecision
+        ) else {
+            return
+        }
+
+        interactor.estimateFee(for: amount, recepient: recepientAddress)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -156,6 +196,20 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         }
 
         provideRecepientStateViewModel()
+    }
+
+    func updateAmount(_ newValue: Decimal) {
+        inputResult = .absolute(newValue)
+
+        refreshFee()
+    }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+
+        refreshFee()
     }
 }
 
@@ -203,7 +257,7 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
     func didReceiveSendingAssetMinBalance(_: BigUInt) {}
 
     func didCompleteSetup() {
-        interactor.estimateFee(for: 0, recepient: recepientAddress)
+        refreshFee()
     }
 
     func didReceiveSetup(error _: Error) {}
@@ -215,6 +269,9 @@ extension TransferSetupPresenter: Localizable {
             updateChainAssetViewModel()
             updateFeeView()
             updateTransferableBalance()
+            provideRecepientStateViewModel()
+            provideRecepientInputViewModel()
+            provideAmountInputViewModel()
         }
     }
 }
