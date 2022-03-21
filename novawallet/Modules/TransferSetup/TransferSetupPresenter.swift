@@ -1,6 +1,7 @@
 import Foundation
 import BigInt
 import SoraFoundation
+import SubstrateSdk
 
 final class TransferSetupPresenter {
     weak var view: TransferSetupViewProtocol?
@@ -9,6 +10,7 @@ final class TransferSetupPresenter {
 
     let chainAsset: ChainAsset
 
+    let senderAccountAddress: AccountAddress
     private(set) var recepientAddress: AccountAddress?
 
     private(set) var senderSendingAssetBalance: AssetBalance?
@@ -19,6 +21,8 @@ final class TransferSetupPresenter {
 
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
+
+    private lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: BigUInt?
 
@@ -38,6 +42,7 @@ final class TransferSetupPresenter {
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
+        senderAccountAddress: AccountAddress,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -47,6 +52,7 @@ final class TransferSetupPresenter {
         self.networkViewModelFactory = networkViewModelFactory
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
+        self.senderAccountAddress = senderAccountAddress
 
         self.localizationManager = localizationManager
     }
@@ -68,6 +74,27 @@ final class TransferSetupPresenter {
         )
 
         view?.didReceiveChainAsset(viewModel: viewModel)
+    }
+
+    private func provideRecepientStateViewModel() {
+        if
+            let recepientAddress = recepientAddress,
+            let accountId = try? recepientAddress.toAccountId(),
+            let icon = try? iconGenerator.generateFromAccountId(accountId) {
+            let iconViewModel = DrawableIconViewModel(icon: icon)
+            let viewModel = AccountFieldStateViewModel(icon: iconViewModel)
+            view?.didReceiveAccountState(viewModel: viewModel)
+        } else {
+            let viewModel = AccountFieldStateViewModel(icon: nil)
+            view?.didReceiveAccountState(viewModel: viewModel)
+        }
+    }
+
+    private func provideRecepientInputViewModel() {
+        let value = recepientAddress ?? ""
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
+
+        view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
 
     private func updateFeeView() {
@@ -114,8 +141,21 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
         updateChainAssetViewModel()
         updateFeeView()
+        provideRecepientStateViewModel()
+        provideRecepientInputViewModel()
 
         interactor.setup()
+    }
+
+    func updateRecepient(partialAddress: String) {
+        let accountId = try? partialAddress.toAccountId(using: chainAsset.chain.chainFormat)
+        if accountId != nil {
+            recepientAddress = partialAddress
+        } else {
+            recepientAddress = nil
+        }
+
+        provideRecepientStateViewModel()
     }
 }
 
