@@ -141,6 +141,7 @@ struct TransferSetupViewFactory {
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            substrateStorageFacade: SubstrateDataStorageFacade.shared,
             operationQueue: operationQueue
         )
     }
