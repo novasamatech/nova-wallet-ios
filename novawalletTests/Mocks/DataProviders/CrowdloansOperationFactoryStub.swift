@@ -23,17 +23,17 @@ final class CrowdloansOperationFactoryStub: CrowdloanOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         accountId: AccountId,
-        trieIndex: UInt32
+        index: FundIndex
     ) -> CompoundOperationWrapper<CrowdloanContributionResponse> {
         CompoundOperationWrapper.createWithResult(
-            CrowdloanContributionResponse(accountId: accountId, trieIndex: trieIndex, contribution: nil)
+            CrowdloanContributionResponse(accountId: accountId, index: index, contribution: nil)
         )
     }
 
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        paraIds: [ParaId]
+        bidderKeys: [BidderKey]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]> {
         CompoundOperationWrapper.createWithResult(parachainLeaseInfo)
     }
