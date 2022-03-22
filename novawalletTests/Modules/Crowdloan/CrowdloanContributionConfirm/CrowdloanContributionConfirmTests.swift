@@ -4,6 +4,7 @@ import SoraKeystore
 import CommonWallet
 import RobinHood
 import SoraFoundation
+import SubstrateSdk
 import Cuckoo
 import BigInt
 
@@ -22,7 +23,9 @@ class CrowdloanContributionConfirmTests: XCTestCase {
             lastContribution: .never,
             firstPeriod: 100,
             lastPeriod: 101,
-            trieIndex: 1)
+            trieIndex: nil,
+            fundIndex: StringScaleMapper(value: 1)
+        )
     )
 
     func testContributionConfirmation() throws {

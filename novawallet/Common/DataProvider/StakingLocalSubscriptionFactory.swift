@@ -195,19 +195,12 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
             storageFacade: storageFacade
         ).createSingleValueRepository()
 
-        let trigger = DataProviderProxyTrigger()
-
         let operationFactory = SubqueryRewardOperationFactory(url: api.url)
 
-        let source = SubqueryRewardSource(
+        let source = SubqueryTotalRewardSource(
             address: address,
             assetPrecision: assetPrecision,
-            targetIdentifier: identifier,
-            repository: AnyDataProviderRepository(repository),
-            operationFactory: operationFactory,
-            trigger: trigger,
-            operationManager: operationManager,
-            logger: Logger.shared
+            operationFactory: operationFactory
         )
 
         let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)
@@ -215,8 +208,7 @@ final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         let provider = SingleValueProvider(
             targetIdentifier: identifier,
             source: anySource,
-            repository: AnyDataProviderRepository(repository),
-            updateTrigger: trigger
+            repository: AnyDataProviderRepository(repository)
         )
 
         saveProvider(provider, for: identifier)
