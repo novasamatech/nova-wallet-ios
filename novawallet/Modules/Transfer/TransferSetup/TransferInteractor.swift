@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class TransferInteractor {
+class TransferInteractor: RuntimeConstantFetching {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
@@ -15,6 +15,7 @@ class TransferInteractor {
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let substrateStorageFacade: StorageFacadeProtocol
     let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
@@ -37,6 +38,12 @@ class TransferInteractor {
 
     var isUtilityTransfer: Bool { chain.utilityAssets().first?.assetId == asset.assetId }
 
+    private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
+        let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
+            substrateStorageFacade.createRepository()
+        return AnyDataProviderRepository(storage)
+    }()
+
     init(
         selectedAccount: ChainAccountResponse,
         chain: ChainModel,
@@ -47,6 +54,7 @@ class TransferInteractor {
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
@@ -58,6 +66,7 @@ class TransferInteractor {
         self.walletRemoteWrapper = walletRemoteWrapper
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+        self.substrateStorageFacade = substrateStorageFacade
         self.operationQueue = operationQueue
     }
 
@@ -66,6 +75,76 @@ class TransferInteractor {
 
         clearSendingAssetRemoteRecepientSubscription()
         clearUtilityAssetRemoteRecepientSubscriptions()
+    }
+
+    private func fetchStatemineMinBalance(
+        for extras: StatemineAssetExtras,
+        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
+        do {
+            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+                .assetsDetails,
+                encodableElement: extras.assetId,
+                chainId: chain.chainId
+            )
+
+            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+            let localRequestFactory = LocalStorageRequestFactory()
+
+            let fetchWrapper: CompoundOperationWrapper<LocalStorageResponse<AssetDetails>> =
+                localRequestFactory.queryItems(
+                    repository: chainStorage,
+                    key: { localKey },
+                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
+                    params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
+                )
+
+            fetchWrapper.addDependency(operations: [codingFactoryOperation])
+
+            let mappingOperation = ClosureOperation<BigUInt> {
+                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData()
+                return details.value?.minBalance ?? 0
+            }
+
+            let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
+
+            dependencies.forEach { mappingOperation.addDependency($0) }
+
+            mappingOperation.completionBlock = {
+                DispatchQueue.main.async {
+                    do {
+                        let minBalance = try mappingOperation.extractNoCancellableResultData()
+                        completionClosure(.success(minBalance))
+                    } catch {
+                        completionClosure(.failure(error))
+                    }
+                }
+            }
+
+            operationQueue.addOperations(dependencies + [mappingOperation], waitUntilFinished: false)
+        } catch {
+            completionClosure(.failure(error))
+        }
+    }
+
+    private func fetchMinBalance(
+        for assetStorageInfo: AssetStorageInfo,
+        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
+    ) {
+        switch assetStorageInfo {
+        case .native:
+            fetchConstant(
+                for: .existentialDeposit,
+                runtimeCodingService: runtimeService,
+                operationManager: OperationManager(operationQueue: operationQueue),
+                closure: completionClosure
+            )
+        case let .statemine(extras):
+            fetchStatemineMinBalance(for: extras, completionClosure: completionClosure)
+        case let .orml(_, _, _, existentialDeposit):
+            completionClosure(.success(existentialDeposit))
+        }
     }
 
     private func extractAssetStorageInfo() {
@@ -119,7 +198,9 @@ class TransferInteractor {
         setupSendingAssetBalanceProvider()
         setupUtilityAssetBalanceProviderIfNeeded()
         setupSendingAssetPriceProviderIfNeeded()
-        setupUtilityAssetBalanceProviderIfNeeded()
+        setupUtilityAssetPriceProviderIfNeeded()
+
+        provideMinBalance()
 
         presenter?.didCompleteSetup()
     }
@@ -172,6 +253,30 @@ class TransferInteractor {
         }
     }
 
+    private func provideMinBalance() {
+        if let sendingAssetInfo = sendingAssetInfo {
+            fetchMinBalance(for: sendingAssetInfo) { [weak self] result in
+                switch result {
+                case let .success(minBalance):
+                    self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
+                case let .failure(error):
+                    self?.presenter?.didReceiveSetup(error: error)
+                }
+            }
+        }
+
+        if let utilityAssetInfo = utilityAssetInfo {
+            fetchMinBalance(for: utilityAssetInfo) { [weak self] result in
+                switch result {
+                case let .success(minBalance):
+                    self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
+                case let .failure(error):
+                    self?.presenter?.didReceiveSetup(error: error)
+                }
+            }
+        }
+    }
+
     func addingTransferCommand(
         to builder: ExtrinsicBuilderProtocol,
         amount: BigUInt,
@@ -182,7 +287,7 @@ class TransferInteractor {
         }
 
         switch sendingAssetInfo {
-        case let .orml(currencyId, _, module):
+        case let .orml(currencyId, _, module, _):
             let call = callFactory.ormlTransfer(
                 in: module,
                 currencyId: currencyId,
