@@ -23,7 +23,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var onchainContributionsOperation: Operation?
     private var latestCrowdloanIndexes: [UInt32]?
     private var leaseInfoWrapper: CompoundOperationWrapper<[ParachainLeaseInfo]>?
-    private var leaseInfoBidderKeys: [BidderKey]?
+    private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
@@ -71,7 +71,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func clearLeaseInfoRequest(_ shouldCancel: Bool) {
         let wrapper = leaseInfoWrapper
         leaseInfoWrapper = nil
-        leaseInfoBidderKeys = nil
+        leaseInfoParams = nil
 
         if shouldCancel {
             wrapper?.cancel()
@@ -161,9 +161,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
-        let newCrowdloanBidderKeys = crowdloans.map { $0.fundInfo.getBidderKey(for: $0.paraId) }
+        let newLeaseParams: [LeaseParam] = crowdloans.map { crowdloan in
+            let bidderKey = crowdloan.fundInfo.getBidderKey(for: crowdloan.paraId)
+            return LeaseParam(paraId: crowdloan.paraId, bidderKey: bidderKey)
+        }
 
-        guard leaseInfoBidderKeys != newCrowdloanBidderKeys else {
+        guard leaseInfoParams != newLeaseParams else {
             return
         }
 
@@ -177,7 +180,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         let queryWrapper = crowdloanOperationFactory.fetchLeaseInfoOperation(
             connection: connection,
             runtimeService: runtimeService,
-            bidderKeys: newCrowdloanBidderKeys
+            params: newLeaseParams
         )
 
         queryWrapper.targetOperation.completionBlock = { [weak self] in
@@ -204,7 +207,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         leaseInfoWrapper = queryWrapper
-        leaseInfoBidderKeys = newCrowdloanBidderKeys
+        leaseInfoParams = newLeaseParams
 
         operationManager.enqueue(operations: queryWrapper.allOperations, in: .transient)
     }

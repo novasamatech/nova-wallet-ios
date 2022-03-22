@@ -72,15 +72,15 @@ class CrowdloanListTests: XCTestCase {
     ]
 
     let leaseInfo: ParachainLeaseInfoList = [
-        ParachainLeaseInfo(bidderKey: 2000,
+        ParachainLeaseInfo(param: LeaseParam(paraId: 2000, bidderKey: 1),
                            fundAccountId: Data(repeating: 10, count: 32),
                            leasedAmount: nil
         ),
-        ParachainLeaseInfo(bidderKey: 2001,
+        ParachainLeaseInfo(param: LeaseParam(paraId: 2001, bidderKey: 2),
                            fundAccountId: Data(repeating: 11, count: 32),
                            leasedAmount: nil
         ),
-        ParachainLeaseInfo(bidderKey: 2002,
+        ParachainLeaseInfo(param: LeaseParam(paraId: 2002, bidderKey: 3) ,
                            fundAccountId: Data(repeating: 12, count: 32),
                            leasedAmount: 1000
         )

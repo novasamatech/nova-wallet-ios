@@ -20,7 +20,7 @@ protocol CrowdloanOperationFactoryProtocol {
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        bidderKeys: [BidderKey]
+        params: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]>
 }
 
@@ -145,12 +145,12 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        bidderKeys: [BidderKey]
+        params: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
-        let keyParams: () throws -> [StringScaleMapper<BidderKey>] = {
-            bidderKeys.map { StringScaleMapper(value: $0) }
+        let keyParams: () throws -> [StringScaleMapper<ParaId>] = {
+            params.map { StringScaleMapper(value: $0.paraId) }
         }
 
         let queryWrapper: CompoundOperationWrapper<[StorageResponse<[ParachainSlotLease?]>]> =
@@ -166,40 +166,30 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
         let mapOperation: BaseOperation<[ParachainLeaseInfo]> = ClosureOperation {
             let queryResult = try queryWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let fundAccountPrefix = "modlpy/cfund".data(using: .utf8) else {
-                throw NetworkBaseError.badDeserialization
-            }
-
-            let fundAccountSuffix = Data(repeating: 0, count: SubstrateConstants.accountIdLength)
-
             return try queryResult.enumerated().map { index, slotLeaseResponse in
-                let bidderKey = bidderKeys[index]
+                let leaseParam = params[index]
 
-                let bidderKeyEncoder = ScaleEncoder()
-                try bidderKey.encode(scaleEncoder: bidderKeyEncoder)
-                let bidderKeyData = bidderKeyEncoder.encode()
-
-                let fundAccountId = (fundAccountPrefix + bidderKeyData + fundAccountSuffix)
-                    .prefix(SubstrateConstants.accountIdLength)
+                let bidderAccountId = try leaseParam.bidderKey.fundAccountId()
 
                 guard let leasedAmountList = slotLeaseResponse.value else {
                     return ParachainLeaseInfo(
-                        bidderKey: bidderKeys[index],
-                        fundAccountId: fundAccountId,
+                        param: leaseParam,
+                        fundAccountId: bidderAccountId,
                         leasedAmount: nil
                     )
                 }
 
-                let leasedAmount = leasedAmountList
+                let paraAccountId = try leaseParam.paraId.fundAccountId()
+
+                let leaseInfo = leasedAmountList
                     .compactMap { $0 }
-                    .filter { $0.accountId == fundAccountId }
-                    .max { $0.amount > $1.amount }?
-                    .amount
+                    .filter { $0.accountId == bidderAccountId || $0.accountId == paraAccountId }
+                    .max { $0.amount > $1.amount }
 
                 return ParachainLeaseInfo(
-                    bidderKey: bidderKeys[index],
-                    fundAccountId: fundAccountId,
-                    leasedAmount: leasedAmount
+                    param: leaseParam,
+                    fundAccountId: leaseInfo?.accountId ?? bidderAccountId,
+                    leasedAmount: leaseInfo?.amount
                 )
             }
         }

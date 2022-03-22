@@ -33,7 +33,7 @@ final class CrowdloansOperationFactoryStub: CrowdloanOperationFactoryProtocol {
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        bidderKeys: [BidderKey]
+        params: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]> {
         CompoundOperationWrapper.createWithResult(parachainLeaseInfo)
     }
