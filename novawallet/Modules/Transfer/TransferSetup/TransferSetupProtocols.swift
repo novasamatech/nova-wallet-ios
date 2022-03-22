@@ -40,4 +40,4 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveSetup(error: Error)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {}

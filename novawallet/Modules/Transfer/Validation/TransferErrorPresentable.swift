@@ -11,7 +11,7 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
 }
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
-    func presentReceiverBalanceTooLow(from view: ControllerBackedProtocol, locale: Locale?) {
+    func presentCantPayFee(from view: ControllerBackedProtocol, locale: Locale?) {
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
         let message = R.string.localizable.walletFeeOverExistentialDeposit(
             preferredLanguages: locale?.rLanguages
@@ -22,11 +22,11 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
         present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
-    func presentReceiveBalanceTooLow(from view: ControllerBackedProtocol, locale: Locale?) {
+    func presentReceiverBalanceTooLow(from view: ControllerBackedProtocol, locale: Locale?) {
         let title = R.string.localizable.walletSendDeadRecipientTitle(
             preferredLanguages: locale?.rLanguages
         )
-        
+
         let message = R.string.localizable.walletSendDeadRecipientMessage(
             preferredLanguages: locale?.rLanguages
         )
