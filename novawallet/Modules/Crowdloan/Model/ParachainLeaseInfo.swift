@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 
 struct ParachainLeaseInfo {
-    let paraId: ParaId
+    let bidderKey: BidderKey
     let fundAccountId: AccountId
     let leasedAmount: BigUInt?
 }
@@ -13,7 +13,7 @@ typealias ParachainLeaseInfoDict = [ParaId: ParachainLeaseInfo]
 extension ParachainLeaseInfoList {
     func toMap() -> ParachainLeaseInfoDict {
         reduce(into: ParachainLeaseInfoDict()) { dict, info in
-            dict[info.paraId] = info
+            dict[info.bidderKey] = info
         }
     }
 }
