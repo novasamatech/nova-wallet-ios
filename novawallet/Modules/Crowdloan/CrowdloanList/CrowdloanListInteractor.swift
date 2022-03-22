@@ -23,7 +23,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var onchainContributionsOperation: Operation?
     private var latestCrowdloanIndexes: [UInt32]?
     private var leaseInfoWrapper: CompoundOperationWrapper<[ParachainLeaseInfo]>?
-    private var leaseInfoParaIds: [UInt32]?
+    private var leaseInfoBidderKeys: [BidderKey]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
@@ -71,7 +71,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func clearLeaseInfoRequest(_ shouldCancel: Bool) {
         let wrapper = leaseInfoWrapper
         leaseInfoWrapper = nil
-        leaseInfoParaIds = nil
+        leaseInfoBidderKeys = nil
 
         if shouldCancel {
             wrapper?.cancel()
@@ -163,7 +163,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     ) {
         let newCrowdloanBidderKeys = crowdloans.map { $0.fundInfo.getBidderKey(for: $0.paraId) }
 
-        guard leaseInfoParaIds != newCrowdloanBidderKeys else {
+        guard leaseInfoBidderKeys != newCrowdloanBidderKeys else {
             return
         }
 
@@ -204,7 +204,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         leaseInfoWrapper = queryWrapper
-        leaseInfoParaIds = newCrowdloanBidderKeys
+        leaseInfoBidderKeys = newCrowdloanBidderKeys
 
         operationManager.enqueue(operations: queryWrapper.allOperations, in: .transient)
     }
