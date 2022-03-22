@@ -52,12 +52,10 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
     let presentable: TransferErrorPresentable
 
     init(
-        view: (Localizable & ControllerBackedProtocol)?,
         presentable: TransferErrorPresentable,
         assetDisplayInfo: AssetBalanceDisplayInfo,
         utilityAssetInfo: AssetBalanceDisplayInfo?
     ) {
-        self.view = view
         self.presentable = presentable
         self.assetDisplayInfo = assetDisplayInfo
         self.utilityAssetInfo = utilityAssetInfo
@@ -69,7 +67,6 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         transferable: BigUInt?,
         locale: Locale
     ) -> DataValidating {
-
         let precision = assetDisplayInfo.assetPrecision
         let sendingAmount = amount.flatMap {
             $0.toSubstrateAmount(precision: precision)
@@ -129,7 +126,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
     func willBeReaped(
         amount: Decimal?,
-        fee: BigUInt?,
+        fee _: BigUInt?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale

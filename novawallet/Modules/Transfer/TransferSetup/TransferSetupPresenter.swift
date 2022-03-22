@@ -32,6 +32,8 @@ final class TransferSetupPresenter {
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
     let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
+    let dataValidatingFactory: TransferDataValidatorFactoryProtocol
+
     var isUtilityTransfer: Bool {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
     }
@@ -45,6 +47,7 @@ final class TransferSetupPresenter {
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         senderAccountAddress: AccountAddress,
+        dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
@@ -55,6 +58,7 @@ final class TransferSetupPresenter {
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
         self.senderAccountAddress = senderAccountAddress
+        self.dataValidatingFactory = dataValidatingFactory
 
         self.localizationManager = localizationManager
     }
@@ -241,9 +245,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         updateAmountPriceView()
     }
 
-    func proceed() {
-        
-    }
+    func proceed() {}
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
