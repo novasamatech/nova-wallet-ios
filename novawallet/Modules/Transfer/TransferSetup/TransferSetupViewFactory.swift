@@ -42,6 +42,12 @@ struct TransferSetupViewFactory {
             utilityBalanceViewModelFactory = nil
         }
 
+        let dataValidatingFactory = TransferDataValidatorFactory(
+            presentable: wireframe,
+            assetDisplayInfo: chainAsset.assetDisplayInfo,
+            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
+        )
+
         let presenter = TransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -51,6 +57,7 @@ struct TransferSetupViewFactory {
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
+            dataValidatingFactory: dataValidatingFactory,
             localizationManager: localizationManager
         )
 
@@ -60,6 +67,7 @@ struct TransferSetupViewFactory {
         )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view
