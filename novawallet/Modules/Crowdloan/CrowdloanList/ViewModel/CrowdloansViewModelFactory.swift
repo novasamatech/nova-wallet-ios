@@ -109,7 +109,7 @@ final class CrowdloansViewModelFactory {
         in crowdloan: Crowdloan,
         viewInfo: CrowdloansViewInfo
     ) -> Bool {
-        viewInfo.contributions[crowdloan.fundInfo.trieIndex]?.balance != nil
+        viewInfo.contributions[crowdloan.fundInfo.index]?.balance != nil
     }
 
     private func progressValueAndText(

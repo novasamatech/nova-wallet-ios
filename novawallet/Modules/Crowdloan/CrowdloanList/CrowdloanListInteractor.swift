@@ -93,7 +93,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
-        let newCrowdloanIndexes = crowdloans.map(\.fundInfo.trieIndex)
+        let newCrowdloanIndexes = crowdloans.map(\.fundInfo.index)
 
         guard latestCrowdloanIndexes != newCrowdloanIndexes else {
             return
@@ -117,12 +117,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                     return []
                 }
 
-                return newCrowdloanIndexes.map { trieIndex in
+                return newCrowdloanIndexes.map { index in
                     strongSelf.crowdloanOperationFactory.fetchContributionOperation(
                         connection: connection,
                         runtimeService: runtimeService,
                         accountId: accountResponse.accountId,
-                        trieIndex: trieIndex
+                        index: index
                     )
                 }
             }.longrunOperation()
@@ -161,9 +161,9 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
-        let newCrowdloanParaIds = crowdloans.map(\.paraId)
+        let newCrowdloanBidderKeys = crowdloans.map { $0.fundInfo.getBidderKey(for: $0.paraId) }
 
-        guard leaseInfoParaIds != newCrowdloanParaIds else {
+        guard leaseInfoParaIds != newCrowdloanBidderKeys else {
             return
         }
 
@@ -177,7 +177,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         let queryWrapper = crowdloanOperationFactory.fetchLeaseInfoOperation(
             connection: connection,
             runtimeService: runtimeService,
-            paraIds: newCrowdloanParaIds
+            bidderKeys: newCrowdloanBidderKeys
         )
 
         queryWrapper.targetOperation.completionBlock = { [weak self] in
@@ -204,7 +204,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         leaseInfoWrapper = queryWrapper
-        leaseInfoParaIds = newCrowdloanParaIds
+        leaseInfoParaIds = newCrowdloanBidderKeys
 
         operationManager.enqueue(operations: queryWrapper.allOperations, in: .transient)
     }
