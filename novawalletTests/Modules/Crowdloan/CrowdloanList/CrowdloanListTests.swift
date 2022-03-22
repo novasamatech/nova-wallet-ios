@@ -23,7 +23,9 @@ class CrowdloanListTests: XCTestCase {
                 lastContribution: .never,
                 firstPeriod: 100,
                 lastPeriod: 101,
-                trieIndex: 1)
+                trieIndex: nil,
+                fundIndex: StringScaleMapper(value: 1)
+            )
         )
     ]
 
@@ -44,7 +46,9 @@ class CrowdloanListTests: XCTestCase {
                 lastContribution: .never,
                 firstPeriod: 100,
                 lastPeriod: 101,
-                trieIndex: 2)
+                trieIndex: nil,
+                fundIndex: StringScaleMapper(value: 2)
+            )
         )
     ]
 
@@ -61,20 +65,22 @@ class CrowdloanListTests: XCTestCase {
                 lastContribution: .never,
                 firstPeriod: 100,
                 lastPeriod: 101,
-                trieIndex: 3)
+                trieIndex: nil,
+                fundIndex: StringScaleMapper(value: 3)
+            )
         )
     ]
 
     let leaseInfo: ParachainLeaseInfoList = [
-        ParachainLeaseInfo(paraId: 2000,
+        ParachainLeaseInfo(bidderKey: 2000,
                            fundAccountId: Data(repeating: 10, count: 32),
                            leasedAmount: nil
         ),
-        ParachainLeaseInfo(paraId: 2001,
+        ParachainLeaseInfo(bidderKey: 2001,
                            fundAccountId: Data(repeating: 11, count: 32),
                            leasedAmount: nil
         ),
-        ParachainLeaseInfo(paraId: 2002,
+        ParachainLeaseInfo(bidderKey: 2002,
                            fundAccountId: Data(repeating: 12, count: 32),
                            leasedAmount: 1000
         )
