@@ -22,6 +22,9 @@ final class TransferSetupPresenter {
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
 
+    private(set) var sendingAssetMinBalance: BigUInt?
+    private(set) var utilityAssetMinBalance: BigUInt?
+
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: BigUInt?
@@ -291,9 +294,13 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
         updateFeeView()
     }
 
-    func didReceiveUtilityAssetMinBalance(_: BigUInt) {}
+    func didReceiveUtilityAssetMinBalance(_ value: BigUInt) {
+        utilityAssetMinBalance = value
+    }
 
-    func didReceiveSendingAssetMinBalance(_: BigUInt) {}
+    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
+        sendingAssetMinBalance = value
+    }
 
     func didCompleteSetup() {
         refreshFee()

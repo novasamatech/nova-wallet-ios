@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 enum AssetStorageInfoError: Error {
     case unexpectedTypeExtras
@@ -8,7 +9,7 @@ enum AssetStorageInfoError: Error {
 enum AssetStorageInfo {
     case native
     case statemine(extras: StatemineAssetExtras)
-    case orml(currencyId: JSON, currencyData: Data, module: String)
+    case orml(currencyId: JSON, currencyData: Data, module: String, existentialDeposit: BigUInt)
 }
 
 extension AssetStorageInfo {
@@ -41,7 +42,14 @@ extension AssetStorageInfo {
                 moduleName = CallCodingPath.currenciesTransfer.moduleName
             }
 
-            return .orml(currencyId: currencyId, currencyData: rawCurrencyId, module: moduleName)
+            let existentialDeposit = BigUInt(extras.existentialDeposit) ?? 0
+
+            return .orml(
+                currencyId: currencyId,
+                currencyData: rawCurrencyId,
+                module: moduleName,
+                existentialDeposit: existentialDeposit
+            )
         case .statemine:
             guard let extras = try asset.typeExtras?.map(to: StatemineAssetExtras.self) else {
                 throw AssetStorageInfoError.unexpectedTypeExtras
