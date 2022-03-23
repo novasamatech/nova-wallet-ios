@@ -3,7 +3,8 @@ import Foundation
 typealias AccountAddress = String
 typealias AccountId = Data
 typealias ParaId = UInt32
-typealias TrieIndex = UInt32
+typealias FundIndex = UInt32
+typealias BidderKey = UInt32
 typealias BlockNumber = UInt32
 typealias BlockTime = UInt64
 typealias LeasingPeriod = UInt32
