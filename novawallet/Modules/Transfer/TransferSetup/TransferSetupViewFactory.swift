@@ -58,7 +58,8 @@ struct TransferSetupViewFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: Logger.shared
         )
 
         let view = TransferSetupViewController(

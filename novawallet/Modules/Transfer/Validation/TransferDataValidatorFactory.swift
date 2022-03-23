@@ -12,12 +12,7 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
-    func canPay(
-        fee: BigUInt?,
-        transferable: BigUInt?,
-        minBalance: BigUInt?,
-        locale: Locale
-    ) -> DataValidating
+    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating
 
     func willBeReaped(
         amount: Decimal?,
@@ -28,7 +23,6 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
     ) -> DataValidating
 
     func receiverHasUtilityAccount(
-        spendingAmount: BigUInt?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -38,6 +32,19 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         sendingAmount: Decimal?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating
+
+    func receiverDiffers(
+        recepient: AccountAddress?,
+        sender: AccountAddress,
+        locale: Locale
+    ) -> DataValidating
+
+    func receiverMatchesChain(
+        recepient: AccountAddress?,
+        chainFormat: ChainFormat,
+        chainName: String,
         locale: Locale
     ) -> DataValidating
 }
@@ -104,7 +111,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: { fee != nil })
     }
 
-    func canPay(fee: BigUInt?, transferable: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating {
+    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
@@ -114,10 +121,10 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
         }, preservesCondition: {
             if
-                let transferable = transferable,
+                let total = total,
                 let fee = fee,
                 let minBalance = minBalance {
-                return fee + minBalance <= transferable
+                return fee + minBalance <= total
             } else {
                 return false
             }
@@ -126,7 +133,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
     func willBeReaped(
         amount: Decimal?,
-        fee _: BigUInt?,
+        fee: BigUInt?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -153,8 +160,9 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             if
                 let sendingAmount = sendingAmount,
                 let totalAmount = totalAmount,
-                let minBalance = minBalance {
-                return sendingAmount + minBalance <= totalAmount
+                let minBalance = minBalance,
+                let fee = fee {
+                return totalAmount >= minBalance + sendingAmount + fee
             } else {
                 return false
             }
@@ -162,7 +170,6 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
     }
 
     func receiverHasUtilityAccount(
-        spendingAmount: BigUInt?,
         totalAmount: BigUInt?,
         minBalance: BigUInt?,
         locale: Locale
@@ -182,10 +189,9 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
 
         }, preservesCondition: {
             if
-                let spendingAmount = spendingAmount,
                 let totalAmount = totalAmount,
                 let minBalance = minBalance {
-                return spendingAmount + minBalance <= totalAmount
+                return minBalance <= totalAmount
             } else {
                 return false
             }
@@ -218,10 +224,45 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             if
                 let totalAmount = totalAmount,
                 let minBalance = minBalance {
-                return sendingAmountValue + minBalance <= totalAmount
+                return totalAmount + sendingAmountValue >= minBalance
             } else {
                 return false
             }
+        })
+    }
+
+    func receiverDiffers(
+        recepient: AccountAddress?,
+        sender: AccountAddress,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentSameReceiver(from: view, locale: locale)
+        }, preservesCondition: {
+            recepient != sender
+        })
+    }
+
+    func receiverMatchesChain(
+        recepient: AccountAddress?,
+        chainFormat: ChainFormat,
+        chainName: String,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentWrongChain(for: chainName, from: view, locale: locale)
+
+        }, preservesCondition: {
+            let accountId = try? recepient?.toAccountId(using: chainFormat)
+            return accountId != nil
         })
     }
 }

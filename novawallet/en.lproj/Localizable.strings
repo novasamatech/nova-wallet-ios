@@ -695,3 +695,6 @@
 "common.transferable.prefix" = "Transferable:";
 "common.paste" = "Paste";
 "amount.too.low" = "Amount is too low";
+"common.validation.invalid.address.title" = "Invalid recipient";
+"common.validation.invalid.address.message" = "Recipient should be a valid %@ address";
+"common.same.receive.address.message" = "Recipient's address must differ from sender";

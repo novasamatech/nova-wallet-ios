@@ -8,6 +8,9 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
         from view: ControllerBackedProtocol,
         locale: Locale?
     )
+
+    func presentSameReceiver(from view: ControllerBackedProtocol, locale: Locale?)
+    func presentWrongChain(for chainName: String, from view: ControllerBackedProtocol, locale: Locale?)
 }
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -47,6 +50,39 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
 
         let message = R.string.localizable.walletSendDeadRecipientCommissionAssetMessage(
             assetSymbol,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentSameReceiver(from view: ControllerBackedProtocol, locale: Locale?) {
+        let title = R.string.localizable.commonValidationInvalidAddressTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.commonSameReceiveAddressMessage(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentWrongChain(
+        for chainName: String,
+        from view: ControllerBackedProtocol,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.commonValidationInvalidAddressTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.commonValidationInvalidAddressMessage(
+            chainName,
             preferredLanguages: locale?.rLanguages
         )
 
