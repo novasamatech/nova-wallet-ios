@@ -20,4 +20,14 @@ extension AssetBalance: Identifiable {
     }
 
     var identifier: String { Self.createIdentifier(for: chainAssetId, accountId: accountId) }
+
+    static func createZero(for chainAssetId: ChainAssetId, accountId: AccountId) -> AssetBalance {
+        AssetBalance(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: 0,
+            reservedInPlank: 0,
+            frozenInPlank: 0
+        )
+    }
 }

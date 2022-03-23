@@ -7,6 +7,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
     let presenter: TransferSetupPresenterProtocol
 
+    var keyboardHandler: KeyboardHandler?
+
     init(
         presenter: TransferSetupPresenterProtocol,
         localizationManager: LocalizationManagerProtocol
@@ -33,6 +35,20 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         setupHandlers()
 
         presenter.setup()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if keyboardHandler == nil {
+            setupKeyboardHandler()
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        clearKeyboardHandler()
     }
 
     private func setupHandlers() {
@@ -204,6 +220,40 @@ extension TransferSetupViewController: Localizable {
     func applyLocalization() {
         if isSetup {
             setupLocalization()
+        }
+    }
+}
+
+extension TransferSetupViewController: KeyboardAdoptable {
+    func updateWhileKeyboardFrameChanging(_ frame: CGRect) {
+        let localKeyboardFrame = view.convert(frame, from: nil)
+        let bottomInset = view.bounds.height - localKeyboardFrame.minY
+        let scrollView = rootView.containerView.scrollView
+        let scrollViewOffset = view.bounds.height - scrollView.frame.maxY
+
+        var contentInsets = scrollView.contentInset
+        contentInsets.bottom = max(0.0, bottomInset - scrollViewOffset)
+        scrollView.contentInset = contentInsets
+
+        if contentInsets.bottom > 0.0 {
+            let targetView: UIView?
+
+            if rootView.recepientInputView.textField.isFirstResponder {
+                targetView = rootView.recepientInputView
+            } else if rootView.amountInputView.textField.isFirstResponder {
+                targetView = rootView.amountInputView
+            } else {
+                targetView = nil
+            }
+
+            if let firstResponderView = targetView {
+                let fieldFrame = scrollView.convert(
+                    firstResponderView.frame,
+                    from: firstResponderView.superview
+                )
+
+                scrollView.scrollRectToVisible(fieldFrame, animated: true)
+            }
         }
     }
 }

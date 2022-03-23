@@ -28,10 +28,10 @@ protocol TransferSetupInteractorInputProtocol: AnyObject {
 }
 
 protocol TransferSetupInteractorOutputProtocol: AnyObject {
-    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance?)
-    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance?)
-    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance?)
-    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance?)
+    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance)
+    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance)
+    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance)
+    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance)
     func didReceiveFee(_ fee: BigUInt)
     func didReceiveSendingAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
