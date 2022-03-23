@@ -46,6 +46,14 @@ final class TransferSetupViewLayout: UIView {
     let networkFeeView: NetworkFeeView = {
         let view = NetworkFeeView()
         view.borderType = []
+        view.style = NetworkFeeView.ViewStyle(
+            titleColor: R.color.colorTransparentText()!,
+            titleFont: .regularFootnote,
+            tokenColor: R.color.colorWhite()!,
+            tokenFont: .regularFootnote,
+            fiatColor: R.color.colorTransparentText()!,
+            fiatFont: .caption1
+        )
         return view
     }()
 
@@ -83,7 +91,7 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(networkContainerView)
         networkContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
-            make.height.equalTo(32.0)
+            make.height.equalTo(28.0)
         }
 
         networkContainerView.addSubview(tokenLabel)
