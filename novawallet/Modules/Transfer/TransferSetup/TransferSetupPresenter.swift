@@ -343,21 +343,21 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
-    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance?) {
+    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
         senderSendingAssetBalance = balance
 
         updateTransferableBalance()
     }
 
-    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance?) {
+    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance) {
         senderUtilityAssetBalance = balance
     }
 
-    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance?) {
+    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance) {
         recepientSendingAssetBalance = balance
     }
 
-    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance?) {
+    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance) {
         recepientUtilityAssetBalance = balance
     }
 
