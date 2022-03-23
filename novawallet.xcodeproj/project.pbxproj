@@ -7585,12 +7585,9 @@
 				8459A9CB2746A1E9000D6278 /* CrowdloanOffchainSubscriptionHandler.swift */,
 				844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */,
 				844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */,
-<<<<<<< HEAD
 				842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */,
 				842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */,
-=======
 				84E25BF127E8FDC100290BF1 /* DecodedProviderTypes.swift */,
->>>>>>> main
 			);
 			path = Subscription;
 			sourceTree = "<group>";
