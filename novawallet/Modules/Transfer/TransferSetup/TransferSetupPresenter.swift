@@ -25,6 +25,11 @@ final class TransferSetupPresenter {
     private(set) var sendingAssetMinBalance: BigUInt?
     private(set) var utilityAssetMinBalance: BigUInt?
 
+    private var senderUtilityAssetTotal: BigUInt? {
+        isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
+            senderUtilityAssetBalance?.totalInPlank
+    }
+
     private lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: BigUInt?
@@ -36,6 +41,8 @@ final class TransferSetupPresenter {
     let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
     let dataValidatingFactory: TransferDataValidatorFactoryProtocol
+
+    let logger: LoggerProtocol?
 
     var isUtilityTransfer: Bool {
         chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
@@ -51,7 +58,8 @@ final class TransferSetupPresenter {
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
@@ -62,6 +70,7 @@ final class TransferSetupPresenter {
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
         self.senderAccountAddress = senderAccountAddress
         self.dataValidatingFactory = dataValidatingFactory
+        self.logger = logger
 
         self.localizationManager = localizationManager
     }
@@ -248,7 +257,83 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         updateAmountPriceView()
     }
 
-    func proceed() {}
+    func proceed() {
+        let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+        var validators: [DataValidating] = [
+            dataValidatingFactory.receiverMatchesChain(
+                recepient: recepientAddress,
+                chainFormat: chainAsset.chain.chainFormat,
+                chainName: chainAsset.chain.name,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverDiffers(
+                recepient: recepientAddress,
+                sender: senderAccountAddress,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+                return
+            },
+
+            dataValidatingFactory.canSend(
+                amount: sendingAmount,
+                fee: isUtilityTransfer ? fee : 0,
+                transferable: senderSendingAssetBalance?.transferable,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.canPay(
+                fee: fee,
+                total: senderUtilityAssetTotal,
+                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverWillHaveAssetAccount(
+                sendingAmount: sendingAmount,
+                totalAmount: recepientSendingAssetBalance?.totalInPlank,
+                minBalance: sendingAssetMinBalance,
+                locale: selectedLocale
+            )
+        ]
+
+        if !isUtilityTransfer {
+            validators.append(
+                dataValidatingFactory.receiverHasUtilityAccount(
+                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                    minBalance: utilityAssetMinBalance,
+                    locale: selectedLocale
+                )
+            )
+        }
+
+        validators.append(
+            dataValidatingFactory.willBeReaped(
+                amount: sendingAmount,
+                fee: isUtilityTransfer ? fee : 0,
+                totalAmount: senderSendingAssetBalance?.totalInPlank,
+                minBalance: sendingAssetMinBalance,
+                locale: selectedLocale
+            )
+        )
+
+        DataValidationRunner(validators: validators).runValidation { [weak self] in
+            guard let amount = sendingAmount, let recepient = self?.recepientAddress else {
+                return
+            }
+
+            self?.logger?.debug("Did complete validation")
+
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                sendingAmount: amount,
+                recepient: recepient
+            )
+        }
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -304,6 +389,8 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
     func didCompleteSetup() {
         refreshFee()
+
+        interactor.change(recepient: recepientAddress)
     }
 
     func didReceiveSetup(error _: Error) {}
