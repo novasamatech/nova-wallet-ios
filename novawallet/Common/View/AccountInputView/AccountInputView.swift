@@ -8,7 +8,7 @@ class AccountInputView: BackgroundedContentControl {
         textField.font = .regularSubheadline
         textField.textColor = R.color.colorWhite()
         textField.tintColor = R.color.colorWhite()
-        textField.clearButtonMode = .whileEditing
+        textField.clearButtonMode = .never
 
         var attributes = textField.defaultTextAttributes
         let currentStyle = attributes[.paragraphStyle] as? NSParagraphStyle
@@ -44,6 +44,18 @@ class AccountInputView: BackgroundedContentControl {
         button.imageWithTitleView?.iconImage = icon
         button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
         button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)
+
+        return button
+    }()
+
+    let clearButton: RoundedButton = {
+        let button = RoundedButton()
+        button.applyIconStyle()
+
+        let icon = R.image.iconClearField()!.withRenderingMode(.alwaysOriginal)
+        button.imageWithTitleView?.iconImage = icon
+        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
+        button.contentInsets = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 8.0, right: 8.0)
 
         return button
     }()
@@ -93,6 +105,14 @@ class AccountInputView: BackgroundedContentControl {
         }
     }
 
+    private var hasText: Bool {
+        if let text = textField.text, !text.isEmpty {
+            return true
+        } else {
+            return false
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: 48.0)
     }
@@ -119,6 +139,8 @@ class AccountInputView: BackgroundedContentControl {
         }
 
         self.inputViewModel = inputViewModel
+
+        updateControlsState()
     }
 
     @available(*, unavailable)
@@ -175,6 +197,10 @@ class AccountInputView: BackgroundedContentControl {
             actionsWidth += scanButton.intrinsicContentSize.width
         }
 
+        if !clearButton.isHidden {
+            actionsWidth += clearButton.intrinsicContentSize.width
+        }
+
         stackView.frame = CGRect(
             x: bounds.maxX - contentInsets.right - actionsWidth,
             y: bounds.midY - buttonHeight / 2.0,
@@ -182,19 +208,23 @@ class AccountInputView: BackgroundedContentControl {
             height: buttonHeight
         )
 
-        let fieldSpacing: CGFloat = 12.0
+        let leftFieldSpacing: CGFloat = 12.0
+        let rightFieldSpacing: CGFloat = 8.0
         let fieldWidth: CGFloat
 
         if actionsWidth > 0 {
-            fieldWidth = max(stackView.frame.minX - iconView.frame.maxX - 2 * fieldSpacing, 0)
+            fieldWidth = max(
+                stackView.frame.minX - iconView.frame.maxX - leftFieldSpacing - rightFieldSpacing,
+                0
+            )
         } else {
-            fieldWidth = max(stackView.frame.minX - iconView.frame.maxX - fieldSpacing, 0)
+            fieldWidth = max(stackView.frame.minX - iconView.frame.maxX - leftFieldSpacing, 0)
         }
 
         let fieldHeight = textField.intrinsicContentSize.height
 
         textField.frame = CGRect(
-            x: iconView.frame.maxX + fieldSpacing,
+            x: iconView.frame.maxX + leftFieldSpacing,
             y: bounds.midY - fieldHeight / 2.0,
             width: fieldWidth,
             height: fieldHeight
@@ -210,8 +240,9 @@ class AccountInputView: BackgroundedContentControl {
         configureContentViewIfNeeded()
         configureTextFieldHandlers()
         configurePasteHandlers()
+        configureClearHandlers()
 
-        updatePasteButtonState()
+        updateControlsState()
     }
 
     private func configureBackgroundViewIfNeeded() {
@@ -243,6 +274,7 @@ class AccountInputView: BackgroundedContentControl {
 
         stackView.addArrangedSubview(pasteButton)
         stackView.addArrangedSubview(scanButton)
+        stackView.addArrangedSubview(clearButton)
 
         addSubview(stackView)
 
@@ -267,11 +299,31 @@ class AccountInputView: BackgroundedContentControl {
         pasteboardService.delegate = self
     }
 
-    private func updatePasteButtonState() {
-        if pasteboardService.pasteboard.hasStrings, !textField.isFirstResponder {
-            pasteButton.isHidden = false
-        } else {
+    private func configureClearHandlers() {
+        clearButton.addTarget(
+            self,
+            action: #selector(actionClear),
+            for: .touchUpInside
+        )
+    }
+
+    private func updateControlsState() {
+        let oldStates = stackView.arrangedSubviews.map(\.isHidden)
+
+        if hasText {
+            clearButton.isHidden = false
             pasteButton.isHidden = true
+            scanButton.isHidden = true
+        } else {
+            clearButton.isHidden = true
+            pasteButton.isHidden = !pasteboardService.pasteboard.hasStrings
+            scanButton.isHidden = false
+        }
+
+        let newStates = stackView.arrangedSubviews.map(\.isHidden)
+
+        if oldStates != newStates {
+            setNeedsLayout()
         }
     }
 
@@ -282,23 +334,19 @@ class AccountInputView: BackgroundedContentControl {
             sender.text = inputViewModel?.inputHandler.value
         }
 
+        updateControlsState()
+
         sendActions(for: .editingChanged)
     }
 
     @objc private func actionEditingBeginEnd() {
         if textField.isFirstResponder {
             roundedBackgroundView?.strokeWidth = 0.5
-
-            scanButton.isHidden = true
         } else {
             roundedBackgroundView?.strokeWidth = 0.0
-
-            scanButton.isHidden = false
         }
 
-        updatePasteButtonState()
-
-        setNeedsLayout()
+        updateControlsState()
     }
 
     @objc func actionPaste() {
@@ -314,7 +362,22 @@ class AccountInputView: BackgroundedContentControl {
                 textField.text = pasteString
                 sendActions(for: .editingChanged)
             }
+
+            updateControlsState()
         }
+    }
+
+    @objc func actionClear() {
+        guard hasText else {
+            return
+        }
+
+        textField.text = ""
+        inputViewModel?.inputHandler.changeValue(to: "")
+
+        updateControlsState()
+
+        sendActions(for: .editingChanged)
     }
 }
 
@@ -351,10 +414,10 @@ extension AccountInputView: UITextFieldDelegate {
 
 extension AccountInputView: PasteboardHandlerDelegate {
     func didReceivePasteboardChange(notification _: Notification) {
-        updatePasteButtonState()
+        updateControlsState()
     }
 
     func didReceivePasteboardRemove(notification _: Notification) {
-        updatePasteButtonState()
+        updateControlsState()
     }
 }
