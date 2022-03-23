@@ -101,26 +101,19 @@ class RewardDataSourceTests: NetworkBaseTests {
                               url: URL,
                               assetPrecision: Int16
     ) throws -> Result<TotalRewardItem?, Error> {
-        let operationManager = OperationManager()
+        let operationFactory = SubqueryRewardOperationFactory(url: url)
 
-        let trigger = DataProviderProxyTrigger()
-
-        let operationFactory = SubqueryRewardOperationFactory(
-            url: url
+        let source = SubqueryTotalRewardSource(
+            address: address,
+            assetPrecision: assetPrecision,
+            operationFactory: operationFactory
         )
 
-        let source = SubqueryRewardSource(address: address,
-                                          assetPrecision: assetPrecision,
-                                          targetIdentifier: address,
-                                          repository: AnyDataProviderRepository(repository),
-                                          operationFactory: operationFactory,
-                                          trigger: trigger,
-                                          operationManager: operationManager)
-
-        let provider = SingleValueProvider(targetIdentifier: address,
-                                           source: AnySingleValueProviderSource(source),
-                                           repository: AnyDataProviderRepository(repository),
-                                           updateTrigger: trigger)
+        let provider = SingleValueProvider(
+            targetIdentifier: address,
+            source: AnySingleValueProviderSource(source),
+            repository: AnyDataProviderRepository(repository)
+        )
 
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 2
