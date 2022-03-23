@@ -177,7 +177,8 @@ class NewAmountInputView: BackgroundedContentControl {
         let textFieldY: CGFloat
 
         if hasPriceLable {
-            textFieldY = bounds.midY - fieldHeight
+            let fieldBaselineOffset = 4.0
+            textFieldY = bounds.midY - fieldHeight + fieldBaselineOffset
         } else {
             textFieldY = bounds.midY - fieldHeight / 2.0
         }
