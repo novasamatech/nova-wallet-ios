@@ -465,11 +465,17 @@ extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
-        chainId _: ChainModel.Id,
+        chainId: ChainModel.Id,
         assetId: AssetModel.Id
     ) {
         switch result {
-        case let .success(balance):
+        case let .success(optBalance):
+            let balance = optBalance ??
+                AssetBalance.createZero(
+                    for: ChainAssetId(chainId: chainId, assetId: assetId),
+                    accountId: accountId
+                )
+
             if accountId == selectedAccount.accountId {
                 if asset.assetId == assetId {
                     presenter?.didReceiveSendingAssetSenderBalance(balance)
