@@ -6,6 +6,7 @@ import RobinHood
 import SoraFoundation
 import Cuckoo
 import BigInt
+import SubstrateSdk
 
 class CrowdloanContributionSetupTests: XCTestCase {
     static let currentBlockNumber: BlockNumber = 1337
@@ -22,7 +23,9 @@ class CrowdloanContributionSetupTests: XCTestCase {
             lastContribution: .never,
             firstPeriod: 100,
             lastPeriod: 101,
-            trieIndex: 1)
+            trieIndex: nil,
+            fundIndex: StringScaleMapper(value: 1)
+        )
     )
 
     func testContributionSetupAndContinue() throws {
