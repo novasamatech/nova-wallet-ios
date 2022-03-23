@@ -2,11 +2,18 @@ import Foundation
 
 final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     func showConfirmation(
-        from _: TransferSetupViewProtocol?,
-        sendingAmount _: Decimal,
-        recepient _: AccountAddress
+        from view: TransferSetupViewProtocol?,
+        sendingAmount: Decimal,
+        recepient: AccountAddress
     ) {
-        // TODO:
+        guard let confirmView = TransferConfirmViewFactory.createView(
+            from: recepient,
+            amount: sendingAmount
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
 
     func showRecepientScan(from _: TransferSetupViewProtocol?) {
