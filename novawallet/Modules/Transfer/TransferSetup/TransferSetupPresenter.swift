@@ -3,50 +3,14 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class TransferSetupPresenter {
+final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOutputProtocol {
     weak var view: TransferSetupViewProtocol?
     let wireframe: TransferSetupWireframeProtocol
     let interactor: TransferSetupInteractorInputProtocol
 
-    let chainAsset: ChainAsset
-
-    let senderAccountAddress: AccountAddress
     private(set) var recepientAddress: AccountAddress?
 
-    private(set) var senderSendingAssetBalance: AssetBalance?
-    private(set) var senderUtilityAssetBalance: AssetBalance?
-
-    private(set) var recepientSendingAssetBalance: AssetBalance?
-    private(set) var recepientUtilityAssetBalance: AssetBalance?
-
-    private(set) var sendingAssetPrice: PriceData?
-    private(set) var utilityAssetPrice: PriceData?
-
-    private(set) var sendingAssetMinBalance: BigUInt?
-    private(set) var utilityAssetMinBalance: BigUInt?
-
-    private var senderUtilityAssetTotal: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
-            senderUtilityAssetBalance?.totalInPlank
-    }
-
-    private lazy var iconGenerator = PolkadotIconGenerator()
-
-    private(set) var fee: BigUInt?
-
     var inputResult: AmountInputResult?
-
-    let networkViewModelFactory: NetworkViewModelFactoryProtocol
-    let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
-    let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
-
-    let dataValidatingFactory: TransferDataValidatorFactoryProtocol
-
-    let logger: LoggerProtocol?
-
-    var isUtilityTransfer: Bool {
-        chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
-    }
 
     init(
         interactor: TransferSetupInteractorInputProtocol,
@@ -63,14 +27,17 @@ final class TransferSetupPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.chainAsset = chainAsset
         self.recepientAddress = recepientAddress
-        self.networkViewModelFactory = networkViewModelFactory
-        self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
-        self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
-        self.senderAccountAddress = senderAccountAddress
-        self.dataValidatingFactory = dataValidatingFactory
-        self.logger = logger
+
+        super.init(
+            chainAsset: chainAsset,
+            networkViewModelFactory: networkViewModelFactory,
+            sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
+            utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
+            senderAccountAddress: senderAccountAddress,
+            dataValidatingFactory: dataValidatingFactory,
+            logger: logger
+        )
 
         self.localizationManager = localizationManager
     }
@@ -216,6 +183,50 @@ final class TransferSetupPresenter {
 
         interactor.estimateFee(for: amount, recepient: recepientAddress)
     }
+
+    // MARK: Protocol
+
+    override func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
+        super.didReceiveSendingAssetSenderBalance(balance)
+
+        updateTransferableBalance()
+    }
+
+    override func didReceiveFee(_ fee: BigUInt) {
+        super.didReceiveFee(fee)
+
+        updateFeeView()
+        provideAmountInputViewModelIfRate()
+        updateAmountPriceView()
+    }
+
+    override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
+        super.didReceiveSendingAssetPrice(priceData)
+
+        if isUtilityTransfer {
+            updateFeeView()
+        }
+
+        updateAmountPriceView()
+    }
+
+    override func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
+        super.didReceiveUtilityAssetPrice(priceData)
+
+        updateFeeView()
+    }
+
+    override func didCompleteSetup() {
+        super.didCompleteSetup()
+
+        refreshFee()
+
+        interactor.change(recepient: recepientAddress)
+    }
+
+    override func didReceiveSetup(error: Error) {
+        super.didReceiveSetup(error: error)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
@@ -340,66 +351,6 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             )
         }
     }
-}
-
-extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
-    func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
-        senderSendingAssetBalance = balance
-
-        updateTransferableBalance()
-    }
-
-    func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance) {
-        senderUtilityAssetBalance = balance
-    }
-
-    func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance) {
-        recepientSendingAssetBalance = balance
-    }
-
-    func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance) {
-        recepientUtilityAssetBalance = balance
-    }
-
-    func didReceiveFee(_ fee: BigUInt) {
-        self.fee = fee
-
-        updateFeeView()
-        provideAmountInputViewModelIfRate()
-        updateAmountPriceView()
-    }
-
-    func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
-        sendingAssetPrice = priceData
-
-        if isUtilityTransfer {
-            updateFeeView()
-        }
-
-        updateAmountPriceView()
-    }
-
-    func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
-        utilityAssetPrice = priceData
-
-        updateFeeView()
-    }
-
-    func didReceiveUtilityAssetMinBalance(_ value: BigUInt) {
-        utilityAssetMinBalance = value
-    }
-
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
-        sendingAssetMinBalance = value
-    }
-
-    func didCompleteSetup() {
-        refreshFee()
-
-        interactor.change(recepient: recepientAddress)
-    }
-
-    func didReceiveSetup(error _: Error) {}
 }
 
 extension TransferSetupPresenter: Localizable {
