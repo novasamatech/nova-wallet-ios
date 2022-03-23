@@ -40,4 +40,10 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveSetup(error: Error)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {}
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {
+    func showConfirmation(
+        from view: TransferSetupViewProtocol?,
+        sendingAmount: Decimal,
+        recepient: AccountAddress
+    )
+}

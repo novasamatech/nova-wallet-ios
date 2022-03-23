@@ -695,3 +695,6 @@
 "common.transferable.prefix" = "Доступно:";
 "common.paste" = "Вставить";
 "amount.too.low" = "Сумма слишком мала";
+"common.validation.invalid.address.title" = "Недопустимый получатель";
+"common.validation.invalid.address.message" = "Получатель должен быть допустимым адресом %@";
+"common.same.receive.address.message" = "Адрес получателя должен отличаться от адреса отправителя";
