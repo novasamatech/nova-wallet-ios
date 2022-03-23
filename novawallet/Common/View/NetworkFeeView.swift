@@ -2,19 +2,18 @@ import UIKit
 import SoraUI
 
 final class NetworkFeeView: UIView {
-    let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorLightGray()
-        label.font = UIFont.p1Paragraph
-        return label
-    }()
+    struct ViewStyle {
+        let titleColor: UIColor
+        let titleFont: UIFont
+        let tokenColor: UIColor
+        let tokenFont: UIFont
+        let fiatColor: UIColor
+        let fiatFont: UIFont
+    }
 
-    let tokenLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = UIFont.p1Paragraph
-        return label
-    }()
+    let titleLabel = UILabel()
+
+    let tokenLabel = UILabel()
 
     let borderView: BorderedContainerView = {
         let view = BorderedContainerView()
@@ -47,11 +46,36 @@ final class NetworkFeeView: UIView {
 
         applyLocalization()
         setupLayout()
+        applyStyle()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    var style = ViewStyle(
+        titleColor: R.color.colorLightGray()!,
+        titleFont: .p1Paragraph,
+        tokenColor: R.color.colorWhite()!,
+        tokenFont: .p1Paragraph,
+        fiatColor: R.color.colorGray()!,
+        fiatFont: .p2Paragraph
+    ) {
+        didSet {
+            applyStyle()
+        }
+    }
+
+    private func applyStyle() {
+        titleLabel.textColor = style.titleColor
+        titleLabel.font = style.titleFont
+
+        tokenLabel.textColor = style.tokenColor
+        tokenLabel.font = style.tokenFont
+
+        fiatLabel?.textColor = style.fiatColor
+        fiatLabel?.font = style.fiatFont
     }
 
     private func applyLocalization() {
@@ -88,8 +112,8 @@ final class NetworkFeeView: UIView {
         }
 
         let fiatLabel = UILabel()
-        fiatLabel.textColor = R.color.colorGray()
-        fiatLabel.font = .p2Paragraph
+        fiatLabel.textColor = style.fiatColor
+        fiatLabel.font = style.fiatFont
 
         addSubview(fiatLabel)
         fiatLabel.snp.makeConstraints { make in

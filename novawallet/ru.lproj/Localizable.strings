@@ -691,3 +691,12 @@
 "common.tx.id" = "Идентификатор транзакции";
 "tx.details.send.title" = "Отправить контакту";
 "commmon.view.in.format" = "Открыть в %@";
+"wallet.transfer.token.format" = "Отправить %@ в";
+"common.transferable.prefix" = "Доступно:";
+"common.paste" = "Вставить";
+"amount.too.low" = "Сумма слишком мала";
+"common.validation.invalid.address.title" = "Недопустимый получатель";
+"common.validation.invalid.address.message" = "Получатель должен быть допустимым адресом %@";
+"common.same.receive.address.message" = "Адрес получателя должен отличаться от адреса отправителя";
+"transfer.setup.enter.address" = "Введите адрес...";
+"transfer.setup.enter.amount" = "Введите сумму...";
