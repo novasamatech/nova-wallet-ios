@@ -53,6 +53,12 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionProceed),
             for: .touchUpInside
         )
+
+        rootView.recepientInputView.scanButton.addTarget(
+            self,
+            action: #selector(actionRecepientScan),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -72,6 +78,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         rootView.networkFeeView.locale = selectedLocale
 
         setupAmountInpuAccessoryView(for: selectedLocale)
+
+        updateActionButtonState()
     }
 
     private func setupAmountInpuAccessoryView(for locale: Locale) {
@@ -83,14 +91,54 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
+    private func updateActionButtonState() {
+        if !rootView.recepientInputView.completed {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .transferSetupEnterAddress(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.invalidateLayout()
+
+            return
+        }
+
+        if !rootView.amountInputView.completed {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+                .transferSetupEnterAmount(preferredLanguages: selectedLocale.rLanguages)
+            rootView.actionButton.invalidateLayout()
+
+            return
+        }
+
+        rootView.actionButton.applyEnabledStyle()
+        rootView.actionButton.isUserInteractionEnabled = true
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        rootView.actionButton.invalidateLayout()
+    }
+
     @objc func actionRecepientAddressChange() {
         let partialAddress = rootView.recepientInputView.textField.text ?? ""
         presenter.updateRecepient(partialAddress: partialAddress)
+
+        updateActionButtonState()
     }
 
     @objc func actionAmountChange() {
         let amount = rootView.amountInputView.inputViewModel?.decimalAmount
         presenter.updateAmount(amount)
+
+        updateActionButtonState()
+    }
+
+    @objc func actionRecepientScan() {
+        presenter.scanRecepientCode()
     }
 
     @objc func actionProceed() {
@@ -133,6 +181,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
 
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
         rootView.amountInputView.bind(inputViewModel: inputViewModel)
+
+        updateActionButtonState()
     }
 
     func didReceiveAmountInputPrice(viewModel: String?) {
@@ -145,6 +195,8 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
 
     func didReceiveAccountInput(viewModel: InputViewModelProtocol) {
         rootView.recepientInputView.bind(inputViewModel: viewModel)
+
+        updateActionButtonState()
     }
 }
 

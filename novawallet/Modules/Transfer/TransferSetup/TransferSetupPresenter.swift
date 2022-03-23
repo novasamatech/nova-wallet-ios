@@ -238,6 +238,8 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             recepientAddress = nil
         }
 
+        interactor.change(recepient: recepientAddress)
+
         provideRecepientStateViewModel()
     }
 
@@ -255,6 +257,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
         refreshFee()
         updateAmountPriceView()
+    }
+
+    func scanRecepientCode() {
+        wireframe.showRecepientScan(from: view)
     }
 
     func proceed() {

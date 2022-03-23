@@ -79,6 +79,14 @@ class NewAmountInputView: BackgroundedContentControl {
 
     private(set) var inputViewModel: AmountInputViewModelProtocol?
 
+    var completed: Bool {
+        if let inputViewModel = inputViewModel {
+            return inputViewModel.isValid
+        } else {
+            return false
+        }
+    }
+
     override public init(frame: CGRect) {
         super.init(frame: frame)
         configure()

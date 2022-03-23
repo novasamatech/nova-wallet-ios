@@ -85,6 +85,14 @@ class AccountInputView: BackgroundedContentControl {
     private var fieldStateViewModel: AccountFieldStateViewModel?
     private var inputViewModel: InputViewModelProtocol?
 
+    var completed: Bool {
+        if let inputViewModel = inputViewModel {
+            return inputViewModel.inputHandler.completed
+        } else {
+            return false
+        }
+    }
+
     override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: 48.0)
     }
