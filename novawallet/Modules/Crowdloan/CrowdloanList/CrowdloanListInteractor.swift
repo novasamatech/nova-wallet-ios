@@ -23,7 +23,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private var onchainContributionsOperation: Operation?
     private var latestCrowdloanIndexes: [UInt32]?
     private var leaseInfoWrapper: CompoundOperationWrapper<[ParachainLeaseInfo]>?
-    private var leaseInfoParaIds: [UInt32]?
+    private var leaseInfoParams: [LeaseParam]?
     private var displayInfoProvider: AnySingleValueProvider<CrowdloanDisplayInfoList>?
     private var externalContributionsProvider: AnySingleValueProvider<[ExternalContribution]>?
 
@@ -71,7 +71,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
     private func clearLeaseInfoRequest(_ shouldCancel: Bool) {
         let wrapper = leaseInfoWrapper
         leaseInfoWrapper = nil
-        leaseInfoParaIds = nil
+        leaseInfoParams = nil
 
         if shouldCancel {
             wrapper?.cancel()
@@ -93,7 +93,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
-        let newCrowdloanIndexes = crowdloans.map(\.fundInfo.trieIndex)
+        let newCrowdloanIndexes = crowdloans.map(\.fundInfo.index)
 
         guard latestCrowdloanIndexes != newCrowdloanIndexes else {
             return
@@ -117,12 +117,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
                     return []
                 }
 
-                return newCrowdloanIndexes.map { trieIndex in
+                return newCrowdloanIndexes.map { index in
                     strongSelf.crowdloanOperationFactory.fetchContributionOperation(
                         connection: connection,
                         runtimeService: runtimeService,
                         accountId: accountResponse.accountId,
-                        trieIndex: trieIndex
+                        index: index
                     )
                 }
             }.longrunOperation()
@@ -161,9 +161,12 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         connection: ChainConnection,
         runtimeService: RuntimeCodingServiceProtocol
     ) {
-        let newCrowdloanParaIds = crowdloans.map(\.paraId)
+        let newLeaseParams: [LeaseParam] = crowdloans.map { crowdloan in
+            let bidderKey = crowdloan.fundInfo.getBidderKey(for: crowdloan.paraId)
+            return LeaseParam(paraId: crowdloan.paraId, bidderKey: bidderKey)
+        }
 
-        guard leaseInfoParaIds != newCrowdloanParaIds else {
+        guard leaseInfoParams != newLeaseParams else {
             return
         }
 
@@ -177,7 +180,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         let queryWrapper = crowdloanOperationFactory.fetchLeaseInfoOperation(
             connection: connection,
             runtimeService: runtimeService,
-            paraIds: newCrowdloanParaIds
+            params: newLeaseParams
         )
 
         queryWrapper.targetOperation.completionBlock = { [weak self] in
@@ -204,7 +207,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
         }
 
         leaseInfoWrapper = queryWrapper
-        leaseInfoParaIds = newCrowdloanParaIds
+        leaseInfoParams = newLeaseParams
 
         operationManager.enqueue(operations: queryWrapper.allOperations, in: .transient)
     }
