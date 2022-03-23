@@ -292,7 +292,7 @@ final class MoonbeamBonusService: MoonbeamBonusServiceProtocol {
             connection: connection,
             runtimeService: runtimeService,
             accountId: accountId,
-            trieIndex: crowdloan.fundInfo.trieIndex
+            index: crowdloan.fundInfo.index
         )
 
         let signatureOperation = createMakeSignatureOperation(

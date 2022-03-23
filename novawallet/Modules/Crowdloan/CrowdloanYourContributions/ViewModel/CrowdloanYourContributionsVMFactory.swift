@@ -56,7 +56,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
         guard
             let title = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: model.paraId)),
-            let contributed = contributions[model.fundInfo.trieIndex]?.balance,
+            let contributed = contributions[model.fundInfo.index]?.balance,
             let contributedText = createContributedText(
                 contributed: contributed,
                 chainAsset: chainAsset,
