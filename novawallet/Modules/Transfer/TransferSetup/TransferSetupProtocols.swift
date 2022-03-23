@@ -17,6 +17,7 @@ protocol TransferSetupPresenterProtocol: AnyObject {
     func updateRecepient(partialAddress: String)
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
+    func scanRecepientCode()
     func proceed()
 }
 
@@ -46,4 +47,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, Tra
         sendingAmount: Decimal,
         recepient: AccountAddress
     )
+
+    func showRecepientScan(from view: TransferSetupViewProtocol?)
 }

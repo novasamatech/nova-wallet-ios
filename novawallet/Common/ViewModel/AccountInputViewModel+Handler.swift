@@ -6,7 +6,8 @@ extension InputViewModel {
         let inputHandler = InputHandler(
             value: value,
             maxLength: 70,
-            validCharacterSet: CharacterSet.address
+            validCharacterSet: CharacterSet.address,
+            predicate: NSPredicate.notEmpty
         )
 
         let viewModel = InputViewModel(inputHandler: inputHandler)

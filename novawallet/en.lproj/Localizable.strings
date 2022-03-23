@@ -698,3 +698,5 @@
 "common.validation.invalid.address.title" = "Invalid recipient";
 "common.validation.invalid.address.message" = "Recipient should be a valid %@ address";
 "common.same.receive.address.message" = "Recipient's address must differ from sender";
+"transfer.setup.enter.address" = "Enter the address...";
+"transfer.setup.enter.amount" = "Enter the amount...";

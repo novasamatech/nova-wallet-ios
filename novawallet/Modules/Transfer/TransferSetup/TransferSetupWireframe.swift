@@ -8,4 +8,8 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
     ) {
         // TODO:
     }
+
+    func showRecepientScan(from _: TransferSetupViewProtocol?) {
+        // TODO:
+    }
 }
