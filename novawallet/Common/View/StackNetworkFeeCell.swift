@@ -12,7 +12,9 @@ final class StackNetworkFeeCell: RowView<NetworkFeeView> {
     }
 
     private func configureStyle() {
-        preferredHeight = 44.0
+        preferredHeight = 44
+        rowContentView.requiresFlexibleHeight()
+
         borderView.strokeColor = R.color.colorWhite8()!
 
         isUserInteractionEnabled = false
