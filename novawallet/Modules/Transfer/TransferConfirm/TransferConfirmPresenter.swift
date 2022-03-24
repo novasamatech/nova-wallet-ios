@@ -99,7 +99,7 @@ final class TransferConfirmPresenter: TransferPresenter {
     }
 
     private func provideAmountViewModel() {
-        let viewModel = sendingBalanceViewModelFactory.balanceFromPrice(
+        let viewModel = sendingBalanceViewModelFactory.spendingAmountFromPrice(
             amount,
             priceData: sendingAssetPrice
         ).value(for: selectedLocale)

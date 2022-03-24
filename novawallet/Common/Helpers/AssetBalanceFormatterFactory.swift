@@ -17,6 +17,10 @@ protocol AssetBalanceFormatterFactoryProtocol {
     func createFeeTokenFormatter(
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter>
+
+    func createInputTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter>
 }
 
 class AssetBalanceFormatterFactory {
@@ -128,5 +132,24 @@ extension AssetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol {
         for info: AssetBalanceDisplayInfo
     ) -> LocalizableResource<TokenFormatter> {
         createTokenFormatterCommon(for: info, roundingMode: .up)
+    }
+
+    func createInputTokenFormatter(
+        for info: AssetBalanceDisplayInfo
+    ) -> LocalizableResource<TokenFormatter> {
+        let formatter = NumberFormatter.amount
+        formatter.maximumFractionDigits = Int(info.assetPrecision)
+
+        let tokenFormatter = TokenFormatter(
+            decimalFormatter: formatter,
+            tokenSymbol: info.symbol,
+            separator: info.symbolValueSeparator,
+            position: info.symbolPosition
+        )
+
+        return LocalizableResource { locale in
+            tokenFormatter.locale = locale
+            return tokenFormatter
+        }
     }
 }
