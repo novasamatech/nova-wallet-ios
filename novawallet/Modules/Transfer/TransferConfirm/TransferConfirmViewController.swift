@@ -86,7 +86,9 @@ extension TransferConfirmViewController: TransferConfirmViewProtocol {
         rootView.walletCell.bind(viewModel: viewModel)
     }
 
-    func didReceiveAmount(viewModel _: BalanceViewModelProtocol) {}
+    func didReceiveAmount(viewModel: BalanceViewModelProtocol) {
+        rootView.amountView.bind(viewModel: viewModel)
+    }
 
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)

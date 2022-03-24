@@ -46,28 +46,29 @@ extension TransferConfirmInteractor: TransferConfirmInteractorInputProtocol {
         do {
             let accountId = try recepient.toAccountId(using: chain.chainFormat)
 
-            extrinsicService.submit({ [weak self] builder in
-                    guard let strongSelf = self else {
-                        throw BaseOperationError.unexpectedDependentResult
-                    }
+            let extrinsicClosure: ExtrinsicBuilderClosure = { [weak self] builder in
+                guard let strongSelf = self else {
+                    throw BaseOperationError.unexpectedDependentResult
+                }
 
-                    return try strongSelf.addingTransferCommand(
-                        to: builder,
-                        amount: amount,
-                        recepient: accountId
-                    )
+                return try strongSelf.addingTransferCommand(
+                    to: builder,
+                    amount: amount,
+                    recepient: accountId
+                )
+            }
 
-                },
+            extrinsicService.submit(
+                extrinsicClosure,
                 signer: signingWrapper,
                 runningIn: .main,
                 completion: { [weak self] result in
-                switch result {
-                case .success:
-                    self?.submitionPresenter?.didCompleteSubmition()
-                case let .failure(error):
-                    self?.presenter?.didReceiveSetup(error: error)
-                }
-
+                    switch result {
+                    case .success:
+                        self?.submitionPresenter?.didCompleteSubmition()
+                    case let .failure(error):
+                        self?.presenter?.didReceiveSetup(error: error)
+                    }
                 }
             )
         } catch {
