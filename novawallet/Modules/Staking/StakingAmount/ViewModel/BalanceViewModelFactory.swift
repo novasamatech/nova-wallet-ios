@@ -9,6 +9,8 @@ protocol BalanceViewModelFactoryProtocol {
     func amountFromValue(_ value: Decimal) -> LocalizableResource<String>
     func balanceFromPrice(_ amount: Decimal, priceData: PriceData?)
         -> LocalizableResource<BalanceViewModelProtocol>
+    func spendingAmountFromPrice(_ amount: Decimal, priceData: PriceData?)
+        -> LocalizableResource<BalanceViewModelProtocol>
     func createBalanceInputViewModel(_ amount: Decimal?) -> LocalizableResource<AmountInputViewModelProtocol>
     func createAssetBalanceViewModel(_ amount: Decimal, balance: Decimal?, priceData: PriceData?)
         -> LocalizableResource<AssetBalanceViewModelProtocol>
@@ -81,6 +83,33 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
             let amountFormatter = localizableAmountFormatter.value(for: locale)
 
             let amountString = amountFormatter.stringFromDecimal(amount) ?? ""
+
+            guard let priceData = priceData, let rate = Decimal(string: priceData.price) else {
+                return BalanceViewModel(amount: amountString, price: nil)
+            }
+
+            let targetAmount = rate * amount
+
+            let priceFormatter = localizablePriceFormatter.value(for: locale)
+            let priceString = priceFormatter.stringFromDecimal(targetAmount) ?? ""
+
+            return BalanceViewModel(amount: amountString, price: priceString)
+        }
+    }
+
+    func spendingAmountFromPrice(
+        _ amount: Decimal,
+        priceData: PriceData?
+    )
+        -> LocalizableResource<BalanceViewModelProtocol> {
+        let localizableAmountFormatter = formatterFactory.createInputTokenFormatter(for: targetAssetInfo)
+        let localizablePriceFormatter = formatterFactory.createTokenFormatter(for: priceAssetInfo)
+
+        return LocalizableResource { locale in
+            let amountFormatter = localizableAmountFormatter.value(for: locale)
+
+            let optAmountString = amountFormatter.stringFromDecimal(amount)
+            let amountString = optAmountString.map { "−" + $0 } ?? ""
 
             guard let priceData = priceData, let rate = Decimal(string: priceData.price) else {
                 return BalanceViewModel(amount: amountString, price: nil)

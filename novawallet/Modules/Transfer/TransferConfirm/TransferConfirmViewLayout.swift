@@ -9,6 +9,8 @@ final class TransferConfirmViewLayout: UIView {
         return view
     }()
 
+    let amountView = MultilineBalanceView()
+
     let senderTableView = StackTableView()
 
     let networkCell = StackNetworkCell()
@@ -61,6 +63,9 @@ final class TransferConfirmViewLayout: UIView {
             make.top.leading.trailing.equalToSuperview()
             make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
+
+        containerView.stackView.addArrangedSubview(amountView)
+        containerView.stackView.setCustomSpacing(20.0, after: amountView)
 
         containerView.stackView.addArrangedSubview(senderTableView)
         containerView.stackView.setCustomSpacing(12.0, after: senderTableView)

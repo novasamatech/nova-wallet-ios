@@ -671,6 +671,7 @@
 		84644B3325685915004EAA4B /* WalletHistoryBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84644B3225685915004EAA4B /* WalletHistoryBackgroundView.swift */; };
 		8466780F27EB2939007935D3 /* TransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466780E27EB2939007935D3 /* TransferPresenter.swift */; };
 		8466781127EB4078007935D3 /* StackNetworkFeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */; };
+		8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781227EC5446007935D3 /* MultilineBalanceView.swift */; };
 		8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */; };
 		8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */; };
 		8467F4C326B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */; };
@@ -2718,6 +2719,7 @@
 		84644B3225685915004EAA4B /* WalletHistoryBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryBackgroundView.swift; sourceTree = "<group>"; };
 		8466780E27EB2939007935D3 /* TransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferPresenter.swift; sourceTree = "<group>"; };
 		8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackNetworkFeeCell.swift; sourceTree = "<group>"; };
+		8466781227EC5446007935D3 /* MultilineBalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineBalanceView.swift; sourceTree = "<group>"; };
 		8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModel.swift; sourceTree = "<group>"; };
 		8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDurationOperationFactoryTests.swift; sourceTree = "<group>"; };
@@ -6964,6 +6966,7 @@
 				84AE7AB227D399CF00495267 /* StackNetworkCell.swift */,
 				84D1ABDF27E1CB870073C631 /* TitleHorizontalMultiValueView.swift */,
 				8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */,
+				8466781227EC5446007935D3 /* MultilineBalanceView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11709,6 +11712,7 @@
 				929AF73A86C9878C987E429A /* NetworkManagementViewFactory.swift in Sources */,
 				8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */,
 				F41CEB88272FFCB700C06154 /* CrowdloanContributionViewModel.swift in Sources */,
+				8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */,
 				845B822926F0BB6700D25C72 /* CrowdloanChainSettings.swift in Sources */,
 				AEE5FB072641669B002B8FDC /* StakingRebondSetupLayout.swift in Sources */,
 				847119C0262EF3BD00716580 /* PayoutValidatorsFactoryProtocol.swift in Sources */,
