@@ -171,7 +171,9 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
         return balance - fee
     }
 
-    private func refreshFee() {
+    // MARK: Subsclass
+
+    override func refreshFee() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let assetInfo = chainAsset.assetDisplayInfo
 
@@ -183,8 +185,6 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
 
         interactor.estimateFee(for: amount, recepient: recepientAddress)
     }
-
-    // MARK: Protocol
 
     override func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
         super.didReceiveSendingAssetSenderBalance(balance)
@@ -276,56 +276,11 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
     func proceed() {
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-        var validators: [DataValidating] = [
-            dataValidatingFactory.receiverMatchesChain(
-                recepient: recepientAddress,
-                chainFormat: chainAsset.chain.chainFormat,
-                chainName: chainAsset.chain.name,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.receiverDiffers(
-                recepient: recepientAddress,
-                sender: senderAccountAddress,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
-                return
-            },
-
-            dataValidatingFactory.canSend(
-                amount: sendingAmount,
-                fee: isUtilityTransfer ? fee : 0,
-                transferable: senderSendingAssetBalance?.transferable,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.canPay(
-                fee: fee,
-                total: senderUtilityAssetTotal,
-                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.receiverWillHaveAssetAccount(
-                sendingAmount: sendingAmount,
-                totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
-                locale: selectedLocale
-            )
-        ]
-
-        if !isUtilityTransfer {
-            validators.append(
-                dataValidatingFactory.receiverHasUtilityAccount(
-                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: utilityAssetMinBalance,
-                    locale: selectedLocale
-                )
-            )
-        }
+        var validators: [DataValidating] = baseValidators(
+            for: sendingAmount,
+            recepientAddress: recepientAddress,
+            selectedLocale: selectedLocale
+        )
 
         validators.append(
             dataValidatingFactory.willBeReaped(
