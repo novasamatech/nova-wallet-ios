@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SoraKeystore
 
 struct TransferConfirmViewFactory {
     static func createView(
@@ -134,6 +135,12 @@ struct TransferConfirmViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
 
+        let signingWrapper = SigningWrapper(
+            keystore: Keychain(),
+            metaId: walletSettings.value.metaId,
+            accountResponse: selectedAccount
+        )
+
         return TransferConfirmInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
@@ -141,6 +148,7 @@ struct TransferConfirmViewFactory {
             runtimeService: runtimeProvider,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
+            signingWrapper: signingWrapper,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,

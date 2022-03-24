@@ -26,8 +26,17 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
 
         presenter.setup()
+    }
+
+    private func setupHandlers() {
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionSubmit),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -53,6 +62,10 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
         rootView.recepientCell.titleLabel.text = R.string.localizable.commonRecipient(
             preferredLanguages: selectedLocale.rLanguages
         )
+    }
+
+    @objc func actionSubmit() {
+        presenter.submit()
     }
 }
 

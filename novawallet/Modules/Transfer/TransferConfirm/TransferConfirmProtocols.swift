@@ -1,3 +1,5 @@
+import BigInt
+
 protocol TransferConfirmViewProtocol: ControllerBackedProtocol {
     func didReceiveNetwork(viewModel: NetworkViewModel)
     func didReceiveSender(viewModel: DisplayAddressViewModel)
@@ -9,11 +11,18 @@ protocol TransferConfirmViewProtocol: ControllerBackedProtocol {
 
 protocol TransferConfirmPresenterProtocol: AnyObject {
     func setup()
+    func submit()
 }
 
-protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {}
+protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
+    func submit(amount: BigUInt, recepient: AccountAddress)
+}
 
-protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {}
+protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {
+    func didCompleteSubmition()
+}
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable {}
+    TransferErrorPresentable {
+    func complete(on view: TransferConfirmViewProtocol?, locale: Locale)
+}
