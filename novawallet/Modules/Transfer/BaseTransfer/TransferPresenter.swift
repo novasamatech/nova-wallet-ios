@@ -58,6 +58,69 @@ class TransferPresenter {
         self.logger = logger
     }
 
+    func refreshFee() {
+        fatalError("Child classes must implement this method")
+    }
+
+    func baseValidators(
+        for sendingAmount: Decimal?,
+        recepientAddress: AccountAddress?,
+        selectedLocale: Locale
+    ) -> [DataValidating] {
+        var validators: [DataValidating] = [
+            dataValidatingFactory.receiverMatchesChain(
+                recepient: recepientAddress,
+                chainFormat: chainAsset.chain.chainFormat,
+                chainName: chainAsset.chain.name,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverDiffers(
+                recepient: recepientAddress,
+                sender: senderAccountAddress,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+                return
+            },
+
+            dataValidatingFactory.canSend(
+                amount: sendingAmount,
+                fee: isUtilityTransfer ? fee : 0,
+                transferable: senderSendingAssetBalance?.transferable,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.canPay(
+                fee: fee,
+                total: senderUtilityAssetTotal,
+                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.receiverWillHaveAssetAccount(
+                sendingAmount: sendingAmount,
+                totalAmount: recepientSendingAssetBalance?.totalInPlank,
+                minBalance: sendingAssetMinBalance,
+                locale: selectedLocale
+            )
+        ]
+
+        if !isUtilityTransfer {
+            validators.append(
+                dataValidatingFactory.receiverHasUtilityAccount(
+                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                    minBalance: utilityAssetMinBalance,
+                    locale: selectedLocale
+                )
+            )
+        }
+
+        return validators
+    }
+
     func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
         senderSendingAssetBalance = balance
     }

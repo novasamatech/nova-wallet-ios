@@ -107,7 +107,9 @@ final class TransferConfirmPresenter: TransferPresenter {
         view?.didReceiveAmount(viewModel: viewModel)
     }
 
-    private func refreshFee() {
+    // MARK: Subsclass
+
+    override func refreshFee() {
         let assetInfo = chainAsset.assetDisplayInfo
 
         guard let amountValue = amount.toSubstrateAmount(precision: assetInfo.assetPrecision) else {
@@ -116,8 +118,6 @@ final class TransferConfirmPresenter: TransferPresenter {
 
         interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
     }
-
-    // MARK: Protocol
 
     override func didReceiveFee(_ fee: BigUInt) {
         super.didReceiveFee(fee)
@@ -173,7 +173,22 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
             return
         }
 
-        interactor.submit(amount: amountValue, recepient: recepientAccountAddress)
+        let validators: [DataValidating] = baseValidators(
+            for: amount,
+            recepientAddress: recepientAccountAddress,
+            selectedLocale: selectedLocale
+        )
+
+        DataValidationRunner(validators: validators).runValidation { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.interactor.submit(
+                amount: amountValue,
+                recepient: strongSelf.recepientAccountAddress
+            )
+        }
     }
 }
 
