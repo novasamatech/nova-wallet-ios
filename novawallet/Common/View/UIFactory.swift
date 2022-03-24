@@ -458,6 +458,23 @@ final class UIFactory: UIFactoryProtocol {
         NetworkFeeView()
     }
 
+    // TODO: Rename when fully move to this method
+    func createNetwork26FeeView() -> NetworkFeeView {
+        let view = NetworkFeeView()
+        view.borderType = []
+
+        view.style = NetworkFeeView.ViewStyle(
+            titleColor: R.color.colorTransparentText()!,
+            titleFont: .regularFootnote,
+            tokenColor: R.color.colorWhite()!,
+            tokenFont: .regularFootnote,
+            fiatColor: R.color.colorTransparentText()!,
+            fiatFont: .caption1
+        )
+
+        return view
+    }
+
     func createNetworkFeeConfirmView() -> NetworkFeeConfirmView {
         NetworkFeeConfirmView(
             frame: CGRect(
