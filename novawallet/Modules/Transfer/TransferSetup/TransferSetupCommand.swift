@@ -20,7 +20,8 @@ final class TransferSetupCommand: WalletCommandProtocol {
     func execute() throws {
         guard let view = TransferSetupViewFactory.createView(
             from: chainAsset,
-            recepient: recepient
+            recepient: recepient,
+            commandFactory: commandFactory
         ) else {
             return
         }

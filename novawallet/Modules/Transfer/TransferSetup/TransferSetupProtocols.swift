@@ -44,6 +44,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {
     func showConfirmation(
         from view: TransferSetupViewProtocol?,
+        chainAsset: ChainAsset,
         sendingAmount: Decimal,
         recepient: AccountAddress
     )

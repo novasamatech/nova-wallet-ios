@@ -32,10 +32,53 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
 
     private func setupLocalization() {
         title = R.string.localizable.walletSendTitle(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+            .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.senderCell.titleLabel.text = R.string.localizable.commonSender(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeCell.rowContentView.locale = selectedLocale
+
+        rootView.recepientCell.titleLabel.text = R.string.localizable.commonRecipient(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 }
 
-extension TransferConfirmViewController: TransferConfirmViewProtocol {}
+extension TransferConfirmViewController: TransferConfirmViewProtocol {
+    func didReceiveNetwork(viewModel: NetworkViewModel) {
+        rootView.networkCell.bind(viewModel: viewModel)
+    }
+
+    func didReceiveSender(viewModel: DisplayAddressViewModel) {
+        rootView.senderCell.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    func didReceiveRecepient(viewModel: DisplayAddressViewModel) {
+        rootView.recepientCell.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    func didReceiveWallet(viewModel: StackCellViewModel) {
+        rootView.walletCell.bind(viewModel: viewModel)
+    }
+
+    func didReceiveAmount(viewModel _: BalanceViewModelProtocol) {}
+
+    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
+    }
+}
 
 extension TransferConfirmViewController: Localizable {
     func applyLocalization() {

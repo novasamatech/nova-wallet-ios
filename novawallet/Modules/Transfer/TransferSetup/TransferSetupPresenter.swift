@@ -338,7 +338,10 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
         )
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
-            guard let amount = sendingAmount, let recepient = self?.recepientAddress else {
+            guard
+                let amount = sendingAmount,
+                let recepient = self?.recepientAddress,
+                let chainAsset = self?.chainAsset else {
                 return
             }
 
@@ -346,6 +349,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
             self?.wireframe.showConfirmation(
                 from: self?.view,
+                chainAsset: chainAsset,
                 sendingAmount: amount,
                 recepient: recepient
             )

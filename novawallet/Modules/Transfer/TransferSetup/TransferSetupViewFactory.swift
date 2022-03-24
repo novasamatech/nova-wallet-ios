@@ -1,10 +1,12 @@
 import Foundation
 import SoraFoundation
+import CommonWallet
 
 struct TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
-        recepient: DisplayAddress?
+        recepient: DisplayAddress?,
+        commandFactory: WalletCommandFactoryProtocol?
     ) -> TransferSetupViewProtocol? {
         guard let interactor = createInteractor(for: chainAsset) else {
             return nil
@@ -21,6 +23,7 @@ struct TransferSetupViewFactory {
         }
 
         let wireframe = TransferSetupWireframe()
+        wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
 
