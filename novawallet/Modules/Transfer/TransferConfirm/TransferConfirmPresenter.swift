@@ -165,9 +165,23 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
 
         interactor.setup()
     }
+
+    func submit() {
+        guard let amountValue = amount.toSubstrateAmount(
+            precision: chainAsset.assetDisplayInfo.assetPrecision
+        ) else {
+            return
+        }
+
+        interactor.submit(amount: amountValue, recepient: recepientAccountAddress)
+    }
 }
 
-extension TransferConfirmPresenter: TransferConfirmInteractorOutputProtocol {}
+extension TransferConfirmPresenter: TransferConfirmInteractorOutputProtocol {
+    func didCompleteSubmition() {
+        wireframe.complete(on: view, locale: selectedLocale)
+    }
+}
 
 extension TransferConfirmPresenter: Localizable {
     func applyLocalization() {
