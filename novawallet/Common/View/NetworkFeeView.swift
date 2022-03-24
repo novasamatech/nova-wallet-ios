@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class NetworkFeeView: UIView {
+class NetworkFeeView: UIView {
     struct ViewStyle {
         let titleColor: UIColor
         let titleFont: UIFont
