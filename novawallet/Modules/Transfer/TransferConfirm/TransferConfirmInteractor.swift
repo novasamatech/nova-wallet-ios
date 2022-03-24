@@ -1,7 +1,5 @@
 import UIKit
 
-final class TransferConfirmInteractor {
-    weak var presenter: TransferConfirmInteractorOutputProtocol!
-}
+final class TransferConfirmInteractor: TransferInteractor {}
 
 extension TransferConfirmInteractor: TransferConfirmInteractorInputProtocol {}

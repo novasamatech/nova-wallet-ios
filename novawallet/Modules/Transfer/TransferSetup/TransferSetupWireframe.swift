@@ -1,19 +1,26 @@
 import Foundation
+import CommonWallet
 
 final class TransferSetupWireframe: TransferSetupWireframeProtocol {
+    weak var commandFactory: WalletCommandFactoryProtocol?
+
     func showConfirmation(
-        from view: TransferSetupViewProtocol?,
+        from _: TransferSetupViewProtocol?,
+        chainAsset: ChainAsset,
         sendingAmount: Decimal,
         recepient: AccountAddress
     ) {
         guard let confirmView = TransferConfirmViewFactory.createView(
-            from: recepient,
+            chainAsset: chainAsset,
+            recepient: recepient,
             amount: sendingAmount
         ) else {
             return
         }
 
-        view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
+        let command = commandFactory?.preparePresentationCommand(for: confirmView.controller)
+        command?.presentationStyle = .push(hidesBottomBar: true)
+        try? command?.execute()
     }
 
     func showRecepientScan(from _: TransferSetupViewProtocol?) {
