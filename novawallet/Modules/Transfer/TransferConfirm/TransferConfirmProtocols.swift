@@ -1,6 +1,6 @@
 import BigInt
 
-protocol TransferConfirmViewProtocol: ControllerBackedProtocol {
+protocol TransferConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveNetwork(viewModel: NetworkViewModel)
     func didReceiveSender(viewModel: DisplayAddressViewModel)
     func didReceiveRecepient(viewModel: DisplayAddressViewModel)
