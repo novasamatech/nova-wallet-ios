@@ -21,6 +21,9 @@ final class DataValidationRunner {
                 case .warning:
                     lastIndex = index
                     return
+                case .asyncProcess:
+                    lastIndex = index
+                    return
                 case .error:
                     return
                 }
@@ -40,6 +43,10 @@ extension DataValidationRunner: DataValidationRunnerProtocol {
 
 extension DataValidationRunner: DataValidatingDelegate {
     func didCompleteWarningHandling() {
+        runValidation(from: lastIndex + 1)
+    }
+
+    func didCompleteAsyncHandling() {
         runValidation(from: lastIndex + 1)
     }
 }

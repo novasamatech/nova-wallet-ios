@@ -20,12 +20,11 @@ final class InvoiceScanLocalSearchEngine: InvoiceLocalSearchEngineProtocol {
             return nil
         }
 
-        let context = ContactContext(destination: .local)
         return SearchData(
             accountId: accountIdHex,
             firstName: address,
             lastName: "",
-            context: context.toContext()
+            context: [:]
         )
     }
 }
