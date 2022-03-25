@@ -9,30 +9,16 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
         displayAddress: DisplayAddress,
         chainAsset: ChainAsset
     ) {
-        guard let peerId = try? displayAddress.address.toAccountId().toHex() else {
+        guard let transferView = TransferSetupViewFactory.createView(
+            from: chainAsset,
+            recepient: displayAddress,
+            commandFactory: commandFactory
+        ) else {
             return
         }
 
-        let assetId = ChainAssetId(
-            chainId: chainAsset.chain.chainId,
-            assetId: chainAsset.asset.assetId
-        ).walletId
-
-        let receiverInfo = ReceiveInfo(
-            accountId: peerId,
-            assetId: assetId,
-            amount: nil,
-            details: nil
-        )
-
-        let transferPayload = TransferPayload(
-            receiveInfo: receiverInfo,
-            receiverName: displayAddress.username
-        )
-
-        if let command = commandFactory?.prepareTransfer(with: transferPayload) {
-            command.presentationStyle = .push(hidesBottomBar: true)
-            try? command.execute()
-        }
+        let command = commandFactory?.preparePresentationCommand(for: transferView.controller)
+        command?.presentationStyle = .push(hidesBottomBar: true)
+        try? command?.execute()
     }
 }
