@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class NetworkFeeView: UIView {
+class NetworkFeeView: UIView {
     struct ViewStyle {
         let titleColor: UIColor
         let titleFont: UIFont
@@ -44,8 +44,8 @@ final class NetworkFeeView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        applyLocalization()
         setupLayout()
+        applyLocalization()
         applyStyle()
     }
 
@@ -64,6 +64,13 @@ final class NetworkFeeView: UIView {
     ) {
         didSet {
             applyStyle()
+        }
+    }
+
+    func requiresFlexibleHeight() {
+        titleLabel.snp.remakeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
 

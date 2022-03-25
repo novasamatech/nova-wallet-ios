@@ -1,13 +1,13 @@
 import Foundation
 import SoraFoundation
-import CommonWallet
+import SoraKeystore
 
-struct TransferSetupViewFactory {
+struct TransferConfirmViewFactory {
     static func createView(
-        from chainAsset: ChainAsset,
-        recepient: DisplayAddress?,
-        commandFactory: WalletCommandFactoryProtocol?
-    ) -> TransferSetupViewProtocol? {
+        chainAsset: ChainAsset,
+        recepient: AccountAddress,
+        amount: Decimal
+    ) -> TransferConfirmViewProtocol? {
         guard let interactor = createInteractor(for: chainAsset) else {
             return nil
         }
@@ -15,15 +15,13 @@ struct TransferSetupViewFactory {
         let walletSettings = SelectedWalletSettings.shared
 
         guard
-            let selectedAccount = walletSettings.value.fetch(
-                for: chainAsset.chain.accountRequest()
-            ),
+            let wallet = walletSettings.value,
+            let selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest()),
             let senderAccountAddress = selectedAccount.toAddress() else {
             return nil
         }
 
-        let wireframe = TransferSetupWireframe()
-        wireframe.commandFactory = commandFactory
+        let wireframe = TransferConfirmWireframe()
 
         let localizationManager = LocalizationManager.shared
 
@@ -51,21 +49,23 @@ struct TransferSetupViewFactory {
             utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
         )
 
-        let presenter = TransferSetupPresenter(
+        let presenter = TransferConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            wallet: wallet,
+            recepient: recepient,
+            amount: amount,
+            displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
             chainAsset: chainAsset,
-            recepientAddress: recepient?.address,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            localizationManager: localizationManager,
-            logger: Logger.shared
+            localizationManager: localizationManager
         )
 
-        let view = TransferSetupViewController(
+        let view = TransferConfirmViewController(
             presenter: presenter,
             localizationManager: localizationManager
         )
@@ -79,7 +79,7 @@ struct TransferSetupViewFactory {
 
     private static func createInteractor(
         for chainAsset: ChainAsset
-    ) -> TransferSetupInteractor? {
+    ) -> TransferConfirmInteractor? {
         let walletSettings = SelectedWalletSettings.shared
 
         guard
@@ -135,13 +135,20 @@ struct TransferSetupViewFactory {
         let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
         let priceLocalSubscriptionFactory = PriceProviderFactory.shared
 
-        return TransferSetupInteractor(
+        let signingWrapper = SigningWrapper(
+            keystore: Keychain(),
+            metaId: walletSettings.value.metaId,
+            accountResponse: selectedAccount
+        )
+
+        return TransferConfirmInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
             asset: asset,
             runtimeService: runtimeProvider,
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
+            signingWrapper: signingWrapper,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,

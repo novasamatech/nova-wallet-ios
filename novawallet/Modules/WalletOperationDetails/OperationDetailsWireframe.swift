@@ -11,7 +11,8 @@ final class OperationDetailsWireframe: OperationDetailsWireframeProtocol {
     ) {
         guard let transferView = TransferSetupViewFactory.createView(
             from: chainAsset,
-            recepient: displayAddress
+            recepient: displayAddress,
+            commandFactory: commandFactory
         ) else {
             return
         }
