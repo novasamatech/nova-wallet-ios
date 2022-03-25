@@ -7,14 +7,14 @@ final class AccountInfoSubscriptionHandlingFactory: RemoteSubscriptionHandlingFa
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
     let eventCenter: EventCenterProtocol
-    let transactionSubscription: TransactionSubscription
+    let transactionSubscription: TransactionSubscription?
 
     init(
         chainAssetId: ChainAssetId,
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription,
+        transactionSubscription: TransactionSubscription?,
         eventCenter: EventCenterProtocol
     ) {
         self.chainAssetId = chainAssetId

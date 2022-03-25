@@ -6,7 +6,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
     let accountId: AccountId
     let chainRegistry: ChainRegistryProtocol
     let assetRepository: AnyDataProviderRepository<AssetBalance>
-    let transactionSubscription: TransactionSubscription
+    let transactionSubscription: TransactionSubscription?
     let eventCenter: EventCenterProtocol
 
     init(
@@ -14,7 +14,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
         accountId: AccountId,
         chainRegistry: ChainRegistryProtocol,
         assetRepository: AnyDataProviderRepository<AssetBalance>,
-        transactionSubscription: TransactionSubscription,
+        transactionSubscription: TransactionSubscription?,
         remoteStorageKey: Data,
         localStorageKey: String,
         storage: AnyDataProviderRepository<ChainStorageItem>,
@@ -55,7 +55,7 @@ final class AccountInfoSubscription: BaseStorageChildSubscription {
             logger.debug("Did change account info")
 
             if let blockHash = blockHash {
-                transactionSubscription.process(blockHash: blockHash)
+                transactionSubscription?.process(blockHash: blockHash)
             }
         }
     }

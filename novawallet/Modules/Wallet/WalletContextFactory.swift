@@ -177,9 +177,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
 
-        let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
-        contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
-
         let feeViewModelFactory: BalanceViewModelFactoryProtocol?
 
         if let utilityAsset = chain.utilityAssets().first, utilityAsset.assetId != asset.assetId {

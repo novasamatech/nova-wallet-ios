@@ -8,6 +8,9 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
 
+    func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
+
     func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
@@ -69,6 +72,18 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
                 mapper: AnyCoreDataMapper(ChainModelMapper())
             )
 
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository()
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem> {
+        let repository: CoreDataRepository<PhishingItem, CDPhishingItem> =
+            storageFacade.createRepository()
         return AnyDataProviderRepository(repository)
     }
 
