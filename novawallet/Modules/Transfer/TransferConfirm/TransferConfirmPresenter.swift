@@ -186,7 +186,8 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
 
             strongSelf.interactor.submit(
                 amount: amountValue,
-                recepient: strongSelf.recepientAccountAddress
+                recepient: strongSelf.recepientAccountAddress,
+                lastFee: strongSelf.fee
             )
         }
     }

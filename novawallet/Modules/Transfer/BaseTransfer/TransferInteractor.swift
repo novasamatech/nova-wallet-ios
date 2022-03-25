@@ -281,9 +281,9 @@ class TransferInteractor: RuntimeConstantFetching {
         to builder: ExtrinsicBuilderProtocol,
         amount: BigUInt,
         recepient: AccountId
-    ) throws -> ExtrinsicBuilderProtocol {
+    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
         guard let sendingAssetInfo = sendingAssetInfo else {
-            return builder
+            return (builder, nil)
         }
 
         switch sendingAssetInfo {
@@ -295,7 +295,8 @@ class TransferInteractor: RuntimeConstantFetching {
                 amount: amount
             )
 
-            return try builder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case let .statemine(extras):
             let call = callFactory.assetsTransfer(
                 to: recepient,
@@ -303,10 +304,12 @@ class TransferInteractor: RuntimeConstantFetching {
                 amount: amount
             )
 
-            return try builder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case .native:
             let call = callFactory.nativeTransfer(to: recepient, amount: amount)
-            return try builder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
+            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         }
     }
 
@@ -431,11 +434,13 @@ extension TransferInteractor {
                 using: extrinsicService,
                 reuseIdentifier: identifier
             ) { [weak self] builder in
-                try self?.addingTransferCommand(
+                let (newBuilder, _) = try self?.addingTransferCommand(
                     to: builder,
                     amount: amount,
                     recepient: recepientAccountId
-                ) ?? builder
+                ) ?? (builder, nil)
+
+                return newBuilder
             }
         } catch {
             presenter?.didReceiveSetup(error: error)
