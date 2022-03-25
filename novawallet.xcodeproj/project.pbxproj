@@ -671,6 +671,9 @@
 		8466780F27EB2939007935D3 /* TransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466780E27EB2939007935D3 /* TransferPresenter.swift */; };
 		8466781127EB4078007935D3 /* StackNetworkFeeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */; };
 		8466781327EC5446007935D3 /* MultilineBalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781227EC5446007935D3 /* MultilineBalanceView.swift */; };
+		8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781527EC9B90007935D3 /* PersistExtrinsicFactory.swift */; };
+		8466781827EC9CDA007935D3 /* PersistTransferDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781727EC9CDA007935D3 /* PersistTransferDetails.swift */; };
+		8466781A27ECA021007935D3 /* PersistentExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781927ECA021007935D3 /* PersistentExtrinsicService.swift */; };
 		8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */; };
 		8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */; };
 		8467F4C326B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */; };
@@ -2718,6 +2721,9 @@
 		8466780E27EB2939007935D3 /* TransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferPresenter.swift; sourceTree = "<group>"; };
 		8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackNetworkFeeCell.swift; sourceTree = "<group>"; };
 		8466781227EC5446007935D3 /* MultilineBalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineBalanceView.swift; sourceTree = "<group>"; };
+		8466781527EC9B90007935D3 /* PersistExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistExtrinsicFactory.swift; sourceTree = "<group>"; };
+		8466781727EC9CDA007935D3 /* PersistTransferDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistTransferDetails.swift; sourceTree = "<group>"; };
+		8466781927ECA021007935D3 /* PersistentExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentExtrinsicService.swift; sourceTree = "<group>"; };
 		8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModel.swift; sourceTree = "<group>"; };
 		8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDurationOperationFactoryTests.swift; sourceTree = "<group>"; };
@@ -4924,6 +4930,7 @@
 		84155DE8253980D700A27058 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				8466781427EC9B6C007935D3 /* PersistExtrinsicService */,
 				841AAC2B26F7311200F0A25E /* RemoteSubscription */,
 				84D1110A26B922C10016D962 /* ChainRegistry */,
 				846CD24B2656FE9D00A2E4B6 /* StorageQueryService */,
@@ -5906,6 +5913,16 @@
 				8466780E27EB2939007935D3 /* TransferPresenter.swift */,
 			);
 			path = BaseTransfer;
+			sourceTree = "<group>";
+		};
+		8466781427EC9B6C007935D3 /* PersistExtrinsicService */ = {
+			isa = PBXGroup;
+			children = (
+				8466781527EC9B90007935D3 /* PersistExtrinsicFactory.swift */,
+				8466781727EC9CDA007935D3 /* PersistTransferDetails.swift */,
+				8466781927ECA021007935D3 /* PersistentExtrinsicService.swift */,
+			);
+			path = PersistExtrinsicService;
 			sourceTree = "<group>";
 		};
 		8466BB40263F4FDE00E065A8 /* ViewModel */ = {
@@ -10673,6 +10690,7 @@
 				84452F9325D5EE7300F47EC5 /* DataOperationFactory.swift in Sources */,
 				F43A597026D535E2005E973D /* AnalyticsPresenterBaseProtocols.swift in Sources */,
 				844DBC6F274E702C009F8351 /* AccountImportBaseView.swift in Sources */,
+				8466781A27ECA021007935D3 /* PersistentExtrinsicService.swift in Sources */,
 				8490151824AB8C6D008F705E /* WalletCommonStyleConfigurator.swift in Sources */,
 				849E0CD025CFDDB700B33506 /* StorageUpdateData+Decoding.swift in Sources */,
 				8430AAE126022CA1005B1066 /* BaseStakingState.swift in Sources */,
@@ -10707,6 +10725,7 @@
 				848E6BE32763346800C91022 /* СhainAssetSelectionControl.swift in Sources */,
 				842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */,
 				2A902077273E7C9900F2D584 /* FeePriceViewModel.swift in Sources */,
+				8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */,
 				8490143024A935FE008F705E /* AlertPresentable.swift in Sources */,
 				F4C086B826D10E3400716AEC /* UIRefreshControl+ProgramaticallyBeginRefresh.swift in Sources */,
 				84E8AC7127BB949300402635 /* RMRKNftV1.swift in Sources */,
@@ -12065,6 +12084,7 @@
 				1062C095BC566A1EA8DE1C06 /* CrowdloanContributionSetupViewController.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
 				1BEADE77C6236CB3BF719A47 /* CrowdloanContributionSetupViewFactory.swift in Sources */,
+				8466781827EC9CDA007935D3 /* PersistTransferDetails.swift in Sources */,
 				84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */,
 				849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */,
 				846A2606267C792000429A7F /* CrowdloanContributionResponse.swift in Sources */,

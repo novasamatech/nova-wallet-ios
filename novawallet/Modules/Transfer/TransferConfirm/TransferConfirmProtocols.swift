@@ -15,7 +15,7 @@ protocol TransferConfirmPresenterProtocol: AnyObject {
 }
 
 protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress)
+    func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?)
 }
 
 protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {

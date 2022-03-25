@@ -39,8 +39,21 @@ struct OperationDetailsViewFactory {
             targetAssetInfo: chainAsset.assetDisplayInfo
         )
 
+        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
+
+        if
+            let utilityAsset = chainAsset.chain.utilityAssets().first,
+            utilityAsset.assetId != chainAsset.asset.assetId {
+            feeViewModelFactory = BalanceViewModelFactory(
+                targetAssetInfo: utilityAsset.displayInfo(with: chainAsset.chain.icon)
+            )
+        } else {
+            feeViewModelFactory = nil
+        }
+
         let viewModelFactory = OperationDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: feeViewModelFactory
         )
 
         let presenter = OperationDetailsPresenter(

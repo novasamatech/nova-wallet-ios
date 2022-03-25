@@ -12,6 +12,7 @@ protocol OperationDetailsViewModelFactoryProtocol {
 
 final class OperationDetailsViewModelFactory {
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let feeViewModelFactory: BalanceViewModelFactoryProtocol?
     let dateFormatter: LocalizableResource<DateFormatter>
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
@@ -19,6 +20,7 @@ final class OperationDetailsViewModelFactory {
 
     init(
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        feeViewModelFactory: BalanceViewModelFactoryProtocol?,
         dateFormatter: LocalizableResource<DateFormatter> = DateFormatter.txDetails,
         networkViewModelFactory: NetworkViewModelFactoryProtocol = NetworkViewModelFactory(),
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol =
@@ -27,6 +29,7 @@ final class OperationDetailsViewModelFactory {
             NumberFormatter.quantity.localizableResource()
     ) {
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.feeViewModelFactory = feeViewModelFactory
         self.dateFormatter = dateFormatter
         self.networkViewModelFactory = networkViewModelFactory
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
@@ -98,7 +101,8 @@ final class OperationDetailsViewModelFactory {
             model.fee,
             precision: assetInfo.assetPrecision
         ).map { amount in
-            balanceViewModelFactory.amountFromValue(amount).value(for: locale)
+            let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
+            return viewModelFactory.amountFromValue(amount).value(for: locale)
         } ?? ""
 
         let sender = displayAddressViewModelFactory.createViewModel(from: model.sender)
