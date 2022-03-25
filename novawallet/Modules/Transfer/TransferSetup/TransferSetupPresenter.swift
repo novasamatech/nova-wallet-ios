@@ -10,6 +10,8 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
 
     private(set) var recepientAddress: AccountAddress?
 
+    let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
+
     var inputResult: AmountInputResult?
 
     init(
@@ -22,12 +24,14 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
+        phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.recepientAddress = recepientAddress
+        self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -288,6 +292,13 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
                 fee: isUtilityTransfer ? fee : 0,
                 totalAmount: senderSendingAssetBalance?.totalInPlank,
                 minBalance: sendingAssetMinBalance,
+                locale: selectedLocale
+            )
+        )
+
+        validators.append(
+            phishingValidatingFactory.notPhishing(
+                address: recepientAddress,
                 locale: selectedLocale
             )
         )

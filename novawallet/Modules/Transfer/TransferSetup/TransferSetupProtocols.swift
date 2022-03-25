@@ -41,7 +41,8 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveSetup(error: Error)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable, TransferErrorPresentable {
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
+    TransferErrorPresentable, PhishingErrorPresentable {
     func showConfirmation(
         from view: TransferSetupViewProtocol?,
         chainAsset: ChainAsset,

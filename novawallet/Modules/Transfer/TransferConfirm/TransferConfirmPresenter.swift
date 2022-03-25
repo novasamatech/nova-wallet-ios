@@ -151,6 +151,8 @@ final class TransferConfirmPresenter: TransferPresenter {
 
     override func didReceiveSetup(error: Error) {
         super.didReceiveSetup(error: error)
+
+        view?.didStopLoading()
     }
 }
 
@@ -184,9 +186,12 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
                 return
             }
 
+            strongSelf.view?.didStartLoading()
+
             strongSelf.interactor.submit(
                 amount: amountValue,
-                recepient: strongSelf.recepientAccountAddress
+                recepient: strongSelf.recepientAccountAddress,
+                lastFee: strongSelf.fee
             )
         }
     }
@@ -194,6 +199,7 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
 
 extension TransferConfirmPresenter: TransferConfirmInteractorOutputProtocol {
     func didCompleteSubmition() {
+        view?.didStopLoading()
         wireframe.complete(on: view, locale: selectedLocale)
     }
 }
