@@ -9,6 +9,7 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
 
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
 
     func createChainAddressTxRepository(
         for address: AccountAddress,
@@ -76,6 +77,12 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
 
     func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem> {
         let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository()
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem> {
+        let repository: CoreDataRepository<PhishingItem, CDPhishingItem> =
             storageFacade.createRepository()
         return AnyDataProviderRepository(repository)
     }
