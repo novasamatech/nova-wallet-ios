@@ -4,11 +4,13 @@ typealias DataValidationRunnerCompletion = () -> Void
 
 enum DataValidationProblem {
     case warning
+    case asyncProcess
     case error
 }
 
 protocol DataValidatingDelegate: AnyObject {
     func didCompleteWarningHandling()
+    func didCompleteAsyncHandling()
 }
 
 protocol DataValidating {

@@ -674,6 +674,9 @@
 		8466781627EC9B90007935D3 /* PersistExtrinsicFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781527EC9B90007935D3 /* PersistExtrinsicFactory.swift */; };
 		8466781827EC9CDA007935D3 /* PersistTransferDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781727EC9CDA007935D3 /* PersistTransferDetails.swift */; };
 		8466781A27ECA021007935D3 /* PersistentExtrinsicService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781927ECA021007935D3 /* PersistentExtrinsicService.swift */; };
+		8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781B27ED9644007935D3 /* AsyncWarningConditionViolation.swift */; };
+		8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781D27ED982C007935D3 /* PhishingAddressValidatorFactory.swift */; };
+		8466782027ED9B39007935D3 /* PhishingErrorPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466781F27ED9B39007935D3 /* PhishingErrorPresentable.swift */; };
 		8466BB42263F501000E065A8 /* StakingUnbondConfirmViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */; };
 		8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */; };
 		8467F4C326B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */; };
@@ -2724,6 +2727,9 @@
 		8466781527EC9B90007935D3 /* PersistExtrinsicFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistExtrinsicFactory.swift; sourceTree = "<group>"; };
 		8466781727EC9CDA007935D3 /* PersistTransferDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistTransferDetails.swift; sourceTree = "<group>"; };
 		8466781927ECA021007935D3 /* PersistentExtrinsicService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistentExtrinsicService.swift; sourceTree = "<group>"; };
+		8466781B27ED9644007935D3 /* AsyncWarningConditionViolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncWarningConditionViolation.swift; sourceTree = "<group>"; };
+		8466781D27ED982C007935D3 /* PhishingAddressValidatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingAddressValidatorFactory.swift; sourceTree = "<group>"; };
+		8466781F27ED9B39007935D3 /* PhishingErrorPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingErrorPresentable.swift; sourceTree = "<group>"; };
 		8466BB41263F501000E065A8 /* StakingUnbondConfirmViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModel.swift; sourceTree = "<group>"; };
 		8466BB462640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondConfirmViewModelFactory.swift; sourceTree = "<group>"; };
 		8467F4C226B1DFA500C5B6F4 /* StakingDurationOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingDurationOperationFactoryTests.swift; sourceTree = "<group>"; };
@@ -8021,6 +8027,9 @@
 				84DD5F63263DFAB700425ACF /* ErrorConditionViolation.swift */,
 				84DD5F76263DFD9C00425ACF /* WarningConditionViolation.swift */,
 				84DBEA5D265EDAD300FDF73C /* BaseDataValidatorFactory.swift */,
+				8466781B27ED9644007935D3 /* AsyncWarningConditionViolation.swift */,
+				8466781D27ED982C007935D3 /* PhishingAddressValidatorFactory.swift */,
+				8466781F27ED9B39007935D3 /* PhishingErrorPresentable.swift */,
 			);
 			path = Validators;
 			sourceTree = "<group>";
@@ -10687,6 +10696,7 @@
 				842876B324AE059700D91AD8 /* AboutData.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */,
 				841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */,
+				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,
 				84452F9325D5EE7300F47EC5 /* DataOperationFactory.swift in Sources */,
 				F43A597026D535E2005E973D /* AnalyticsPresenterBaseProtocols.swift in Sources */,
 				844DBC6F274E702C009F8351 /* AccountImportBaseView.swift in Sources */,
@@ -10796,6 +10806,7 @@
 				84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */,
 				844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */,
 				849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */,
+				8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
 				8490147524A94A37008F705E /* RootWireframe.swift in Sources */,
@@ -11293,6 +11304,7 @@
 				849E689526AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift in Sources */,
 				8454C26F2632BBAA00657DAD /* ExtrinsicProcessing.swift in Sources */,
 				84E25BE227E5F23E00290BF1 /* PasteboardHandler.swift in Sources */,
+				8466782027ED9B39007935D3 /* PhishingErrorPresentable.swift in Sources */,
 				8461CC8326BC0006007460E4 /* MortalEraOperationFactory.swift in Sources */,
 				8425EA8B25EA7AF200C307C9 /* UnappliedSlashes.swift in Sources */,
 				84893BFE24DA0000008F6A3F /* FieldStatus.swift in Sources */,
