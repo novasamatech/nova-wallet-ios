@@ -49,6 +49,13 @@ struct TransferConfirmViewFactory {
             utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
         )
 
+        let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()
+        let phishingValidatingFactory = PhishingAddressValidatorFactory(
+            repository: phishingRepository,
+            presentable: wireframe,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
+
         let presenter = TransferConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -62,6 +69,7 @@ struct TransferConfirmViewFactory {
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
             senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
+            phishingValidatingFactory: phishingValidatingFactory,
             localizationManager: localizationManager
         )
 
@@ -72,6 +80,7 @@ struct TransferConfirmViewFactory {
 
         presenter.view = view
         dataValidatingFactory.view = view
+        phishingValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view
