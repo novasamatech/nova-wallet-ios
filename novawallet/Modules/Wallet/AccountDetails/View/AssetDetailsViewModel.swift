@@ -13,6 +13,9 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
     let transferableBalance: BalanceViewModel
     let lockedBalance: BalanceViewModel
 
+    let networkName: String
+    let networkIcon: ImageViewModelProtocol
+
     let infoDetailsCommand: WalletCommandProtocol
 
     init(
@@ -21,6 +24,8 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
         totalBalance: BalanceViewModel,
         transferableBalance: BalanceViewModel,
         lockedBalance: BalanceViewModel,
+        networkName: String,
+        networkIcon: ImageViewModelProtocol,
         infoDetailsCommand: WalletCommandProtocol
     ) {
         self.price = price
@@ -28,6 +33,8 @@ final class AssetDetailsViewModel: WalletViewModelProtocol {
         self.totalBalance = totalBalance
         self.transferableBalance = transferableBalance
         self.lockedBalance = lockedBalance
+        self.networkName = networkName
+        self.networkIcon = networkIcon
         self.infoDetailsCommand = infoDetailsCommand
     }
 }
