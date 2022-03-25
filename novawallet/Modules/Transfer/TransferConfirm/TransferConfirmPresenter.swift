@@ -10,8 +10,6 @@ final class TransferConfirmPresenter: TransferPresenter {
 
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
-    let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
-
     let recepientAccountAddress: AccountAddress
     let wallet: MetaAccountModel
     let amount: Decimal
@@ -31,7 +29,6 @@ final class TransferConfirmPresenter: TransferPresenter {
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
         senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
-        phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -41,7 +38,6 @@ final class TransferConfirmPresenter: TransferPresenter {
         recepientAccountAddress = recepient
         self.amount = amount
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
-        self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
             chainAsset: chainAsset,
@@ -179,18 +175,11 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
             return
         }
 
-        var validators: [DataValidating] = baseValidators(
+        let validators: [DataValidating] = baseValidators(
             for: amount,
             recepientAddress: recepientAccountAddress,
             selectedLocale: selectedLocale
         )
-
-        let phishingValidator = phishingValidatingFactory.notPhishing(
-            address: recepientAccountAddress,
-            locale: selectedLocale
-        )
-
-        validators.append(phishingValidator)
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard let strongSelf = self else {
