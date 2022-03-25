@@ -23,6 +23,6 @@ protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputP
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, PhishingErrorPresentable {
+    TransferErrorPresentable {
     func complete(on view: TransferConfirmViewProtocol?, locale: Locale)
 }
