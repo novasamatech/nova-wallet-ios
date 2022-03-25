@@ -43,19 +43,7 @@ final class TransferSetupViewLayout: UIView {
         return view
     }()
 
-    let networkFeeView: NetworkFeeView = {
-        let view = NetworkFeeView()
-        view.borderType = []
-        view.style = NetworkFeeView.ViewStyle(
-            titleColor: R.color.colorTransparentText()!,
-            titleFont: .regularFootnote,
-            tokenColor: R.color.colorWhite()!,
-            tokenFont: .regularFootnote,
-            fiatColor: R.color.colorTransparentText()!,
-            fiatFont: .caption1
-        )
-        return view
-    }()
+    let networkFeeView = UIFactory.default.createNetwork26FeeView()
 
     let amountView = TitleHorizontalMultiValueView()
 
