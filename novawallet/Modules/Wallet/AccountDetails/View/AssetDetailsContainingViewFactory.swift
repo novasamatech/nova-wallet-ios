@@ -37,6 +37,13 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         }
 
         view.bind(title: title, iconViewModel: iconViewModel)
+
+        let networkName = chainAsset.chain.name
+
+        let networkIcon = RemoteImageViewModel(url: chainAsset.chain.icon)
+
+        view.bind(networkName: networkName, iconViewModel: networkIcon)
+
         view.localizationManager = localizationManager
 
         bindCommands(to: view)
