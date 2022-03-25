@@ -10,11 +10,11 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
-        <array key="PublicSans-Bold.otf">
-            <string>PublicSans-Bold</string>
-        </array>
         <array key="PublicSans-Regular.otf">
             <string>PublicSans-Regular</string>
+        </array>
+        <array key="PublicSans-SemiBold.otf">
+            <string>PublicSans-SemiBold</string>
         </array>
     </customFonts>
     <objects>
@@ -56,7 +56,7 @@
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fG9-KC-Bq2">
                             <rect key="frame" x="34" y="22" width="0.0" height="0.0"/>
-                            <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="18"/>
+                            <fontDescription key="fontDescription" name="PublicSans-SemiBold" family="Public Sans" pointSize="17"/>
                             <color key="textColor" name="colorWhite"/>
                             <nil key="highlightedColor"/>
                         </label>

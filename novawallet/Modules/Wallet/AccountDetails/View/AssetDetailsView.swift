@@ -43,10 +43,13 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     private var backgroundView = MultigradientView.background
 
+    private let networkView = RawChainView()
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
         setupBackgroundView()
+        setupNetworkView()
 
         separators.forEach {
             $0.strokeWidth = UIConstants.separatorHeight
@@ -143,6 +146,15 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         }
     }
 
+    private func setupNetworkView() {
+        addSubview(networkView)
+        networkView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalTo(titleLabel.snp.centerY)
+            make.height.equalTo(16.0)
+        }
+    }
+
     private func setupDefaultValues() {
         priceLabel.text = ""
         totalSectionTokenLabel.text = ""
@@ -168,6 +180,8 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
         lockedSectionTokenLabel.text = assetViewModel.lockedBalance.amount
         lockedSectionFiatLabel.text = assetViewModel.lockedBalance.price
+
+        networkView.bind(name: assetViewModel.networkName, iconViewModel: assetViewModel.networkIcon)
 
         switch assetViewModel.priceChangeViewModel {
         case let .goingUp(displayString):

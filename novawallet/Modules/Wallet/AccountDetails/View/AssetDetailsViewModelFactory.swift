@@ -95,12 +95,16 @@ final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
             precision: asset.precision
         )
 
+        let networkImageViewModel = RemoteImageViewModel(url: chain.icon)
+
         return AssetDetailsViewModel(
             price: priceString,
             priceChangeViewModel: priceChangeViewModel,
             totalBalance: totalBalance,
             transferableBalance: transferableBalance,
             lockedBalance: lockedBalance,
+            networkName: chain.name,
+            networkIcon: networkImageViewModel,
             infoDetailsCommand: infoDetailsCommand
         )
     }
