@@ -50,7 +50,8 @@ class OperationDetailsTests: XCTestCase {
         )
 
         let viewModelFactory = OperationDetailsViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
+            balanceViewModelFactory: balanceViewModelFactory,
+            feeViewModelFactory: nil
         )
 
         let presenter = OperationDetailsPresenter(
