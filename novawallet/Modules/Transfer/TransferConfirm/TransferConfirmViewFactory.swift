@@ -141,6 +141,12 @@ struct TransferConfirmViewFactory {
             accountResponse: selectedAccount
         )
 
+        let transactionStorage = SubstrateRepositoryFactory().createTxRepository()
+        let persistentExtrinsicService = PersistentExtrinsicService(
+            repository: transactionStorage,
+            operationQueue: operationQueue
+        )
+
         return TransferConfirmInteractor(
             selectedAccount: selectedAccount,
             chain: chain,
@@ -149,6 +155,8 @@ struct TransferConfirmViewFactory {
             feeProxy: feeProxy,
             extrinsicService: extrinsicService,
             signingWrapper: signingWrapper,
+            persistExtrinsicService: persistentExtrinsicService,
+            eventCenter: EventCenter.shared,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,

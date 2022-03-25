@@ -1,6 +1,6 @@
 import BigInt
 
-protocol TransferConfirmViewProtocol: ControllerBackedProtocol {
+protocol TransferConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
     func didReceiveNetwork(viewModel: NetworkViewModel)
     func didReceiveSender(viewModel: DisplayAddressViewModel)
     func didReceiveRecepient(viewModel: DisplayAddressViewModel)
@@ -15,7 +15,7 @@ protocol TransferConfirmPresenterProtocol: AnyObject {
 }
 
 protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
-    func submit(amount: BigUInt, recepient: AccountAddress)
+    func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?)
 }
 
 protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {
