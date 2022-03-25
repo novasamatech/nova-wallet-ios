@@ -1,21 +1,39 @@
 import Foundation
 import SnapKit
 import CommonWallet
+import UIKit
 
 final class HistoryItemTableViewCell: UITableViewCell {
     private enum Constants {
         static let verticalInset: CGFloat = 11
-        static let iconSize: CGFloat = 32
+        static let iconSize = CGSize(width: 36, height: 36)
+        static let imageInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         static let statusOffset: CGFloat = 4.0
         static let titleSpacingForTransfer: CGFloat = 64.0
         static let titleSpacingForOthers: CGFloat = 8.0
+
+        static var displayImageSize: CGSize {
+            CGSize(
+                width: iconSize.width - imageInsets.left - imageInsets.right,
+                height: iconSize.height - imageInsets.top - imageInsets.bottom
+            )
+        }
     }
 
-    private let transactionTypeView = UIImageView()
+    let iconView: AssetIconView = {
+        let view = AssetIconView()
+        view.backgroundView.cornerRadius = Constants.iconSize.height / 2.0
+        view.backgroundView.fillColor = R.color.colorWhite16()!
+        view.backgroundView.highlightedFillColor = R.color.colorWhite16()!
+        view.backgroundView.strokeColor = R.color.colorWhite8()!
+        view.contentInsets = Constants.imageInsets
+        view.imageView.tintColor = R.color.colorTransparentText()
+        return view
+    }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorWhite()
         label.lineBreakMode = .byTruncatingMiddle
         return label
@@ -23,21 +41,21 @@ final class HistoryItemTableViewCell: UITableViewCell {
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorTransparentText()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorWhite48()
         return label
     }()
 
     private let amountLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         return label
     }()
 
     private let timeLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorTransparentText()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorWhite48()
         return label
     }()
 
@@ -66,12 +84,12 @@ final class HistoryItemTableViewCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(transactionTypeView)
+        contentView.addSubview(iconView)
 
-        transactionTypeView.snp.makeConstraints { make in
+        iconView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
-            make.width.equalTo(Constants.iconSize)
+            make.size.equalTo(Constants.iconSize)
         }
 
         contentView.addSubview(amountLabel)
@@ -84,7 +102,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
         contentView.addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(transactionTypeView.snp.trailing).offset(UIConstants.horizontalInset / 2.0)
+            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalToSuperview().inset(Constants.verticalInset)
             make.trailing.lessThanOrEqualTo(amountLabel.snp.leading)
                 .offset(-Constants.titleSpacingForTransfer)
@@ -101,7 +119,7 @@ final class HistoryItemTableViewCell: UITableViewCell {
         contentView.addSubview(subtitleLabel)
 
         subtitleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(transactionTypeView.snp.trailing).offset(UIConstants.horizontalInset / 2.0)
+            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
             make.trailing.lessThanOrEqualTo(timeLabel.snp.leading)
@@ -195,11 +213,13 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
                 amountLabel.textColor = R.color.colorWhite()
             }
 
-            transactionTypeView.image = nil
+            let settings = ImageViewModelSettings(
+                targetSize: Constants.displayImageSize,
+                cornerRadius: nil,
+                tintColor: R.color.colorTransparentText()
+            )
 
-            itemViewModel.imageViewModel?.loadImage { [weak self] image, _ in
-                self?.transactionTypeView.image = image
-            }
+            iconView.bind(viewModel: itemViewModel.imageViewModel, settings: settings)
 
             updateAmountConstraints()
 
