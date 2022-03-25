@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -35,9 +35,9 @@
                                 <userDefinedRuntimeAttribute type="color" keyPath="titleColor">
                                     <color key="value" name="colorWhite"/>
                                 </userDefinedRuntimeAttribute>
-                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-Bold"/>
+                                <userDefinedRuntimeAttribute type="string" keyPath="_titleFontName" value="PublicSans-SemiBold"/>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_titleFontSize">
-                                    <real key="value" value="19"/>
+                                    <real key="value" value="17"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="number" keyPath="spacingBetweenLabelAndIcon">
                                     <real key="value" value="8"/>
@@ -86,7 +86,7 @@
                 </tableView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
-            <color key="backgroundColor" name="colorAlmostBlack"/>
+            <color key="backgroundColor" name="color0x1D1D20"/>
             <constraints>
                 <constraint firstItem="4YV-hB-WfP" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="JFJ-K5-WUg"/>
                 <constraint firstItem="ruq-rw-p1b" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="1" id="Mqd-AH-Wrk"/>
@@ -100,8 +100,8 @@
         </view>
     </objects>
     <resources>
-        <namedColor name="colorAlmostBlack">
-            <color red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="color0x1D1D20">
+            <color red="0.11372549019607843" green="0.11372549019607843" blue="0.12549019607843137" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="colorDarkGray">
             <color red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
