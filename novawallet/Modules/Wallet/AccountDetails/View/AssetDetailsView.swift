@@ -77,6 +77,10 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         }
     }
 
+    func bind(networkName: String, iconViewModel: ImageViewModelProtocol) {
+        networkView.bind(name: networkName, iconViewModel: iconViewModel)
+    }
+
     func bindActions(
         send: WalletCommandProtocol?,
         receive: WalletCommandProtocol?,
@@ -180,8 +184,6 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
         lockedSectionTokenLabel.text = assetViewModel.lockedBalance.amount
         lockedSectionFiatLabel.text = assetViewModel.lockedBalance.price
-
-        networkView.bind(name: assetViewModel.networkName, iconViewModel: assetViewModel.networkIcon)
 
         switch assetViewModel.priceChangeViewModel {
         case let .goingUp(displayString):
