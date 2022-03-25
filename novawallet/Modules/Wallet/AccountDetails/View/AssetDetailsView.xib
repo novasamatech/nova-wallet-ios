@@ -205,7 +205,7 @@
                                             <real key="value" value="1"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="color" keyPath="strokeColor">
-                                            <color key="value" name="colorBlurSeparator"/>
+                                            <color key="value" name="colorWhite24"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="color" keyPath="fillColor">
                                             <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -214,7 +214,7 @@
                                             <color key="value" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="color" keyPath="highlightedStrokeColor">
-                                            <color key="value" name="colorBlurSeparator"/>
+                                            <color key="value" name="colorWhite24"/>
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                 </view>
@@ -608,20 +608,6 @@
             <point key="canvasLocation" x="138.40000000000001" y="138.98050974512745"/>
         </view>
     </objects>
-    <designables>
-        <designable name="BH9-GQ-WWi">
-            <size key="intrinsicContentSize" width="40" height="63.5"/>
-        </designable>
-        <designable name="CZ1-mR-zue">
-            <size key="intrinsicContentSize" width="64" height="63.5"/>
-        </designable>
-        <designable name="Fv6-uX-qxI">
-            <size key="intrinsicContentSize" width="48" height="63.5"/>
-        </designable>
-        <designable name="WCS-ks-Idr">
-            <size key="intrinsicContentSize" width="16" height="16"/>
-        </designable>
-    </designables>
     <resources>
         <image name="iconBuy" width="24" height="24"/>
         <image name="iconInfoFilled" width="16" height="16"/>
@@ -641,6 +627,9 @@
         </namedColor>
         <namedColor name="colorWhite">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="colorWhite24">
+            <color red="1" green="1" blue="1" alpha="0.23999999463558197" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
