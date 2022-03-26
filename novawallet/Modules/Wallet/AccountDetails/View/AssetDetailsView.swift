@@ -43,10 +43,13 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     private var backgroundView = MultigradientView.background
 
+    private let networkView = RawChainView()
+
     override func awakeFromNib() {
         super.awakeFromNib()
 
         setupBackgroundView()
+        setupNetworkView()
 
         separators.forEach {
             $0.strokeWidth = UIConstants.separatorHeight
@@ -72,6 +75,10 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         iconViewModel?.loadImage { [weak self] image, _ in
             self?.iconView.image = image
         }
+    }
+
+    func bind(networkName: String, iconViewModel: ImageViewModelProtocol) {
+        networkView.bind(name: networkName, iconViewModel: iconViewModel)
     }
 
     func bindActions(
@@ -140,6 +147,15 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         insertSubview(backgroundView, at: 0)
         backgroundView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+    }
+
+    private func setupNetworkView() {
+        addSubview(networkView)
+        networkView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalTo(titleLabel.snp.centerY)
+            make.height.equalTo(16.0)
         }
     }
 

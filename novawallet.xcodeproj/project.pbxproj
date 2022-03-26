@@ -853,6 +853,8 @@
 		84873AFF26028E2B000A83EE /* StakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873AFE26028E2B000A83EE /* StakingStateMachine.swift */; };
 		84873B0426029B75000A83EE /* StakingEstimationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */; };
 		84873B0926029CBD000A83EE /* StakingStateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0826029CBD000A83EE /* StakingStateViewModelFactory.swift */; };
+		8487580727EDEB9600495306 /* BorderedIconLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487580627EDEB9600495306 /* BorderedIconLabelView.swift */; };
+		8487580927EDEDB200495306 /* RawChainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487580827EDEDB200495306 /* RawChainView.swift */; };
 		84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */; };
 		8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */; };
 		8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECDE258CE118004591CC /* PurchaseCompleted.swift */; };
@@ -2906,6 +2908,8 @@
 		84873AFE26028E2B000A83EE /* StakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachine.swift; sourceTree = "<group>"; };
 		84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEstimationViewModel.swift; sourceTree = "<group>"; };
 		84873B0826029CBD000A83EE /* StakingStateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateViewModelFactory.swift; sourceTree = "<group>"; };
+		8487580627EDEB9600495306 /* BorderedIconLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorderedIconLabelView.swift; sourceTree = "<group>"; };
+		8487580827EDEDB200495306 /* RawChainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawChainView.swift; sourceTree = "<group>"; };
 		84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAssetExtras.swift; sourceTree = "<group>"; };
 		8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompletionHandler.swift; sourceTree = "<group>"; };
 		8488ECDE258CE118004591CC /* PurchaseCompleted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompleted.swift; sourceTree = "<group>"; };
@@ -6979,6 +6983,8 @@
 				84D1ABDF27E1CB870073C631 /* TitleHorizontalMultiValueView.swift */,
 				8466781027EB4078007935D3 /* StackNetworkFeeCell.swift */,
 				8466781227EC5446007935D3 /* MultilineBalanceView.swift */,
+				8487580627EDEB9600495306 /* BorderedIconLabelView.swift */,
+				8487580827EDEDB200495306 /* RawChainView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11447,6 +11453,7 @@
 				AEE5FB1226457A88002B8FDC /* StakingRewardDestSetupWireframe.swift in Sources */,
 				8467FD2A24EA6C62005D486C /* SigningWrapper.swift in Sources */,
 				84C1B98B24F55E8200FE5470 /* AccountTableViewCell.swift in Sources */,
+				8487580927EDEDB200495306 /* RawChainView.swift in Sources */,
 				8490150F24AB8A3A008F705E /* WalletEmptyStateDataSource+Module.swift in Sources */,
 				84CA68E126BEAC7C003B9453 /* SpecVersionSubscriptionFactory.swift in Sources */,
 				842BDB21278C222100AB4B5A /* DAppBrowserBaseState.swift in Sources */,
@@ -12223,6 +12230,7 @@
 				D600448CB75095E6873E542F /* DAppTxDetailsProtocols.swift in Sources */,
 				84E25BE827E751B400290BF1 /* Charset+Encoding.swift in Sources */,
 				847F2D5B27AB290600AFD476 /* WalletPriceChangeViewModel.swift in Sources */,
+				8487580727EDEB9600495306 /* BorderedIconLabelView.swift in Sources */,
 				84AE7AAD27D3839D00495267 /* StackCellViewModel.swift in Sources */,
 				CD9359A2720F2EE1D4E09DF6 /* DAppTxDetailsWireframe.swift in Sources */,
 				0E364B6F05D390069D049CC2 /* DAppTxDetailsPresenter.swift in Sources */,
