@@ -700,3 +700,11 @@
 "common.same.receive.address.message" = "Recipient's address must differ from sender";
 "transfer.setup.enter.address" = "Enter the address...";
 "transfer.setup.enter.amount" = "Enter the amount...";
+"common.not.now" = "Not now";
+"common.open.settings" = "Open settings";
+"qr.scan.error.camera.restricted" = "Unfortunately, access to the camera is restricted.";
+"qr.scan.error.camera.restricted_previously" = "Unfortunately, you denied access to camera previously. Would you like to allow access now?";
+"qr.scan.error.camera.title" = "Camera Access";
+"recepient.scan.error" = "Can't extract recepient address";
+"recepient.scan.title" = "Scan QR";
+"recepient.scan.message" = "Scan QR code from receiver";
