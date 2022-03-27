@@ -109,10 +109,10 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="toe-8Q-kTb">
-                    <rect key="frame" x="16" y="38" width="343" height="233"/>
+                    <rect key="frame" x="16" y="38" width="343" height="204"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1il-4U-1mN" customClass="TriangularedBlurView" customModule="novawallet" customModuleProvider="target">
-                            <rect key="frame" x="0.0" y="0.0" width="343" height="233"/>
+                            <rect key="frame" x="0.0" y="0.0" width="343" height="204"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="_cornerCut">
@@ -123,8 +123,8 @@
                                 </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                         </view>
-                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="ux5-Ve-mCi">
-                            <rect key="frame" x="16" y="0.0" width="311" height="221"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ux5-Ve-mCi">
+                            <rect key="frame" x="16" y="0.0" width="311" height="196"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fah-UV-q8Z">
                                     <rect key="frame" x="0.0" y="0.0" width="311" height="50"/>
@@ -146,7 +146,7 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qjw-Fd-nXz">
-                                    <rect key="frame" x="0.0" y="55" width="311" height="48"/>
+                                    <rect key="frame" x="0.0" y="50" width="311" height="48"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ph6-Xx-9Mv">
                                             <rect key="frame" x="0.0" y="0.0" width="311" height="48"/>
@@ -188,7 +188,7 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2sN-nW-WdG" customClass="BorderedContainerView" customModule="SoraUI">
-                                    <rect key="frame" x="0.0" y="108" width="311" height="1"/>
+                                    <rect key="frame" x="0.0" y="98" width="311" height="1"/>
                                     <color key="backgroundColor" systemColor="labelColor"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="JCw-Un-ZdU"/>
@@ -219,7 +219,7 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PiS-Yk-ezu">
-                                    <rect key="frame" x="0.0" y="114" width="311" height="48"/>
+                                    <rect key="frame" x="0.0" y="99" width="311" height="48"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="svo-8k-XgC">
                                             <rect key="frame" x="0.0" y="0.0" width="311" height="48"/>
@@ -261,7 +261,7 @@
                                     </constraints>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Db-GA-Eb2" customClass="BorderedContainerView" customModule="SoraUI">
-                                    <rect key="frame" x="0.0" y="167" width="311" height="1"/>
+                                    <rect key="frame" x="0.0" y="147" width="311" height="1"/>
                                     <color key="backgroundColor" systemColor="labelColor"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="ZZB-8C-5Mu"/>
@@ -292,7 +292,7 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Zn-mB-TFB">
-                                    <rect key="frame" x="0.0" y="173" width="311" height="48"/>
+                                    <rect key="frame" x="0.0" y="148" width="311" height="48"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="aS9-Os-xb3">
                                             <rect key="frame" x="0.0" y="0.0" width="311" height="48"/>
@@ -354,7 +354,7 @@
                             </constraints>
                         </stackView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCS-ks-Idr" customClass="RoundedButton" customModule="SoraUI">
-                            <rect key="frame" x="0.0" y="167" width="343" height="66"/>
+                            <rect key="frame" x="0.0" y="148" width="343" height="56"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="color" keyPath="_fillColor">
@@ -387,15 +387,15 @@
                         <constraint firstItem="1il-4U-1mN" firstAttribute="leading" secondItem="tX5-Gs-bfE" secondAttribute="leading" id="M5Q-Jq-2U9"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="trailing" secondItem="1il-4U-1mN" secondAttribute="trailing" id="NhI-mw-sDZ"/>
                         <constraint firstItem="WCS-ks-Idr" firstAttribute="bottom" secondItem="1il-4U-1mN" secondAttribute="bottom" id="PBb-Az-sDN"/>
-                        <constraint firstItem="WCS-ks-Idr" firstAttribute="height" secondItem="2Zn-mB-TFB" secondAttribute="height" constant="18" id="SNG-DD-ynP"/>
+                        <constraint firstItem="WCS-ks-Idr" firstAttribute="height" secondItem="2Zn-mB-TFB" secondAttribute="height" constant="8" id="SNG-DD-ynP"/>
                         <constraint firstItem="1il-4U-1mN" firstAttribute="top" secondItem="tX5-Gs-bfE" secondAttribute="top" id="Taw-1c-94p"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="trailing" secondItem="ux5-Ve-mCi" secondAttribute="trailing" constant="16" id="XWJ-eT-9o1"/>
-                        <constraint firstItem="tX5-Gs-bfE" firstAttribute="bottom" secondItem="ux5-Ve-mCi" secondAttribute="bottom" constant="12" id="cw7-Nb-uhF"/>
+                        <constraint firstItem="tX5-Gs-bfE" firstAttribute="bottom" secondItem="ux5-Ve-mCi" secondAttribute="bottom" constant="8" id="cw7-Nb-uhF"/>
                         <constraint firstItem="tX5-Gs-bfE" firstAttribute="bottom" secondItem="1il-4U-1mN" secondAttribute="bottom" id="fak-Ce-DCt"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5WV-bu-ZuX">
-                    <rect key="frame" x="16" y="283" width="343" height="80"/>
+                    <rect key="frame" x="16" y="254" width="343" height="80"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kJm-Iu-UQl" customClass="TriangularedBlurView" customModule="novawallet" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="343" height="80"/>
