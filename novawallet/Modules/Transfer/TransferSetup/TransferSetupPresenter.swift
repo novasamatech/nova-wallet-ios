@@ -275,7 +275,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func scanRecepientCode() {
-        wireframe.showRecepientScan(from: view)
+        wireframe.showRecepientScan(from: view, delegate: self)
     }
 
     func proceed() {
@@ -334,5 +334,21 @@ extension TransferSetupPresenter: Localizable {
             provideAmountInputViewModel()
             updateAmountPriceView()
         }
+    }
+}
+
+extension TransferSetupPresenter: TransferScanDelegate {
+    func transferScanDidReceiveRecepient(address: AccountAddress) {
+        guard recepientAddress != address else {
+            return
+        }
+
+        recepientAddress = address
+
+        provideRecepientInputViewModel()
+        provideRecepientStateViewModel()
+
+        interactor.change(recepient: recepientAddress)
+        refreshFee()
     }
 }
