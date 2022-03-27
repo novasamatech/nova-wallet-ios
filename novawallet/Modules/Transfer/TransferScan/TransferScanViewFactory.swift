@@ -3,10 +3,10 @@ import SoraFoundation
 
 struct TransferScanViewFactory {
     static func createView(
-        for delegate: TransferScanDelegate,
-        chainFormat: ChainFormat
+        for delegate: TransferScanDelegate
     ) -> QRScannerViewProtocol? {
-        let matcher = AddressQRMatcher(chainFormat: chainFormat)
+        // TODO: get rid of format
+        let matcher = AddressQRMatcher(chainFormat: .substrate(42))
         let qrService = QRCaptureService(delegate: nil)
 
         let wireframe = QRScannerWireframe()
