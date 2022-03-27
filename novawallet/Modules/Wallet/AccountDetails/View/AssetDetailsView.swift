@@ -6,7 +6,7 @@ import SoraFoundation
 final class AssetDetailsView: BaseAccountDetailsContainingView {
     var contentInsets: UIEdgeInsets = .zero
 
-    var preferredContentHeight: CGFloat { 380.0 }
+    var preferredContentHeight: CGFloat { 350.0 }
 
     @IBOutlet var separators: [BorderedContainerView]!
 
