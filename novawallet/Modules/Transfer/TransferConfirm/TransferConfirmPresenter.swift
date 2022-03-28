@@ -107,6 +107,19 @@ final class TransferConfirmPresenter: TransferPresenter {
         view?.didReceiveAmount(viewModel: viewModel)
     }
 
+    private func presentOptions(for address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            explorers: chainAsset.chain.explorers,
+            locale: selectedLocale
+        )
+    }
+
     // MARK: Subsclass
 
     override func refreshFee() {
@@ -194,6 +207,14 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
                 lastFee: strongSelf.fee
             )
         }
+    }
+
+    func showSenderActions() {
+        presentOptions(for: senderAccountAddress)
+    }
+
+    func showRecepientActions() {
+        presentOptions(for: recepientAccountAddress)
     }
 }
 
