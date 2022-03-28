@@ -175,6 +175,21 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
         return balance - fee
     }
 
+    private func updateRecepientAddress(_ newAddress: String) {
+        let accountId = try? newAddress.toAccountId(using: chainAsset.chain.chainFormat)
+        if accountId != nil {
+            recepientAddress = newAddress
+        } else {
+            recepientAddress = nil
+        }
+
+        interactor.change(recepient: recepientAddress)
+
+        provideRecepientStateViewModel()
+
+        refreshFee()
+    }
+
     // MARK: Subsclass
 
     override func refreshFee() {
@@ -246,16 +261,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func updateRecepient(partialAddress: String) {
-        let accountId = try? partialAddress.toAccountId(using: chainAsset.chain.chainFormat)
-        if accountId != nil {
-            recepientAddress = partialAddress
-        } else {
-            recepientAddress = nil
-        }
-
-        interactor.change(recepient: recepientAddress)
-
-        provideRecepientStateViewModel()
+        updateRecepientAddress(partialAddress)
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -275,7 +281,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func scanRecepientCode() {
-        wireframe.showRecepientScan(from: view)
+        wireframe.showRecepientScan(from: view, delegate: self)
     }
 
     func proceed() {
@@ -334,5 +340,21 @@ extension TransferSetupPresenter: Localizable {
             provideAmountInputViewModel()
             updateAmountPriceView()
         }
+    }
+}
+
+extension TransferSetupPresenter: TransferScanDelegate {
+    func transferScanDidReceiveRecepient(address: AccountAddress) {
+        wireframe.hideRecepientScan(from: view)
+
+        guard recepientAddress != address else {
+            return
+        }
+
+        recepientAddress = address
+
+        provideRecepientInputViewModel()
+
+        updateRecepientAddress(address)
     }
 }

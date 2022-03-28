@@ -700,3 +700,17 @@
 "common.same.receive.address.message" = "Адрес получателя должен отличаться от адреса отправителя";
 "transfer.setup.enter.address" = "Введите адрес...";
 "transfer.setup.enter.amount" = "Введите сумму...";
+"common.not.now" = "Не сейчас";
+"common.open.settings" = "Открыть настройки";
+"qr.scan.error.camera.restricted" = "К сожалению, доступ к камере ограничен.";
+"qr.scan.error.camera.restricted_previously" = "К сожалению, вы ранее запретили доступ к камере. Хотите предоставить доступ к камере сейчас?";
+"qr.scan.error.camera.title" = "Доступ к камере";
+"recepient.scan.error" = "Не удалось извлеч адрес получателя";
+"recepient.scan.title" = "Поднесите QR";
+"recepient.scan.message" = "Поднесите QR код получателя";
+"qr.scan.upload.gallery" = "Загрузить из галереи";
+"qr.scan.error.no.info" = "Не получилось декодировать QR код";
+"qr.scan.error.invalid.image" = "Не удалось обработать изображение";
+"qr.scan.error.gallery.restricted" = "К сожалению, доступ к галерее ограничен.";
+"qr.scan.error.gallery.restricted.previously" = "К сожалению, вы ранее запретили доступ к галерее. Хотите предоставить доступ к галерее сейчас?";
+"qr.scan.error.gallery.title" = "Доступ к галерее";
