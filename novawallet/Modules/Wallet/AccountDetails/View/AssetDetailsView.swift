@@ -43,7 +43,11 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     private var backgroundView = MultigradientView.background
 
-    private let networkView = RawChainView()
+    private let networkView: RawChainView = {
+        let chainView = RawChainView()
+        chainView.iconDetailsView.detailsLabel.lineBreakMode = .byCharWrapping
+        return chainView
+    }()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -156,6 +160,7 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(titleLabel.snp.centerY)
             make.height.equalTo(16.0)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4.0)
         }
     }
 
