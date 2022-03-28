@@ -339,6 +339,8 @@ extension TransferSetupPresenter: Localizable {
 
 extension TransferSetupPresenter: TransferScanDelegate {
     func transferScanDidReceiveRecepient(address: AccountAddress) {
+        wireframe.hideRecepientScan(from: view)
+
         guard recepientAddress != address else {
             return
         }

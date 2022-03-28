@@ -866,6 +866,9 @@
 		8487584127F0842D00495306 /* AddressQRMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584027F0842D00495306 /* AddressQRMatcher.swift */; };
 		8487584327F08F9600495306 /* TransferScanPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584227F08F9600495306 /* TransferScanPresenter.swift */; };
 		8487584527F096F800495306 /* QRScannerWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584427F096F800495306 /* QRScannerWireframe.swift */; };
+		8487584727F1816300495306 /* QRExtractionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584627F1816200495306 /* QRExtractionService.swift */; };
+		8487584927F1830D00495306 /* QRImageUploadDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584827F1830D00495306 /* QRImageUploadDelegate.swift */; };
+		8487584B27F1834E00495306 /* ImageGalleryPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */; };
 		84884B5F27A1336500FAC549 /* OrmlAssetExtras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */; };
 		8488ECD7258CDCBC004591CC /* PurchaseCompletionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */; };
 		8488ECDF258CE118004591CC /* PurchaseCompleted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8488ECDE258CE118004591CC /* PurchaseCompleted.swift */; };
@@ -2932,6 +2935,9 @@
 		8487584027F0842D00495306 /* AddressQRMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressQRMatcher.swift; sourceTree = "<group>"; };
 		8487584227F08F9600495306 /* TransferScanPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferScanPresenter.swift; sourceTree = "<group>"; };
 		8487584427F096F800495306 /* QRScannerWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRScannerWireframe.swift; sourceTree = "<group>"; };
+		8487584627F1816200495306 /* QRExtractionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QRExtractionService.swift; sourceTree = "<group>"; };
+		8487584827F1830D00495306 /* QRImageUploadDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRImageUploadDelegate.swift; sourceTree = "<group>"; };
+		8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryPresentable.swift; sourceTree = "<group>"; };
 		84884B5E27A1336500FAC549 /* OrmlAssetExtras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAssetExtras.swift; sourceTree = "<group>"; };
 		8488ECD6258CDCBC004591CC /* PurchaseCompletionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompletionHandler.swift; sourceTree = "<group>"; };
 		8488ECDE258CE118004591CC /* PurchaseCompleted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCompleted.swift; sourceTree = "<group>"; };
@@ -6389,12 +6395,13 @@
 		8487582227F06AF300495306 /* QRScanner */ = {
 			isa = PBXGroup;
 			children = (
+				8487584827F1830D00495306 /* QRImageUploadDelegate.swift */,
+				8487584427F096F800495306 /* QRScannerWireframe.swift */,
 				8487582527F06AF300495306 /* QRScannerViewLayout.swift */,
 				8487582627F06AF300495306 /* QRScannerPresenter.swift */,
 				8487582727F06AF300495306 /* QRScannerProtocols.swift */,
 				8487582827F06AF300495306 /* QRScannerViewController.swift */,
 				8487582F27F06AF300495306 /* Service */,
-				8487584427F096F800495306 /* QRScannerWireframe.swift */,
 			);
 			path = QRScanner;
 			sourceTree = "<group>";
@@ -6402,6 +6409,7 @@
 		8487582F27F06AF300495306 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				8487584627F1816200495306 /* QRExtractionService.swift */,
 				8487583027F06AF300495306 /* QRCaptureService.swift */,
 			);
 			path = Service;
@@ -6792,6 +6800,7 @@
 				8499FE7227BE305100712589 /* JSONListConvertible.swift */,
 				842A738327DDF55A006EE1EA /* OperationIdOptionsPresentable.swift */,
 				8487583D27F070B300495306 /* ApplicationSettingsPresentable.swift */,
+				8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -11277,6 +11286,7 @@
 				84FB1F6F2526AA6800E0242B /* TransactionHistoryViewModelFactory.swift in Sources */,
 				F40966BA26B297D6008CD244 /* AnalyticsSummaryRewardViewModel.swift in Sources */,
 				842A736427DB31A3006EE1EA /* OperationRewardModel.swift in Sources */,
+				8487584727F1816300495306 /* QRExtractionService.swift in Sources */,
 				849013DB24A927E2008F705E /* Logger.swift in Sources */,
 				84443BA226C123F100C33B5D /* Data+Random.swift in Sources */,
 				84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */,
@@ -11468,6 +11478,7 @@
 				8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */,
 				849013DD24A927E2008F705E /* KeystoreExtensions.swift in Sources */,
 				844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */,
+				8487584B27F1834E00495306 /* ImageGalleryPresentable.swift in Sources */,
 				AE20602C2636EA5800357578 /* MoonPayKeys.swift in Sources */,
 				8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */,
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
@@ -11529,6 +11540,7 @@
 				843910C3253F39B100E3C217 /* WalletNetworkFacade+Storage.swift in Sources */,
 				84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */,
 				F43A596A26D520E0005E973D /* EmptyStateViewCell.swift in Sources */,
+				8487584927F1830D00495306 /* QRImageUploadDelegate.swift in Sources */,
 				AEA2C1B42681E99D0069492E /* ValidatorSearchProtocols.swift in Sources */,
 				7489BDA1D23D8DF73E7EB9BC /* UsernameSetupWireframe.swift in Sources */,
 				84D6D7F627A7D3060094FC33 /* WalletListTotalBalanceCell.swift in Sources */,

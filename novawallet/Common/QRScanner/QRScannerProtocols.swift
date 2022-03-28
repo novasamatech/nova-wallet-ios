@@ -7,8 +7,9 @@ protocol QRScannerViewProtocol: ControllerBackedProtocol, Localizable {
     func present(message: String, animated: Bool)
 }
 
-protocol QRScannerWireframeProtocol: ApplicationSettingsPresentable {}
+protocol QRScannerWireframeProtocol: ApplicationSettingsPresentable, ImageGalleryPresentable {}
 
 protocol QRScannerPresenterProtocol: AnyObject {
     func setup()
+    func uploadGallery()
 }

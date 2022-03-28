@@ -15,6 +15,7 @@ final class TransferScanPresenter: QRScannerPresenter {
         wireframe: QRScannerWireframeProtocol,
         delegate: TransferScanDelegate,
         qrScanService: QRCaptureServiceProtocol,
+        qrExtractionService: QRExtractionServiceProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -22,7 +23,12 @@ final class TransferScanPresenter: QRScannerPresenter {
         self.delegate = delegate
         self.localizationManager = localizationManager
 
-        super.init(wireframe: wireframe, qrScanService: qrScanService, logger: logger)
+        super.init(
+            wireframe: wireframe,
+            qrScanService: qrScanService,
+            qrExtractionService: qrExtractionService,
+            logger: logger
+        )
     }
 
     private func handleFailure() {
@@ -40,7 +46,7 @@ final class TransferScanPresenter: QRScannerPresenter {
 
         if let address = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.delegate?.didReceiveRecepient(address: address)
+                self?.delegate?.transferScanDidReceiveRecepient(address: address)
             }
         } else {
             DispatchQueue.main.async { [weak self] in

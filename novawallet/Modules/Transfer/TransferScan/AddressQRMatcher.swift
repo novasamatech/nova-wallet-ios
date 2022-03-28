@@ -7,12 +7,6 @@ protocol AddressQRMatching {
 }
 
 final class AddressQRMatcher: AddressQRMatching {
-    let chainFormat: ChainFormat
-
-    init(chainFormat: ChainFormat) {
-        self.chainFormat = chainFormat
-    }
-
     func match(code: String) -> AccountAddress? {
         guard let data = code.data(using: .utf8) else {
             return nil
@@ -20,17 +14,12 @@ final class AddressQRMatcher: AddressQRMatching {
 
         do {
             if SubstrateQR.isSubstrateQR(data: data) {
-                let substrateDecoder = SubstrateQRDecoder(
-                    addressFormat: chainFormat.substrateQRAddressFormat
-                )
-
+                let substrateDecoder = SubstrateQRDecoder()
                 return try substrateDecoder.decode(data: data).address
+            } else if (try? code.toAccountId()) != nil {
+                return code
             } else {
-                let addressDecoder = AddressQRDecoder(
-                    addressFormat: chainFormat.substrateQRAddressFormat
-                )
-
-                return try addressDecoder.decode(data: data)
+                return nil
             }
         } catch {
             return nil
