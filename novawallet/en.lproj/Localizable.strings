@@ -708,3 +708,9 @@
 "recepient.scan.error" = "Can't extract recepient address";
 "recepient.scan.title" = "Scan QR";
 "recepient.scan.message" = "Scan QR code from receiver";
+"qr.scan.upload.gallery" = "Upload from gallery";
+"qr.scan.error.no.info" = "QR can't be decoded";
+"qr.scan.error.invalid.image" = "Can't process selected image";
+"qr.scan.error.gallery.restricted" = "Unfortunately, access to the photos is restricted.";
+"qr.scan.error.gallery.restricted.previously" = "Unfortunately, you denied access to photos previously. Would you like to allow access now?";
+"qr.scan.error.gallery.title" = "Photos Access";

@@ -5,9 +5,11 @@ struct TransferScanViewFactory {
     static func createView(
         for delegate: TransferScanDelegate
     ) -> QRScannerViewProtocol? {
-        // TODO: get rid of format
-        let matcher = AddressQRMatcher(chainFormat: .substrate(42))
-        let qrService = QRCaptureService(delegate: nil)
+        let matcher = AddressQRMatcher()
+
+        let processingQueue = QRCaptureService.processingQueue
+        let qrService = QRCaptureService(delegate: nil, delegateQueue: processingQueue)
+        let qrExtractor = QRExtractionService(processingQueue: processingQueue)
 
         let wireframe = QRScannerWireframe()
 
@@ -18,6 +20,7 @@ struct TransferScanViewFactory {
             wireframe: wireframe,
             delegate: delegate,
             qrScanService: qrService,
+            qrExtractionService: qrExtractor,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
