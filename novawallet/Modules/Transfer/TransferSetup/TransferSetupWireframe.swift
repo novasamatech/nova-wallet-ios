@@ -23,7 +23,19 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
         try? command?.execute()
     }
 
-    func showRecepientScan(from _: TransferSetupViewProtocol?) {
-        // TODO:
+    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate) {
+        guard let scanView = TransferScanViewFactory.createView(for: delegate) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: scanView.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func hideRecepientScan(from view: TransferSetupViewProtocol?) {
+        view?.controller.dismiss(animated: true)
     }
 }
