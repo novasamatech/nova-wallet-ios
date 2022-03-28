@@ -708,3 +708,9 @@
 "recepient.scan.error" = "Не удалось извлеч адрес получателя";
 "recepient.scan.title" = "Поднесите QR";
 "recepient.scan.message" = "Поднесите QR код получателя";
+"qr.scan.upload.gallery" = "Загрузить из галереи";
+"qr.scan.error.no.info" = "Не получилось декодировать QR код";
+"qr.scan.error.invalid.image" = "Не удалось обработать изображение";
+"qr.scan.error.gallery.restricted" = "К сожалению, доступ к галерее ограничен.";
+"qr.scan.error.gallery.restricted.previously" = "К сожалению, вы ранее запретили доступ к галерее. Хотите предоставить доступ к галерее сейчас?";
+"qr.scan.error.gallery.title" = "Доступ к галерее";

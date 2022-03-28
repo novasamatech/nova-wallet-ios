@@ -46,12 +46,25 @@ final class QRScannerViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
+
         presenter.setup()
     }
 
     private func setupLocalization() {
         title = localizedTitle.value(for: selectedLocale)
         rootView.titleLabel.text = localizedMessage.value(for: selectedLocale)
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.qrScanUploadGallery(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+    }
+
+    private func setupHandlers() {
+        rootView.actionButton.addTarget(
+            self,
+            action: #selector(actionUpload),
+            for: .touchUpInside
+        )
     }
 
     private func configureVideoLayer(with captureSession: AVCaptureSession) {
@@ -84,6 +97,10 @@ final class QRScannerViewController: UIViewController, ViewHolder {
         }
 
         messageDissmisAnimator.animate(block: block, completionBlock: nil)
+    }
+
+    @objc private func actionUpload() {
+        presenter.uploadGallery()
     }
 }
 
