@@ -50,5 +50,7 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
         recepient: AccountAddress
     )
 
-    func showRecepientScan(from view: TransferSetupViewProtocol?)
+    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate)
+
+    func hideRecepientScan(from view: TransferSetupViewProtocol?)
 }
