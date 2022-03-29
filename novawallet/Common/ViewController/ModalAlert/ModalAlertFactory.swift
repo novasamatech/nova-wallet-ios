@@ -22,7 +22,7 @@ struct ModalAlertFactory {
         )
 
         let style = ModalAlertPresentationStyle(
-            backgroundColor: R.color.colorAlmostBlack()!,
+            backgroundColor: R.color.color0x1D1D20()!,
             backdropColor: .clear,
             cornerRadius: 8.0
         )
@@ -59,7 +59,7 @@ struct ModalAlertFactory {
         controller.view = contentView
 
         let style = ModalAlertPresentationStyle(
-            backgroundColor: R.color.colorAlmostBlack()!,
+            backgroundColor: R.color.color0x1D1D20()!,
             backdropColor: .clear,
             cornerRadius: 8.0
         )
