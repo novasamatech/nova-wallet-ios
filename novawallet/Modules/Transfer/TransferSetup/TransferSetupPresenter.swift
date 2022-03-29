@@ -243,8 +243,8 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
         interactor.change(recepient: recepientAddress)
     }
 
-    override func didReceiveSetup(error: Error) {
-        super.didReceiveSetup(error: error)
+    override func didReceiveError(_ error: Error) {
+        super.didReceiveError(error)
     }
 }
 
