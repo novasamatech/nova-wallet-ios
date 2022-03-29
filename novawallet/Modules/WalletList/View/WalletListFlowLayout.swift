@@ -189,9 +189,7 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
 
         var groupY: CGFloat = 0.0
 
-        let hasSummarySection = collectionView.numberOfItems(
-            inSection: SectionType.summary.index
-        ) > 0
+        let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
 
         if hasSummarySection {
             groupY = Constants.accountHeight + SectionType.summary.cellSpacing + Constants.totalBalanceHeight
@@ -228,10 +226,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
                 with: IndexPath(item: 0, section: section)
             )
 
-            let size = CGSize(
-                width: collectionView.frame.width - 2 * UIConstants.horizontalInset,
-                height: decorationHeight
-            )
+            let decorationWidth = max(collectionView.frame.width - 2 * UIConstants.horizontalInset, 0)
+            let size = CGSize(width: decorationWidth, height: decorationHeight)
 
             let origin = CGPoint(x: UIConstants.horizontalInset, y: positionY)
 
