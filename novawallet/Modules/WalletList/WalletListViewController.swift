@@ -64,6 +64,18 @@ final class WalletListViewController: UIViewController, ViewHolder {
         )
     }
 
+    private func reloadCollectionView() {
+        rootView.collectionView.reloadData()
+
+        let numberOfSection = rootView.collectionView.numberOfSections
+
+        let allSections = (0 ..< numberOfSection).map { $0 }
+
+        UIView.performWithoutAnimation {
+            rootView.collectionView.reloadSections(IndexSet(allSections))
+        }
+    }
+
     @objc func actionSelectAccount() {
         presenter.selectWallet()
     }
@@ -325,7 +337,7 @@ extension WalletListViewController: UICollectionViewDataSource {
 extension WalletListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            rootView.collectionView.reloadData()
+            reloadCollectionView()
         }
     }
 }
@@ -361,7 +373,7 @@ extension WalletListViewController: WalletListViewProtocol {
             }
 
         } else {
-            rootView.collectionView.reloadData()
+            reloadCollectionView()
         }
     }
 
