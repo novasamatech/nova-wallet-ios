@@ -107,6 +107,19 @@ final class TransferConfirmPresenter: TransferPresenter {
         view?.didReceiveAmount(viewModel: viewModel)
     }
 
+    private func presentOptions(for address: AccountAddress) {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentAccountOptions(
+            from: view,
+            address: address,
+            explorers: chainAsset.chain.explorers,
+            locale: selectedLocale
+        )
+    }
+
     // MARK: Subsclass
 
     override func refreshFee() {
@@ -119,10 +132,18 @@ final class TransferConfirmPresenter: TransferPresenter {
         interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
     }
 
-    override func didReceiveFee(_ fee: BigUInt) {
-        super.didReceiveFee(fee)
+    override func askFeeRetry() {
+        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.refreshFee()
+        }
+    }
 
-        provideNetworkFeeViewModel()
+    override func didReceiveFee(result: Result<BigUInt, Error>) {
+        super.didReceiveFee(result: result)
+
+        if case .success = result {
+            provideNetworkFeeViewModel()
+        }
     }
 
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -149,10 +170,12 @@ final class TransferConfirmPresenter: TransferPresenter {
         interactor.change(recepient: recepientAccountAddress)
     }
 
-    override func didReceiveSetup(error: Error) {
-        super.didReceiveSetup(error: error)
+    override func didReceiveError(_ error: Error) {
+        super.didReceiveError(error)
 
         view?.didStopLoading()
+
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }
 
@@ -194,6 +217,14 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
                 lastFee: strongSelf.fee
             )
         }
+    }
+
+    func showSenderActions() {
+        presentOptions(for: senderAccountAddress)
+    }
+
+    func showRecepientActions() {
+        presentOptions(for: recepientAccountAddress)
     }
 }
 

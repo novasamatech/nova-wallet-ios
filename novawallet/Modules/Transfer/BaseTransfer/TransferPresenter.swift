@@ -62,6 +62,10 @@ class TransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
+    func askFeeRetry() {
+        fatalError("Child classes must implement this method")
+    }
+
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
@@ -137,8 +141,13 @@ class TransferPresenter {
         recepientUtilityAssetBalance = balance
     }
 
-    func didReceiveFee(_ fee: BigUInt) {
-        self.fee = fee
+    func didReceiveFee(result: Result<BigUInt, Error>) {
+        switch result {
+        case let .success(fee):
+            self.fee = fee
+        case .failure:
+            askFeeRetry()
+        }
     }
 
     func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -159,5 +168,5 @@ class TransferPresenter {
 
     func didCompleteSetup() {}
 
-    func didReceiveSetup(error _: Error) {}
+    func didReceiveError(_: Error) {}
 }

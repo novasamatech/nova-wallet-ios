@@ -37,6 +37,18 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
             action: #selector(actionSubmit),
             for: .touchUpInside
         )
+
+        rootView.senderCell.addTarget(
+            self,
+            action: #selector(actionSender),
+            for: .touchUpInside
+        )
+
+        rootView.recepientCell.addTarget(
+            self,
+            action: #selector(actionRecepient),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
@@ -66,6 +78,14 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
 
     @objc func actionSubmit() {
         presenter.submit()
+    }
+
+    @objc func actionSender() {
+        presenter.showSenderActions()
+    }
+
+    @objc func actionRecepient() {
+        presenter.showRecepientActions()
     }
 }
 

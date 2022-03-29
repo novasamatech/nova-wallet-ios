@@ -259,7 +259,8 @@ class NewAmountInputView: BackgroundedContentControl {
             return iconView
         }
 
-        let imageView = AssetIconView()
+        let initFrame = CGRect(x: 0.0, y: 0.0, width: 2 * iconRadius, height: 2 * iconRadius)
+        let imageView = AssetIconView(frame: initFrame)
         imageView.contentInsets = UIEdgeInsets(top: 4.0, left: 4.0, bottom: 4.0, right: 4.0)
         imageView.backgroundView.cornerRadius = iconRadius
         contentView?.addSubview(imageView)
