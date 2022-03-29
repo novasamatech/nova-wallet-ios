@@ -8,17 +8,13 @@ struct TransferSetupViewFactory {
         recepient: DisplayAddress?,
         commandFactory: WalletCommandFactoryProtocol?
     ) -> TransferSetupViewProtocol? {
-        guard let interactor = createInteractor(for: chainAsset) else {
-            return nil
-        }
-
         let walletSettings = SelectedWalletSettings.shared
+        let accountRequest = chainAsset.chain.accountRequest()
 
         guard
-            let selectedAccount = walletSettings.value.fetch(
-                for: chainAsset.chain.accountRequest()
-            ),
-            let senderAccountAddress = selectedAccount.toAddress() else {
+            let selectedAccount = walletSettings.value.fetch(for: accountRequest),
+            let senderAccountAddress = selectedAccount.toAddress(),
+            let interactor = createInteractor(for: chainAsset, account: selectedAccount) else {
             return nil
         }
 
@@ -87,17 +83,9 @@ struct TransferSetupViewFactory {
     }
 
     private static func createInteractor(
-        for chainAsset: ChainAsset
+        for chainAsset: ChainAsset,
+        account: ChainAccountResponse
     ) -> TransferSetupInteractor? {
-        let walletSettings = SelectedWalletSettings.shared
-
-        guard
-            let selectedAccount = walletSettings.value.fetch(
-                for: chainAsset.chain.accountRequest()
-            ) else {
-            return nil
-        }
-
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = chainAsset.chain
         let asset = chainAsset.asset
@@ -108,54 +96,45 @@ struct TransferSetupViewFactory {
             return nil
         }
 
-        let operationManager = OperationManagerFacade.sharedManager
-        let logger = Logger.shared
         let repositoryFactory = SubstrateRepositoryFactory()
         let repository = repositoryFactory.createChainStorageItemRepository()
-        let eventCenter = EventCenter.shared
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
-            operationManager: operationManager,
-            logger: logger
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
         )
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
-            eventCenter: eventCenter,
-            operationQueue: operationQueue
+            eventCenter: EventCenter.shared,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.accountId,
+            accountId: account.accountId,
             chainFormat: chain.chainFormat,
-            cryptoType: selectedAccount.cryptoType,
+            cryptoType: account.cryptoType,
             runtimeRegistry: runtimeProvider,
             engine: connection,
-            operationManager: operationManager
+            operationManager: OperationManagerFacade.sharedManager
         )
 
-        let feeProxy = ExtrinsicFeeProxy()
-
-        let walletLocalSubscriptionFactory = WalletLocalSubscriptionFactory.shared
-        let priceLocalSubscriptionFactory = PriceProviderFactory.shared
-
         return TransferSetupInteractor(
-            selectedAccount: selectedAccount,
+            selectedAccount: account,
             chain: chain,
             asset: asset,
             runtimeService: runtimeProvider,
-            feeProxy: feeProxy,
+            feeProxy: ExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
-            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
-            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
-            operationQueue: operationQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
 }
