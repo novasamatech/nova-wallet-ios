@@ -59,7 +59,7 @@ final class TransferConfirmInteractor: TransferInteractor {
                 self?.eventCenter.notify(with: WalletNewTransactionInserted())
                 self?.submitionPresenter?.didCompleteSubmition()
             case let .failure(error):
-                self?.presenter?.didReceiveSetup(error: error)
+                self?.presenter?.didReceiveError(error)
             }
         }
     }
@@ -115,12 +115,12 @@ extension TransferConfirmInteractor: TransferConfirmInteractorInputProtocol {
                         }
 
                     case let .failure(error):
-                        self?.presenter?.didReceiveSetup(error: error)
+                        self?.presenter?.didReceiveError(error)
                     }
                 }
             )
         } catch {
-            presenter?.didReceiveSetup(error: error)
+            presenter?.didReceiveError(error)
         }
     }
 }

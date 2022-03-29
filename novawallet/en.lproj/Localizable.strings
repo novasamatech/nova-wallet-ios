@@ -714,3 +714,5 @@
 "qr.scan.error.gallery.restricted" = "Unfortunately, access to the photos is restricted.";
 "qr.scan.error.gallery.restricted.previously" = "Unfortunately, you denied access to photos previously. Would you like to allow access now?";
 "qr.scan.error.gallery.title" = "Photos Access";
+"common.db.subscription.error" = "Couldn't extract data from the database. Please, try again later.";
+"common.data.corruption.error" = "Unexpected corrupted data found. Please, contact support.";

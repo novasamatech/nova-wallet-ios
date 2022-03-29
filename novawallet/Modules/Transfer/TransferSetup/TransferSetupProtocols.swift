@@ -32,17 +32,17 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetSenderBalance(_ balance: AssetBalance)
     func didReceiveSendingAssetRecepientBalance(_ balance: AssetBalance)
     func didReceiveUtilityAssetRecepientBalance(_ balance: AssetBalance)
-    func didReceiveFee(_ fee: BigUInt)
+    func didReceiveFee(result: Result<BigUInt, Error>)
     func didReceiveSendingAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
     func didReceiveSendingAssetMinBalance(_ value: BigUInt)
     func didCompleteSetup()
-    func didReceiveSetup(error: Error)
+    func didReceiveError(_ error: Error)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, PhishingErrorPresentable {
+    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable {
     func showConfirmation(
         from view: TransferSetupViewProtocol?,
         chainAsset: ChainAsset,
