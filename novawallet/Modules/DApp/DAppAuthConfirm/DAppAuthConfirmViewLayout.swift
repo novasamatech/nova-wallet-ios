@@ -81,7 +81,7 @@ final class DAppAuthConfirmViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = R.color.colorAlmostBlack()!
+        backgroundColor = R.color.color0x1D1D20()
 
         setupLayout()
     }
