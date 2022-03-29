@@ -12,6 +12,8 @@ protocol TransferConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProt
 protocol TransferConfirmPresenterProtocol: AnyObject {
     func setup()
     func submit()
+    func showSenderActions()
+    func showRecepientActions()
 }
 
 protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
@@ -23,6 +25,6 @@ protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputP
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable {
+    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable {
     func complete(on view: TransferConfirmViewProtocol?, locale: Locale)
 }

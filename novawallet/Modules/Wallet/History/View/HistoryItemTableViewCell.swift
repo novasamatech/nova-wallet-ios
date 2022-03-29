@@ -205,7 +205,7 @@ extension HistoryItemTableViewCell: WalletViewProtocol {
                 removeStatusView()
             case .rejected:
                 addStatusViewIfNeeded()
-                statusImageView?.image = R.image.iconTxFailed()
+                statusImageView?.image = R.image.iconErrorFilled()
                 amountLabel.textColor = R.color.colorTransparentText()
             case .pending:
                 addStatusViewIfNeeded()
