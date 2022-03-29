@@ -136,7 +136,7 @@ DEPENDENCIES:
   - SoraKeystore (~> 1.0.0)
   - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
   - Sourcery (~> 1.4)
-  - Starscream (from `https://github.com/ERussel/Starscream.git`, commit `b9e69390d96e71427463469f47cdafb8c0db1b21`)
+  - Starscream (from `https://github.com/ERussel/Starscream.git`, commit `96b40350509663ecdbf82c8498b457303c6fc10d`)
   - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `16ebc9bedbf6eb58f9045b16bb31cddb90585059`)"
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
@@ -178,7 +178,7 @@ EXTERNAL SOURCES:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
   Starscream:
-    :commit: b9e69390d96e71427463469f47cdafb8c0db1b21
+    :commit: 96b40350509663ecdbf82c8498b457303c6fc10d
     :git: https://github.com/ERussel/Starscream.git
   SubstrateSdk:
     :commit: 16ebc9bedbf6eb58f9045b16bb31cddb90585059
@@ -197,7 +197,7 @@ CHECKOUT OPTIONS:
     :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
   Starscream:
-    :commit: b9e69390d96e71427463469f47cdafb8c0db1b21
+    :commit: 96b40350509663ecdbf82c8498b457303c6fc10d
     :git: https://github.com/ERussel/Starscream.git
   SubstrateSdk:
     :commit: 16ebc9bedbf6eb58f9045b16bb31cddb90585059
@@ -240,6 +240,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: 2800764b8e4180c6cc92b616052a1e255593269b
+PODFILE CHECKSUM: dd848907f30fa4738bc8df1f0caee6736d77ff35
 
 COCOAPODS: 1.11.2
