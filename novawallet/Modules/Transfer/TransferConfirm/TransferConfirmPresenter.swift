@@ -132,10 +132,18 @@ final class TransferConfirmPresenter: TransferPresenter {
         interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
     }
 
-    override func didReceiveFee(_ fee: BigUInt) {
-        super.didReceiveFee(fee)
+    override func askFeeRetry() {
+        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.refreshFee()
+        }
+    }
 
-        provideNetworkFeeViewModel()
+    override func didReceiveFee(result: Result<BigUInt, Error>) {
+        super.didReceiveFee(result: result)
+
+        if case .success = result {
+            provideNetworkFeeViewModel()
+        }
     }
 
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -166,6 +174,8 @@ final class TransferConfirmPresenter: TransferPresenter {
         super.didReceiveError(error)
 
         view?.didStopLoading()
+
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }
 

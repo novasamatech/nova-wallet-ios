@@ -168,7 +168,7 @@ class TransferInteractor: RuntimeConstantFetching {
 
                     self?.continueSetup()
                 } catch {
-                    self?.presenter?.didReceiveError(error)
+                    self?.presenter?.didReceiveError(CommonError.dataCorruption)
                 }
             }
         }
@@ -443,7 +443,7 @@ extension TransferInteractor {
                 return newBuilder
             }
         } catch {
-            presenter?.didReceiveError(error)
+            presenter?.didReceiveError(CommonError.dataCorruption)
         }
     }
 
@@ -494,8 +494,8 @@ extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
                     presenter?.didReceiveUtilityAssetRecepientBalance(balance)
                 }
             }
-        case let .failure(error):
-            presenter?.didReceiveError(error)
+        case .failure:
+            presenter?.didReceiveError(CommonError.databaseSubscription)
         }
     }
 }
@@ -509,8 +509,8 @@ extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
             } else if chain.utilityAssets().first?.priceId == priceId {
                 presenter?.didReceiveUtilityAssetPrice(priceData)
             }
-        case let .failure(error):
-            presenter?.didReceiveError(error)
+        case .failure:
+            presenter?.didReceiveError(CommonError.databaseSubscription)
         }
     }
 }
@@ -523,9 +523,9 @@ extension TransferInteractor: ExtrinsicFeeProxyDelegate {
         switch result {
         case let .success(info):
             let fee = BigUInt(info.fee) ?? 0
-            presenter?.didReceiveFee(fee)
+            presenter?.didReceiveFee(result: .success(fee))
         case let .failure(error):
-            presenter?.didReceiveError(error)
+            presenter?.didReceiveFee(result: .failure(error))
         }
     }
 }

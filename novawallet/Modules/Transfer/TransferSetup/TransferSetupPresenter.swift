@@ -205,18 +205,26 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
         interactor.estimateFee(for: amount, recepient: recepientAddress)
     }
 
+    override func askFeeRetry() {
+        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.refreshFee()
+        }
+    }
+
     override func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
         super.didReceiveSendingAssetSenderBalance(balance)
 
         updateTransferableBalance()
     }
 
-    override func didReceiveFee(_ fee: BigUInt) {
-        super.didReceiveFee(fee)
+    override func didReceiveFee(result: Result<BigUInt, Error>) {
+        super.didReceiveFee(result: result)
 
-        updateFeeView()
-        provideAmountInputViewModelIfRate()
-        updateAmountPriceView()
+        if case .success = result {
+            updateFeeView()
+            provideAmountInputViewModelIfRate()
+            updateAmountPriceView()
+        }
     }
 
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
@@ -245,6 +253,8 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
 
     override func didReceiveError(_ error: Error) {
         super.didReceiveError(error)
+
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
     }
 }
 
