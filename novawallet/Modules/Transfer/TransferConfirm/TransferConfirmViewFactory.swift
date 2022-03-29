@@ -2,6 +2,7 @@ import Foundation
 import SoraFoundation
 import SoraKeystore
 
+// swiftlint:disable function_body_length
 struct TransferConfirmViewFactory {
     static func createView(
         chainAsset: ChainAsset,
@@ -150,3 +151,5 @@ struct TransferConfirmViewFactory {
         )
     }
 }
+
+// swiftlint:enable function_body_length
