@@ -64,18 +64,6 @@ final class WalletListViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func reloadCollectionView() {
-        rootView.collectionView.reloadData()
-
-        let numberOfSection = rootView.collectionView.numberOfSections
-
-        let allSections = (0 ..< numberOfSection).map { $0 }
-
-        UIView.performWithoutAnimation {
-            rootView.collectionView.reloadSections(IndexSet(allSections))
-        }
-    }
-
     @objc func actionSelectAccount() {
         presenter.selectWallet()
     }
@@ -337,7 +325,7 @@ extension WalletListViewController: UICollectionViewDataSource {
 extension WalletListViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            reloadCollectionView()
+            rootView.collectionView.reloadData()
         }
     }
 }
@@ -348,43 +336,19 @@ extension WalletListViewController: WalletListViewProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel) {
         headerViewModel = viewModel
 
-        let headerSection = WalletListFlowLayout.SectionType.summary.index
-
-        UIView.performWithoutAnimation {
-            rootView.collectionView.reloadSections([headerSection])
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didReceiveGroups(state: WalletListGroupState) {
-        let oldState = groupsState
         groupsState = state
 
-        if
-            case let .list(oldGroups) = oldState,
-            case let .list(newGroups) = groupsState,
-            oldGroups.count == newGroups.count {
-            let sections: IndexSet = (0 ..< newGroups.count).reduce(IndexSet()) { result, index in
-                let sectionIndex = WalletListFlowLayout.SectionType.assetsStartingSection + index
-                return result.union([sectionIndex])
-            }
-
-            UIView.performWithoutAnimation {
-                rootView.collectionView.reloadSections(sections)
-            }
-
-        } else {
-            reloadCollectionView()
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didReceiveNft(viewModel: WalletListNftsViewModel?) {
         nftViewModel = viewModel
 
-        let nftSection = WalletListFlowLayout.SectionType.nfts.index
-
-        UIView.performWithoutAnimation {
-            rootView.collectionView.reloadSections([nftSection])
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didCompleteRefreshing() {
