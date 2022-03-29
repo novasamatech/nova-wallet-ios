@@ -2,6 +2,7 @@ import Foundation
 import SoraFoundation
 import CommonWallet
 
+// swiftlint:disable function_body_length
 struct TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
@@ -138,3 +139,5 @@ struct TransferSetupViewFactory {
         )
     }
 }
+
+// swiftlint:enable function_body_length
