@@ -159,5 +159,5 @@ class TransferPresenter {
 
     func didCompleteSetup() {}
 
-    func didReceiveSetup(error _: Error) {}
+    func didReceiveError(_: Error) {}
 }

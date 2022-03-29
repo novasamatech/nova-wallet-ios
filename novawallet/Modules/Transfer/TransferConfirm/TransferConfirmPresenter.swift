@@ -162,8 +162,8 @@ final class TransferConfirmPresenter: TransferPresenter {
         interactor.change(recepient: recepientAccountAddress)
     }
 
-    override func didReceiveSetup(error: Error) {
-        super.didReceiveSetup(error: error)
+    override func didReceiveError(_ error: Error) {
+        super.didReceiveError(error)
 
         view?.didStopLoading()
     }
