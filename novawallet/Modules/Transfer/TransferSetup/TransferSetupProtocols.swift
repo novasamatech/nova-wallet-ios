@@ -38,7 +38,7 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
     func didReceiveSendingAssetMinBalance(_ value: BigUInt)
     func didCompleteSetup()
-    func didReceiveSetup(error: Error)
+    func didReceiveError(_ error: Error)
 }
 
 protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,

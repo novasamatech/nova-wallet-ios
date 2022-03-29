@@ -168,7 +168,7 @@ class TransferInteractor: RuntimeConstantFetching {
 
                     self?.continueSetup()
                 } catch {
-                    self?.presenter?.didReceiveSetup(error: error)
+                    self?.presenter?.didReceiveError(error)
                 }
             }
         }
@@ -260,7 +260,7 @@ class TransferInteractor: RuntimeConstantFetching {
                 case let .success(minBalance):
                     self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
                 case let .failure(error):
-                    self?.presenter?.didReceiveSetup(error: error)
+                    self?.presenter?.didReceiveError(error)
                 }
             }
         }
@@ -271,7 +271,7 @@ class TransferInteractor: RuntimeConstantFetching {
                 case let .success(minBalance):
                     self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
                 case let .failure(error):
-                    self?.presenter?.didReceiveSetup(error: error)
+                    self?.presenter?.didReceiveError(error)
                 }
             }
         }
@@ -443,7 +443,7 @@ extension TransferInteractor {
                 return newBuilder
             }
         } catch {
-            presenter?.didReceiveSetup(error: error)
+            presenter?.didReceiveError(error)
         }
     }
 
@@ -495,7 +495,7 @@ extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
                 }
             }
         case let .failure(error):
-            presenter?.didReceiveSetup(error: error)
+            presenter?.didReceiveError(error)
         }
     }
 }
@@ -510,7 +510,7 @@ extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
                 presenter?.didReceiveUtilityAssetPrice(priceData)
             }
         case let .failure(error):
-            presenter?.didReceiveSetup(error: error)
+            presenter?.didReceiveError(error)
         }
     }
 }
@@ -525,7 +525,7 @@ extension TransferInteractor: ExtrinsicFeeProxyDelegate {
             let fee = BigUInt(info.fee) ?? 0
             presenter?.didReceiveFee(fee)
         case let .failure(error):
-            presenter?.didReceiveSetup(error: error)
+            presenter?.didReceiveError(error)
         }
     }
 }
