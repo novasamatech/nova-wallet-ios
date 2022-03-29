@@ -89,14 +89,12 @@ final class WalletListPresenter {
                     return .cached(value: items)
                 }
 
-                let nftBalance = calculateNftBalance(for: ChainAsset(chain: chain, asset: asset))
-
                 let totalBalance: BigUInt
 
                 if case let .success(assetBalance) = balanceResults[chainAssetId] {
-                    totalBalance = nftBalance + assetBalance
+                    totalBalance = assetBalance
                 } else {
-                    totalBalance = nftBalance
+                    totalBalance = 0
                 }
 
                 let newItem = WalletListAssetAccountPrice(
@@ -113,12 +111,10 @@ final class WalletListPresenter {
                     return .cached(value: items)
                 }
 
-                let nftBalance = calculateNftBalance(for: ChainAsset(chain: chain, asset: asset))
-
                 if case let .success(assetBalance) = balanceResults[chainAssetId] {
                     let newItem = WalletListAssetAccountPrice(
                         assetInfo: asset.displayInfo,
-                        balance: nftBalance + assetBalance,
+                        balance: assetBalance,
                         price: keyValue.value
                     )
 
@@ -126,7 +122,7 @@ final class WalletListPresenter {
                 } else {
                     let newItem = WalletListAssetAccountPrice(
                         assetInfo: asset.displayInfo,
-                        balance: nftBalance,
+                        balance: 0,
                         price: keyValue.value
                     )
 
@@ -282,7 +278,6 @@ final class WalletListPresenter {
     }
 
     private func updateNftView() {
-        provideHeaderViewModel()
         provideNftViewModel()
     }
 
