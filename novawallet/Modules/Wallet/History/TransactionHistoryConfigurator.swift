@@ -5,11 +5,11 @@ import SoraFoundation
 final class TransactionHistoryConfigurator {
     private lazy var transactionCellStyle: TransactionCellStyleProtocol = {
         let title = WalletTextStyle(
-            font: UIFont.p1Paragraph,
+            font: .semiBoldBody,
             color: R.color.colorWhite()!
         )
         let amount = WalletTextStyle(
-            font: UIFont.p1Paragraph,
+            font: .p1Paragraph,
             color: R.color.colorWhite()!
         )
         let style = WalletTransactionStatusStyle(
@@ -34,8 +34,8 @@ final class TransactionHistoryConfigurator {
 
     private lazy var headerStyle: TransactionHeaderStyleProtocol = {
         let title = WalletTextStyle(
-            font: UIFont.capsTitle,
-            color: R.color.colorWhite()!
+            font: .semiBoldCaps2,
+            color: R.color.colorTransparentText()!
         )
         return TransactionHeaderStyle(
             background: .clear,
@@ -48,12 +48,12 @@ final class TransactionHistoryConfigurator {
     let viewModelFactory: TransactionHistoryViewModelFactory
 
     init(
-        chainFormat: ChainFormat,
+        chainAsset: ChainAsset,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
         viewModelFactory = TransactionHistoryViewModelFactory(
-            chainFormat: chainFormat,
+            chainAsset: chainAsset,
             amountFormatterFactory: amountFormatterFactory,
             dateFormatter: DateFormatter.txHistory,
             assets: assets

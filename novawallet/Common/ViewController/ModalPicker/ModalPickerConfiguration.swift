@@ -3,14 +3,14 @@ import SoraUI
 
 extension ModalSheetPresentationStyle {
     static var fearless: ModalSheetPresentationStyle {
-        let indicatorSize = CGSize(width: 35.0, height: 2.0)
+        let indicatorSize = CGSize(width: 32.0, height: 3.0)
         let headerStyle = ModalSheetPresentationHeaderStyle(
             preferredHeight: 20.0,
-            backgroundColor: R.color.colorAlmostBlack()!,
-            cornerRadius: 20.0,
-            indicatorVerticalOffset: 2.0,
+            backgroundColor: R.color.color0x1D1D20()!,
+            cornerRadius: 16.0,
+            indicatorVerticalOffset: 4.0,
             indicatorSize: indicatorSize,
-            indicatorColor: R.color.colorLightGray()!
+            indicatorColor: R.color.colorWhite32()!
         )
         let style = ModalSheetPresentationStyle(
             backdropColor: R.color.colorScrim()!,

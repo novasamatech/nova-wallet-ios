@@ -10,6 +10,7 @@ struct AssetBalance: Equatable {
     let frozenInPlank: BigUInt
 
     var totalInPlank: BigUInt { freeInPlank + reservedInPlank }
+    var transferable: BigUInt { freeInPlank > frozenInPlank ? freeInPlank - frozenInPlank : 0 }
 }
 
 extension AssetBalance: Identifiable {
@@ -19,4 +20,14 @@ extension AssetBalance: Identifiable {
     }
 
     var identifier: String { Self.createIdentifier(for: chainAssetId, accountId: accountId) }
+
+    static func createZero(for chainAssetId: ChainAssetId, accountId: AccountId) -> AssetBalance {
+        AssetBalance(
+            chainAssetId: chainAssetId,
+            accountId: accountId,
+            freeInPlank: 0,
+            reservedInPlank: 0,
+            frozenInPlank: 0
+        )
+    }
 }

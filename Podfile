@@ -3,7 +3,7 @@ platform :ios, '13.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
-  pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '02b0e2f658331f177e35af81449066ef97bf5401'
+  pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '16ebc9bedbf6eb58f9045b16bb31cddb90585059'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
@@ -20,13 +20,13 @@ abstract_target 'novawalletAll' do
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
-  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => 'b9e69390d96e71427463469f47cdafb8c0db1b21'
+  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
 
   target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '02b0e2f658331f177e35af81449066ef97bf5401'
+    pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '16ebc9bedbf6eb58f9045b16bb31cddb90585059'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
@@ -34,7 +34,7 @@ abstract_target 'novawalletAll' do
     pod 'RobinHood', '~> 2.6.0'
     pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
     pod 'Sourcery', '~> 1.4'
-    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => 'b9e69390d96e71427463469f47cdafb8c0db1b21'
+    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
 
   end
 

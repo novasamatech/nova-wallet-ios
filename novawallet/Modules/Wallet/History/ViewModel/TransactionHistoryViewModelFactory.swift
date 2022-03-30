@@ -9,20 +9,22 @@ enum TransactionHistoryViewModelFactoryError: Error {
 }
 
 final class TransactionHistoryViewModelFactory {
-    let chainFormat: ChainFormat
+    let chainAsset: ChainAsset
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let dateFormatter: LocalizableResource<DateFormatter>
     let assets: [WalletAsset]
 
+    var chainFormat: ChainFormat { chainAsset.chain.chainFormat }
+
     let iconGenerator = PolkadotIconGenerator()
 
     init(
-        chainFormat: ChainFormat,
+        chainAsset: ChainAsset,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         dateFormatter: LocalizableResource<DateFormatter>,
         assets: [WalletAsset]
     ) {
-        self.chainFormat = chainFormat
+        self.chainAsset = chainAsset
         self.amountFormatterFactory = amountFormatterFactory
         self.dateFormatter = dateFormatter
         self.assets = assets
@@ -46,27 +48,15 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
-        let icon: UIImage?
+        let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
 
-        if let accountId = try? data.peerName?.toAccountId(using: chainFormat) {
-            icon = try? iconGenerator.generateFromAccountId(accountId)
-                .imageWithFillColor(
-                    R.color.colorWhite()!,
-                    size: UIConstants.normalAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
-        } else {
-            icon = nil
-        }
+        let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
 
-        if let currentIcon = icon {
-            imageViewModel = WalletStaticImageViewModel(staticImage: currentIcon)
-        } else {
-            imageViewModel = nil
-        }
-
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         let subtitle = R.string.localizable.transferTitle(preferredLanguages: locale.rLanguages)
 
@@ -100,15 +90,14 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
+        let icon = R.image.iconRewardOperation()
+        let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
 
-        if let icon = R.image.iconRewardAndSlashes() {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
-        } else {
-            imageViewModel = nil
-        }
-
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         let title = txType == .reward ?
             R.string.localizable.stakingReward(preferredLanguages: locale.rLanguages) :
@@ -146,15 +135,14 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
+        let iconUrl = chainAsset.chain.icon
+        let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
 
-        if let icon = R.image.iconExtrinsic() {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
-        } else {
-            imageViewModel = nil
-        }
-
-        let command = commandFactory.prepareTransactionDetailsCommand(with: data)
+        let command = OperationDetailsCommand(
+            commandFactory: commandFactory,
+            txData: data,
+            chainAsset: chainAsset
+        )
 
         return HistoryItemViewModel(
             title: data.peerLastName?.displayCall ?? "",
