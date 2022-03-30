@@ -63,5 +63,10 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
         delegate: DAppAuthDelegate
     )
 
+    func presentPhishingDetected(
+        from view: DAppBrowserViewProtocol?,
+        delegate: DAppPhishingViewDelegate
+    )
+
     func close(view: DAppBrowserViewProtocol?)
 }
