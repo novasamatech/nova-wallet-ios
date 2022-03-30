@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 
 final class WalletHistoryBackgroundView: TriangularedBlurView {
-    let minimizedSideLength: CGFloat = 10.0
+    let minimizedSideLength: CGFloat = 12.0
 }
 
 extension WalletHistoryBackgroundView: HistoryBackgroundViewProtocol {

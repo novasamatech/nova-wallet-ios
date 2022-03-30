@@ -22,6 +22,14 @@ protocol AccountFetching {
         operationManager: OperationManagerProtocol,
         closure: @escaping (Result<AccountItem?, Error>) -> Void
     )
+
+    func fetchDisplayAddress(
+        for accountIds: [AccountId],
+        chain: ChainModel,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue,
+        completion: @escaping ((Result<[DisplayAddress], Error>) -> Void)
+    ) -> CancellableCall
 }
 
 extension AccountFetching {
@@ -182,5 +190,61 @@ extension AccountFetching {
         }
 
         operationManager.enqueue(operations: [fetchOperation, mapOperation], in: .transient)
+    }
+
+    func fetchDisplayAddress(
+        for accountIds: [AccountId],
+        chain: ChainModel,
+        repository: AnyDataProviderRepository<MetaAccountModel>,
+        operationQueue: OperationQueue,
+        completion: @escaping ((Result<[DisplayAddress], Error>) -> Void)
+    ) -> CancellableCall {
+        let allAccountsOperation = repository.fetchAllOperation(
+            with: RepositoryFetchOptions()
+        )
+
+        let mapOperation = ClosureOperation<[DisplayAddress]> {
+            let metaAccounts = try allAccountsOperation.extractNoCancellableResultData()
+
+            return try accountIds.map { accountId in
+                let optionAccount = metaAccounts.first { metaAccount in
+                    metaAccount.substrateAccountId == accountId ||
+                        metaAccount.ethereumAddress == accountId ||
+                        metaAccount.chainAccounts.contains { chainAccount in
+                            chainAccount.accountId == accountId && chainAccount.chainId == chain.chainId
+                        }
+                }
+
+                let address = try accountId.toAddress(using: chain.chainFormat)
+
+                if let account = optionAccount {
+                    return DisplayAddress(address: address, username: account.name)
+                } else {
+                    return DisplayAddress(address: address, username: "")
+                }
+            }
+        }
+
+        mapOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let displayAddresses = try mapOperation.extractNoCancellableResultData()
+                    completion(.success(displayAddresses))
+                } catch {
+                    completion(.failure(error))
+                }
+            }
+        }
+
+        mapOperation.addDependency(allAccountsOperation)
+
+        let wrapper = CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [allAccountsOperation]
+        )
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+
+        return wrapper
     }
 }

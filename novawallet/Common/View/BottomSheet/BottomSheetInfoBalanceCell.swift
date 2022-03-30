@@ -11,15 +11,15 @@ final class BottomSheetInfoBalanceCell: BottomSheetInfoTableCell, ModalPickerCel
 
     let amountLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorWhite()
         return label
     }()
 
     let priceLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorGray()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorTransparentText()
         return label
     }()
 
