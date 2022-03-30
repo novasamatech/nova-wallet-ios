@@ -24,7 +24,7 @@ jobs:
           path: Pods
           key: ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pods-
+            ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}
 
       - name: Install Cocoapods
         if: steps.cache-cocoapods.outputs.cache-hit != 'true'
