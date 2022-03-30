@@ -812,6 +812,10 @@
 		8476C9E025EF94F2003EEAE1 /* StakingViewModelFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476C9DF25EF94F2003EEAE1 /* StakingViewModelFacade.swift */; };
 		8476CA0B25EFB17A003EEAE1 /* RewardCalculatorServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476CA0A25EFB17A003EEAE1 /* RewardCalculatorServiceStub.swift */; };
 		8476D39827F431D5004D9A7A /* MockApplicationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39727F431D5004D9A7A /* MockApplicationService.swift */; };
+		8476D39B27F43E30004D9A7A /* PhishingSiteVerifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39A27F43E30004D9A7A /* PhishingSiteVerifier.swift */; };
+		8476D39D27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */; };
+		8476D39F27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D39E27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift */; };
+		8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */; };
 		84786DA825F9F58E0089DFF7 /* EraValidatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */; };
 		84786E1025FA20D30089DFF7 /* StakingAccountResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786E0F25FA20D30089DFF7 /* StakingAccountResolver.swift */; };
 		84786E1525FA57B90089DFF7 /* StakingLedger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786E1425FA57B90089DFF7 /* StakingLedger.swift */; };
@@ -2872,6 +2876,10 @@
 		8476C9DF25EF94F2003EEAE1 /* StakingViewModelFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingViewModelFacade.swift; sourceTree = "<group>"; };
 		8476CA0A25EFB17A003EEAE1 /* RewardCalculatorServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardCalculatorServiceStub.swift; sourceTree = "<group>"; };
 		8476D39727F431D5004D9A7A /* MockApplicationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockApplicationService.swift; sourceTree = "<group>"; };
+		8476D39A27F43E30004D9A7A /* PhishingSiteVerifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSiteVerifier.swift; sourceTree = "<group>"; };
+		8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PhishingSiteVerifier+Init.swift"; sourceTree = "<group>"; };
+		8476D39E27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppMetamaskPhishingDetectedState.swift; sourceTree = "<group>"; };
+		8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserPhishingDetectedState.swift; sourceTree = "<group>"; };
 		84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EraValidatorService+Fetch.swift"; sourceTree = "<group>"; };
 		84786E0F25FA20D30089DFF7 /* StakingAccountResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAccountResolver.swift; sourceTree = "<group>"; };
 		84786E1425FA57B90089DFF7 /* StakingLedger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingLedger.swift; sourceTree = "<group>"; };
@@ -4471,6 +4479,8 @@
 				84F3B27327F4130800D64CF5 /* PhishingSites.swift */,
 				84F3B27527F4175500D64CF5 /* PhishingSite.swift */,
 				84F3B27927F4187300D64CF5 /* PhishingSitesSyncService.swift */,
+				8476D39A27F43E30004D9A7A /* PhishingSiteVerifier.swift */,
+				8476D39C27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift */,
 			);
 			path = GitHubPhishingService;
 			sourceTree = "<group>";
@@ -5226,6 +5236,7 @@
 				842BDB2D278C506F00AB4B5A /* DAppBrowserDeniedState.swift */,
 				842BDB2F278C57EB00AB4B5A /* DAppBrowserSigningState.swift */,
 				84C1FA15278C9BB1008B2711 /* DAppBrowserAccountSubscribingState.swift */,
+				8476D3A027F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift */,
 			);
 			path = PolkadotExtensionStates;
 			sourceTree = "<group>";
@@ -7417,6 +7428,7 @@
 				849976CB27B3905E00B14A6C /* DAppMetamaskDeniedState.swift */,
 				849976CD27B3921800B14A6C /* DAppMetamaskAuthorizedState.swift */,
 				846F757D27B53F5100536547 /* DAppMetamaskSigningState.swift */,
+				8476D39E27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift */,
 			);
 			path = MetamaskStates;
 			sourceTree = "<group>";
@@ -10542,6 +10554,7 @@
 				F4CE0F9A27343FFD0094CD8A /* AcalaContributionConfirmVC.swift in Sources */,
 				8493D0E126FF4F5000A28008 /* ScaleCoder+Extension.swift in Sources */,
 				8428766724ADF22000D91AD8 /* TransformAnimator+Common.swift in Sources */,
+				8476D39F27F4582A004D9A7A /* DAppMetamaskPhishingDetectedState.swift in Sources */,
 				AEFC6D6F2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift in Sources */,
 				84AA004526C6A04A00BCB4DC /* CommonTypesSyncService.swift in Sources */,
 				8490147424A94A37008F705E /* RootProtocol.swift in Sources */,
@@ -10562,6 +10575,7 @@
 				F484FF5F264BA2720015320F /* ControllerAccountConfirmationLayout.swift in Sources */,
 				841494402604E71C000D8D1A /* TotalRewardItem.swift in Sources */,
 				84DA3B1224C6D29100B5E27F /* RuntimeVersion.swift in Sources */,
+				8476D3A127F4598D004D9A7A /* DAppBrowserPhishingDetectedState.swift in Sources */,
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */,
@@ -11062,6 +11076,7 @@
 				8419377B25441CB600CFA50C /* ReceiveViewFactory.swift in Sources */,
 				8436EDE225895804004D9E97 /* RampProvider.swift in Sources */,
 				849013AC24A80984008F705E /* AppDelegate.swift in Sources */,
+				8476D39D27F44E73004D9A7A /* PhishingSiteVerifier+Init.swift in Sources */,
 				84CE69E82566750D00559427 /* ByteLengthProcessor.swift in Sources */,
 				8494D87A2525350000614D8F /* SubscanStatusData.swift in Sources */,
 				8499FEDA27BFDB8C00712589 /* NFTStreamableSource.swift in Sources */,
@@ -11876,6 +11891,7 @@
 				BD571417BD18C711B76E1D62 /* ExportSeedWireframe.swift in Sources */,
 				8463A73825E3AA47003B8160 /* AccountInfo.swift in Sources */,
 				ABA3D873BBECB7F4BD670872 /* ExportSeedPresenter.swift in Sources */,
+				8476D39B27F43E30004D9A7A /* PhishingSiteVerifier.swift in Sources */,
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
 				886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */,
 				C20ED4531583D0C8E38715E0 /* PurchaseProtocols.swift in Sources */,
