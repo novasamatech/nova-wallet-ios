@@ -122,7 +122,9 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     }
 
     func didDetectPhishing(host: String) {
-        logger?.info("Did detect phishing host: \(host)")
+        logger?.warning("Did detect phishing host: \(host)")
+
+        wireframe.presentPhishingDetected(from: view, delegate: self)
     }
 }
 
@@ -144,5 +146,11 @@ extension DAppBrowserPresenter: DAppSearchDelegate {
 extension DAppBrowserPresenter: DAppAuthDelegate {
     func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest) {
         interactor.processAuth(response: response, forTransport: request.transportName)
+    }
+}
+
+extension DAppBrowserPresenter: DAppPhishingViewDelegate {
+    func dappPhishingViewDidHide() {
+        wireframe.close(view: view)
     }
 }
