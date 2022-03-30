@@ -29,10 +29,14 @@ class DAppListTests: XCTestCase {
             item: DAppListGenerator.createAnyDAppList()
         )
 
+        let phishingSyncService = MockApplicationServiceProtocol()
+        phishingSyncService.applyDefaultStub()
+
         let interactor = DAppListInteractor(
             walletSettings: walletSettings,
             eventCenter: EventCenter.shared,
-            dAppProvider: AnySingleValueProvider(dAppProvider)
+            dAppProvider: AnySingleValueProvider(dAppProvider),
+            phishingSyncService: phishingSyncService
         )
 
         let presenter = DAppListPresenter(
@@ -83,5 +87,7 @@ class DAppListTests: XCTestCase {
         case .loaded:
             break
         }
+
+        verify(phishingSyncService, times(1)).setup()
     }
 }
