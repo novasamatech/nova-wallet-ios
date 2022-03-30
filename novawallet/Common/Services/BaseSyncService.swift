@@ -9,7 +9,7 @@ class BaseSyncService {
     private(set) var retryAttempt: Int = 0
     private(set) var isSyncing: Bool = false
     private(set) var isActive: Bool = false
-    private(set) let mutex = NSLock()
+    let mutex = NSLock()
 
     private lazy var scheduler: Scheduler = {
         let scheduler = Scheduler(with: self, callbackQueue: DispatchQueue.global())
