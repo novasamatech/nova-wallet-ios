@@ -33,34 +33,19 @@ class PhishingSitesSyncService: BaseSyncService {
 
         mapOperation.addDependency(networkOperation)
 
-        let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
-
-        let diffOperation = ClosureOperation<DataChangesDiffCalculator<PhishingSite>.Changes> {
-            let remoteItems = try mapOperation.extractNoCancellableResultData()
-            let localItems = try fetchOperation.extractNoCancellableResultData()
-
-            let calculator = DataChangesDiffCalculator<PhishingSite>()
-            return calculator.diff(newItems: remoteItems, oldItems: localItems)
+        let replaceOperation = repository.replaceOperation {
+            try mapOperation.extractNoCancellableResultData()
         }
 
-        diffOperation.addDependency(fetchOperation)
-        diffOperation.addDependency(mapOperation)
+        replaceOperation.addDependency(mapOperation)
 
-        let saveOperation = repository.saveOperation({
-            try diffOperation.extractNoCancellableResultData().newOrUpdatedItems
-        }, {
-            try diffOperation.extractNoCancellableResultData().removedItems.map { $0.identifier }
-        })
-
-        saveOperation.addDependency(diffOperation)
-
-        saveOperation.completionBlock = { [weak self] in
-            guard !saveOperation.isCancelled else {
+        replaceOperation.completionBlock = { [weak self] in
+            guard !replaceOperation.isCancelled else {
                 return
             }
 
             do {
-                try saveOperation.extractNoCancellableResultData()
+                try replaceOperation.extractNoCancellableResultData()
 
                 self?.clearAndComplete(nil)
             } catch {
@@ -69,8 +54,8 @@ class PhishingSitesSyncService: BaseSyncService {
         }
 
         let wrapper = CompoundOperationWrapper(
-            targetOperation: saveOperation,
-            dependencies: [diffOperation, fetchOperation, mapOperation, networkOperation]
+            targetOperation: replaceOperation,
+            dependencies: [networkOperation, mapOperation]
         )
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
