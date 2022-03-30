@@ -1443,6 +1443,11 @@
 		84F30EF1260001A600039D09 /* DataProviderChange+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F30EF0260001A600039D09 /* DataProviderChange+Helper.swift */; };
 		84F30F4A2600C81C00039D09 /* StakingMainInterator+Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F30F492600C81C00039D09 /* StakingMainInterator+Subscription.swift */; };
 		84F30F4F2600C9BC00039D09 /* StakingMainInteractor+InputProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F30F4E2600C9BC00039D09 /* StakingMainInteractor+InputProtocol.swift */; };
+		84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27327F4130800D64CF5 /* PhishingSites.swift */; };
+		84F3B27627F4175500D64CF5 /* PhishingSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27527F4175500D64CF5 /* PhishingSite.swift */; };
+		84F3B27827F4179A00D64CF5 /* PhishingSiteMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */; };
+		84F3B27A27F4187300D64CF5 /* PhishingSitesSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27927F4187300D64CF5 /* PhishingSitesSyncService.swift */; };
+		84F3B27C27F419B100D64CF5 /* BaseSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */; };
 		84F4386125D9A83100AEDA56 /* TimeInterval+Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386025D9A83100AEDA56 /* TimeInterval+Time.swift */; };
 		84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386525D9B8C600AEDA56 /* TypeRegistryPrepared.swift */; };
 		84F4386B25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386A25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift */; };
@@ -3502,6 +3507,11 @@
 		84F30EF0260001A600039D09 /* DataProviderChange+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataProviderChange+Helper.swift"; sourceTree = "<group>"; };
 		84F30F492600C81C00039D09 /* StakingMainInterator+Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainInterator+Subscription.swift"; sourceTree = "<group>"; };
 		84F30F4E2600C9BC00039D09 /* StakingMainInteractor+InputProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingMainInteractor+InputProtocol.swift"; sourceTree = "<group>"; };
+		84F3B27327F4130800D64CF5 /* PhishingSites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSites.swift; sourceTree = "<group>"; };
+		84F3B27527F4175500D64CF5 /* PhishingSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSite.swift; sourceTree = "<group>"; };
+		84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSiteMapper.swift; sourceTree = "<group>"; };
+		84F3B27927F4187300D64CF5 /* PhishingSitesSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSitesSyncService.swift; sourceTree = "<group>"; };
+		84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseSyncService.swift; sourceTree = "<group>"; };
 		84F4386025D9A83100AEDA56 /* TimeInterval+Time.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Time.swift"; sourceTree = "<group>"; };
 		84F4386525D9B8C600AEDA56 /* TypeRegistryPrepared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeRegistryPrepared.swift; sourceTree = "<group>"; };
 		84F4386A25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeRegistryFacade.swift; sourceTree = "<group>"; };
@@ -4452,6 +4462,11 @@
 				2AB7A7FE25CD0E7F00767D87 /* GitHubPhishingAPIService.swift */,
 				2AD0A18F25D3D1E100312428 /* GitHubPhishingServiceFactory.swift */,
 				AEF73FB425DBA24300407D41 /* PhishingCheckExecutor.swift */,
+				2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */,
+				2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */,
+				84F3B27327F4130800D64CF5 /* PhishingSites.swift */,
+				84F3B27527F4175500D64CF5 /* PhishingSite.swift */,
+				84F3B27927F4187300D64CF5 /* PhishingSitesSyncService.swift */,
 			);
 			path = GitHubPhishingService;
 			sourceTree = "<group>";
@@ -4940,6 +4955,7 @@
 				84155DE9253980E100A27058 /* WebSocketService */,
 				84155DEC2539817200A27058 /* ApplicationService.swift */,
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
+				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -5774,6 +5790,7 @@
 				845B822026EF8F1A00D25C72 /* ManagedMetaAccountMapper.swift */,
 				849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */,
 				8499FECB27BF8F4A00712589 /* NftModelMapper.swift */,
+				84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -6641,7 +6658,6 @@
 				84563D0624F4674A0055591D /* ManagedAccountItemMapper.swift */,
 				84754C932511EB2A00854599 /* ManagedConnectionItem.swift */,
 				84754C952511EF0D00854599 /* ManagedConnectionItemMapper.swift */,
-				2A66CFAE25D10EDF0006E4C1 /* PhishingItem.swift */,
 				846AF8432525BE0100868F37 /* Price.swift */,
 				84754CA32513E6DC00854599 /* PrimitiveContextWrapper.swift */,
 				847C9658255362F7002D288F /* RestoreJson.swift */,
@@ -7485,7 +7501,6 @@
 			isa = PBXGroup;
 			children = (
 				8423B0E7251B2DAD00B8687C /* SubstrateOperationFactory.swift */,
-				2AD0A19425D3D3EC00312428 /* GitHubOperationFactory.swift */,
 				84452F9225D5EE7300F47EC5 /* DataOperationFactory.swift */,
 			);
 			path = Misc;
@@ -10756,6 +10771,7 @@
 				843910D6253F8DAD00E3C217 /* NetworkAvailabilityLayerProtocols.swift in Sources */,
 				849842E626587573006BBB9F /* MultilineTableViewCell.swift in Sources */,
 				84BC330026315D7B003C3FF9 /* ExtrinsicConfirmViewModel.swift in Sources */,
+				84F3B27A27F4187300D64CF5 /* PhishingSitesSyncService.swift in Sources */,
 				AEA0C8A6267B6B2600F9666F /* SelectedValidatorListWireframe.swift in Sources */,
 				84963D7026F92F18003FE8E4 /* WalletRemoteSubscriptionService.swift in Sources */,
 				8468B87624F63D5900B76BC6 /* AddAccount+AccountImportWireframe.swift in Sources */,
@@ -11639,6 +11655,7 @@
 				AEF50556261A04AD0098574D /* MoonpayProvider.swift in Sources */,
 				84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */,
 				84DB9E8A26409E8200F23DD3 /* StakingRedeemLayout.swift in Sources */,
+				84F3B27627F4175500D64CF5 /* PhishingSite.swift in Sources */,
 				84644A2B2567222A004EAA4B /* TriangularedBlurButton.swift in Sources */,
 				F41CEB7B272FF34400C06154 /* CrowdloanYourContributionsViewModel.swift in Sources */,
 				843E9B3D27C8E8F1009C143A /* NftMediaView.swift in Sources */,
@@ -11733,6 +11750,7 @@
 				8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */,
 				F40966BC26B297D6008CD244 /* AnalyticsRewardsViewModelFactory.swift in Sources */,
 				84EE780627C4DF130027357F /* DAppSearchInteractor.swift in Sources */,
+				84F3B27C27F419B100D64CF5 /* BaseSyncService.swift in Sources */,
 				84AE7AB727D3AC4B00495267 /* RMRKV1DetailsInteractor.swift in Sources */,
 				2AFF4BA0274D1E4D00D790B4 /* UsernameSetupViewController.swift in Sources */,
 				843A2C6F26A8548B00266F53 /* RowView.swift in Sources */,
@@ -11782,6 +11800,7 @@
 				842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */,
 				848919DB26FB663D004DBAD5 /* CrowdloansChainViewModel.swift in Sources */,
 				842A736D27DB7B5E006EE1EA /* OperationTransferViewModel.swift in Sources */,
+				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */,
 				846A2C4B2529F99400731018 /* AccountRepositoryFactory.swift in Sources */,
@@ -11917,6 +11936,7 @@
 				CC545DF80038901FA06FDD58 /* SelectValidatorsConfirmViewController.swift in Sources */,
 				1F88F3DBFA0BD6D0FDF558F3 /* SelectValidatorsConfirmViewFactory.swift in Sources */,
 				D344C6DAC1F8BB6152BA8DD0 /* RecommendedValidatorListProtocols.swift in Sources */,
+				84F3B27827F4179A00D64CF5 /* PhishingSiteMapper.swift in Sources */,
 				0678271BE1BA5BBC084F478A /* RecommendedValidatorListWireframe.swift in Sources */,
 				F441BE0E263984DD0096B67B /* BondExtraCall.swift in Sources */,
 				84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */,

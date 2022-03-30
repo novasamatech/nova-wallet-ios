@@ -4,9 +4,30 @@ import IrohaCrypto
 
 protocol GitHubOperationFactoryProtocol {
     func fetchPhishingListOperation(_ url: URL) -> NetworkOperation<[PhishingItem]>
+    func fetchPhishingSitesOperation(_ url: URL) -> NetworkOperation<PhishingSites>
 }
 
 class GitHubOperationFactory: GitHubOperationFactoryProtocol {
+    func fetchPhishingSitesOperation(_ url: URL) -> NetworkOperation<PhishingSites> {
+        let requestFactory = BlockNetworkRequestFactory {
+            var request = URLRequest(url: url)
+            request.setValue(
+                HttpContentType.json.rawValue,
+                forHTTPHeaderField: HttpHeaderKey.contentType.rawValue
+            )
+            request.httpMethod = HttpMethod.get.rawValue
+            return request
+        }
+
+        let resultFactory = AnyNetworkResultFactory<PhishingSites> { data in
+            try JSONDecoder().decode(PhishingSites.self, from: data)
+        }
+
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+
+        return operation
+    }
+
     func fetchPhishingListOperation(_ url: URL) -> NetworkOperation<[PhishingItem]> {
         let requestFactory = BlockNetworkRequestFactory {
             var request = URLRequest(url: url)
