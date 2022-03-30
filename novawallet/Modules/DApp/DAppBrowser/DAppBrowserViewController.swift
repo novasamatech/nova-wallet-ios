@@ -104,6 +104,8 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         }
 
         rootView.urlBar.setNeedsLayout()
+
+        presenter.processNew(url: newUrl)
     }
 
     private func setupTransports(_ transports: [DAppTransportModel]) {
