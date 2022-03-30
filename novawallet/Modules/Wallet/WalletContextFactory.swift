@@ -29,8 +29,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
     // swiftlint:disable function_body_length
     func createContext(for chain: ChainModel, asset: AssetModel) throws -> CommonWalletContextProtocol {
         guard let metaAccount = SelectedWalletSettings.shared.value,
-              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()),
-              let utilityAsset = chain.utilityAssets().first else {
+              let chainAccountResponse = metaAccount.fetch(for: chain.accountRequest()) else {
             throw WalletContextFactoryError.missingAccount
         }
 
@@ -172,20 +171,10 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         )
 
         TransactionHistoryConfigurator(
-            chainFormat: chain.chainFormat,
+            chainAsset: chainAsset,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
-
-        TransactionDetailsConfigurator(
-            chainAccount: chainAccountResponse,
-            selectedAsset: asset,
-            utilityAsset: utilityAsset,
-            explorers: chain.explorers
-        ).configure(builder: builder.transactionDetailsModuleBuilder)
-
-        let contactsConfigurator = ContactsConfigurator(accountId: accountId, chainFormat: chain.chainFormat)
-        contactsConfigurator.configure(builder: builder.contactsModuleBuilder)
 
         let feeViewModelFactory: BalanceViewModelFactoryProtocol?
 
@@ -197,27 +186,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
             feeViewModelFactory = nil
         }
 
-        let transferConfigurator = TransferConfigurator(
-            chainAsset: chainAsset,
-            utilityAsset: utilityAsset,
-            explorers: chain.explorers,
-            balanceViewModelFactory: balanceViewModelFactory,
-            feeViewModelFactory: feeViewModelFactory,
-            localizationManager: localizationManager
-        )
-
-        transferConfigurator.configure(builder: builder.transferModuleBuilder)
-
-        let confirmConfigurator = TransferConfirmConfigurator(
-            chainAccount: chainAccountResponse,
-            chainAsset: chainAsset,
-            balanceViewModelFactory: balanceViewModelFactory,
-            feeViewModelFactory: feeViewModelFactory,
-            localizationManager: localizationManager
-        )
-
-        confirmConfigurator.configure(builder: builder.transferConfirmationBuilder)
-
         let receiveConfigurator = ReceiveConfigurator(
             accountId: accountId,
             chain: chain,
@@ -228,13 +196,8 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
 
         receiveConfigurator.configure(builder: builder.receiveModuleBuilder)
 
-        let invoiceScanConfigurator = InvoiceScanConfigurator(chainFormat: chain.chainFormat)
-        invoiceScanConfigurator.configure(builder: builder.invoiceScanModuleBuilder)
-
         let context = try builder.build()
 
-        transferConfigurator.commandFactory = context
-        confirmConfigurator.commandFactory = context
         receiveConfigurator.commandFactory = context
 
         assetDetailsConfigurator.bind(commandFactory: context)

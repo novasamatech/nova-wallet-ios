@@ -336,43 +336,19 @@ extension WalletListViewController: WalletListViewProtocol {
     func didReceiveHeader(viewModel: WalletListHeaderViewModel) {
         headerViewModel = viewModel
 
-        let headerSection = WalletListFlowLayout.SectionType.summary.index
-
-        UIView.performWithoutAnimation {
-            rootView.collectionView.reloadSections([headerSection])
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didReceiveGroups(state: WalletListGroupState) {
-        let oldState = groupsState
         groupsState = state
 
-        if
-            case let .list(oldGroups) = oldState,
-            case let .list(newGroups) = groupsState,
-            oldGroups.count == newGroups.count {
-            let sections: IndexSet = (0 ..< newGroups.count).reduce(IndexSet()) { result, index in
-                let sectionIndex = WalletListFlowLayout.SectionType.assetsStartingSection + index
-                return result.union([sectionIndex])
-            }
-
-            UIView.performWithoutAnimation {
-                rootView.collectionView.reloadSections(sections)
-            }
-
-        } else {
-            rootView.collectionView.reloadData()
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didReceiveNft(viewModel: WalletListNftsViewModel?) {
         nftViewModel = viewModel
 
-        let nftSection = WalletListFlowLayout.SectionType.nfts.index
-
-        UIView.performWithoutAnimation {
-            rootView.collectionView.reloadSections([nftSection])
-        }
+        rootView.collectionView.reloadData()
     }
 
     func didCompleteRefreshing() {

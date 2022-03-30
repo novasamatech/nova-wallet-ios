@@ -22,6 +22,15 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
     }
 
+    func spendingAmountFromPrice(
+        _ amount: Decimal,
+        priceData: PriceData?
+    ) -> LocalizableResource<BalanceViewModelProtocol> {
+        LocalizableResource { _ in
+            BalanceViewModel(amount: amount.description, price: priceData?.price.description)
+        }
+    }
+
     func createBalanceInputViewModel(_ amount: Decimal?) -> LocalizableResource<AmountInputViewModelProtocol> {
         LocalizableResource { _ in
             AmountInputViewModel(symbol: "KSM", amount: amount, limit: 0, formatter: NumberFormatter())
