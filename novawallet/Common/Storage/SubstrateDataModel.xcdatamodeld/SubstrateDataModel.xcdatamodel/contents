@@ -93,6 +93,9 @@
         <attribute name="publicKey" optional="YES" attributeType="String"/>
         <attribute name="source" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="CDPhishingSite" representedClassName="CDPhishingSite" syncable="YES" codeGenerationType="class">
+        <attribute name="identifier" optional="YES" attributeType="String"/>
+    </entity>
     <entity name="CDRuntimeMetadataItem" representedClassName="CDRuntimeMetadataItem" syncable="YES" codeGenerationType="class">
         <attribute name="identifier" optional="YES" attributeType="String"/>
         <attribute name="metadata" optional="YES" attributeType="Binary"/>
@@ -136,5 +139,6 @@
         <element name="CDSingleValue" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDStashItem" positionX="-45" positionY="81" width="128" height="59"/>
         <element name="CDTransactionHistoryItem" positionX="-54" positionY="9" width="128" height="239"/>
+        <element name="CDPhishingSite" positionX="-36" positionY="153" width="128" height="44"/>
     </elements>
 </model>
