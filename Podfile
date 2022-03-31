@@ -21,10 +21,10 @@ abstract_target 'novawalletAll' do
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
   pod 'Base58Swift', :git => 'https://github.com/keefertaylor/Base58Swift.git', :tag => '2.1.14'
-  pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-  pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-  pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-  pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
+  pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+  pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+  pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+  pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
   pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
 
   target 'novawalletTests' do
@@ -39,10 +39,10 @@ abstract_target 'novawalletAll' do
     pod 'RobinHood', '~> 2.6.0'
     pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
     pod 'Sourcery', '~> 1.4'
-    pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-    pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-    pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
-    pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :commit => 'b76a9c01b954c20603b765ef8b72b52a970eeb37'
+    pod 'BeaconCore', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+    pod 'BeaconBlockchainSubstrate', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+    pod 'BeaconClientWallet', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
+    pod 'BeaconTransportP2PMatrix', :git => 'https://github.com/airgap-it/beacon-ios-sdk.git', :tag => '3.1.0'
     pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
 
   end

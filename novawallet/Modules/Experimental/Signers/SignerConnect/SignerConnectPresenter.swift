@@ -92,6 +92,14 @@ extension SignerConnectPresenter: SignerConnectInteractorOutputProtocol {
         }
     }
 
+    func didSubmitOperation() {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.presentOperationSuccess(from: view, locale: view.selectedLocale)
+    }
+
     func didReceiveProtocol(error: Error) {
         wireframe.presentErrorOrUndefined(error: error, from: view, locale: view?.selectedLocale)
     }
