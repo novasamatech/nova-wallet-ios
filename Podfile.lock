@@ -1,15 +1,15 @@
 PODS:
   - Base58Swift (2.1.11):
     - BigInt (~> 5.0.0)
-  - BeaconBlockchainSubstrate (3.1.0-beta.0):
-    - BeaconCore (~> 3.1.0-beta.0)
-  - BeaconClientWallet (3.1.0-beta.0):
-    - BeaconCore (~> 3.1.0-beta.0)
-  - BeaconCore (3.1.0-beta.0):
+  - BeaconBlockchainSubstrate (3.1.0):
+    - BeaconCore (~> 3.1.0)
+  - BeaconClientWallet (3.1.0):
+    - BeaconCore (~> 3.1.0)
+  - BeaconCore (3.1.0):
     - Base58Swift (~> 2.1.0)
     - Sodium (~> 0.9.1)
-  - BeaconTransportP2PMatrix (3.1.0-beta.0):
-    - BeaconCore (~> 3.1.0-beta.0)
+  - BeaconTransportP2PMatrix (3.1.0):
+    - BeaconCore (~> 3.1.0)
   - BigInt (5.0.0)
   - Charts (3.6.0):
     - Charts/Core (= 3.6.0)
@@ -138,10 +138,10 @@ PODS:
 
 DEPENDENCIES:
   - Base58Swift (from `https://github.com/keefertaylor/Base58Swift.git`, tag `2.1.14`)
-  - BeaconBlockchainSubstrate (from `https://github.com/airgap-it/beacon-ios-sdk.git`, commit `b76a9c01b954c20603b765ef8b72b52a970eeb37`)
-  - BeaconClientWallet (from `https://github.com/airgap-it/beacon-ios-sdk.git`, commit `b76a9c01b954c20603b765ef8b72b52a970eeb37`)
-  - BeaconCore (from `https://github.com/airgap-it/beacon-ios-sdk.git`, commit `b76a9c01b954c20603b765ef8b72b52a970eeb37`)
-  - BeaconTransportP2PMatrix (from `https://github.com/airgap-it/beacon-ios-sdk.git`, commit `b76a9c01b954c20603b765ef8b72b52a970eeb37`)
+  - BeaconBlockchainSubstrate (from `https://github.com/airgap-it/beacon-ios-sdk.git`, tag `3.1.0`)
+  - BeaconClientWallet (from `https://github.com/airgap-it/beacon-ios-sdk.git`, tag `3.1.0`)
+  - BeaconCore (from `https://github.com/airgap-it/beacon-ios-sdk.git`, tag `3.1.0`)
+  - BeaconTransportP2PMatrix (from `https://github.com/airgap-it/beacon-ios-sdk.git`, tag `3.1.0`)
   - Charts
   - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `da686d69620aea28dc1aef0fbaf322e2c4b5c84e`)
   - Cuckoo
@@ -196,17 +196,17 @@ EXTERNAL SOURCES:
     :git: https://github.com/keefertaylor/Base58Swift.git
     :tag: 2.1.14
   BeaconBlockchainSubstrate:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconClientWallet:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconCore:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconTransportP2PMatrix:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   CommonWallet:
     :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
@@ -230,17 +230,17 @@ CHECKOUT OPTIONS:
     :git: https://github.com/keefertaylor/Base58Swift.git
     :tag: 2.1.14
   BeaconBlockchainSubstrate:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconClientWallet:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconCore:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   BeaconTransportP2PMatrix:
-    :commit: b76a9c01b954c20603b765ef8b72b52a970eeb37
     :git: https://github.com/airgap-it/beacon-ios-sdk.git
+    :tag: 3.1.0
   CommonWallet:
     :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
@@ -262,10 +262,10 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Base58Swift: 225fad1330f12beaf8faf08aeb279da274f5b167
-  BeaconBlockchainSubstrate: 42dbe7078ead5baffe8fec845c6376c223af6993
-  BeaconClientWallet: 1bd49076179993b3f057da13c3bd8fcb11aafc19
-  BeaconCore: 9d044c43e14619c3f74d0d2ca0608e1771fe2e5c
-  BeaconTransportP2PMatrix: a07dbb3eeb8e5e3a85afe0e417192568b5ac4cd7
+  BeaconBlockchainSubstrate: 756559d26194cec7a0fa3a5c154b144481346da6
+  BeaconClientWallet: 1ace31cc9b248ac97a3b6016675f93059a8d8bd3
+  BeaconCore: 16619de3b08d533406c13ed6d5339ed9b68b4498
+  BeaconTransportP2PMatrix: 78b3e0b490c5bd9584c7e0ae9e925b1bba8b1720
   BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
   Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
@@ -297,6 +297,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: cd1f0990f6b01983adfaa4d16ce94d29baeb1e50
+PODFILE CHECKSUM: aa210f6ed175d6b08836665efb85fc9c716b0bf9
 
 COCOAPODS: 1.11.2

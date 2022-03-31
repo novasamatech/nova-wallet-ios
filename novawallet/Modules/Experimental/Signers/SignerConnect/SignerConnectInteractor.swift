@@ -155,7 +155,7 @@ final class SignerConnectInteractor {
         logger?.debug("Permission request: \(permission)")
 
         do {
-            let accounts: [Substrate.Account] = try permission.networks.compactMap { network in
+            let networkAccounts: [Substrate.Account] = try permission.networks.compactMap { network in
                 let rawId = try Data(hexString: network.genesisHash)
 
                 if let chain = availableChains[rawId] {
@@ -166,32 +166,26 @@ final class SignerConnectInteractor {
                     }
 
                     return try Substrate.Account(
+                        publicKey: accountResponse.publicKey.toHex(includePrefix: true),
+                        address: address,
                         network: Substrate.Network(
                             genesisHash: network.genesisHash,
                             name: chain.name,
                             rpcURL: chain.nodes.first?.url.absoluteString
-                        ),
-                        publicKey: accountResponse.publicKey.toHex(includePrefix: true),
-                        address: address
+                        )
                     )
                 } else {
-                    guard let address = try? wallet.substrateAccountId.toAddress(
-                        using: .substrate(42)
-                    ) else {
-                        return nil
-                    }
-
-                    return try Substrate.Account(
-                        network: Substrate.Network(
-                            genesisHash: network.genesisHash,
-                            name: nil,
-                            rpcURL: nil
-                        ),
-                        publicKey: wallet.substratePublicKey.toHex(includePrefix: true),
-                        address: address
-                    )
+                    return nil
                 }
             }
+
+            let universalAddress = try wallet.substrateAccountId.toAddress(using: .substrate(42))
+            let universalAccount = try Substrate.Account(
+                publicKey: wallet.substratePublicKey.toHex(includePrefix: true),
+                address: universalAddress
+            )
+
+            let accounts = networkAccounts + [universalAccount]
 
             let content = PermissionSubstrateResponse(from: permission, accounts: accounts)
 
@@ -212,7 +206,7 @@ final class SignerConnectInteractor {
 
     private func handle(blockchainRequest: BlockchainSubstrateRequest) {
         switch blockchainRequest {
-        case let .transfer:
+        case .transfer:
             logger?.error("Unsupported transfer request")
         case let .signPayload(content):
 
@@ -309,8 +303,10 @@ final class SignerConnectInteractor {
                     switch result {
                     case .success:
                         self?.logger?.info("Signature submited")
+                        self?.presenter.didSubmitOperation()
                     case let .failure(error):
                         self?.logger?.error("Signature submition failed: \(error)")
+                        self?.presenter.didReceiveProtocol(error: error)
                     }
                 }
             }
@@ -329,6 +325,7 @@ final class SignerConnectInteractor {
             client?.respond(with: response, completion: { _ in })
 
             logger?.info("Signing aborted: \(error)")
+            presenter.didReceiveProtocol(error: error)
         }
     }
 

@@ -12,7 +12,7 @@ final class ExperimentalListWireframe: ExperimentalListWireframeProtocol {
     }
 
     func hideBeaconConnection(from view: ExperimentalListViewProtocol?) {
-        view?.controller.dismiss(animated: true, completion: nil)
+        view?.controller.navigationController?.popViewController(animated: true)
     }
 
     func showBeaconSession(from view: ExperimentalListViewProtocol?, connectionInfo: BeaconConnectionInfo) {

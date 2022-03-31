@@ -22,6 +22,7 @@ protocol SignerConnectInteractorOutputProtocol: AnyObject {
     func didReceiveApp(metadata: BeaconConnectionInfo)
     func didReceiveConnection(result: Result<Void, Error>)
     func didReceive(request: DAppOperationRequest, signingType: DAppSigningType)
+    func didSubmitOperation()
     func didReceiveProtocol(error: Error)
 }
 
@@ -32,4 +33,6 @@ protocol SignerConnectWireframeProtocol: AlertPresentable, ErrorPresentable, Add
         signingType: DAppSigningType,
         delegate: DAppOperationConfirmDelegate
     )
+
+    func presentOperationSuccess(from view: SignerConnectViewProtocol?, locale: Locale)
 }
