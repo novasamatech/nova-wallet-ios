@@ -80,7 +80,7 @@ final class DAppPhishingViewLayout: UIView {
 
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
-            make.top.equalTo(subtitleLabel.snp.bottom).offset(24.0)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-UIConstants.actionBottomInset)
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
