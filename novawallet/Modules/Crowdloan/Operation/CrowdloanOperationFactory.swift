@@ -14,13 +14,13 @@ protocol CrowdloanOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         accountId: AccountId,
-        trieIndex: UInt32
+        index: FundIndex
     ) -> CompoundOperationWrapper<CrowdloanContributionResponse>
 
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        paraIds: [ParaId]
+        params: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]>
 }
 
@@ -92,18 +92,18 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         accountId: AccountId,
-        trieIndex: UInt32
+        index: FundIndex
     ) -> CompoundOperationWrapper<CrowdloanContributionResponse> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let storageKeyParam: () throws -> Data = { accountId }
 
         let childKeyParam: () throws -> Data = {
-            let trieIndexEncoder = ScaleEncoder()
-            try trieIndex.encode(scaleEncoder: trieIndexEncoder)
-            let trieIndexData = trieIndexEncoder.encode()
+            let indexEncoder = ScaleEncoder()
+            try index.encode(scaleEncoder: indexEncoder)
+            let indexData = indexEncoder.encode()
 
-            guard let childSuffix = try "crowdloan".data(using: .utf8).map({ $0 + trieIndexData })?.blake2b32() else {
+            guard let childSuffix = try "crowdloan".data(using: .utf8).map({ $0 + indexData })?.blake2b32() else {
                 throw NetworkBaseError.badSerialization
             }
 
@@ -127,7 +127,11 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
 
         let mappingOperation = ClosureOperation<CrowdloanContributionResponse> {
             let result = try queryWrapper.targetOperation.extractNoCancellableResultData()
-            return CrowdloanContributionResponse(accountId: accountId, trieIndex: trieIndex, contribution: result.value)
+            return CrowdloanContributionResponse(
+                accountId: accountId,
+                index: index,
+                contribution: result.value
+            )
         }
 
         mappingOperation.addDependency(queryWrapper.targetOperation)
@@ -141,12 +145,12 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
     func fetchLeaseInfoOperation(
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
-        paraIds: [ParaId]
+        params: [LeaseParam]
     ) -> CompoundOperationWrapper<[ParachainLeaseInfo]> {
         let coderFactoryOperation = runtimeService.fetchCoderFactoryOperation()
 
         let keyParams: () throws -> [StringScaleMapper<ParaId>] = {
-            paraIds.map { StringScaleMapper(value: $0) }
+            params.map { StringScaleMapper(value: $0.paraId) }
         }
 
         let queryWrapper: CompoundOperationWrapper<[StorageResponse<[ParachainSlotLease?]>]> =
@@ -162,40 +166,30 @@ extension CrowdloanOperationFactory: CrowdloanOperationFactoryProtocol {
         let mapOperation: BaseOperation<[ParachainLeaseInfo]> = ClosureOperation {
             let queryResult = try queryWrapper.targetOperation.extractNoCancellableResultData()
 
-            guard let fundAccountPrefix = "modlpy/cfund".data(using: .utf8) else {
-                throw NetworkBaseError.badDeserialization
-            }
-
-            let fundAccountSuffix = Data(repeating: 0, count: SubstrateConstants.accountIdLength)
-
             return try queryResult.enumerated().map { index, slotLeaseResponse in
-                let paraId = paraIds[index]
+                let leaseParam = params[index]
 
-                let paraIdEncoder = ScaleEncoder()
-                try paraId.encode(scaleEncoder: paraIdEncoder)
-                let paraIdData = paraIdEncoder.encode()
-
-                let fundAccountId = (fundAccountPrefix + paraIdData + fundAccountSuffix)
-                    .prefix(SubstrateConstants.accountIdLength)
+                let bidderAccountId = try leaseParam.bidderKey.fundAccountId()
 
                 guard let leasedAmountList = slotLeaseResponse.value else {
                     return ParachainLeaseInfo(
-                        paraId: paraIds[index],
-                        fundAccountId: fundAccountId,
+                        param: leaseParam,
+                        fundAccountId: bidderAccountId,
                         leasedAmount: nil
                     )
                 }
 
-                let leasedAmount = leasedAmountList
+                let paraAccountId = try leaseParam.paraId.fundAccountId()
+
+                let leaseInfo = leasedAmountList
                     .compactMap { $0 }
-                    .filter { $0.accountId == fundAccountId }
-                    .max { $0.amount > $1.amount }?
-                    .amount
+                    .filter { $0.accountId == bidderAccountId || $0.accountId == paraAccountId }
+                    .max { $0.amount > $1.amount }
 
                 return ParachainLeaseInfo(
-                    paraId: paraIds[index],
-                    fundAccountId: fundAccountId,
-                    leasedAmount: leasedAmount
+                    param: leaseParam,
+                    fundAccountId: leaseInfo?.accountId ?? bidderAccountId,
+                    leasedAmount: leaseInfo?.amount
                 )
             }
         }

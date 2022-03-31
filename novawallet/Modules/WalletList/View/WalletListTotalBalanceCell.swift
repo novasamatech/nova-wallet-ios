@@ -101,7 +101,6 @@ final class WalletListTotalBalanceCell: UICollectionViewCell {
 
         contentView.addSubview(amountLabel)
         amountLabel.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
             make.leading.equalTo(backgroundBlurView).offset(8.0)
             make.trailing.equalTo(backgroundBlurView).offset(-8.0)
             make.bottom.equalToSuperview().inset(Constants.bottomInset)

@@ -4,11 +4,15 @@ final class ExperimentalListWireframe: ExperimentalListWireframeProtocol {
     func showNotificationSettings(from _: ExperimentalListViewProtocol?) {}
 
     func showBeaconConnection(from view: ExperimentalListViewProtocol?, delegate: BeaconQRDelegate) {
-        guard let signerView = QRScannerViewFactory.createBeaconView(for: delegate) else {
+        guard let signerView = BeaconScanViewFactory.createView(for: delegate) else {
             return
         }
 
         view?.controller.navigationController?.pushViewController(signerView.controller, animated: true)
+    }
+
+    func hideBeaconConnection(from view: ExperimentalListViewProtocol?) {
+        view?.controller.dismiss(animated: true, completion: nil)
     }
 
     func showBeaconSession(from view: ExperimentalListViewProtocol?, connectionInfo: BeaconConnectionInfo) {

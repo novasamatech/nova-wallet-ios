@@ -17,11 +17,25 @@ extension AccountId {
     }
 }
 
+enum AccountAddressConversionError: Error {
+    case invalidEthereumAddress
+}
+
 extension AccountAddress {
+    private func extractEthereumAccountId() throws -> AccountId {
+        let accountId = try AccountId(hexString: self)
+
+        guard accountId.count == SubstrateConstants.ethereumAddressLength else {
+            throw AccountAddressConversionError.invalidEthereumAddress
+        }
+
+        return accountId
+    }
+
     func toAccountId(using conversion: ChainFormat) throws -> AccountId {
         switch conversion {
         case .ethereum:
-            return try AccountId(hexString: self)
+            return try extractEthereumAccountId()
         case let .substrate(prefix):
             return try SS58AddressFactory().accountId(fromAddress: self, type: prefix)
         }
@@ -29,7 +43,7 @@ extension AccountAddress {
 
     func toAccountId() throws -> AccountId {
         if hasPrefix("0x") {
-            return try AccountId(hexString: self)
+            return try extractEthereumAccountId()
         } else {
             let addressFactory = SS58AddressFactory()
             let type = try addressFactory.type(fromAddress: self)

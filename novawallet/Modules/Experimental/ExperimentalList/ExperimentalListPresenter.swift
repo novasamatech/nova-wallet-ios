@@ -41,6 +41,7 @@ extension ExperimentalListPresenter: ExperimentalListInteractorOutputProtocol {}
 
 extension ExperimentalListPresenter: BeaconQRDelegate {
     func didReceiveBeacon(connectionInfo: BeaconConnectionInfo) {
+        wireframe.hideBeaconConnection(from: view)
         wireframe.showBeaconSession(from: view, connectionInfo: connectionInfo)
     }
 }

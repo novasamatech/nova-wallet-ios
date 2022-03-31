@@ -17,5 +17,6 @@ protocol ExperimentalListInteractorOutputProtocol: AnyObject {}
 protocol ExperimentalListWireframeProtocol: AnyObject {
     func showNotificationSettings(from view: ExperimentalListViewProtocol?)
     func showBeaconConnection(from view: ExperimentalListViewProtocol?, delegate: BeaconQRDelegate)
+    func hideBeaconConnection(from view: ExperimentalListViewProtocol?)
     func showBeaconSession(from view: ExperimentalListViewProtocol?, connectionInfo: BeaconConnectionInfo)
 }

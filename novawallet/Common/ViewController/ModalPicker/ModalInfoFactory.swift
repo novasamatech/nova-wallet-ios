@@ -69,10 +69,11 @@ struct ModalInfoFactory {
         viewController.cellHeight = Self.rowHeight
         viewController.headerHeight = Self.headerHeight
         viewController.footerHeight = Self.footerHeight
+        viewController.headerBorderType = []
         viewController.allowsSelection = false
         viewController.hasCloseItem = false
         viewController.separatorStyle = .singleLine
-        viewController.separatorColor = R.color.colorDarkGray()
+        viewController.separatorColor = R.color.colorWhite24()
 
         viewController.localizedTitle = LocalizableResource { locale in
             R.string.localizable.walletBalanceLocked(preferredLanguages: locale.rLanguages)

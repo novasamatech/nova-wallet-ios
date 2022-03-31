@@ -7,6 +7,7 @@ final class WalletChainView: UIView {
         view.applyFilledBackgroundStyle()
         view.fillColor = R.color.colorWhite16()!
         view.highlightedFillColor = R.color.colorWhite16()!
+        view.cornerRadius = 7.0
         return view
     }()
 
