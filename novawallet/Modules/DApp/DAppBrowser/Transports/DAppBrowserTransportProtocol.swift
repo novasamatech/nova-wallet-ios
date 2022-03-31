@@ -11,6 +11,7 @@ protocol DAppBrowserTransportProtocol: AnyObject {
 
     func start(with dataSource: DAppBrowserStateDataSource)
     func isIdle() -> Bool
+    func bringPhishingDetectedStateIfNeeded() -> Bool
     func process(message: Any, host: String)
     func processConfirmation(response: DAppOperationResponse)
     func processAuth(response: DAppAuthResponse)
