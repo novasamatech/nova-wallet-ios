@@ -8,6 +8,9 @@ protocol SubstrateRepositoryFactoryProtocol {
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
     func createChainRepository() -> AnyDataProviderRepository<ChainModel>
 
+    func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem>
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem>
+
     func createChainAddressTxRepository(
         for address: AccountAddress,
         chainId: ChainModel.Id
@@ -24,6 +27,8 @@ protocol SubstrateRepositoryFactoryProtocol {
         chainId: ChainModel.Id,
         assetId: UInt32
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
+    func createPhishingSitesRepository() -> AnyDataProviderRepository<PhishingSite>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -69,6 +74,18 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
                 mapper: AnyCoreDataMapper(ChainModelMapper())
             )
 
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createTxRepository() -> AnyDataProviderRepository<TransactionHistoryItem> {
+        let repository: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
+            storageFacade.createRepository()
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createPhishingRepository() -> AnyDataProviderRepository<PhishingItem> {
+        let repository: CoreDataRepository<PhishingItem, CDPhishingItem> =
+            storageFacade.createRepository()
         return AnyDataProviderRepository(repository)
     }
 
@@ -128,5 +145,12 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
             storageFacade.createRepository(filter: filter, sortDescriptors: [sortDescriptor])
         return AnyDataProviderRepository(txStorage)
+    }
+
+    func createPhishingSitesRepository() -> AnyDataProviderRepository<PhishingSite> {
+        let mapper = PhishingSiteMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        return AnyDataProviderRepository(repository)
     }
 }

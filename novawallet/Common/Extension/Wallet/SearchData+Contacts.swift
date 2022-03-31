@@ -13,13 +13,11 @@ extension SearchData {
             type: networkType
         )
 
-        let contactContext = ContactContext(destination: .remote)
-
         return SearchData(
             accountId: accountId.toHex(),
             firstName: contactItem.peerAddress,
             lastName: contactItem.peerName ?? "",
-            context: contactContext.toContext()
+            context: [:]
         )
     }
 }

@@ -37,6 +37,13 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         }
 
         view.bind(title: title, iconViewModel: iconViewModel)
+
+        let networkName = chainAsset.chain.name
+
+        let networkIcon = RemoteImageViewModel(url: chainAsset.chain.icon)
+
+        view.bind(networkName: networkName, iconViewModel: networkIcon)
+
         view.localizationManager = localizationManager
 
         bindCommands(to: view)
@@ -67,8 +74,18 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         }
 
         let assetId = chainAsset.chainAssetId.walletId
-        let sendCommand: WalletCommandProtocol? = isTransfersEnable() ?
-            commandFactory.prepareSendCommand(for: assetId) : nil
+        let sendCommand: WalletCommandProtocol?
+
+        if isTransfersEnable() {
+            sendCommand = TransferSetupCommand(
+                commandFactory: commandFactory,
+                chainAsset: chainAsset,
+                recepient: nil
+            )
+        } else {
+            sendCommand = nil
+        }
+
         let receiveCommand: WalletCommandProtocol = commandFactory.prepareReceiveCommand(for: assetId)
 
         // TODO: Enable buy command when tokens ready

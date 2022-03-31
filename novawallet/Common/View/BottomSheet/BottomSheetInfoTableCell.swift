@@ -3,8 +3,8 @@ import UIKit
 class BottomSheetInfoTableCell: UITableViewCell {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.font = .regularSubheadline
+        label.textColor = R.color.colorTransparentText()!
         return label
     }()
 

@@ -48,25 +48,9 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
-        let icon: UIImage?
+        let icon = txType == .incoming ? R.image.iconIncomingTransfer() : R.image.iconOutgoingTransfer()
 
-        if let accountId = try? data.peerName?.toAccountId(using: chainFormat) {
-            icon = try? iconGenerator.generateFromAccountId(accountId)
-                .imageWithFillColor(
-                    R.color.colorWhite()!,
-                    size: UIConstants.normalAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
-        } else {
-            icon = nil
-        }
-
-        if let currentIcon = icon {
-            imageViewModel = WalletStaticImageViewModel(staticImage: currentIcon)
-        } else {
-            imageViewModel = nil
-        }
+        let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
 
         let command = OperationDetailsCommand(
             commandFactory: commandFactory,
@@ -106,13 +90,8 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
-
-        if let icon = R.image.iconRewardAndSlashes() {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
-        } else {
-            imageViewModel = nil
-        }
+        let icon = R.image.iconRewardOperation()
+        let imageViewModel = icon.map { StaticImageViewModel(image: $0) }
 
         let command = OperationDetailsCommand(
             commandFactory: commandFactory,
@@ -156,13 +135,8 @@ final class TransactionHistoryViewModelFactory {
         let time = dateFormatter.value(for: locale)
             .string(from: Date(timeIntervalSince1970: TimeInterval(data.timestamp)))
 
-        let imageViewModel: WalletImageViewModelProtocol?
-
-        if let icon = R.image.iconExtrinsic() {
-            imageViewModel = WalletStaticImageViewModel(staticImage: icon)
-        } else {
-            imageViewModel = nil
-        }
+        let iconUrl = chainAsset.chain.icon
+        let imageViewModel: ImageViewModelProtocol = RemoteImageViewModel(url: iconUrl)
 
         let command = OperationDetailsCommand(
             commandFactory: commandFactory,
