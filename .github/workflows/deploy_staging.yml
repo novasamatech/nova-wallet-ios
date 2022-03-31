@@ -6,6 +6,10 @@ on:
       appVersion:
         description: 'App version'
         required: true
+      userGroup:
+        description: 'Firebase user group'
+        default: 'external-users'
+        required: true
   # release:
   #   types: [published]
 
@@ -110,6 +114,6 @@ jobs:
         with:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: external-users
+          groups: ${{ github.event.inputs.userGroup }}
           file: export/novawallet.ipa
           releaseNotes: ${{ github.event.head_commit.message }}
