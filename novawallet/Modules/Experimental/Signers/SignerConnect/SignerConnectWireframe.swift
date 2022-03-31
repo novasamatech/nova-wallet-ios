@@ -1,7 +1,7 @@
 import Foundation
 import SoraUI
 
-final class SignerConnectWireframe: SignerConnectWireframeProtocol {
+final class SignerConnectWireframe: SignerConnectWireframeProtocol, ModalAlertPresenting {
     func showConfirmation(
         from view: SignerConnectViewProtocol?,
         request: DAppOperationRequest,
@@ -23,5 +23,12 @@ final class SignerConnectWireframe: SignerConnectWireframeProtocol {
         confirmView.controller.modalPresentationStyle = .custom
 
         view?.controller.present(confirmView.controller, animated: true, completion: nil)
+    }
+
+    func presentOperationSuccess(from view: SignerConnectViewProtocol?, locale: Locale) {
+        let title = R.string.localizable
+            .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
+
+        presentSuccessNotification(title, from: view?.controller, completion: nil)
     }
 }
