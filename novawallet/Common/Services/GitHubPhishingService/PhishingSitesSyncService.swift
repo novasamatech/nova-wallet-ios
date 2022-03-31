@@ -28,7 +28,7 @@ class PhishingSitesSyncService: BaseSyncService {
         let mapOperation = ClosureOperation<[PhishingSite]> {
             let phishingSites = try networkOperation.extractNoCancellableResultData()
 
-            return phishingSites.blocked().map { PhishingSite(host: $0) }
+            return phishingSites.deny.map { PhishingSite(host: $0) }
         }
 
         mapOperation.addDependency(networkOperation)
