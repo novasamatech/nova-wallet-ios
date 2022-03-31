@@ -15467,6 +15467,8 @@ import Cuckoo
 import Cuckoo
 @testable import novawallet
 
+import Foundation
+
 
  class MockDAppBrowserViewProtocol: DAppBrowserViewProtocol, Cuckoo.ProtocolMock {
     
@@ -15731,6 +15733,21 @@ import Cuckoo
     
     
     
+     func processNew(url: URL)  {
+        
+    return cuckoo_manager.call("processNew(url: URL)",
+            parameters: (url),
+            escapingParameters: (url),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.processNew(url: url))
+        
+    }
+    
+    
+    
      func process(message: Any, host: String, transport name: String)  {
         
     return cuckoo_manager.call("process(message: Any, host: String, transport: String)",
@@ -15788,6 +15805,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
+	    func processNew<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(URL)> where M1.MatchedType == URL {
+	        let matchers: [Cuckoo.ParameterMatcher<(URL)>] = [wrap(matchable: url) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "processNew(url: URL)", parameterMatchers: matchers))
+	    }
+	    
 	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(message: Any, host: String, transport: String)", parameterMatchers: matchers))
@@ -15826,6 +15848,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func processNew<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.__DoNotUse<(URL), Void> where M1.MatchedType == URL {
+	        let matchers: [Cuckoo.ParameterMatcher<(URL)>] = [wrap(matchable: url) { $0 }]
+	        return cuckoo_manager.verify("processNew(url: URL)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.__DoNotUse<(Any, String, String), Void> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
 	        return cuckoo_manager.verify("process(message: Any, host: String, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -15855,6 +15883,12 @@ import Cuckoo
     
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func processNew(url: URL)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15915,6 +15949,21 @@ import Cuckoo
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.setup())
+        
+    }
+    
+    
+    
+     func process(host: String)  {
+        
+    return cuckoo_manager.call("process(host: String)",
+            parameters: (host),
+            escapingParameters: (host),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.process(host: host))
         
     }
     
@@ -16007,6 +16056,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
+	    func process<M1: Cuckoo.Matchable>(host: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: host) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(host: String)", parameterMatchers: matchers))
+	    }
+	    
 	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "process(message: Any, host: String, transport: String)", parameterMatchers: matchers))
@@ -16055,6 +16109,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func process<M1: Cuckoo.Matchable>(host: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: host) { $0 }]
+	        return cuckoo_manager.verify("process(host: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.__DoNotUse<(Any, String, String), Void> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(Any, String, String)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: host) { $0.1 }, wrap(matchable: name) { $0.2 }]
 	        return cuckoo_manager.verify("process(message: Any, host: String, transport: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -16096,6 +16156,12 @@ import Cuckoo
     
     
      func setup()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func process(host: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16246,6 +16312,21 @@ import Cuckoo
         
     }
     
+    
+    
+     func didDetectPhishing(host: String)  {
+        
+    return cuckoo_manager.call("didDetectPhishing(host: String)",
+            parameters: (host),
+            escapingParameters: (host),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didDetectPhishing(host: host))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16283,6 +16364,11 @@ import Cuckoo
 	    func didReceiveAuth<M1: Cuckoo.Matchable>(request: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthRequest)> where M1.MatchedType == DAppAuthRequest {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthRequest)>] = [wrap(matchable: request) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveAuth(request: DAppAuthRequest)", parameterMatchers: matchers))
+	    }
+	    
+	    func didDetectPhishing<M1: Cuckoo.Matchable>(host: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: host) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didDetectPhishing(host: String)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16337,6 +16423,12 @@ import Cuckoo
 	        return cuckoo_manager.verify("didReceiveAuth(request: DAppAuthRequest)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didDetectPhishing<M1: Cuckoo.Matchable>(host: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: host) { $0 }]
+	        return cuckoo_manager.verify("didDetectPhishing(host: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16379,6 +16471,12 @@ import Cuckoo
     
     
      func didReceiveAuth(request: DAppAuthRequest)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didDetectPhishing(host: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16456,6 +16554,21 @@ import Cuckoo
     
     
     
+     func presentPhishingDetected(from view: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)  {
+        
+    return cuckoo_manager.call("presentPhishingDetected(from: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)",
+            parameters: (view, delegate),
+            escapingParameters: (view, delegate),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentPhishingDetected(from: view, delegate: delegate))
+        
+    }
+    
+    
+    
      func close(view: DAppBrowserViewProtocol?)  {
         
     return cuckoo_manager.call("close(view: DAppBrowserViewProtocol?)",
@@ -16523,6 +16636,11 @@ import Cuckoo
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAuth(from: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)", parameterMatchers: matchers))
 	    }
 	    
+	    func presentPhishingDetected<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, delegate: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppPhishingViewDelegate)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppPhishingViewDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppPhishingViewDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentPhishingDetected(from: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)", parameterMatchers: matchers))
+	    }
+	    
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "close(view: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
@@ -16573,6 +16691,12 @@ import Cuckoo
 	    }
 	    
 	    @discardableResult
+	    func presentPhishingDetected<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, delegate: M2) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppPhishingViewDelegate), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppPhishingViewDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppPhishingViewDelegate)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: delegate) { $0.1 }]
+	        return cuckoo_manager.verify("presentPhishingDetected(from: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("close(view: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -16614,6 +16738,12 @@ import Cuckoo
     
     
      func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func presentPhishingDetected(from view: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

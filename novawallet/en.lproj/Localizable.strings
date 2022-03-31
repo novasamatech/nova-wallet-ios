@@ -734,3 +734,6 @@
 "qr.scan.error.gallery.title" = "Photos Access";
 "common.db.subscription.error" = "Couldn't extract data from the database. Please, try again later.";
 "common.data.corruption.error" = "Unexpected corrupted data found. Please, contact support.";
+"dapp.phishing.title" = "Phishing detected";
+"dapp.phishing.message" = "Nova Wallet believes that this website could compromise the security of your accounts and your tokens";
+"dapp.phishing.action" = "Okay, take me back";
