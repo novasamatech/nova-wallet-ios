@@ -8,6 +8,7 @@ on:
         required: true
       userGroup:
         description: 'Firebase user group'
+        default: 'external-users'
         required: true
   # release:
   #   types: [published]
