@@ -14,6 +14,7 @@ final class DAppBrowserInteractor {
     let dataSource: DAppBrowserStateDataSource
     let logger: LoggerProtocol?
     let transports: [DAppBrowserTransportProtocol]
+    let sequentialPhishingVerifier: PhishingSiteVerifing
 
     private(set) var messageQueue: [QueueMessage] = []
 
@@ -24,6 +25,7 @@ final class DAppBrowserInteractor {
         chainRegistry: ChainRegistryProtocol,
         dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
         operationQueue: OperationQueue,
+        sequentialPhishingVerifier: PhishingSiteVerifing,
         logger: LoggerProtocol? = nil
     ) {
         self.transports = transports
@@ -36,6 +38,7 @@ final class DAppBrowserInteractor {
             dApp: userQuery.dApp
         )
         self.logger = logger
+        self.sequentialPhishingVerifier = sequentialPhishingVerifier
     }
 
     private func subscribeChainRegistry() {
@@ -192,6 +195,31 @@ final class DAppBrowserInteractor {
 
         transport?.process(message: queueMessage.underliningMessage, host: queueMessage.host)
     }
+
+    private func bringPhishingDetectedStateAndNotify(for host: String) {
+        let allPhishing = transports
+            .map { $0.bringPhishingDetectedStateIfNeeded() }
+            .allSatisfy { !$0 }
+
+        if !allPhishing {
+            presenter.didDetectPhishing(host: host)
+        }
+    }
+
+    private func verifyPhishing(for host: String, completion: ((Bool) -> Void)?) {
+        sequentialPhishingVerifier.verify(host: host) { [weak self] result in
+            switch result {
+            case let .success(isNotPhishing):
+                if !isNotPhishing {
+                    self?.bringPhishingDetectedStateAndNotify(for: host)
+                }
+
+                completion?(isNotPhishing)
+            case let .failure(error):
+                self?.presenter.didReceive(error: error)
+            }
+        }
+    }
 }
 
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
@@ -199,13 +227,25 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
         subscribeChainRegistry()
     }
 
+    func process(host: String) {
+        verifyPhishing(for: host, completion: nil)
+    }
+
     func process(message: Any, host: String, transport name: String) {
         logger?.debug("Did receive \(name) message from \(host): \(message)")
 
-        let queueMessage = QueueMessage(host: host, transportName: name, underliningMessage: message)
-        messageQueue.append(queueMessage)
+        verifyPhishing(for: host) { [weak self] isNotPhishing in
+            if isNotPhishing {
+                let queueMessage = QueueMessage(
+                    host: host,
+                    transportName: name,
+                    underliningMessage: message
+                )
+                self?.messageQueue.append(queueMessage)
 
-        processMessageIfNeeded()
+                self?.processMessageIfNeeded()
+            }
+        }
     }
 
     func processConfirmation(response: DAppOperationResponse, forTransport name: String) {
@@ -213,6 +253,8 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     }
 
     func process(newQuery: DAppSearchResult) {
+        sequentialPhishingVerifier.cancelAll()
+
         userQuery = newQuery
 
         transports.forEach { $0.stop() }
