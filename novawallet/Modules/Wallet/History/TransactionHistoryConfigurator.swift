@@ -47,11 +47,15 @@ final class TransactionHistoryConfigurator {
 
     let viewModelFactory: TransactionHistoryViewModelFactory
 
+    let supportsFilters: Bool
+
     init(
         chainAsset: ChainAsset,
         amountFormatterFactory: NumberFormatterFactoryProtocol,
         assets: [WalletAsset]
     ) {
+        supportsFilters = chainAsset.asset.assetId == chainAsset.chain.utilityAssets().first?.assetId
+
         viewModelFactory = TransactionHistoryViewModelFactory(
             chainAsset: chainAsset,
             amountFormatterFactory: amountFormatterFactory,
@@ -73,10 +77,16 @@ final class TransactionHistoryConfigurator {
             .with(transactionCellStyle: transactionCellStyle)
             .with(cellClass: HistoryItemTableViewCell.self, for: HistoryConstants.historyCellId)
             .with(transactionHeaderStyle: headerStyle)
-            .with(supportsFilter: true)
             .with(includesFeeInAmount: false)
             .with(localizableTitle: title)
             .with(viewFactoryOverriding: WalletHistoryViewFactoryOverriding())
-            .with(filterEditor: WalletHistoryFilterEditor())
+
+        if supportsFilters {
+            builder
+                .with(supportsFilter: true)
+                .with(filterEditor: WalletHistoryFilterEditor())
+        } else {
+            builder.with(supportsFilter: false)
+        }
     }
 }
