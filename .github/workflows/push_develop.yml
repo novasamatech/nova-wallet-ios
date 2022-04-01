@@ -1,20 +1,18 @@
 name: Distribute to Firebase
 
 on:
-  # push:
-  #   branches: [ develop ]
-  pull_request:
+  push:
     branches: [ develop ]
 
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-11
+    runs-on: macos-latest
 
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '13.1'
+          xcode-version: latest-stable
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -29,7 +27,7 @@ jobs:
             ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}
 
       - name: Install Cocoapods
-        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+        # if: steps.cache-cocoapods.outputs.cache-hit != 'true'
         run: pod install --repo-update
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
@@ -91,23 +89,23 @@ jobs:
           path: export
 
   # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
-  # distribute-ios:
-  #   needs: build
-  #   name: Distribute archive to Firebase
-  #   runs-on: ubuntu-latest
+  distribute-ios:
+    needs: build
+    name: Distribute archive to Firebase
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/download-artifact@v2
-  #       with:
-  #         name: novawallet.ipa
-  #         path: export
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: novawallet.ipa
+          path: export
 
-  #     - name: Upload artifact to Firebase App Distribution
-  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
-  #       with:
-  #         appId: ${{ secrets.FIREBASE_APP_ID }}
-  #         token: ${{ secrets.FIREBASE_TOKEN }}
-  #         groups: dev-team
-  #         file: export/novawallet.ipa
-  #         releaseNotes: ${{ github.event.head_commit.message }}
+      - name: Upload artifact to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: dev-team
+          file: export/novawallet.ipa
+          releaseNotes: ${{ github.event.head_commit.message }}
