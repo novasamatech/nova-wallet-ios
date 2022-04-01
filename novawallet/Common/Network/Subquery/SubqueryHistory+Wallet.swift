@@ -57,6 +57,13 @@ extension SubqueryHistoryElement: WalletRemoteHistoryItemProtocol {
                 assetId: assetId,
                 chainAssetInfo: chainAssetInfo
             )
+        } else if let assetTransfer = assetTransfer {
+            return createTransactionFromTransfer(
+                assetTransfer,
+                address: address,
+                assetId: assetId,
+                chainAssetInfo: chainAssetInfo
+            )
         } else {
             // we shouldn't crash if broken data received
             return AssetTransactionData(
