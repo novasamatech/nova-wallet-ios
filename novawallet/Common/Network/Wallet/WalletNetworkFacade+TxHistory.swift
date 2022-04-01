@@ -4,7 +4,7 @@ import CommonWallet
 import IrohaCrypto
 
 extension WalletNetworkFacade {
-    func createUtilityAssetHistory(
+    func createAssetHistory(
         for address: AccountAddress,
         chainAsset: ChainAsset,
         pagination: Pagination,
@@ -15,7 +15,19 @@ extension WalletNetworkFacade {
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
         if let baseUrl = chain.externalApi?.history?.url {
-            maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
+            do {
+                let asset = chainAsset.asset
+                let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
+                let historyAssetId = try assetMapper.historyAssetId()
+
+                maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
+                    url: baseUrl,
+                    filter: filter,
+                    assetId: historyAssetId
+                )
+            } catch {
+                maybeRemoteHistoryFactory = nil
+            }
         } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
             maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
                 baseURL: fallbackUrl,
