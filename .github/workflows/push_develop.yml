@@ -22,9 +22,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: Pods
-          key: ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}
+            ${{ runner.os }}-pods-
 
       - name: Install Cocoapods
         # if: steps.cache-cocoapods.outputs.cache-hit != 'true'
