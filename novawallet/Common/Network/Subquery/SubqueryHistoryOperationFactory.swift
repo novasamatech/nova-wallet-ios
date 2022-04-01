@@ -51,14 +51,7 @@ final class SubqueryHistoryOperationFactory {
     private func prepareAssetIdFilter(_ assetId: String) -> String {
         """
         {
-          and: [
-            {
-                assetTransfer: { isNull: false }
-            },
-            {
-                assetTransfer: { contains: {assetId: \"\(assetId)\"} }
-            }
-          ]
+            assetTransfer: { contains: {assetId: \"\(assetId)\"} }
         }
         """
     }
@@ -91,7 +84,7 @@ final class SubqueryHistoryOperationFactory {
         cursor: String?
     ) -> String {
         let after = cursor.map { "\"\($0)\"" } ?? "null"
-        let optAssetTransferField = assetId != nil ? "assetTransfer" : ""
+        let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
         return """
         {
@@ -119,8 +112,7 @@ final class SubqueryHistoryOperationFactory {
                      address
                      reward
                      extrinsic
-                     transfer
-                     \(optAssetTransferField)
+                     \(transferField)
                  }
              }
         }
