@@ -1,7 +1,9 @@
 name: Distribute to Firebase
 
 on:
-  push:
+  # push:
+  #   branches: [ develop ]
+  pull_request:
     branches: [ develop ]
 
 jobs:
@@ -89,23 +91,23 @@ jobs:
           path: export
 
   # wzieba/Firebase-Distribution-Github-Action@v1 doesn't work on macos machine, so we need to upload artifacts on macos, then download them on linux :((
-  distribute-ios:
-    needs: build
-    name: Distribute archive to Firebase
-    runs-on: ubuntu-latest
+  # distribute-ios:
+  #   needs: build
+  #   name: Distribute archive to Firebase
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: novawallet.ipa
-          path: export
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: novawallet.ipa
+  #         path: export
 
-      - name: Upload artifact to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          token: ${{ secrets.FIREBASE_TOKEN }}
-          groups: dev-team
-          file: export/novawallet.ipa
-          releaseNotes: ${{ github.event.head_commit.message }}
+  #     - name: Upload artifact to Firebase App Distribution
+  #       uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #       with:
+  #         appId: ${{ secrets.FIREBASE_APP_ID }}
+  #         token: ${{ secrets.FIREBASE_TOKEN }}
+  #         groups: dev-team
+  #         file: export/novawallet.ipa
+  #         releaseNotes: ${{ github.event.head_commit.message }}
