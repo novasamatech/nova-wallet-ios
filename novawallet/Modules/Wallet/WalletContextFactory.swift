@@ -161,14 +161,6 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
         let amountFormatterFactory = AmountFormatterFactory()
-        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: asset.displayInfo(with: chain.icon),
-            priceAssetInfo: AssetBalanceDisplayInfo.usd(),
-            formatterFactory: assetBalanceFormatterFactory,
-            limit: TransferConstants.maxAmount
-        )
 
         TransactionHistoryConfigurator(
             chainAsset: chainAsset,
