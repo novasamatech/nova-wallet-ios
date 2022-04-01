@@ -51,6 +51,7 @@ struct SubqueryHistoryElement: Decodable {
         case reward
         case extrinsic
         case transfer
+        case assetTransfer
     }
 
     let identifier: String
@@ -62,6 +63,7 @@ struct SubqueryHistoryElement: Decodable {
     let reward: SubqueryRewardOrSlash?
     let extrinsic: SubqueryExtrinsic?
     let transfer: SubqueryTransfer?
+    let assetTransfer: SubqueryTransfer?
 }
 
 struct SubqueryHistoryData: Decodable {
