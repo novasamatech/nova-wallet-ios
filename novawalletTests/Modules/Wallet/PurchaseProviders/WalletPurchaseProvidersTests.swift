@@ -9,6 +9,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         do {
             try performRampTest()
             try performMoonPayTest()
+            try performTransakTest()
         }
         catch {
             XCTFail("Unexpected error: \(error)")
@@ -76,6 +77,37 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let provider = MoonpayProviderFactory().createProvider(with: secretKeyData, apiKey: apiKey)
             .with(colorCode: R.color.colorAccent()!.hexRGB)
             .with(callbackUrl: config.purchaseRedirect)
+
+        // when
+        let expectation = XCTestExpectation()
+
+        let actions = provider.buildPurchaseActions(for: chainAsset, accountId: accountId)
+        XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
+        expectation.fulfill()
+
+        // then
+        wait(for: [expectation], timeout: Constants.defaultExpectationDuration)
+    }
+
+    func performTransakTest() throws {
+        // given
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
+
+        let accountId = try address.toAccountId()
+
+        let config: ApplicationConfigProtocol = ApplicationConfig.shared
+
+        let apiKey = ""
+        let redirectUrl = config.purchaseRedirect
+        let network = chain.name.lowercased()
+
+        // swiftlint:disable next long_string
+        let expectedUrl = "https://staging-global.transak.com?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&walletAddress=\(address)&disableWalletAddressForm=true&redirectURL=\(redirectUrl)"
+            .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+
+        let provider = TransakProvider().with(callbackUrl: config.purchaseRedirect)
 
         // when
         let expectation = XCTestExpectation()
