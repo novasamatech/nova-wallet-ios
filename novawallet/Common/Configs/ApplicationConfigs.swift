@@ -103,8 +103,8 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         "pk_live_Boi6Rl107p7XuJWBL8GJRzGWlmUSoxbz"
     }
 
-    var purchaseRedirect: URL { // FIXME: change to Nova address
-        URL(string: "fearless://fearless.io/redirect")!
+    var purchaseRedirect: URL {
+        URL(string: "novawallet://novawallet.io/redirect")!
     }
 
     var phishingListURL: URL {
