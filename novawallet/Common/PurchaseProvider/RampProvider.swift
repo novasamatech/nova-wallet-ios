@@ -1,6 +1,7 @@
 import Foundation
 
 final class RampProvider: PurchaseProviderProtocol {
+    // TODO: Replace token
     static let pubToken = "3quzr4e6wdyccndec8jzjebzar5kxxzfy2f3us5k"
     static let baseUrlString = "https://buy.ramp.network/"
 
