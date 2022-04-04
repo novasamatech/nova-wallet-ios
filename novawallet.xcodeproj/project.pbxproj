@@ -548,6 +548,7 @@
 		84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */; };
 		8448221826B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */; };
 		8448221C26B1850D007F4492 /* TitleIconViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448221B26B1850D007F4492 /* TitleIconViewModel.swift */; };
+		8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448336627FAAF780077FB55 /* TransakProvider.swift */; };
 		8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */; };
 		8448D5B8277DA4C200FAEEBC /* DAppListLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */; };
 		8448D5BB277DDA5000FAEEBC /* DAppListGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5BA277DDA5000FAEEBC /* DAppListGenerator.swift */; };
@@ -2620,6 +2621,7 @@
 		84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRuntimeMetadataItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		8448221726B1624E007F4492 /* SelectValidatorsConfirmViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectValidatorsConfirmViewLayout.swift; sourceTree = "<group>"; };
 		8448221B26B1850D007F4492 /* TitleIconViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleIconViewModel.swift; sourceTree = "<group>"; };
+		8448336627FAAF780077FB55 /* TransakProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransakProvider.swift; sourceTree = "<group>"; };
 		8448D5B5277D717400FAEEBC /* DAppListDecorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListDecorationView.swift; sourceTree = "<group>"; };
 		8448D5B7277DA4C200FAEEBC /* DAppListLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListLoadingView.swift; sourceTree = "<group>"; };
 		8448D5BA277DDA5000FAEEBC /* DAppListGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListGenerator.swift; sourceTree = "<group>"; };
@@ -5426,6 +5428,7 @@
 				AEF5071D262369C00098574D /* PurchaseProviderProtocol.swift */,
 				AEF507B9262486F80098574D /* MoonpayProviderFactory.swift */,
 				AE20602B2636EA5800357578 /* MoonPayKeys.swift */,
+				8448336627FAAF780077FB55 /* TransakProvider.swift */,
 			);
 			path = PurchaseProvider;
 			sourceTree = "<group>";
@@ -12044,6 +12047,7 @@
 				6F0CFDAB9D0C35075BD74A77 /* WalletHistoryFilterProtocols.swift in Sources */,
 				60461B20A5DA9E9E3AF0BB84 /* WalletHistoryFilterWireframe.swift in Sources */,
 				8487583327F06AF300495306 /* QRScannerViewLayout.swift in Sources */,
+				8448336727FAAF780077FB55 /* TransakProvider.swift in Sources */,
 				84CFF1E326526FBC00DB7CF7 /* StakingBondMoreProtocols.swift in Sources */,
 				5FE687B860FC10AB08518A6E /* WalletHistoryFilterPresenter.swift in Sources */,
 				640A79BD1335394818E70366 /* WalletHistoryFilterViewController.swift in Sources */,
