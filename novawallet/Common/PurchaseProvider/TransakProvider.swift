@@ -1,6 +1,7 @@
 import Foundation
 
 final class TransakProvider: PurchaseProviderProtocol {
+    // TODO: Put pub token
     #if F_RELEASE
         static let pubToken = ""
         static let baseUrlString = "https://global.transak.com"
@@ -17,12 +18,14 @@ final class TransakProvider: PurchaseProviderProtocol {
     }
 
     func buildPurchaseActions(for chainAsset: ChainAsset, accountId: AccountId) -> [PurchaseAction] {
-        guard let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+        guard
+            let transak = chainAsset.asset.buyProviders?.transak,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return []
         }
 
         let token = chainAsset.asset.symbol
-        let network = chainAsset.chain.name.lowercased()
+        let network = transak.network?.stringValue ?? chainAsset.chain.name.lowercased()
 
         guard let url = buildURLForToken(token, network: network, address: address) else {
             return []

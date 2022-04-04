@@ -27,7 +27,9 @@ final class RampProvider: PurchaseProviderProtocol {
         for chainAsset: ChainAsset,
         accountId: AccountId
     ) -> [PurchaseAction] {
-        guard let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+        guard
+            chainAsset.asset.buyProviders?.ramp != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return []
         }
 
