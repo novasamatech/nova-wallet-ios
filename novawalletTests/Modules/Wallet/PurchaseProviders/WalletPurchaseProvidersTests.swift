@@ -3,10 +3,6 @@ import XCTest
 import UIKit.UIColor
 
 class WalletPurchaseProvidersTests: XCTestCase {
-    let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
-    let chain = Chain.polkadot
-
-
     func testPurchaseProviders() throws {
         do {
             try performRampTest()
@@ -19,6 +15,13 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performRampTest() throws {
         // given
+        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 0)
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+        let asset = chainAsset.asset
+
+        let accountId = Data(repeating: 0, count: 32)
+        let address = try accountId.toAddress(using: chain.chainFormat)
+
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
         let apiKey = "3quzr4e6wdyccndec8jzjebzar5kxxzfy2f3us5k"
@@ -27,7 +30,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let logoUrl = config.logoURL
 
         // swiftlint:disable next long_string
-        let expectedUrl = "https://buy.ramp.network/?swapAsset=DOT&userAddress=\(address)&hostApiKey=\(apiKey)&variant=hosted-mobile&finalUrl=\(redirectUrl)&hostAppName=\(appName)&hostLogoUrl=\(logoUrl)"
+        let expectedUrl = "https://buy.ramp.network/?swapAsset=\(asset.symbol)&userAddress=\(address)&hostApiKey=\(apiKey)&variant=hosted-mobile&finalUrl=\(redirectUrl)&hostAppName=\(appName)&hostLogoUrl=\(logoUrl)"
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
         let provider = RampProvider()
@@ -38,7 +41,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chain, address: address)
+        let actions = provider.buildPurchaseActions(for: chainAsset, accountId: accountId)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
@@ -48,6 +51,13 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performMoonPayTest() throws {
         // given
+        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 0)
+        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
+        let asset = chainAsset.asset
+
+        let accountId = Data(repeating: 0, count: 32)
+        let address = try accountId.toAddress(using: chain.chainFormat)
+
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
         let apiKey = "pk_test_DMRuyL6Nf1qc9OzjPBmCFBeCGkFwiZs0"
@@ -56,7 +66,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let colorCode = R.color.colorAccent()!.hexRGB
 
         // swiftlint:disable next long_string
-        let query = "apiKey=\(apiKey)&currencyCode=DOT&walletAddress=\(address)&showWalletAddressForm=true&colorCode=\(colorCode)&redirectURL=\(redirectUrl)"
+        let query = "apiKey=\(apiKey)&currencyCode=\(asset.symbol)&walletAddress=\(address)&showWalletAddressForm=true&colorCode=\(colorCode)&redirectURL=\(redirectUrl)"
             .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
 
         let expectedUrl = "https://buy.moonpay.com/?\(query)&signature=WLIKNxVBMrM0bE5ZExPLlYan%2BkI86iQqdlaQZm55qYs%3D"
@@ -70,7 +80,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         // when
         let expectation = XCTestExpectation()
 
-        let actions = provider.buildPurchaseActions(for: chain, address: address)
+        let actions = provider.buildPurchaseActions(for: chainAsset, accountId: accountId)
         XCTAssertEqual(actions[0].url.absoluteString, expectedUrl)
         expectation.fulfill()
 
