@@ -8,7 +8,7 @@ final class AssetDetailsConfigurator {
     let viewModelFactory: AssetDetailsViewModelFactory
 
     init(
-        address: AccountAddress,
+        accountId: AccountId,
         chainAsset: ChainAsset,
         purchaseProvider: PurchaseProviderProtocol,
         priceAsset: WalletAsset,
@@ -18,13 +18,12 @@ final class AssetDetailsConfigurator {
 
         containingViewFactory = AssetDetailsContainingViewFactory(
             chainAsset: chainAsset,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            purchaseProvider: purchaseProvider,
+            selectedAccountId: accountId
         )
 
         viewModelFactory = AssetDetailsViewModelFactory(
-            address: address,
-            chain: chainAsset.chain,
-            purchaseProvider: purchaseProvider,
             amountFormatterFactory: amountFormatterFactory,
             priceAsset: priceAsset
         )
