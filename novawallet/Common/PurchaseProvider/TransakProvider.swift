@@ -31,7 +31,7 @@ final class TransakProvider: PurchaseProviderProtocol {
             return []
         }
 
-        let action = PurchaseAction(title: "Transak", url: url, icon: R.image.iconRamp()!)
+        let action = PurchaseAction(title: "Transak", url: url, icon: R.image.iconTransak()!)
 
         return [action]
     }

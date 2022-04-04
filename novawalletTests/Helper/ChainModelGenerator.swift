@@ -1,5 +1,6 @@
 import Foundation
 @testable import novawallet
+import SubstrateSdk
 
 enum ChainModelGenerator {
     static func generate(
@@ -233,7 +234,8 @@ enum ChainModelGenerator {
         _ identifier: AssetModel.Id,
         symbol: String? = nil,
         assetPresicion: UInt16 = (9...18).randomElement()!,
-        hasStaking: Bool = false
+        hasStaking: Bool = false,
+        buyProviders: JSON? = nil
     ) -> AssetModel {
 
         let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
@@ -248,7 +250,7 @@ enum ChainModelGenerator {
             staking: hasStaking ? "relaychain" : nil,
             type: nil,
             typeExtras: nil,
-            buyProviders: nil
+            buyProviders: buyProviders
         )
     }
 

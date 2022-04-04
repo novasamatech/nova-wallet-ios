@@ -1,6 +1,7 @@
 import XCTest
 @testable import novawallet
 import UIKit.UIColor
+import SubstrateSdk
 
 class WalletPurchaseProvidersTests: XCTestCase {
     let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
@@ -18,7 +19,8 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performRampTest() throws {
         // given
-        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let buyProviders = JSON.dictionaryValue(["ramp": JSON.dictionaryValue([:])])
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT", buyProviders: buyProviders)
         let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
@@ -53,7 +55,8 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performMoonPayTest() throws {
         // given
-        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let buyProviders = JSON.dictionaryValue(["moonpay": JSON.dictionaryValue([:])])
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT", buyProviders: buyProviders)
         let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
@@ -91,7 +94,8 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performTransakTest() throws {
         // given
-        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let buyProviders = JSON.dictionaryValue(["transak": JSON.dictionaryValue([:])])
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT", buyProviders: buyProviders)
         let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
         let chainAsset = ChainAsset(chain: chain, asset: asset)
 
