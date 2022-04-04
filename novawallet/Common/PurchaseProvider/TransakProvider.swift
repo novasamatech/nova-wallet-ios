@@ -1,12 +1,11 @@
 import Foundation
 
 final class TransakProvider: PurchaseProviderProtocol {
-    // TODO: Put pub token
     #if F_RELEASE
-        static let pubToken = ""
+        static let pubToken = "861a131b-1721-4e99-8ec3-7349840c888f"
         static let baseUrlString = "https://global.transak.com"
     #else
-        static let pubToken = ""
+        static let pubToken = "ed6a6887-57fd-493a-8075-4718b463913b"
         static let baseUrlString = "https://staging-global.transak.com"
     #endif
 
