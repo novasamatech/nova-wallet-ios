@@ -15,6 +15,7 @@ struct AssetModel: Equatable, Codable, Hashable {
     let staking: String?
     let type: String?
     let typeExtras: JSON?
+    let buyProviders: JSON?
 
     var isUtility: Bool { assetId == 0 }
 }
