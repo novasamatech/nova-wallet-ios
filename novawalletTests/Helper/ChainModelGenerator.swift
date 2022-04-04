@@ -20,7 +20,8 @@ enum ChainModelGenerator {
                 priceId: nil,
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
-                typeExtras: nil
+                typeExtras: nil,
+                buyProviders: nil
             )
 
             let node = ChainNodeModel(
@@ -92,7 +93,8 @@ enum ChainModelGenerator {
                 priceId: nil,
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
-                typeExtras: nil
+                typeExtras: nil,
+                buyProviders: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -245,7 +247,8 @@ enum ChainModelGenerator {
             priceId: nil,
             staking: hasStaking ? "relaychain" : nil,
             type: nil,
-            typeExtras: nil
+            typeExtras: nil,
+            buyProviders: nil
         )
     }
 
