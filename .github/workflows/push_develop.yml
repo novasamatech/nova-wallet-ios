@@ -7,12 +7,12 @@ on:
 jobs:
   build:
     name: Archive, export and upload to Firebase
-    runs-on: macos-11
+    runs-on: macos-latest
 
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '13.1'
+          xcode-version: latest-stable
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -22,12 +22,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: Pods
-          key: ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pods-${{ secrets.COCOAPODS_CACHE_SECRET }}
+            ${{ runner.os }}-pods-
 
       - name: Install Cocoapods
-        if: steps.cache-cocoapods.outputs.cache-hit != 'true'
+        # if: steps.cache-cocoapods.outputs.cache-hit != 'true'
         run: pod install --repo-update
 
       # Source https://docs.github.com/en/actions/deployment/installing-an-apple-certificate-on-macos-runners-for-xcode-development#add-a-step-to-your-workflow
