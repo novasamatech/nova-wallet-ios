@@ -3,6 +3,8 @@ import XCTest
 import UIKit.UIColor
 
 class WalletPurchaseProvidersTests: XCTestCase {
+    let address = "15cfSaBcTxNr8rV59cbhdMNCRagFr3GE6B3zZRsCp4QHHKPu"
+
     func testPurchaseProviders() throws {
         do {
             try performRampTest()
@@ -15,12 +17,11 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performRampTest() throws {
         // given
-        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 0)
-        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
-        let asset = chainAsset.asset
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
-        let accountId = Data(repeating: 0, count: 32)
-        let address = try accountId.toAddress(using: chain.chainFormat)
+        let accountId = try address.toAccountId()
 
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
@@ -51,12 +52,11 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
     func performMoonPayTest() throws {
         // given
-        let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 0)
-        let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
-        let asset = chainAsset.asset
+        let asset = ChainModelGenerator.generateAssetWithId(0, symbol: "DOT")
+        let chain = ChainModelGenerator.generateChain(assets: [asset], addressPrefix: 0)
+        let chainAsset = ChainAsset(chain: chain, asset: asset)
 
-        let accountId = Data(repeating: 0, count: 32)
-        let address = try accountId.toAddress(using: chain.chainFormat)
+        let accountId = try address.toAccountId()
 
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
@@ -69,7 +69,7 @@ class WalletPurchaseProvidersTests: XCTestCase {
         let query = "apiKey=\(apiKey)&currencyCode=\(asset.symbol)&walletAddress=\(address)&showWalletAddressForm=true&colorCode=\(colorCode)&redirectURL=\(redirectUrl)"
             .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? ""
 
-        let expectedUrl = "https://buy.moonpay.com/?\(query)&signature=WLIKNxVBMrM0bE5ZExPLlYan%2BkI86iQqdlaQZm55qYs%3D"
+        let expectedUrl = "https://buy.moonpay.com/?\(query)&signature=oXX0CUdPjd5XrjoogHBbDAucVipQuB7DgtsyqwutFTQ%3D"
 
         let secretKeyData = Data(secretKey.utf8)
 
