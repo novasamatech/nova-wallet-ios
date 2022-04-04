@@ -11,7 +11,8 @@ extension PurchaseAggregator {
             MoonpayProviderFactory().createProvider(
                 with: moonpaySecretKeyData,
                 apiKey: config.moonPayApiKey
-            )
+            ),
+            TransakProvider()
         ]
         return PurchaseAggregator(providers: purchaseProviders)
             .with(appName: config.purchaseAppName)

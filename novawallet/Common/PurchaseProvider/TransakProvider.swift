@@ -37,7 +37,7 @@ final class TransakProvider: PurchaseProviderProtocol {
         var components = URLComponents(string: Self.baseUrlString)
 
         var queryItems = [
-            URLQueryItem(name: "api", value: Self.pubToken),
+            URLQueryItem(name: "apiKey", value: Self.pubToken),
             URLQueryItem(name: "network", value: network),
             URLQueryItem(name: "cryptoCurrencyCode", value: token),
             URLQueryItem(name: "walletAddress", value: address),
