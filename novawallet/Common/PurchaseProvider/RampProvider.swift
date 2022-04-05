@@ -1,9 +1,13 @@
 import Foundation
 
 final class RampProvider: PurchaseProviderProtocol {
-    // TODO: Replace token
-    static let pubToken = "3quzr4e6wdyccndec8jzjebzar5kxxzfy2f3us5k"
-    static let baseUrlString = "https://buy.ramp.network/"
+    #if F_RELEASE
+        static let pubToken = "6hrtmyabadyjf6q4jc6h45yv3k8h7s88ebgubscd"
+        static let baseUrlString = "https://buy.ramp.network/"
+    #else
+        static let pubToken = "n8ev677z3z7enckabyc249j84ajpc28o9tmsgob7"
+        static let baseUrlString = "https://ri-widget-staging.firebaseapp.com"
+    #endif
 
     private var appName: String?
     private var logoUrl: URL?
