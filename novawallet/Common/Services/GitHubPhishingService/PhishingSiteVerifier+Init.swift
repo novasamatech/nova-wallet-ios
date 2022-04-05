@@ -5,10 +5,9 @@ extension PhishingSiteVerifier {
         for storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared
     ) -> PhishingSiteVerifier {
         let factory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-        let repository = factory.createPhishingSitesRepository()
         let operationQueue = OperationQueue()
         operationQueue.maxConcurrentOperationCount = 1
 
-        return PhishingSiteVerifier(repository: repository, operationQueue: operationQueue)
+        return PhishingSiteVerifier(repositoryFactory: factory, operationQueue: operationQueue)
     }
 }
