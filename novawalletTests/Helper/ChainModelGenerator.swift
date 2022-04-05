@@ -1,5 +1,6 @@
 import Foundation
 @testable import novawallet
+import SubstrateSdk
 
 enum ChainModelGenerator {
     static func generate(
@@ -20,7 +21,8 @@ enum ChainModelGenerator {
                 priceId: nil,
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
-                typeExtras: nil
+                typeExtras: nil,
+                buyProviders: nil
             )
 
             let node = ChainNodeModel(
@@ -92,7 +94,8 @@ enum ChainModelGenerator {
                 priceId: nil,
                 staking: hasStaking ? "relaychain" : nil,
                 type: nil,
-                typeExtras: nil
+                typeExtras: nil,
+                buyProviders: nil
             )
 
             let node = RemoteChainNodeModel(
@@ -152,8 +155,6 @@ enum ChainModelGenerator {
         hasStaking: Bool = false,
         hasCrowdloans: Bool = false
     ) -> ChainModel {
-        let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
-
         let assets = (0..<count).map { index in
             generateAssetWithId(
                 AssetModel.Id(index),
@@ -161,6 +162,26 @@ enum ChainModelGenerator {
                 hasStaking: hasStaking
             )
         }
+
+        return generateChain(
+            assets: assets,
+            defaultChainId: defaultChainId,
+            addressPrefix: addressPrefix,
+            assetPresicion: assetPresicion,
+            hasStaking: hasStaking,
+            hasCrowdloans: hasCrowdloans
+        )
+    }
+
+    static func generateChain(
+        assets: [AssetModel],
+        defaultChainId: ChainModel.Id? = nil,
+        addressPrefix: UInt16,
+        assetPresicion: UInt16 = (9...18).randomElement()!,
+        hasStaking: Bool = false,
+        hasCrowdloans: Bool = false
+    ) -> ChainModel {
+        let chainId = defaultChainId ?? Data.random(of: 32)!.toHex()
 
         let urlString = "node\(Data.random(of: 32)!.toHex()).io"
 
@@ -211,19 +232,25 @@ enum ChainModelGenerator {
 
     static func generateAssetWithId(
         _ identifier: AssetModel.Id,
+        symbol: String? = nil,
         assetPresicion: UInt16 = (9...18).randomElement()!,
-        hasStaking: Bool = false
+        hasStaking: Bool = false,
+        buyProviders: JSON? = nil
     ) -> AssetModel {
-        AssetModel(
+
+        let assetSymbol = symbol ?? String(UUID().uuidString.prefix(3))
+
+        return AssetModel(
             assetId: identifier,
             icon: Constants.dummyURL,
             name: UUID().uuidString,
-            symbol: String(UUID().uuidString.prefix(3)),
+            symbol: assetSymbol,
             precision: assetPresicion,
             priceId: nil,
             staking: hasStaking ? "relaychain" : nil,
             type: nil,
-            typeExtras: nil
+            typeExtras: nil,
+            buyProviders: buyProviders
         )
     }
 
