@@ -28,13 +28,14 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
-        let apiKey = "3quzr4e6wdyccndec8jzjebzar5kxxzfy2f3us5k"
+        let apiKey = RampProvider.pubToken
+        let host = RampProvider.baseUrlString
         let redirectUrl = config.purchaseRedirect
         let appName = config.purchaseAppName
         let logoUrl = config.logoURL
 
         // swiftlint:disable next long_string
-        let expectedUrl = "https://buy.ramp.network/?swapAsset=\(asset.symbol)&userAddress=\(address)&hostApiKey=\(apiKey)&variant=hosted-mobile&finalUrl=\(redirectUrl)&hostAppName=\(appName)&hostLogoUrl=\(logoUrl)"
+        let expectedUrl = "\(host)?swapAsset=\(asset.symbol)&userAddress=\(address)&hostApiKey=\(apiKey)&variant=hosted-mobile&finalUrl=\(redirectUrl)&hostAppName=\(appName)&hostLogoUrl=\(logoUrl)"
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
         let provider = RampProvider()
@@ -103,12 +104,13 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
         let config: ApplicationConfigProtocol = ApplicationConfig.shared
 
-        let apiKey = ""
+        let apiKey = TransakProvider.pubToken
+        let host = TransakProvider.baseUrlString
         let redirectUrl = config.purchaseRedirect
         let network = chain.name.lowercased()
 
         // swiftlint:disable next long_string
-        let expectedUrl = "https://staging-global.transak.com?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&walletAddress=\(address)&disableWalletAddressForm=true&redirectURL=\(redirectUrl)"
+        let expectedUrl = "\(host)?apiKey=\(apiKey)&network=\(network)&cryptoCurrencyCode=\(asset.symbol)&walletAddress=\(address)&disableWalletAddressForm=true"
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
         let provider = TransakProvider().with(callbackUrl: config.purchaseRedirect)

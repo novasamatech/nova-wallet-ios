@@ -73,9 +73,6 @@
                <Test
                   Identifier = "NetworkManagementTests">
                </Test>
-               <Test
-                  Identifier = "WalletPurchaseProvidersTests">
-               </Test>
             </SkippedTests>
          </TestableReference>
          <TestableReference
