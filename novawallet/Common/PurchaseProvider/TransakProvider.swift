@@ -38,17 +38,13 @@ final class TransakProvider: PurchaseProviderProtocol {
     private func buildURLForToken(_ token: String, network: String, address: String) -> URL? {
         var components = URLComponents(string: Self.baseUrlString)
 
-        var queryItems = [
+        let queryItems = [
             URLQueryItem(name: "apiKey", value: Self.pubToken),
             URLQueryItem(name: "network", value: network),
             URLQueryItem(name: "cryptoCurrencyCode", value: token),
             URLQueryItem(name: "walletAddress", value: address),
             URLQueryItem(name: "disableWalletAddressForm", value: "true")
         ]
-
-        if let callbackUrl = callbackUrl?.absoluteString {
-            queryItems.append(URLQueryItem(name: "redirectURL", value: callbackUrl))
-        }
 
         components?.queryItems = queryItems
 
