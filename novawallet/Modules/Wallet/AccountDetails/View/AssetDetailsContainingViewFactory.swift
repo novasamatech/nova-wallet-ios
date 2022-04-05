@@ -5,15 +5,21 @@ import SoraFoundation
 class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProtocol {
     let chainAsset: ChainAsset
     let localizationManager: LocalizationManagerProtocol
+    let purchaseProvider: PurchaseProviderProtocol
+    let selectedAccountId: AccountId
 
     var commandFactory: WalletCommandFactoryProtocol?
 
     init(
         chainAsset: ChainAsset,
-        localizationManager: LocalizationManagerProtocol
+        localizationManager: LocalizationManagerProtocol,
+        purchaseProvider: PurchaseProviderProtocol,
+        selectedAccountId: AccountId
     ) {
         self.chainAsset = chainAsset
         self.localizationManager = localizationManager
+        self.purchaseProvider = purchaseProvider
+        self.selectedAccountId = selectedAccountId
     }
 
     func createView() -> BaseAccountDetailsContainingView {
@@ -88,20 +94,16 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
 
         let receiveCommand: WalletCommandProtocol = commandFactory.prepareReceiveCommand(for: assetId)
 
-        // TODO: Enable buy command when tokens ready
-        let buyCommand: WalletCommandProtocol? = nil
+        let actions = purchaseProvider.buildPurchaseActions(
+            for: chainAsset,
+            accountId: selectedAccountId
+        )
 
-        /* if let walletChain = Chain(genesisHash: chain.chainId) {
-             let actions = purchaseProvider.buildPurchaseActions(for: walletChain, address: address)
-
-             buyCommand = actions.isEmpty ? nil :
-                 WalletSelectPurchaseProviderCommand(
-                     actions: actions,
-                     commandFactory: commandFactory
-                 )
-         } else {
-             buyCommand = nil
-         } */
+        let buyCommand = actions.isEmpty ? nil :
+            WalletSelectPurchaseProviderCommand(
+                actions: actions,
+                commandFactory: commandFactory
+            )
 
         view.bindActions(send: sendCommand, receive: receiveCommand, buy: buyCommand)
     }
