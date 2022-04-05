@@ -7,22 +7,24 @@ protocol PhishingSiteVerifing {
 }
 
 final class PhishingSiteVerifier: PhishingSiteVerifing {
-    let repository: AnyDataProviderRepository<PhishingSite>
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let operationQueue: OperationQueue
 
-    init(repository: AnyDataProviderRepository<PhishingSite>, operationQueue: OperationQueue) {
-        self.repository = repository
+    init(repositoryFactory: SubstrateRepositoryFactoryProtocol, operationQueue: OperationQueue) {
+        self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
     }
 
     func verify(host: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        let operation = repository.fetchOperation(by: host, options: RepositoryFetchOptions())
+        let filter = NSPredicate.filterPhishingSitesDomain(host)
+        let repository = repositoryFactory.createPhishingSitesRepositoryWithPredicate(filter)
+        let fetchOperation = repository.fetchCountOperation()
 
-        operation.completionBlock = {
+        fetchOperation.completionBlock = {
             DispatchQueue.main.async {
                 do {
-                    let optItem = try operation.extractNoCancellableResultData()
-                    let isNotPhishing = optItem == nil
+                    let numberOfItems = try fetchOperation.extractNoCancellableResultData()
+                    let isNotPhishing = numberOfItems == 0
 
                     completion(.success(isNotPhishing))
                 } catch {
@@ -31,7 +33,7 @@ final class PhishingSiteVerifier: PhishingSiteVerifing {
             }
         }
 
-        operationQueue.addOperation(operation)
+        operationQueue.addOperations([fetchOperation], waitUntilFinished: false)
     }
 
     func cancelAll() {
