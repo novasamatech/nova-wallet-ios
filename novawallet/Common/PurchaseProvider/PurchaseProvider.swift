@@ -31,9 +31,9 @@ extension PurchaseAggregator: PurchaseProviderProtocol {
     }
 
     func buildPurchaseActions(
-        for chain: Chain,
-        address: String
+        for chainAsset: ChainAsset,
+        accountId: AccountId
     ) -> [PurchaseAction] {
-        providers.flatMap { $0.buildPurchaseActions(for: chain, address: address) }
+        providers.flatMap { $0.buildPurchaseActions(for: chainAsset, accountId: accountId) }
     }
 }

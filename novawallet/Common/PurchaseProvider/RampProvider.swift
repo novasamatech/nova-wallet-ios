@@ -1,8 +1,13 @@
 import Foundation
 
 final class RampProvider: PurchaseProviderProtocol {
-    static let pubToken = "3quzr4e6wdyccndec8jzjebzar5kxxzfy2f3us5k"
-    static let baseUrlString = "https://buy.ramp.network/"
+    #if F_RELEASE
+        static let pubToken = "6hrtmyabadyjf6q4jc6h45yv3k8h7s88ebgubscd"
+        static let baseUrlString = "https://buy.ramp.network/"
+    #else
+        static let pubToken = "n8ev677z3z7enckabyc249j84ajpc28o9tmsgob7"
+        static let baseUrlString = "https://ri-widget-staging.firebaseapp.com"
+    #endif
 
     private var appName: String?
     private var logoUrl: URL?
@@ -24,19 +29,16 @@ final class RampProvider: PurchaseProviderProtocol {
     }
 
     func buildPurchaseActions(
-        for chain: Chain,
-        address: String
+        for chainAsset: ChainAsset,
+        accountId: AccountId
     ) -> [PurchaseAction] {
-        let optionUrl: URL?
-
-        switch chain {
-        case .polkadot:
-            optionUrl = buildURLForToken("DOT", address: address)
-        case .kusama:
-            optionUrl = buildURLForToken("KSM", address: address)
-        case .westend, .rococo:
-            optionUrl = nil
+        guard
+            chainAsset.asset.buyProviders?.ramp != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
         }
+
+        let optionUrl = buildURLForToken(chainAsset.asset.symbol, address: address)
 
         if let url = optionUrl {
             let action = PurchaseAction(title: "Ramp", url: url, icon: R.image.iconRamp()!)

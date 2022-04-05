@@ -21,6 +21,14 @@ final class ChainModelMapper {
             typeExtras = nil
         }
 
+        let buyProviders: JSON?
+
+        if let data = entity.buyProviders {
+            buyProviders = try jsonDecoder.decode(JSON.self, from: data)
+        } else {
+            buyProviders = nil
+        }
+
         return AssetModel(
             assetId: UInt32(bitPattern: entity.assetId),
             icon: entity.icon,
@@ -30,7 +38,8 @@ final class ChainModelMapper {
             priceId: entity.priceId,
             staking: entity.staking,
             type: entity.type,
-            typeExtras: typeExtras
+            typeExtras: typeExtras,
+            buyProviders: buyProviders
         )
     }
 
@@ -82,6 +91,12 @@ final class ChainModelMapper {
                 assetEntity.typeExtras = try jsonEncoder.encode(json)
             } else {
                 assetEntity.typeExtras = nil
+            }
+
+            if let json = asset.buyProviders {
+                assetEntity.buyProviders = try jsonEncoder.encode(json)
+            } else {
+                assetEntity.buyProviders = nil
             }
 
             return assetEntity
