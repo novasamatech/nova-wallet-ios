@@ -66,6 +66,10 @@ class TransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
+    func updateFee(_ newValue: BigUInt?) {
+        fee = newValue
+    }
+
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
