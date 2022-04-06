@@ -14,6 +14,7 @@ final class StackActionView: UIView {
         let view = BorderedLabelView()
         view.titleLabel.font = .semiBoldFootnote
         view.titleLabel.textColor = R.color.colorTransparentText()!
+        view.contentInsets = UIEdgeInsets(top: 2, left: 8, bottom: 3, right: 8)
         return view
     }()
 

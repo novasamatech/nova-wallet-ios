@@ -5,7 +5,7 @@ protocol StakingActionsViewDelegate: AnyObject {
 }
 
 final class StakingActionsView: UIView {
-    var delegate: StakingActionsViewDelegate?
+    weak var delegate: StakingActionsViewDelegate?
 
     let backgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()

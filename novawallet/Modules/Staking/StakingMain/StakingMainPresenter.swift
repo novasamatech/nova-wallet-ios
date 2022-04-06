@@ -26,8 +26,7 @@ final class StakingMainPresenter {
 
     private var balance: Decimal?
     private var networkStakingInfo: NetworkStakingInfo?
-    private var controllerAccount: MetaChainAccountResponse?
-    private var stashAccount: MetaChainAccountResponse?
+    private var accounts: [AccountId: MetaChainAccountResponse] = [:]
     private var nomination: Nomination?
 
     init(
@@ -48,6 +47,12 @@ final class StakingMainPresenter {
         self.dataValidatingFactory = dataValidatingFactory
 
         stateMachine.delegate = self
+    }
+
+    private func accountForAddress(_ address: AccountAddress) -> MetaChainAccountResponse? {
+        let accountId = try? address.toAccountId()
+
+        return accountId.flatMap { accounts[$0] }
     }
 
     private func provideStakingInfo() {
@@ -95,6 +100,8 @@ final class StakingMainPresenter {
             state.stashItem
         }
 
+        let stashAccount = stashItem.flatMap { accountForAddress($0.stash) }
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 stash: try? stashAccount?.chainAccount.toAccountItem(),
@@ -116,6 +123,8 @@ final class StakingMainPresenter {
         let ledgerInfo: StakingLedger? = stateMachine.viewState { (state: BaseStakingState) in
             (state as? StashLedgerStateProtocol)?.ledgerInfo
         }
+
+        let controllerAccount = stashItem.flatMap { accountForAddress($0.controller) }
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
@@ -150,10 +159,13 @@ final class StakingMainPresenter {
     func setupValidators(for bondedState: BondedState) {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
+        let stashItem = bondedState.stashItem
+        let controllerAccount = accountForAddress(stashItem.controller)
+
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
                 controller: try? controllerAccount?.chainAccount.toAccountItem(),
-                for: bondedState.stashItem.controller,
+                for: stashItem.controller,
                 locale: locale
             )
         ]).runValidation { [weak self] in
@@ -169,7 +181,7 @@ final class StakingMainPresenter {
                     stashItem: bondedState.stashItem,
                     chainFormat: chainAsset.chain.chainFormat
                 ),
-                let controllerAccount = self?.controllerAccount,
+                let controllerAccount = controllerAccount,
                 controllerAccount.chainAccount.toAddress() == bondedState.stashItem.controller
             else {
                 return
@@ -305,8 +317,11 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     func performRedeemAction() {
         guard let view = view else { return }
         let selectedLocale = view.localizationManager?.selectedLocale
+
+        let baseState = stateMachine.viewState(using: { (state: BaseStashNextState) in state })
+        let controllerAccount = baseState.flatMap { accountForAddress($0.stashItem.controller) }
+
         guard controllerAccount != nil else {
-            let baseState = stateMachine.viewState(using: { (state: BaseStashNextState) in state })
             wireframe.presentMissingController(
                 from: view,
                 address: baseState?.stashItem.controller ?? "",
@@ -314,6 +329,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
             )
             return
         }
+
         wireframe.showRedeem(from: view)
     }
 
@@ -506,6 +522,8 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
     func didReceive(newChainAsset: ChainAsset) {
         networkStakingInfo = nil
 
+        accounts = [:]
+
         stateMachine.state.process(chainAsset: newChainAsset)
 
         provideMainViewModel()
@@ -533,14 +551,8 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         handle(error: payeeError)
     }
 
-    func didReceiveControllerAccount(result: Result<MetaChainAccountResponse?, Error>) {
-        switch result {
-        case let .success(accountItem):
-            controllerAccount = accountItem
-        case let .failure(error):
-            controllerAccount = nil
-            handle(error: error)
-        }
+    func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId) {
+        accounts[accountId] = account
     }
 
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>) {
