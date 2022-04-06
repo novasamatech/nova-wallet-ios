@@ -214,44 +214,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         wireframe.showAccountsSelection(from: view)
     }
 
-    func performManageStakingAction() {
-        let managedItems: [StakingManageOption] = {
-            if let nominatorState = stateMachine.viewState(using: { (state: NominatorState) in state }) {
-                return [
-                    .stakingBalance,
-                    .pendingRewards,
-                    .rewardDestination,
-                    .changeValidators(count: nominatorState.nomination.targets.count),
-                    .controllerAccount
-                ]
-            }
-
-            if stateMachine.viewState(using: { (state: BondedState) in state }) != nil {
-                return [
-                    .stakingBalance,
-                    .setupValidators,
-                    .rewardDestination,
-                    .controllerAccount
-                ]
-            }
-
-            return [
-                .stakingBalance,
-                .pendingRewards,
-                .rewardDestination,
-                .yourValidator,
-                .controllerAccount
-            ]
-        }()
-
-        wireframe.showManageStaking(
-            from: view,
-            items: managedItems,
-            delegate: self,
-            context: managedItems as NSArray
-        )
-    }
-
     func performRewardInfoAction() {
         guard let rewardCalculator = stateMachine
             .viewState(using: { (state: BaseStakingState) in state })?.commonData.calculatorEngine else {
@@ -568,46 +530,46 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
 // MARK: - ModalPickerViewControllerDelegate
 
 extension StakingMainPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard
-            let manageStakingItems = context as? [StakingManageOption],
-            index >= 0, index < manageStakingItems.count else {
-            return
-        }
+    func modalPickerDidSelectModelAtIndex(_: Int, context _: AnyObject?) {
+        /* guard
+             let manageStakingItems = context as? [StakingManageOption],
+             index >= 0, index < manageStakingItems.count else {
+             return
+         }
 
-        let selectedItem = manageStakingItems[index]
+         let selectedItem = manageStakingItems[index]
 
-        switch selectedItem {
-        case .pendingRewards:
-            if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
-                let stashAddress = validatorState.stashItem.stash
-                wireframe.showRewardPayoutsForValidator(from: view, stashAddress: stashAddress)
-                return
-            }
+         switch selectedItem {
+         case .pendingRewards:
+             if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
+                 let stashAddress = validatorState.stashItem.stash
+                 wireframe.showRewardPayoutsForValidator(from: view, stashAddress: stashAddress)
+                 return
+             }
 
-            if let stashState = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
-                let stashAddress = stashState.stashItem.stash
-                wireframe.showRewardPayoutsForNominator(from: view, stashAddress: stashAddress)
-                return
-            }
-        case .rewardDestination:
-            wireframe.showRewardDestination(from: view)
-        case .stakingBalance:
-            wireframe.showStakingBalance(from: view)
-        case .changeValidators:
-            wireframe.showNominatorValidators(from: view)
-        case .setupValidators:
-            if let bondedState = stateMachine.viewState(using: { (state: BondedState) in state }) {
-                setupValidators(for: bondedState)
-            }
-        case .controllerAccount:
-            wireframe.showControllerAccount(from: view)
-        case .yourValidator:
-            if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
-                let stashAddress = validatorState.stashItem.stash
-                wireframe.showYourValidatorInfo(stashAddress, from: view)
-            }
-        }
+             if let stashState = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
+                 let stashAddress = stashState.stashItem.stash
+                 wireframe.showRewardPayoutsForNominator(from: view, stashAddress: stashAddress)
+                 return
+             }
+         case .rewardDestination:
+             wireframe.showRewardDestination(from: view)
+         case .stakingBalance:
+             wireframe.showStakingBalance(from: view)
+         case .changeValidators:
+             wireframe.showNominatorValidators(from: view)
+         case .setupValidators:
+             if let bondedState = stateMachine.viewState(using: { (state: BondedState) in state }) {
+                 setupValidators(for: bondedState)
+             }
+         case .controllerAccount:
+             wireframe.showControllerAccount(from: view)
+         case .yourValidator:
+             if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
+                 let stashAddress = validatorState.stashItem.stash
+                 wireframe.showYourValidatorInfo(stashAddress, from: view)
+             }
+         } */
     }
 }
 
