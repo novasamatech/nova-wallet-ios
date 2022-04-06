@@ -891,6 +891,8 @@
 		8489A6D027FD5B9E0040C066 /* StackActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CF27FD5B9E0040C066 /* StackActionView.swift */; };
 		8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D127FD5FB80040C066 /* StackActionCell.swift */; };
 		8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */; };
+		8489A6D627FDA50D0040C066 /* AccountLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D527FDA50D0040C066 /* AccountLocalStorageSubscriber.swift */; };
+		8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D727FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift */; };
 		8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */; };
 		8489EDCE264DD4DA00FF997E /* RecommendationsComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */; };
 		848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */; };
@@ -2968,6 +2970,8 @@
 		8489A6CF27FD5B9E0040C066 /* StackActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionView.swift; sourceTree = "<group>"; };
 		8489A6D127FD5FB80040C066 /* StackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionCell.swift; sourceTree = "<group>"; };
 		8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashLedgerStateProtocol.swift; sourceTree = "<group>"; };
+		8489A6D527FDA50D0040C066 /* AccountLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		8489A6D727FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposing.swift; sourceTree = "<group>"; };
 		8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposerTests.swift; sourceTree = "<group>"; };
 		848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainProviderFactoryStub.swift; sourceTree = "<group>"; };
@@ -7775,6 +7779,8 @@
 				842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */,
 				842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */,
 				84E25BF127E8FDC100290BF1 /* DecodedProviderTypes.swift */,
+				8489A6D527FDA50D0040C066 /* AccountLocalStorageSubscriber.swift */,
+				8489A6D727FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -11218,6 +11224,7 @@
 				84FB1F672526920B00E0242B /* SubscanTransferData.swift in Sources */,
 				846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */,
 				84FB298426393D0900BE0FCD /* YourValidatorListViewModelFactory.swift in Sources */,
+				8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */,
 				8406B5AB26FBD9EB00635B61 /* AccountInfoUpdatingService.swift in Sources */,
 				844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */,
 				84A3772E27B502F20026D6D1 /* MetamaskTransaction.swift in Sources */,
@@ -12147,6 +12154,7 @@
 				C083E2FC291784BF60EE73BA /* CrowdloanListViewController.swift in Sources */,
 				5888936B3D13D92F1534E08B /* CrowdloanListViewLayout.swift in Sources */,
 				849C066F2765140B00394C82 /* AnyCancellableCleaning.swift in Sources */,
+				8489A6D627FDA50D0040C066 /* AccountLocalStorageSubscriber.swift in Sources */,
 				846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */,
 				278F5341DC043EBED7C0733D /* CrowdloanListViewFactory.swift in Sources */,
 				7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */,
