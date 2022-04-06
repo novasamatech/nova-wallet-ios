@@ -66,7 +66,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
 
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)
 
-    func didReceiveControllerAccount(result: Result<MetaChainAccountResponse?, Error>)
+    func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)
     func networkInfoViewExpansion(isExpanded: Bool)
 }
 

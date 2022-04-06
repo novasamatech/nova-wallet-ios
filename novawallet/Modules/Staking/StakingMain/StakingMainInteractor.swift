@@ -54,6 +54,7 @@ final class StakingMainInteractor: RuntimeConstantFetching, AnyCancellableCleani
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
     var payeeProvider: AnyDataProvider<DecodedPayee>?
     var controllerAccountProvider: StreamableProvider<MetaAccountModel>?
+    var stashAccountProvider: StreamableProvider<MetaAccountModel>?
     var minNominatorBondProvider: AnyDataProvider<DecodedBigUInt>?
     var counterForNominatorsProvider: AnyDataProvider<DecodedU32>?
     var maxNominatorsCountProvider: AnyDataProvider<DecodedU32>?
