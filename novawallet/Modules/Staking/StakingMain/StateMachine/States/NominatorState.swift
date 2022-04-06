@@ -1,6 +1,6 @@
 import Foundation
 
-final class NominatorState: BaseStashNextState {
+final class NominatorState: BaseStashNextState, StashLedgerStateProtocol {
     private(set) var ledgerInfo: StakingLedger
     private(set) var nomination: Nomination
 

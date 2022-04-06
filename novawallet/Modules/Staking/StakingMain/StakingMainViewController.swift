@@ -220,6 +220,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         if actionsView == nil {
             let newActionsView = StakingActionsView()
             newActionsView.locale = selectedLocale
+            newActionsView.delegate = self
             stackView.addArrangedSubview(newActionsView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
@@ -514,11 +515,17 @@ extension StakingMainViewController: AlertsViewDelegate {
         case .bondedSetValidators:
             presenter.performSetupValidatorsForBondedAction()
         case .nominatorLowStake:
-            presenter.performBondMoreAction()
+            presenter.performStakeMoreAction()
         case .redeemUnbonded:
             presenter.performRedeemAction()
         case .waitingNextEra:
             break
         }
+    }
+}
+
+extension StakingMainViewController: StakingActionsViewDelegate {
+    func actionsViewDidSelectAction(_ action: StakingManageOption) {
+        presenter.performManageAction(action)
     }
 }
