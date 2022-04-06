@@ -295,11 +295,21 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForBondedState(state)
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .setupValidators,
+            .rewardDestination,
+            .controllerAccount
+        ]
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            actions: actions
         )
     }
 
@@ -345,11 +355,22 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForNominatorState(state)
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .pendingRewards,
+            .rewardDestination,
+            .changeValidators(count: state.nomination.targets.count),
+            .controllerAccount
+        ]
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            actions: actions
         )
     }
 
@@ -390,15 +411,27 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForValidatorState(state)
+
         let analyticsViewModel = createAnalyticsViewModel(
             commonData: state.commonData,
             chainAsset: chainAsset
         )
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .pendingRewards,
+            .rewardDestination,
+            .yourValidator,
+            .controllerAccount
+        ]
+
         lastViewModel = .validator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            actions: actions
         )
     }
 }

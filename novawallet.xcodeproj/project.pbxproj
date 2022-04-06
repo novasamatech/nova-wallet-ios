@@ -887,7 +887,9 @@
 		84893C0324DA8641008F6A3F /* AccountCreationRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84893C0224DA8641008F6A3F /* AccountCreationRequest.swift */; };
 		84893C0524DA8663008F6A3F /* AccountCreationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84893C0424DA8663008F6A3F /* AccountCreationError.swift */; };
 		84893C0724DA890F008F6A3F /* CommonError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84893C0624DA890F008F6A3F /* CommonError.swift */; };
-		8489A6CE27FC5C5E0040C066 /* StakingActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CD27FC5C5E0040C066 /* StakingActionView.swift */; };
+		8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */; };
+		8489A6D027FD5B9E0040C066 /* StackActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CF27FD5B9E0040C066 /* StackActionView.swift */; };
+		8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D127FD5FB80040C066 /* StackActionCell.swift */; };
 		8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */; };
 		8489EDCE264DD4DA00FF997E /* RecommendationsComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */; };
 		848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */; };
@@ -2961,7 +2963,9 @@
 		84893C0224DA8641008F6A3F /* AccountCreationRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationRequest.swift; sourceTree = "<group>"; };
 		84893C0424DA8663008F6A3F /* AccountCreationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountCreationError.swift; sourceTree = "<group>"; };
 		84893C0624DA890F008F6A3F /* CommonError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonError.swift; sourceTree = "<group>"; };
-		8489A6CD27FC5C5E0040C066 /* StakingActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActionView.swift; sourceTree = "<group>"; };
+		8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActionsView.swift; sourceTree = "<group>"; };
+		8489A6CF27FD5B9E0040C066 /* StackActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionView.swift; sourceTree = "<group>"; };
+		8489A6D127FD5FB80040C066 /* StackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionCell.swift; sourceTree = "<group>"; };
 		8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposing.swift; sourceTree = "<group>"; };
 		8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposerTests.swift; sourceTree = "<group>"; };
 		848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainProviderFactoryStub.swift; sourceTree = "<group>"; };
@@ -7077,6 +7081,8 @@
 				8466781227EC5446007935D3 /* MultilineBalanceView.swift */,
 				8487580627EDEB9600495306 /* BorderedIconLabelView.swift */,
 				8487580827EDEDB200495306 /* RawChainView.swift */,
+				8489A6CF27FD5B9E0040C066 /* StackActionView.swift */,
+				8489A6D127FD5FB80040C066 /* StackActionCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -9170,7 +9176,7 @@
 				84B018AF26E0450F00C75E28 /* ValidatorStateView.swift */,
 				848E6BD82761CAC800C91022 /* StakingRewardView.swift */,
 				848E6BDC2762142300C91022 /* StakingStatusView.swift */,
-				8489A6CD27FC5C5E0040C066 /* StakingActionView.swift */,
+				8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10636,6 +10642,7 @@
 				845BB8DB25E462B100E5FCDC /* SubstrateConstansts.swift in Sources */,
 				849014C824AA8A28008F705E /* BiometryAuth.swift in Sources */,
 				84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */,
+				8489A6D027FD5B9E0040C066 /* StackActionView.swift in Sources */,
 				843612C3278FF0C700DC739E /* FeeRetryable.swift in Sources */,
 				8424A8C7262EC0E50091BFB1 /* PayoutInfo.swift in Sources */,
 				843910C7253F56EA00E3C217 /* BaseOperation+Result.swift in Sources */,
@@ -11704,6 +11711,7 @@
 				84CFF1EE26526FBC00DB7CF7 /* StakingBondMoreConfirmationProtocols.swift in Sources */,
 				8499FE7B27BE58A000712589 /* IdentityMapper.swift in Sources */,
 				846F758227B54D7A00536547 /* EthereumOperationFactory.swift in Sources */,
+				8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */,
 				F429324F26280F6B00752C2C /* StakingRewardDetailsViewModel.swift in Sources */,
 				F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */,
 				848E6BDF276218E600C91022 /* GlowingView.swift in Sources */,
@@ -12110,7 +12118,7 @@
 				C21129B2B8D8B33BCBD5843E /* StakingRedeemViewFactory.swift in Sources */,
 				85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */,
 				BE3F6213B26F35EB6324DBD8 /* ControllerAccountWireframe.swift in Sources */,
-				8489A6CE27FC5C5E0040C066 /* StakingActionView.swift in Sources */,
+				8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */,
 				84DED40B266656D400A153BB /* KaruraBonusService.swift in Sources */,
 				842A736627DB485E006EE1EA /* OperationSlashModel.swift in Sources */,
 				885551F78A5926D16D5AF0CB /* ControllerAccountPresenter.swift in Sources */,

@@ -39,6 +39,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     private lazy var analyticsContainerView = UIView()
     private lazy var analyticsView = RewardAnalyticsWidgetView()
 
+    private var actionsView: StakingActionsView?
+
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
 
@@ -207,6 +209,28 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         rewardView = nil
     }
 
+    private func updateActionsView(for stakingActions: [StakingManageOption]?) {
+        guard let stakingActions = stakingActions, !stakingActions.isEmpty else {
+            actionsView?.removeFromSuperview()
+            actionsView = nil
+
+            return
+        }
+
+        if actionsView == nil {
+            let newActionsView = StakingActionsView()
+            newActionsView.locale = selectedLocale
+            stackView.addArrangedSubview(newActionsView)
+            newActionsView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            actionsView = newActionsView
+        }
+
+        actionsView?.bind(actions: stakingActions)
+    }
+
     @objc
     private func handleAnalyticsWidgetTap() {
         presenter.performAnalyticsAction()
@@ -367,6 +391,7 @@ extension StakingMainViewController: Localizable {
         alertsView.locale = locale
         analyticsView.locale = locale
         rewardView?.locale = locale
+        actionsView?.locale = locale
     }
 
     func applyLocalization() {
@@ -426,23 +451,27 @@ extension StakingMainViewController: StakingMainViewProtocol {
         case .undefined:
             clearStateView()
             clearStakingRewardViewIfNeeded()
+            updateActionsView(for: nil)
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
             expandNetworkInfoView(true)
             clearStakingRewardViewIfNeeded()
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel):
+            updateActionsView(for: nil)
+        case let .nominator(viewModel, alerts, reward, analyticsViewModel, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel):
+            updateActionsView(for: actions)
+        case let .validator(viewModel, alerts, reward, analyticsViewModel, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
+            updateActionsView(for: actions)
         }
     }
 
@@ -464,9 +493,7 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
 // MARK: - StakingStateViewDelegate
 
 extension StakingMainViewController: StakingStateViewDelegate {
-    func stakingStateViewDidReceiveMoreAction(_: StakingStateView) {
-        presenter.performManageStakingAction()
-    }
+    func stakingStateViewDidReceiveMoreAction(_: StakingStateView) {}
 
     func stakingStateViewDidReceiveStatusAction(_ view: StakingStateView) {
         if view is NominatorStateView {
