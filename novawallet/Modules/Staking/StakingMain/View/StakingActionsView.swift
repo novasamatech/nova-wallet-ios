@@ -1,6 +1,12 @@
 import UIKit
 
+protocol StakingActionsViewDelegate: AnyObject {
+    func actionsViewDidSelectAction(_ action: StakingManageOption)
+}
+
 final class StakingActionsView: UIView {
+    var delegate: StakingActionsViewDelegate?
+
     let backgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 12.0
@@ -60,7 +66,10 @@ final class StakingActionsView: UIView {
         if actions.count > self.actions.count {
             let newCellsCount = actions.count - self.actions.count
             let newCells: [StackActionCell] = (0 ..< newCellsCount).map { _ in
-                StackActionCell()
+                let cell = StackActionCell()
+                cell.addTarget(self, action: #selector(actionCell(on:)), for: .touchUpInside)
+
+                return cell
             }
 
             newCells.forEach { tableView.addArrangedSubview($0) }
@@ -87,5 +96,13 @@ final class StakingActionsView: UIView {
 
             cell.bind(title: title, icon: icon, details: details)
         }
+    }
+
+    @objc func actionCell(on sender: UIControl) {
+        guard let cell = sender as? StackActionCell, let index = cells.firstIndex(of: cell) else {
+            return
+        }
+
+        delegate?.actionsViewDidSelectAction(actions[index])
     }
 }

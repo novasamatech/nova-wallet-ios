@@ -890,6 +890,7 @@
 		8489A6CE27FC5C5E0040C066 /* StakingActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */; };
 		8489A6D027FD5B9E0040C066 /* StackActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6CF27FD5B9E0040C066 /* StackActionView.swift */; };
 		8489A6D227FD5FB80040C066 /* StackActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D127FD5FB80040C066 /* StackActionCell.swift */; };
+		8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */; };
 		8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */; };
 		8489EDCE264DD4DA00FF997E /* RecommendationsComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */; };
 		848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */; };
@@ -2966,6 +2967,7 @@
 		8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingActionsView.swift; sourceTree = "<group>"; };
 		8489A6CF27FD5B9E0040C066 /* StackActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionView.swift; sourceTree = "<group>"; };
 		8489A6D127FD5FB80040C066 /* StackActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackActionCell.swift; sourceTree = "<group>"; };
+		8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashLedgerStateProtocol.swift; sourceTree = "<group>"; };
 		8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposing.swift; sourceTree = "<group>"; };
 		8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposerTests.swift; sourceTree = "<group>"; };
 		848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainProviderFactoryStub.swift; sourceTree = "<group>"; };
@@ -5384,6 +5386,7 @@
 				8430AB1126023C9F005B1066 /* PendingBondedState.swift */,
 				AEF507F62625A3280098574D /* ValidatorState+Status.swift */,
 				844E1E18266142080076AC59 /* BondedState+Status.swift */,
+				8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */,
 			);
 			path = States;
 			sourceTree = "<group>";
@@ -10755,6 +10758,7 @@
 				84D8F17124D856D300AF43E9 /* SNAddressType+ViewModel.swift in Sources */,
 				84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */,
 				842876B324AE059700D91AD8 /* AboutData.swift in Sources */,
+				8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */,
 				84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */,
 				841E2E522738444500F250C1 /* WalletDetailsUpdater.swift in Sources */,
 				8466781C27ED9644007935D3 /* AsyncWarningConditionViolation.swift in Sources */,

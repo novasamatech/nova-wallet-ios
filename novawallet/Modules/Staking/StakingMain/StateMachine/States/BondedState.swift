@@ -1,6 +1,6 @@
 import Foundation
 
-final class BondedState: BaseStashNextState {
+final class BondedState: BaseStashNextState, StashLedgerStateProtocol {
     private(set) var ledgerInfo: StakingLedger
 
     init(
