@@ -41552,7 +41552,7 @@ import SoraFoundation
     
     
     
-     func performBondMoreAction()  {
+     func performStakeMoreAction()  {
         
     return cuckoo_manager.call("performBondMoreAction()",
             parameters: (),
@@ -41561,7 +41561,7 @@ import SoraFoundation
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.performBondMoreAction())
+            defaultCall: __defaultImplStub!.performStakeMoreAction())
         
     }
     
@@ -41838,7 +41838,7 @@ import SoraFoundation
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func performBondMoreAction()   {
+     func performStakeMoreAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

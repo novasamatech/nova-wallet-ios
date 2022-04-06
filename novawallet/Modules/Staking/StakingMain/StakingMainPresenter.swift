@@ -27,6 +27,7 @@ final class StakingMainPresenter {
     private var balance: Decimal?
     private var networkStakingInfo: NetworkStakingInfo?
     private var controllerAccount: MetaChainAccountResponse?
+    private var stashAccount: MetaChainAccountResponse?
     private var nomination: Nomination?
 
     init(
@@ -85,6 +86,65 @@ final class StakingMainPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
+    }
+
+    func handleStakeMore() {
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+
+        let stashItem: StashItem? = stateMachine.viewState { (state: BaseStashNextState) in
+            state.stashItem
+        }
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                stash: try? stashAccount?.chainAccount.toAccountItem(),
+                for: stashItem?.stash ?? "",
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            self?.wireframe.showBondMore(from: self?.view)
+        }
+    }
+
+    func handleUnstake() {
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+
+        let stashItem: StashItem? = stateMachine.viewState { (state: BaseStakingState) in
+            (state as? StashLedgerStateProtocol)?.stashItem
+        }
+
+        let ledgerInfo: StakingLedger? = stateMachine.viewState { (state: BaseStakingState) in
+            (state as? StashLedgerStateProtocol)?.ledgerInfo
+        }
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                controller: try? controllerAccount?.chainAccount.toAccountItem(),
+                for: stashItem?.controller ?? "",
+                locale: locale
+            ),
+
+            dataValidatingFactory.unbondingsLimitNotReached(
+                ledgerInfo?.unlocking.count,
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            self?.wireframe.showUnbond(from: self?.view)
+        }
+    }
+
+    func handlePendingRewards() {
+        if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
+            let stashAddress = validatorState.stashItem.stash
+            wireframe.showRewardPayoutsForValidator(from: view, stashAddress: stashAddress)
+            return
+        }
+
+        if let stashState = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
+            let stashAddress = stashState.stashItem.stash
+            wireframe.showRewardPayoutsForNominator(from: view, stashAddress: stashAddress)
+            return
+        }
     }
 
     func setupValidators(for bondedState: BondedState) {
@@ -238,8 +298,8 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         setupValidators(for: bonded)
     }
 
-    func performBondMoreAction() {
-        wireframe.showBondMore(from: view)
+    func performStakeMoreAction() {
+        handleStakeMore()
     }
 
     func performRedeemAction() {
@@ -281,6 +341,32 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 
     func networkInfoViewDidChangeExpansion(isExpanded: Bool) {
         interactor.saveNetworkInfoViewExpansion(isExpanded: isExpanded)
+    }
+
+    func performManageAction(_ action: StakingManageOption) {
+        switch action {
+        case .stakeMore:
+            handleStakeMore()
+        case .unstake:
+            handleUnstake()
+        case .pendingRewards:
+            handlePendingRewards()
+        case .rewardDestination:
+            wireframe.showRewardDestination(from: view)
+        case .changeValidators:
+            wireframe.showNominatorValidators(from: view)
+        case .setupValidators:
+            if let bondedState = stateMachine.viewState(using: { (state: BondedState) in state }) {
+                setupValidators(for: bondedState)
+            }
+        case .controllerAccount:
+            wireframe.showControllerAccount(from: view)
+        case .yourValidator:
+            if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
+                let stashAddress = validatorState.stashItem.stash
+                wireframe.showYourValidatorInfo(stashAddress, from: view)
+            }
+        }
     }
 }
 
@@ -524,52 +610,6 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
 
     func networkInfoViewExpansion(isExpanded: Bool) {
         view?.expandNetworkInfoView(isExpanded)
-    }
-}
-
-// MARK: - ModalPickerViewControllerDelegate
-
-extension StakingMainPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_: Int, context _: AnyObject?) {
-        /* guard
-             let manageStakingItems = context as? [StakingManageOption],
-             index >= 0, index < manageStakingItems.count else {
-             return
-         }
-
-         let selectedItem = manageStakingItems[index]
-
-         switch selectedItem {
-         case .pendingRewards:
-             if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
-                 let stashAddress = validatorState.stashItem.stash
-                 wireframe.showRewardPayoutsForValidator(from: view, stashAddress: stashAddress)
-                 return
-             }
-
-             if let stashState = stateMachine.viewState(using: { (state: BaseStashNextState) in state }) {
-                 let stashAddress = stashState.stashItem.stash
-                 wireframe.showRewardPayoutsForNominator(from: view, stashAddress: stashAddress)
-                 return
-             }
-         case .rewardDestination:
-             wireframe.showRewardDestination(from: view)
-         case .stakingBalance:
-             wireframe.showStakingBalance(from: view)
-         case .changeValidators:
-             wireframe.showNominatorValidators(from: view)
-         case .setupValidators:
-             if let bondedState = stateMachine.viewState(using: { (state: BondedState) in state }) {
-                 setupValidators(for: bondedState)
-             }
-         case .controllerAccount:
-             wireframe.showControllerAccount(from: view)
-         case .yourValidator:
-             if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
-                 let stashAddress = validatorState.stashItem.stash
-                 wireframe.showYourValidatorInfo(stashAddress, from: view)
-             }
-         } */
     }
 }
 
