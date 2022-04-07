@@ -893,6 +893,9 @@
 		8489A6D427FDA0BB0040C066 /* StashLedgerStateProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */; };
 		8489A6D627FDA50D0040C066 /* AccountLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D527FDA50D0040C066 /* AccountLocalStorageSubscriber.swift */; };
 		8489A6D827FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D727FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift */; };
+		8489A6DA27FDC49D0040C066 /* StakingUnbondingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6D927FDC49D0040C066 /* StakingUnbondingsView.swift */; };
+		8489A6DC27FE9F570040C066 /* StakingUnbondingItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6DB27FE9F570040C066 /* StakingUnbondingItemViewModel.swift */; };
+		8489A6DE27FEA1930040C066 /* StakingUnbondingItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489A6DD27FEA1930040C066 /* StakingUnbondingItemView.swift */; };
 		8489EDBA264DB25500FF997E /* RecommendationsComposing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */; };
 		8489EDCE264DD4DA00FF997E /* RecommendationsComposerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */; };
 		848A83752746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */; };
@@ -2972,6 +2975,9 @@
 		8489A6D327FDA0BB0040C066 /* StashLedgerStateProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashLedgerStateProtocol.swift; sourceTree = "<group>"; };
 		8489A6D527FDA50D0040C066 /* AccountLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		8489A6D727FDA51C0040C066 /* AccountLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
+		8489A6D927FDC49D0040C066 /* StakingUnbondingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondingsView.swift; sourceTree = "<group>"; };
+		8489A6DB27FE9F570040C066 /* StakingUnbondingItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondingItemViewModel.swift; sourceTree = "<group>"; };
+		8489A6DD27FEA1930040C066 /* StakingUnbondingItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingUnbondingItemView.swift; sourceTree = "<group>"; };
 		8489EDB9264DB25500FF997E /* RecommendationsComposing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposing.swift; sourceTree = "<group>"; };
 		8489EDCD264DD4DA00FF997E /* RecommendationsComposerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationsComposerTests.swift; sourceTree = "<group>"; };
 		848A83742746D86A004493DD /* CrowdloanOffchainProviderFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanOffchainProviderFactoryStub.swift; sourceTree = "<group>"; };
@@ -8740,6 +8746,7 @@
 				F4A6C9E3265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift */,
 				F409673226B29C9B008CD244 /* RewardAnalyticsWidgetViewModel.swift */,
 				848E6BDA2761E0E100C91022 /* StakingRewardViewModel.swift */,
+				8489A6DB27FE9F570040C066 /* StakingUnbondingItemViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -9186,6 +9193,8 @@
 				848E6BD82761CAC800C91022 /* StakingRewardView.swift */,
 				848E6BDC2762142300C91022 /* StakingStatusView.swift */,
 				8489A6CD27FC5C5E0040C066 /* StakingActionsView.swift */,
+				8489A6D927FDC49D0040C066 /* StakingUnbondingsView.swift */,
+				8489A6DD27FEA1930040C066 /* StakingUnbondingItemView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -10928,6 +10937,7 @@
 				843C49DF24DF3CB300B71DDA /* AccountImportMetadata.swift in Sources */,
 				8436E94226C840C8003D4EA7 /* RuntimeCoderEvents.swift in Sources */,
 				8461CC8A26BD2F07007460E4 /* RuntimeProviderPool.swift in Sources */,
+				8489A6DC27FE9F570040C066 /* StakingUnbondingItemViewModel.swift in Sources */,
 				848DE76626D642670045CD29 /* StorageMigrator.swift in Sources */,
 				F4AE12A1268DD69B0097D1C7 /* MnemonicTextNormalizer.swift in Sources */,
 				8463A72525E3A82A003B8160 /* DataProviderProxyTrigger.swift in Sources */,
@@ -11477,6 +11487,7 @@
 				843E9B2D27C8AC57009C143A /* NftMediaViewModel.swift in Sources */,
 				8490152B24ABD0A2008F705E /* WalletCommonConfigurator.swift in Sources */,
 				842A738627DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift in Sources */,
+				8489A6DA27FDC49D0040C066 /* StakingUnbondingsView.swift in Sources */,
 				F40966CC26B297D6008CD244 /* AnalyticsStakeWireframe.swift in Sources */,
 				8428765F24ADE0BB00D91AD8 /* UserSettings.swift in Sources */,
 				84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */,
@@ -12171,6 +12182,7 @@
 				8410562C27AF1C15004F5CA3 /* Ethereum+Checksum.swift in Sources */,
 				4E5CD7B8821FA5298EA1598E /* CrowdloanContributionSetupWireframe.swift in Sources */,
 				9081D43697D992F51E057ED2 /* CrowdloanContributionSetupPresenter.swift in Sources */,
+				8489A6DE27FEA1930040C066 /* StakingUnbondingItemView.swift in Sources */,
 				F436BB842726EA94004B1794 /* MoonbeamCoordinator.swift in Sources */,
 				830A27C5447348F1D202D996 /* CrowdloanContributionSetupInteractor.swift in Sources */,
 				84AE7AB327D399CF00495267 /* StackNetworkCell.swift in Sources */,
