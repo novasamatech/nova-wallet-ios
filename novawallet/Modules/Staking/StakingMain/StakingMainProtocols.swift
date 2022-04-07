@@ -22,6 +22,7 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performSetupValidatorsForBondedAction()
     func performStakeMoreAction()
     func performRedeemAction()
+    func performRebondAction()
     func performAnalyticsAction()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
     func performManageAction(_ action: StakingManageOption)
@@ -90,6 +91,7 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
     func showBondMore(from view: ControllerBackedProtocol?)
     func showUnbond(from view: ControllerBackedProtocol?)
     func showRedeem(from view: ControllerBackedProtocol?)
+    func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption)
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)

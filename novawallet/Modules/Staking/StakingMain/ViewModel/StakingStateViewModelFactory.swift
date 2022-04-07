@@ -202,6 +202,34 @@ final class StakingStateViewModelFactory {
             reward: reward
         )
     }
+
+    private func createUnbondingViewModel(
+        from stakingLedger: StakingLedger,
+        chainAsset: ChainAsset,
+        eraCountdown: EraCountdown?
+    ) -> StakingUnbondingViewModel? {
+        let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
+        let balanceFactory = getBalanceViewModelFactory(for: chainAsset)
+
+        let viewModels = stakingLedger
+            .unlocking
+            .sorted(by: { $0.era < $1.era })
+            .map { unbondingItem -> StakingUnbondingItemViewModel in
+                let unbondingAmountDecimal = Decimal
+                    .fromSubstrateAmount(
+                        unbondingItem.value,
+                        precision: assetPrecision
+                    ) ?? .zero
+                let tokenAmount = balanceFactory.amountFromValue(unbondingAmountDecimal)
+
+                return StakingUnbondingItemViewModel(
+                    amount: tokenAmount,
+                    unbondingEra: unbondingItem.era
+                )
+            }
+
+        return StakingUnbondingViewModel(eraCountdown: eraCountdown, items: viewModels)
+    }
 }
 
 extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
@@ -304,11 +332,20 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .controllerAccount
         ]
 
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
             analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
             actions: actions
         )
     }
@@ -365,11 +402,20 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .controllerAccount
         ]
 
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
             analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
             actions: actions
         )
     }
@@ -426,11 +472,20 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
             .controllerAccount
         ]
 
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .validator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
             analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
             actions: actions
         )
     }

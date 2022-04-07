@@ -93,7 +93,7 @@ final class StakingMainPresenter {
         view?.didReceive(viewModel: viewModel)
     }
 
-    func handleStakeMore() {
+    private func handleStakeMore() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
         let stashItem: StashItem? = stateMachine.viewState { (state: BaseStashNextState) in
@@ -113,7 +113,7 @@ final class StakingMainPresenter {
         }
     }
 
-    func handleUnstake() {
+    private func handleUnstake() {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
         let stashItem: StashItem? = stateMachine.viewState { (state: BaseStakingState) in
@@ -142,7 +142,7 @@ final class StakingMainPresenter {
         }
     }
 
-    func handlePendingRewards() {
+    private func handlePendingRewards() {
         if let validatorState = stateMachine.viewState(using: { (state: ValidatorState) in state }) {
             let stashAddress = validatorState.stashItem.stash
             wireframe.showRewardPayoutsForValidator(from: view, stashAddress: stashAddress)
@@ -156,7 +156,7 @@ final class StakingMainPresenter {
         }
     }
 
-    func setupValidators(for bondedState: BondedState) {
+    private func setupValidators(for bondedState: BondedState) {
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
 
         let stashItem = bondedState.stashItem
@@ -197,6 +197,29 @@ final class StakingMainPresenter {
 
             self?.wireframe.proceedToSelectValidatorsStart(from: self?.view, existingBonding: existingBonding)
         }
+    }
+
+    private func presentRebond() {
+        let locale = view?.selectedLocale
+
+        let actions = StakingRebondOption.allCases.map { option -> AlertPresentableAction in
+            let title = option.titleForLocale(locale)
+            let action = AlertPresentableAction(title: title) { [weak self] in
+                self?.wireframe.showRebond(from: self?.view, option: option)
+            }
+            return action
+        }
+
+        let title = R.string.localizable.walletBalanceUnbonding_v190(preferredLanguages: locale?.rLanguages)
+        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
+        let viewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(viewModel: viewModel, style: .actionSheet, from: view)
     }
 }
 
@@ -331,6 +354,23 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         }
 
         wireframe.showRedeem(from: view)
+    }
+
+    func performRebondAction() {
+        let locale = view?.localizationManager?.selectedLocale ?? Locale.current
+
+        let baseState = stateMachine.viewState(using: { (state: BaseStashNextState) in state })
+        let controllerAccount = baseState.flatMap { accountForAddress($0.stashItem.controller) }
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.has(
+                controller: try? controllerAccount?.chainAccount.toAccountItem(),
+                for: baseState?.stashItem.controller ?? "",
+                locale: locale
+            )
+        ]).runValidation { [weak self] in
+            self?.presentRebond()
+        }
     }
 
     func performAnalyticsAction() {
