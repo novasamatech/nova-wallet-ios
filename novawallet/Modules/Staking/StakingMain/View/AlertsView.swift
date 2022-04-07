@@ -8,7 +8,11 @@ protocol AlertsViewDelegate: AnyObject {
 final class AlertsView: UIView {
     weak var delegate: AlertsViewDelegate?
 
-    private let backgroundView: UIView = TriangularedBlurView()
+    private let backgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        view.sideLength = 12
+        return view
+    }()
 
     private let titleView: IconDetailsView = {
         let view = IconDetailsView()
@@ -74,7 +78,8 @@ final class AlertsView: UIView {
         addSubview(alertsStackView)
         alertsStackView.snp.makeConstraints { make in
             make.top.equalTo(titleView.snp.bottom).offset(3.0)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(13.0)
         }
     }
 
@@ -95,20 +100,18 @@ final class AlertsView: UIView {
             alertsStackView.isHidden = false
 
             var itemViews = [UIView]()
-            for (index, alert) in alerts.enumerated() {
+            for alert in alerts {
                 let alertView = AlertItemView(stakingAlert: alert, locale: locale)
                 let rowView = RowView(contentView: alertView)
                 rowView.borderView.strokeColor = R.color.colorBlurSeparator()!
+                rowView.borderView.borderType = .none
+
                 rowView.contentInsets = UIEdgeInsets(
                     top: 0.0,
                     left: UIConstants.horizontalInset,
                     bottom: 0.0,
                     right: UIConstants.horizontalInset
                 )
-
-                if index == alerts.count - 1 {
-                    rowView.borderView.borderType = .none
-                }
 
                 rowView.addTarget(self, action: #selector(handleSelectItem), for: .touchUpInside)
                 itemViews.append(rowView)
