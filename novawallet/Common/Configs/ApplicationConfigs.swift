@@ -91,7 +91,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var logoURL: URL {
         // swiftlint:disable:next line_length
-        let logoString = "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Horizontal_On_White_200px.png"
+        let logoString = "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Horizontal_iOS_Ramp.png"
         return URL(string: logoString)!
     }
 
