@@ -26,15 +26,14 @@ class StakingStateView: UIView {
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorTransparentText()
         return label
     }()
 
     let iconMore: UIImageView = {
         let view = UIImageView()
-        view.image = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.tintColor = R.color.colorWhite48()
+        view.image = R.image.iconMore()?.tinted(with: R.color.colorWhite48()!)
         return view
     }()
 
@@ -43,7 +42,7 @@ class StakingStateView: UIView {
         view.valueTop.font = .boldTitle1
         view.valueTop.textColor = R.color.colorWhite()
         view.valueTop.textAlignment = .center
-        view.valueBottom.font = .p0Paragraph
+        view.valueBottom.font = .regularBody
         view.valueBottom.textColor = R.color.colorTransparentText()
         view.valueBottom.textAlignment = .center
         view.spacing = 6.0

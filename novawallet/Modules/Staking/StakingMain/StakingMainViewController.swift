@@ -61,6 +61,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         setupNetworkInfoView()
         setupAlertsView()
         setupAnalyticsView()
+        setupScrollView()
         setupLocalization()
         presenter.setup()
     }
@@ -109,6 +110,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     }
 
     // MARK: - Private functions
+
+    private func setupScrollView() {
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
 
     private func setupBackgroundView() {
         view.insertSubview(backgroundView, at: 0)
