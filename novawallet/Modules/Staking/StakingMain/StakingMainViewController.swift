@@ -40,6 +40,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     private lazy var analyticsView = RewardAnalyticsWidgetView()
 
     private var actionsView: StakingActionsView?
+    private var unbondingsView: StakingUnbondingsView?
 
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
@@ -232,6 +233,37 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         actionsView?.bind(actions: stakingActions)
     }
 
+    private func updateUnbondingsView(for unbondingViewModel: StakingUnbondingViewModel?) {
+        guard let unbondingViewModel = unbondingViewModel, !unbondingViewModel.items.isEmpty else {
+            unbondingsView?.removeFromSuperview()
+            unbondingsView = nil
+
+            return
+        }
+
+        if unbondingsView == nil {
+            let newUnbondingsView = StakingUnbondingsView()
+            newUnbondingsView.locale = selectedLocale
+            newUnbondingsView.delegate = self
+
+            if let stateView = stateContainerView {
+                stackView.insertArranged(view: newUnbondingsView, after: stateView)
+            } else {
+                stackView.addArrangedSubview(newUnbondingsView)
+            }
+
+            newUnbondingsView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            stackView.setCustomSpacing(8.0, after: newUnbondingsView)
+
+            unbondingsView = newUnbondingsView
+        }
+
+        unbondingsView?.bind(viewModel: unbondingViewModel)
+    }
+
     @objc
     private func handleAnalyticsWidgetTap() {
         presenter.performAnalyticsAction()
@@ -393,6 +425,7 @@ extension StakingMainViewController: Localizable {
         analyticsView.locale = locale
         rewardView?.locale = locale
         actionsView?.locale = locale
+        unbondingsView?.locale = locale
     }
 
     func applyLocalization() {
@@ -453,26 +486,30 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStateView()
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
+            updateUnbondingsView(for: nil)
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
             expandNetworkInfoView(true)
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel, actions):
+            updateUnbondingsView(for: nil)
+        case let .nominator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
             updateActionsView(for: actions)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel, actions):
+            updateUnbondingsView(for: unbondings)
+        case let .validator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
             updateActionsView(for: actions)
+            updateUnbondingsView(for: unbondings)
         }
     }
 
@@ -527,5 +564,15 @@ extension StakingMainViewController: AlertsViewDelegate {
 extension StakingMainViewController: StakingActionsViewDelegate {
     func actionsViewDidSelectAction(_ action: StakingManageOption) {
         presenter.performManageAction(action)
+    }
+}
+
+extension StakingMainViewController: StakingUnbondingsViewDelegate {
+    func stakingUnbondingViewDidCancel(_: StakingUnbondingsView) {
+        presenter.performRebondAction()
+    }
+
+    func stakingUnbondingViewDidRedeem(_: StakingUnbondingsView) {
+        presenter.performRedeemAction()
     }
 }

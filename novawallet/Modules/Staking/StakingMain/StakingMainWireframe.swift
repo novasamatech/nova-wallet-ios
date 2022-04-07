@@ -141,6 +141,27 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption) {
+        let rebondView: ControllerBackedProtocol? = {
+            switch option {
+            case .all:
+                return StakingRebondConfirmationViewFactory.createView(for: .all, state: state)
+            case .last:
+                return StakingRebondConfirmationViewFactory.createView(for: .last, state: state)
+            case .customAmount:
+                return StakingRebondSetupViewFactory.createView(for: state)
+            }
+        }()
+
+        guard let controller = rebondView?.controller else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode) {
         let analyticsView = AnalyticsContainerViewFactory.createView(mode: mode, stakingState: state)
         analyticsView.controller.hidesBottomBarWhenPushed = true
