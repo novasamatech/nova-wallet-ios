@@ -176,7 +176,7 @@ final class StakingUnbondingsView: UIView {
             redeemButton.applyEnabledStyle()
             redeemButton.isUserInteractionEnabled = true
         } else {
-            redeemButton.applyDisabledStyle()
+            redeemButton.applyTranslucentDisabledStyle()
             redeemButton.isUserInteractionEnabled = false
         }
     }
