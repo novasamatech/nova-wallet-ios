@@ -9,7 +9,12 @@ struct BalancesWithdrawEvent: Decodable {
     init(from decoder: Decoder) throws {
         var unkeyedContainer = try decoder.unkeyedContainer()
 
-        accountId = try unkeyedContainer.decode(AccountId.self)
+        if let rawAccountId = try? unkeyedContainer.decode(AccountId.self) {
+            accountId = rawAccountId
+        } else {
+            accountId = try unkeyedContainer.decode(BytesCodable.self).wrappedValue
+        }
+
         amount = try unkeyedContainer.decode(StringScaleMapper<BigUInt>.self).value
     }
 }

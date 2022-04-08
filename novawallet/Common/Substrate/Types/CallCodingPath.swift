@@ -94,4 +94,8 @@ extension CallCodingPath {
     static var assetsTransferAll: CallCodingPath {
         CallCodingPath(moduleName: "Assets", callName: "transfer_all")
     }
+
+    static var ethereumTransact: CallCodingPath {
+        CallCodingPath(moduleName: "Ethereum", callName: "transact")
+    }
 }

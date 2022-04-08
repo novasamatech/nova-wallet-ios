@@ -31,4 +31,8 @@ extension EventCodingPath {
     static var balancesWithdraw: EventCodingPath {
         EventCodingPath(moduleName: "Balances", eventName: "Withdraw")
     }
+
+    static var ethereumExecuted: EventCodingPath {
+        EventCodingPath(moduleName: "Ethereum", eventName: "Executed")
+    }
 }
