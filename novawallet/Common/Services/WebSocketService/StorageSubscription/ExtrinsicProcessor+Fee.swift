@@ -7,20 +7,23 @@ extension ExtrinsicProcessor {
         for index: UInt32,
         sender: AccountId,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> BigUInt? {
         if let fee = findFeeOfBalancesWithdraw(
             for: index,
             sender: sender,
             eventRecords: eventRecords,
-            metadata: metadata
+            metadata: metadata,
+            runtimeJsonContext: runtimeJsonContext
         ) {
             return fee
         } else {
             return findFeeOfBalancesTreasuryDeposit(
                 for: index,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: runtimeJsonContext
             )
         }
     }
@@ -29,7 +32,8 @@ extension ExtrinsicProcessor {
         for index: UInt32,
         sender: AccountId,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> BigUInt? {
         let withdraw = EventCodingPath.balancesWithdraw
         let closure: (EventRecord) -> Bool = { record in
@@ -43,7 +47,10 @@ extension ExtrinsicProcessor {
                 return false
             }
 
-            guard let event = try? record.event.params.map(to: BalancesWithdrawEvent.self) else {
+            guard let event = try? record.event.params.map(
+                to: BalancesWithdrawEvent.self,
+                with: runtimeJsonContext.toRawContext()
+            ) else {
                 return false
             }
 
@@ -52,7 +59,10 @@ extension ExtrinsicProcessor {
 
         guard
             let record = eventRecords.first(where: closure),
-            let event = try? record.event.params.map(to: BalancesWithdrawEvent.self) else {
+            let event = try? record.event.params.map(
+                to: BalancesWithdrawEvent.self,
+                with: runtimeJsonContext.toRawContext()
+            ) else {
             return nil
         }
 
@@ -62,7 +72,8 @@ extension ExtrinsicProcessor {
     private func findFeeOfBalancesTreasuryDeposit(
         for index: UInt32,
         eventRecords: [EventRecord],
-        metadata: RuntimeMetadataProtocol
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
     ) -> BigUInt? {
         let balances = EventCodingPath.balancesDeposit
 
@@ -75,7 +86,10 @@ extension ExtrinsicProcessor {
             return eventPath.moduleName == balances.moduleName &&
                 eventPath.eventName == balances.eventName
         }.map { record in
-            let event = try? record.event.params.map(to: BalanceDepositEvent.self)
+            let event = try? record.event.params.map(
+                to: BalanceDepositEvent.self,
+                with: runtimeJsonContext.toRawContext()
+            )
             return event?.amount ?? 0
         }
 
@@ -90,7 +104,10 @@ extension ExtrinsicProcessor {
             return eventPath.moduleName == treasury.moduleName &&
                 eventPath.eventName == treasury.eventName
         }.map { record in
-            let event = try? record.event.params.map(to: TreasuryDepositEvent.self)
+            let event = try? record.event.params.map(
+                to: TreasuryDepositEvent.self,
+                with: runtimeJsonContext.toRawContext()
+            )
             return event?.amount ?? 0
         }
 
