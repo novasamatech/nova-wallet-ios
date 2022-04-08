@@ -1,5 +1,5 @@
 typealias AnalyticsRewardsItemView = StakingBalanceUnbondingItemView
-typealias AnalyticsRewardsItemViewModel = UnbondingItemViewModel
+typealias AnalyticsRewardsItemViewModel = StakingRewardHistoryCellViewModel
 
 struct AnalyticsRewardSection {
     let title: String

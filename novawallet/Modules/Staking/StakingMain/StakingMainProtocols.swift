@@ -15,16 +15,17 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performAssetSelection()
     func performMainAction()
     func performAccountAction()
-    func performManageStakingAction()
     func performNominationStatusAction()
     func performValidationStatusAction()
     func performRewardInfoAction()
     func performChangeValidatorsAction()
     func performSetupValidatorsForBondedAction()
-    func performBondMoreAction()
+    func performStakeMoreAction()
     func performRedeemAction()
+    func performRebondAction()
     func performAnalyticsAction()
     func networkInfoViewDidChangeExpansion(isExpanded: Bool)
+    func performManageAction(_ action: StakingManageOption)
 }
 
 protocol StakingMainInteractorInputProtocol: AnyObject {
@@ -66,19 +67,12 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
 
     func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)
 
-    func didReceiveControllerAccount(result: Result<MetaChainAccountResponse?, Error>)
+    func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)
     func networkInfoViewExpansion(isExpanded: Bool)
 }
 
 protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
     func showSetupAmount(from view: StakingMainViewProtocol?)
-
-    func showManageStaking(
-        from view: StakingMainViewProtocol?,
-        items: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    )
 
     func proceedToSelectValidatorsStart(
         from view: StakingMainViewProtocol?,
@@ -89,14 +83,15 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
 
     func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)
     func showRewardPayoutsForValidator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)
-    func showStakingBalance(from view: ControllerBackedProtocol?)
     func showNominatorValidators(from view: ControllerBackedProtocol?)
     func showRewardDestination(from view: ControllerBackedProtocol?)
     func showControllerAccount(from view: ControllerBackedProtocol?)
 
     func showAccountsSelection(from view: StakingMainViewProtocol?)
     func showBondMore(from view: ControllerBackedProtocol?)
+    func showUnbond(from view: ControllerBackedProtocol?)
     func showRedeem(from view: ControllerBackedProtocol?)
+    func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption)
     func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)
 
     func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)

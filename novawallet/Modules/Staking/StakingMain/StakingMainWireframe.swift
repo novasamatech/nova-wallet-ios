@@ -17,22 +17,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showManageStaking(
-        from view: StakingMainViewProtocol?,
-        items: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) {
-        let maybeManageView = ModalPickerFactory.createPickerForList(
-            items,
-            delegate: delegate,
-            context: context
-        )
-        guard let manageView = maybeManageView else { return }
-
-        view?.controller.present(manageView, animated: true, completion: nil)
-    }
-
     func proceedToSelectValidatorsStart(
         from view: StakingMainViewProtocol?,
         existingBonding: ExistingBonding
@@ -77,16 +61,6 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
-    func showStakingBalance(from view: ControllerBackedProtocol?) {
-        guard let stakingBalance = StakingBalanceViewFactory.createView(for: state) else { return }
-        let controller = stakingBalance.controller
-        controller.hidesBottomBarWhenPushed = true
-
-        view?.controller
-            .navigationController?
-            .pushViewController(controller, animated: true)
     }
 
     func showNominatorValidators(from view: ControllerBackedProtocol?) {
@@ -145,6 +119,16 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showUnbond(from view: ControllerBackedProtocol?) {
+        guard let unbondView = StakingUnbondSetupViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: unbondView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showRedeem(from view: ControllerBackedProtocol?) {
         guard let redeemView = StakingRedeemViewFactory.createView(for: state) else {
             return
@@ -153,6 +137,27 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         let navigationController = ImportantFlowViewFactory.createNavigation(
             from: redeemView.controller
         )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption) {
+        let rebondView: ControllerBackedProtocol? = {
+            switch option {
+            case .all:
+                return StakingRebondConfirmationViewFactory.createView(for: .all, state: state)
+            case .last:
+                return StakingRebondConfirmationViewFactory.createView(for: .last, state: state)
+            case .customAmount:
+                return StakingRebondSetupViewFactory.createView(for: state)
+            }
+        }()
+
+        guard let controller = rebondView?.controller else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: controller)
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
