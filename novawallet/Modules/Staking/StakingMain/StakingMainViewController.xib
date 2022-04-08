@@ -40,7 +40,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="66"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Staking" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ypp-bS-mpc">
-                                            <rect key="frame" x="16" y="12" width="310" height="36.333333333333336"/>
+                                            <rect key="frame" x="16" y="11.666666666666664" width="310" height="36.666666666666664"/>
                                             <fontDescription key="fontDescription" name="PublicSans-Bold" family="Public Sans" pointSize="31"/>
                                             <color key="textColor" name="colorWhite"/>
                                             <nil key="highlightedColor"/>

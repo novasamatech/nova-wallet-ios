@@ -86,7 +86,7 @@ final class StakingBalanceUnbondingItemView: UIView {
 }
 
 extension StakingBalanceUnbondingItemView {
-    func bind(model: UnbondingItemViewModel) {
+    func bind(model: StakingRewardHistoryCellViewModel) {
         titleLabel.text = model.addressOrName
         daysLeftLabel.attributedText = model.daysLeftText
         tokenAmountLabel.text = model.tokenAmountText

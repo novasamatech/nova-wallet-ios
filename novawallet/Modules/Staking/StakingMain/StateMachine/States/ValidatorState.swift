@@ -1,6 +1,6 @@
 import Foundation
 
-final class ValidatorState: BaseStashNextState {
+final class ValidatorState: BaseStashNextState, StashLedgerStateProtocol {
     private(set) var ledgerInfo: StakingLedger
     private(set) var prefs: ValidatorPrefs
 
