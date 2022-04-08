@@ -8,7 +8,7 @@ extension TransactionHistoryItem {
         _ result: TransactionSubscriptionResult,
         accountId: AccountId,
         chainAsset: ChainAsset,
-        runtimeJsonContext _: RuntimeJsonContext
+        runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryItem? {
         do {
             let chain = chainAsset.chain
@@ -32,7 +32,8 @@ extension TransactionHistoryItem {
 
             let timestamp = Int64(Date().timeIntervalSince1970)
 
-            let encodedCall = try JSONEncoder.scaleCompatible().encode(extrinsic.call)
+            let context = runtimeJsonContext.toRawContext()
+            let encodedCall = try JSONEncoder.scaleCompatible(with: context).encode(extrinsic.call)
 
             let amountString = result.processingResult.amount.map { String($0) }
 
