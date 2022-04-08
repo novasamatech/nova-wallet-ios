@@ -444,6 +444,7 @@
 		8430AB052602339B005B1066 /* PendingValidatorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AB042602339B005B1066 /* PendingValidatorState.swift */; };
 		8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AB1126023C9F005B1066 /* PendingBondedState.swift */; };
 		8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AB1626023D2D005B1066 /* BaseStashNextState.swift */; };
+		8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */; };
 		8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */; };
 		843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */; };
 		843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */; };
@@ -2513,6 +2514,7 @@
 		8430AB042602339B005B1066 /* PendingValidatorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingValidatorState.swift; sourceTree = "<group>"; };
 		8430AB1126023C9F005B1066 /* PendingBondedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingBondedState.swift; sourceTree = "<group>"; };
 		8430AB1626023D2D005B1066 /* BaseStashNextState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStashNextState.swift; sourceTree = "<group>"; };
+		8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumExecuted.swift; sourceTree = "<group>"; };
 		8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapperTests.swift; sourceTree = "<group>"; };
 		843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteHistoryFiltering.swift; sourceTree = "<group>"; };
@@ -5512,6 +5514,7 @@
 				8499FEC327BEC5F400712589 /* UniquesClassMetadata.swift */,
 				8499FEC527BEC68000712589 /* UniquesInstanceMetadata.swift */,
 				84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */,
+				8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -11848,6 +11851,7 @@
 				8488ECEA258CE456004591CC /* PurchaseViewController.swift in Sources */,
 				847C9659255362F7002D288F /* RestoreJson.swift in Sources */,
 				5BA47B0F2286D41E7056DA0F /* AddConnectionInteractor.swift in Sources */,
+				8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */,
 				48641BF5A7B1B9F53246F376 /* AddConnectionViewController.swift in Sources */,
 				8487583227F06AF300495306 /* TransferScanViewFactory.swift in Sources */,
 				849632072555CE9D00B8E316 /* ExportSeedData.swift in Sources */,
