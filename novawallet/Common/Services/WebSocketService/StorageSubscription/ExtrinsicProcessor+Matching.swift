@@ -72,7 +72,8 @@ extension ExtrinsicProcessor {
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: context
             )
 
             let peerId = accountId == sender ? result.callAccountId : sender
@@ -185,7 +186,8 @@ extension ExtrinsicProcessor {
                 for: extrinsicIndex,
                 sender: executedValue.from,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: runtimeJsonContext
             )
 
             return ExtrinsicProcessingResult(
@@ -236,7 +238,8 @@ extension ExtrinsicProcessor {
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: runtimeJsonContext
             )
 
             guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
@@ -291,7 +294,8 @@ extension ExtrinsicProcessor {
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: context
             )
 
             let peerId = accountId == sender ? result.callAccountId : sender
@@ -375,7 +379,8 @@ extension ExtrinsicProcessor {
                 for: extrinsicIndex,
                 sender: sender,
                 eventRecords: eventRecords,
-                metadata: metadata
+                metadata: metadata,
+                runtimeJsonContext: context
             )
 
             let peerId = accountId == sender ? result.callAccountId : sender
