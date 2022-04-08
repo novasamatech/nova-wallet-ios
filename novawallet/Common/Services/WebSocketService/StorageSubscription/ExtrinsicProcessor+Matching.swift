@@ -87,8 +87,10 @@ extension ExtrinsicProcessor {
             }
 
             return ExtrinsicProcessingResult(
-                extrinsic: extrinsic,
+                sender: sender,
                 callPath: result.callPath,
+                call: extrinsic.call,
+                extrinsicHash: nil,
                 fee: fee,
                 peerId: peerId,
                 amount: result.callAmount,
@@ -143,6 +145,121 @@ extension ExtrinsicProcessor {
         return (callPath, isAccountMatched, callAccountId, currencyId, call.args.amount)
     }
 
+    private func parseEthereumTransact(
+        extrinsicIndex: UInt32,
+        extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
+    ) -> ExtrinsicProcessingResult? {
+        let optExecutedEvent = eventRecords.first { record in
+            if
+                record.extrinsicIndex == extrinsicIndex,
+                let eventPath = metadata.createEventCodingPath(from: record.event),
+                eventPath == EventCodingPath.ethereumExecuted {
+                return true
+            } else {
+                return false
+            }
+        }
+
+        guard let executedEvent = optExecutedEvent?.event else {
+            return nil
+        }
+
+        do {
+            let executedValue = try executedEvent.params.map(
+                to: EthereumExecuted.self,
+                with: runtimeJsonContext.toRawContext()
+            )
+
+            guard executedValue.from == accountId else {
+                return nil
+            }
+
+            guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
+                return nil
+            }
+
+            let fee = findFee(
+                for: extrinsicIndex,
+                sender: executedValue.from,
+                eventRecords: eventRecords,
+                metadata: metadata
+            )
+
+            return ExtrinsicProcessingResult(
+                sender: executedValue.from,
+                callPath: CallCodingPath.ethereumTransact,
+                call: extrinsic.call,
+                extrinsicHash: executedValue.transactionHash,
+                fee: fee,
+                peerId: executedValue.to,
+                amount: nil,
+                isSuccess: executedValue.isSuccess,
+                assetId: assetId
+            )
+        } catch {
+            return nil
+        }
+    }
+
+    private func parseSubstrateExtrinsic(
+        extrinsicIndex: UInt32,
+        extrinsic: Extrinsic,
+        eventRecords: [EventRecord],
+        metadata: RuntimeMetadataProtocol,
+        runtimeJsonContext: RuntimeJsonContext
+    ) -> ExtrinsicProcessingResult? {
+        do {
+            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
+                to: MultiAddress.self,
+                with: runtimeJsonContext.toRawContext()
+            ).accountId
+
+            let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
+            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
+            let isAccountMatched = accountId == maybeSender
+
+            guard
+                let sender = maybeSender,
+                isAccountMatched,
+                let isSuccess = matchStatus(
+                    for: extrinsicIndex,
+                    eventRecords: eventRecords,
+                    metadata: metadata
+                ) else {
+                return nil
+            }
+
+            let fee = findFee(
+                for: extrinsicIndex,
+                sender: sender,
+                eventRecords: eventRecords,
+                metadata: metadata
+            )
+
+            guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
+                return nil
+            }
+
+            return ExtrinsicProcessingResult(
+                sender: sender,
+                callPath: callPath,
+                call: extrinsic.call,
+                extrinsicHash: nil,
+                fee: fee,
+                peerId: nil,
+                amount: nil,
+                isSuccess: isSuccess,
+                assetId: assetId
+            )
+
+        } catch {
+            return nil
+        }
+    }
+
     func matchAssetsTransfer(
         extrinsicIndex: UInt32,
         extrinsic: Extrinsic,
@@ -151,22 +268,22 @@ extension ExtrinsicProcessor {
         context: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
         do {
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: context.toRawContext()
-            ).accountId
+            let rawContext = context.toRawContext()
+            let maybeAddress = extrinsic.signature?.address
+            let maybeSender = try maybeAddress?.map(to: MultiAddress.self, with: rawContext).accountId
 
             let result = try parseAssetsExtrinsic(extrinsic, sender: maybeSender, context: context)
 
             guard
                 result.callPath.isAssetsTransfer,
                 result.isAccountMatched,
-                let sender = maybeSender,
-                let isSuccess = matchStatus(
-                    for: extrinsicIndex,
-                    eventRecords: eventRecords,
-                    metadata: metadata
-                ) else {
+                let sender = maybeSender else {
+                return nil
+            }
+
+            let status = matchStatus(for: extrinsicIndex, eventRecords: eventRecords, metadata: metadata)
+
+            guard let isSuccess = status else {
                 return nil
             }
 
@@ -194,8 +311,10 @@ extension ExtrinsicProcessor {
             }
 
             return ExtrinsicProcessingResult(
-                extrinsic: extrinsic,
+                sender: sender,
                 callPath: result.callPath,
+                call: extrinsic.call,
+                extrinsicHash: nil,
                 fee: fee,
                 peerId: peerId,
                 amount: result.callAmount,
@@ -266,8 +385,10 @@ extension ExtrinsicProcessor {
             }
 
             return ExtrinsicProcessingResult(
-                extrinsic: extrinsic,
+                sender: sender,
                 callPath: result.callPath,
+                call: extrinsic.call,
+                extrinsicHash: nil,
                 fee: fee,
                 peerId: peerId,
                 amount: result.callAmount,
@@ -303,50 +424,26 @@ extension ExtrinsicProcessor {
         metadata: RuntimeMetadataProtocol,
         runtimeJsonContext: RuntimeJsonContext
     ) -> ExtrinsicProcessingResult? {
-        do {
-            let maybeSender: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: runtimeJsonContext.toRawContext()
-            ).accountId
+        let ethereumCall = CallCodingPath.ethereumTransact
 
-            let call = try extrinsic.call.map(to: RuntimeCall<NoRuntimeArgs>.self)
-            let callPath = CallCodingPath(moduleName: call.moduleName, callName: call.callName)
-            let isAccountMatched = accountId == maybeSender
-
-            guard
-                let sender = maybeSender,
-                isAccountMatched,
-                let isSuccess = matchStatus(
-                    for: extrinsicIndex,
-                    eventRecords: eventRecords,
-                    metadata: metadata
-                ) else {
-                return nil
-            }
-
-            let fee = findFee(
-                for: extrinsicIndex,
-                sender: sender,
-                eventRecords: eventRecords,
-                metadata: metadata
-            )
-
-            guard let assetId = chain.utilityAssets().first?.assetId ?? chain.assets.first?.assetId else {
-                return nil
-            }
-
-            return ExtrinsicProcessingResult(
+        if chain.isEthereumBased,
+           extrinsic.call.moduleName?.stringValue == ethereumCall.moduleName,
+           extrinsic.call.callName?.stringValue == ethereumCall.callName {
+            return parseEthereumTransact(
+                extrinsicIndex: extrinsicIndex,
                 extrinsic: extrinsic,
-                callPath: callPath,
-                fee: fee,
-                peerId: nil,
-                amount: nil,
-                isSuccess: isSuccess,
-                assetId: assetId
+                eventRecords: eventRecords,
+                metadata: metadata,
+                runtimeJsonContext: runtimeJsonContext
             )
-
-        } catch {
-            return nil
+        } else {
+            return parseSubstrateExtrinsic(
+                extrinsicIndex: extrinsicIndex,
+                extrinsic: extrinsic,
+                eventRecords: eventRecords,
+                metadata: metadata,
+                runtimeJsonContext: runtimeJsonContext
+            )
         }
     }
 }
