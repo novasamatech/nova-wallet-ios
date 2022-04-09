@@ -13,8 +13,8 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
 
     func createViewModel(
         stashItem: StashItem,
-        stashAccountItem: AccountItem?,
-        chosenAccountItem: AccountItem?
+        stashAccountItem: ChainAccountResponse?,
+        chosenAccountItem: ChainAccountResponse?
     ) -> ControllerAccountViewModel {
         let stashAddress = stashItem.stash
         let stashViewModel = LocalizableResource<AccountInfoViewModel> { locale in
@@ -28,13 +28,13 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             return AccountInfoViewModel(
                 title: R.string.localizable.stackingStashAccount(preferredLanguages: locale.rLanguages),
                 address: stashAddress,
-                name: stashAccountItem?.username ?? stashAddress,
+                name: stashAccountItem?.name ?? stashAddress,
                 icon: stashIcon
             )
         }
 
         let controllerViewModel = LocalizableResource<AccountInfoViewModel> { locale in
-            let selectedControllerAddress = chosenAccountItem?.address ?? stashItem.controller
+            let selectedControllerAddress = chosenAccountItem?.toAddress() ?? stashItem.controller
             let controllerIcon = try? self.iconGenerator
                 .generateFromAddress(selectedControllerAddress)
                 .imageWithFillColor(
@@ -45,7 +45,7 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             return AccountInfoViewModel(
                 title: R.string.localizable.stakingControllerAccountTitle(preferredLanguages: locale.rLanguages),
                 address: selectedControllerAddress,
-                name: chosenAccountItem?.username ?? selectedControllerAddress,
+                name: chosenAccountItem?.name ?? selectedControllerAddress,
                 icon: controllerIcon
             )
         }
@@ -58,12 +58,15 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             if stashAddress != selectedAddress {
                 return false
             }
+
             guard let chosenAccountItem = chosenAccountItem else {
                 return false
             }
-            if chosenAccountItem.address == stashItem.controller {
+
+            if chosenAccountItem.toAddress() == stashItem.controller {
                 return false
             }
+
             return true
         }()
 

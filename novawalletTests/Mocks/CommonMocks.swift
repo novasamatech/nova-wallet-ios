@@ -1338,53 +1338,6 @@ import RobinHood
     
     
     
-    @available(*, deprecated, message: "Use createMetaAccountRepository(for filter:, sortDescriptors:) instead")
-    
-     func createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem> {
-        
-    return cuckoo_manager.call("createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createManagedRepository())
-        
-    }
-    
-    
-    
-     func createRepository() -> AnyDataProviderRepository<AccountItem> {
-        
-    return cuckoo_manager.call("createRepository() -> AnyDataProviderRepository<AccountItem>",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createRepository())
-        
-    }
-    
-    
-    
-     func createAccountRepository(for networkType: SNAddressType) -> AnyDataProviderRepository<AccountItem> {
-        
-    return cuckoo_manager.call("createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>",
-            parameters: (networkType),
-            escapingParameters: (networkType),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createAccountRepository(for: networkType))
-        
-    }
-    
-    
-    
      func createMetaAccountRepository(for filter: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel> {
         
     return cuckoo_manager.call("createMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>",
@@ -1422,21 +1375,6 @@ import RobinHood
 	    }
 	    
 	    
-	    func createManagedRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ManagedAccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>", parameterMatchers: matchers))
-	    }
-	    
-	    func createRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<AccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createRepository() -> AnyDataProviderRepository<AccountItem>", parameterMatchers: matchers))
-	    }
-	    
-	    func createAccountRepository<M1: Cuckoo.Matchable>(for networkType: M1) -> Cuckoo.ProtocolStubFunction<(SNAddressType), AnyDataProviderRepository<AccountItem>> where M1.MatchedType == SNAddressType {
-	        let matchers: [Cuckoo.ParameterMatcher<(SNAddressType)>] = [wrap(matchable: networkType) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>", parameterMatchers: matchers))
-	    }
-	    
 	    func createMetaAccountRepository<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(for filter: M1, sortDescriptors: M2) -> Cuckoo.ProtocolStubFunction<(NSPredicate?, [NSSortDescriptor]), AnyDataProviderRepository<MetaAccountModel>> where M1.OptionalMatchedType == NSPredicate, M2.MatchedType == [NSSortDescriptor] {
 	        let matchers: [Cuckoo.ParameterMatcher<(NSPredicate?, [NSSortDescriptor])>] = [wrap(matchable: filter) { $0.0 }, wrap(matchable: sortDescriptors) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>", parameterMatchers: matchers))
@@ -1464,24 +1402,6 @@ import RobinHood
 	
 	    
 	    @discardableResult
-	    func createManagedRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ManagedAccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func createRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<AccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createRepository() -> AnyDataProviderRepository<AccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func createAccountRepository<M1: Cuckoo.Matchable>(for networkType: M1) -> Cuckoo.__DoNotUse<(SNAddressType), AnyDataProviderRepository<AccountItem>> where M1.MatchedType == SNAddressType {
-	        let matchers: [Cuckoo.ParameterMatcher<(SNAddressType)>] = [wrap(matchable: networkType) { $0 }]
-	        return cuckoo_manager.verify("createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func createMetaAccountRepository<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(for filter: M1, sortDescriptors: M2) -> Cuckoo.__DoNotUse<(NSPredicate?, [NSSortDescriptor]), AnyDataProviderRepository<MetaAccountModel>> where M1.OptionalMatchedType == NSPredicate, M2.MatchedType == [NSSortDescriptor] {
 	        let matchers: [Cuckoo.ParameterMatcher<(NSPredicate?, [NSSortDescriptor])>] = [wrap(matchable: filter) { $0.0 }, wrap(matchable: sortDescriptors) { $0.1 }]
 	        return cuckoo_manager.verify("createMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -1501,18 +1421,6 @@ import RobinHood
 
     
 
-    
-     func createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ManagedAccountItem>).self)
-    }
-    
-     func createRepository() -> AnyDataProviderRepository<AccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<AccountItem>).self)
-    }
-    
-     func createAccountRepository(for networkType: SNAddressType) -> AnyDataProviderRepository<AccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<AccountItem>).self)
-    }
     
      func createMetaAccountRepository(for filter: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<MetaAccountModel>).self)
