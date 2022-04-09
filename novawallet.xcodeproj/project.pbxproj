@@ -516,9 +516,7 @@
 		8444D1BE2671465A00AF6D8C /* CrowdloanBonusServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8444D1BD2671465A00AF6D8C /* CrowdloanBonusServiceError.swift */; };
 		844518D127CAB6FC00D0C52B /* NftImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844518D027CAB6FC00D0C52B /* NftImageViewModel.swift */; };
 		84452A6025D037AE00F47EC5 /* ChainStorage+Decodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452A5F25D037AE00F47EC5 /* ChainStorage+Decodable.swift */; };
-		84452F2B25D5B84200F47EC5 /* RuntimeRegistryServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F2A25D5B84200F47EC5 /* RuntimeRegistryServiceProtocol.swift */; };
 		84452F4E25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */; };
-		84452F5325D5BD2A00F47EC5 /* RuntimeRegistryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F5225D5BD2A00F47EC5 /* RuntimeRegistryService.swift */; };
 		84452F5825D5C30600F47EC5 /* FilesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F5725D5C30600F47EC5 /* FilesRepository.swift */; };
 		84452F5D25D5CB3B00F47EC5 /* FileManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F5C25D5CB3B00F47EC5 /* FileManagerTests.swift */; };
 		84452F7425D5E2B300F47EC5 /* runtime-westend.json in Resources */ = {isa = PBXBuildFile; fileRef = 84452F7025D5E2B300F47EC5 /* runtime-westend.json */; };
@@ -1438,7 +1436,6 @@
 		84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3B27D27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift */; };
 		84F4386125D9A83100AEDA56 /* TimeInterval+Time.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386025D9A83100AEDA56 /* TimeInterval+Time.swift */; };
 		84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386525D9B8C600AEDA56 /* TypeRegistryPrepared.swift */; };
-		84F4386B25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386A25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift */; };
 		84F4387025D9BC3900AEDA56 /* EmptyStreamableSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4386F25D9BC3900AEDA56 /* EmptyStreamableSource.swift */; };
 		84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4387425D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift */; };
 		84F4387F25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */; };
@@ -2529,9 +2526,7 @@
 		8444D1BD2671465A00AF6D8C /* CrowdloanBonusServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanBonusServiceError.swift; sourceTree = "<group>"; };
 		844518D027CAB6FC00D0C52B /* NftImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftImageViewModel.swift; sourceTree = "<group>"; };
 		84452A5F25D037AE00F47EC5 /* ChainStorage+Decodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainStorage+Decodable.swift"; sourceTree = "<group>"; };
-		84452F2A25D5B84200F47EC5 /* RuntimeRegistryServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeRegistryServiceProtocol.swift; sourceTree = "<group>"; };
 		84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeCoderFactory.swift; sourceTree = "<group>"; };
-		84452F5225D5BD2A00F47EC5 /* RuntimeRegistryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeRegistryService.swift; sourceTree = "<group>"; };
 		84452F5725D5C30600F47EC5 /* FilesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesRepository.swift; sourceTree = "<group>"; };
 		84452F5C25D5CB3B00F47EC5 /* FileManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManagerTests.swift; sourceTree = "<group>"; };
 		84452F7025D5E2B300F47EC5 /* runtime-westend.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "runtime-westend.json"; sourceTree = "<group>"; };
@@ -3457,7 +3452,6 @@
 		84F3B27D27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhishingSitesSyncIntegrationTests.swift; sourceTree = "<group>"; };
 		84F4386025D9A83100AEDA56 /* TimeInterval+Time.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Time.swift"; sourceTree = "<group>"; };
 		84F4386525D9B8C600AEDA56 /* TypeRegistryPrepared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeRegistryPrepared.swift; sourceTree = "<group>"; };
-		84F4386A25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeRegistryFacade.swift; sourceTree = "<group>"; };
 		84F4386F25D9BC3900AEDA56 /* EmptyStreamableSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStreamableSource.swift; sourceTree = "<group>"; };
 		84F4387425D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateDataProviderFactory.swift; sourceTree = "<group>"; };
 		84F4387E25D9D61300AEDA56 /* SubstrateStorageTestFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubstrateStorageTestFacade.swift; sourceTree = "<group>"; };
@@ -4840,7 +4834,6 @@
 				F4DCAE4526207ECD00CCA6BF /* PayoutRewardsService */,
 				845BB8B625E4464D00E5FCDC /* ExtrinsicService */,
 				2AB7A7FD25CD0E3E00767D87 /* GitHubPhishingService */,
-				84452F2925D5B81800F47EC5 /* RuntimeRegistryService */,
 				84155DE9253980E100A27058 /* WebSocketService */,
 				84155DEC2539817200A27058 /* ApplicationService.swift */,
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
@@ -5522,17 +5515,6 @@
 			path = Bifrost;
 			sourceTree = "<group>";
 		};
-		84452F2925D5B81800F47EC5 /* RuntimeRegistryService */ = {
-			isa = PBXGroup;
-			children = (
-				84452F2A25D5B84200F47EC5 /* RuntimeRegistryServiceProtocol.swift */,
-				84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */,
-				84452F5225D5BD2A00F47EC5 /* RuntimeRegistryService.swift */,
-				84F4386A25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift */,
-			);
-			path = RuntimeRegistryService;
-			sourceTree = "<group>";
-		};
 		84452F6F25D5E2B300F47EC5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -5753,6 +5735,7 @@
 				8436E94326C853E4003D4EA7 /* RuntimeSnapshotOperationFactory.swift */,
 				8436E94526C85405003D4EA7 /* RuntimeSnapshot.swift */,
 				844CB57126F9EB2000396E13 /* RuntimeCodingService.swift */,
+				84452F4D25D5BB1C00F47EC5 /* RuntimeCoderFactory.swift */,
 			);
 			path = RuntimeProviderPool;
 			sourceTree = "<group>";
@@ -10744,7 +10727,6 @@
 				F408E9BE26B80FD30043CFE0 /* AnalyticsSectionHeader.swift in Sources */,
 				84C6801824D7053B00006BF5 /* BorderedSubtitleActionView.swift in Sources */,
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
-				84452F2B25D5B84200F47EC5 /* RuntimeRegistryServiceProtocol.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
 				8460E1162541E03400826F55 /* WalletFormCellStyle+Internal.swift in Sources */,
@@ -11137,7 +11119,6 @@
 				8467F4C926B2943A00C5B6F4 /* ImportantFlowNavigationController.swift in Sources */,
 				849ABE6D2627949E00011A2A /* BatchMapper.swift in Sources */,
 				F40966B826B297D6008CD244 /* AnalyticsContainerProtocols.swift in Sources */,
-				84452F5325D5BD2A00F47EC5 /* RuntimeRegistryService.swift in Sources */,
 				AEDD7C0F269C81F500A8405F /* BlockWeights.swift in Sources */,
 				AEE4E34D25E915ED00D6DF31 /* RewardCalculatorServiceProtocol.swift in Sources */,
 				8499FEE627C105DB00712589 /* RMRKV2SyncService.swift in Sources */,
@@ -11268,7 +11249,6 @@
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
-				84F4386B25D9B9EA00AEDA56 /* RuntimeRegistryFacade.swift in Sources */,
 				84F18D4C27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
 				84DF21A92535AA8F005454AE /* ExistentialDepositInfoCommand.swift in Sources */,
