@@ -75,8 +75,8 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accountItems = responses.compactMap { try? $0.chainAccount.toAccountItem() }
-                self?.presenter.didReceiveAccounts(result: .success(accountItems))
+                let accounts = responses.map(\.chainAccount)
+                self?.presenter.didReceiveAccounts(result: .success(accounts))
             case let .failure(error):
                 self?.presenter.didReceiveAccounts(result: .failure(error))
             }
@@ -85,11 +85,11 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         feeProxy.delegate = self
     }
 
-    func estimateFee(for account: AccountItem) {
-        guard let extrinsicService = extrinsicService else { return }
+    func estimateFee(for account: ChainAccountResponse) {
+        guard let extrinsicService = extrinsicService, let address = account.toAddress() else { return }
         do {
-            let setController = try callFactory.setController(account.address)
-            let identifier = setController.callName + account.identifier
+            let setController = try callFactory.setController(address)
+            let identifier = setController.callName + address
 
             feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
                 try builder.adding(call: setController)
@@ -219,17 +219,17 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                 ) { [weak self] result in
                     switch result {
                     case let .success(accountResponse):
-                        let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
+                        let maybeAccount = accountResponse?.chainAccount
 
-                        if let accountResponse = accountResponse, let accountItem = maybeAccountItem {
+                        if let accountResponse = accountResponse, let account = maybeAccount {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
                                 accountId: accountResponse.chainAccount.accountId,
                                 chainFormat: accountResponse.chainAccount.chainFormat,
                                 cryptoType: accountResponse.chainAccount.cryptoType
                             )
-                            self?.estimateFee(for: accountItem)
+                            self?.estimateFee(for: account)
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccountItem))
+                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccount))
                     case let .failure(error):
                         self?.presenter.didReceiveStashAccount(result: .failure(error))
                     }

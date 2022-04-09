@@ -104,7 +104,7 @@ final class StakingMainPresenter {
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                stash: try? stashAccount?.chainAccount.toAccountItem(),
+                stash: stashAccount?.chainAccount,
                 for: stashItem?.stash ?? "",
                 locale: locale
             )
@@ -128,7 +128,7 @@ final class StakingMainPresenter {
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                controller: try? controllerAccount?.chainAccount.toAccountItem(),
+                controller: controllerAccount?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             ),
@@ -164,7 +164,7 @@ final class StakingMainPresenter {
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                controller: try? controllerAccount?.chainAccount.toAccountItem(),
+                controller: controllerAccount?.chainAccount,
                 for: stashItem.controller,
                 locale: locale
             )
@@ -364,7 +364,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
 
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                controller: try? controllerAccount?.chainAccount.toAccountItem(),
+                controller: controllerAccount?.chainAccount,
                 for: baseState?.stashItem.controller ?? "",
                 locale: locale
             )

@@ -20,7 +20,7 @@ protocol AccountFetching {
         accountRequest: ChainAccountRequest,
         repositoryFactory: AccountRepositoryFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        closure: @escaping (Result<AccountItem?, Error>) -> Void
+        closure: @escaping (Result<ChainAccountResponse?, Error>) -> Void
     )
 
     func fetchDisplayAddress(
@@ -78,12 +78,12 @@ extension AccountFetching {
         accountRequest: ChainAccountRequest,
         repositoryFactory: AccountRepositoryFactoryProtocol,
         operationManager: OperationManagerProtocol,
-        closure: @escaping (Result<AccountItem?, Error>) -> Void
+        closure: @escaping (Result<ChainAccountResponse?, Error>) -> Void
     ) {
         let repository = repositoryFactory.createAccountRepository(for: accountId)
         let fetchOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let mapOperation = ClosureOperation<AccountItem?> {
+        let mapOperation = ClosureOperation<ChainAccountResponse?> {
             let metAccounts = try fetchOperation.extractNoCancellableResultData()
 
             let responses: [ChainAccountResponse] = metAccounts.compactMap { metaAccount in
@@ -96,7 +96,7 @@ extension AccountFetching {
                 return accountResponse
             }
 
-            return try responses.first?.toAccountItem()
+            return responses.first
         }
 
         mapOperation.addDependency(fetchOperation)

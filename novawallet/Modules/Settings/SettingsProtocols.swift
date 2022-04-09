@@ -35,7 +35,6 @@ protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPrese
     EmailPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
-    func showConnectionSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
     func showPincodeChange(from view: ControllerBackedProtocol?)
 }

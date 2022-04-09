@@ -15,11 +15,11 @@ final class StakingRewardDestSetupPresenter {
     let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
-    private var rewardDestination: RewardDestination<AccountItem>?
+    private var rewardDestination: RewardDestination<ChainAccountResponse>?
     private var calculator: RewardCalculatorEngineProtocol?
     private var originalDestination: RewardDestination<AccountAddress>?
-    private var stashAccount: AccountItem?
-    private var controllerAccount: AccountItem?
+    private var stashAccount: ChainAccountResponse?
+    private var controllerAccount: ChainAccountResponse?
     private var priceData: PriceData?
     private var stashItem: StashItem?
     private var bonded: Decimal?
@@ -155,7 +155,7 @@ extension StakingRewardDestSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
         guard
             let accounts =
-            (context as? PrimitiveContextWrapper<[AccountItem]>)?.value
+            (context as? PrimitiveContextWrapper<[ChainAccountResponse]>)?.value
         else {
             return
         }
@@ -200,7 +200,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(account):
             controllerAccount = account
@@ -209,7 +209,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveStash(result: Result<AccountItem?, Error>) {
+    func didReceiveStash(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(account):
             stashAccount = account
@@ -231,7 +231,9 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveRewardDestinationAccount(result: Result<RewardDestination<AccountItem>?, Error>) {
+    func didReceiveRewardDestinationAccount(
+        result: Result<RewardDestination<ChainAccountResponse>?, Error>
+    ) {
         switch result {
         case let .success(rewardDestination):
             if self.rewardDestination == nil {
@@ -268,7 +270,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveAccounts(result: Result<[AccountItem], Error>) {
+    func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>) {
         switch result {
         case let .success(accounts):
             let context = PrimitiveContextWrapper(value: accounts)

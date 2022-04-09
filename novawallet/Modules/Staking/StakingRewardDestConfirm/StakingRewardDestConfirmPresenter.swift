@@ -5,7 +5,7 @@ final class StakingRewardDestConfirmPresenter {
     weak var view: StakingRewardDestConfirmViewProtocol?
     let wireframe: StakingRewardDestConfirmWireframeProtocol
     let interactor: StakingRewardDestConfirmInteractorInputProtocol
-    let rewardDestination: RewardDestination<AccountItem>
+    let rewardDestination: RewardDestination<ChainAccountResponse>
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -13,7 +13,7 @@ final class StakingRewardDestConfirmPresenter {
     let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
-    private var controllerAccount: AccountItem?
+    private var controllerAccount: ChainAccountResponse?
     private var stashItem: StashItem?
     private var fee: Decimal?
     private var balance: Decimal?
@@ -22,7 +22,7 @@ final class StakingRewardDestConfirmPresenter {
     init(
         interactor: StakingRewardDestConfirmInteractorInputProtocol,
         wireframe: StakingRewardDestConfirmWireframeProtocol,
-        rewardDestination: RewardDestination<AccountItem>,
+        rewardDestination: RewardDestination<ChainAccountResponse>,
         confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
@@ -65,11 +65,11 @@ final class StakingRewardDestConfirmPresenter {
     }
 
     private func refreshFeeIfNeeded() {
-        guard fee == nil, let stashItem = stashItem else {
+        guard fee == nil, let stashItem = stashItem, let address = rewardDestination.accountAddress else {
             return
         }
 
-        interactor.estimateFee(for: rewardDestination.accountAddress, stashItem: stashItem)
+        interactor.estimateFee(for: address, stashItem: stashItem)
     }
 }
 
@@ -97,17 +97,21 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
 
         ]).runValidation { [weak self] in
-            guard let rewardDestination = self?.rewardDestination, let stashItem = self?.stashItem else { return }
+            guard
+                let rewardDestination = self?.rewardDestination,
+                let stashItem = self?.stashItem,
+                let address = rewardDestination.accountAddress
+            else { return }
 
             self?.view?.didStartLoading()
 
-            self?.interactor.submit(rewardDestination: rewardDestination.accountAddress, for: stashItem)
+            self?.interactor.submit(rewardDestination: address, for: stashItem)
         }
     }
 
     func presentSenderAccountOptions() {
         guard
-            let address = controllerAccount?.address,
+            let address = controllerAccount?.toAddress(),
             let view = view,
             let locale = view.localizationManager?.selectedLocale else {
             return
@@ -123,7 +127,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
 
     func presentPayoutAccountOptions() {
         guard
-            let address = rewardDestination.payoutAccount?.address,
+            let address = rewardDestination.payoutAccount?.toAddress(),
             let view = view,
             let locale = view.localizationManager?.selectedLocale else {
             return
@@ -176,7 +180,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(controller):
             controllerAccount = controller
