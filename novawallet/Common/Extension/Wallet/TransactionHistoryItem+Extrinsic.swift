@@ -11,27 +11,18 @@ extension TransactionHistoryItem {
         runtimeJsonContext: RuntimeJsonContext
     ) -> TransactionHistoryItem? {
         do {
-            let extrinsic = result.processingResult.extrinsic
             let chain = chainAsset.chain
             let asset = chainAsset.asset
 
-            let maybeTxOrigin: AccountId? = try extrinsic.signature?.address.map(
-                to: MultiAddress.self,
-                with: runtimeJsonContext.toRawContext()
-            ).accountId
-
-            guard let txOrigin = maybeTxOrigin else {
-                return nil
-            }
-
-            let sender = try txOrigin.toAddress(using: chain.chainFormat)
+            let extrinsic = result.processingResult
+            let sender = try extrinsic.sender.toAddress(using: chain.chainFormat)
 
             let address = try accountId.toAddress(using: chain.chainFormat)
             let receiver: AccountAddress? = {
                 if sender != address {
                     return address
                 } else {
-                    if let peerId = result.processingResult.peerId {
+                    if let peerId = extrinsic.peerId {
                         return try? peerId.toAddress(using: chain.chainFormat)
                     } else {
                         return nil
@@ -41,12 +32,14 @@ extension TransactionHistoryItem {
 
             let timestamp = Int64(Date().timeIntervalSince1970)
 
-            let encodedCall = try JSONEncoder.scaleCompatible().encode(extrinsic.call)
+            let context = runtimeJsonContext.toRawContext()
+            let encodedCall = try JSONEncoder.scaleCompatible(with: context).encode(extrinsic.call)
 
             let amountString = result.processingResult.amount.map { String($0) }
 
             let maybeFee = result.processingResult.fee.map { String($0) }
 
+            let txHash = extrinsic.extrinsicHash ?? result.extrinsicHash
             return TransactionHistoryItem(
                 chainId: chain.chainId,
                 assetId: asset.assetId,
@@ -54,7 +47,7 @@ extension TransactionHistoryItem {
                 receiver: receiver,
                 amountInPlank: amountString,
                 status: result.processingResult.isSuccess ? .success : .failed,
-                txHash: result.extrinsicHash.toHex(includePrefix: true),
+                txHash: txHash.toHex(includePrefix: true),
                 timestamp: timestamp,
                 fee: maybeFee,
                 blockNumber: result.blockNumber,
