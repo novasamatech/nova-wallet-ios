@@ -8,7 +8,7 @@ import SoraFoundation
 
 class ControllerAccountTests: XCTestCase {
 
-    func testContinueAction() {
+    func testContinueAction() throws {
         let wireframe = MockControllerAccountWireframeProtocol()
         let interactor = MockControllerAccountInteractorInputProtocol()
         let viewModelFactory = MockControllerAccountViewModelFactoryProtocol()
@@ -62,14 +62,25 @@ class ControllerAccountTests: XCTestCase {
             when(stub).reload(with: any()).thenDoNothing()
         }
 
-        let controllerAddress = "controllerAddress"
-        let stashAddress = "stashAddress"
+        let controllerAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
+        let stashAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
 
         let stashItem = StashItem(stash: stashAddress, controller: controllerAddress)
         presenter.didReceiveStashItem(result: .success(stashItem))
 
-        let accountItem = AccountItem(address: controllerAddress, cryptoType: .ecdsa, username: "usename", publicKeyData: Data())
-        presenter.didReceiveControllerAccount(result: .success(accountItem))
+        let controllerId = try controllerAddress.toAccountId()
+        let controllerAccount = ChainAccountResponse(
+            chainId: chain.chainId,
+            accountId: controllerId,
+            publicKey: controllerId,
+            name: "username",
+            cryptoType: .substrateEcdsa,
+            addressPrefix: chain.addressPrefix,
+            isEthereumBased: chain.isEthereumBased,
+            isChainAccount: false
+        )
+
+        presenter.didReceiveControllerAccount(result: .success(controllerAccount))
 
         let controllerAccountInfo = AccountInfo(
             nonce: 0,
