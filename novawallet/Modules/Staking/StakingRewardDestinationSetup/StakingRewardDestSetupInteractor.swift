@@ -104,8 +104,8 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-                self?.presenter?.didReceiveController(result: .success(maybeAccountItem))
+                let maybeAccount = accountResponse?.chainAccount
+                self?.presenter?.didReceiveController(result: .success(maybeAccount))
             case let .failure(error):
                 self?.presenter?.didReceiveController(result: .failure(error))
             }
@@ -123,8 +123,8 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-                self?.presenter?.didReceiveStash(result: .success(maybeAccountItem))
+                let maybeAccount = accountResponse?.chainAccount
+                self?.presenter?.didReceiveStash(result: .success(maybeAccount))
             case let .failure(error):
                 self?.presenter?.didReceiveStash(result: .failure(error))
             }
@@ -180,8 +180,8 @@ extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInpu
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accountItems = responses.compactMap { try? $0.chainAccount.toAccountItem() }
-                self?.presenter?.didReceiveAccounts(result: .success(accountItems))
+                let accounts = responses.map(\.chainAccount)
+                self?.presenter?.didReceiveAccounts(result: .success(accounts))
             case let .failure(error):
                 self?.presenter?.didReceiveAccounts(result: .failure(error))
             }

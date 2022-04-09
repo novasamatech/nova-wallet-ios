@@ -112,8 +112,8 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accountItems = responses.compactMap { try? $0.chainAccount.toAccountItem() }
-                self?.presenter.didReceive(accounts: accountItems)
+                let accounts = responses.map(\.chainAccount)
+                self?.presenter.didReceive(accounts: accounts)
             case let .failure(error):
                 self?.presenter.didReceive(error: error)
             }
@@ -123,15 +123,19 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
     func estimateFee(
         for address: String,
         amount: BigUInt,
-        rewardDestination: RewardDestination<AccountItem>
+        rewardDestination: RewardDestination<ChainAccountResponse>
     ) {
+        guard let accountAddress = rewardDestination.accountAddress else {
+            return
+        }
+
         let closure: ExtrinsicBuilderClosure = { builder in
             let callFactory = SubstrateCallFactory()
 
             let bondCall = try callFactory.bond(
                 amount: amount,
                 controller: address,
-                rewardDestination: rewardDestination.accountAddress
+                rewardDestination: accountAddress
             )
 
             let targets = Array(
