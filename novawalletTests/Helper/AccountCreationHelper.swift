@@ -79,14 +79,14 @@ final class AccountCreationHelper {
         let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
 
         let info = try AccountImportJsonFactory().createInfo(from: definition)
-        let cryptoType = MultiassetCryptoType(rawValue: info.cryptoType?.rawValue ?? CryptoType.sr25519.rawValue)
+        let cryptoType = info.cryptoType ?? .sr25519
 
         return try createMetaAccountFromKeystoreData(
             data,
             password: password,
             keychain: keychain,
             settings: settings,
-            cryptoType: cryptoType ?? .sr25519
+            cryptoType: cryptoType
         )
     }
 
