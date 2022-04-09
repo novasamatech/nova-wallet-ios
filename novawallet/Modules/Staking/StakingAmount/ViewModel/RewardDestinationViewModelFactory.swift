@@ -7,8 +7,11 @@ protocol RewardDestinationViewModelFactoryProtocol {
     func createRestake(from model: CalculatedReward?, priceData: PriceData?)
         -> LocalizableResource<RewardDestinationViewModelProtocol>
 
-    func createPayout(from model: CalculatedReward?, priceData: PriceData?, account: AccountItem) throws
-        -> LocalizableResource<RewardDestinationViewModelProtocol>
+    func createPayout(
+        from model: CalculatedReward?,
+        priceData: PriceData?,
+        account: ChainAccountResponse
+    ) throws -> LocalizableResource<RewardDestinationViewModelProtocol>
 
     func createPayout(from model: CalculatedReward?, priceData: PriceData?, address: AccountAddress) throws
         -> LocalizableResource<RewardDestinationViewModelProtocol>
@@ -37,11 +40,14 @@ final class RewardDestinationViewModelFactory: RewardDestinationViewModelFactory
         )
     }
 
-    func createPayout(from model: CalculatedReward?, priceData: PriceData?, account: AccountItem) throws
-        -> LocalizableResource<RewardDestinationViewModelProtocol> {
-        let icon = try iconGenerator.generateFromAddress(account.address)
+    func createPayout(
+        from model: CalculatedReward?,
+        priceData: PriceData?,
+        account: ChainAccountResponse
+    ) throws -> LocalizableResource<RewardDestinationViewModelProtocol> {
+        let icon = try iconGenerator.generateFromAccountId(account.accountId)
 
-        let type = RewardDestinationTypeViewModel.payout(icon: icon, title: account.username)
+        let type = RewardDestinationTypeViewModel.payout(icon: icon, title: account.name)
 
         guard let model = model else {
             return createEmptyReturnViewModel(from: type)

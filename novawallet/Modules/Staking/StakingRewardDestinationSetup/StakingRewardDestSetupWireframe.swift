@@ -8,7 +8,10 @@ final class StakingRewardDestSetupWireframe: StakingRewardDestSetupWireframeProt
         self.state = state
     }
 
-    func proceed(view: StakingRewardDestSetupViewProtocol?, rewardDestination: RewardDestination<AccountItem>) {
+    func proceed(
+        view: StakingRewardDestSetupViewProtocol?,
+        rewardDestination: RewardDestination<ChainAccountResponse>
+    ) {
         guard let confirmationView = StakingRewardDestConfirmViewFactory.createView(
             for: state,
             rewardDestination: rewardDestination

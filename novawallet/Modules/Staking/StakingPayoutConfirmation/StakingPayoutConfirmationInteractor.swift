@@ -144,7 +144,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
                     case let .success(accountItem):
                         let displayAddress = DisplayAddress(
                             address: payoutAddress,
-                            username: accountItem?.username ?? ""
+                            username: accountItem?.name ?? ""
                         )
 
                         let result: RewardDestination = .payout(account: displayAddress)

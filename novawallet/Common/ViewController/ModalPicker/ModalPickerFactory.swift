@@ -156,58 +156,9 @@ enum ModalPickerFactory {
         return viewController
     }
 
-    static func createPickerForList(
-        _ types: [Chain],
-        selectedType: Chain?,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
-        guard !types.isEmpty else {
-            return nil
-        }
-
-        let viewController: ModalPickerViewController<IconWithTitleTableViewCell, IconWithTitleViewModel>
-            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
-
-        viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.commonChooseNetwork(preferredLanguages: locale.rLanguages)
-        }
-
-        viewController.cellNib = UINib(resource: R.nib.iconWithTitleTableViewCell)
-        viewController.delegate = delegate
-        viewController.modalPresentationStyle = .custom
-        viewController.context = context
-
-        if let selectedType = selectedType {
-            viewController.selectedIndex = types.firstIndex(of: selectedType) ?? 0
-        } else {
-            viewController.selectedIndex = 0
-        }
-
-        viewController.viewModels = types.map { type in
-            LocalizableResource { locale in
-                IconWithTitleViewModel(
-                    icon: type.icon,
-                    title: type.titleForLocale(locale)
-                )
-            }
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
-        viewController.modalTransitioningFactory = factory
-
-        let height = viewController.headerHeight + CGFloat(types.count) * viewController.cellHeight +
-            viewController.footerHeight
-        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
-
-        viewController.localizationManager = LocalizationManager.shared
-
-        return viewController
-    }
-
     static func createPickerList(
-        _ accounts: [AccountItem],
-        selectedAccount: AccountItem?,
+        _ accounts: [ChainAccountResponse],
+        selectedAccount: ChainAccountResponse?,
         title: LocalizableResource<String>,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -222,28 +173,8 @@ enum ModalPickerFactory {
     }
 
     static func createPickerList(
-        _ accounts: [AccountItem],
-        selectedAccount: AccountItem?,
-        addressType: SNAddressType,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
-        let localizedTitle = LocalizableResource { locale in
-            R.string.localizable.profileAccountsTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        return createPickerList(
-            accounts,
-            selectedAccount: selectedAccount,
-            headerType: .address(addressType, title: localizedTitle),
-            delegate: delegate,
-            context: context
-        )
-    }
-
-    static func createPickerList(
-        _ accounts: [AccountItem],
-        selectedAccount: AccountItem?,
+        _ accounts: [ChainAccountResponse],
+        selectedAccount: ChainAccountResponse?,
         headerType: AccountHeaderType,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -266,7 +197,9 @@ enum ModalPickerFactory {
         viewController.context = context
 
         if let selectedAccount = selectedAccount {
-            viewController.selectedIndex = accounts.firstIndex(of: selectedAccount) ?? NSNotFound
+            viewController.selectedIndex = accounts.firstIndex { account in
+                account.chainId == selectedAccount.chainId && account.accountId == selectedAccount.accountId
+            } ?? NSNotFound
         } else {
             viewController.selectedIndex = NSNotFound
         }
@@ -275,10 +208,10 @@ enum ModalPickerFactory {
 
         viewController.viewModels = accounts.compactMap { account in
             let viewModel: AccountPickerViewModel
-            if let icon = try? iconGenerator.generateFromAddress(account.address) {
-                viewModel = AccountPickerViewModel(title: account.username, icon: icon)
+            if let icon = try? iconGenerator.generateFromAccountId(account.accountId) {
+                viewModel = AccountPickerViewModel(title: account.name, icon: icon)
             } else {
-                viewModel = AccountPickerViewModel(title: account.username, icon: EmptyAccountIcon())
+                viewModel = AccountPickerViewModel(title: account.name, icon: EmptyAccountIcon())
             }
 
             return LocalizableResource { _ in viewModel }

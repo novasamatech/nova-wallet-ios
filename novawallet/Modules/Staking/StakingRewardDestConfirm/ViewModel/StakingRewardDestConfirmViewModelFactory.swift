@@ -4,8 +4,8 @@ import SubstrateSdk
 protocol StakingRewardDestConfirmVMFactoryProtocol {
     func createViewModel(
         from stashItem: StashItem,
-        rewardDestination: RewardDestination<AccountItem>,
-        controller: AccountItem?
+        rewardDestination: RewardDestination<ChainAccountResponse>,
+        controller: ChainAccountResponse?
     ) throws -> StakingRewardDestConfirmViewModel
 }
 
@@ -15,8 +15,8 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
 
     func createViewModel(
         from stashItem: StashItem,
-        rewardDestination: RewardDestination<AccountItem>,
-        controller: AccountItem?
+        rewardDestination: RewardDestination<ChainAccountResponse>,
+        controller: ChainAccountResponse?
     ) throws -> StakingRewardDestConfirmViewModel {
         let icon = try iconGenerator.generateFromAddress(stashItem.controller)
 
@@ -26,14 +26,14 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
         case .restake:
             rewardDestViewModel = .restake
         case let .payout(account):
-            let payoutIcon = try iconGenerator.generateFromAddress(account.address)
+            let payoutIcon = try iconGenerator.generateFromAccountId(account.accountId)
 
-            rewardDestViewModel = .payout(icon: payoutIcon, title: account.username)
+            rewardDestViewModel = .payout(icon: payoutIcon, title: account.name)
         }
 
         return StakingRewardDestConfirmViewModel(
             senderIcon: icon,
-            senderName: controller?.username ?? stashItem.controller,
+            senderName: controller?.name ?? stashItem.controller,
             rewardDestination: rewardDestViewModel
         )
     }

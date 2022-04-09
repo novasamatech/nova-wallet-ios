@@ -17,7 +17,7 @@ final class StakingBondMoreConfirmationPresenter {
     private var balance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var stashAccount: AccountItem?
+    private var stashAccount: ChainAccountResponse?
     private var stashItem: StashItem?
 
     init(
@@ -188,7 +188,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
-    func didReceiveStash(result: Result<AccountItem?, Error>) {
+    func didReceiveStash(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(stashAccount):
             self.stashAccount = stashAccount

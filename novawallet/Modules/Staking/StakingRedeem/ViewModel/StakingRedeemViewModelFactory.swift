@@ -5,7 +5,7 @@ import SubstrateSdk
 
 protocol StakingRedeemViewModelFactoryProtocol {
     func createRedeemViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal
     ) throws -> StakingRedeemViewModel
 }
@@ -21,7 +21,7 @@ final class StakingRedeemViewModelFactory: StakingRedeemViewModelFactoryProtocol
     }
 
     func createRedeemViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal
     ) throws -> StakingRedeemViewModel {
         let formatter = formatterFactory.createInputFormatter(for: assetInfo)
@@ -30,12 +30,12 @@ final class StakingRedeemViewModelFactory: StakingRedeemViewModelFactoryProtocol
             formatter.value(for: locale).string(from: amount as NSNumber) ?? ""
         }
 
-        let icon = try iconGenerator.generateFromAddress(controllerItem.address)
+        let icon = try iconGenerator.generateFromAccountId(controllerItem.accountId)
 
         return StakingRedeemViewModel(
-            senderAddress: controllerItem.address,
+            senderAddress: controllerItem.toAddress() ?? "",
             senderIcon: icon,
-            senderName: controllerItem.username,
+            senderName: controllerItem.name,
             amount: amount
         )
     }
