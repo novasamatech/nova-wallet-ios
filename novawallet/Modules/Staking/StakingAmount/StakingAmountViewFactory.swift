@@ -47,9 +47,7 @@ final class StakingAmountViewFactory {
     ) -> StakingAmountPresenter? {
         guard
             let metaAccount = SelectedWalletSettings.shared.value,
-            let accountItem = try? metaAccount.fetch(
-                for: chainAsset.chain.accountRequest()
-            )?.toAccountItem() else {
+            let accountItem = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 

@@ -13,12 +13,6 @@ protocol ExtrinsicServiceFactoryProtocol {
         metaId: String,
         account: ChainAccountResponse
     ) -> SigningWrapperProtocol
-
-    func createService(accountItem: AccountItem) -> ExtrinsicServiceProtocol
-    func createSigningWrapper(
-        accountItem: AccountItem,
-        connectionItem: ConnectionItem
-    ) -> SigningWrapperProtocol
 }
 
 final class ExtrinsicServiceFactory {
@@ -62,26 +56,5 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             metaId: metaId,
             accountResponse: account
         )
-    }
-
-    func createService(accountItem: AccountItem) -> ExtrinsicServiceProtocol {
-        ExtrinsicService(
-            address: accountItem.address,
-            cryptoType: accountItem.cryptoType,
-            runtimeRegistry: runtimeRegistry,
-            engine: engine,
-            operationManager: operationManager
-        )
-    }
-
-    func createSigningWrapper(
-        accountItem: AccountItem,
-        connectionItem: ConnectionItem
-    ) -> SigningWrapperProtocol {
-        let settings = InMemorySettingsManager()
-        settings.selectedAccount = accountItem
-        settings.selectedConnection = connectionItem
-
-        return SigningWrapper(keystore: Keychain(), settings: settings)
     }
 }

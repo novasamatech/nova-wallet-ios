@@ -39,19 +39,6 @@ extension ChainAccountResponse {
         isEthereumBased ? .ethereum : .substrate(addressPrefix)
     }
 
-    func toAccountItem() throws -> AccountItem {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
-        let address = try accountId.toAddress(using: chainFormat)
-        let cryptoType = CryptoType(rawValue: self.cryptoType.rawValue) ?? .ecdsa
-
-        return AccountItem(
-            address: address,
-            cryptoType: cryptoType,
-            username: name,
-            publicKeyData: publicKey
-        )
-    }
-
     func toDisplayAddress() throws -> DisplayAddress {
         let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
         let address = try accountId.toAddress(using: chainFormat)

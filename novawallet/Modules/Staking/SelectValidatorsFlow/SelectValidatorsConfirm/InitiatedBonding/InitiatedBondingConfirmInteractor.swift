@@ -43,8 +43,8 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
                 return .restake
             case let .payout(account):
                 let displayAddress = DisplayAddress(
-                    address: account.address,
-                    username: account.username
+                    address: account.toAddress() ?? "",
+                    username: account.name
                 )
                 return .payout(account: displayAddress)
             }
@@ -67,12 +67,12 @@ final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractor
         guard
             let amount = nomination.bonding.amount.toSubstrateAmount(
                 precision: chainAsset.assetDisplayInfo.assetPrecision
-            ) else {
+            ),
+            let rewardDestination = nomination.bonding.rewardDestination.accountAddress else {
             return nil
         }
 
         let controllerAddress = selectedAccount.address
-        let rewardDestination = nomination.bonding.rewardDestination.accountAddress
         let targets = nomination.targets
 
         let closure: ExtrinsicBuilderClosure = { builder in

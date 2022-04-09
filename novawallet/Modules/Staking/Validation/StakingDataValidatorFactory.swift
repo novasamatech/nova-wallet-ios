@@ -6,8 +6,18 @@ protocol StakingDataValidatingFactoryProtocol: BaseDataValidatingFactoryProtocol
     func canUnbond(amount: Decimal?, bonded: Decimal?, locale: Locale) -> DataValidating
     func canRebond(amount: Decimal?, unbonding: Decimal?, locale: Locale) -> DataValidating
 
-    func has(controller: AccountItem?, for address: AccountAddress, locale: Locale) -> DataValidating
-    func has(stash: AccountItem?, for address: AccountAddress, locale: Locale) -> DataValidating
+    func has(
+        controller: ChainAccountResponse?,
+        for address: AccountAddress,
+        locale: Locale
+    ) -> DataValidating
+
+    func has(
+        stash: ChainAccountResponse?,
+        for address: AccountAddress,
+        locale: Locale
+    ) -> DataValidating
+
     func unbondingsLimitNotReached(_ count: Int?, locale: Locale) -> DataValidating
     func controllerBalanceIsNotZero(_ balance: Decimal?, locale: Locale) -> DataValidating
 
@@ -96,24 +106,32 @@ final class StakingDataValidatingFactory: StakingDataValidatingFactoryProtocol {
         })
     }
 
-    func has(controller: AccountItem?, for address: AccountAddress, locale: Locale) -> DataValidating {
+    func has(
+        controller: ChainAccountResponse?,
+        for address: AccountAddress,
+        locale: Locale
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
             self?.presentable.presentMissingController(from: view, address: address, locale: locale)
-        }, preservesCondition: { controller != nil })
+        }, preservesCondition: { controller?.toAddress() == address })
     }
 
-    func has(stash: AccountItem?, for address: AccountAddress, locale: Locale) -> DataValidating {
+    func has(
+        stash: ChainAccountResponse?,
+        for address: AccountAddress,
+        locale: Locale
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
             }
 
             self?.presentable.presentMissingStash(from: view, address: address, locale: locale)
-        }, preservesCondition: { stash != nil })
+        }, preservesCondition: { stash?.toAddress() == address })
     }
 
     func unbondingsLimitNotReached(_ count: Int?, locale: Locale) -> DataValidating {

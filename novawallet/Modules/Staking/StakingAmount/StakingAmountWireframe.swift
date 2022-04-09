@@ -9,8 +9,8 @@ final class StakingAmountWireframe: StakingAmountWireframeProtocol {
     }
 
     func presentAccountSelection(
-        _ accounts: [AccountItem],
-        selectedAccountItem: AccountItem,
+        _ accounts: [ChainAccountResponse],
+        selectedAccountItem: ChainAccountResponse,
         delegate: ModalPickerViewControllerDelegate,
         from view: StakingAmountViewProtocol?,
         context: AnyObject?

@@ -5,7 +5,7 @@ import SubstrateSdk
 
 protocol StakingBondMoreConfirmViewModelFactoryProtocol {
     func createViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal
     ) throws -> StakingBondMoreConfirmViewModel
 }
@@ -21,7 +21,7 @@ final class StakingBondMoreConfirmViewModelFactory: StakingBondMoreConfirmViewMo
     }
 
     func createViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal
     ) throws -> StakingBondMoreConfirmViewModel {
         let formatter = formatterFactory.createInputFormatter(for: assetInfo)
@@ -30,12 +30,12 @@ final class StakingBondMoreConfirmViewModelFactory: StakingBondMoreConfirmViewMo
             formatter.value(for: locale).string(from: amount as NSNumber) ?? ""
         }
 
-        let icon = try iconGenerator.generateFromAddress(controllerItem.address)
+        let icon = try iconGenerator.generateFromAccountId(controllerItem.accountId)
 
         return StakingBondMoreConfirmViewModel(
-            senderAddress: controllerItem.address,
+            senderAddress: controllerItem.toAddress() ?? "",
             senderIcon: icon,
-            senderName: controllerItem.username,
+            senderName: controllerItem.name,
             amount: amount
         )
     }
