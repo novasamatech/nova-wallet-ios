@@ -9,21 +9,21 @@ final class ControllerAccountConfirmationPresenter {
     var interactor: ControllerAccountConfirmationInteractorInputProtocol!
 
     private let iconGenerator: IconGenerating
-    private let controllerAccountItem: AccountItem
+    private let controllerAccountItem: ChainAccountResponse
     private let assetInfo: AssetBalanceDisplayInfo
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let logger: LoggerProtocol?
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let explorers: [ChainModel.Explorer]?
 
-    private var stashAccountItem: AccountItem?
+    private var stashAccountItem: ChainAccountResponse?
     private var fee: Decimal?
     private var priceData: PriceData?
     private var balance: Decimal?
     private var stakingLedger: StakingLedger?
 
     init(
-        controllerAccountItem: AccountItem,
+        controllerAccountItem: ChainAccountResponse,
         assetInfo: AssetBalanceDisplayInfo,
         iconGenerator: IconGenerating,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -61,10 +61,12 @@ final class ControllerAccountConfirmationPresenter {
         view?.reload(with: viewModel)
     }
 
-    private func createAccountInfoViewModel(_ accountItem: AccountItem, title: String) -> AccountInfoViewModel {
-        let address = accountItem.address
+    private func createAccountInfoViewModel(
+        _ accountItem: ChainAccountResponse,
+        title: String
+    ) -> AccountInfoViewModel {
         let icon = try? iconGenerator
-            .generateFromAddress(address)
+            .generateFromAccountId(accountItem.accountId)
             .imageWithFillColor(
                 R.color.colorWhite()!,
                 size: UIConstants.smallAddressIconSize,
@@ -72,8 +74,8 @@ final class ControllerAccountConfirmationPresenter {
             )
         return AccountInfoViewModel(
             title: title,
-            address: address,
-            name: accountItem.username,
+            address: accountItem.toAddress() ?? "",
+            name: accountItem.name,
             icon: icon
         )
     }
@@ -100,11 +102,11 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
     }
 
     func handleStashAction() {
-        presentAccountOptions(for: stashAccountItem?.address)
+        presentAccountOptions(for: stashAccountItem?.toAddress())
     }
 
     func handleControllerAction() {
-        presentAccountOptions(for: controllerAccountItem.address)
+        presentAccountOptions(for: controllerAccountItem.toAddress())
     }
 
     func confirm() {
@@ -157,7 +159,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didReceiveStashAccount(result: Result<AccountItem?, Error>) {
+    func didReceiveStashAccount(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             stashAccountItem = accountItem

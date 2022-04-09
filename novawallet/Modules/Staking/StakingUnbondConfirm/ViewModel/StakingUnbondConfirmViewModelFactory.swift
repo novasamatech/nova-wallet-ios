@@ -5,7 +5,7 @@ import SubstrateSdk
 
 protocol StakingUnbondConfirmViewModelFactoryProtocol {
     func createUnbondConfirmViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal,
         shouldResetRewardDestination: Bool
     ) throws -> StakingUnbondConfirmViewModel
@@ -60,7 +60,7 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
     }
 
     func createUnbondConfirmViewModel(
-        controllerItem: AccountItem,
+        controllerItem: ChainAccountResponse,
         amount: Decimal,
         shouldResetRewardDestination: Bool
     ) throws -> StakingUnbondConfirmViewModel {
@@ -70,14 +70,14 @@ final class StakingUnbondConfirmViewModelFactory: StakingUnbondConfirmViewModelF
             formatter.value(for: locale).string(from: amount as NSNumber) ?? ""
         }
 
-        let icon = try iconGenerator.generateFromAddress(controllerItem.address)
+        let icon = try iconGenerator.generateFromAccountId(controllerItem.accountId)
 
         let hints = createHints(from: shouldResetRewardDestination)
 
         return StakingUnbondConfirmViewModel(
-            senderAddress: controllerItem.address,
+            senderAddress: controllerItem.toAddress() ?? "",
             senderIcon: icon,
-            senderName: controllerItem.username,
+            senderName: controllerItem.name,
             amount: amount,
             hints: hints
         )

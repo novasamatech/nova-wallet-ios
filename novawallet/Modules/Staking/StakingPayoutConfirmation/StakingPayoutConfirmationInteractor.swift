@@ -105,13 +105,9 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
     }
 
     private func provideRewardAmount() {
-        guard let accountItem = try? selectedAccount.toAccountItem() else {
-            return
-        }
-
         let rewardAmount = payouts.map(\.reward).reduce(0, +)
 
-        presenter.didRecieve(account: accountItem, rewardAmount: rewardAmount)
+        presenter.didRecieve(account: selectedAccount, rewardAmount: rewardAmount)
     }
 
     private func provideRewardDestination(with payee: RewardDestinationArg) {
@@ -144,7 +140,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
                     case let .success(accountItem):
                         let displayAddress = DisplayAddress(
                             address: payoutAddress,
-                            username: accountItem?.username ?? ""
+                            username: accountItem?.name ?? ""
                         )
 
                         let result: RewardDestination = .payout(account: displayAddress)

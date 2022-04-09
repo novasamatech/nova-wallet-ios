@@ -16,7 +16,7 @@ final class StakingBondMorePresenter {
     private var balance: Decimal?
     private var fee: Decimal?
     private var stashItem: StashItem?
-    private var stashAccount: AccountItem?
+    private var stashAccount: ChainAccountResponse?
 
     init(
         interactor: StakingBondMoreInteractorInputProtocol,
@@ -171,7 +171,7 @@ extension StakingBondMorePresenter: StakingBondMoreInteractorOutputProtocol {
         }
     }
 
-    func didReceiveStash(result: Result<AccountItem?, Error>) {
+    func didReceiveStash(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(stashAccount):
             self.stashAccount = stashAccount

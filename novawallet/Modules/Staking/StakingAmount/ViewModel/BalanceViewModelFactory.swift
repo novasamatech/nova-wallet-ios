@@ -23,19 +23,6 @@ final class BalanceViewModelFactory: BalanceViewModelFactoryProtocol {
 
     private let formatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    @available(*, deprecated, message: "Use init(targetAssetInfo:priceAssetInfo)")
-    init(
-        walletPrimitiveFactory _: WalletPrimitiveFactoryProtocol,
-        selectedAddressType _: SNAddressType,
-        limit: Decimal,
-        formatterFactory _: NumberFormatterFactoryProtocol = AmountFormatterFactory()
-    ) {
-        targetAssetInfo = AssetBalanceDisplayInfo.usd()
-        priceAssetInfo = AssetBalanceDisplayInfo.usd()
-        self.limit = limit
-        formatterFactory = AssetBalanceFormatterFactory()
-    }
-
     init(
         targetAssetInfo: AssetBalanceDisplayInfo,
         priceAssetInfo: AssetBalanceDisplayInfo = AssetBalanceDisplayInfo.usd(),
