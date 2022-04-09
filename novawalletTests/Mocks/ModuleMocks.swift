@@ -40830,9 +40830,9 @@ import SoraFoundation
     
     
     
-     func didRecieve(account: AccountItem, rewardAmount: Decimal)  {
+     func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)  {
         
-    return cuckoo_manager.call("didRecieve(account: AccountItem, rewardAmount: Decimal)",
+    return cuckoo_manager.call("didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)",
             parameters: (account, rewardAmount),
             escapingParameters: (account, rewardAmount),
             superclassCall:
@@ -40957,9 +40957,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountItem, Decimal)> where M1.MatchedType == AccountItem, M2.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountItem, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didRecieve(account: AccountItem, rewardAmount: Decimal)", parameterMatchers: matchers))
+	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainAccountResponse, Decimal)> where M1.MatchedType == ChainAccountResponse, M2.MatchedType == Decimal {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -41014,9 +41014,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.__DoNotUse<(AccountItem, Decimal), Void> where M1.MatchedType == AccountItem, M2.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountItem, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
-	        return cuckoo_manager.verify("didRecieve(account: AccountItem, rewardAmount: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.__DoNotUse<(ChainAccountResponse, Decimal), Void> where M1.MatchedType == ChainAccountResponse, M2.MatchedType == Decimal {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
+	        return cuckoo_manager.verify("didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -41070,7 +41070,7 @@ import SoraFoundation
     
 
     
-     func didRecieve(account: AccountItem, rewardAmount: Decimal)   {
+     func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
