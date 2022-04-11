@@ -103,13 +103,15 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
     private func applyAsset() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         if let viewModel = assetViewModel?.value(for: locale) {
-            rootView.amountView.detailsValueLabel.text = viewModel.balance
-            rootView.amountInputView.symbolLabel.text = viewModel.symbol
-
-            rootView.amountInputView.iconView.bind(
-                viewModel: viewModel.iconViewModel,
-                size: CGSize(width: 24.0, height: 24.0)
+            let assetViewModel = AssetViewModel(
+                symbol: viewModel.symbol,
+                imageViewModel: viewModel.iconViewModel
             )
+
+            rootView.amountInputView.bind(assetViewModel: assetViewModel)
+            rootView.amountInputView.bind(priceViewModel: viewModel.price)
+
+            rootView.amountView.detailsValueLabel.text = viewModel.balance
         }
     }
 
@@ -242,7 +244,7 @@ extension StakingAmountViewController: StakingAmountViewProtocol {
 
         amountInputViewModel = concreteViewModel
 
-        rootView.amountInputView.textField.text = concreteViewModel.displayAmount
+        rootView.amountInputView.bind(inputViewModel: concreteViewModel)
         concreteViewModel.observable.add(observer: self)
 
         updateActionButton()
