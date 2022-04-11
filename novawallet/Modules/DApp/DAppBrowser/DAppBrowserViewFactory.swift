@@ -21,6 +21,8 @@ struct DAppBrowserViewFactory {
             DAppMetamaskTransport(isDebug: canDebugDApp)
         ]
 
+        let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier()
+
         let interactor = DAppBrowserInteractor(
             transports: transports,
             userQuery: userQuery,
@@ -28,6 +30,7 @@ struct DAppBrowserViewFactory {
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            sequentialPhishingVerifier: phishingVerifier,
             logger: logger
         )
 

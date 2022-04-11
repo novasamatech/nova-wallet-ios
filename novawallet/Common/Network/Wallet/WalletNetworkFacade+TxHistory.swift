@@ -4,7 +4,7 @@ import CommonWallet
 import IrohaCrypto
 
 extension WalletNetworkFacade {
-    func createUtilityAssetHistory(
+    func createAssetHistory(
         for address: AccountAddress,
         chainAsset: ChainAsset,
         pagination: Pagination,
@@ -15,7 +15,19 @@ extension WalletNetworkFacade {
         let maybeRemoteHistoryFactory: WalletRemoteHistoryFactoryProtocol?
 
         if let baseUrl = chain.externalApi?.history?.url {
-            maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(url: baseUrl, filter: filter)
+            do {
+                let asset = chainAsset.asset
+                let assetMapper = CustomAssetMapper(type: asset.type, typeExtras: asset.typeExtras)
+                let historyAssetId = try assetMapper.historyAssetId()
+
+                maybeRemoteHistoryFactory = SubqueryHistoryOperationFactory(
+                    url: baseUrl,
+                    filter: filter,
+                    assetId: historyAssetId
+                )
+            } catch {
+                maybeRemoteHistoryFactory = nil
+            }
         } else if let fallbackUrl = WalletAssetId(chainId: chain.chainId)?.subscanUrl {
             maybeRemoteHistoryFactory = SubscanHistoryOperationFactory(
                 baseURL: fallbackUrl,
@@ -116,7 +128,8 @@ extension WalletNetworkFacade {
 
         let mapOperation = createHistoryMapOperation(
             dependingOn: mergeOperation,
-            remoteOperation: remoteHistoryWrapper.targetOperation
+            remoteOperation: remoteHistoryWrapper.targetOperation,
+            previousContext: pagination.context
         )
 
         dependencies.forEach { mapOperation.addDependency($0) }
@@ -187,7 +200,9 @@ extension WalletNetworkFacade {
         address: String
     ) -> BaseOperation<TransactionHistoryMergeResult> {
         ClosureOperation {
-            let remoteTransactions = try remoteOperation?.extractNoCancellableResultData().historyItems ?? []
+            // ignore remote transactions if not received
+            let optRemoteTransactions = try? remoteOperation?.extractNoCancellableResultData().historyItems
+            let remoteTransactions = optRemoteTransactions ?? []
 
             if let localTransactions = try localOperation?.extractNoCancellableResultData(),
                !localTransactions.isEmpty {
@@ -197,10 +212,7 @@ extension WalletNetworkFacade {
                     utilityAsset: utilityAsset
                 )
 
-                return manager.merge(
-                    remoteItems: remoteTransactions,
-                    localItems: localTransactions
-                )
+                return manager.merge(remoteItems: remoteTransactions, localItems: localTransactions)
             } else {
                 let transactions: [AssetTransactionData] = remoteTransactions.map { item in
                     item.createTransactionForAddress(
@@ -210,21 +222,22 @@ extension WalletNetworkFacade {
                     )
                 }
 
-                return TransactionHistoryMergeResult(
-                    historyItems: transactions,
-                    identifiersToRemove: []
-                )
+                return TransactionHistoryMergeResult(historyItems: transactions, identifiersToRemove: [])
             }
         }
     }
 
     func createHistoryMapOperation(
         dependingOn mergeOperation: BaseOperation<TransactionHistoryMergeResult>,
-        remoteOperation: BaseOperation<WalletRemoteHistoryData>
+        remoteOperation: BaseOperation<WalletRemoteHistoryData>,
+        previousContext: PaginationContext?
     ) -> BaseOperation<AssetTransactionPageData?> {
         ClosureOperation {
             let mergeResult = try mergeOperation.extractNoCancellableResultData()
-            let newHistoryContext = try remoteOperation.extractNoCancellableResultData().context
+
+            // we still need to return local operations if remote failed
+            let optNewHistoryResult = try? remoteOperation.extractNoCancellableResultData()
+            let newHistoryContext = optNewHistoryResult?.context ?? previousContext
 
             return AssetTransactionPageData(
                 transactions: mergeResult.historyItems,

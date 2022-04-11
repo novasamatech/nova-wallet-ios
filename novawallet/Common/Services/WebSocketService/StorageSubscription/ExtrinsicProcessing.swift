@@ -3,8 +3,10 @@ import SubstrateSdk
 import BigInt
 
 struct ExtrinsicProcessingResult {
-    let extrinsic: Extrinsic
+    let sender: AccountId
     let callPath: CallCodingPath
+    let call: JSON
+    let extrinsicHash: Data?
     let fee: BigUInt?
     let peerId: AccountId?
     let amount: BigUInt?

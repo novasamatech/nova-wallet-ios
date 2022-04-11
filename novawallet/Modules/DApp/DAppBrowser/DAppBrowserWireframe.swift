@@ -58,6 +58,23 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(authVew.controller, animated: true, completion: nil)
     }
 
+    func presentPhishingDetected(
+        from view: DAppBrowserViewProtocol?,
+        delegate: DAppPhishingViewDelegate
+    ) {
+        guard let phishingView = DAppPhishingViewFactory.createView(with: delegate) else {
+            return
+        }
+
+        let factory = ModalSheetPresentationFactory(
+            configuration: ModalSheetPresentationConfiguration.fearless
+        )
+        phishingView.controller.modalTransitioningFactory = factory
+        phishingView.controller.modalPresentationStyle = .custom
+
+        view?.controller.present(phishingView.controller, animated: true, completion: nil)
+    }
+
     func close(view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }

@@ -11,11 +11,11 @@ extension CallCodingPath {
     }
 
     var isBalancesTransfer: Bool {
-        [.transfer, .transferKeepAlive].contains(self)
+        [.transfer, .transferKeepAlive, .forceTransfer, .transferAll].contains(self)
     }
 
     var isAssetsTransfer: Bool {
-        [.assetsTransfer, .assetsTransferKeepAlive].contains(self)
+        [.assetsTransfer, .assetsTransferKeepAlive, .assetsForceTransfer, .assetsTransferAll].contains(self)
     }
 
     var isTokensTransfer: Bool {
@@ -23,7 +23,11 @@ extension CallCodingPath {
             .tokensTransfer,
             .currenciesTransfer,
             .tokensTransferKeepAlive,
-            .currenciesTransferKeepAlive
+            .currenciesTransferKeepAlive,
+            .tokensForceTransfer,
+            .currenciesForceTransfer,
+            .tokensTransferAll,
+            .currenciesTransferAll
         ].contains(self)
     }
 
@@ -33,6 +37,14 @@ extension CallCodingPath {
 
     static var transferKeepAlive: CallCodingPath {
         CallCodingPath(moduleName: "Balances", callName: "transfer_keep_alive")
+    }
+
+    static var forceTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Balances", callName: "force_transfer")
+    }
+
+    static var transferAll: CallCodingPath {
+        CallCodingPath(moduleName: "Balances", callName: "transfer_all")
     }
 
     static var tokensTransfer: CallCodingPath {
@@ -51,11 +63,39 @@ extension CallCodingPath {
         CallCodingPath(moduleName: "Currencies", callName: "transfer_keep_alive")
     }
 
+    static var tokensForceTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Tokens", callName: "force_transfer")
+    }
+
+    static var currenciesForceTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Currencies", callName: "force_transfer")
+    }
+
+    static var tokensTransferAll: CallCodingPath {
+        CallCodingPath(moduleName: "Tokens", callName: "transfer_all")
+    }
+
+    static var currenciesTransferAll: CallCodingPath {
+        CallCodingPath(moduleName: "Currencies", callName: "transfer_all")
+    }
+
     static var assetsTransfer: CallCodingPath {
         CallCodingPath(moduleName: "Assets", callName: "transfer")
     }
 
     static var assetsTransferKeepAlive: CallCodingPath {
         CallCodingPath(moduleName: "Assets", callName: "transfer_keep_alive")
+    }
+
+    static var assetsForceTransfer: CallCodingPath {
+        CallCodingPath(moduleName: "Assets", callName: "force_transfer")
+    }
+
+    static var assetsTransferAll: CallCodingPath {
+        CallCodingPath(moduleName: "Assets", callName: "transfer_all")
+    }
+
+    static var ethereumTransact: CallCodingPath {
+        CallCodingPath(moduleName: "Ethereum", callName: "transact")
     }
 }

@@ -40,7 +40,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fearless</string>
+				<string>novawallet</string>
 			</array>
 		</dict>
 	</array>

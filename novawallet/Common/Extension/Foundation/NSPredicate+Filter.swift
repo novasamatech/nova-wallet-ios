@@ -221,4 +221,16 @@ extension NSPredicate {
         let typePredicate = nfts(for: type)
         return NSCompoundPredicate(andPredicateWithSubpredicates: [chainAccountPredicate, typePredicate])
     }
+
+    static func filterPhishingSitesDomain(_ host: String) -> NSPredicate {
+        let separator = "."
+        let hostComponents = host.components(separatedBy: separator)
+
+        let predicates: [NSPredicate] = (2 ... hostComponents.count).map { count in
+            let possibleHost = hostComponents.suffix(count).joined(separator: separator)
+            return NSPredicate(format: "%K == %@", #keyPath(CDPhishingSite.identifier), possibleHost)
+        }
+
+        return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+    }
 }

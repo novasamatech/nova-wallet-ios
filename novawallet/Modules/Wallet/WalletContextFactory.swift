@@ -151,7 +151,7 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         let purchaseProvider = PurchaseAggregator.defaultAggregator()
 
         let assetDetailsConfigurator = AssetDetailsConfigurator(
-            address: address,
+            accountId: accountId,
             chainAsset: chainAsset,
             purchaseProvider: purchaseProvider,
             priceAsset: priceAsset,
@@ -161,30 +161,12 @@ extension WalletContextFactory: WalletContextFactoryProtocol {
         assetDetailsConfigurator.configure(builder: builder.accountDetailsModuleBuilder)
 
         let amountFormatterFactory = AmountFormatterFactory()
-        let assetBalanceFormatterFactory = AssetBalanceFormatterFactory()
-
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: asset.displayInfo(with: chain.icon),
-            priceAssetInfo: AssetBalanceDisplayInfo.usd(),
-            formatterFactory: assetBalanceFormatterFactory,
-            limit: TransferConstants.maxAmount
-        )
 
         TransactionHistoryConfigurator(
             chainAsset: chainAsset,
             amountFormatterFactory: amountFormatterFactory,
             assets: accountSettings.assets
         ).configure(builder: builder.historyModuleBuilder)
-
-        let feeViewModelFactory: BalanceViewModelFactoryProtocol?
-
-        if let utilityAsset = chain.utilityAssets().first, utilityAsset.assetId != asset.assetId {
-            feeViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAsset.displayInfo(with: chain.icon)
-            )
-        } else {
-            feeViewModelFactory = nil
-        }
 
         let receiveConfigurator = ReceiveConfigurator(
             accountId: accountId,
