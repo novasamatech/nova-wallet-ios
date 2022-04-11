@@ -4,170 +4,49 @@ import SoraUI
 import SubstrateSdk
 import CommonWallet
 
-final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
-    var presenter: StakingAmountPresenterProtocol!
+final class StakingAmountViewController: UIViewController, ViewHolder {
+    typealias RootViewType = StakingAmountLayout
 
-    @IBOutlet private var inputContainerView: UIView!
-    @IBOutlet private var stackView: UIStackView!
-    @IBOutlet private var amountInputView: AmountInputView!
-    @IBOutlet private var rewardDestinationTitleLabel: UILabel!
-    @IBOutlet private var restakeView: RewardSelectionView!
-    @IBOutlet private var payoutView: RewardSelectionView!
-    @IBOutlet private var chooseRewardView: UIView!
-    @IBOutlet private var learnMoreView: DetailsTriangularedView!
-    @IBOutlet private var actionButton: TriangularedButton!
-
-    private lazy var networkFeeView = uiFactory.createNetworkFeeView()
-
-    private var accountContainerView: UIView?
-    private var accountView: DetailsTriangularedView?
-
-    var uiFactory: UIFactoryProtocol!
+    let presenter: StakingAmountPresenterProtocol
 
     private var rewardDestinationViewModel: LocalizableResource<RewardDestinationViewModelProtocol>?
     private var assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>?
     private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
     private var amountInputViewModel: AmountInputViewModelProtocol?
 
+    init(presenter: StakingAmountPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = StakingAmountLayout()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupInitBalanceView()
-        setupInitNetworkFee()
+        setupBalanceAccessoryView()
         setupLocalization()
         updateActionButton()
 
         presenter.setup()
     }
 
-    private func setupNavigationItem() {
-        let closeBarItem = UIBarButtonItem(
-            image: R.image.iconClose(),
-            style: .plain,
-            target: self,
-            action: #selector(actionClose)
-        )
-
-        navigationItem.leftBarButtonItem = closeBarItem
-    }
-
-    @objc private func actionClose() {
-        presenter.close()
-    }
-
     // MARK: Private
-
-    private func createAccountViewIfNeeded() {
-        guard accountContainerView == nil else {
-            return
-        }
-
-        let accountView = uiFactory.createDetailsView(with: .smallIconTitleSubtitle, filled: false)
-        accountView.translatesAutoresizingMaskIntoConstraints = false
-        self.accountView = accountView
-
-        accountView.highlightedFillColor = R.color.colorHighlightedAccent()!
-
-        let languages = (localizationManager?.selectedLocale ?? Locale.current).rLanguages
-        accountView.title = R.string.localizable
-            .stakingRewardPayoutAccount(preferredLanguages: languages)
-
-        accountView.actionImage = R.image.iconSmallArrowDown()
-
-        accountView.addTarget(
-            self,
-            action: #selector(actionSelectPayoutAccount),
-            for: .touchUpInside
-        )
-
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.backgroundColor = .clear
-        containerView.addSubview(accountView)
-
-        accountContainerView = containerView
-
-        accountView.leadingAnchor.constraint(
-            equalTo: containerView.leadingAnchor,
-            constant: UIConstants.horizontalInset
-        ).isActive = true
-
-        accountView.rightAnchor.constraint(
-            equalTo: containerView.rightAnchor,
-            constant: -UIConstants.horizontalInset
-        ).isActive = true
-
-        accountView.heightAnchor.constraint(equalToConstant: UIConstants.triangularedViewHeight).isActive = true
-
-        accountView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 12.0).isActive = true
-        accountView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: 0.0).isActive = true
-    }
-
-    private func updateAccountView() {
-        if restakeView.isSelected, let containerView = accountContainerView {
-            stackView.removeArrangedSubview(containerView)
-            containerView.removeFromSuperview()
-
-            accountContainerView = nil
-            accountView = nil
-        }
-
-        if payoutView.isSelected {
-            createAccountViewIfNeeded()
-
-            if let containerView = accountContainerView,
-               let insertionIndex = stackView.arrangedSubviews
-               .firstIndex(where: { $0 == chooseRewardView }) {
-                stackView.insertArrangedSubview(containerView, at: insertionIndex + 1)
-
-                containerView.widthAnchor.constraint(
-                    equalTo: stackView.widthAnchor,
-                    constant: 0.0
-                ).isActive = true
-            }
-        }
-    }
 
     private func setupBalanceAccessoryView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
-        let accessoryView = uiFactory.createAmountAccessoryView(for: self, locale: locale)
-        amountInputView.textField.inputAccessoryView = accessoryView
-    }
-
-    private func setupInitBalanceView() {
-        amountInputView.priceText = ""
-        amountInputView.balanceText = ""
-
-        let textColor = R.color.colorWhite()!
-        let placeholder = NSAttributedString(
-            string: "0",
-            attributes: [
-                .foregroundColor: textColor.withAlphaComponent(0.5),
-                .font: UIFont.h4Title
-            ]
-        )
-
-        amountInputView.textField.attributedPlaceholder = placeholder
-        amountInputView.textField.keyboardType = .decimalPad
-
-        amountInputView.textField.delegate = self
-    }
-
-    private func setupInitNetworkFee() {
-        guard let index = stackView.arrangedSubviews.firstIndex(of: inputContainerView) else {
-            return
-        }
-
-        stackView.insertArrangedSubview(networkFeeView, at: index + 1)
-        stackView.setCustomSpacing(10.0, after: inputContainerView)
-
-        networkFeeView.translatesAutoresizingMaskIntoConstraints = false
-        networkFeeView.widthAnchor.constraint(
-            equalTo: stackView.widthAnchor,
-            constant: -2 * UIConstants.horizontalInset
-        ).isActive = true
-
-        networkFeeView.bind(viewModel: nil)
+        let accessoryView = UIFactory.default.createAmountAccessoryView(for: self, locale: locale)
+        rootView.amountInputView.textField.inputAccessoryView = accessoryView
     }
 
     private func setupLocalization() {
@@ -175,58 +54,74 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
         let languages = locale.rLanguages
 
         title = R.string.localizable.stakingStake(preferredLanguages: languages)
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: languages)
-        rewardDestinationTitleLabel.text = R.string.localizable
-            .stakingSetupRewardDestinationSectionTitle_v2_2_0(preferredLanguages: languages)
-        restakeView.title = R.string.localizable.stakingSetupRestakeTitle_v2_2_0(preferredLanguages: languages)
-        payoutView.title = R.string.localizable.stakingSetupPayoutTitle(preferredLanguages: languages)
-        learnMoreView.title = R.string.localizable
-            .stakingRewardsLearnMore(preferredLanguages: languages)
-        actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: languages)
 
-        networkFeeView.locale = locale
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+            preferredLanguages: languages
+        )
+
+        rootView.restakeOptionView.title = R.string.localizable.stakingSetupRestakeTitle_v2_2_0(
+            preferredLanguages: languages
+        )
+
+        rootView.payoutOptionView.title = R.string.localizable.stakingSetupPayoutTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: languages
+        )
+
+        rootView.networkFeeView.locale = locale
 
         applyAsset()
         applyFee()
         applyRewardDestinationViewModel()
 
-        if let accountView = accountView {
-            accountView.title = R.string.localizable
-                .stakingRewardPayoutAccount(preferredLanguages: languages)
-        }
+        rootView.accountView.title = R.string.localizable.stakingRewardPayoutAccount(
+            preferredLanguages: languages
+        )
 
         setupBalanceAccessoryView()
     }
 
     private func updateActionButton() {
         let isEnabled = (amountInputViewModel?.isValid == true)
-        actionButton.set(enabled: isEnabled)
+
+        if isEnabled {
+            rootView.actionButton.applyEnabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = true
+        } else {
+            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.isUserInteractionEnabled = false
+        }
     }
 
     private func applyAsset() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         if let viewModel = assetViewModel?.value(for: locale) {
-            amountInputView.balanceText = R.string.localizable
+            rootView.amountView.detailsValueLabel.text = R.string.localizable
                 .commonAvailableFormat(
                     viewModel.balance ?? "",
                     preferredLanguages: locale.rLanguages
                 )
-            amountInputView.priceText = viewModel.price
 
-            amountInputView.symbol = viewModel.symbol
+            rootView.amountInputView.symbolLabel.text = viewModel.symbol
 
-            viewModel.iconViewModel?.cancel(on: amountInputView.iconView)
-            amountInputView.assetIcon = nil
-            viewModel.iconViewModel?.loadAmountInputIcon(on: amountInputView.iconView, animated: true)
+            rootView.amountInputView.iconView.bind(
+                viewModel: viewModel.iconViewModel,
+                size: CGSize(width: 24.0, height: 24.0)
+            )
         }
     }
 
     private func applyFee() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         let fee = feeViewModel?.value(for: locale)
-        networkFeeView.bind(viewModel: fee)
+        rootView.networkFeeView.bind(viewModel: fee)
     }
 
     private func applyRewardDestinationViewModel() {
@@ -239,6 +134,9 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
     }
 
     private func applyRewardDestinationContent(from viewModel: RewardDestinationViewModelProtocol) {
+        let restakeView = rootView.restakeOptionView
+        let payoutView = rootView.payoutOptionView
+
         let restakeColor = restakeView.isSelected ? R.color.colorWhite()! : R.color.colorLightGray()!
         let payoutColor = payoutView.isSelected ? R.color.colorWhite()! : R.color.colorLightGray()!
 
@@ -268,17 +166,20 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
     }
 
     private func applyRewardDestinationType(from viewModel: RewardDestinationViewModelProtocol) {
+        let restakeView = rootView.restakeOptionView
+        let payoutView = rootView.payoutOptionView
+
         switch viewModel.type {
         case .restake:
             restakeView.isSelected = true
             payoutView.isSelected = false
 
-            updateAccountView()
+            rootView.accountView.isHidden = true
         case let .payout(icon, title):
             restakeView.isSelected = false
             payoutView.isSelected = true
 
-            updateAccountView()
+            rootView.accountView.isHidden = false
             applyPayoutAddress(icon, title: title)
         }
     }
@@ -290,27 +191,28 @@ final class StakingAmountViewController: UIViewController, AdaptiveDesignable {
             contentScale: UIScreen.main.scale
         )
 
-        accountView?.iconImage = icon
-        accountView?.subtitle = title
+        let accountView = rootView.accountView
+        accountView.iconImage = icon
+        accountView.subtitle = title
     }
 
-    @IBAction private func actionRestake() {
-        if !restakeView.isSelected {
+    @objc private func actionRestake() {
+        if !rootView.restakeOptionView.isSelected {
             presenter.selectRestakeDestination()
         }
     }
 
-    @IBAction private func actionPayout() {
-        if !payoutView.isSelected {
+    @objc private func actionPayout() {
+        if !rootView.payoutOptionView.isSelected {
             presenter.selectPayoutDestination()
         }
     }
 
-    @IBAction private func actionLearnPayout() {
+    @objc private func actionLearnPayout() {
         presenter.selectLearnMore()
     }
 
-    @IBAction private func actionProceed() {
+    @objc private func actionProceed() {
         presenter.proceed()
     }
 
@@ -345,7 +247,7 @@ extension StakingAmountViewController: StakingAmountViewProtocol {
 
         amountInputViewModel = concreteViewModel
 
-        amountInputView.fieldText = concreteViewModel.displayAmount
+        rootView.amountInputView.textField.text = concreteViewModel.displayAmount
         concreteViewModel.observable.add(observer: self)
 
         updateActionButton()
@@ -354,19 +256,19 @@ extension StakingAmountViewController: StakingAmountViewProtocol {
 
 extension StakingAmountViewController: AmountInputAccessoryViewDelegate {
     func didSelect(on _: AmountInputAccessoryView, percentage: Float) {
-        amountInputView.textField.resignFirstResponder()
+        rootView.amountInputView.textField.resignFirstResponder()
 
         presenter.selectAmountPercentage(percentage)
     }
 
     func didSelectDone(on _: AmountInputAccessoryView) {
-        amountInputView.textField.resignFirstResponder()
+        rootView.amountInputView.textField.resignFirstResponder()
     }
 }
 
 extension StakingAmountViewController: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        amountInputView.fieldText = amountInputViewModel?.displayAmount
+        rootView.amountInputView.textField.text = amountInputViewModel?.displayAmount
 
         updateActionButton()
 
