@@ -103,12 +103,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
     private func applyAsset() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         if let viewModel = assetViewModel?.value(for: locale) {
-            rootView.amountView.detailsValueLabel.text = R.string.localizable
-                .commonAvailableFormat(
-                    viewModel.balance ?? "",
-                    preferredLanguages: locale.rLanguages
-                )
-
+            rootView.amountView.detailsValueLabel.text = viewModel.balance
             rootView.amountInputView.symbolLabel.text = viewModel.symbol
 
             rootView.amountInputView.iconView.bind(
