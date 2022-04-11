@@ -13,28 +13,31 @@ protocol SubqueryHistoryOperationFactoryProtocol {
 final class SubqueryHistoryOperationFactory {
     let url: URL
     let filter: WalletHistoryFilter
+    let assetId: String?
 
-    init(url: URL, filter: WalletHistoryFilter) {
+    init(url: URL, filter: WalletHistoryFilter, assetId: String?) {
         self.url = url
         self.filter = filter
+        self.assetId = assetId
     }
 
     private func prepareExtrinsicInclusionFilter() -> String {
         """
         {
-          or: [
+          and: [
             {
-                  extrinsic: {isNull: true}
+                  extrinsic: {isNull: false}
             },
             {
               not: {
                 and: [
+                    { extrinsic: { contains: {module: "balances"} } },
                     {
-                      extrinsic: { contains: {module: "balances"} } ,
                         or: [
                          { extrinsic: {contains: {call: "transfer"} } },
                          { extrinsic: {contains: {call: "transferKeepAlive"} } },
                          { extrinsic: {contains: {call: "forceTransfer"} } },
+                         { extrinsic: {contains: {call: "transferAll"} } }
                       ]
                     }
                 ]
@@ -45,28 +48,43 @@ final class SubqueryHistoryOperationFactory {
         """
     }
 
+    private func prepareAssetIdFilter(_ assetId: String) -> String {
+        """
+        {
+            assetTransfer: { contains: {assetId: \"\(assetId)\"} }
+        }
+        """
+    }
+
     private func prepareFilter() -> String {
         var filterStrings: [String] = []
 
         if filter.contains(.extrinsics) {
             filterStrings.append(prepareExtrinsicInclusionFilter())
-        } else {
-            filterStrings.append("{extrinsic: { isNull: true }}")
         }
 
-        if !filter.contains(.rewardsAndSlashes) {
-            filterStrings.append("{reward: { isNull: true }}")
+        if filter.contains(.rewardsAndSlashes) {
+            filterStrings.append("{ reward: { isNull: false } }")
         }
 
-        if !filter.contains(.transfers) {
-            filterStrings.append("{transfer: { isNull: true }}")
+        if filter.contains(.transfers) {
+            if let assetId = assetId {
+                filterStrings.append(prepareAssetIdFilter(assetId))
+            } else {
+                filterStrings.append("{ transfer: { isNull: false } }")
+            }
         }
 
         return filterStrings.joined(separator: ",")
     }
 
-    private func prepareQueryForAddress(_ address: String, count: Int, cursor: String?) -> String {
+    private func prepareQueryForAddress(
+        _ address: String,
+        count: Int,
+        cursor: String?
+    ) -> String {
         let after = cursor.map { "\"\($0)\"" } ?? "null"
+        let transferField = assetId != nil ? "assetTransfer" : "transfer"
         let filterString = prepareFilter()
         return """
         {
@@ -76,7 +94,7 @@ final class SubqueryHistoryOperationFactory {
                  orderBy: TIMESTAMP_DESC,
                  filter: {
                      address: { equalTo: \"\(address)\"},
-                     and: [
+                     or: [
                         \(filterString)
                      ]
                  }
@@ -94,7 +112,7 @@ final class SubqueryHistoryOperationFactory {
                      address
                      reward
                      extrinsic
-                     transfer
+                     \(transferField)
                  }
              }
         }

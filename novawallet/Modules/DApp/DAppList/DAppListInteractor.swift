@@ -7,15 +7,22 @@ final class DAppListInteractor {
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let dAppProvider: AnySingleValueProvider<DAppList>
+    let phishingSyncService: ApplicationServiceProtocol
 
     init(
         walletSettings: SelectedWalletSettings,
         eventCenter: EventCenterProtocol,
-        dAppProvider: AnySingleValueProvider<DAppList>
+        dAppProvider: AnySingleValueProvider<DAppList>,
+        phishingSyncService: ApplicationServiceProtocol
     ) {
         self.walletSettings = walletSettings
         self.eventCenter = eventCenter
         self.dAppProvider = dAppProvider
+        self.phishingSyncService = phishingSyncService
+    }
+
+    deinit {
+        phishingSyncService.throttle()
     }
 
     private func provideAccountId() {
@@ -56,6 +63,8 @@ extension DAppListInteractor: DAppListInteractorInputProtocol {
         provideAccountId()
 
         subscribeDApps()
+
+        phishingSyncService.setup()
 
         eventCenter.add(observer: self, dispatchIn: .main)
     }

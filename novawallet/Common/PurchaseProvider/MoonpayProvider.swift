@@ -27,13 +27,16 @@ final class MoonpayProvider: PurchaseProviderProtocol {
     }
 
     func buildPurchaseActions(
-        for chain: Chain,
-        address: String
+        for chainAsset: ChainAsset,
+        accountId: AccountId
     ) -> [PurchaseAction] {
-        let optionUrl: URL?
+        guard
+            chainAsset.asset.buyProviders?.moonpay != nil,
+            let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
+            return []
+        }
 
-        guard chain == .polkadot else { return [] }
-        optionUrl = buildURLForToken("DOT", address: address)
+        let optionUrl = buildURLForToken(chainAsset.asset.symbol, address: address)
 
         if let url = optionUrl {
             let action = PurchaseAction(title: "MoonPay", url: url, icon: R.image.iconMoonPay()!)

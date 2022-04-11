@@ -202,6 +202,9 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
             return
         }
 
+        updateFee(nil)
+        updateFeeView()
+
         interactor.estimateFee(for: amount, recepient: recepientAddress)
     }
 

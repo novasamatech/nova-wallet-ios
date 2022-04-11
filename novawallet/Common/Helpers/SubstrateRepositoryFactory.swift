@@ -27,6 +27,12 @@ protocol SubstrateRepositoryFactoryProtocol {
         chainId: ChainModel.Id,
         assetId: UInt32
     ) -> AnyDataProviderRepository<TransactionHistoryItem>
+
+    func createPhishingSitesRepository() -> AnyDataProviderRepository<PhishingSite>
+
+    func createPhishingSitesRepositoryWithPredicate(
+        _ filter: NSPredicate
+    ) -> AnyDataProviderRepository<PhishingSite>
 }
 
 final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
@@ -143,5 +149,25 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
         let txStorage: CoreDataRepository<TransactionHistoryItem, CDTransactionHistoryItem> =
             storageFacade.createRepository(filter: filter, sortDescriptors: [sortDescriptor])
         return AnyDataProviderRepository(txStorage)
+    }
+
+    func createPhishingSitesRepository() -> AnyDataProviderRepository<PhishingSite> {
+        let mapper = PhishingSiteMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createPhishingSitesRepositoryWithPredicate(
+        _ filter: NSPredicate
+    ) -> AnyDataProviderRepository<PhishingSite> {
+        let mapper = PhishingSiteMapper()
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        return AnyDataProviderRepository(repository)
     }
 }

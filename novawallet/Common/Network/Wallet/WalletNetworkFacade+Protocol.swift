@@ -84,8 +84,6 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
         _ request: WalletHistoryRequest,
         pagination: Pagination
     ) -> CompoundOperationWrapper<AssetTransactionPageData?> {
-        let filter = WalletHistoryFilter(string: request.filter)
-
         let mayBeUserAssets = request.assets?.filter { $0 != totalPriceId }
 
         // The history only works for asset detals now
@@ -101,21 +99,22 @@ extension WalletNetworkFacade: WalletNetworkOperationFactoryProtocol {
             return createEmptyHistoryResponseOperation()
         }
 
-        if asset.assetId == utilityAsset.assetId {
-            return createUtilityAssetHistory(
-                for: address,
-                chainAsset: ChainAsset(chain: chain, asset: asset),
-                pagination: pagination,
-                filter: filter
-            )
+        let filter = WalletHistoryFilter(string: request.filter)
+
+        let assetFilter: WalletHistoryFilter
+
+        if asset.assetId != utilityAsset.assetId {
+            assetFilter = filter.subtracting([.rewardsAndSlashes, .extrinsics])
         } else {
-            return createLocalAssetHistory(
-                for: address,
-                chainAsset: ChainAsset(chain: chain, asset: asset),
-                pagination: pagination,
-                filter: filter
-            )
+            assetFilter = filter
         }
+
+        return createAssetHistory(
+            for: address,
+            chainAsset: ChainAsset(chain: chain, asset: asset),
+            pagination: pagination,
+            filter: assetFilter
+        )
     }
 
     func transferMetadataOperation(
