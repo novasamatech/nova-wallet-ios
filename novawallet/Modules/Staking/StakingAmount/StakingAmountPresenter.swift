@@ -4,8 +4,8 @@ import BigInt
 
 final class StakingAmountPresenter {
     weak var view: StakingAmountViewProtocol?
-    var wireframe: StakingAmountWireframeProtocol!
-    var interactor: StakingAmountInteractorInputProtocol!
+    let wireframe: StakingAmountWireframeProtocol
+    let interactor: StakingAmountInteractorInputProtocol
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let rewardDestViewModelFactory: RewardDestinationViewModelFactoryProtocol
@@ -30,6 +30,8 @@ final class StakingAmountPresenter {
     private var maxNominatorsCount: UInt32?
 
     init(
+        wireframe: StakingAmountWireframeProtocol,
+        interactor: StakingAmountInteractorInputProtocol,
         amount: Decimal?,
         selectedAccount: ChainAccountResponse,
         assetInfo: AssetBalanceDisplayInfo,
@@ -39,6 +41,8 @@ final class StakingAmountPresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        self.wireframe = wireframe
+        self.interactor = interactor
         self.amount = amount
         self.selectedAccount = selectedAccount
         payoutAccount = selectedAccount
