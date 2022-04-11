@@ -8,10 +8,19 @@ struct DAppListViewFactory {
             for: dAppsUrl
         )
 
+        let phishingSiteRepository = SubstrateRepositoryFactory().createPhishingSitesRepository()
+        let phishingSyncService = PhishingSitesSyncService(
+            url: ApplicationConfig.shared.phishingDAppsURL,
+            operationFactory: GitHubOperationFactory(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            repository: phishingSiteRepository
+        )
+
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
-            dAppProvider: dAppProvider
+            dAppProvider: dAppProvider,
+            phishingSyncService: phishingSyncService
         )
 
         let wireframe = DAppListWireframe()

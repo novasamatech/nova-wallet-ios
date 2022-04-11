@@ -13,8 +13,8 @@ protocol PurchaseProviderProtocol {
     func with(colorCode: String) -> Self
     func with(callbackUrl: URL) -> Self
     func buildPurchaseActions(
-        for chain: Chain,
-        address: String
+        for chainAsset: ChainAsset,
+        accountId: AccountId
     ) -> [PurchaseAction]
 }
 

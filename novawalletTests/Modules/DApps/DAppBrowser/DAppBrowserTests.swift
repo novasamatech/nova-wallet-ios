@@ -44,13 +44,18 @@ class DAppBrowserTests: XCTestCase {
 
         let transport = DAppPolkadotExtensionTransport()
 
+        let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier(
+            for: SubstrateStorageTestFacade()
+        )
+
         let interactor = DAppBrowserInteractor(
             transports: [transport],
             userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
-            operationQueue: OperationQueue()
+            operationQueue: OperationQueue(),
+            sequentialPhishingVerifier: phishingVerifier
         )
 
         let presenter = DAppBrowserPresenter(

@@ -109,6 +109,22 @@ extension DAppPolkadotExtensionTransport: DAppBrowserTransportProtocol {
         return script
     }
 
+    func bringPhishingDetectedStateIfNeeded() -> Bool {
+        guard let state = state else {
+            return false
+        }
+
+        let isPhishingState = state as? DAppBrowserPhishingDetectedState
+
+        if isPhishingState != nil {
+            return false
+        }
+
+        self.state = DAppBrowserPhishingDetectedState(stateMachine: self)
+
+        return true
+    }
+
     func isIdle() -> Bool {
         state?.canHandleMessage() ?? false
     }

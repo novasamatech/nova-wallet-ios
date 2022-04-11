@@ -193,6 +193,22 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
         state?.canHandleMessage() ?? false
     }
 
+    func bringPhishingDetectedStateIfNeeded() -> Bool {
+        guard let state = state else {
+            return false
+        }
+
+        let isPhishingState = state as? DAppMetamaskPhishingDetectedState
+
+        if isPhishingState != nil {
+            return false
+        }
+
+        self.state = DAppMetamaskPhishingDetectedState(stateMachine: self, chain: state.chain)
+
+        return true
+    }
+
     func start(with dataSource: DAppBrowserStateDataSource) {
         self.dataSource = dataSource
 

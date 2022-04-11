@@ -3,22 +3,10 @@ import CommonWallet
 import SoraFoundation
 
 final class AssetDetailsViewModelFactory: AccountListViewModelFactoryProtocol {
-    let address: AccountAddress
-    let chain: ChainModel
-    let purchaseProvider: PurchaseProviderProtocol
     let amountFormatterFactory: NumberFormatterFactoryProtocol
     let priceAsset: WalletAsset
 
-    init(
-        address: AccountAddress,
-        chain: ChainModel,
-        purchaseProvider: PurchaseProviderProtocol,
-        amountFormatterFactory: NumberFormatterFactoryProtocol,
-        priceAsset: WalletAsset
-    ) {
-        self.address = address
-        self.chain = chain
-        self.purchaseProvider = purchaseProvider
+    init(amountFormatterFactory: NumberFormatterFactoryProtocol, priceAsset: WalletAsset) {
         self.amountFormatterFactory = amountFormatterFactory
         self.priceAsset = priceAsset
     }

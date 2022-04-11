@@ -18,6 +18,7 @@ protocol ApplicationConfigProtocol {
     var moonPayApiKey: String { get }
     var purchaseRedirect: URL { get }
     var phishingListURL: URL { get }
+    var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
     var dAppsListURL: URL { get }
     var commonTypesURL: URL { get }
@@ -88,9 +89,9 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     // swiftlint:enable force_cast
 
-    var logoURL: URL { // FIXME: change to Nova repo
+    var logoURL: URL {
         // swiftlint:disable:next line_length
-        let logoString = "https://raw.githubusercontent.com/sora-xor/sora-branding/master/Fearless-Wallet-brand/fearless-wallet-logo-ramp.png"
+        let logoString = "https://raw.githubusercontent.com/nova-wallet/branding/master/logos/Nova_Wallet_Horizontal_iOS_Ramp.png"
         return URL(string: logoString)!
     }
 
@@ -102,12 +103,16 @@ extension ApplicationConfig: ApplicationConfigProtocol {
         "pk_live_Boi6Rl107p7XuJWBL8GJRzGWlmUSoxbz"
     }
 
-    var purchaseRedirect: URL { // FIXME: change to Nova address
-        URL(string: "fearless://fearless.io/redirect")!
+    var purchaseRedirect: URL {
+        URL(string: "novawallet://novawallet.io/redirect")!
     }
 
     var phishingListURL: URL {
         URL(string: "https://polkadot.js.org/phishing/address.json")!
+    }
+
+    var phishingDAppsURL: URL {
+        URL(string: "https://polkadot.js.org/phishing/all.json")!
     }
 
     var chainListURL: URL {

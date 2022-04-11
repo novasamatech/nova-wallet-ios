@@ -1,3 +1,5 @@
+import Foundation
+
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
     func didReceive(response: DAppScriptResponse, forTransport name: String)
@@ -9,6 +11,7 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
+    func processNew(url: URL)
     func process(message: Any, host: String, transport name: String)
     func activateSearch(with query: String?)
     func close()
@@ -16,6 +19,7 @@ protocol DAppBrowserPresenterProtocol: AnyObject {
 
 protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func setup()
+    func process(host: String)
     func process(message: Any, host: String, transport name: String)
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
@@ -36,6 +40,7 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
         type: DAppSigningType
     )
     func didReceiveAuth(request: DAppAuthRequest)
+    func didDetectPhishing(host: String)
 }
 
 protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
@@ -56,6 +61,11 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
         from view: DAppBrowserViewProtocol?,
         request: DAppAuthRequest,
         delegate: DAppAuthDelegate
+    )
+
+    func presentPhishingDetected(
+        from view: DAppBrowserViewProtocol?,
+        delegate: DAppPhishingViewDelegate
     )
 
     func close(view: DAppBrowserViewProtocol?)

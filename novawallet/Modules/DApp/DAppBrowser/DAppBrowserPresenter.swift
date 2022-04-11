@@ -8,6 +8,8 @@ final class DAppBrowserPresenter {
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
 
+    private var currentHost: String?
+
     init(
         interactor: DAppBrowserInteractorInputProtocol,
         wireframe: DAppBrowserWireframeProtocol,
@@ -46,6 +48,16 @@ final class DAppBrowserPresenter {
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
     func setup() {
         interactor.setup()
+    }
+
+    func processNew(url: URL) {
+        guard let newHost = url.host, newHost != currentHost else {
+            return
+        }
+
+        currentHost = newHost
+
+        interactor.process(host: newHost)
     }
 
     func process(message: Any, host: String, transport name: String) {
@@ -108,6 +120,12 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
     func didReceiveAuth(request: DAppAuthRequest) {
         wireframe.presentAuth(from: view, request: request, delegate: self)
     }
+
+    func didDetectPhishing(host: String) {
+        logger?.warning("Did detect phishing host: \(host)")
+
+        wireframe.presentPhishingDetected(from: view, delegate: self)
+    }
 }
 
 extension DAppBrowserPresenter: DAppOperationConfirmDelegate {
@@ -128,5 +146,11 @@ extension DAppBrowserPresenter: DAppSearchDelegate {
 extension DAppBrowserPresenter: DAppAuthDelegate {
     func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest) {
         interactor.processAuth(response: response, forTransport: request.transportName)
+    }
+}
+
+extension DAppBrowserPresenter: DAppPhishingViewDelegate {
+    func dappPhishingViewDidHide() {
+        wireframe.close(view: view)
     }
 }
