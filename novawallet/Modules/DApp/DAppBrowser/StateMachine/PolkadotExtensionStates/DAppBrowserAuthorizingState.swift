@@ -11,19 +11,8 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
     }
 
     func saveAuthAndComplete(_ approved: Bool, identifier: String, dataSource: DAppBrowserStateDataSource) {
-        let fetchOperations = dataSource.dAppSettingsRepository.fetchOperation(
-            by: identifier,
-            options: RepositoryFetchOptions()
-        )
-
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
-            let currentSettings = try fetchOperations.extractNoCancellableResultData()
-
-            let newSettings = DAppSettings(
-                identifier: currentSettings?.identifier ?? identifier,
-                allowed: approved,
-                favorite: currentSettings?.favorite ?? false
-            )
+            let newSettings = DAppSettings(identifier: identifier, allowed: approved)
 
             return [newSettings]
         }, { [] })
@@ -34,9 +23,7 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
             }
         }
 
-        saveOperation.addDependency(fetchOperations)
-
-        dataSource.operationQueue.addOperations([fetchOperations, saveOperation], waitUntilFinished: false)
+        dataSource.operationQueue.addOperations([saveOperation], waitUntilFinished: false)
     }
 
     func complete(_ approved: Bool) {
