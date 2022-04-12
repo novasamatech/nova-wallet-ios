@@ -14,6 +14,8 @@ protocol DAppListViewModelFactoryProtocol {
     func createDAppsFromQuery(_ query: String?, dAppList: DAppList) -> [DAppViewModel]
 }
 
+private typealias IndexedDApp = (index: Int, dapp: DApp)
+
 final class DAppListViewModelFactory {
     private func createDAppViewModel(
         from model: DApp,
@@ -85,22 +87,23 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         dAppList: DAppList,
         favorites: [String: DAppFavorite]
     ) -> [DAppViewModel] {
-        let actualDApps: [(Int, DApp)] = dAppList.dApps.enumerated().compactMap { valueIndex in
+        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
             if let category = category {
-                return valueIndex.element.categories.contains(category) ? valueIndex : nil
+                return valueIndex.element.categories.contains(category) ?
+                    IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element) : nil
             } else {
-                return valueIndex
+                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
         }.sorted { model1, model2 in
-            let favorite1 = favorites[model1.1.url.absoluteString] != nil ? 1 : 0
-            let favorite2 = favorites[model2.1.url.absoluteString] != nil ? 1 : 0
+            let favorite1 = favorites[model1.dapp.url.absoluteString] != nil ? 1 : 0
+            let favorite2 = favorites[model2.dapp.url.absoluteString] != nil ? 1 : 0
 
             if favorite1 > favorite2 {
                 return true
             } else if favorite1 < favorite2 {
                 return false
             } else {
-                return model1.0 < model2.0
+                return model1.index < model2.index
             }
         }
 
@@ -108,11 +111,11 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             result[category.identifier] = category
         }
 
-        let knownViewModels: [DAppViewModel] = actualDApps.map { dapp in
-            let favorite = favorites[dapp.1.url.absoluteString] != nil ? true : false
+        let knownViewModels: [DAppViewModel] = actualDApps.map { indexedDapp in
+            let favorite = favorites[indexedDapp.dapp.url.absoluteString] != nil ? true : false
             return createDAppViewModel(
-                from: dapp.1,
-                index: dapp.0,
+                from: indexedDapp.dapp,
+                index: indexedDapp.index,
                 categories: categories,
                 favorite: favorite
             )
