@@ -37,11 +37,18 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         setupBalanceAccessoryView()
         setupLocalization()
         updateActionButton()
+        setupHandlers()
 
         presenter.setup()
     }
 
     // MARK: Private
+
+    private func setupHandlers() {
+        rootView.restakeOptionView.addTarget(self, action: #selector(actionRestake), for: .touchUpInside)
+        rootView.payoutOptionView.addTarget(self, action: #selector(actionPayout), for: .touchUpInside)
+        rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+    }
 
     private func setupBalanceAccessoryView() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
@@ -63,11 +70,11 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.restakeOptionView.title = R.string.localizable.stakingSetupRestakeTitle_v2_2_0(
+        rootView.restakeOptionView.titleLabel.text = R.string.localizable.stakingSetupRestakeTitle_v2_2_0(
             preferredLanguages: languages
         )
 
-        rootView.payoutOptionView.title = R.string.localizable.stakingSetupPayoutTitle(
+        rootView.payoutOptionView.titleLabel.text = R.string.localizable.stakingSetupPayoutTitle(
             preferredLanguages: languages
         )
 
@@ -134,29 +141,21 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         let restakeView = rootView.restakeOptionView
         let payoutView = rootView.payoutOptionView
 
-        let restakeColor = restakeView.isSelected ? R.color.colorWhite()! : R.color.colorLightGray()!
-        let payoutColor = payoutView.isSelected ? R.color.colorWhite()! : R.color.colorLightGray()!
-
         if let reward = viewModel.rewardViewModel {
-            restakeView.amountTitle = reward.restakeAmount
-            restakeView.incomeTitle = reward.restakePercentage
-            restakeView.priceTitle = reward.restakePrice
-            payoutView.amountTitle = reward.payoutAmount
-            payoutView.incomeTitle = reward.payoutPercentage
-            payoutView.priceTitle = reward.payoutPrice
+            restakeView.amountLabel.text = reward.restakeAmount
+            restakeView.incomeLabel.text = reward.restakePercentage
+            restakeView.priceLabel.text = reward.restakePrice
+            payoutView.amountLabel.text = reward.payoutAmount
+            payoutView.incomeLabel.text = reward.payoutPercentage
+            payoutView.priceLabel.text = reward.payoutPrice
         } else {
-            restakeView.amountTitle = ""
-            restakeView.priceTitle = ""
-            restakeView.incomeTitle = ""
-            payoutView.amountTitle = ""
-            payoutView.priceTitle = ""
-            payoutView.incomeTitle = ""
+            restakeView.amountLabel.text = ""
+            restakeView.incomeLabel.text = ""
+            restakeView.priceLabel.text = ""
+            payoutView.amountLabel.text = ""
+            payoutView.incomeLabel.text = ""
+            payoutView.priceLabel.text = ""
         }
-
-        restakeView.titleLabel.textColor = restakeColor
-        restakeView.amountLabel.textColor = restakeColor
-        payoutView.titleLabel.textColor = payoutColor
-        payoutView.amountLabel.textColor = payoutColor
 
         restakeView.setNeedsLayout()
         payoutView.setNeedsLayout()
