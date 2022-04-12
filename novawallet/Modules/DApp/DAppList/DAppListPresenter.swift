@@ -1,35 +1,42 @@
 import Foundation
 import SubstrateSdk
 import SoraFoundation
+import RobinHood
 
 final class DAppListPresenter {
     enum CategoryIndex: Equatable {
         case all
-        case custom(index: Int)
+        case favorites
+        case custom(index: Int, hasFavorites: Bool)
 
         var selectedIndex: Int {
             switch self {
             case .all:
                 return 0
-            case let .custom(index):
-                return index + 1
+            case .favorites:
+                return 1
+            case let .custom(index, hasFavorites):
+                return hasFavorites ? index + 2 : index + 1
             }
         }
 
         var customIndex: Int? {
             switch self {
-            case .all:
+            case .all, .favorites:
                 return nil
-            case let .custom(index):
+            case let .custom(index, _):
                 return index
             }
         }
 
-        init(uiIndex: Int) {
+        init(uiIndex: Int, hasFavorites: Bool) {
             if uiIndex == 0 {
                 self = .all
+            } else if uiIndex == 1, hasFavorites {
+                self = .favorites
             } else {
-                self = .custom(index: uiIndex - 1)
+                self = hasFavorites ? .custom(index: uiIndex - 2, hasFavorites: hasFavorites)
+                    : .custom(index: uiIndex - 1, hasFavorites: hasFavorites)
             }
         }
     }
@@ -43,6 +50,8 @@ final class DAppListPresenter {
     private var dAppsResult: Result<DAppList, Error>?
     private var categories: [DAppCategory] = []
     private var selectedDApps: [DAppViewModel] = []
+    private var favorites: [String: DAppFavorite] = [:]
+    private var hasFavorites: Bool { !favorites.isEmpty }
     private var selectedCategory: CategoryIndex = .all
 
     private lazy var iconGenerator = NovaIconGenerator()
@@ -78,23 +87,66 @@ final class DAppListPresenter {
                 dApp.categories.forEach { result.insert($0) }
             }
 
-            let maybeSelectedCategory = selectedCategory.customIndex.map { categories[$0] }
+            let prevCategories = categories
             categories = dAppList.categories.filter { existingCategories.contains($0.identifier) }
 
-            let maybeNewCategoryIndex = categories.firstIndex { category in
-                category.identifier == maybeSelectedCategory?.identifier
+            switch selectedCategory {
+            case .all:
+                selectedDApps = viewModelFactory.createDApps(
+                    from: nil,
+                    dAppList: dAppList,
+                    favorites: favorites
+                )
+            case .favorites:
+                let hasFavorites = !favorites.isEmpty
+
+                if !hasFavorites {
+                    selectedCategory = .all
+
+                    selectedDApps = viewModelFactory.createDApps(
+                        from: nil,
+                        dAppList: dAppList,
+                        favorites: favorites
+                    )
+                } else {
+                    selectedCategory = .favorites
+
+                    selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
+                }
+            case .custom:
+                let maybeSelectedCategory = selectedCategory.customIndex.map { prevCategories[$0] }
+                updateCategoriesWhenCustomSelected(
+                    for: dAppList,
+                    selectedDAppCategory: maybeSelectedCategory
+                )
             }
 
-            selectedCategory = maybeNewCategoryIndex.map { CategoryIndex.custom(index: $0) } ?? .all
-
-            let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
-
-            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
         } else {
             categories = []
             selectedDApps = []
             selectedCategory = .all
         }
+    }
+
+    private func updateCategoriesWhenCustomSelected(
+        for dAppList: DAppList,
+        selectedDAppCategory: DAppCategory?
+    ) {
+        let maybeNewCategoryIndex = categories.firstIndex { category in
+            category.identifier == selectedDAppCategory?.identifier
+        }
+
+        selectedCategory = maybeNewCategoryIndex.map {
+            CategoryIndex.custom(index: $0, hasFavorites: hasFavorites)
+        } ?? .all
+
+        let categoryId = selectedCategory.customIndex.map { categories[$0].identifier }
+
+        selectedDApps = viewModelFactory.createDApps(
+            from: categoryId,
+            dAppList: dAppList,
+            favorites: favorites
+        )
     }
 
     private func updateState() {
@@ -133,12 +185,14 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func category(at index: Int) -> String {
-        let category = CategoryIndex(uiIndex: index)
+        let category = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
 
         switch category {
         case .all:
             return R.string.localizable.commonAll(preferredLanguages: selectedLocale.rLanguages)
-        case let .custom(index):
+        case .favorites:
+            return R.string.localizable.commonFavorites(preferredLanguages: selectedLocale.rLanguages)
+        case let .custom(index, _):
             return categories[index].name
         }
     }
@@ -152,7 +206,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             return
         }
 
-        let newCategory = CategoryIndex(uiIndex: index)
+        let newCategory = CategoryIndex(uiIndex: index, hasFavorites: hasFavorites)
 
         guard selectedCategory != newCategory else {
             return
@@ -160,11 +214,22 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
         selectedCategory = newCategory
 
-        if let categoryIndex = selectedCategory.customIndex {
-            let categoryId = categories[categoryIndex].identifier
-            selectedDApps = viewModelFactory.createDApps(from: categoryId, dAppList: dAppList)
-        } else {
-            selectedDApps = viewModelFactory.createDApps(from: nil, dAppList: dAppList)
+        switch selectedCategory {
+        case .all:
+            selectedDApps = viewModelFactory.createDApps(
+                from: nil,
+                dAppList: dAppList,
+                favorites: favorites
+            )
+        case .favorites:
+            selectedDApps = viewModelFactory.createFavoriteDApps(from: Array(favorites.values))
+        case let .custom(index, _):
+            let categoryId = categories[index].identifier
+            selectedDApps = viewModelFactory.createDApps(
+                from: categoryId,
+                dAppList: dAppList,
+                favorites: favorites
+            )
         }
 
         view?.didReceive(state: .loaded)
@@ -184,9 +249,43 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         }
 
         let dAppViewModel = selectedDApps[index]
-        let dApp = dAppList.dApps[dAppViewModel.index]
 
-        wireframe.showBrowser(from: view, for: .dApp(model: dApp))
+        switch dAppViewModel.identifier {
+        case let .index(value):
+            let dApp = dAppList.dApps[value]
+
+            wireframe.showBrowser(from: view, for: .dApp(model: dApp))
+
+        case let .key(value):
+            if let dapp = favorites[value] {
+                wireframe.showBrowser(from: view, for: .query(string: dapp.identifier))
+            }
+        }
+    }
+
+    func toogleFavoriteForDApp(at index: Int) {
+        guard case let .success(dAppList) = dAppsResult else {
+            return
+        }
+
+        let dAppViewModel = selectedDApps[index]
+
+        switch dAppViewModel.identifier {
+        case let .index(value):
+            let dApp = dAppList.dApps[value]
+            let identifier = dApp.url.absoluteString
+
+            if favorites[identifier] == nil {
+                interactor.addToFavorites(dApp: dApp)
+            } else {
+                interactor.removeFromFavorites(dAppIdentifier: identifier)
+            }
+
+        case let .key(value):
+            if let dapp = favorites[value] {
+                interactor.removeFromFavorites(dAppIdentifier: dapp.identifier)
+            }
+        }
     }
 }
 
@@ -217,6 +316,20 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
         }
 
         self.dAppsResult = dAppsResult
+
+        updateCategories()
+        updateState()
+    }
+
+    func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
+        for change in changes {
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                favorites[newItem.identifier] = newItem
+            case let .delete(deletedIdentifier):
+                favorites[deletedIdentifier] = nil
+            }
+        }
 
         updateCategories()
         updateState()

@@ -233,4 +233,8 @@ extension NSPredicate {
 
         return NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
     }
+
+    static func filterFavoriteDApps(by identifier: String) -> NSPredicate {
+        NSPredicate(format: "%K == %@", #keyPath(CDDAppFavorite.identifier), identifier)
+    }
 }
