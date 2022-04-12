@@ -159,6 +159,16 @@ final class DAppListPresenter {
             view?.didReceive(state: .loading)
         }
     }
+
+    private func askDAppRemoval(for identifier: String, name: String) {
+        wireframe.showFavoritesRemovalConfirmation(
+            from: view,
+            name: name,
+            locale: selectedLocale
+        ) { [weak self] in
+            self?.interactor.removeFromFavorites(dAppIdentifier: identifier)
+        }
+    }
 }
 
 extension DAppListPresenter: DAppListPresenterProtocol {
@@ -275,15 +285,16 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             let dApp = dAppList.dApps[value]
             let identifier = dApp.url.absoluteString
 
-            if favorites[identifier] == nil {
-                interactor.addToFavorites(dApp: dApp)
+            if favorites[identifier] != nil {
+                askDAppRemoval(for: identifier, name: dAppViewModel.name)
             } else {
-                interactor.removeFromFavorites(dAppIdentifier: identifier)
+                interactor.addToFavorites(dApp: dApp)
             }
 
         case let .key(value):
             if let dapp = favorites[value] {
-                interactor.removeFromFavorites(dAppIdentifier: dapp.identifier)
+                let name = viewModelFactory.createFavoriteDAppName(from: dapp)
+                askDAppRemoval(for: dapp.identifier, name: name)
             }
         }
     }

@@ -1,6 +1,8 @@
 import Foundation
 
 protocol DAppListViewModelFactoryProtocol {
+    func createFavoriteDAppName(from model: DAppFavorite) -> String
+
     func createFavoriteDApps(from list: [DAppFavorite]) -> [DAppViewModel]
 
     func createDApps(
@@ -40,16 +42,6 @@ final class DAppListViewModelFactory {
         )
     }
 
-    private func createFavoriteDAppName(from model: DAppFavorite) -> String {
-        if let label = model.label {
-            return label
-        } else if let url = URL(string: model.identifier) {
-            return url.host ?? model.identifier
-        } else {
-            return model.identifier
-        }
-    }
-
     private func createFavoriteDAppViewModel(from model: DAppFavorite) -> DAppViewModel {
         let imageViewModel: ImageViewModelProtocol
 
@@ -72,6 +64,16 @@ final class DAppListViewModelFactory {
 }
 
 extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
+    func createFavoriteDAppName(from model: DAppFavorite) -> String {
+        if let label = model.label {
+            return label
+        } else if let url = URL(string: model.identifier) {
+            return url.host ?? model.identifier
+        } else {
+            return model.identifier
+        }
+    }
+
     func createFavoriteDApps(from list: [DAppFavorite]) -> [DAppViewModel] {
         list.map { favoriteDapp in
             createFavoriteDAppViewModel(from: favoriteDapp)

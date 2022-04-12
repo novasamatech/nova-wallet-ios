@@ -720,3 +720,6 @@
 "dapp.phishing.message" = "Nova Wallet считает, что этот вебсайт может скомпрометировать безопасность Вашего аккаунта и токенов";
 "dapp.phishing.action" = "Понятно, вернемся назад";
 "common.favorites" = "Избранные";
+"dapp.remove.favorites.title" = "Удалить из Избранного?";
+"dapp.remove.favorites.message" = "\"%@\" будет удален из Избранного";
+"common.remove" = "Удалить";
