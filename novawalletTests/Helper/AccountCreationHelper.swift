@@ -81,8 +81,6 @@ final class AccountCreationHelper {
 
         let data = try Data(contentsOf: url)
 
-        let definition = try JSONDecoder().decode(KeystoreDefinition.self, from: data)
-
         return try createAccountFromKeystoreData(data,
                                                  password: password,
                                                  keychain: keychain,
