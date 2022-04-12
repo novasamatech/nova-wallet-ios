@@ -1280,6 +1280,9 @@
 		84D1111326B932C40016D962 /* ChainNodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1111226B932C40016D962 /* ChainNodeModel.swift */; };
 		84D17ED628053D6D00F7BAFF /* DAppFavorite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17ED528053D6D00F7BAFF /* DAppFavorite.swift */; };
 		84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17ED728053E3200F7BAFF /* DAppFavoriteMapper.swift */; };
+		84D17EDA28054C7500F7BAFF /* DAppLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17ED928054C7500F7BAFF /* DAppLocalStorageSubscriber.swift */; };
+		84D17EDC28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17EDB28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift */; };
+		84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17EDD28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift */; };
 		84D1ABD827E0A0600073C631 /* AssetStorageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABD727E0A0600073C631 /* AssetStorageInfo.swift */; };
 		84D1ABDA27E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */; };
 		84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */; };
@@ -3364,6 +3367,9 @@
 		84D17ED42805307000F7BAFF /* MultiassetUserDataModel3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiassetUserDataModel3.xcdatamodel; sourceTree = "<group>"; };
 		84D17ED528053D6D00F7BAFF /* DAppFavorite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavorite.swift; sourceTree = "<group>"; };
 		84D17ED728053E3200F7BAFF /* DAppFavoriteMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppFavoriteMapper.swift; sourceTree = "<group>"; };
+		84D17ED928054C7500F7BAFF /* DAppLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalStorageSubscriber.swift; sourceTree = "<group>"; };
+		84D17EDB28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
+		84D17EDD28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
 		84D1ABD727E0A0600073C631 /* AssetStorageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfo.swift; sourceTree = "<group>"; };
 		84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscriptionWrapper.swift; sourceTree = "<group>"; };
 		84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetViewModel.swift; sourceTree = "<group>"; };
@@ -5948,6 +5954,7 @@
 				846CA77927099B1E0011124C /* StakingAnalyticsLocalSubscriptionFactory.swift */,
 				8499FEDB27BFDD4300712589 /* NftLocalSubscriptionFactory.swift */,
 				842A738527DE04F1006EE1EA /* TransactionLocalSubscriptionFactory.swift */,
+				84D17EDD28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift */,
 			);
 			path = DataProvider;
 			sourceTree = "<group>";
@@ -7772,6 +7779,8 @@
 				842A738727DE149C006EE1EA /* TransactionLocalStorageSubscriber.swift */,
 				842A738927DE14B3006EE1EA /* TransactionLocalStorageHandler.swift */,
 				84E25BF127E8FDC100290BF1 /* DecodedProviderTypes.swift */,
+				84D17ED928054C7500F7BAFF /* DAppLocalStorageSubscriber.swift */,
+				84D17EDB28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift */,
 			);
 			path = Subscription;
 			sourceTree = "<group>";
@@ -11254,6 +11263,7 @@
 				843910CC253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84BB3CF3267D24B000676FFE /* UIStackView+Manage.swift in Sources */,
 				8419C39626EA8F7300A3179C /* PriceData.swift in Sources */,
+				84D17EDC28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift in Sources */,
 				84E25BE627E750D500290BF1 /* AccountInputViewModel+Handler.swift in Sources */,
 				849014E024AA8F60008F705E /* MainTabBarWireframe.swift in Sources */,
 				AE6F7FE42685E812002BBC3E /* ValidatorListFilterViewFactory.swift in Sources */,
@@ -11706,6 +11716,7 @@
 				849E17E627914394002D1744 /* NavigationBarSettings.swift in Sources */,
 				849E17F02791909C002D1744 /* DAppSettings.swift in Sources */,
 				846A2C4D2529FBB700731018 /* NSPredicate+Filter.swift in Sources */,
+				84D17EDA28054C7500F7BAFF /* DAppLocalStorageSubscriber.swift in Sources */,
 				844CB57226F9EB2000396E13 /* RuntimeCodingService.swift in Sources */,
 				84B73AD8279C2EDA0071AE16 /* AssetAccountSubscription.swift in Sources */,
 				843910B2253ED4D100E3C217 /* CDChainStorageItem+CoreDataDecodable.swift in Sources */,
@@ -12130,6 +12141,7 @@
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
 				D886425A55425810AD070AB5 /* ControllerAccountConfirmationWireframe.swift in Sources */,
+				84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */,
 				0AAFEFA17F249F4BEF051F6B /* ControllerAccountConfirmationPresenter.swift in Sources */,
 				135CEEC5363BE34130958578 /* ControllerAccountConfirmationInteractor.swift in Sources */,
 				F4D6FF5226B3ECEB002313AF /* AnalyticsViewState.swift in Sources */,
