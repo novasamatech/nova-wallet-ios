@@ -719,3 +719,4 @@
 "dapp.phishing.title" = "Обнаружен фишинг";
 "dapp.phishing.message" = "Nova Wallet считает, что этот вебсайт может скомпрометировать безопасность Вашего аккаунта и токенов";
 "dapp.phishing.action" = "Понятно, вернемся назад";
+"common.favorites" = "Избранные";
