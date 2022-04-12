@@ -1283,6 +1283,7 @@
 		84D17EDA28054C7500F7BAFF /* DAppLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17ED928054C7500F7BAFF /* DAppLocalStorageSubscriber.swift */; };
 		84D17EDC28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17EDB28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift */; };
 		84D17EDE28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17EDD28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift */; };
+		84D17EE12805A62600F7BAFF /* DAppAlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D17EE02805A62600F7BAFF /* DAppAlertPresentable.swift */; };
 		84D1ABD827E0A0600073C631 /* AssetStorageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABD727E0A0600073C631 /* AssetStorageInfo.swift */; };
 		84D1ABDA27E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */; };
 		84D1ABDC27E1B4FE0073C631 /* ChainAssetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */; };
@@ -3370,6 +3371,7 @@
 		84D17ED928054C7500F7BAFF /* DAppLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		84D17EDB28054C9C00F7BAFF /* DAppLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		84D17EDD28054CC400F7BAFF /* DAppLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
+		84D17EE02805A62600F7BAFF /* DAppAlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAlertPresentable.swift; sourceTree = "<group>"; };
 		84D1ABD727E0A0600073C631 /* AssetStorageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfo.swift; sourceTree = "<group>"; };
 		84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteSubscriptionWrapper.swift; sourceTree = "<group>"; };
 		84D1ABDB27E1B4FE0073C631 /* ChainAssetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetViewModel.swift; sourceTree = "<group>"; };
@@ -6191,6 +6193,7 @@
 		846B49A92769EEC80066B875 /* DApp */ = {
 			isa = PBXGroup;
 			children = (
+				84D17EDF2805A5ED00F7BAFF /* Protocols */,
 				84D2F1A3277437C00040C680 /* View */,
 				84EC2D1B276C67EB009B0BE1 /* Model */,
 				A798A35104CE0BC5AD2645F3 /* DAppTxDetails */,
@@ -7877,6 +7880,14 @@
 				84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */,
 			);
 			path = ChainRegistry;
+			sourceTree = "<group>";
+		};
+		84D17EDF2805A5ED00F7BAFF /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				84D17EE02805A62600F7BAFF /* DAppAlertPresentable.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		84D2F19E27730E0F0040C680 /* ViewModel */ = {
@@ -12058,6 +12069,7 @@
 				8499FEC827BF73F400712589 /* StorageKeyFactory+Size.swift in Sources */,
 				5869563D0EA593FBD02C169C /* StakingPayoutConfirmationProtocols.swift in Sources */,
 				8499FED627BFB12600712589 /* UniquesSyncService.swift in Sources */,
+				84D17EE12805A62600F7BAFF /* DAppAlertPresentable.swift in Sources */,
 				A871B6ABACAE8A811010F792 /* StakingPayoutConfirmationWireframe.swift in Sources */,
 				F4D6FF1326B3DDDF002313AF /* AnalyticsRewardsViewController.swift in Sources */,
 				1795E946F1E386442E96E2BC /* StakingPayoutConfirmationPresenter.swift in Sources */,
