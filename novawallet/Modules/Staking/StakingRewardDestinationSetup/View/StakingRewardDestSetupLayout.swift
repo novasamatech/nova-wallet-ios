@@ -9,8 +9,8 @@ final class StakingRewardDestSetupLayout: UIView {
         return view
     }()
 
-    let restakeOptionView = UIFactory.default.createRewardSelectionView()
-    let payoutOptionView = UIFactory.default.createRewardSelectionView()
+    let restakeOptionView = RewardSelectionView()
+    let payoutOptionView = RewardSelectionView()
     let accountView = UIFactory.default.createAccountView(for: .selection, filled: false)
 
     let networkFeeView = UIFactory.default.createNetworkFeeView()
@@ -45,10 +45,10 @@ final class StakingRewardDestSetupLayout: UIView {
         learnMoreView.titleLabel.text = R.string.localizable
             .stakingRewardsLearnMore_2_2_0(preferredLanguages: locale.rLanguages)
 
-        restakeOptionView.title = R.string.localizable
+        restakeOptionView.titleLabel.text = R.string.localizable
             .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
-        payoutOptionView.title = R.string.localizable
+        payoutOptionView.titleLabel.text = R.string.localizable
             .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
         accountView.title = R.string.localizable
