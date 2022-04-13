@@ -4,8 +4,6 @@ import RobinHood
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveAccount(icon: DrawableIcon)
     func didReceive(state: DAppListState)
-    func didMoveDApp(from initIndex: Int, to finalIndex: Int)
-    func didRemoveDApp(at finalIndex: Int)
     func didCompleteRefreshing()
 }
 
