@@ -2,8 +2,13 @@ import Foundation
 import RobinHood
 
 struct DAppSettings: Identifiable {
-    // normaly it is dapp url's host
+    // normaly it is a dapp url's host
     let identifier: String
     let allowed: Bool
-    let favorite: Bool
+}
+
+extension DAppSettings {
+    func byReplacingAuthrization(_ newValue: Bool) -> DAppSettings {
+        DAppSettings(identifier: identifier, allowed: newValue)
+    }
 }
