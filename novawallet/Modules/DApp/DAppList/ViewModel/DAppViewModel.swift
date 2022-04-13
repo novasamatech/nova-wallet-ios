@@ -1,8 +1,14 @@
 import Foundation
 
 struct DAppViewModel {
-    let index: Int
+    enum Identifier {
+        case index(value: Int)
+        case key(value: String)
+    }
+
+    let identifier: Identifier
     let name: String
     let details: String
     let icon: ImageViewModelProtocol?
+    let isFavorite: Bool
 }

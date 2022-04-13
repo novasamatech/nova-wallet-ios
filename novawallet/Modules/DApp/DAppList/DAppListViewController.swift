@@ -166,6 +166,7 @@ extension DAppListViewController: UICollectionViewDataSource {
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         let view: DAppItemView = collectionView.dequeueReusableCellWithType(DAppItemView.self, for: indexPath)!
+        view.delegate = self
 
         let dApp = presenter.dApp(at: indexPath.row - 1)
         view.bind(viewModel: dApp)
@@ -301,6 +302,23 @@ extension DAppListViewController: DAppListViewProtocol {
 
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
+    }
+}
+
+extension DAppListViewController: DAppItemViewDelegate {
+    func dAppItemDidToggleFavorite(_ view: DAppItemView) {
+        guard
+            let indexPath = rootView.collectionView.indexPath(for: view),
+            let cellType = DAppListFlowLayout.CellType(indexPath: indexPath) else {
+            return
+        }
+
+        switch cellType {
+        case .header, .notLoaded, .dAppHeader, .categories:
+            break
+        case let .dapp(index):
+            presenter.toogleFavoriteForDApp(at: index)
+        }
     }
 }
 

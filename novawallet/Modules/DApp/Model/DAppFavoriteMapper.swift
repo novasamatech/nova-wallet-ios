@@ -1,13 +1,13 @@
 import Foundation
-import RobinHood
 import CoreData
+import RobinHood
 
-final class DAppSettingsMapper: CoreDataMapperProtocol {
-    typealias DataProviderModel = DAppSettings
-    typealias CoreDataEntity = CDDAppSettings
+final class DAppFavoriteMapper: CoreDataMapperProtocol {
+    typealias DataProviderModel = DAppFavorite
+    typealias CoreDataEntity = CDDAppFavorite
 
     func transform(entity: CoreDataEntity) throws -> DataProviderModel {
-        DAppSettings(identifier: entity.identifier!, allowed: entity.allowed)
+        DAppFavorite(identifier: entity.identifier!, label: entity.label, icon: entity.icon)
     }
 
     func populate(
@@ -16,7 +16,8 @@ final class DAppSettingsMapper: CoreDataMapperProtocol {
         using _: NSManagedObjectContext
     ) throws {
         entity.identifier = model.identifier
-        entity.allowed = model.allowed
+        entity.icon = model.icon
+        entity.label = model.label
     }
 
     var entityIdentifierFieldName: String { #keyPath(CDDAppSettings.identifier) }

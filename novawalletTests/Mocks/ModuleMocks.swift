@@ -16102,6 +16102,7 @@ import Foundation
 import Cuckoo
 @testable import novawallet
 
+import RobinHood
 import SubstrateSdk
 
 
@@ -16508,6 +16509,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func toogleFavoriteForDApp(at index: Int)  {
+        
+    return cuckoo_manager.call("toogleFavoriteForDApp(at: Int)",
+            parameters: (index),
+            escapingParameters: (index),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.toogleFavoriteForDApp(at: index))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16570,6 +16586,11 @@ import SubstrateSdk
 	    func selectDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectDApp(at: Int)", parameterMatchers: matchers))
+	    }
+	    
+	    func toogleFavoriteForDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "toogleFavoriteForDApp(at: Int)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16654,6 +16675,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("selectDApp(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func toogleFavoriteForDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return cuckoo_manager.verify("toogleFavoriteForDApp(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16704,6 +16731,10 @@ import SubstrateSdk
     }
     
      func selectDApp(at index: Int)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func toogleFavoriteForDApp(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16764,6 +16795,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func addToFavorites(dApp: DApp)  {
+        
+    return cuckoo_manager.call("addToFavorites(dApp: DApp)",
+            parameters: (dApp),
+            escapingParameters: (dApp),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.addToFavorites(dApp: dApp))
+        
+    }
+    
+    
+    
+     func removeFromFavorites(dAppIdentifier: String)  {
+        
+    return cuckoo_manager.call("removeFromFavorites(dAppIdentifier: String)",
+            parameters: (dAppIdentifier),
+            escapingParameters: (dAppIdentifier),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeFromFavorites(dAppIdentifier: dAppIdentifier))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16781,6 +16842,16 @@ import SubstrateSdk
 	    func refresh() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "refresh()", parameterMatchers: matchers))
+	    }
+	    
+	    func addToFavorites<M1: Cuckoo.Matchable>(dApp: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DApp)> where M1.MatchedType == DApp {
+	        let matchers: [Cuckoo.ParameterMatcher<(DApp)>] = [wrap(matchable: dApp) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "addToFavorites(dApp: DApp)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(dAppIdentifier: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: dAppIdentifier) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "removeFromFavorites(dAppIdentifier: String)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16811,6 +16882,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("refresh()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func addToFavorites<M1: Cuckoo.Matchable>(dApp: M1) -> Cuckoo.__DoNotUse<(DApp), Void> where M1.MatchedType == DApp {
+	        let matchers: [Cuckoo.ParameterMatcher<(DApp)>] = [wrap(matchable: dApp) { $0 }]
+	        return cuckoo_manager.verify("addToFavorites(dApp: DApp)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(dAppIdentifier: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: dAppIdentifier) { $0 }]
+	        return cuckoo_manager.verify("removeFromFavorites(dAppIdentifier: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16825,6 +16908,14 @@ import SubstrateSdk
     }
     
      func refresh()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func addToFavorites(dApp: DApp)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func removeFromFavorites(dAppIdentifier: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16885,6 +16976,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])  {
+        
+    return cuckoo_manager.call("didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavoriteDapp(changes: changes))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16902,6 +17008,11 @@ import SubstrateSdk
 	    func didReceive<M1: Cuckoo.OptionalMatchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList, Error>?)> where M1.OptionalMatchedType == Result<DAppList, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList, Error>?)>] = [wrap(matchable: dAppsResult) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList, Error>?)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavoriteDapp<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16932,6 +17043,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList, Error>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavoriteDapp<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<DAppFavorite>]), Void> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16946,6 +17063,10 @@ import SubstrateSdk
     }
     
      func didReceive(dAppsResult: Result<DAppList, Error>?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17023,36 +17144,6 @@ import SubstrateSdk
     
     
     
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
-            parameters: (message, title, closeAction, view),
-            escapingParameters: (message, title, closeAction, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
-        
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
-            parameters: (viewModel, style, view),
-            escapingParameters: (viewModel, style, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
-        
-    }
-    
-    
-    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -17088,16 +17179,6 @@ import SubstrateSdk
 	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppSearchResult)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
@@ -17140,18 +17221,6 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -17175,14 +17244,6 @@ import SubstrateSdk
     }
     
      func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
