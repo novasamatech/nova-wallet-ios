@@ -25,7 +25,6 @@ final class DAppItemView: UICollectionViewCell {
     let favoriteButton: RoundedButton = {
         let button = RoundedButton()
         button.applyIconStyle()
-        button.contentInsets = UIEdgeInsets(top: 0.0, left: 20.0, bottom: 0.0, right: 20.0)
         return button
     }()
 
@@ -126,6 +125,7 @@ final class DAppItemView: UICollectionViewCell {
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
             make.height.equalToSuperview()
+            make.width.equalTo(60.0)
         }
 
         contentView.addSubview(titleLabel)
@@ -141,8 +141,6 @@ final class DAppItemView: UICollectionViewCell {
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
             make.trailing.lessThanOrEqualTo(favoriteButton.snp.leading).offset(-4.0)
         }
-
-        favoriteButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
 
     @objc private func actionToggleFavorite() {
