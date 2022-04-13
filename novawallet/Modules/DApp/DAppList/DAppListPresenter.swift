@@ -177,21 +177,6 @@ final class DAppListPresenter {
             self?.interactor.removeFromFavorites(dAppIdentifier: identifier)
         }
     }
-
-    private func applyFavorite(changes: [DataProviderChange<DAppFavorite>]) {
-        if favorites == nil {
-            favorites = [:]
-        }
-
-        for change in changes {
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                favorites?[newItem.identifier] = newItem
-            case let .delete(deletedIdentifier):
-                favorites?[deletedIdentifier] = nil
-            }
-        }
-    }
 }
 
 extension DAppListPresenter: DAppListPresenterProtocol {
@@ -356,7 +341,8 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     }
 
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
-        applyFavorite(changes: changes)
+        favorites = changes.mergeToDict(favorites ?? [:])
+
         updateCategories()
         updateState()
     }

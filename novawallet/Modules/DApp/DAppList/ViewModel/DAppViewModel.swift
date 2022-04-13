@@ -11,4 +11,13 @@ struct DAppViewModel {
     let details: String
     let icon: ImageViewModelProtocol?
     let isFavorite: Bool
+
+    var order: Int? {
+        switch identifier {
+        case let .index(value):
+            return value
+        case .key:
+            return nil
+        }
+    }
 }
