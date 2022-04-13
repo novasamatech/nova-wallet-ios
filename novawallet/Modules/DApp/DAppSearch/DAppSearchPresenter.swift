@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 final class DAppSearchPresenter {
     weak var view: DAppSearchViewProtocol?
@@ -6,6 +7,7 @@ final class DAppSearchPresenter {
     let interactor: DAppSearchInteractorInputProtocol
 
     private var dAppList: DAppList?
+    private var favorites: [String: DAppFavorite]?
 
     private(set) var query: String?
 
@@ -32,8 +34,13 @@ final class DAppSearchPresenter {
     }
 
     private func provideViewModel() {
-        if let dAppList = dAppList {
-            let viewModels = viewModelFactory.createDAppsFromQuery(query, dAppList: dAppList)
+        if let dAppList = dAppList, let favorites = favorites {
+            let viewModels = viewModelFactory.createDAppsFromQuery(
+                query,
+                dAppList: dAppList,
+                favorites: favorites
+            )
+
             view?.didReceiveDApp(viewModels: viewModels)
         } else {
             view?.didReceiveDApp(viewModels: [])
@@ -92,5 +99,11 @@ extension DAppSearchPresenter: DAppSearchInteractorOutputProtocol {
         case let .failure(error):
             logger?.error("Fatal error: \(error)")
         }
+    }
+
+    func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
+        favorites = changes.mergeToDict(favorites ?? [:])
+
+        provideViewModel()
     }
 }

@@ -12,6 +12,12 @@ extension DAppLocalSubscriptionFactoryProtocol {
 }
 
 final class DAppLocalSubscriptionFactory {
+    static let shared = DAppLocalSubscriptionFactory(
+        storageFacade: UserDataStorageFacade.shared,
+        operationQueue: OperationManagerFacade.sharedDefaultQueue,
+        logger: Logger.shared
+    )
+
     let storageFacade: StorageFacadeProtocol
     let logger: LoggerProtocol?
     let operationQueue: OperationQueue
