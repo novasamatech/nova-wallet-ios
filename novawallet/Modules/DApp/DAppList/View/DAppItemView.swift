@@ -141,6 +141,8 @@ final class DAppItemView: UICollectionViewCell {
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
             make.trailing.lessThanOrEqualTo(favoriteButton.snp.leading).offset(-4.0)
         }
+
+        favoriteButton.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
     }
 
     @objc private func actionToggleFavorite() {

@@ -50,8 +50,8 @@ final class DAppListPresenter {
     private var dAppsResult: Result<DAppList, Error>?
     private var categories: [DAppCategory] = []
     private var selectedDApps: [DAppViewModel] = []
-    private var favorites: [String: DAppFavorite] = [:]
-    private var hasFavorites: Bool { !favorites.isEmpty }
+    private var favorites: [String: DAppFavorite]?
+    private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var selectedCategory: CategoryIndex = .all
     private var pendingFavoriteIdentifier: String?
 
@@ -83,6 +83,10 @@ final class DAppListPresenter {
     }
 
     private func updateCategories() {
+        guard let favorites = favorites else {
+            return
+        }
+
         if let dAppList = try? dAppsResult?.get() {
             let existingCategories = dAppList.dApps.reduce(into: Set<String>()) { result, dApp in
                 dApp.categories.forEach { result.insert($0) }
@@ -146,17 +150,21 @@ final class DAppListPresenter {
         selectedDApps = viewModelFactory.createDApps(
             from: categoryId,
             dAppList: dAppList,
-            favorites: favorites
+            favorites: favorites ?? [:]
         )
     }
 
     private func updateState() {
-        switch dAppsResult {
-        case .success:
-            view?.didReceive(state: .loaded)
-        case .failure:
-            view?.didReceive(state: .error)
-        case .none:
+        if favorites != nil {
+            switch dAppsResult {
+            case .success:
+                view?.didReceive(state: .loaded)
+            case .failure:
+                view?.didReceive(state: .error)
+            case .none:
+                view?.didReceive(state: .loading)
+            }
+        } else {
             view?.didReceive(state: .loading)
         }
     }
@@ -241,12 +249,16 @@ final class DAppListPresenter {
     }
 
     private func applyFavorite(changes: [DataProviderChange<DAppFavorite>]) {
+        if favorites == nil {
+            favorites = [:]
+        }
+
         for change in changes {
             switch change {
             case let .insert(newItem), let .update(newItem):
-                favorites[newItem.identifier] = newItem
+                favorites?[newItem.identifier] = newItem
             case let .delete(deletedIdentifier):
-                favorites[deletedIdentifier] = nil
+                favorites?[deletedIdentifier] = nil
             }
         }
     }
@@ -293,7 +305,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func selectCategory(at index: Int) {
-        guard let dAppList = try? dAppsResult?.get() else {
+        guard let dAppList = try? dAppsResult?.get(), let favorites = favorites else {
             return
         }
 
@@ -348,7 +360,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             wireframe.showBrowser(from: view, for: .dApp(model: dApp))
 
         case let .key(value):
-            if let dapp = favorites[value] {
+            if let dapp = favorites?[value] {
                 wireframe.showBrowser(from: view, for: .query(string: dapp.identifier))
             }
         }
@@ -368,14 +380,14 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
             pendingFavoriteIdentifier = identifier
 
-            if favorites[identifier] != nil {
+            if favorites?[identifier] != nil {
                 askDAppRemoval(for: identifier, name: dAppViewModel.name)
             } else {
                 interactor.addToFavorites(dApp: dApp)
             }
 
         case let .key(value):
-            if let dapp = favorites[value] {
+            if let dapp = favorites?[value] {
                 pendingFavoriteIdentifier = dapp.identifier
 
                 let name = viewModelFactory.createFavoriteDAppName(from: dapp)
