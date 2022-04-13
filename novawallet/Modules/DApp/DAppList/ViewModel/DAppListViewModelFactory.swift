@@ -11,7 +11,11 @@ protocol DAppListViewModelFactoryProtocol {
         favorites: [String: DAppFavorite]
     ) -> [DAppViewModel]
 
-    func createDAppsFromQuery(_ query: String?, dAppList: DAppList) -> [DAppViewModel]
+    func createDAppsFromQuery(
+        _ query: String?,
+        dAppList: DAppList,
+        favorites: [String: DAppFavorite]
+    ) -> [DAppViewModel]
 }
 
 private typealias IndexedDApp = (index: Int, dapp: DApp)
@@ -63,6 +67,52 @@ final class DAppListViewModelFactory {
             isFavorite: true
         )
     }
+
+    private func createViewModels(
+        merging dapps: [IndexedDApp],
+        filteredFavorites: [String: DAppFavorite],
+        allFavorites: [String: DAppFavorite],
+        categories: [DAppCategory]
+    ) -> [DAppViewModel] {
+        let categoriesDict = categories.reduce(into: [String: DAppCategory]()) { result, category in
+            result[category.identifier] = category
+        }
+
+        let knownIdentifiers = Set(dapps.map(\.dapp.identifier))
+
+        let knownViewModels: [DAppViewModel] = dapps.map { indexedDapp in
+            let favorite = allFavorites[indexedDapp.dapp.identifier] != nil ? true : false
+            return createDAppViewModel(
+                from: indexedDapp.dapp,
+                index: indexedDapp.index,
+                categories: categoriesDict,
+                favorite: favorite
+            )
+        }
+
+        let favoriteViewModels = filteredFavorites.values.filter {
+            !knownIdentifiers.contains($0.identifier)
+        }.map { createFavoriteDAppViewModel(from: $0) }
+
+        let allViewModels = favoriteViewModels + knownViewModels
+
+        return allViewModels.sorted { model1, model2 in
+            let favoriteValue1 = model1.isFavorite ? 1 : 0
+            let favoriteValue2 = model2.isFavorite ? 1 : 0
+
+            if favoriteValue1 != favoriteValue2 {
+                return favoriteValue1 > favoriteValue2
+            } else if let order1 = model1.order, let order2 = model2.order {
+                return order1 < order2
+            } else if model1.order != nil {
+                return false
+            } else if model2.order != nil {
+                return true
+            } else {
+                return model1.name.localizedCompare(model2.name) == .orderedAscending
+            }
+        }
+    }
 }
 
 extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
@@ -94,68 +144,56 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
             } else {
                 return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
-        }.sorted { model1, model2 in
-            let favorite1 = favorites[model1.dapp.identifier] != nil ? 1 : 0
-            let favorite2 = favorites[model2.dapp.identifier] != nil ? 1 : 0
-
-            if favorite1 > favorite2 {
-                return true
-            } else if favorite1 < favorite2 {
-                return false
-            } else {
-                return model1.index < model2.index
-            }
-        }
-
-        let categories = dAppList.categories.reduce(into: [String: DAppCategory]()) { result, category in
-            result[category.identifier] = category
-        }
-
-        let knownViewModels: [DAppViewModel] = actualDApps.map { indexedDapp in
-            let favorite = favorites[indexedDapp.dapp.identifier] != nil ? true : false
-            return createDAppViewModel(
-                from: indexedDapp.dapp,
-                index: indexedDapp.index,
-                categories: categories,
-                favorite: favorite
-            )
         }
 
         if category == nil {
-            let knownIdentifiers = Set(dAppList.dApps.map(\.identifier))
-
-            let favoriteViewModels = favorites.values.filter {
-                !knownIdentifiers.contains($0.identifier)
-            }.sorted { model1, model2 in
-                model1.identifier.localizedCompare(model2.identifier) == .orderedAscending
-            }.map { createFavoriteDAppViewModel(from: $0) }
-
-            return favoriteViewModels + knownViewModels
+            return createViewModels(
+                merging: actualDApps,
+                filteredFavorites: favorites,
+                allFavorites: favorites,
+                categories: dAppList.categories
+            )
         } else {
-            return knownViewModels
+            return createViewModels(
+                merging: actualDApps,
+                filteredFavorites: [:],
+                allFavorites: favorites,
+                categories: dAppList.categories
+            )
         }
     }
 
-    func createDAppsFromQuery(_ query: String?, dAppList: DAppList) -> [DAppViewModel] {
-        let actualDApps: [(Int, DApp)] = dAppList.dApps.enumerated().compactMap { valueIndex in
+    func createDAppsFromQuery(
+        _ query: String?,
+        dAppList: DAppList,
+        favorites: [String: DAppFavorite]
+    ) -> [DAppViewModel] {
+        let actualDApps: [IndexedDApp] = dAppList.dApps.enumerated().compactMap { valueIndex in
             guard let query = query, !query.isEmpty else {
-                return valueIndex
+                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
 
             if valueIndex.element.name.localizedCaseInsensitiveContains(query) {
-                return valueIndex
+                return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             } else {
                 return nil
             }
         }
 
-        let categories = dAppList.categories.reduce(into: [String: DAppCategory]()) { result, category in
-            result[category.identifier] = category
+        let filteredFavorites = favorites.filter { keyValue in
+            guard let query = query, !query.isEmpty else {
+                return true
+            }
+
+            let name = createFavoriteDAppName(from: keyValue.value)
+            return name.localizedCaseInsensitiveContains(query)
         }
 
-        // TODO: Apply favorites for search
-        return actualDApps.map {
-            createDAppViewModel(from: $0.1, index: $0.0, categories: categories, favorite: false)
-        }
+        return createViewModels(
+            merging: actualDApps,
+            filteredFavorites: filteredFavorites,
+            allFavorites: favorites,
+            categories: dAppList.categories
+        )
     }
 }
