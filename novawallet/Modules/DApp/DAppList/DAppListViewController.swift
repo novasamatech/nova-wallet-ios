@@ -300,24 +300,6 @@ extension DAppListViewController: DAppListViewProtocol {
         rootView.collectionView.reloadData()
     }
 
-    func didMoveDApp(from initIndex: Int, to finalIndex: Int) {
-        let initIndexPath = DAppListFlowLayout.CellType.dapp(index: initIndex).indexPath
-        let finalIndexPath = DAppListFlowLayout.CellType.dapp(index: finalIndex).indexPath
-
-        let viewModel = presenter.dApp(at: finalIndex)
-
-        let cell = rootView.collectionView.cellForItem(at: initIndexPath) as? DAppItemView
-        cell?.bind(viewModel: viewModel)
-
-        rootView.collectionView.moveItem(at: initIndexPath, to: finalIndexPath)
-    }
-
-    func didRemoveDApp(at finalIndex: Int) {
-        let finalIndexPath = DAppListFlowLayout.CellType.dapp(index: finalIndex).indexPath
-
-        rootView.collectionView.deleteItems(at: [finalIndexPath])
-    }
-
     func didCompleteRefreshing() {
         rootView.collectionView.refreshControl?.endRefreshing()
     }
