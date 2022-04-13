@@ -95,8 +95,8 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
                 return IndexedDApp(index: valueIndex.offset, dapp: valueIndex.element)
             }
         }.sorted { model1, model2 in
-            let favorite1 = favorites[model1.dapp.url.absoluteString] != nil ? 1 : 0
-            let favorite2 = favorites[model2.dapp.url.absoluteString] != nil ? 1 : 0
+            let favorite1 = favorites[model1.dapp.identifier] != nil ? 1 : 0
+            let favorite2 = favorites[model2.dapp.identifier] != nil ? 1 : 0
 
             if favorite1 > favorite2 {
                 return true
@@ -112,7 +112,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         }
 
         let knownViewModels: [DAppViewModel] = actualDApps.map { indexedDapp in
-            let favorite = favorites[indexedDapp.dapp.url.absoluteString] != nil ? true : false
+            let favorite = favorites[indexedDapp.dapp.identifier] != nil ? true : false
             return createDAppViewModel(
                 from: indexedDapp.dapp,
                 index: indexedDapp.index,
@@ -122,7 +122,7 @@ extension DAppListViewModelFactory: DAppListViewModelFactoryProtocol {
         }
 
         if category == nil {
-            let knownIdentifiers = Set(dAppList.dApps.map(\.url.absoluteString))
+            let knownIdentifiers = Set(dAppList.dApps.map(\.identifier))
 
             let favoriteViewModels = favorites.values.filter {
                 !knownIdentifiers.contains($0.identifier)
