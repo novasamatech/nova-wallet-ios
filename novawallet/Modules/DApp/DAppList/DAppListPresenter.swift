@@ -53,7 +53,6 @@ final class DAppListPresenter {
     private var favorites: [String: DAppFavorite]?
     private var hasFavorites: Bool { !(favorites ?? [:]).isEmpty }
     private var selectedCategory: CategoryIndex = .all
-    private var pendingFavoriteIdentifier: String?
 
     private lazy var iconGenerator = NovaIconGenerator()
 
@@ -176,75 +175,6 @@ final class DAppListPresenter {
             locale: selectedLocale
         ) { [weak self] in
             self?.interactor.removeFromFavorites(dAppIdentifier: identifier)
-        }
-    }
-
-    private func indexOfViewModelIdentifier(for pendingIdentifier: String) -> Int? {
-        selectedDApps.firstIndex { viewModel in
-            switch viewModel.identifier {
-            case let .index(value):
-                guard let dAppList = try? dAppsResult?.get() else {
-                    return false
-                }
-
-                return pendingIdentifier == dAppList.dApps[value].identifier
-            case let .key(value):
-                return pendingIdentifier == value
-            }
-        }
-    }
-
-    private func updateFavoriteState(
-        for pendingIdentifier: String,
-        change: DataProviderChange<DAppFavorite>
-    ) {
-        let maybeInitIndex = indexOfViewModelIdentifier(for: pendingIdentifier)
-
-        applyFavorite(changes: [change])
-        updateCategories()
-
-        let maybeFinalIndex = indexOfViewModelIdentifier(for: pendingIdentifier)
-
-        if let initIndex = maybeInitIndex, let finalIndex = maybeFinalIndex {
-            view?.didMoveDApp(from: initIndex, to: finalIndex)
-        } else if let initIndex = maybeInitIndex, hasFavorites {
-            view?.didRemoveDApp(at: initIndex)
-        } else {
-            updateState()
-        }
-    }
-
-    private func updatePendingFavorite(for changes: [DataProviderChange<DAppFavorite>]) -> Bool {
-        guard let pendingFavoriteIdentifier = pendingFavoriteIdentifier else {
-            return false
-        }
-
-        guard changes.count == 1, let change = changes.first else {
-            self.pendingFavoriteIdentifier = nil
-            return false
-        }
-
-        switch change {
-        case let .insert(newItem), let .update(newItem):
-            if newItem.identifier == pendingFavoriteIdentifier {
-                updateFavoriteState(for: pendingFavoriteIdentifier, change: change)
-
-                self.pendingFavoriteIdentifier = nil
-                return true
-            } else {
-                self.pendingFavoriteIdentifier = nil
-                return false
-            }
-        case let .delete(deletedIdentifier):
-            if deletedIdentifier == pendingFavoriteIdentifier {
-                updateFavoriteState(for: pendingFavoriteIdentifier, change: change)
-
-                self.pendingFavoriteIdentifier = nil
-                return true
-            } else {
-                self.pendingFavoriteIdentifier = nil
-                return false
-            }
         }
     }
 
@@ -378,8 +308,6 @@ extension DAppListPresenter: DAppListPresenterProtocol {
             let dApp = dAppList.dApps[value]
             let identifier = dApp.identifier
 
-            pendingFavoriteIdentifier = identifier
-
             if favorites?[identifier] != nil {
                 askDAppRemoval(for: identifier, name: dAppViewModel.name)
             } else {
@@ -388,8 +316,6 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 
         case let .key(value):
             if let dapp = favorites?[value] {
-                pendingFavoriteIdentifier = dapp.identifier
-
                 let name = viewModelFactory.createFavoriteDAppName(from: dapp)
                 askDAppRemoval(for: dapp.identifier, name: name)
             }
@@ -430,11 +356,9 @@ extension DAppListPresenter: DAppListInteractorOutputProtocol {
     }
 
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>]) {
-        if !updatePendingFavorite(for: changes) {
-            applyFavorite(changes: changes)
-            updateCategories()
-            updateState()
-        }
+        applyFavorite(changes: changes)
+        updateCategories()
+        updateState()
     }
 }
 
