@@ -1,7 +1,7 @@
 import UIKit
 
 final class DAppAddFavoriteViewLayout: UIView {
-    struct Constants {
+    enum Constants {
         static let iconViewSize = CGSize(width: 88.0, height: 88.0)
         static let iconContentInsets = UIEdgeInsets(top: 12.0, left: 12.0, bottom: 12.0, right: 12.0)
         static var iconDisplaySize: CGSize {
@@ -40,12 +40,16 @@ final class DAppAddFavoriteViewLayout: UIView {
         return label
     }()
 
+    let titleInputView = TextInputField()
+
     let addressLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTransparentText()
         label.font = .regularFootnote
         return label
     }()
+
+    let addressInputView = TextInputField()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -81,7 +85,21 @@ final class DAppAddFavoriteViewLayout: UIView {
         containerView.stackView.addArrangedSubview(titleLabel)
         containerView.stackView.setCustomSpacing(8.0, after: titleLabel)
 
+        containerView.stackView.addArrangedSubview(titleInputView)
+        titleInputView.snp.makeConstraints { make in
+            make.height.equalTo(48.0)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: titleInputView)
+
         containerView.stackView.addArrangedSubview(addressLabel)
         containerView.stackView.setCustomSpacing(8.0, after: addressLabel)
+
+        containerView.stackView.addArrangedSubview(addressInputView)
+        addressInputView.snp.makeConstraints { make in
+            make.height.equalTo(48.0)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: addressInputView)
     }
 }
