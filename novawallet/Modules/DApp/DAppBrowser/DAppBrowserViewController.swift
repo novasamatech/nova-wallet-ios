@@ -238,8 +238,8 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
     func didReceiveFavorite(flag: Bool) {
         rootView.favoriteBarButton.isEnabled = true
 
-        let icon = flag ? R.image.iconFavButtonSel() : R.image.iconFavButton()
-        rootView.favoriteBarButton.image = icon?.tinted(with: R.color.colorWhite()!)
+        let icon = flag ? R.image.iconFavButtonSel() : R.image.iconFavToolbar()
+        rootView.favoriteBarButton.image = icon?.withRenderingMode(.alwaysOriginal)
     }
 }
 
