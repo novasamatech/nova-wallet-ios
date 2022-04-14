@@ -723,3 +723,5 @@
 "dapp.remove.favorites.title" = "Remove from Favorites?";
 "dapp.remove.favorites.message" = "\"%@\" will be removed from Favorites";
 "common.remove" = "Remove";
+"common.title" = "Title";
+"dapp.favorite.add.title" = "Add to favorites";
