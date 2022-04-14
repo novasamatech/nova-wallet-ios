@@ -9,9 +9,9 @@ final class DAppBrowserPresenter {
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
 
-    private var favorites: [String: DAppFavorite]?
+    private(set) var favorites: [String: DAppFavorite]?
 
-    private var browserPage: DAppBrowserPage?
+    private(set) var browserPage: DAppBrowserPage?
 
     init(
         interactor: DAppBrowserInteractorInputProtocol,
