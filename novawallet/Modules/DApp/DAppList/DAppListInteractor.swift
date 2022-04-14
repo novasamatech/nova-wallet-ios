@@ -7,8 +7,8 @@ final class DAppListInteractor {
     let walletSettings: SelectedWalletSettings
     let eventCenter: EventCenterProtocol
     let dAppProvider: AnySingleValueProvider<DAppList>
-    let dappsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
-    let dappsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
+    let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
+    let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
     let phishingSyncService: ApplicationServiceProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -20,8 +20,8 @@ final class DAppListInteractor {
         eventCenter: EventCenterProtocol,
         dAppProvider: AnySingleValueProvider<DAppList>,
         phishingSyncService: ApplicationServiceProtocol,
-        dappsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
-        dappsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
+        dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
+        dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
         logger: LoggerProtocol
     ) {
@@ -29,8 +29,8 @@ final class DAppListInteractor {
         self.eventCenter = eventCenter
         self.dAppProvider = dAppProvider
         self.phishingSyncService = phishingSyncService
-        self.dappsLocalSubscriptionFactory = dappsLocalSubscriptionFactory
-        self.dappsFavoriteRepository = dappsFavoriteRepository
+        self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
+        self.dAppsFavoriteRepository = dAppsFavoriteRepository
         self.operationQueue = operationQueue
         self.logger = logger
     }
@@ -78,13 +78,13 @@ final class DAppListInteractor {
             icon: dApp.icon?.absoluteString
         )
 
-        let saveOperation = dappsFavoriteRepository.saveOperation({ [model] }, { [] })
+        let saveOperation = dAppsFavoriteRepository.saveOperation({ [model] }, { [] })
 
         operationQueue.addOperation(saveOperation)
     }
 
     func removeFromFavorites(dAppIdentifier: String) {
-        let saveOperation = dappsFavoriteRepository.saveOperation({ [] }, { [dAppIdentifier] })
+        let saveOperation = dAppsFavoriteRepository.saveOperation({ [] }, { [dAppIdentifier] })
 
         operationQueue.addOperation(saveOperation)
     }
