@@ -199,7 +199,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func numberOfCategories() -> Int {
-        categories.count + 1
+        hasFavorites ? categories.count + 2 : categories.count + 1
     }
 
     func category(at index: Int) -> String {
