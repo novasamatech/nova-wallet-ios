@@ -189,6 +189,7 @@ extension DAppListViewController: UICollectionViewDataSource {
         indexPath: IndexPath
     ) -> UICollectionViewCell {
         let view = collectionView.dequeueReusableCellWithType(DAppListLoadingView.self, for: indexPath)!
+        view.selectedLocale = selectedLocale
 
         return view
     }

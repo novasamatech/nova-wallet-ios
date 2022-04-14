@@ -1413,6 +1413,21 @@ import RobinHood
         
     }
     
+    
+    
+     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite> {
+        
+    return cuckoo_manager.call("createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createFavoriteDAppsRepository())
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountRepositoryFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1445,6 +1460,11 @@ import RobinHood
 	    func createManagedMetaAccountRepository<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(for filter: M1, sortDescriptors: M2) -> Cuckoo.ProtocolStubFunction<(NSPredicate?, [NSSortDescriptor]), AnyDataProviderRepository<ManagedMetaAccountModel>> where M1.OptionalMatchedType == NSPredicate, M2.MatchedType == [NSSortDescriptor] {
 	        let matchers: [Cuckoo.ParameterMatcher<(NSPredicate?, [NSSortDescriptor])>] = [wrap(matchable: filter) { $0.0 }, wrap(matchable: sortDescriptors) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createManagedMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<ManagedMetaAccountModel>", parameterMatchers: matchers))
+	    }
+	    
+	    func createFavoriteDAppsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DAppFavorite>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1493,6 +1513,12 @@ import RobinHood
 	        return cuckoo_manager.verify("createManagedMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<ManagedMetaAccountModel>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createFavoriteDAppsRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<DAppFavorite>> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -1520,6 +1546,10 @@ import RobinHood
     
      func createManagedMetaAccountRepository(for filter: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<ManagedMetaAccountModel>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ManagedMetaAccountModel>).self)
+    }
+    
+     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppFavorite>).self)
     }
     
 }

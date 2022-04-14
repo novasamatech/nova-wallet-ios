@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 final class DAppBrowserPresenter {
     weak var view: DAppBrowserViewProtocol?
@@ -8,7 +9,9 @@ final class DAppBrowserPresenter {
     let logger: LoggerProtocol?
     let localizationManager: LocalizationManager
 
-    private var currentHost: String?
+    private(set) var favorites: [String: DAppFavorite]?
+
+    private(set) var browserPage: DAppBrowserPage?
 
     init(
         interactor: DAppBrowserInteractorInputProtocol,
@@ -43,6 +46,16 @@ final class DAppBrowserPresenter {
 
         wireframe.present(viewModel: viewModel, style: .alert, from: view)
     }
+
+    private func provideFavoriteState() {
+        guard let favorites = favorites, let page = browserPage else {
+            return
+        }
+
+        let isFavorite = favorites[page.identifier] != nil
+
+        view?.didReceiveFavorite(flag: isFavorite)
+    }
 }
 
 extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
@@ -50,12 +63,15 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         interactor.setup()
     }
 
-    func processNew(url: URL) {
-        guard let newHost = url.host, newHost != currentHost else {
+    func process(page: DAppBrowserPage) {
+        let oldHost = browserPage?.url.host
+        browserPage = page
+
+        guard let newHost = browserPage?.url.host, newHost != oldHost else {
             return
         }
 
-        currentHost = newHost
+        provideFavoriteState()
 
         interactor.process(host: newHost)
     }
@@ -66,6 +82,27 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
 
     func activateSearch(with query: String?) {
         wireframe.presentSearch(from: view, initialQuery: query, delegate: self)
+    }
+
+    func toggleFavorite() {
+        guard let page = browserPage, let favorites = favorites else {
+            return
+        }
+
+        if let favoriteDApp = favorites[page.identifier] {
+            let name = favoriteDApp.label ?? page.title
+
+            wireframe.showFavoritesRemovalConfirmation(
+                from: view,
+                name: name,
+                locale: localizationManager.selectedLocale
+            ) { [weak self] in
+                self?.interactor.removeFromFavorites(record: favoriteDApp)
+            }
+
+        } else {
+            wireframe.presentAddToFavoriteForm(from: view, page: page)
+        }
     }
 
     func close() {
@@ -125,6 +162,12 @@ extension DAppBrowserPresenter: DAppBrowserInteractorOutputProtocol {
         logger?.warning("Did detect phishing host: \(host)")
 
         wireframe.presentPhishingDetected(from: view, delegate: self)
+    }
+
+    func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>]) {
+        favorites = changes.mergeToDict(favorites ?? [:])
+
+        provideFavoriteState()
     }
 }
 
