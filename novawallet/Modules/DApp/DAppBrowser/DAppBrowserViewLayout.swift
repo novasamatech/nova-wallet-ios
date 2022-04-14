@@ -37,8 +37,7 @@ final class DAppBrowserViewLayout: UIView {
     }()
 
     let favoriteBarButton: UIBarButtonItem = {
-        let item = UIBarButtonItem(image: R.image.iconFavButton()!, style: .plain, target: nil, action: nil)
-        item.tintColor = R.color.colorWhite()
+        let item = UIBarButtonItem(image: R.image.iconFavToolbar()!, style: .plain, target: nil, action: nil)
         return item
     }()
 
