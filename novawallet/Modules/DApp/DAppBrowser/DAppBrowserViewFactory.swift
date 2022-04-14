@@ -23,12 +23,18 @@ struct DAppBrowserViewFactory {
 
         let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier()
 
+        let favoritesRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createFavoriteDAppsRepository()
+
         let interactor = DAppBrowserInteractor(
             transports: transports,
             userQuery: userQuery,
             wallet: SelectedWalletSettings.shared.value,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+            dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+            dAppsFavoriteRepository: favoritesRepository,
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             sequentialPhishingVerifier: phishingVerifier,
             logger: logger

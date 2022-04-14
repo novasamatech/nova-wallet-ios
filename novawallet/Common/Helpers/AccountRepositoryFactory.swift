@@ -20,6 +20,8 @@ protocol AccountRepositoryFactoryProtocol {
         for filter: NSPredicate?,
         sortDescriptors: [NSSortDescriptor]
     ) -> AnyDataProviderRepository<ManagedMetaAccountModel>
+
+    func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -81,6 +83,13 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
             sortDescriptors: sortDescriptors,
             mapper: AnyCoreDataMapper(mapper)
         )
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite> {
+        let mapper = DAppFavoriteMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)
     }
