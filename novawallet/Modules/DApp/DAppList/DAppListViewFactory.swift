@@ -21,10 +21,9 @@ struct DAppListViewFactory {
 
         let logger = Logger.shared
 
-        let favoritesMapper = DAppFavoriteMapper()
-        let favoritesRepository = UserDataStorageFacade.shared.createRepository(
-            mapper: AnyCoreDataMapper(favoritesMapper)
-        )
+        let favoritesRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createFavoriteDAppsRepository()
 
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,

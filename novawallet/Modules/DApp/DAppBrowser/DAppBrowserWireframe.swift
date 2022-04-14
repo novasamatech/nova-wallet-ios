@@ -77,6 +77,13 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(phishingView.controller, animated: true, completion: nil)
     }
 
+    func presentAddToFavoriteForm(
+        from _: DAppBrowserViewProtocol?,
+        page _: DAppBrowserPage
+    ) {
+        // TODO: present add to favorite form
+    }
+
     func close(view: DAppBrowserViewProtocol?) {
         view?.controller.navigationController?.popViewController(animated: true)
     }
