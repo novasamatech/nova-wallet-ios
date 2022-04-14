@@ -36,6 +36,11 @@ final class DAppBrowserViewLayout: UIView {
         return item
     }()
 
+    let favoriteBarButton: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: R.image.iconFavToolbar()!, style: .plain, target: nil, action: nil)
+        return item
+    }()
+
     let toolbarBackgroundView: TriangularedBlurView = {
         let view = TriangularedBlurView()
         view.sideLength = 0.0
@@ -103,7 +108,9 @@ final class DAppBrowserViewLayout: UIView {
             flexibleSpace,
             goForwardBarItem,
             flexibleSpace,
-            refreshBarItem
+            refreshBarItem,
+            flexibleSpace,
+            favoriteBarButton
         ]
     }
 }
