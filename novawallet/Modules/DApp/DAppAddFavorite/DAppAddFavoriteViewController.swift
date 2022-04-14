@@ -29,13 +29,18 @@ final class DAppAddFavoriteViewController: UIViewController, ViewHolder {
         super.viewDidLoad()
 
         setupLocalization()
+        setupHandlers()
 
         presenter.setup()
     }
 
     private func setupHandlers() {
+        navigationItem.rightBarButtonItem = rootView.saveButton
         rootView.saveButton.target = self
         rootView.saveButton.action = #selector(actionSave)
+
+        rootView.titleInputView.addTarget(self, action: #selector(actionFieldChange), for: .editingChanged)
+        rootView.addressInputView.addTarget(self, action: #selector(actionFieldChange), for: .editingChanged)
     }
 
     private func setupLocalization() {
@@ -58,6 +63,10 @@ final class DAppAddFavoriteViewController: UIViewController, ViewHolder {
         }
     }
 
+    @objc private func actionFieldChange() {
+        updateSaveButton()
+    }
+
     @objc private func actionSave() {
         presenter.save()
     }
@@ -70,26 +79,18 @@ extension DAppAddFavoriteViewController: DAppAddFavoriteViewProtocol {
     }
 
     func didReceive(titleViewModel: InputViewModelProtocol) {
-        self.titleViewModel?.inputHandler.removeObserver(self)
         self.titleViewModel = titleViewModel
 
-        titleViewModel.inputHandler.addObserver(self)
+        rootView.titleInputView.bind(inputViewModel: titleViewModel)
 
         updateSaveButton()
     }
 
     func didReceive(addressViewModel: InputViewModelProtocol) {
-        self.addressViewModel?.inputHandler.removeObserver(self)
         self.addressViewModel = addressViewModel
 
-        addressViewModel.inputHandler.addObserver(self)
+        rootView.addressInputView.bind(inputViewModel: addressViewModel)
 
-        updateSaveButton()
-    }
-}
-
-extension DAppAddFavoriteViewController: InputHandlingObserver {
-    func didChangeInputValue(_ handler: InputHandling, from oldValue: String) {
         updateSaveButton()
     }
 }
