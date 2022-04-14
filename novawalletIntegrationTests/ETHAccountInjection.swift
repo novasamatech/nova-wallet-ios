@@ -8,8 +8,8 @@ class ETHAccountInjectionTest: XCTestCase {
         ///For inject account in simulator or device you should do:
         ///1. Find account that you want to add which operation in ETH chain
         ///2. Run script: https://github.com/stepanLav/helpful-utils/blob/master/derive_eth_publick_key_from_transaction.py
-        ///3. Replace ethAddress,ethPublicKey by getting values from script above. And set name
-        ///4. Change acces in UserDataStorageFacade for init() to public
+        ///3. Replace ethAddress,ethPublicKey with the values from the script above. And set the name.
+        ///4. Change the access in UserDataStorageFacade for init() to public
         ///5. Run test
 
 
