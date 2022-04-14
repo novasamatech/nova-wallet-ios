@@ -40,8 +40,9 @@ final class DAppAddFavoriteInteractor {
     }
 
     private func handleResultAndMatchModel(_ result: DAppList) {
-        let dApps = result.dApps.compactMap { dApp in
-            dApp.url.baseURL == browserPage.url.baseURL ? dApp : nil
+        let dApps: [DApp] = result.dApps.compactMap { dApp in
+            let hasMatch = dApp.url.host == browserPage.url.host && dApp.url.scheme == browserPage.url.scheme
+            return hasMatch ? dApp : nil
         }
 
         if dApps.count == 1, let dApp = dApps.first {
