@@ -81,7 +81,7 @@ final class DAppListViewModelFactory {
         let knownIdentifiers = Set(dapps.map(\.dapp.identifier))
 
         let knownViewModels: [DAppViewModel] = dapps.map { indexedDapp in
-            let favorite = allFavorites[indexedDapp.dapp.identifier] != nil ? true : false
+            let favorite = allFavorites[indexedDapp.dapp.identifier] != nil
             return createDAppViewModel(
                 from: indexedDapp.dapp,
                 index: indexedDapp.index,
