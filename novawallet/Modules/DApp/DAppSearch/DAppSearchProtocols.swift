@@ -19,6 +19,7 @@ protocol DAppSearchInteractorInputProtocol: AnyObject {
 
 protocol DAppSearchInteractorOutputProtocol: AnyObject {
     func didReceive(dAppsResult: Result<DAppList?, Error>)
+    func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
 }
 
 protocol DAppSearchWireframeProtocol: AnyObject {

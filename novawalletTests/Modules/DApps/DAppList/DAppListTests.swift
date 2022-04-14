@@ -48,8 +48,8 @@ class DAppListTests: XCTestCase {
             eventCenter: EventCenter.shared,
             dAppProvider: AnySingleValueProvider(dAppProvider),
             phishingSyncService: phishingSyncService,
-            dappsLocalSubscriptionFactory: dappLocalProviderFactory,
-            dappsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
+            dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
+            dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
             operationQueue: operationQueue,
             logger: Logger.shared
         )

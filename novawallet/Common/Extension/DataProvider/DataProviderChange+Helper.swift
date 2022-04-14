@@ -25,4 +25,17 @@ extension Array {
             }
         }
     }
+
+    func mergeToDict<T: Identifiable>(
+        _ dict: [String: T]
+    ) -> [String: T] where Element == DataProviderChange<T> {
+        reduce(into: dict) { result, change in
+            switch change {
+            case let .insert(newItem), let .update(newItem):
+                result[newItem.identifier] = newItem
+            case let .delete(deletedIdentifier):
+                result[deletedIdentifier] = nil
+            }
+        }
+    }
 }

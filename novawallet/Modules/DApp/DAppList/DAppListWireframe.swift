@@ -17,6 +17,8 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         }
 
         let navigationController = FearlessNavigationController(rootViewController: searchView.controller)
+        navigationController.barSettings = NavigationBarSettings.defaultSettings.bySettingCloseButton(false)
+
         navigationController.modalTransitionStyle = .crossDissolve
         navigationController.modalPresentationStyle = .fullScreen
         view?.controller.present(navigationController, animated: true, completion: nil)
