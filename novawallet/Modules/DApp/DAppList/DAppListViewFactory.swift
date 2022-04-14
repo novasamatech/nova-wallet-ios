@@ -21,12 +21,6 @@ struct DAppListViewFactory {
 
         let logger = Logger.shared
 
-        let favoritesFactory = DAppLocalSubscriptionFactory(
-            storageFacade: UserDataStorageFacade.shared,
-            operationQueue: sharedQueue,
-            logger: logger
-        )
-
         let favoritesMapper = DAppFavoriteMapper()
         let favoritesRepository = UserDataStorageFacade.shared.createRepository(
             mapper: AnyCoreDataMapper(favoritesMapper)
@@ -37,8 +31,8 @@ struct DAppListViewFactory {
             eventCenter: EventCenter.shared,
             dAppProvider: dAppProvider,
             phishingSyncService: phishingSyncService,
-            dappsLocalSubscriptionFactory: favoritesFactory,
-            dappsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
+            dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+            dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
             operationQueue: sharedQueue,
             logger: logger
         )

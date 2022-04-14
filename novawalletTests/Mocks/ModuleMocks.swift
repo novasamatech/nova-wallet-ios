@@ -18850,6 +18850,21 @@ import RobinHood
         
     }
     
+    
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])  {
+        
+    return cuckoo_manager.call("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavorite(changes: changes))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppSearchInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -18862,6 +18877,11 @@ import RobinHood
 	    func didReceive<M1: Cuckoo.Matchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList?, Error>)> where M1.MatchedType == Result<DAppList?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList?, Error>)>] = [wrap(matchable: dAppsResult) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorOutputProtocol.self, method: "didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -18886,6 +18906,12 @@ import RobinHood
 	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<DAppFavorite>]), Void> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -18896,6 +18922,10 @@ import RobinHood
 
     
      func didReceive(dAppsResult: Result<DAppList?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

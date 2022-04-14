@@ -2,7 +2,7 @@ import Foundation
 import RobinHood
 
 protocol DAppLocalStorageSubscriber: AnyObject {
-    var dappsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol { get }
+    var dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol { get }
 
     var dappsLocalSubscriptionHandler: DAppLocalSubscriptionHandler { get }
 
@@ -15,7 +15,7 @@ extension DAppLocalStorageSubscriber {
     func subscribeToFavoriteDApps(
         _ identifier: String?
     ) -> StreamableProvider<DAppFavorite> {
-        let provider = dappsLocalSubscriptionFactory.getFavoritesProvider(identifier)
+        let provider = dAppsLocalSubscriptionFactory.getFavoritesProvider(identifier)
 
         let updateClosure = {
             [weak self] (changes: [DataProviderChange<DAppFavorite>]) in
