@@ -77,11 +77,13 @@ final class DAppBrowserWireframe: DAppBrowserWireframeProtocol {
         view?.controller.present(phishingView.controller, animated: true, completion: nil)
     }
 
-    func presentAddToFavoriteForm(
-        from _: DAppBrowserViewProtocol?,
-        page _: DAppBrowserPage
-    ) {
-        // TODO: present add to favorite form
+    func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage) {
+        guard let addFavoriteView = DAppAddFavoriteViewFactory.createView(for: page) else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: addFavoriteView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func close(view: DAppBrowserViewProtocol?) {
