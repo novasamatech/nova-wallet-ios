@@ -85,12 +85,12 @@ extension DAppAddFavoritePresenter: DAppAddFavoriteInteractorOutputProtocol {
     }
 
     func didCompleteSaveWithResult(_ result: Result<Void, Error>) {
+        let locale = localizationManager.selectedLocale
+
         switch result {
         case .success:
-            wireframe.close(view: view)
+            wireframe.complete(view: view, locale: locale)
         case let .failure(error):
-            let locale = localizationManager.selectedLocale
-
             if !wireframe.present(error: error, from: view, locale: locale) {
                 _ = wireframe.present(error: CommonError.undefined, from: view, locale: locale)
             }

@@ -22,5 +22,5 @@ protocol DAppAddFavoriteInteractorOutputProtocol: AnyObject {
 }
 
 protocol DAppAddFavoriteWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func close(view: DAppAddFavoriteViewProtocol?)
+    func complete(view: DAppAddFavoriteViewProtocol?, locale: Locale)
 }

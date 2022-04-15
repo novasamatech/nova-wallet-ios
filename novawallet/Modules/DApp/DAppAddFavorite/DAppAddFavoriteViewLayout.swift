@@ -64,6 +64,7 @@ final class DAppAddFavoriteViewLayout: UIView {
     let addressInputView: TextInputField = {
         let view = TextInputField()
         view.textField.keyboardType = .URL
+        view.textField.autocorrectionType = .no
         return view
     }()
 
