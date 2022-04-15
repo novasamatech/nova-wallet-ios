@@ -67,11 +67,11 @@ extension DAppBrowserPresenter: DAppBrowserPresenterProtocol {
         let oldHost = browserPage?.url.host
         browserPage = page
 
+        provideFavoriteState()
+
         guard let newHost = browserPage?.url.host, newHost != oldHost else {
             return
         }
-
-        provideFavoriteState()
 
         interactor.process(host: newHost)
     }
