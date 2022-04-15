@@ -49,7 +49,10 @@ final class DAppAddFavoriteViewLayout: UIView {
         return label
     }()
 
-    let titleInputView = TextInputField()
+    let titleInputView: TextInputField = {
+        let view = TextInputField()
+        return view
+    }()
 
     let addressLabel: UILabel = {
         let label = UILabel()
@@ -58,7 +61,11 @@ final class DAppAddFavoriteViewLayout: UIView {
         return label
     }()
 
-    let addressInputView = TextInputField()
+    let addressInputView: TextInputField = {
+        let view = TextInputField()
+        view.textField.keyboardType = .URL
+        return view
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)

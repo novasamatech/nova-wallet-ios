@@ -8,7 +8,7 @@ class TextInputField: BackgroundedContentControl {
         textField.font = .regularSubheadline
         textField.textColor = R.color.colorWhite()
         textField.tintColor = R.color.colorWhite()
-        textField.textAlignment = .left
+        textField.returnKeyType = .done
 
         return textField
     }()
@@ -145,6 +145,14 @@ class TextInputField: BackgroundedContentControl {
         }
     }
 
+    private func updateTextFieldState() {
+        if textField.isFirstResponder {
+            roundedBackgroundView?.strokeWidth = 0.5
+        } else {
+            roundedBackgroundView?.strokeWidth = 0.0
+        }
+    }
+
     // MARK: Action
 
     @objc private func actionEditingChanged() {
@@ -158,15 +166,16 @@ class TextInputField: BackgroundedContentControl {
     }
 
     @objc private func actionEditingDidBeginEnd() {
-        if textField.isFirstResponder {
-            roundedBackgroundView?.strokeWidth = 0.5
-        } else {
-            roundedBackgroundView?.strokeWidth = 0.0
-        }
+        updateTextFieldState()
     }
 }
 
 extension TextInputField: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
+    }
+
     func textField(
         _: UITextField,
         shouldChangeCharactersIn range: NSRange,
