@@ -55,7 +55,7 @@ final class DAppAddFavoriteInteractor {
     private func provideProposedModelWithMatchedDApp(_ dApp: DApp?) {
         let proposedModel = DAppFavorite(
             identifier: browserPage.identifier,
-            label: browserPage.title,
+            label: dApp?.name ?? browserPage.title,
             icon: dApp?.icon?.absoluteString
         )
 
