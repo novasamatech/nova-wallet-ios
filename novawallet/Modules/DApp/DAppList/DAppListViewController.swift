@@ -102,9 +102,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
         presenter.refresh()
     }
 
-    @objc func actionSettings() {
-        
-    }
+    @objc func actionSettings() {}
 }
 
 extension DAppListViewController: UICollectionViewDelegate {
