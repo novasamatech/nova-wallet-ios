@@ -22,6 +22,8 @@ protocol AccountRepositoryFactoryProtocol {
     ) -> AnyDataProviderRepository<ManagedMetaAccountModel>
 
     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>
+
+    func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>
 }
 
 extension AccountRepositoryFactoryProtocol {
@@ -89,6 +91,13 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
 
     func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite> {
         let mapper = DAppFavoriteMapper()
+        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createAuthorizedDAppsRepository(for _: String) -> AnyDataProviderRepository<DAppSettings> {
+        let mapper = DAppSettingsMapper()
         let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
 
         return AnyDataProviderRepository(repository)

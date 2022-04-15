@@ -11,15 +11,20 @@ final class DAppBrowserAuthorizingState: DAppBrowserBaseState {
     }
 
     func saveAuthAndComplete(_ approved: Bool, identifier: String, dataSource: DAppBrowserStateDataSource) {
+        guard approved else {
+            complete(false)
+            return
+        }
+
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
-            let newSettings = DAppSettings(identifier: identifier, allowed: approved)
+            let newSettings = DAppSettings(identifier: identifier, metaId: dataSource.wallet.metaId)
 
             return [newSettings]
         }, { [] })
 
         saveOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                self?.complete(approved)
+                self?.complete(true)
             }
         }
 
