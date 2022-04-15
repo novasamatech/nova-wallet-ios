@@ -198,6 +198,10 @@ extension DAppListPresenter: DAppListPresenterProtocol {
         wireframe.showSearch(from: view, delegate: self)
     }
 
+    func activateSettings() {
+        wireframe.showSetting(from: view)
+    }
+
     func numberOfCategories() -> Int {
         hasFavorites ? categories.count + 2 : categories.count + 1
     }
