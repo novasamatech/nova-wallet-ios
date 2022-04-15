@@ -33,7 +33,5 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
     }
 
-    func showSetting(from view: DAppListViewProtocol?) {
-        
-    }
+    func showSetting(from _: DAppListViewProtocol?) {}
 }
