@@ -22,8 +22,13 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
         host: String,
         dataSource: DAppBrowserStateDataSource
     ) {
+        guard approved else {
+            complete(false, dataSource: dataSource)
+            return
+        }
+
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
-            let newSettings = DAppSettings(identifier: host, allowed: approved)
+            let newSettings = DAppSettings(identifier: host, metaId: dataSource.wallet.metaId)
 
             return [newSettings]
         }, { [] })
