@@ -723,3 +723,6 @@
 "dapp.remove.favorites.title" = "Удалить из Избранного?";
 "dapp.remove.favorites.message" = "\"%@\" будет удален из Избранного";
 "common.remove" = "Удалить";
+"common.title" = "Название";
+"dapp.favorite.add.title" = "Добавить в Избранные";
+"common.saved" = "Сохранено";
