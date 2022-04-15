@@ -16,6 +16,8 @@ final class DAppAddFavoriteViewController: UIViewController, ViewHolder {
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
+
+        isModalInPresentation = true
     }
 
     @available(*, unavailable)

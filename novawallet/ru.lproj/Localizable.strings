@@ -725,3 +725,4 @@
 "common.remove" = "Удалить";
 "common.title" = "Название";
 "dapp.favorite.add.title" = "Добавить в Избранные";
+"common.saved" = "Сохранено";
