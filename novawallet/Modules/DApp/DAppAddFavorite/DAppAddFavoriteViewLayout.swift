@@ -23,6 +23,15 @@ final class DAppAddFavoriteViewLayout: UIView {
     let saveButton: UIBarButtonItem = {
         let button = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         button.tintColor = R.color.colorNovaBlue()!
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.regularBody
+        ]
+
+        button.setTitleTextAttributes(attributes, for: .normal)
+        button.setTitleTextAttributes(attributes, for: .highlighted)
+        button.setTitleTextAttributes(attributes, for: .disabled)
+
         return button
     }()
 
