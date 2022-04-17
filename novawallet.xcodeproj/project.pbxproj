@@ -866,6 +866,9 @@
 		84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B01273301C800E1E4DD /* RemoteChainModel.swift */; };
 		84800B042733024600E1E4DD /* RemoteChainNodeModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */; };
 		84821E84275F93C700ADC8D2 /* TitleMultiValueView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */; };
+		8482F625280C45340006C3A0 /* DisplayWalletViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F624280C45340006C3A0 /* DisplayWalletViewModel.swift */; };
+		8482F628280C49940006C3A0 /* DAppsAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F627280C49940006C3A0 /* DAppsAuthViewModelFactory.swift */; };
+		8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */; };
 		8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */; };
 		84873AFF26028E2B000A83EE /* StakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873AFE26028E2B000A83EE /* StakingStateMachine.swift */; };
 		84873B0426029B75000A83EE /* StakingEstimationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */; };
@@ -2958,6 +2961,9 @@
 		84800B01273301C800E1E4DD /* RemoteChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainModel.swift; sourceTree = "<group>"; };
 		84800B032733024600E1E4DD /* RemoteChainNodeModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteChainNodeModel.swift; sourceTree = "<group>"; };
 		84821E83275F93C700ADC8D2 /* TitleMultiValueView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TitleMultiValueView+Style.swift"; sourceTree = "<group>"; };
+		8482F624280C45340006C3A0 /* DisplayWalletViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayWalletViewModel.swift; sourceTree = "<group>"; };
+		8482F627280C49940006C3A0 /* DAppsAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppsAuthViewModelFactory.swift; sourceTree = "<group>"; };
+		8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsViewModel.swift; sourceTree = "<group>"; };
 		8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserScriptHandler.swift; sourceTree = "<group>"; };
 		84873AFE26028E2B000A83EE /* StakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachine.swift; sourceTree = "<group>"; };
 		84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEstimationViewModel.swift; sourceTree = "<group>"; };
@@ -4442,6 +4448,7 @@
 		17C8516C4BEF61B6DE078C60 /* DAppAuthSettings */ = {
 			isa = PBXGroup;
 			children = (
+				8482F626280C497A0006C3A0 /* ViewModel */,
 				8EE72F2B6612508D4783A507 /* DAppAuthSettingsProtocols.swift */,
 				24B23BAD22C87DA5F324B44F /* DAppAuthSettingsWireframe.swift */,
 				B213C270130EDCF51303BFBE /* DAppAuthSettingsPresenter.swift */,
@@ -6498,6 +6505,15 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		8482F626280C497A0006C3A0 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				8482F627280C49940006C3A0 /* DAppsAuthViewModelFactory.swift */,
+				8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		8487582227F06AF300495306 /* QRScanner */ = {
 			isa = PBXGroup;
 			children = (
@@ -7362,6 +7378,7 @@
 				84D1ABDD27E1B5240073C631 /* AssetViewModel.swift */,
 				84E25BE327E5F71900290BF1 /* AccountFieldStateViewModel.swift */,
 				84E25BE527E750D500290BF1 /* AccountInputViewModel+Handler.swift */,
+				8482F624280C45340006C3A0 /* DisplayWalletViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -10737,6 +10754,7 @@
 				849DEBD425ED015C00C64C19 /* SelectValidatorsConfirmViewModel.swift in Sources */,
 				84CD82B8263C3249001A6F01 /* SubstrateProviderSubscriber+Default.swift in Sources */,
 				845BB8B825E4465F00E5FCDC /* ExtrinsicService.swift in Sources */,
+				8482F625280C45340006C3A0 /* DisplayWalletViewModel.swift in Sources */,
 				F4F65C2E26D8B7F7002EE838 /* FWXAxisChartLegendView.swift in Sources */,
 				F47BBD8B263189DB0087DA11 /* StakingBalanceAction.swift in Sources */,
 				F4F2297C260DC05600ACFDB8 /* StakingRewardTokenUsdViewModel.swift in Sources */,
@@ -11124,6 +11142,7 @@
 				840882B02514024800177E20 /* SelectedConnectionChanged.swift in Sources */,
 				84FD3DB72540EF0700A234E3 /* TransactionSubscription.swift in Sources */,
 				2AD0A16A25D3854700312428 /* TransferConfirmCommandProxy.swift in Sources */,
+				8482F628280C49940006C3A0 /* DAppsAuthViewModelFactory.swift in Sources */,
 				84C3F7832602086100D47501 /* StakingViewState.swift in Sources */,
 				F46F9F902733E02B00FFA556 /* MoonbeamKeys.swift in Sources */,
 				849014DC24AA8F60008F705E /* MainTabBarPresenter.swift in Sources */,
@@ -12238,6 +12257,7 @@
 				846F758727B5550700536547 /* EthereumRpcRequest.swift in Sources */,
 				278F5341DC043EBED7C0733D /* CrowdloanListViewFactory.swift in Sources */,
 				7CBE9FFAF8394786CA131D4D /* CustomValidatorListProtocols.swift in Sources */,
+				8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */,
 				B51AD1836313CE26F369ED3F /* CustomValidatorListWireframe.swift in Sources */,
 				D565DB5ED3B8B4D9BCFB4C21 /* CustomValidatorListPresenter.swift in Sources */,
 				8AEF593AFE8F59F7DC0A5753 /* CustomValidatorListInteractor.swift in Sources */,

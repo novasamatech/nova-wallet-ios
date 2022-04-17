@@ -61,7 +61,7 @@ extension DAppAuthSettingsInteractor: DAppAuthSettingsInteractorInputProtocol {
 }
 
 extension DAppAuthSettingsInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
-    func handleAuthorizedDApps(result: Result<[DataProviderChange<DAppSettings>], Error>, for metaId: String) {
+    func handleAuthorizedDApps(result: Result<[DataProviderChange<DAppSettings>], Error>, for _: String) {
         switch result {
         case let .success(changes):
             presenter?.didReceiveAuthorizationSettings(changes: changes)

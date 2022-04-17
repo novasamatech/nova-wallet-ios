@@ -12,7 +12,7 @@ extension DAppLocalSubscriptionHandler {
     ) {}
 
     func handleAuthorizedDApps(
-        result: Result<[DataProviderChange<DAppSettings>], Error>,
-        for metaId: String
+        result _: Result<[DataProviderChange<DAppSettings>], Error>,
+        for _: String
     ) {}
 }
