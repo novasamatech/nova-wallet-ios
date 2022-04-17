@@ -1,9 +1,14 @@
 import RobinHood
+import CommonWallet
 
-protocol DAppAuthSettingsViewProtocol: AnyObject {}
+protocol DAppAuthSettingsViewProtocol: ControllerBackedProtocol {
+    func didReceiveWallet(viewModel: DisplayWalletViewModel)
+    func didReceiveAuthorized(viewModels: [DAppAuthSettingsViewModel])
+}
 
 protocol DAppAuthSettingsPresenterProtocol: AnyObject {
     func setup()
+    func remove(viewModel: DAppAuthSettingsViewModel)
 }
 
 protocol DAppAuthSettingsInteractorInputProtocol: AnyObject {
@@ -17,4 +22,4 @@ protocol DAppAuthSettingsInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol DAppAuthSettingsWireframeProtocol: AnyObject {}
+protocol DAppAuthSettingsWireframeProtocol: ErrorPresentable, DAppAlertPresentable {}
