@@ -869,6 +869,8 @@
 		8482F625280C45340006C3A0 /* DisplayWalletViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F624280C45340006C3A0 /* DisplayWalletViewModel.swift */; };
 		8482F628280C49940006C3A0 /* DAppsAuthViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F627280C49940006C3A0 /* DAppsAuthViewModelFactory.swift */; };
 		8482F62A280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */; };
+		8482F62D280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F62C280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift */; };
+		8482F62F280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8482F62E280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift */; };
 		8485D924277E16C400767243 /* DAppBrowserScriptHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */; };
 		84873AFF26028E2B000A83EE /* StakingStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873AFE26028E2B000A83EE /* StakingStateMachine.swift */; };
 		84873B0426029B75000A83EE /* StakingEstimationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */; };
@@ -2964,6 +2966,8 @@
 		8482F624280C45340006C3A0 /* DisplayWalletViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayWalletViewModel.swift; sourceTree = "<group>"; };
 		8482F627280C49940006C3A0 /* DAppsAuthViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppsAuthViewModelFactory.swift; sourceTree = "<group>"; };
 		8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsViewModel.swift; sourceTree = "<group>"; };
+		8482F62C280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppsAuthSettingsWalletCell.swift; sourceTree = "<group>"; };
+		8482F62E280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppAuthSettingsTableCell.swift; sourceTree = "<group>"; };
 		8485D923277E16C400767243 /* DAppBrowserScriptHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserScriptHandler.swift; sourceTree = "<group>"; };
 		84873AFE26028E2B000A83EE /* StakingStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachine.swift; sourceTree = "<group>"; };
 		84873B0326029B75000A83EE /* StakingEstimationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingEstimationViewModel.swift; sourceTree = "<group>"; };
@@ -4448,6 +4452,7 @@
 		17C8516C4BEF61B6DE078C60 /* DAppAuthSettings */ = {
 			isa = PBXGroup;
 			children = (
+				8482F62B280C5AA10006C3A0 /* View */,
 				8482F626280C497A0006C3A0 /* ViewModel */,
 				8EE72F2B6612508D4783A507 /* DAppAuthSettingsProtocols.swift */,
 				24B23BAD22C87DA5F324B44F /* DAppAuthSettingsWireframe.swift */,
@@ -6512,6 +6517,15 @@
 				8482F629280C4B770006C3A0 /* DAppAuthSettingsViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		8482F62B280C5AA10006C3A0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8482F62C280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift */,
+				8482F62E280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		8487582227F06AF300495306 /* QRScanner */ = {
@@ -11317,6 +11331,7 @@
 				AE398384272AF97500BC8A85 /* WalletTableViewCell.swift in Sources */,
 				84DF21A125347031005454AE /* DetailsDisplayTableViewCell.swift in Sources */,
 				F43A8A95265B9CF400A8A5A8 /* CustomValidatorCell.swift in Sources */,
+				8482F62F280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift in Sources */,
 				84FB1F672526920B00E0242B /* SubscanTransferData.swift in Sources */,
 				846E5013277999FC0049B659 /* DAppAuthViewModel.swift in Sources */,
 				84FB298426393D0900BE0FCD /* YourValidatorListViewModelFactory.swift in Sources */,
@@ -12005,6 +12020,7 @@
 				848FFE9A25E6E0E400652AA5 /* ValidatorExposure.swift in Sources */,
 				F40D0AED260CCDE600CBD43B /* RewardDetailsRow.swift in Sources */,
 				8498430926592E5D006BBB9F /* CrowdloansViewModel.swift in Sources */,
+				8482F62D280C5B040006C3A0 /* DAppsAuthSettingsWalletCell.swift in Sources */,
 				5DDD2206DF795CF205610455 /* AccountExportPasswordPresenter.swift in Sources */,
 				800FCAF66DC8A24020D16A9C /* AccountExportPasswordInteractor.swift in Sources */,
 				7C93FA82996A426E7B8CA06E /* AccountExportPasswordViewController.swift in Sources */,
