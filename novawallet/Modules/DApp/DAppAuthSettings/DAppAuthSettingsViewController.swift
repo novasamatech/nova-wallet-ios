@@ -68,6 +68,12 @@ extension DAppAuthSettingsViewController: UITableViewDataSource {
             forIndexPath: indexPath
         )
 
+        cell.locale = selectedLocale
+
+        if let viewModel = walletViewModel {
+            cell.bind(viewModel: viewModel)
+        }
+
         return cell
     }
 
@@ -81,10 +87,14 @@ extension DAppAuthSettingsViewController: UITableViewDataSource {
             forIndexPath: indexPath
         )
 
+        cell.delegate = self
+
+        cell.bind(viewModel: viewModel)
+
         return cell
     }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         (authorizedViewModels?.count ?? 0) + 1
     }
 
@@ -104,15 +114,28 @@ extension DAppAuthSettingsViewController: UITableViewDataSource {
 
 extension DAppAuthSettingsViewController: DAppAuthSettingsViewProtocol {
     func didReceiveWallet(viewModel: DisplayWalletViewModel) {
-        self.walletViewModel = viewModel
+        walletViewModel = viewModel
 
         rootView.tableView.reloadData()
     }
 
     func didReceiveAuthorized(viewModels: [DAppAuthSettingsViewModel]) {
-        self.authorizedViewModels = viewModels
+        authorizedViewModels = viewModels
 
         rootView.tableView.reloadData()
+    }
+}
+
+extension DAppAuthSettingsViewController: DAppAuthSettingsTableCellDelegate {
+    func authSettingsDidSelectCell(_ cell: DAppAuthSettingsTableCell) {
+        guard
+            let indexPath = rootView.tableView.indexPath(for: cell),
+            case let .authorized(index) = Row(indexPath: indexPath),
+            let viewModel = authorizedViewModels?[index] else {
+            return
+        }
+
+        presenter.remove(viewModel: viewModel)
     }
 }
 
