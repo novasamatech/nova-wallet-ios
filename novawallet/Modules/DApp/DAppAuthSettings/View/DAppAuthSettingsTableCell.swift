@@ -6,7 +6,7 @@ protocol DAppAuthSettingsTableCellDelegate: AnyObject {
 }
 
 final class DAppAuthSettingsTableCell: UITableViewCell {
-    private struct Constants {
+    private enum Constants {
         static let imageSize = CGSize(width: 48.0, height: 48.0)
         static let imageInsets = UIEdgeInsets(top: 6.0, left: 6.0, bottom: 6.0, right: 6.0)
         static var imageDisplaySize: CGSize {
@@ -17,7 +17,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
         }
     }
 
-    let iconView: DAppIconView = DAppIconView()
+    let iconView = DAppIconView()
 
     weak var delegate: DAppAuthSettingsTableCellDelegate?
 
@@ -49,12 +49,15 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
         setupLayout()
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     func bind(viewModel: DAppAuthSettingsViewModel) {
-        iconView.bind(viewModel: viewModel.iconViewModel, size: <#T##CGSize#>)
+        iconView.bind(viewModel: viewModel.iconViewModel, size: Constants.imageDisplaySize)
+
+        multiValueView.bind(topValue: viewModel.title, bottomValue: viewModel.subtitle)
     }
 
     private func setupHandlers() {

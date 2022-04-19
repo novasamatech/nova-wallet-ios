@@ -727,3 +727,4 @@
 "dapp.favorite.add.title" = "Add to favorites";
 "common.saved" = "Saved";
 "dapp.authorized.title" = "Authorized websites";
+"dapp.authorized.info" = "Websites to which you allowed access to see your address when you use them";

@@ -12,6 +12,14 @@ final class DAppsAuthSettingsWalletCell: UITableViewCell {
 
     let walletView = StackTableCell()
 
+    var locale = Locale.current {
+        didSet {
+            if oldValue != locale {
+                setupLocalization()
+            }
+        }
+    }
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -20,8 +28,23 @@ final class DAppsAuthSettingsWalletCell: UITableViewCell {
         setupLayout()
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bind(viewModel: DisplayWalletViewModel) {
+        walletView.bind(viewModel: viewModel.cellViewModel)
+    }
+
+    private func setupLocalization() {
+        infoLabel.text = R.string.localizable.dappAuthorizedInfo(
+            preferredLanguages: locale.rLanguages
+        )
+
+        walletView.titleLabel.text = R.string.localizable.commonWallet(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func setupLayout() {
