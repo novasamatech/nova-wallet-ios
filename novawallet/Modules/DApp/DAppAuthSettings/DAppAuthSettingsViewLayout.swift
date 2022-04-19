@@ -5,6 +5,7 @@ final class DAppAuthSettingsViewLayout: UIView {
         let view = UITableView()
         view.backgroundColor = .clear
         view.allowsSelection = false
+        view.separatorStyle = .none
         return view
     }()
 
