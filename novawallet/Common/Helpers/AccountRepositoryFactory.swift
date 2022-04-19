@@ -96,9 +96,14 @@ final class AccountRepositoryFactory: AccountRepositoryFactoryProtocol {
         return AnyDataProviderRepository(repository)
     }
 
-    func createAuthorizedDAppsRepository(for _: String) -> AnyDataProviderRepository<DAppSettings> {
+    func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings> {
         let mapper = DAppSettingsMapper()
-        let repository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+        let filter = NSPredicate.filterAuthorizedDApps(by: metaId)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
 
         return AnyDataProviderRepository(repository)
     }

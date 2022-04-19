@@ -13,7 +13,9 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
         dAppsList: DAppList?
     ) -> [DAppAuthSettingsViewModel] {
         let dAppsStore: [String: DApp] = dAppsList?.dApps.reduce(into: [String: DApp]()) { result, dApp in
-            result[dApp.url.absoluteString] = dApp
+            if let host = dApp.url.host {
+                result[host] = dApp
+            }
         } ?? [:]
 
         return authorizationStore.keys.map { dAppId in

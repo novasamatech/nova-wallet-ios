@@ -17,17 +17,23 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
         }
     }
 
-    let iconView = DAppIconView()
+    let iconView: DAppIconView = {
+        let view = DAppIconView()
+        view.contentInsets = Constants.imageInsets
+        return view
+    }()
 
     weak var delegate: DAppAuthSettingsTableCellDelegate?
 
     let multiValueView: MultiValueView = {
         let view = MultiValueView()
+        view.valueTop.textAlignment = .left
         view.valueTop.font = .regularSubheadline
         view.valueTop.textColor = R.color.colorWhite()!
+        view.valueBottom.textAlignment = .left
         view.valueBottom.font = .regularFootnote
         view.valueBottom.textColor = R.color.colorTransparentText()!
-        view.spacing = 2.0
+        view.spacing = 0.0
         return view
     }()
 
@@ -85,7 +91,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
 
         contentView.addSubview(multiValueView)
         multiValueView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(10.0)
+            make.top.bottom.equalToSuperview().inset(8.0)
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.trailing.equalTo(removeButton.snp.leading)
         }

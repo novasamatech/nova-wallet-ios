@@ -10,7 +10,12 @@ final class DAppsAuthSettingsWalletCell: UITableViewCell {
         return label
     }()
 
-    let walletView = StackTableCell()
+    let walletView: StackTableCell = {
+        let view = StackTableCell()
+        view.borderView.borderType = []
+        view.contentInsets = .zero
+        return view
+    }()
 
     var locale = Locale.current {
         didSet {
@@ -57,7 +62,7 @@ final class DAppsAuthSettingsWalletCell: UITableViewCell {
         contentView.addSubview(walletView)
         walletView.snp.makeConstraints { make in
             make.top.equalTo(infoLabel.snp.bottom).offset(8.0)
-            make.leading.trailing.equalTo(16.0)
+            make.leading.trailing.equalToSuperview().inset(16.0)
             make.height.equalTo(44.0)
             make.bottom.equalToSuperview()
         }
