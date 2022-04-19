@@ -728,3 +728,5 @@
 "common.saved" = "Сохранено";
 "dapp.authorized.title" = "Авторизованные сайты";
 "dapp.authorized.info" = "Сайты для которых вы разрешили доступ к вашим адресам";
+"dapp.remove.authorized.title" = "Удалить из Авторизованных?";
+"dapp.remove.authorized.message" = "\"%@\" будет удален из Авторизованных";
