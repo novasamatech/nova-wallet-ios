@@ -72,6 +72,10 @@ extension DAppAuthSettingsPresenter: DAppAuthSettingsPresenterProtocol {
 
 extension DAppAuthSettingsPresenter: DAppAuthSettingsInteractorOutputProtocol {
     func didReceiveDAppList(_ list: DAppList?) {
+        guard list != nil else {
+            return
+        }
+
         dAppsList = list
 
         provideAuthSettings()
