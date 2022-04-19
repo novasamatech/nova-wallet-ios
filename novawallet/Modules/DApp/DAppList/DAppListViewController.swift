@@ -102,7 +102,9 @@ final class DAppListViewController: UIViewController, ViewHolder {
         presenter.refresh()
     }
 
-    @objc func actionSettings() {}
+    @objc func actionSettings() {
+        presenter.activateSettings()
+    }
 }
 
 extension DAppListViewController: UICollectionViewDelegate {
@@ -182,6 +184,8 @@ extension DAppListViewController: UICollectionViewDataSource {
     ) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithType(DAppListFeaturedHeaderView.self, for: indexPath)!
         cell.locale = selectedLocale
+
+        cell.actionButton.addTarget(self, action: #selector(actionSettings), for: .touchUpInside)
 
         return cell
     }
