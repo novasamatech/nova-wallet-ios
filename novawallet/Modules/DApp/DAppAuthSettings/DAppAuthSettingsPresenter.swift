@@ -66,7 +66,15 @@ extension DAppAuthSettingsPresenter: DAppAuthSettingsPresenterProtocol {
             return
         }
 
-        interactor.remove(auth: dAppSettings)
+        let locale = localizationManager.selectedLocale
+
+        wireframe.showAuthorizedRemovalConfirmation(
+            from: view,
+            name: viewModel.title,
+            locale: locale
+        ) { [weak self] in
+            self?.interactor.remove(auth: dAppSettings)
+        }
     }
 }
 
