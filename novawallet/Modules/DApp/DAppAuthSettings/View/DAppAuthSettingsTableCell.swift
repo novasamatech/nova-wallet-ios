@@ -33,7 +33,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
         view.valueBottom.textAlignment = .left
         view.valueBottom.font = .regularFootnote
         view.valueBottom.textColor = R.color.colorTransparentText()!
-        view.spacing = 0.0
+        view.spacing = 3.0
         return view
     }()
 
@@ -91,7 +91,7 @@ final class DAppAuthSettingsTableCell: UITableViewCell {
 
         contentView.addSubview(multiValueView)
         multiValueView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(8.0)
+            make.centerY.equalToSuperview()
             make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.trailing.equalTo(removeButton.snp.leading)
         }
