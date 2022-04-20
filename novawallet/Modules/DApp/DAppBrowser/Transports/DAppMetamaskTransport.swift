@@ -81,8 +81,17 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         state = nextState
 
         if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
-            let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
-            delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            if signingOperation.stringValue == nil {
+                let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
+                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            } else if let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() {
+                let type = DAppSigningType.ethereumPersonalSign(chain: nextState.chain, accountId: accountId)
+                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            } else {
+                let error = DAppBrowserStateError.unexpected(reason: "Can't find selected account id")
+                delegate?.dAppTransport(self, didReceive: error)
+            }
+
         } else {
             let error = DAppBrowserStateError.unexpected(reason: "Can't create signing request")
             delegate?.dAppTransport(self, didReceive: error)
