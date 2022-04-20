@@ -455,6 +455,7 @@
 		8430AB1226023C9F005B1066 /* PendingBondedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AB1126023C9F005B1066 /* PendingBondedState.swift */; };
 		8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430AB1626023D2D005B1066 /* BaseStashNextState.swift */; };
 		8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */; };
+		84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84326220281050E6008C52C7 /* EthereumSigner.swift */; };
 		8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */; };
 		843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */; };
 		843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */; };
@@ -2550,6 +2551,7 @@
 		8430AB1126023C9F005B1066 /* PendingBondedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingBondedState.swift; sourceTree = "<group>"; };
 		8430AB1626023D2D005B1066 /* BaseStashNextState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseStashNextState.swift; sourceTree = "<group>"; };
 		8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumExecuted.swift; sourceTree = "<group>"; };
+		84326220281050E6008C52C7 /* EthereumSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSigner.swift; sourceTree = "<group>"; };
 		8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapperTests.swift; sourceTree = "<group>"; };
 		843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteHistoryFiltering.swift; sourceTree = "<group>"; };
@@ -7124,6 +7126,7 @@
 				8410562B27AF1C15004F5CA3 /* Ethereum+Checksum.swift */,
 				841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */,
 				8482F632281024B80006C3A0 /* Data+EthereumSign.swift */,
+				84326220281050E6008C52C7 /* EthereumSigner.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -11713,6 +11716,7 @@
 				84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */,
 				8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */,
 				84F30F4A2600C81C00039D09 /* StakingMainInterator+Subscription.swift in Sources */,
+				84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */,
 				84585A31251C0B9300390F7A /* NetworkInfoMode.swift in Sources */,
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,

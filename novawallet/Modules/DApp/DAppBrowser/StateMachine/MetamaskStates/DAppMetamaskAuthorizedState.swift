@@ -34,13 +34,32 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
     private func signPersonalMessage(from message: MetamaskMessage) {
         guard
             let hexString = message.object?.data?.stringValue,
-            let signingMessage = try? Data(hexString: hexString).ethereumPersonalSignMessage() else {
+            let signingHashedData = try? Data(
+                hexString: hexString
+            ).ethereumPersonalSignMessage()?.keccak256() else {
             let error = MetamaskError.invalidParams(with: "can't create signing data")
             provideError(for: message.identifier, error: error, nextState: self)
 
             return
         }
 
+        emiSigningBytesOperation(for: message, hashedData: signingHashedData)
+    }
+
+    private func signTypedData(from message: MetamaskMessage) {
+        guard
+            let hexString = message.object?.data?.stringValue,
+            let signingHashedData = try? Data(hexString: hexString) else {
+            let error = MetamaskError.invalidParams(with: "can't create signing data")
+            provideError(for: message.identifier, error: error, nextState: self)
+
+            return
+        }
+
+        emiSigningBytesOperation(for: message, hashedData: signingHashedData)
+    }
+
+    private func emiSigningBytesOperation(for message: MetamaskMessage, hashedData: Data) {
         let requestId = message.identifier
         let nextState = DAppMetamaskSigningState(
             stateMachine: stateMachine,
@@ -48,7 +67,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             requestId: requestId
         )
 
-        let signingJson = JSON.stringValue(signingMessage.toHex(includePrefix: true))
+        let signingJson = JSON.stringValue(hashedData.toHex(includePrefix: true))
 
         stateMachine?.emit(messageId: requestId, signingOperation: signingJson, nextState: nextState)
     }
@@ -96,6 +115,8 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                 sendTransaction(from: message)
             case .signPersonalMessage:
                 signPersonalMessage(from: message)
+            case .signTypedMessage:
+                signTypedData(from: message)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)
