@@ -726,3 +726,8 @@
 "common.title" = "Title";
 "dapp.favorite.add.title" = "Add to favorites";
 "common.saved" = "Saved";
+"dapp.authorized.title" = "Authorized websites";
+"dapp.authorized.info" = "Websites to which you allowed access to see your address when you use them";
+"dapp.remove.authorized.title" = "Remove from Authorized?";
+"dapp.remove.authorized.message" = "\"%@\" will be removed from Authorized";
+"dapp.authorized.empty" = "List of websites will appear here";

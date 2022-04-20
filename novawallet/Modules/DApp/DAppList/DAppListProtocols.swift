@@ -12,6 +12,7 @@ protocol DAppListPresenterProtocol: AnyObject {
     func refresh()
     func activateAccount()
     func activateSearch()
+    func activateSettings()
 
     func numberOfCategories() -> Int
     func category(at index: Int) -> String
@@ -40,4 +41,5 @@ protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebP
     func showWalletSelection(from view: DAppListViewProtocol?)
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)
     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)
+    func showSetting(from view: DAppListViewProtocol?)
 }

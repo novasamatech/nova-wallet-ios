@@ -1428,6 +1428,21 @@ import RobinHood
         
     }
     
+    
+    
+     func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings> {
+        
+    return cuckoo_manager.call("createAuthorizedDAppsRepository(for: String) -> AnyDataProviderRepository<DAppSettings>",
+            parameters: (metaId),
+            escapingParameters: (metaId),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createAuthorizedDAppsRepository(for: metaId))
+        
+    }
+    
 
 	 struct __StubbingProxy_AccountRepositoryFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -1465,6 +1480,11 @@ import RobinHood
 	    func createFavoriteDAppsRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<DAppFavorite>> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>", parameterMatchers: matchers))
+	    }
+	    
+	    func createAuthorizedDAppsRepository<M1: Cuckoo.Matchable>(for metaId: M1) -> Cuckoo.ProtocolStubFunction<(String), AnyDataProviderRepository<DAppSettings>> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: metaId) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createAuthorizedDAppsRepository(for: String) -> AnyDataProviderRepository<DAppSettings>", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -1519,6 +1539,12 @@ import RobinHood
 	        return cuckoo_manager.verify("createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func createAuthorizedDAppsRepository<M1: Cuckoo.Matchable>(for metaId: M1) -> Cuckoo.__DoNotUse<(String), AnyDataProviderRepository<DAppSettings>> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: metaId) { $0 }]
+	        return cuckoo_manager.verify("createAuthorizedDAppsRepository(for: String) -> AnyDataProviderRepository<DAppSettings>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -1550,6 +1576,10 @@ import RobinHood
     
      func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppFavorite>).self)
+    }
+    
+     func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>  {
+        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppSettings>).self)
     }
     
 }
