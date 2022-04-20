@@ -225,18 +225,22 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     }
 
     func process(message: Any, host: String) {
-        guard
-            let dict = message as? NSDictionary,
-            let parsedMessage = try? dict.map(to: MetamaskMessage.self) else {
+        do {
+            guard let dict = message as? NSDictionary else {
+                delegate?.dAppTransport(self, didReceive: DAppBrowserInteractorError.unexpectedMessageType)
+                return
+            }
+
+            let parsedMessage = try dict.map(to: MetamaskMessage.self)
+
+            guard let dataSource = dataSource else {
+                return
+            }
+
+            state?.handle(message: parsedMessage, host: host, dataSource: dataSource)
+        } catch {
             delegate?.dAppTransport(self, didReceive: DAppBrowserInteractorError.unexpectedMessageType)
-            return
         }
-
-        guard let dataSource = dataSource else {
-            return
-        }
-
-        state?.handle(message: parsedMessage, host: host, dataSource: dataSource)
     }
 
     func processConfirmation(response: DAppOperationResponse) {
