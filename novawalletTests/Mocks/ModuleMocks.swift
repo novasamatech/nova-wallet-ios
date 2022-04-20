@@ -16497,6 +16497,21 @@ import SubstrateSdk
     
     
     
+     func activateSettings()  {
+        
+    return cuckoo_manager.call("activateSettings()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateSettings())
+        
+    }
+    
+    
+    
      func numberOfCategories() -> Int {
         
     return cuckoo_manager.call("numberOfCategories() -> Int",
@@ -16644,6 +16659,11 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateSearch()", parameterMatchers: matchers))
 	    }
 	    
+	    func activateSettings() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateSettings()", parameterMatchers: matchers))
+	    }
+	    
 	    func numberOfCategories() -> Cuckoo.ProtocolStubFunction<(), Int> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "numberOfCategories() -> Int", parameterMatchers: matchers))
@@ -16725,6 +16745,12 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func activateSettings() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("activateSettings()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func numberOfCategories() -> Cuckoo.__DoNotUse<(), Int> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("numberOfCategories() -> Int", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -16794,6 +16820,10 @@ import SubstrateSdk
     }
     
      func activateSearch()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func activateSettings()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -17235,6 +17265,21 @@ import SubstrateSdk
     
     
     
+     func showSetting(from view: DAppListViewProtocol?)  {
+        
+    return cuckoo_manager.call("showSetting(from: DAppListViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showSetting(from: view))
+        
+    }
+    
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -17270,6 +17315,11 @@ import SubstrateSdk
 	    func showBrowser<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, for result: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?, DAppSearchResult)> where M1.OptionalMatchedType == DAppListViewProtocol, M2.MatchedType == DAppSearchResult {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?, DAppSearchResult)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: result) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", parameterMatchers: matchers))
+	    }
+	    
+	    func showSetting<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?)> where M1.OptionalMatchedType == DAppListViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showSetting(from: DAppListViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
@@ -17312,6 +17362,12 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
+	    func showSetting<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?), Void> where M1.OptionalMatchedType == DAppListViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showSetting(from: DAppListViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -17335,6 +17391,10 @@ import SubstrateSdk
     }
     
      func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+     func showSetting(from view: DAppListViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

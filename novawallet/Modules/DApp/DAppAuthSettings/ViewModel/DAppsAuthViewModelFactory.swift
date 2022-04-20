@@ -48,6 +48,6 @@ final class DAppsAuthViewModelFactory: DAppsAuthViewModelFactoryProtocol {
                 iconViewModel: imageViewModel,
                 identifier: dAppId
             )
-        }.sorted { $0.title.localizedCaseInsensitiveContains($1.title) }
+        }.sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
     }
 }
