@@ -9,6 +9,8 @@ protocol DAppLocalStorageSubscriber: AnyObject {
     func subscribeToFavoriteDApps(
         _ identifier: String?
     ) -> StreamableProvider<DAppFavorite>
+
+    func subscribeToAuthorizedDApps(by metaId: String) -> StreamableProvider<DAppSettings>
 }
 
 extension DAppLocalStorageSubscriber {
@@ -25,6 +27,38 @@ extension DAppLocalStorageSubscriber {
 
         let failureClosure = { [weak self] (error: Error) in
             self?.dappsLocalSubscriptionHandler.handleFavoriteDApps(result: .failure(error))
+            return
+        }
+
+        let options = StreamableProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: true
+        )
+
+        provider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return provider
+    }
+
+    func subscribeToAuthorizedDApps(by metaId: String) -> StreamableProvider<DAppSettings> {
+        let provider = dAppsLocalSubscriptionFactory.getAuthorizedProvider(for: metaId)
+
+        let updateClosure = {
+            [weak self] (changes: [DataProviderChange<DAppSettings>]) in
+            self?.dappsLocalSubscriptionHandler.handleAuthorizedDApps(result: .success(changes), for: metaId)
+            return
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.dappsLocalSubscriptionHandler.handleAuthorizedDApps(result: .failure(error), for: metaId)
             return
         }
 
