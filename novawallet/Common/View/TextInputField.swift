@@ -58,9 +58,6 @@ class TextInputField: BackgroundedContentControl {
     override var isFirstResponder: Bool { textField.isFirstResponder }
 
     func bind(inputViewModel: InputViewModelProtocol) {
-        self.inputViewModel?.inputHandler.removeObserver(self)
-        inputViewModel.inputHandler.addObserver(self)
-
         self.inputViewModel = inputViewModel
 
         textField.text = inputViewModel.inputHandler.value
@@ -182,15 +179,5 @@ extension TextInputField: UITextFieldDelegate {
         replacementString string: String
     ) -> Bool {
         inputViewModel?.inputHandler.didReceiveReplacement(string, for: range) ?? false
-    }
-}
-
-extension TextInputField: InputHandlingObserver {
-    func didChangeInputValue(_: InputHandling, from _: String) {
-        if textField.text != inputViewModel?.inputHandler.value {
-            textField.text = inputViewModel?.inputHandler.value
-
-            sendActions(for: .editingChanged)
-        }
     }
 }
