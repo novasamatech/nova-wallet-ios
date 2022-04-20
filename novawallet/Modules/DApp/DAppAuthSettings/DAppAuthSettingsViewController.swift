@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class DAppAuthSettingsViewController: UIViewController, ViewHolder {
     enum Row {
@@ -123,6 +124,40 @@ extension DAppAuthSettingsViewController: DAppAuthSettingsViewProtocol {
         authorizedViewModels = viewModels
 
         rootView.tableView.reloadData()
+        reloadEmptyState(animated: false)
+    }
+}
+
+extension DAppAuthSettingsViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+    var contentViewForEmptyState: UIView { rootView }
+}
+
+extension DAppAuthSettingsViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        let emptyView = EmptyStateView()
+        emptyView.image = R.image.iconEmptyHistory()
+        emptyView.title = R.string.localizable.dappAuthorizedEmpty(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+        emptyView.titleColor = R.color.colorTransparentText()!
+        emptyView.titleFont = .regularFootnote
+        return emptyView
+    }
+}
+
+extension DAppAuthSettingsViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        guard let authorizedViewModels = authorizedViewModels else {
+            return false
+        }
+
+        return authorizedViewModels.isEmpty
+    }
+
+    var displayInsetsForEmptyState: UIEdgeInsets {
+        UIEdgeInsets(top: 110.0, left: 0, bottom: 0, right: 0)
     }
 }
 
@@ -145,6 +180,7 @@ extension DAppAuthSettingsViewController: Localizable {
             setupLocalization()
 
             rootView.tableView.reloadData()
+            reloadEmptyState(animated: false)
         }
     }
 }
