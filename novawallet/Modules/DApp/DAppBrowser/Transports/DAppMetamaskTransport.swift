@@ -85,7 +85,7 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
                 let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
                 delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
             } else if let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() {
-                let type = DAppSigningType.ethereumPersonalSign(chain: nextState.chain, accountId: accountId)
+                let type = DAppSigningType.ethereumBytes(chain: nextState.chain, accountId: accountId)
                 delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
             } else {
                 let error = DAppBrowserStateError.unexpected(reason: "Can't find selected account id")
