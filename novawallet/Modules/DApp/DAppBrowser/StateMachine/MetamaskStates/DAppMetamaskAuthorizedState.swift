@@ -43,7 +43,7 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        emiSigningBytesOperation(for: message, hashedData: signingHashedData)
+        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
     }
 
     private func signTypedData(from message: MetamaskMessage) {
@@ -56,10 +56,10 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
             return
         }
 
-        emiSigningBytesOperation(for: message, hashedData: signingHashedData)
+        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
     }
 
-    private func emiSigningBytesOperation(for message: MetamaskMessage, hashedData: Data) {
+    private func emitSigningBytesOperation(for message: MetamaskMessage, hashedData: Data) {
         let requestId = message.identifier
         let nextState = DAppMetamaskSigningState(
             stateMachine: stateMachine,
