@@ -4,15 +4,15 @@ import RobinHood
 
 struct DAppBrowserViewFactory {
     static func createView(for userQuery: DAppSearchResult) -> DAppBrowserViewProtocol? {
+        guard let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
+
         let localizationManager = LocalizationManager.shared
         let logger = Logger.shared
 
         let storageFacade = UserDataStorageFacade.shared
-        let dAppSettingsRepository = storageFacade.createRepository(
-            filter: nil,
-            sortDescriptors: [],
-            mapper: AnyCoreDataMapper(DAppSettingsMapper())
-        )
+        let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: storageFacade)
 
         let canDebugDApp = ApplicationConfig.shared.canDebugDApp
 
@@ -23,14 +23,16 @@ struct DAppBrowserViewFactory {
 
         let phishingVerifier = PhishingSiteVerifier.createSequentialVerifier()
 
-        let favoritesRepository = AccountRepositoryFactory(
-            storageFacade: UserDataStorageFacade.shared
-        ).createFavoriteDAppsRepository()
+        let favoritesRepository = accountRepositoryFactory.createFavoriteDAppsRepository()
+
+        let dAppSettingsRepository = accountRepositoryFactory.createAuthorizedDAppsRepository(
+            for: wallet.metaId
+        )
 
         let interactor = DAppBrowserInteractor(
             transports: transports,
             userQuery: userQuery,
-            wallet: SelectedWalletSettings.shared.value,
+            wallet: wallet,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
             dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,

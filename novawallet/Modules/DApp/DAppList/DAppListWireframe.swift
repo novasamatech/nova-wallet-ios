@@ -32,4 +32,13 @@ final class DAppListWireframe: DAppListWireframeProtocol {
         browserView.controller.hidesBottomBarWhenPushed = true
         view?.controller.navigationController?.pushViewController(browserView.controller, animated: true)
     }
+
+    func showSetting(from view: DAppListViewProtocol?) {
+        guard let settingsView = DAppAuthSettingsViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(rootViewController: settingsView.controller)
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
