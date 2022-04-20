@@ -21,7 +21,7 @@ struct DAppOperationConfirmViewFactory {
         case let .ethereumTransaction(chain):
             maybeAssetInfo = chain.assetDisplayInfo
             maybeInteractor = createEthereumInteractor(for: request, chain: chain)
-        case let .ethereumPersonalSign(chain, accountId):
+        case let .ethereumBytes(chain, accountId):
             maybeAssetInfo = chain.assetDisplayInfo
             maybeInteractor = createEthereumPersonalSignInteractor(
                 for: request,
