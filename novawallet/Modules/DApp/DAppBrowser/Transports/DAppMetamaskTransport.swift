@@ -81,8 +81,17 @@ extension DAppMetamaskTransport: DAppMetamaskStateMachineProtocol {
         state = nextState
 
         if let request = createConfirmationRequest(messageId: messageId, from: signingOperation) {
-            let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
-            delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            if signingOperation.stringValue == nil {
+                let type = DAppSigningType.ethereumTransaction(chain: nextState.chain)
+                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            } else if let accountId = try? state?.fetchSelectedAddress(from: dataSource)?.toAccountId() {
+                let type = DAppSigningType.ethereumBytes(chain: nextState.chain, accountId: accountId)
+                delegate?.dAppTransport(self, didReceiveConfirmation: request, of: type)
+            } else {
+                let error = DAppBrowserStateError.unexpected(reason: "Can't find selected account id")
+                delegate?.dAppTransport(self, didReceive: error)
+            }
+
         } else {
             let error = DAppBrowserStateError.unexpected(reason: "Can't create signing request")
             delegate?.dAppTransport(self, didReceive: error)
@@ -216,18 +225,22 @@ extension DAppMetamaskTransport: DAppBrowserTransportProtocol {
     }
 
     func process(message: Any, host: String) {
-        guard
-            let dict = message as? NSDictionary,
-            let parsedMessage = try? dict.map(to: MetamaskMessage.self) else {
+        do {
+            guard let dict = message as? NSDictionary else {
+                delegate?.dAppTransport(self, didReceive: DAppBrowserInteractorError.unexpectedMessageType)
+                return
+            }
+
+            let parsedMessage = try dict.map(to: MetamaskMessage.self)
+
+            guard let dataSource = dataSource else {
+                return
+            }
+
+            state?.handle(message: parsedMessage, host: host, dataSource: dataSource)
+        } catch {
             delegate?.dAppTransport(self, didReceive: DAppBrowserInteractorError.unexpectedMessageType)
-            return
         }
-
-        guard let dataSource = dataSource else {
-            return
-        }
-
-        state?.handle(message: parsedMessage, host: host, dataSource: dataSource)
     }
 
     func processConfirmation(response: DAppOperationResponse) {
