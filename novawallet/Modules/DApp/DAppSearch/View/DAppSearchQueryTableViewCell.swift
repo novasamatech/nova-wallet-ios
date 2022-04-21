@@ -21,13 +21,6 @@ final class DAppSearchQueryTableViewCell: UITableViewCell {
         return label
     }()
 
-    let accessoryImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = R.color.colorWhite32()!
-        return imageView
-    }()
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -57,17 +50,10 @@ final class DAppSearchQueryTableViewCell: UITableViewCell {
             make.size.equalTo(48.0)
         }
 
-        contentView.addSubview(accessoryImageView)
-        accessoryImageView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16.0)
-            make.centerY.equalToSuperview()
-        }
-
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(iconImageView.snp.trailing).offset(12.0)
-            make.trailing.lessThanOrEqualTo(accessoryImageView.snp.leading).offset(-4.0)
         }
     }
 }

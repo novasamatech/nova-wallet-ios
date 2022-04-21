@@ -67,10 +67,10 @@ extension UIImage {
         return image
     }
 
-    func tinted(with color: UIColor, opaque _: Bool = false) -> UIImage? {
+    func tinted(with color: UIColor, opaque: Bool = false) -> UIImage? {
         let templateImage = withRenderingMode(.alwaysTemplate)
 
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        UIGraphicsBeginImageContextWithOptions(size, opaque, scale)
 
         color.set()
         templateImage.draw(in: CGRect(origin: .zero, size: size))

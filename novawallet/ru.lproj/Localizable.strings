@@ -719,3 +719,15 @@
 "dapp.phishing.title" = "Обнаружен фишинг";
 "dapp.phishing.message" = "Nova Wallet считает, что этот вебсайт может скомпрометировать безопасность Вашего аккаунта и токенов";
 "dapp.phishing.action" = "Понятно, вернемся назад";
+"common.favorites" = "Избранные";
+"dapp.remove.favorites.title" = "Удалить из Избранного?";
+"dapp.remove.favorites.message" = "\"%@\" будет удален из Избранного";
+"common.remove" = "Удалить";
+"common.title" = "Название";
+"dapp.favorite.add.title" = "Добавить в Избранные";
+"common.saved" = "Сохранено";
+"dapp.authorized.title" = "Авторизованные сайты";
+"dapp.authorized.info" = "Сайты для которых вы разрешили доступ к вашим адресам";
+"dapp.remove.authorized.title" = "Удалить из Авторизованных?";
+"dapp.remove.authorized.message" = "\"%@\" будет удален из Авторизованных";
+"dapp.authorized.empty" = "Список сайтов появится здесь";

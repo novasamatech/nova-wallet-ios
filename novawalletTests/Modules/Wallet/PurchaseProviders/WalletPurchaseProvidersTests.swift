@@ -106,7 +106,6 @@ class WalletPurchaseProvidersTests: XCTestCase {
 
         let apiKey = TransakProvider.pubToken
         let host = TransakProvider.baseUrlString
-        let redirectUrl = config.purchaseRedirect
         let network = chain.name.lowercased()
 
         // swiftlint:disable next long_string

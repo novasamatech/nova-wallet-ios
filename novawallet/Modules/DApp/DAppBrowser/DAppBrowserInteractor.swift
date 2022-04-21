@@ -15,6 +15,10 @@ final class DAppBrowserInteractor {
     let logger: LoggerProtocol?
     let transports: [DAppBrowserTransportProtocol]
     let sequentialPhishingVerifier: PhishingSiteVerifing
+    let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
+    let dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>
+
+    private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
 
     private(set) var messageQueue: [QueueMessage] = []
 
@@ -24,6 +28,8 @@ final class DAppBrowserInteractor {
         wallet: MetaAccountModel,
         chainRegistry: ChainRegistryProtocol,
         dAppSettingsRepository: AnyDataProviderRepository<DAppSettings>,
+        dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
+        dAppsFavoriteRepository: AnyDataProviderRepository<DAppFavorite>,
         operationQueue: OperationQueue,
         sequentialPhishingVerifier: PhishingSiteVerifing,
         logger: LoggerProtocol? = nil
@@ -39,6 +45,8 @@ final class DAppBrowserInteractor {
         )
         self.logger = logger
         self.sequentialPhishingVerifier = sequentialPhishingVerifier
+        self.dAppsFavoriteRepository = dAppsFavoriteRepository
+        self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
     }
 
     private func subscribeChainRegistry() {
@@ -225,6 +233,8 @@ final class DAppBrowserInteractor {
 extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
     func setup() {
         subscribeChainRegistry()
+
+        favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
     }
 
     func process(host: String) {
@@ -263,6 +273,11 @@ extension DAppBrowserInteractor: DAppBrowserInteractorInputProtocol {
 
     func processAuth(response: DAppAuthResponse, forTransport name: String) {
         transports.first(where: { $0.name == name })?.processAuth(response: response)
+    }
+
+    func removeFromFavorites(record: DAppFavorite) {
+        let operation = dAppsFavoriteRepository.saveOperation({ [] }, { [record.identifier] })
+        dataSource.operationQueue.addOperation(operation)
     }
 
     func reload() {
@@ -304,5 +319,16 @@ extension DAppBrowserInteractor: DAppBrowserTransportDelegate {
         postExecutionScript: DAppScriptResponse
     ) {
         provideTransportUpdate(with: postExecutionScript)
+    }
+}
+
+extension DAppBrowserInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
+    func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
+        switch result {
+        case let .success(changes):
+            presenter.didReceiveFavorite(changes: changes)
+        case let .failure(error):
+            logger?.error("Unexpected database error: \(error)")
+        }
     }
 }

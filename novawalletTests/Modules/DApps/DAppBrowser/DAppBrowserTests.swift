@@ -21,11 +21,12 @@ class DAppBrowserTests: XCTestCase {
         let wireframe = MockDAppBrowserWireframeProtocol()
 
         let keychain = InMemoryKeychain()
+        let operationQueue = OperationQueue()
 
         let storageFacade = UserDataStorageTestFacade()
         let walletSettings = SelectedWalletSettings(
             storageFacade: storageFacade,
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         try AccountCreationHelper.createMetaAccountFromMnemonic(
@@ -48,12 +49,23 @@ class DAppBrowserTests: XCTestCase {
             for: SubstrateStorageTestFacade()
         )
 
+        let dAppLocalProviderFactory = DAppLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
+
+        let dAppsFavoriteRepository = AccountRepositoryFactory(
+            storageFacade: storageFacade
+        ).createFavoriteDAppsRepository()
+
         let interactor = DAppBrowserInteractor(
             transports: [transport],
             userQuery: .query(string: dAppURL),
             wallet: walletSettings.value,
             chainRegistry: chainRegistry,
             dAppSettingsRepository: AnyDataProviderRepository(dAppSettingsRepository),
+            dAppsLocalSubscriptionFactory: dAppLocalProviderFactory,
+            dAppsFavoriteRepository: dAppsFavoriteRepository,
             operationQueue: OperationQueue(),
             sequentialPhishingVerifier: phishingVerifier
         )
@@ -72,6 +84,7 @@ class DAppBrowserTests: XCTestCase {
         var loadedModel: DAppBrowserModel?
 
         let loadingExpectation = XCTestExpectation()
+        let favoritesExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(viewModel: any()).then { viewModel in
@@ -79,9 +92,15 @@ class DAppBrowserTests: XCTestCase {
 
                 loadingExpectation.fulfill()
             }
+
+            when(stub).didReceiveFavorite(flag: any()).then { _ in
+                favoritesExpectation.fulfill()
+            }
         }
 
         presenter.setup()
+
+        presenter.process(page: DAppBrowserPage(url: URL(string: "https://google.com")!, title: "google"))
 
         // then
 
@@ -92,5 +111,9 @@ class DAppBrowserTests: XCTestCase {
         if (transport.state as? DAppBrowserWaitingAuthState) == nil {
             XCTFail("Waiting auth state expected after setup")
         }
+
+        verify(view, times(1)).didReceiveFavorite(flag: any())
+        XCTAssertNotNil(presenter.favorites)
+        XCTAssertNotNil(presenter.browserPage)
     }
 }
