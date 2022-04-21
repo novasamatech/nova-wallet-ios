@@ -1,4 +1,5 @@
 import SubstrateSdk
+import RobinHood
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
     func didReceiveAccount(icon: DrawableIcon)
@@ -11,6 +12,7 @@ protocol DAppListPresenterProtocol: AnyObject {
     func refresh()
     func activateAccount()
     func activateSearch()
+    func activateSettings()
 
     func numberOfCategories() -> Int
     func category(at index: Int) -> String
@@ -19,20 +21,25 @@ protocol DAppListPresenterProtocol: AnyObject {
     func numberOfDApps() -> Int
     func dApp(at index: Int) -> DAppViewModel
     func selectDApp(at index: Int)
+    func toogleFavoriteForDApp(at index: Int)
 }
 
 protocol DAppListInteractorInputProtocol: AnyObject {
     func setup()
     func refresh()
+    func addToFavorites(dApp: DApp)
+    func removeFromFavorites(dAppIdentifier: String)
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceive(accountIdResult: Result<AccountId, Error>)
     func didReceive(dAppsResult: Result<DAppList, Error>?)
+    func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppListWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable {
+protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable {
     func showWalletSelection(from view: DAppListViewProtocol?)
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)
     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)
+    func showSetting(from view: DAppListViewProtocol?)
 }
