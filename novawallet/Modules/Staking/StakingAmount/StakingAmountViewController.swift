@@ -48,6 +48,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         rootView.restakeOptionView.addTarget(self, action: #selector(actionRestake), for: .touchUpInside)
         rootView.payoutOptionView.addTarget(self, action: #selector(actionPayout), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
+        rootView.aboutLinkView.actionButton.addTarget(self, action: #selector(actionLearnPayout), for: .touchUpInside)
     }
 
     private func setupBalanceAccessoryView() {
@@ -67,6 +68,14 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         )
 
         rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+            preferredLanguages: languages
+        )
+
+        rootView.aboutLinkView.titleView.text = R.string.localizable.stakingRewardsDestinationTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.aboutLinkView.actionButton.imageWithTitleView?.title = R.string.localizable.stakingAboutRewards(
             preferredLanguages: languages
         )
 
