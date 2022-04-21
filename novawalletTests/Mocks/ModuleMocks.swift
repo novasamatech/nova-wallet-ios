@@ -116,6 +116,7 @@ public class MockLocalizable: Localizable, Cuckoo.ProtocolMock {
 }
 
 public class LocalizableStub: Localizable {
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -130,6 +131,8 @@ public class LocalizableStub: Localizable {
 
     
 
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -226,6 +229,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -349,9 +354,13 @@ import UIKit
     
 
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -466,6 +475,7 @@ import UIKit
 }
 
  class ControllerBackedProtocolStub: ControllerBackedProtocol {
+        
     
     
      var isSetup: Bool {
@@ -474,6 +484,7 @@ import UIKit
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -649,6 +660,7 @@ import UIKit
 }
 
  class LoadableViewProtocolStub: LoadableViewProtocol {
+        
     
     
      var loadableContentView: UIView! {
@@ -657,6 +669,7 @@ import UIKit
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -670,9 +683,13 @@ import UIKit
     
 
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -770,6 +787,8 @@ import UIKit
     
 
     
+    
+    
      func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -865,6 +884,8 @@ import UIKit
 
     
 
+    
+    
     
      func share(source: UIActivityItemSource, from view: ControllerBackedProtocol?, with completionHandler: SharingCompletionHandler?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -963,6 +984,8 @@ import UIKit
 
     
 
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1103,6 +1126,7 @@ import Foundation
 }
 
  class SelectionListViewProtocolStub: SelectionListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -1111,6 +1135,7 @@ import Foundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -1123,6 +1148,8 @@ import Foundation
 
     
 
+    
+    
     
      func didReload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1260,6 +1287,7 @@ import Foundation
 }
 
  class SelectionListPresenterProtocolStub: SelectionListPresenterProtocol {
+        
     
     
      var numberOfItems: Int {
@@ -1273,9 +1301,13 @@ import Foundation
     
 
     
+    
+    
      func item(at index: Int) -> SelectableViewModelProtocol  {
         return DefaultValueRegistry.defaultValue(for: (SelectableViewModelProtocol).self)
     }
+    
+    
     
      func selectItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1414,6 +1446,7 @@ import Cuckoo
 }
 
  class AccountConfirmViewProtocolStub: AccountConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -1422,6 +1455,7 @@ import Cuckoo
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -1434,6 +1468,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func didReceive(words: [String], afterConfirmationFail: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1604,17 +1640,25 @@ import Cuckoo
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func requestWords()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm(words: [String])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func skip()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1759,13 +1803,19 @@ import Cuckoo
     
 
     
+    
+    
      func requestWords()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm(words: [String])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func skipConfirmation()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1910,13 +1960,19 @@ import Cuckoo
     
 
     
+    
+    
      func didReceive(words: [String], afterConfirmationFail: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didCompleteConfirmation()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2061,13 +2117,19 @@ import Cuckoo
     
 
     
+    
+    
      func proceed(from view: AccountConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2235,6 +2297,7 @@ import SoraFoundation
 }
 
  class AccountCreateViewProtocolStub: AccountCreateViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -2243,6 +2306,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -2256,9 +2320,13 @@ import SoraFoundation
     
 
     
+    
+    
      func set(mnemonic: [String])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func displayMnemonic()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2429,17 +2497,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateAdvanced()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func prepareToDisplayMnemonic()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2531,6 +2607,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2649,9 +2727,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(metadata: MetaAccountCreationMetadata)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMnemonicGeneration(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2874,25 +2956,37 @@ import SoraFoundation
     
 
     
+    
+    
      func showAdvancedSettings(from view: AccountCreateViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func confirm(from view: AccountCreateViewProtocol?, request: MetaAccountCreationRequest, metadata: MetaAccountCreationMetadata)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm(from view: AccountCreateViewProtocol?, request: ChainAccountImportMnemonicRequest, metaAccountModel: MetaAccountModel, chainModelId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func cancelFlow(from view: AccountCreateViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3164,6 +3258,7 @@ import SoraFoundation
 }
 
  class AccountImportViewProtocolStub: AccountImportViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -3172,6 +3267,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -3185,25 +3281,37 @@ import SoraFoundation
     
 
     
+    
+    
      func setSource(type: SecretSource)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func setSource(viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setName(viewModel: InputViewModelProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func setPassword(viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setUploadWarning(message: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func setShouldShowAdvancedSettings(_ shouldShow: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3374,17 +3482,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateUpload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateAdvancedSettings()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3659,33 +3775,49 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func importAccountWithMnemonic(request: MetaAccountImportMnemonicRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func importAccountWithSeed(request: MetaAccountImportSeedRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func importAccountWithMnemonic(chainId: ChainModel.Id, request: ChainAccountImportMnemonicRequest, into wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func importAccountWithSeed(chainId: ChainModel.Id, request: ChainAccountImportSeedRequest, into wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func importAccountWithKeystore(chainId: ChainModel.Id, request: ChainAccountImportKeystoreRequest, into wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func deriveMetadataFromKeystore(_ keystore: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3856,17 +3988,25 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAccountImport(metadata: MetaAccountImportMetadata)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didCompleteAccountImport()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountImport(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSuggestKeystore(text: String, preferredInfo: MetaAccountImportPreferredInfo?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3985,9 +4125,13 @@ import SoraFoundation
     
 
     
+    
+    
      func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -4184,21 +4328,31 @@ import SoraFoundation
     
 
     
+    
+    
      func proceed(from view: AccountImportViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showModifiableAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings, delegate: AdvancedWalletSettingsDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showReadonlyAdvancedSettings(from view: AccountImportViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -4367,6 +4521,7 @@ import SoraFoundation
 }
 
  class AccountManagementViewProtocolStub: AccountManagementViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -4375,6 +4530,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -4388,9 +4544,13 @@ import SoraFoundation
     
 
     
+    
+    
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func set(nameViewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -4665,33 +4825,49 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func numberOfSections() -> Int  {
         return DefaultValueRegistry.defaultValue(for: (Int).self)
     }
     
+    
+    
      func numberOfItems(in section: Int) -> Int  {
         return DefaultValueRegistry.defaultValue(for: (Int).self)
     }
+    
+    
     
      func item(at indexPath: IndexPath) -> ChainAccountViewModelItem  {
         return DefaultValueRegistry.defaultValue(for: (ChainAccountViewModelItem).self)
     }
     
+    
+    
      func titleForSection(_ section: Int) -> LocalizableResource<String>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<String>).self)
     }
+    
+    
     
      func activateDetails(at indexPath: IndexPath)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectItem(at indexPath: IndexPath)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func finalizeName()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -4862,17 +5038,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup(walletId: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func save(name: String, walletId: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func flushPendingName()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func requestExportOptions(metaAccount: MetaAccountModel, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5043,17 +5227,25 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveWallet(_ result: Result<MetaAccountModel?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveChains(_ result: Result<[ChainModel.Id: ChainModel], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didSaveWalletName(_ result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(exportOptionsResult: Result<[SecretSource], Error>, metaAccount: MetaAccountModel, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5302,29 +5494,43 @@ import SoraFoundation
     
 
     
+    
+    
      func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showExportAccount(for wallet: MetaAccountModel, chain: ChainModel, options: [SecretSource], from view: AccountManagementViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5570,6 +5776,7 @@ import SoraFoundation
 }
 
  class AdvancedWalletViewProtocolStub: AdvancedWalletViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -5578,6 +5785,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -5591,21 +5799,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setSubstrateCrypto(viewModel: SelectableViewModel<TitleWithSubtitleViewModel>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func setEthreumCrypto(viewModel: SelectableViewModel<TitleWithSubtitleViewModel>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setSubstrateDerivationPath(viewModel: InputViewModelProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setEthereumDerivationPath(viewModel: InputViewModelProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didCompleteCryptoTypeSelection()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5776,17 +5994,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectSubstrateCryptoType()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectEthereumCryptoType()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func apply()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5957,17 +6183,25 @@ import SoraFoundation
     
 
     
+    
+    
      func presentCryptoTypeSelection(from view: AdvancedWalletViewProtocol?, availableTypes: [MultiassetCryptoType], selectedType: MultiassetCryptoType, delegate: ModalPickerViewControllerDelegate?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func complete(from view: AdvancedWalletViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6059,6 +6293,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func didReceiveNewAdvanced(walletSettings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6206,13 +6442,19 @@ import Cuckoo
     
 
     
+    
+    
      func complete(on view: ChainSelectionViewProtocol, selecting chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6304,6 +6546,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func assetSelection(view: ChainSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6442,6 +6686,7 @@ import Cuckoo
 }
 
  class AssetsManageViewProtocolStub: AssetsManageViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -6450,6 +6695,7 @@ import Cuckoo
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -6462,6 +6708,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func didReceive(viewModel: AssetsManageViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6606,13 +6854,19 @@ import Cuckoo
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setHideZeroBalances(value: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func apply()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6731,9 +6985,13 @@ import Cuckoo
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func save(hideZeroBalances: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6852,9 +7110,13 @@ import Cuckoo
     
 
     
+    
+    
      func didReceive(hideZeroBalances: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSave()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6946,6 +7208,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func close(view: AssetsManageViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7084,6 +7348,7 @@ import Cuckoo
 }
 
  class ChainSelectionViewProtocolStub: ChainSelectionViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -7092,6 +7357,7 @@ import Cuckoo
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -7104,6 +7370,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func didReload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7267,6 +7535,7 @@ import Cuckoo
 }
 
  class ChainSelectionPresenterProtocolStub: ChainSelectionPresenterProtocol {
+        
     
     
      var numberOfItems: Int {
@@ -7280,13 +7549,19 @@ import Cuckoo
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func item(at index: Int) -> SelectableViewModelProtocol  {
         return DefaultValueRegistry.defaultValue(for: (SelectableViewModelProtocol).self)
     }
+    
+    
     
      func selectItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7378,6 +7653,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7496,9 +7773,13 @@ import Cuckoo
     
 
     
+    
+    
      func didReceiveChains(result: Result<[ChainModel], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7643,13 +7924,19 @@ import Cuckoo
     
 
     
+    
+    
      func complete(on view: ChainSelectionViewProtocol, selecting chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7741,6 +8028,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func chainSelection(view: ChainSelectionViewProtocol, didCompleteWith chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -7865,9 +8154,13 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: BigUInt, bonusService: CrowdloanBonusServiceProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -8194,41 +8487,61 @@ import Foundation
     
 
     
+    
+    
      func didReceiveCrowdloan(result: Result<Crowdloan, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBlockDuration(result: Result<BlockTime, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMinimumContribution(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -8660,6 +8973,7 @@ import SoraFoundation
 }
 
  class CrowdloanContributionConfirmViewProtocolStub: CrowdloanContributionConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -8668,6 +8982,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -8676,6 +8991,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -8686,6 +9002,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -8694,6 +9011,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -8707,37 +9025,55 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAsset(viewModel: AssetBalanceViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(viewModel: BalanceViewModelProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveCrowdloan(viewModel: CrowdloanContributeConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveEstimatedReward(viewModel: String?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBonus(viewModel: String?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -8908,17 +9244,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentRewardDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -9089,17 +9433,25 @@ import SoraFoundation
     
 
     
+    
+    
      func estimateFee(for contribution: BigUInt)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func submit(contribution: BigUInt)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: BigUInt, bonusService: CrowdloanBonusServiceProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -9504,53 +9856,79 @@ import SoraFoundation
     
 
     
+    
+    
      func didSubmitContribution(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDisplayAddress(result: Result<DisplayAddress, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveRewardDestinationAddress(_ address: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveCrowdloan(result: Result<Crowdloan, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBlockDuration(result: Result<BlockTime, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveMinimumContribution(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -9695,13 +10073,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(on view: CrowdloanContributionConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -10161,6 +10545,7 @@ import SoraFoundation
 }
 
  class CrowdloanContributionSetupViewProtocolStub: CrowdloanContributionSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -10169,6 +10554,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -10177,6 +10563,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -10187,6 +10574,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -10195,6 +10583,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -10208,41 +10597,61 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAsset(viewModel: AssetBalanceViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(viewModel: BalanceViewModelProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveInput(viewModel: AmountInputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveCrowdloan(viewModel: CrowdloanContributionSetupViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveEstimatedReward(viewModel: String?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBonus(viewModel: String?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveRewardDestination(viewModel: CrowdloanRewardDestinationVM)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -10491,29 +10900,43 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAmountPercentage(_ percentage: Float)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func updateAmount(_ newValue: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentLearnMore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentAdditionalBonuses()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentRewardDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -10632,9 +11055,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: BigUInt, bonusService: CrowdloanBonusServiceProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -10961,41 +11388,61 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveCrowdloan(result: Result<Crowdloan, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBlockDuration(result: Result<BlockTime, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMinimumContribution(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -11192,21 +11639,31 @@ import SoraFoundation
     
 
     
+    
+    
      func showConfirmation(from view: CrowdloanContributionSetupViewProtocol?, paraId: ParaId, inputAmount: Decimal, bonusService: CrowdloanBonusServiceProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAdditionalBonus(from view: CrowdloanContributionSetupViewProtocol?, for displayInfo: CrowdloanDisplayInfo, inputAmount: Decimal, delegate: CustomCrowdloanDelegate, existingService: CrowdloanBonusServiceProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -11525,6 +11982,7 @@ import SoraFoundation
 }
 
  class CrowdloanListViewProtocolStub: CrowdloanListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -11533,6 +11991,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -11541,6 +12000,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -11549,6 +12009,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -11562,25 +12023,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(chainInfo: CrowdloansChainViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(listState: CrowdloanListState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -11829,29 +12302,43 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func refresh(shouldReset: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectCrowdloan(_ paraId: ParaId)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func becomeOnline()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func putOffline()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectChain()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleYourContributions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -12048,21 +12535,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func refresh()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func saveSelected(chainModel: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func becomeOnline()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func putOffline()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -12389,41 +12886,61 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveCrowdloans(result: Result<[Crowdloan], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDisplayInfo(result: Result<CrowdloanDisplayInfoDict, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBlockDuration(result: Result<BlockTime, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveSelectedChain(result: Result<ChainModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -12568,13 +13085,19 @@ import SoraFoundation
     
 
     
+    
+    
      func presentContributionSetup(from view: CrowdloanListViewProtocol?, crowdloan: Crowdloan, displayInfo: CrowdloanDisplayInfo?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showYourContributions(crowdloans: [Crowdloan], viewInfo: CrowdloansViewInfo, chainAsset: ChainAssetDisplayInfo, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectChain(from view: ControllerBackedProtocol?, delegate: ChainSelectionDelegate, selectedChainId: ChainModel.Id?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -12671,6 +13194,8 @@ import Foundation
 
     
 
+    
+    
     
      func didReceive(bonusService: CrowdloanBonusServiceProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13015,6 +13540,7 @@ import SoraFoundation
 }
 
  class ReferralCrowdloanViewProtocolStub: ReferralCrowdloanViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -13023,6 +13549,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -13031,6 +13558,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -13039,6 +13567,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -13052,29 +13581,43 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveLearnMore(viewModel: LearnMoreViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveReferral(viewModel: ReferralCrowdloanViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveInput(viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveShouldInputCode()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveShouldAgreeTerms()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13323,29 +13866,43 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func update(referralCode: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func applyDefaultCode()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func applyInputCode()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setTermsAgreed(value: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentTerms()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentLearnMore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13516,17 +14073,25 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(on view: ReferralCrowdloanViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13665,6 +14230,7 @@ import Cuckoo
 }
 
  class DAppAuthConfirmViewProtocolStub: DAppAuthConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -13673,6 +14239,7 @@ import Cuckoo
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -13685,6 +14252,8 @@ import Cuckoo
 
     
 
+    
+    
     
      func didReceive(viewModel: DAppAuthViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13829,13 +14398,19 @@ import Cuckoo
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func allow()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func deny()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -13928,6 +14503,8 @@ import Cuckoo
     
 
     
+    
+    
      func close(from view: DAppAuthConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -14019,6 +14596,8 @@ import Cuckoo
     
 
     
+    
+    
      func didReceiveAuthResponse(_ response: DAppAuthResponse, for request: DAppAuthRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -14030,6 +14609,7 @@ import Cuckoo
 @testable import novawallet
 
 import Foundation
+import RobinHood
 
 
  class MockDAppBrowserViewProtocol: DAppBrowserViewProtocol, Cuckoo.ProtocolMock {
@@ -14128,6 +14708,21 @@ import Foundation
         
     }
     
+    
+    
+     func didReceiveFavorite(flag: Bool)  {
+        
+    return cuckoo_manager.call("didReceiveFavorite(flag: Bool)",
+            parameters: (flag),
+            escapingParameters: (flag),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavorite(flag: flag))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14160,6 +14755,11 @@ import Foundation
 	    func didReceiveReplacement<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(transports: M1, postExecution script: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([DAppTransportModel], DAppScriptResponse)> where M1.MatchedType == [DAppTransportModel], M2.MatchedType == DAppScriptResponse {
 	        let matchers: [Cuckoo.ParameterMatcher<([DAppTransportModel], DAppScriptResponse)>] = [wrap(matchable: transports) { $0.0 }, wrap(matchable: script) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(flag: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: flag) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserViewProtocol.self, method: "didReceiveFavorite(flag: Bool)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14206,10 +14806,17 @@ import Foundation
 	        return cuckoo_manager.verify("didReceiveReplacement(transports: [DAppTransportModel], postExecution: DAppScriptResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(flag: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
+	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: flag) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavorite(flag: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
  class DAppBrowserViewProtocolStub: DAppBrowserViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -14218,6 +14825,7 @@ import Foundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -14231,15 +14839,27 @@ import Foundation
     
 
     
+    
+    
      func didReceive(viewModel: DAppBrowserModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(response: DAppScriptResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveFavorite(flag: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -14287,16 +14907,16 @@ import Foundation
     
     
     
-     func processNew(url: URL)  {
+     func process(page: DAppBrowserPage)  {
         
-    return cuckoo_manager.call("processNew(url: URL)",
-            parameters: (url),
-            escapingParameters: (url),
+    return cuckoo_manager.call("process(page: DAppBrowserPage)",
+            parameters: (page),
+            escapingParameters: (page),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.processNew(url: url))
+            defaultCall: __defaultImplStub!.process(page: page))
         
     }
     
@@ -14332,6 +14952,21 @@ import Foundation
     
     
     
+     func toggleFavorite()  {
+        
+    return cuckoo_manager.call("toggleFavorite()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.toggleFavorite())
+        
+    }
+    
+    
+    
      func close()  {
         
     return cuckoo_manager.call("close()",
@@ -14359,9 +14994,9 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func processNew<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(URL)> where M1.MatchedType == URL {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL)>] = [wrap(matchable: url) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "processNew(url: URL)", parameterMatchers: matchers))
+	    func process<M1: Cuckoo.Matchable>(page: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserPage)> where M1.MatchedType == DAppBrowserPage {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserPage)>] = [wrap(matchable: page) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "process(page: DAppBrowserPage)", parameterMatchers: matchers))
 	    }
 	    
 	    func process<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(message: M1, host: M2, transport name: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(Any, String, String)> where M1.MatchedType == Any, M2.MatchedType == String, M3.MatchedType == String {
@@ -14372,6 +15007,11 @@ import Foundation
 	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String?)> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "activateSearch(with: String?)", parameterMatchers: matchers))
+	    }
+	    
+	    func toggleFavorite() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserPresenterProtocol.self, method: "toggleFavorite()", parameterMatchers: matchers))
 	    }
 	    
 	    func close() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -14402,9 +15042,9 @@ import Foundation
 	    }
 	    
 	    @discardableResult
-	    func processNew<M1: Cuckoo.Matchable>(url: M1) -> Cuckoo.__DoNotUse<(URL), Void> where M1.MatchedType == URL {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL)>] = [wrap(matchable: url) { $0 }]
-	        return cuckoo_manager.verify("processNew(url: URL)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func process<M1: Cuckoo.Matchable>(page: M1) -> Cuckoo.__DoNotUse<(DAppBrowserPage), Void> where M1.MatchedType == DAppBrowserPage {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserPage)>] = [wrap(matchable: page) { $0 }]
+	        return cuckoo_manager.verify("process(page: DAppBrowserPage)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14417,6 +15057,12 @@ import Foundation
 	    func activateSearch<M1: Cuckoo.OptionalMatchable>(with query: M1) -> Cuckoo.__DoNotUse<(String?), Void> where M1.OptionalMatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?)>] = [wrap(matchable: query) { $0 }]
 	        return cuckoo_manager.verify("activateSearch(with: String?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func toggleFavorite() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("toggleFavorite()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -14434,21 +15080,37 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func processNew(url: URL)   {
+    
+    
+     func process(page: DAppBrowserPage)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func process(message: Any, host: String, transport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateSearch(with query: String?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
+    
+     func toggleFavorite()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
     
      func close()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -14573,6 +15235,21 @@ import Foundation
     
     
     
+     func removeFromFavorites(record: DAppFavorite)  {
+        
+    return cuckoo_manager.call("removeFromFavorites(record: DAppFavorite)",
+            parameters: (record),
+            escapingParameters: (record),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeFromFavorites(record: record))
+        
+    }
+    
+    
+    
      func reload()  {
         
     return cuckoo_manager.call("reload()",
@@ -14623,6 +15300,11 @@ import Foundation
 	    func processAuth<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(response: M1, forTransport name: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppAuthResponse, String)> where M1.MatchedType == DAppAuthResponse, M2.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppAuthResponse, String)>] = [wrap(matchable: response) { $0.0 }, wrap(matchable: name) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "processAuth(response: DAppAuthResponse, forTransport: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(record: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppFavorite)> where M1.MatchedType == DAppFavorite {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppFavorite)>] = [wrap(matchable: record) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorInputProtocol.self, method: "removeFromFavorites(record: DAppFavorite)", parameterMatchers: matchers))
 	    }
 	    
 	    func reload() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -14683,6 +15365,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(record: M1) -> Cuckoo.__DoNotUse<(DAppFavorite), Void> where M1.MatchedType == DAppFavorite {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppFavorite)>] = [wrap(matchable: record) { $0 }]
+	        return cuckoo_manager.verify("removeFromFavorites(record: DAppFavorite)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func reload() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("reload()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -14697,29 +15385,49 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func process(host: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func process(message: Any, host: String, transport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func processConfirmation(response: DAppOperationResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func process(newQuery: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func processAuth(response: DAppAuthResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
+    
+     func removeFromFavorites(record: DAppFavorite)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
     
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -14857,6 +15565,21 @@ import Foundation
         
     }
     
+    
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])  {
+        
+    return cuckoo_manager.call("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavorite(changes: changes))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppBrowserInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -14899,6 +15622,11 @@ import Foundation
 	    func didDetectPhishing<M1: Cuckoo.Matchable>(host: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
 	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: host) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didDetectPhishing(host: String)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserInteractorOutputProtocol.self, method: "didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -14959,6 +15687,12 @@ import Foundation
 	        return cuckoo_manager.verify("didDetectPhishing(host: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<DAppFavorite>]), Void> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -14968,31 +15702,51 @@ import Foundation
     
 
     
+    
+    
      func didReceive(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDApp(model: DAppBrowserModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveReplacement(transports: [DAppTransportModel], postExecution script: DAppScriptResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(response: DAppScriptResponse, forTransport name: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveConfirmation(request: DAppOperationRequest, type: DAppSigningType)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAuth(request: DAppAuthRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didDetectPhishing(host: String)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15085,6 +15839,21 @@ import Foundation
     
     
     
+     func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage)  {
+        
+    return cuckoo_manager.call("presentAddToFavoriteForm(from: DAppBrowserViewProtocol?, page: DAppBrowserPage)",
+            parameters: (view, page),
+            escapingParameters: (view, page),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.presentAddToFavoriteForm(from: view, page: page))
+        
+    }
+    
+    
+    
      func close(view: DAppBrowserViewProtocol?)  {
         
     return cuckoo_manager.call("close(view: DAppBrowserViewProtocol?)",
@@ -15095,36 +15864,6 @@ import Foundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.close(view: view))
-        
-    }
-    
-    
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
-            parameters: (message, title, closeAction, view),
-            escapingParameters: (message, title, closeAction, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
-        
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
-            parameters: (viewModel, style, view),
-            escapingParameters: (viewModel, style, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
         
     }
     
@@ -15157,19 +15896,14 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentPhishingDetected(from: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)", parameterMatchers: matchers))
 	    }
 	    
+	    func presentAddToFavoriteForm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, page: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?, DAppBrowserPage)> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppBrowserPage {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppBrowserPage)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: page) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "presentAddToFavoriteForm(from: DAppBrowserViewProtocol?, page: DAppBrowserPage)", parameterMatchers: matchers))
+	    }
+	    
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppBrowserViewProtocol?)> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "close(view: DAppBrowserViewProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppBrowserWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15213,21 +15947,15 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func presentAddToFavoriteForm<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, page: M2) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?, DAppBrowserPage), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol, M2.MatchedType == DAppBrowserPage {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?, DAppBrowserPage)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: page) { $0.1 }]
+	        return cuckoo_manager.verify("presentAddToFavoriteForm(from: DAppBrowserViewProtocol?, page: DAppBrowserPage)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func close<M1: Cuckoo.OptionalMatchable>(view: M1) -> Cuckoo.__DoNotUse<(DAppBrowserViewProtocol?), Void> where M1.OptionalMatchedType == DAppBrowserViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(DAppBrowserViewProtocol?)>] = [wrap(matchable: view) { $0 }]
 	        return cuckoo_manager.verify("close(view: DAppBrowserViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -15239,31 +15967,39 @@ import Foundation
     
 
     
+    
+    
      func presentOperationConfirm(from view: DAppBrowserViewProtocol?, request: DAppOperationRequest, type: DAppSigningType, delegate: DAppOperationConfirmDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentSearch(from view: DAppBrowserViewProtocol?, initialQuery: String?, delegate: DAppSearchDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentAuth(from view: DAppBrowserViewProtocol?, request: DAppAuthRequest, delegate: DAppAuthDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentPhishingDetected(from view: DAppBrowserViewProtocol?, delegate: DAppPhishingViewDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
+     func presentAddToFavoriteForm(from view: DAppBrowserViewProtocol?, page: DAppBrowserPage)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
      func close(view: DAppBrowserViewProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15273,6 +16009,7 @@ import Foundation
 import Cuckoo
 @testable import novawallet
 
+import RobinHood
 import SubstrateSdk
 
 
@@ -15454,6 +16191,7 @@ import SubstrateSdk
 }
 
  class DAppListViewProtocolStub: DAppListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -15462,6 +16200,7 @@ import SubstrateSdk
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -15475,13 +16214,19 @@ import SubstrateSdk
     
 
     
+    
+    
      func didReceiveAccount(icon: DrawableIcon)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(state: DAppListState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didCompleteRefreshing()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -15571,6 +16316,21 @@ import SubstrateSdk
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.activateSearch())
+        
+    }
+    
+    
+    
+     func activateSettings()  {
+        
+    return cuckoo_manager.call("activateSettings()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateSettings())
         
     }
     
@@ -15679,6 +16439,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func toogleFavoriteForDApp(at index: Int)  {
+        
+    return cuckoo_manager.call("toogleFavoriteForDApp(at: Int)",
+            parameters: (index),
+            escapingParameters: (index),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.toogleFavoriteForDApp(at: index))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListPresenterProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -15706,6 +16481,11 @@ import SubstrateSdk
 	    func activateSearch() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateSearch()", parameterMatchers: matchers))
+	    }
+	    
+	    func activateSettings() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "activateSettings()", parameterMatchers: matchers))
 	    }
 	    
 	    func numberOfCategories() -> Cuckoo.ProtocolStubFunction<(), Int> {
@@ -15741,6 +16521,11 @@ import SubstrateSdk
 	    func selectDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "selectDApp(at: Int)", parameterMatchers: matchers))
+	    }
+	    
+	    func toogleFavoriteForDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListPresenterProtocol.self, method: "toogleFavoriteForDApp(at: Int)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15781,6 +16566,12 @@ import SubstrateSdk
 	    func activateSearch() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateSearch()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func activateSettings() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("activateSettings()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -15825,6 +16616,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("selectDApp(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func toogleFavoriteForDApp<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
+	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
+	        return cuckoo_manager.verify("toogleFavoriteForDApp(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -15834,47 +16631,81 @@ import SubstrateSdk
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func refresh()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateSearch()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
+     func activateSettings()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
      func numberOfCategories() -> Int  {
         return DefaultValueRegistry.defaultValue(for: (Int).self)
     }
+    
+    
     
      func category(at index: Int) -> String  {
         return DefaultValueRegistry.defaultValue(for: (String).self)
     }
     
+    
+    
      func selectedCategoryIndex() -> Int  {
         return DefaultValueRegistry.defaultValue(for: (Int).self)
     }
+    
+    
     
      func selectCategory(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func numberOfDApps() -> Int  {
         return DefaultValueRegistry.defaultValue(for: (Int).self)
     }
+    
+    
     
      func dApp(at index: Int) -> DAppViewModel  {
         return DefaultValueRegistry.defaultValue(for: (DAppViewModel).self)
     }
     
+    
+    
      func selectDApp(at index: Int)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func toogleFavoriteForDApp(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -15935,6 +16766,36 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func addToFavorites(dApp: DApp)  {
+        
+    return cuckoo_manager.call("addToFavorites(dApp: DApp)",
+            parameters: (dApp),
+            escapingParameters: (dApp),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.addToFavorites(dApp: dApp))
+        
+    }
+    
+    
+    
+     func removeFromFavorites(dAppIdentifier: String)  {
+        
+    return cuckoo_manager.call("removeFromFavorites(dAppIdentifier: String)",
+            parameters: (dAppIdentifier),
+            escapingParameters: (dAppIdentifier),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.removeFromFavorites(dAppIdentifier: dAppIdentifier))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorInputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -15952,6 +16813,16 @@ import SubstrateSdk
 	    func refresh() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "refresh()", parameterMatchers: matchers))
+	    }
+	    
+	    func addToFavorites<M1: Cuckoo.Matchable>(dApp: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DApp)> where M1.MatchedType == DApp {
+	        let matchers: [Cuckoo.ParameterMatcher<(DApp)>] = [wrap(matchable: dApp) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "addToFavorites(dApp: DApp)", parameterMatchers: matchers))
+	    }
+	    
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(dAppIdentifier: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(String)> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: dAppIdentifier) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorInputProtocol.self, method: "removeFromFavorites(dAppIdentifier: String)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -15982,6 +16853,18 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("refresh()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func addToFavorites<M1: Cuckoo.Matchable>(dApp: M1) -> Cuckoo.__DoNotUse<(DApp), Void> where M1.MatchedType == DApp {
+	        let matchers: [Cuckoo.ParameterMatcher<(DApp)>] = [wrap(matchable: dApp) { $0 }]
+	        return cuckoo_manager.verify("addToFavorites(dApp: DApp)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func removeFromFavorites<M1: Cuckoo.Matchable>(dAppIdentifier: M1) -> Cuckoo.__DoNotUse<(String), Void> where M1.MatchedType == String {
+	        let matchers: [Cuckoo.ParameterMatcher<(String)>] = [wrap(matchable: dAppIdentifier) { $0 }]
+	        return cuckoo_manager.verify("removeFromFavorites(dAppIdentifier: String)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -15991,11 +16874,27 @@ import SubstrateSdk
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func refresh()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func addToFavorites(dApp: DApp)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func removeFromFavorites(dAppIdentifier: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16056,6 +16955,21 @@ import SubstrateSdk
         
     }
     
+    
+    
+     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])  {
+        
+    return cuckoo_manager.call("didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavoriteDapp(changes: changes))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppListInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -16073,6 +16987,11 @@ import SubstrateSdk
 	    func didReceive<M1: Cuckoo.OptionalMatchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList, Error>?)> where M1.OptionalMatchedType == Result<DAppList, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList, Error>?)>] = [wrap(matchable: dAppsResult) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList, Error>?)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavoriteDapp<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListInteractorOutputProtocol.self, method: "didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -16103,6 +17022,12 @@ import SubstrateSdk
 	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList, Error>?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavoriteDapp<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<DAppFavorite>]), Void> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -16112,11 +17037,21 @@ import SubstrateSdk
     
 
     
+    
+    
      func didReceive(accountIdResult: Result<AccountId, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(dAppsResult: Result<DAppList, Error>?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -16194,31 +17129,16 @@ import SubstrateSdk
     
     
     
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
+     func showSetting(from view: DAppListViewProtocol?)  {
         
-    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
-            parameters: (message, title, closeAction, view),
-            escapingParameters: (message, title, closeAction, view),
+    return cuckoo_manager.call("showSetting(from: DAppListViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
-        
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
-            parameters: (viewModel, style, view),
-            escapingParameters: (viewModel, style, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
+            defaultCall: __defaultImplStub!.showSetting(from: view))
         
     }
     
@@ -16261,14 +17181,9 @@ import SubstrateSdk
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showBrowser(from: DAppListViewProtocol?, for: DAppSearchResult)", parameterMatchers: matchers))
 	    }
 	    
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
+	    func showSetting<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(DAppListViewProtocol?)> where M1.OptionalMatchedType == DAppListViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppListWireframeProtocol.self, method: "showSetting(from: DAppListViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
@@ -16311,15 +17226,9 @@ import SubstrateSdk
 	    }
 	    
 	    @discardableResult
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showSetting<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(DAppListViewProtocol?), Void> where M1.OptionalMatchedType == DAppListViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(DAppListViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showSetting(from: DAppListViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -16337,25 +17246,31 @@ import SubstrateSdk
     
 
     
+    
+    
      func showWalletSelection(from view: DAppListViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
+    
+    
+     func showSetting(from view: DAppListViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -16522,6 +17437,7 @@ import SubstrateSdk
 }
 
  class DAppOperationConfirmViewProtocolStub: DAppOperationConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -16530,6 +17446,7 @@ import SubstrateSdk
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -16543,9 +17460,13 @@ import SubstrateSdk
     
 
     
+    
+    
      func didReceive(confimationViewModel: DAppOperationConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(feeViewModel: DAppOperationFeeViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -16716,17 +17637,25 @@ import SubstrateSdk
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func reject()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateTxDetails()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -16923,21 +17852,31 @@ import SubstrateSdk
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func reject()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func prepareTxDetails()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17134,21 +18073,31 @@ import SubstrateSdk
     
 
     
+    
+    
      func didReceive(modelResult: Result<DAppOperationConfirmModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(feeResult: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(priceResult: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(responseResult: Result<DAppOperationResponse, Error>, for request: DAppOperationRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(txDetailsResult: Result<JSON, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17319,17 +18268,25 @@ import SubstrateSdk
     
 
     
+    
+    
      func close(view: DAppOperationConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17421,6 +18378,8 @@ import SubstrateSdk
 
     
 
+    
+    
     
      func didReceiveConfirmationResponse(_ response: DAppOperationResponse, for request: DAppOperationRequest)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17587,6 +18546,7 @@ import RobinHood
 }
 
  class DAppSearchViewProtocolStub: DAppSearchViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -17595,6 +18555,7 @@ import RobinHood
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -17608,9 +18569,13 @@ import RobinHood
     
 
     
+    
+    
      func didReceive(initialQuery: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveDApp(viewModels: [DAppViewModel])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17807,21 +18772,31 @@ import RobinHood
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func updateSearch(query: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectDApp(viewModel: DAppViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectSearchQuery()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func cancel()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -17914,6 +18889,8 @@ import RobinHood
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -17960,6 +18937,21 @@ import RobinHood
         
     }
     
+    
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])  {
+        
+    return cuckoo_manager.call("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])",
+            parameters: (changes),
+            escapingParameters: (changes),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveFavorite(changes: changes))
+        
+    }
+    
 
 	 struct __StubbingProxy_DAppSearchInteractorOutputProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -17972,6 +18964,11 @@ import RobinHood
 	    func didReceive<M1: Cuckoo.Matchable>(dAppsResult: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<DAppList?, Error>)> where M1.MatchedType == Result<DAppList?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<DAppList?, Error>)>] = [wrap(matchable: dAppsResult) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorOutputProtocol.self, method: "didReceive(dAppsResult: Result<DAppList?, Error>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([DataProviderChange<DAppFavorite>])> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockDAppSearchInteractorOutputProtocol.self, method: "didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -17996,6 +18993,12 @@ import RobinHood
 	        return cuckoo_manager.verify("didReceive(dAppsResult: Result<DAppList?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceiveFavorite<M1: Cuckoo.Matchable>(changes: M1) -> Cuckoo.__DoNotUse<([DataProviderChange<DAppFavorite>]), Void> where M1.MatchedType == [DataProviderChange<DAppFavorite>] {
+	        let matchers: [Cuckoo.ParameterMatcher<([DataProviderChange<DAppFavorite>])>] = [wrap(matchable: changes) { $0 }]
+	        return cuckoo_manager.verify("didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -18005,7 +19008,15 @@ import RobinHood
     
 
     
+    
+    
      func didReceive(dAppsResult: Result<DAppList?, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -18095,6 +19106,8 @@ import RobinHood
 
     
 
+    
+    
     
      func close(from view: DAppSearchViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18186,6 +19199,8 @@ import RobinHood
 
     
 
+    
+    
     
      func didCompleteDAppSearchResult(_ result: DAppSearchResult)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18353,6 +19368,7 @@ import SoraFoundation
 }
 
  class AccountExportPasswordViewProtocolStub: AccountExportPasswordViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -18361,6 +19377,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -18374,9 +19391,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setPasswordInputViewModel(_ viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func setPasswordConfirmationViewModel(_ viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18495,9 +19516,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18589,6 +19614,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func exportAccount(password: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18707,9 +19734,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didExport(json: RestoreJson)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -18854,13 +19885,19 @@ import SoraFoundation
     
 
     
+    
+    
      func showJSONExport(_ json: RestoreJson, from view: AccountExportPasswordViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19002,6 +20039,7 @@ import SoraFoundation
 }
 
  class ExportGenericViewProtocolStub: ExportGenericViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -19010,6 +20048,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -19022,6 +20061,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func set(viewModel: ExportGenericViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19166,13 +20207,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateExport()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateAdvancedSettings()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19369,21 +20416,31 @@ import SoraFoundation
     
 
     
+    
+    
      func close(view: ExportGenericViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func share(source: UIActivityItemSource, from view: ControllerBackedProtocol?, with completionHandler: SharingCompletionHandler?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19480,6 +20537,8 @@ import IrohaCrypto
 
     
 
+    
+    
     
      func fetchExportData()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19598,9 +20657,13 @@ import IrohaCrypto
     
 
     
+    
+    
      func didReceive(exportData: ExportMnemonicData)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -19823,25 +20886,37 @@ import IrohaCrypto
     
 
     
+    
+    
      func openConfirmationForMnemonic(_ mnemonic: IRMnemonicProtocol, from view: ExportGenericViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close(view: ExportGenericViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func share(source: UIActivityItemSource, from view: ControllerBackedProtocol?, with completionHandler: SharingCompletionHandler?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -20043,21 +21118,31 @@ import Foundation
     
 
     
+    
+    
      func close(view: ExportGenericViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAdvancedSettings(from view: ExportGenericViewProtocol?, secretSource: SecretSource, settings: AdvancedWalletSettings)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func share(source: UIActivityItemSource, from view: ControllerBackedProtocol?, with completionHandler: SharingCompletionHandler?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -20172,6 +21257,7 @@ import Foundation
 }
 
  class OnboardingMainViewProtocolStub: OnboardingMainViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -20180,6 +21266,7 @@ import Foundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -20384,21 +21471,31 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activateSignup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateAccountRestore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateTerms()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func activatePrivacy()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -20621,25 +21718,37 @@ import Foundation
     
 
     
+    
+    
      func showSignup(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAccountRestore(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showKeystoreImport(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -20732,6 +21841,8 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -20822,6 +21933,8 @@ import Foundation
 
     
 
+    
+    
     
      func didSuggestKeystoreImport()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21014,6 +22127,7 @@ import UIKit
 }
 
  class PinSetupViewProtocolStub: PinSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -21022,6 +22136,7 @@ import UIKit
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -21035,13 +22150,19 @@ import UIKit
     
 
     
+    
+    
      func didRequestBiometryUsage(biometryType: AvailableBiometryType, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didChangeAccessoryState(enabled: Bool, availableBiometryType: AvailableBiometryType)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveWrongPincode()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21212,17 +22333,25 @@ import UIKit
     
 
     
+    
+    
      func start()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func cancel()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func activateBiometricAuth()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func submit(pin: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21314,6 +22443,8 @@ import UIKit
 
     
 
+    
+    
     
      func process(pin: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21458,13 +22589,19 @@ import UIKit
     
 
     
+    
+    
      func didSavePin()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartWaitingBiometryDecision(type: AvailableBiometryType, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didChangeState(from: PinSetupInteractor.PinSetupState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21583,9 +22720,13 @@ import UIKit
     
 
     
+    
+    
      func showMain(from view: PinSetupViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showSignup(from view: PinSetupViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21682,6 +22823,8 @@ import UIKit
 
     
 
+    
+    
     
      func loadOnLaunch()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21852,17 +22995,25 @@ import UIKit
     
 
     
+    
+    
      func showLocalAuthentication(on view: UIWindow)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showOnboarding(on view: UIWindow)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showPincodeSetup(on view: UIWindow)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showBroken(on view: UIWindow)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -21981,9 +23132,13 @@ import UIKit
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func decideModuleSynchroniously()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -22154,17 +23309,25 @@ import UIKit
     
 
     
+    
+    
      func didDecideOnboarding()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didDecideLocalAuthentication()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didDecidePincodeSetup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didDecideBroken()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -22332,6 +23495,7 @@ import UIKit.UIImage
 }
 
  class SettingsViewProtocolStub: SettingsViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -22340,6 +23504,7 @@ import UIKit.UIImage
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -22353,9 +23518,13 @@ import UIKit.UIImage
     
 
     
+    
+    
      func reload(sections: [(SettingsSection, [SettingsCellViewModel])])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didLoad(userViewModel: SettingsAccountViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -22519,6 +23688,7 @@ import UIKit.UIImage
 }
 
  class SettingsPresenterProtocolStub: SettingsPresenterProtocol {
+        
     
     
      var appNameText: String {
@@ -22532,13 +23702,19 @@ import UIKit.UIImage
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func actionRow(_ row: SettingsRow)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleWalletAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -22657,9 +23833,13 @@ import UIKit.UIImage
     
 
     
+    
+    
      func createAccountViewModel(for wallet: MetaAccountModel) -> SettingsAccountViewModel  {
         return DefaultValueRegistry.defaultValue(for: (SettingsAccountViewModel).self)
     }
+    
+    
     
      func createSectionViewModels(language: Language?, locale: Locale) -> [(SettingsSection, [SettingsCellViewModel])]  {
         return DefaultValueRegistry.defaultValue(for: ([(SettingsSection, [SettingsCellViewModel])]).self)
@@ -22751,6 +23931,8 @@ import UIKit.UIImage
 
     
 
+    
+    
     
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -22869,9 +24051,13 @@ import UIKit.UIImage
     
 
     
+    
+    
      func didReceive(wallet: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveUserDataProvider(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -23146,33 +24332,49 @@ import UIKit.UIImage
     
 
     
+    
+    
      func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAccountSelection(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showLanguageSelection(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showPincodeChange(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -23373,6 +24575,7 @@ import SoraFoundation
 }
 
  class AnalyticsRewardDetailsViewProtocolStub: AnalyticsRewardDetailsViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -23381,6 +24584,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -23389,6 +24593,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -23404,9 +24609,13 @@ import SoraFoundation
     
 
     
+    
+    
      func bind(viewModel: LocalizableResource<AnalyticsRewardDetailsViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -23525,9 +24734,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleEventIdAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -23820,17 +25033,25 @@ import SoraFoundation
     
 
     
+    
+    
      func presentSuccessNotification(_ title: String, from view: ControllerBackedProtocol?, completion closure: (() -> Void)?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -23922,6 +25143,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func createViweModel(rewardModel: AnalyticsRewardDetailsModel) -> LocalizableResource<AnalyticsRewardDetailsViewModel>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<AnalyticsRewardDetailsViewModel>).self)
@@ -24122,6 +25345,7 @@ import SoraFoundation
 }
 
  class ControllerAccountViewProtocolStub: ControllerAccountViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -24130,6 +25354,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -24138,6 +25363,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -24153,9 +25379,13 @@ import SoraFoundation
     
 
     
+    
+    
      func reload(with viewModel: ControllerAccountViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -24247,6 +25477,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func createViewModel(stashItem: StashItem, stashAccountItem: ChainAccountResponse?, chosenAccountItem: ChainAccountResponse?) -> ControllerAccountViewModel  {
         return DefaultValueRegistry.defaultValue(for: (ControllerAccountViewModel).self)
@@ -24443,21 +25675,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleStashAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func handleControllerAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectLearnMore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -24628,17 +25870,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for account: ChainAccountResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func fetchLedger(controllerAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func fetchControllerAccountInfo(controllerAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -24887,29 +26137,43 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStashAccount(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveControllerAccount(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -25132,25 +26396,37 @@ import SoraFoundation
     
 
     
+    
+    
      func showConfirmation(from view: ControllerBackedProtocol?, controllerAccountItem: ChainAccountResponse)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close(view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -25249,6 +26525,8 @@ import RobinHood
 
     
 
+    
+    
     
      func networkStakingOperation(for eraValidatorService: EraValidatorServiceProtocol, runtimeService: RuntimeCodingServiceProtocol) -> CompoundOperationWrapper<NetworkStakingInfo>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<NetworkStakingInfo>).self)
@@ -25451,21 +26729,31 @@ import RobinHood
     
 
     
+    
+    
      func allElectedOperation() -> CompoundOperationWrapper<[ElectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[ElectedValidatorInfo]>).self)
     }
+    
+    
     
      func allSelectedOperation(by nomination: Nomination, nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
     }
     
+    
+    
      func activeValidatorsOperation(for nominatorAddress: AccountAddress) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
     }
     
+    
+    
      func pendingValidatorsOperation(for accountIds: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
     }
+    
+    
     
      func wannabeValidatorsOperation(for accountIdList: [AccountId]) -> CompoundOperationWrapper<[SelectedValidatorInfo]>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<[SelectedValidatorInfo]>).self)
@@ -25692,6 +26980,7 @@ import SoraFoundation
 }
 
  class CustomValidatorListViewProtocolStub: CustomValidatorListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -25700,6 +26989,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -25708,6 +26998,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -25723,13 +27014,19 @@ import SoraFoundation
     
 
     
+    
+    
      func reload(_ viewModel: CustomValidatorListViewModel, at indexes: [Int]?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func setFilterAppliedState(to state: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -26056,41 +27353,61 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func fillWithRecommended()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func clearFilter()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func deselectAll()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func changeValidatorSelection(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSelectValidator(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentFilter()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentSearch()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didRemove(_ validator: SelectedValidatorInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -26183,6 +27500,8 @@ import SoraFoundation
     
 
     
+    
+    
      func createViewModel(from validatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], totalValidatorsCount: Int, filter: CustomValidatorListFilter, priceData: PriceData?, locale: Locale) -> CustomValidatorListViewModel  {
         return DefaultValueRegistry.defaultValue(for: (CustomValidatorListViewModel).self)
     }
@@ -26274,6 +27593,8 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -26364,6 +27685,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -26586,25 +27909,37 @@ import SoraFoundation
     
 
     
+    
+    
      func present(_ validatorInfo: ValidatorInfoProtocol, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentFilters(from view: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentSearch(from view: ControllerBackedProtocol?, fullValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], delegate: ValidatorSearchDelegate?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed(from view: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], maxTargets: Int, delegate: SelectedValidatorListDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -26805,6 +28140,7 @@ import SoraFoundation
 }
 
  class RecommendedValidatorListViewProtocolStub: RecommendedValidatorListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -26813,6 +28149,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -26821,6 +28158,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -26836,9 +28174,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(viewModel: RecommendedValidatorListViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -26983,13 +28325,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectedValidatorAt(index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -27108,9 +28456,13 @@ import SoraFoundation
     
 
     
+    
+    
      func present(_ validatorInfo: SelectedValidatorInfo, from view: RecommendedValidatorListViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed(from view: RecommendedValidatorListViewProtocol?, targets: [SelectedValidatorInfo], maxTargets: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -27491,6 +28843,7 @@ import SoraFoundation
 }
 
  class SelectValidatorsConfirmViewProtocolStub: SelectValidatorsConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -27499,6 +28852,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -27507,6 +28861,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -27517,6 +28872,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -27525,6 +28881,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -27538,29 +28895,43 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(confirmationViewModel: LocalizableResource<SelectValidatorsConfirmViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(hintsViewModel: LocalizableResource<[TitleIconViewModel]>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -27731,17 +29102,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectWalletAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectPayoutAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -27886,13 +29265,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submitNomination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -28271,49 +29656,73 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveModel(result: Result<SelectValidatorsConfirmationModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePrice(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMinBond(result: Result<BigUInt?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveCounterForNominators(result: Result<UInt32?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStakingDuration(result: Result<StakingDuration, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStartNomination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didCompleteNomination(txHash: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didFailNomination(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(paymentInfo: RuntimeDispatchInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(feeError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -28458,13 +29867,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: SelectValidatorsConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -28666,6 +30081,7 @@ import SoraFoundation
 }
 
  class SelectValidatorsStartViewProtocolStub: SelectValidatorsStartViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -28674,6 +30090,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -28682,6 +30099,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -28697,9 +30115,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(viewModel: SelectValidatorsStartViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -28870,17 +30292,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func updateOnAppearance()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectRecommendedValidators()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectCustomValidators()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -28972,6 +30402,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29090,9 +30522,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveValidators(result: Result<[ElectedValidatorInfo], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMaxNominations(result: Result<Int, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29263,17 +30699,25 @@ import SoraFoundation
     
 
     
+    
+    
      func proceedToCustomList(from view: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceedToRecommendedList(from view: SelectValidatorsStartViewProtocol?, validatorList: [SelectedValidatorInfo], maxTargets: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29500,6 +30944,7 @@ import SoraFoundation
 }
 
  class SelectedValidatorListViewProtocolStub: SelectedValidatorListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -29508,6 +30953,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -29516,6 +30962,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -29531,13 +30978,19 @@ import SoraFoundation
     
 
     
+    
+    
      func didReload(_ viewModel: SelectedValidatorListViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didChangeViewModel(_ viewModel: SelectedValidatorListViewModel, byRemovingItemAt index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29629,6 +31082,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func didRemove(_ validator: SelectedValidatorInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29825,21 +31280,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSelectValidator(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func removeItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func dismiss()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -29931,6 +31396,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func createViewModel(from validatorList: [SelectedValidatorInfo], totalValidatorsCount: Int, locale: Locale) -> SelectedValidatorListViewModel  {
         return DefaultValueRegistry.defaultValue(for: (SelectedValidatorListViewModel).self)
@@ -30127,21 +31594,31 @@ import SoraFoundation
     
 
     
+    
+    
      func present(_ validatorInfo: ValidatorInfoProtocol, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed(from view: SelectedValidatorListViewProtocol?, targets: [SelectedValidatorInfo], maxTargets: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func dismiss(_ view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -30353,6 +31830,7 @@ import SoraFoundation
 }
 
  class ValidatorStakeInfoProtocolStub: ValidatorStakeInfoProtocol {
+        
     
     
      var nominators: [NominatorInfo] {
@@ -30361,6 +31839,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var totalStake: Decimal {
@@ -30369,6 +31848,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var ownStake: Decimal {
@@ -30377,6 +31857,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var stakeReturn: Decimal {
@@ -30385,6 +31866,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var maxNominatorsRewarded: UInt32 {
@@ -30393,6 +31875,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var oversubscribed: Bool {
@@ -30654,6 +32137,7 @@ import SoraFoundation
 }
 
  class ValidatorInfoProtocolStub: ValidatorInfoProtocol {
+        
     
     
      var address: String {
@@ -30662,6 +32146,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var identity: AccountIdentity? {
@@ -30670,6 +32155,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var stakeInfo: ValidatorStakeInfoProtocol? {
@@ -30678,6 +32164,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var myNomination: ValidatorMyNominationStatus? {
@@ -30686,6 +32173,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var totalStake: Decimal {
@@ -30694,6 +32182,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var ownStake: Decimal {
@@ -30702,6 +32191,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var hasSlashes: Bool {
@@ -30710,6 +32200,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var blocked: Bool {
@@ -30913,6 +32404,7 @@ import SoraFoundation
 }
 
  class ValidatorInfoViewProtocolStub: ValidatorInfoViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -30921,6 +32413,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -30929,6 +32422,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -30944,9 +32438,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didRecieve(state: ValidatorInfoState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31065,9 +32563,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31212,13 +32714,19 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoadingValidatorInfo()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveValidatorInfo(result: Result<ValidatorInfoProtocol?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31415,21 +32923,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentTotalStake()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentIdentityItem(_ value: ValidatorInfoViewModel.IdentityItemValue)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31600,17 +33118,25 @@ import SoraFoundation
     
 
     
+    
+    
      func showStakingAmounts(from view: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31707,6 +33233,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func close(_ view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -31902,6 +33430,7 @@ import SoraFoundation
 }
 
  class ValidatorListFilterViewProtocolStub: ValidatorListFilterViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -31910,6 +33439,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -31918,6 +33448,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -31933,9 +33464,13 @@ import SoraFoundation
     
 
     
+    
+    
      func didUpdateViewModel(_ viewModel: ValidatorListFilterViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -32221,6 +33756,7 @@ import SoraFoundation
 }
 
  class ValidatorListFilterPresenterProtocolStub: ValidatorListFilterPresenterProtocol {
+        
     
     
      var view: ValidatorListFilterViewProtocol? {
@@ -32231,6 +33767,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -32246,25 +33783,37 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func toggleFilterItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectFilterItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func applyFilter()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func resetFilter()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -32356,6 +33905,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func didUpdate(_ filter: CustomValidatorListFilter)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -32531,17 +34082,25 @@ import SoraFoundation
     
 
     
+    
+    
      func present(_ validatorInfo: ValidatorInfoProtocol, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close(_ view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -32633,6 +34192,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func validatorSearchDidUpdate(selectedValidatorList: [SelectedValidatorInfo])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -32906,6 +34467,7 @@ import SoraFoundation
 }
 
  class ValidatorSearchViewProtocolStub: ValidatorSearchViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -32914,6 +34476,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -32922,6 +34485,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -32937,21 +34501,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReload(_ viewModel: ValidatorSearchViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStartSearch()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStopSearch()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReset()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -33044,6 +34618,8 @@ import SoraFoundation
     
 
     
+    
+    
      func performValidatorSearch(accountId: AccountId)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -33134,6 +34710,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func didReceiveValidatorInfo(result: Result<SelectedValidatorInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -33385,6 +34963,7 @@ import SoraFoundation
 }
 
  class ValidatorSearchPresenterProtocolStub: ValidatorSearchPresenterProtocol {
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -33400,25 +34979,37 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func changeValidatorSelection(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func search(for textEntry: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSelectValidator(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func applyChanges()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -33510,6 +35101,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func createViewModel(from displayValidatorList: [SelectedValidatorInfo], selectedValidatorList: [SelectedValidatorInfo], locale: Locale) -> ValidatorSearchViewModel  {
         return DefaultValueRegistry.defaultValue(for: (ValidatorSearchViewModel).self)
@@ -33810,6 +35403,7 @@ import SoraFoundation
 }
 
  class YourValidatorListViewProtocolStub: YourValidatorListViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -33818,6 +35412,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -33826,6 +35421,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -33836,6 +35432,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -33844,6 +35441,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -33857,17 +35455,25 @@ import SoraFoundation
     
 
     
+    
+    
      func reload(state: YourValidatorListViewState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -34038,17 +35644,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func retry()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didSelectValidator(viewModel: YourValidatorViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func changeValidators()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -34167,9 +35781,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func refresh()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -34366,21 +35984,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveValidators(result: Result<YourValidatorsModel?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveRewardDestination(result: Result<RewardDestinationArg?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -34551,17 +36179,25 @@ import SoraFoundation
     
 
     
+    
+    
      func present(_ validatorInfo: ValidatorInfoProtocol, from view: YourValidatorListViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceedToSelectValidatorsStart(from view: YourValidatorListViewProtocol?, existingBonding: ExistingBonding)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -34816,6 +36452,7 @@ import SoraFoundation
 }
 
  class StakingBondMoreViewProtocolStub: StakingBondMoreViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -34824,6 +36461,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -34832,6 +36470,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -34847,17 +36486,25 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -35028,17 +36675,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleContinueAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func updateAmount(_ newValue: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAmountPercentage(_ percentage: Float)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -35157,9 +36812,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -35356,21 +37015,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStash(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -35541,17 +37210,25 @@ import SoraFoundation
     
 
     
+    
+    
      func showConfirmation(from view: ControllerBackedProtocol?, amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close(view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -35906,6 +37583,7 @@ import SoraFoundation
 }
 
  class StakingBondMoreConfirmationViewProtocolStub: StakingBondMoreConfirmationViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -35914,6 +37592,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -35922,6 +37601,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -35932,6 +37612,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -35940,6 +37621,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -35953,25 +37635,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveConfirmation(viewModel: StakingBondMoreConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -36116,13 +37810,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -36267,13 +37967,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submit(for amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -36496,25 +38202,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStash(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSubmitBonding(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -36659,13 +38377,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingBondMoreConfirmationViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -36947,6 +38671,7 @@ import SoraFoundation
 }
 
  class StakingMainViewProtocolStub: StakingMainViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -36955,6 +38680,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -36963,6 +38689,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -36978,21 +38705,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(viewModel: StakingMainViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStakingState(viewModel: StakingViewState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func expandNetworkInfoView(_ isExpanded: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -37449,61 +39186,91 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performAssetSelection()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performMainAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performAccountAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performNominationStatusAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performValidationStatusAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performRewardInfoAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performChangeValidatorsAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performSetupValidatorsForBondedAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performStakeMoreAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performRedeemAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performRebondAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func performAnalyticsAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func networkInfoViewDidChangeExpansion(isExpanded: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func performManageAction(_ action: StakingManageOption)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -37648,13 +39415,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func saveNetworkInfoViewExpansion(isExpanded: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func save(chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -38553,129 +40326,193 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(selectedAddress: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(price: PriceData?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(priceError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(totalReward: TotalRewardItem)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(totalRewardError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(accountInfo: AccountInfo?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(balanceError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(calculator: RewardCalculatorEngineProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(calculatorError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(stashItem: StashItem?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(stashItemError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(ledgerInfo: StakingLedger?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(ledgerInfoError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(nomination: Nomination?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(nominationError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(validatorPrefs: ValidatorPrefs?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(validatorError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(eraStakersInfo: EraStakersInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(eraStakersInfoError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(networkStakingInfo: NetworkStakingInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(networkStakingInfoError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(payee: RewardDestinationArg?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(payeeError: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(newChainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceieve(subqueryRewards: Result<[SubqueryRewardItemData]?, Error>, period: AnalyticsPeriod)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMinNominatorBond(result: Result<BigUInt?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveCounterForNominators(result: Result<UInt32?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMaxNominatorsCount(result: Result<UInt32?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(eraCountdownResult: Result<EraCountdown, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveMaxNominatorsPerValidator(result: Result<UInt32, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccount(_ account: MetaChainAccountResponse?, for accountId: AccountId)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func networkInfoViewExpansion(isExpanded: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -39210,73 +41047,109 @@ import SoraFoundation
     
 
     
+    
+    
      func showSetupAmount(from view: StakingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceedToSelectValidatorsStart(from view: StakingMainViewProtocol?, existingBonding: ExistingBonding)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showRewardPayoutsForNominator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showRewardPayoutsForValidator(from view: ControllerBackedProtocol?, stashAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showNominatorValidators(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showRewardDestination(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showControllerAccount(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showAccountsSelection(from view: StakingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showBondMore(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showUnbond(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showRedeem(from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showRebond(from view: ControllerBackedProtocol?, option: StakingRebondOption)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showAnalytics(from view: ControllerBackedProtocol?, mode: AnalyticsContainerViewMode)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showYourValidatorInfo(_ stashAddress: AccountAddress, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showChainAssetSelection(from view: StakingMainViewProtocol?, selectedChainAssetId: ChainAssetId?, delegate: AssetSelectionDelegate)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -39603,6 +41476,7 @@ import SoraFoundation
 }
 
  class StakingPayoutConfirmationViewProtocolStub: StakingPayoutConfirmationViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -39611,6 +41485,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -39619,6 +41494,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -39629,6 +41505,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -39637,6 +41514,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -39650,21 +41528,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -39809,13 +41697,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentAccountOptions(for viewModel: AccountInfoViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -39960,13 +41854,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submitPayout()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -40241,33 +42141,49 @@ import SoraFoundation
     
 
     
+    
+    
      func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<Decimal, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStartPayout()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didCompletePayout(txHashes: [String])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didFailPayout(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -40412,13 +42328,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingPayoutConfirmationViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -40773,6 +42695,7 @@ import SoraFoundation
 }
 
  class StakingRebondConfirmationViewProtocolStub: StakingRebondConfirmationViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -40781,6 +42704,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -40789,6 +42713,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -40799,6 +42724,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -40807,6 +42733,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -40820,25 +42747,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveConfirmation(viewModel: StakingRebondConfirmationViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -40983,13 +42922,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -41134,13 +43079,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submit(for amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -41415,33 +43366,49 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSubmitRebonding(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -41586,13 +43553,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingRebondConfirmationViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -41847,6 +43820,7 @@ import SoraFoundation
 }
 
  class StakingRebondSetupViewProtocolStub: StakingRebondSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -41855,6 +43829,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -41863,6 +43838,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -41878,17 +43854,25 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -42085,21 +44069,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAmountPercentage(_ percentage: Float)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func updateAmount(_ newValue: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -42218,9 +44212,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -42469,29 +44467,43 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -42662,17 +44674,25 @@ import SoraFoundation
     
 
     
+    
+    
      func proceed(view parameter0: StakingRebondSetupViewProtocol?, amount parameter1: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close(view: StakingRebondSetupViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -43027,6 +45047,7 @@ import SoraFoundation
 }
 
  class StakingRedeemViewProtocolStub: StakingRedeemViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -43035,6 +45056,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -43043,6 +45065,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -43053,6 +45076,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -43061,6 +45085,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -43074,25 +45099,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveConfirmation(viewModel: StakingRedeemViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -43237,13 +45274,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -43388,13 +45431,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submitForStash(_ stashAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFeeForStash(_ stashAddress: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -43695,37 +45744,55 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSubmitRedeeming(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -43870,13 +45937,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingRedeemViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -44203,6 +46276,7 @@ import SoraFoundation
 }
 
  class StakingRewardDestConfirmViewProtocolStub: StakingRewardDestConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -44211,6 +46285,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -44219,6 +46294,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -44229,6 +46305,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -44237,6 +46314,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -44250,21 +46328,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveConfirmation(viewModel: StakingRewardDestConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -44435,17 +46523,25 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func presentSenderAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentPayoutAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -44590,13 +46686,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func estimateFee(for rewardDestination: RewardDestination<AccountAddress>, stashItem: StashItem)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func submit(rewardDestination: RewardDestination<AccountAddress>, for stashItem: StashItem)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -44819,25 +46921,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSubmitRewardDest(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -44982,13 +47096,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingRewardDestConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -45216,6 +47336,7 @@ import SoraFoundation
 }
 
  class StakingRewardDestSetupViewProtocolStub: StakingRewardDestSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -45224,6 +47345,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -45232,6 +47354,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -45247,13 +47370,19 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveRewardDestination(viewModel: ChangeRewardDestinationViewModel?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -45476,25 +47605,37 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectRestakeDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func selectPayoutDestination()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectPayoutAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func displayLearnMore()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -45639,13 +47780,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func fetchPayoutAccounts()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -46024,49 +48171,73 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStash(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveRewardDestinationAddress(result: Result<RewardDestination<AccountAddress>?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveCalculator(result: Result<RewardCalculatorEngineProtocol?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveNomination(result: Result<Nomination?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -46263,21 +48434,31 @@ import SoraFoundation
     
 
     
+    
+    
      func proceed(view: StakingRewardDestSetupViewProtocol?, rewardDestination: RewardDestination<ChainAccountResponse>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -46478,6 +48659,7 @@ import SoraFoundation
 }
 
  class StakingRewardDetailsViewProtocolStub: StakingRewardDetailsViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -46486,6 +48668,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -46494,6 +48677,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -46509,9 +48693,13 @@ import SoraFoundation
     
 
     
+    
+    
      func reload(with viewModel: LocalizableResource<StakingRewardDetailsViewModel>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -46656,13 +48844,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func handlePayoutAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleValidatorAccountAction(locale: Locale)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -46755,6 +48949,8 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -46846,6 +49042,8 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceive(priceResult: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -46936,6 +49134,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func showPayoutConfirmation(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -47237,6 +49437,7 @@ import SoraUI
 }
 
  class StakingRewardPayoutsViewProtocolStub: StakingRewardPayoutsViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -47245,6 +49446,7 @@ import SoraUI
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -47253,6 +49455,7 @@ import SoraUI
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -47263,6 +49466,7 @@ import SoraUI
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -47271,6 +49475,7 @@ import SoraUI
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -47284,17 +49489,25 @@ import SoraUI
     
 
     
+    
+    
      func reload(with state: StakingRewardPayoutsViewState)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -47491,21 +49704,31 @@ import SoraUI
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func handleSelectedHistory(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func handlePayoutAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func getTimeLeftString(at index: Int) -> LocalizableResource<NSAttributedString>?  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<NSAttributedString>?).self)
@@ -47624,9 +49847,13 @@ import SoraUI
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func reload()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -47771,13 +49998,19 @@ import SoraUI
     
 
     
+    
+    
      func didReceive(result: Result<PayoutsInfo, PayoutRewardsServiceError>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceive(priceResult: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceive(eraCountdownResult: Result<EraCountdown, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -47896,9 +50129,13 @@ import SoraUI
     
 
     
+    
+    
      func showRewardDetails(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showPayoutConfirmation(for payouts: [PayoutInfo], from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -48017,9 +50254,13 @@ import SoraUI
     
 
     
+    
+    
      func createPayoutsViewModel(payoutsInfo: PayoutsInfo, priceData: PriceData?, eraCountdown: EraCountdown?) -> LocalizableResource<StakingPayoutViewModel>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<StakingPayoutViewModel>).self)
     }
+    
+    
     
      func timeLeftString(at index: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<NSAttributedString>).self)
@@ -48374,6 +50615,7 @@ import SoraFoundation
 }
 
  class StakingUnbondConfirmViewProtocolStub: StakingUnbondConfirmViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -48382,6 +50624,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -48390,6 +50633,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -48400,6 +50644,7 @@ import SoraFoundation
         set { }
         
     }
+        
     
     
      var loadableContentView: UIView! {
@@ -48408,6 +50653,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var shouldDisableInteractionWhenLoading: Bool {
@@ -48421,25 +50667,37 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveConfirmation(viewModel: StakingUnbondConfirmViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didStartLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -48584,13 +50842,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func confirm()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAccount()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -48735,13 +50999,19 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func submit(for amount: Decimal, resettingRewardDestination: Bool, chilling: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee(for amount: Decimal, resettingRewardDestination: Bool, chilling: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -49094,45 +51364,67 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceivePayee(result: Result<RewardDestinationArg?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveMinBonded(result: Result<BigUInt?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveNomination(result: Result<Nomination?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didSubmitUnbonding(result: Result<String, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -49277,13 +51569,19 @@ import SoraFoundation
     
 
     
+    
+    
      func complete(from view: StakingUnbondConfirmViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -49565,6 +51863,7 @@ import SoraFoundation
 }
 
  class StakingUnbondSetupViewProtocolStub: StakingUnbondSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -49573,6 +51872,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -49581,6 +51881,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
     public var localizationManager: LocalizationManagerProtocol? {
@@ -49596,21 +51897,31 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveBonding(duration: LocalizableResource<String>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func applyLocalization()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -49807,21 +52118,31 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func selectAmountPercentage(_ percentage: Float)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func updateAmount(_ newValue: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func close()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -49940,9 +52261,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func estimateFee()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -50243,37 +52568,55 @@ import SoraFoundation
     
 
     
+    
+    
      func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceivePriceData(result: Result<PriceData?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveBondingDuration(result: Result<UInt32, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func didReceiveStashItem(result: Result<StashItem?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didReceiveStakingDuration(result: Result<StakingDuration, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -50444,17 +52787,25 @@ import SoraFoundation
     
 
     
+    
+    
      func close(view: StakingUnbondSetupViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed(view: StakingUnbondSetupViewProtocol?, amount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -50595,6 +52946,7 @@ import SoraFoundation
 }
 
  class UsernameSetupViewProtocolStub: UsernameSetupViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -50603,6 +52955,7 @@ import SoraFoundation
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -50615,6 +52968,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func setInput(viewModel: InputViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -50733,9 +53088,13 @@ import SoraFoundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func proceed()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -50827,6 +53186,8 @@ import SoraFoundation
 
     
 
+    
+    
     
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51032,13 +53393,19 @@ import SoraFoundation
     
 
     
+    
+    
      func proceed(from view: UsernameSetupViewProtocol?, walletName: String)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51205,6 +53572,7 @@ import CommonWallet
 }
 
  class WalletHistoryFilterViewProtocolStub: WalletHistoryFilterViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -51213,6 +53581,7 @@ import CommonWallet
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -51226,9 +53595,13 @@ import CommonWallet
     
 
     
+    
+    
      func didReceive(viewModel: WalletHistoryFilterViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func didConfirm(viewModel: WalletHistoryFilterViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51399,17 +53772,25 @@ import CommonWallet
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func toggleFilterItem(at index: Int)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func apply()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func reset()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51501,6 +53882,8 @@ import CommonWallet
 
     
 
+    
+    
     
      func proceed(from view: WalletHistoryFilterViewProtocol?, applying filter: WalletHistoryFilter)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51641,6 +54024,7 @@ import CommonWallet
 }
 
  class OperationDetailsViewProtocolStub: OperationDetailsViewProtocol {
+        
     
     
      var isSetup: Bool {
@@ -51649,6 +54033,7 @@ import CommonWallet
         }
         
     }
+        
     
     
      var controller: UIViewController {
@@ -51661,6 +54046,8 @@ import CommonWallet
 
     
 
+    
+    
     
      func didReceive(viewModel: OperationDetailsViewModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51857,21 +54244,31 @@ import CommonWallet
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func showSenderActions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showRecepientActions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func showOperationActions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func send()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -51964,6 +54361,8 @@ import CommonWallet
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
@@ -52054,6 +54453,8 @@ import CommonWallet
 
     
 
+    
+    
     
      func didReceiveDetails(result: Result<OperationDetailsModel, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -52198,13 +54599,19 @@ import CommonWallet
     
 
     
+    
+    
      func showSend(from view: OperationDetailsViewProtocol?, displayAddress: DisplayAddress, chainAsset: ChainAsset)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)

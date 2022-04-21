@@ -1,4 +1,5 @@
 import Foundation
+import RobinHood
 
 protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
     func didReceive(viewModel: DAppBrowserModel)
@@ -7,13 +8,16 @@ protocol DAppBrowserViewProtocol: ControllerBackedProtocol {
         transports: [DAppTransportModel],
         postExecution script: DAppScriptResponse
     )
+
+    func didReceiveFavorite(flag: Bool)
 }
 
 protocol DAppBrowserPresenterProtocol: AnyObject {
     func setup()
-    func processNew(url: URL)
+    func process(page: DAppBrowserPage)
     func process(message: Any, host: String, transport name: String)
     func activateSearch(with query: String?)
+    func toggleFavorite()
     func close()
 }
 
@@ -24,6 +28,7 @@ protocol DAppBrowserInteractorInputProtocol: AnyObject {
     func processConfirmation(response: DAppOperationResponse, forTransport name: String)
     func process(newQuery: DAppSearchResult)
     func processAuth(response: DAppAuthResponse, forTransport name: String)
+    func removeFromFavorites(record: DAppFavorite)
     func reload()
 }
 
@@ -41,9 +46,10 @@ protocol DAppBrowserInteractorOutputProtocol: AnyObject {
     )
     func didReceiveAuth(request: DAppAuthRequest)
     func didDetectPhishing(host: String)
+    func didReceiveFavorite(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol DAppBrowserWireframeProtocol: DAppAlertPresentable, ErrorPresentable {
     func presentOperationConfirm(
         from view: DAppBrowserViewProtocol?,
         request: DAppOperationRequest,
@@ -66,6 +72,11 @@ protocol DAppBrowserWireframeProtocol: AlertPresentable, ErrorPresentable {
     func presentPhishingDetected(
         from view: DAppBrowserViewProtocol?,
         delegate: DAppPhishingViewDelegate
+    )
+
+    func presentAddToFavoriteForm(
+        from view: DAppBrowserViewProtocol?,
+        page: DAppBrowserPage
     )
 
     func close(view: DAppBrowserViewProtocol?)

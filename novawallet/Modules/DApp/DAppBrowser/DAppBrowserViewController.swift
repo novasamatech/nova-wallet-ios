@@ -11,6 +11,7 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
     private var urlObservation: NSKeyValueObservation?
     private var goBackObservation: NSKeyValueObservation?
     private var goForwardObservation: NSKeyValueObservation?
+    private var titleObservation: NSKeyValueObservation?
 
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
@@ -26,6 +27,9 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     deinit {
         urlObservation?.invalidate()
+        goBackObservation?.invalidate()
+        goForwardObservation?.invalidate()
+        titleObservation?.invalidate()
     }
 
     override func loadView() {
@@ -82,6 +86,17 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
             self?.didChangeGoForward(newValue)
         }
 
+        titleObservation = rootView.webView.observe(
+            \.title,
+            options: [.initial, .new]
+        ) { [weak self] _, change in
+            guard let newValue = change.newValue, let title = newValue else {
+                return
+            }
+
+            self?.didChangeTitle(title)
+        }
+
         rootView.goBackBarItem.target = self
         rootView.goBackBarItem.action = #selector(actionGoBack)
 
@@ -91,7 +106,20 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.refreshBarItem.target = self
         rootView.refreshBarItem.action = #selector(actionRefresh)
 
+        rootView.favoriteBarButton.isEnabled = false
+        rootView.favoriteBarButton.target = self
+        rootView.favoriteBarButton.action = #selector(actionFavorite)
+
         rootView.urlBar.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
+    }
+
+    private func didChangeTitle(_ title: String) {
+        guard let url = rootView.webView.url else {
+            return
+        }
+
+        let page = DAppBrowserPage(url: url, title: title)
+        presenter.process(page: page)
     }
 
     private func didChangeUrl(_ newUrl: URL) {
@@ -105,7 +133,10 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
         rootView.urlBar.setNeedsLayout()
 
-        presenter.processNew(url: newUrl)
+        let title = rootView.webView.title ?? ""
+
+        let page = DAppBrowserPage(url: newUrl, title: title)
+        presenter.process(page: page)
     }
 
     private func setupTransports(_ transports: [DAppTransportModel]) {
@@ -160,10 +191,12 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
         rootView.webView.goForward()
     }
 
-    @objc private func actionFavorite() {}
-
     @objc private func actionRefresh() {
         rootView.webView.reload()
+    }
+
+    @objc private func actionFavorite() {
+        presenter.toggleFavorite()
     }
 
     @objc private func actionSearch() {
@@ -200,6 +233,13 @@ extension DAppBrowserViewController: DAppBrowserViewProtocol {
         setupTransports(transports)
 
         rootView.webView.evaluateJavaScript(script.content)
+    }
+
+    func didReceiveFavorite(flag: Bool) {
+        rootView.favoriteBarButton.isEnabled = true
+
+        let icon = flag ? R.image.iconFavToolbarSel() : R.image.iconFavToolbar()
+        rootView.favoriteBarButton.image = icon?.withRenderingMode(.alwaysOriginal)
     }
 }
 

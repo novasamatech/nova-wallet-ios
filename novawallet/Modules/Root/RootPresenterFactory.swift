@@ -10,7 +10,7 @@ final class RootPresenterFactory: RootPresenterFactoryProtocol {
         let settings = SettingsManager.shared
 
         let dbMigrator = UserStorageMigrator(
-            targetVersion: .version3,
+            targetVersion: UserStorageParams.modelVersion,
             storeURL: UserStorageParams.storageURL,
             modelDirectory: UserStorageParams.modelDirectory,
             keystore: keychain,

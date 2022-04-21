@@ -22,19 +22,13 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
         host: String,
         dataSource: DAppBrowserStateDataSource
     ) {
-        let fetchOperations = dataSource.dAppSettingsRepository.fetchOperation(
-            by: host,
-            options: RepositoryFetchOptions()
-        )
+        guard approved else {
+            complete(false, dataSource: dataSource)
+            return
+        }
 
         let saveOperation = dataSource.dAppSettingsRepository.saveOperation({
-            let currentSettings = try fetchOperations.extractNoCancellableResultData()
-
-            let newSettings = DAppSettings(
-                identifier: currentSettings?.identifier ?? host,
-                allowed: approved,
-                favorite: currentSettings?.favorite ?? false
-            )
+            let newSettings = DAppSettings(identifier: host, metaId: dataSource.wallet.metaId)
 
             return [newSettings]
         }, { [] })
@@ -45,9 +39,7 @@ final class DAppMetamaskAuthorizingState: DAppMetamaskBaseState {
             }
         }
 
-        saveOperation.addDependency(fetchOperations)
-
-        dataSource.operationQueue.addOperations([fetchOperations, saveOperation], waitUntilFinished: false)
+        dataSource.operationQueue.addOperations([saveOperation], waitUntilFinished: false)
     }
 
     func complete(_ approved: Bool, dataSource: DAppBrowserStateDataSource) {
