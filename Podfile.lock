@@ -13,9 +13,9 @@ PODS:
     - SoraFoundation/NotificationHandlers (~> 1.0.0)
     - SoraFoundation/NumberProcessing (~> 1.0.0)
     - SoraUI (~> 1.10.0)
-  - Cuckoo (1.5.0):
-    - Cuckoo/Swift (= 1.5.0)
-  - Cuckoo/Swift (1.5.0)
+  - Cuckoo (1.7.1):
+    - Cuckoo/Swift (= 1.7.1)
+  - Cuckoo/Swift (1.7.1)
   - FireMock (3.1)
   - IrohaCrypto/BIP39 (0.9.0):
     - IrohaCrypto/Common
@@ -214,7 +214,7 @@ SPEC CHECKSUMS:
   Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   CommonWallet: 4c3c9c7f543842f04a930ddca163a5e0ab60f04a
-  Cuckoo: 09ff1b7c6613b9c27dafea90702ca32208fe59d3
+  Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
   keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4

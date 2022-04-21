@@ -41,8 +41,6 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
 
     let accessoryImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = R.color.colorWhite32()!
         return imageView
     }()
 
@@ -68,6 +66,12 @@ final class DAppSearchDAppTableViewCell: UITableViewCell {
 
         titleLabel.text = viewModel.name
         subtitleLabel.text = viewModel.details
+
+        if viewModel.isFavorite {
+            accessoryImageView.image = R.image.iconFavButtonSel()!
+        } else {
+            accessoryImageView.image = nil
+        }
     }
 
     private func setupLayout() {

@@ -15,6 +15,8 @@ struct DApp: Codable, Equatable {
     let url: URL
     let icon: URL?
     let categories: [String]
+
+    var identifier: String { url.absoluteString }
 }
 
 struct DAppCategory: Codable, Equatable {

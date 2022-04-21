@@ -11,7 +11,12 @@ struct DAppSearchViewFactory {
             for: dAppsUrl
         )
 
-        let interactor = DAppSearchInteractor(dAppProvider: dAppProvider)
+        let interactor = DAppSearchInteractor(
+            dAppProvider: dAppProvider,
+            dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+            logger: Logger.shared
+        )
+
         let wireframe = DAppSearchWireframe()
 
         let presenter = DAppSearchPresenter(
