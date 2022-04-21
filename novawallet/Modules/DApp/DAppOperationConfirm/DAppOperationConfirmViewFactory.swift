@@ -21,6 +21,13 @@ struct DAppOperationConfirmViewFactory {
         case let .ethereumTransaction(chain):
             maybeAssetInfo = chain.assetDisplayInfo
             maybeInteractor = createEthereumInteractor(for: request, chain: chain)
+        case let .ethereumBytes(chain, accountId):
+            maybeAssetInfo = chain.assetDisplayInfo
+            maybeInteractor = createEthereumPersonalSignInteractor(
+                for: request,
+                chain: chain,
+                accountId: accountId
+            )
         }
 
         guard let interactor = maybeInteractor, let assetInfo = maybeAssetInfo else {
@@ -103,6 +110,19 @@ struct DAppOperationConfirmViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue,
             signingWrapperFactory: SigningWrapperFactory(keystore: Keychain()),
             serializationFactory: EthereumSerializationFactory()
+        )
+    }
+
+    private static func createEthereumPersonalSignInteractor(
+        for request: DAppOperationRequest,
+        chain: MetamaskChain,
+        accountId: AccountId
+    ) -> DAppEthereumSignBytesInteractor {
+        DAppEthereumSignBytesInteractor(
+            request: request,
+            accountId: accountId,
+            chain: chain,
+            keystore: Keychain()
         )
     }
 }

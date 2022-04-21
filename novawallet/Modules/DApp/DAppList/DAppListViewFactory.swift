@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import RobinHood
 
 struct DAppListViewFactory {
     static func createView() -> DAppListViewProtocol? {
@@ -8,19 +9,31 @@ struct DAppListViewFactory {
             for: dAppsUrl
         )
 
+        let sharedQueue = OperationManagerFacade.sharedDefaultQueue
+
         let phishingSiteRepository = SubstrateRepositoryFactory().createPhishingSitesRepository()
         let phishingSyncService = PhishingSitesSyncService(
             url: ApplicationConfig.shared.phishingDAppsURL,
             operationFactory: GitHubOperationFactory(),
-            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            operationQueue: sharedQueue,
             repository: phishingSiteRepository
         )
+
+        let logger = Logger.shared
+
+        let favoritesRepository = AccountRepositoryFactory(
+            storageFacade: UserDataStorageFacade.shared
+        ).createFavoriteDAppsRepository()
 
         let interactor = DAppListInteractor(
             walletSettings: SelectedWalletSettings.shared,
             eventCenter: EventCenter.shared,
             dAppProvider: dAppProvider,
-            phishingSyncService: phishingSyncService
+            phishingSyncService: phishingSyncService,
+            dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactory.shared,
+            dAppsFavoriteRepository: AnyDataProviderRepository(favoritesRepository),
+            operationQueue: sharedQueue,
+            logger: logger
         )
 
         let wireframe = DAppListWireframe()

@@ -16,6 +16,8 @@ struct MetamaskMessage: Codable {
         case requestAccounts
         case addEthereumChain
         case switchEthereumChain
+        case signPersonalMessage
+        case signTypedMessage
     }
 
     let identifier: Id

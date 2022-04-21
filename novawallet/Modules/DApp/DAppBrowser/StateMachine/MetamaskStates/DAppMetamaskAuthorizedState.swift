@@ -1,4 +1,5 @@
 import Foundation
+import SubstrateSdk
 
 final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
     private func provideEthereumAddresses(
@@ -21,9 +22,54 @@ final class DAppMetamaskAuthorizedState: DAppMetamaskBaseState {
         }
 
         let requestId = message.identifier
-        let nextState = DAppMetamaskSigningState(stateMachine: stateMachine, chain: chain, requestId: requestId)
+        let nextState = DAppMetamaskSigningState(
+            stateMachine: stateMachine,
+            chain: chain,
+            requestId: requestId
+        )
 
         stateMachine?.emit(messageId: requestId, signingOperation: transactionInfo, nextState: nextState)
+    }
+
+    private func signPersonalMessage(from message: MetamaskMessage) {
+        guard
+            let hexString = message.object?.data?.stringValue,
+            let signingHashedData = try? Data(
+                hexString: hexString
+            ).ethereumPersonalSignMessage()?.keccak256() else {
+            let error = MetamaskError.invalidParams(with: "can't create signing data")
+            provideError(for: message.identifier, error: error, nextState: self)
+
+            return
+        }
+
+        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
+    }
+
+    private func signTypedData(from message: MetamaskMessage) {
+        guard
+            let hexString = message.object?.data?.stringValue,
+            let signingHashedData = try? Data(hexString: hexString) else {
+            let error = MetamaskError.invalidParams(with: "can't create signing data")
+            provideError(for: message.identifier, error: error, nextState: self)
+
+            return
+        }
+
+        emitSigningBytesOperation(for: message, hashedData: signingHashedData)
+    }
+
+    private func emitSigningBytesOperation(for message: MetamaskMessage, hashedData: Data) {
+        let requestId = message.identifier
+        let nextState = DAppMetamaskSigningState(
+            stateMachine: stateMachine,
+            chain: chain,
+            requestId: requestId
+        )
+
+        let signingJson = JSON.stringValue(hashedData.toHex(includePrefix: true))
+
+        stateMachine?.emit(messageId: requestId, signingOperation: signingJson, nextState: nextState)
     }
 }
 
@@ -67,6 +113,10 @@ extension DAppMetamaskAuthorizedState: DAppMetamaskStateProtocol {
                 )
             case .signTransaction:
                 sendTransaction(from: message)
+            case .signPersonalMessage:
+                signPersonalMessage(from: message)
+            case .signTypedMessage:
+                signTypedData(from: message)
             }
         } catch {
             stateMachine?.emit(error: error, nextState: self)
