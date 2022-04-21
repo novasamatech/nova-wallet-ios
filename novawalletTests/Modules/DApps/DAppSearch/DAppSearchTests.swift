@@ -15,7 +15,17 @@ class DAppSearchTests: XCTestCase {
             item: dAppList
         )
 
-        let interactor = DAppSearchInteractor(dAppProvider: AnySingleValueProvider(dAppProvider))
+        let dAppProviderFactory = DAppLocalSubscriptionFactory(
+            storageFacade: UserDataStorageTestFacade(),
+            operationQueue: OperationQueue(),
+            logger: nil
+        )
+
+        let interactor = DAppSearchInteractor(
+            dAppProvider: AnySingleValueProvider(dAppProvider),
+            dAppsLocalSubscriptionFactory: dAppProviderFactory,
+            logger: Logger.shared
+        )
 
         let presenter = DAppSearchPresenter(
             interactor: interactor,
