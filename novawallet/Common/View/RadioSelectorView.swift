@@ -73,15 +73,15 @@ final class RadioSelectorView: UIView {
 
         let center = CGPoint(x: rect.midX, y: rect.midY)
 
-        context.addArc(
-            center: center,
-            radius: outerRadius,
-            startAngle: 0,
-            endAngle: 2 * CGFloat.pi,
-            clockwise: true
-        )
-
         if selected {
+            context.addArc(
+                center: center,
+                radius: outerRadius,
+                startAngle: 0,
+                endAngle: 2 * CGFloat.pi,
+                clockwise: false
+            )
+
             context.setFillColor(outerColor.cgColor)
             context.fillPath()
 
@@ -90,12 +90,21 @@ final class RadioSelectorView: UIView {
                 radius: innerRadius,
                 startAngle: 0,
                 endAngle: 2 * CGFloat.pi,
-                clockwise: true
+                clockwise: false
             )
 
             context.setFillColor(innerColor.cgColor)
             context.fillPath()
         } else {
+            context.addArc(
+                center: center,
+                radius: outerRadius - strokeWidth / 2.0,
+                startAngle: 0,
+                endAngle: 2 * CGFloat.pi,
+                clockwise: false
+            )
+
+            context.setLineWidth(strokeWidth)
             context.setStrokeColor(strokeColor.cgColor)
             context.strokePath()
         }
