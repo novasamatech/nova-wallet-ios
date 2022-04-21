@@ -17,6 +17,8 @@ final class StakingAmountLayout: UIView {
     let payoutOptionView = RewardSelectionView()
     let accountView = UIFactory.default.createAccountView(for: .selection, filled: false)
 
+    let aboutLinkView = LinkCellView()
+
     let networkFeeView = UIFactory.default.createNetwork26FeeView()
 
     let actionButton: TriangularedButton = {
@@ -63,6 +65,11 @@ final class StakingAmountLayout: UIView {
         }
 
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(aboutLinkView)
+        aboutLinkView.snp.makeConstraints { make in
+            make.height.equalTo(44.0)
+        }
 
         containerView.stackView.addArrangedSubview(restakeOptionView)
         restakeOptionView.snp.makeConstraints { make in
