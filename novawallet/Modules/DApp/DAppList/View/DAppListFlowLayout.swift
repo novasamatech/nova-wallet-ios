@@ -132,6 +132,7 @@ final class DAppListFlowLayout: UICollectionViewFlowLayout {
             let headerLayoutFrame = collectionView.layoutAttributesForItem(
                 at: CellType.dAppHeader.indexPath
             )?.frame,
+            headerLayoutFrame.origin.y > 0.0,
             headerUsedFrame != headerLayoutFrame
         else {
             return

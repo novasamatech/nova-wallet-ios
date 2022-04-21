@@ -3,6 +3,7 @@ import XCTest
 import SoraKeystore
 import SoraFoundation
 import Cuckoo
+import RobinHood
 
 class DAppListTests: XCTestCase {
     func testSuccessSetup() throws {
@@ -11,9 +12,11 @@ class DAppListTests: XCTestCase {
         let keychain = InMemoryKeychain()
 
         let storageFacade = UserDataStorageTestFacade()
+        let operationQueue = OperationQueue()
+
         let walletSettings = SelectedWalletSettings(
             storageFacade: storageFacade,
-            operationQueue: OperationQueue()
+            operationQueue: operationQueue
         )
 
         try AccountCreationHelper.createMetaAccountFromMnemonic(
@@ -32,11 +35,23 @@ class DAppListTests: XCTestCase {
         let phishingSyncService = MockApplicationServiceProtocol()
         phishingSyncService.applyDefaultStub()
 
+        let dappLocalProviderFactory = DAppLocalSubscriptionFactory(
+            storageFacade: storageFacade,
+            operationQueue: operationQueue
+        )
+
+        let mapper = DAppFavoriteMapper()
+        let dappsFavoriteRepository = storageFacade.createRepository(mapper: AnyCoreDataMapper(mapper))
+
         let interactor = DAppListInteractor(
             walletSettings: walletSettings,
             eventCenter: EventCenter.shared,
             dAppProvider: AnySingleValueProvider(dAppProvider),
-            phishingSyncService: phishingSyncService
+            phishingSyncService: phishingSyncService,
+            dAppsLocalSubscriptionFactory: dappLocalProviderFactory,
+            dAppsFavoriteRepository: AnyDataProviderRepository(dappsFavoriteRepository),
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         let presenter = DAppListPresenter(
