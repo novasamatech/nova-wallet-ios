@@ -10,6 +10,18 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
         return view
     }()
 
+    let actionButton: TriangularedBlurButton = {
+        let button = TriangularedBlurButton()
+        button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?
+            .withRenderingMode(.alwaysTemplate)
+            .tinted(with: R.color.colorWhite80()!)
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.changesContentOpacityWhenHighlighted = true
+        button.triangularedBlurView?.overlayView.highlightedFillColor =
+            R.color.colorAccentSelected()!
+        return button
+    }()
+
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
@@ -44,10 +56,18 @@ final class DAppListFeaturedHeaderView: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(titleLabel)
+        addSubview(actionButton)
+
+        actionButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+        }
+
+        addSubview(titleLabel)
 
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.trailing.lessThanOrEqualTo(actionButton.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()
         }
     }

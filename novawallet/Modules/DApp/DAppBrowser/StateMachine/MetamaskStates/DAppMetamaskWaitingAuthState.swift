@@ -18,7 +18,7 @@ final class DAppMetamaskWaitingAuthState: DAppMetamaskBaseState {
             DispatchQueue.main.async {
                 let settings = try? settingsOperation.extractNoCancellableResultData()
 
-                if let allowed = settings?.allowed, allowed {
+                if settings != nil {
                     self?.completeByAllowingAccess(for: authMessage, dataSource: dataSource)
                 } else {
                     self?.completeByRequestingAuth(

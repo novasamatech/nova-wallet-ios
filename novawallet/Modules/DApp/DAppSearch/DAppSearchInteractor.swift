@@ -5,9 +5,19 @@ final class DAppSearchInteractor {
     weak var presenter: DAppSearchInteractorOutputProtocol!
 
     let dAppProvider: AnySingleValueProvider<DAppList>
+    let dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol
+    let logger: LoggerProtocol
 
-    init(dAppProvider: AnySingleValueProvider<DAppList>) {
+    private var favoriteDAppsProvider: StreamableProvider<DAppFavorite>?
+
+    init(
+        dAppProvider: AnySingleValueProvider<DAppList>,
+        dAppsLocalSubscriptionFactory: DAppLocalSubscriptionFactoryProtocol,
+        logger: LoggerProtocol
+    ) {
         self.dAppProvider = dAppProvider
+        self.dAppsLocalSubscriptionFactory = dAppsLocalSubscriptionFactory
+        self.logger = logger
     }
 
     private func subscribeDApps() {
@@ -41,5 +51,18 @@ final class DAppSearchInteractor {
 extension DAppSearchInteractor: DAppSearchInteractorInputProtocol {
     func setup() {
         subscribeDApps()
+
+        favoriteDAppsProvider = subscribeToFavoriteDApps(nil)
+    }
+}
+
+extension DAppSearchInteractor: DAppLocalStorageSubscriber, DAppLocalSubscriptionHandler {
+    func handleFavoriteDApps(result: Result<[DataProviderChange<DAppFavorite>], Error>) {
+        switch result {
+        case let .success(changes):
+            presenter.didReceiveFavorite(changes: changes)
+        case let .failure(error):
+            logger.error("Favorites error: \(error)")
+        }
     }
 }
