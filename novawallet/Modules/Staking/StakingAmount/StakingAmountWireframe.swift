@@ -9,8 +9,8 @@ final class StakingAmountWireframe: StakingAmountWireframeProtocol {
     }
 
     func presentAccountSelection(
-        _ accounts: [ChainAccountResponse],
-        selectedAccountItem: ChainAccountResponse,
+        _ accounts: [MetaChainAccountResponse],
+        selectedAccount: MetaChainAccountResponse,
         delegate: ModalPickerViewControllerDelegate,
         from view: StakingAmountViewProtocol?,
         context: AnyObject?
@@ -22,7 +22,7 @@ final class StakingAmountWireframe: StakingAmountWireframeProtocol {
 
         guard let picker = ModalPickerFactory.createPickerList(
             accounts,
-            selectedAccount: selectedAccountItem,
+            selectedAccount: selectedAccount,
             title: title,
             delegate: delegate,
             context: context

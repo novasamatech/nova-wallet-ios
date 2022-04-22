@@ -94,7 +94,9 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
 
             updateAccountView()
 
-        case let .payout(icon, title):
+        case let .payout(details):
+            // TODO: Fix viewModel application
+
             rootView.restakeOptionView.isSelected = false
             rootView.payoutOptionView.isSelected = true
 
@@ -104,7 +106,6 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
             rootView.payoutOptionView.amountLabel.textColor = activeTextColor
 
             updateAccountView()
-            applyPayoutAddress(icon, title: title)
         }
 
         rootView.restakeOptionView.setNeedsLayout()
@@ -113,19 +114,19 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
 
     private func applyRewardDestinationContent(from viewModel: RewardDestinationViewModelProtocol) {
         if let reward = viewModel.rewardViewModel {
-            rootView.restakeOptionView.amountTitle = reward.restakeAmount
-            rootView.restakeOptionView.priceTitle = reward.restakePrice
-            rootView.restakeOptionView.incomeTitle = reward.restakePercentage
-            rootView.payoutOptionView.amountTitle = reward.payoutAmount
-            rootView.payoutOptionView.priceTitle = reward.payoutPrice
-            rootView.payoutOptionView.incomeTitle = reward.payoutPercentage
+            rootView.restakeOptionView.amountLabel.text = reward.restakeAmount
+            rootView.restakeOptionView.priceLabel.text = reward.restakePrice
+            rootView.restakeOptionView.incomeLabel.text = reward.restakePercentage
+            rootView.payoutOptionView.amountLabel.text = reward.payoutAmount
+            rootView.payoutOptionView.priceLabel.text = reward.payoutPrice
+            rootView.payoutOptionView.incomeLabel.text = reward.payoutPercentage
         } else {
-            rootView.restakeOptionView.amountTitle = ""
-            rootView.restakeOptionView.priceTitle = ""
-            rootView.restakeOptionView.incomeTitle = ""
-            rootView.payoutOptionView.amountTitle = ""
-            rootView.payoutOptionView.priceTitle = ""
-            rootView.payoutOptionView.incomeTitle = ""
+            rootView.restakeOptionView.amountLabel.text = ""
+            rootView.restakeOptionView.priceLabel.text = ""
+            rootView.restakeOptionView.incomeLabel.text = ""
+            rootView.payoutOptionView.amountLabel.text = ""
+            rootView.payoutOptionView.priceLabel.text = ""
+            rootView.payoutOptionView.incomeLabel.text = ""
         }
     }
 
