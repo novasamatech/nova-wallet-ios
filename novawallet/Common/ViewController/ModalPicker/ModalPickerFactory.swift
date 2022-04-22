@@ -129,7 +129,7 @@ enum ModalPickerFactory {
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     ) -> UIViewController? {
-        let viewController: ModalPickerViewController<AccountPickerTableViewCell, AccountPickerViewModel>
+        let viewController: ModalPickerViewController<AccountPickerTableViewCell, WalletAccountViewModel>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
         switch headerType {
@@ -141,10 +141,11 @@ enum ModalPickerFactory {
             viewController.actionType = .add
         }
 
-        viewController.cellNib = UINib(resource: R.nib.accountPickerTableViewCell)
         viewController.delegate = delegate
         viewController.modalPresentationStyle = .custom
         viewController.context = context
+        viewController.headerBorderType = []
+        viewController.cellHeight = 56.0
 
         if let selectedAccount = selectedAccount {
             viewController.selectedIndex = accounts.firstIndex { account in
@@ -155,20 +156,14 @@ enum ModalPickerFactory {
             viewController.selectedIndex = NSNotFound
         }
 
-        let iconGenerator = PolkadotIconGenerator()
+        let viewModelFactory = WalletAccountViewModelFactory()
 
         viewController.viewModels = accounts.compactMap { account in
-            let viewModel: AccountPickerViewModel
-            if let icon = try? iconGenerator.generateFromAccountId(account.chainAccount.accountId) {
-                viewModel = AccountPickerViewModel(title: account.chainAccount.name, icon: icon)
-            } else {
-                viewModel = AccountPickerViewModel(title: account.chainAccount.name, icon: EmptyAccountIcon())
-            }
-
-            return LocalizableResource { _ in viewModel }
+            let optViewModel = try? viewModelFactory.createViewModel(from: account)
+            return optViewModel.map { viewModel in LocalizableResource { _ in viewModel } }
         }
 
-        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(accounts.count) * viewController.cellHeight +
