@@ -355,7 +355,13 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 }
 
 extension StakingAmountPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompletionAccountSelection()
+    }
+
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        view?.didCompletionAccountSelection()
+
         guard
             let accounts =
             (context as? PrimitiveContextWrapper<[MetaChainAccountResponse]>)?.value
