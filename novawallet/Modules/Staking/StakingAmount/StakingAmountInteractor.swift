@@ -112,8 +112,7 @@ extension StakingAmountInteractor: StakingAmountInteractorInputProtocol, Runtime
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accounts = responses.map(\.chainAccount)
-                self?.presenter.didReceive(accounts: accounts)
+                self?.presenter.didReceive(accounts: responses)
             case let .failure(error):
                 self?.presenter.didReceive(error: error)
             }

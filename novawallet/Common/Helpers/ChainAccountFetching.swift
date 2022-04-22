@@ -27,6 +27,8 @@ struct MetaEthereumAccountResponse {
 
 struct MetaChainAccountResponse {
     let metaId: String
+    let substrateAccountId: AccountId
+    let ethereumAccountId: AccountId?
     let chainAccount: ChainAccountResponse
 }
 
@@ -133,7 +135,12 @@ extension MetaAccountModel {
 
     func fetchMetaChainAccount(for request: ChainAccountRequest) -> MetaChainAccountResponse? {
         fetch(for: request).map {
-            MetaChainAccountResponse(metaId: metaId, chainAccount: $0)
+            MetaChainAccountResponse(
+                metaId: metaId,
+                substrateAccountId: substrateAccountId,
+                ethereumAccountId: ethereumAddress,
+                chainAccount: $0
+            )
         }
     }
 

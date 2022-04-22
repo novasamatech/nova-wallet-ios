@@ -49,6 +49,9 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         rootView.payoutOptionView.addTarget(self, action: #selector(actionPayout), for: .touchUpInside)
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
         rootView.aboutLinkView.actionButton.addTarget(self, action: #selector(actionLearnPayout), for: .touchUpInside)
+
+        let accountControl = rootView.accountView.actionControl
+        accountControl.addTarget(self, action: #selector(actionSelectPayoutAccount), for: .valueChanged)
     }
 
     private func setupBalanceAccessoryView() {
@@ -97,7 +100,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         applyFee()
         applyRewardDestinationViewModel()
 
-        rootView.accountView.title = R.string.localizable.stakingRewardPayoutAccount(
+        rootView.accountView.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
             preferredLanguages: languages
         )
 
@@ -173,32 +176,22 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
     private func applyRewardDestinationType(from viewModel: RewardDestinationViewModelProtocol) {
         let restakeView = rootView.restakeOptionView
         let payoutView = rootView.payoutOptionView
+        let accountView = rootView.accountView
 
         switch viewModel.type {
         case .restake:
             restakeView.isSelected = true
             payoutView.isSelected = false
 
-            rootView.accountView.isHidden = true
-        case let .payout(icon, title):
+            rootView.setAccountShown(false)
+        case let .payout(details):
             restakeView.isSelected = false
             payoutView.isSelected = true
+            accountView.actionControl.isSelected = false
 
-            rootView.accountView.isHidden = false
-            applyPayoutAddress(icon, title: title)
+            rootView.setAccountShown(true)
+            accountView.bind(viewModel: details)
         }
-    }
-
-    private func applyPayoutAddress(_ icon: DrawableIcon, title: String) {
-        let icon = icon.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: UIConstants.smallAddressIconSize,
-            contentScale: UIScreen.main.scale
-        )
-
-        let accountView = rootView.accountView
-        accountView.iconImage = icon
-        accountView.subtitle = title
     }
 
     @objc private func actionRestake() {

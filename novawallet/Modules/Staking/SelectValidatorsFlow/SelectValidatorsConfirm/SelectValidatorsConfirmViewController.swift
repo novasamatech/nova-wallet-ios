@@ -116,7 +116,8 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             rootView.rewardDestinationView.valueLabel.text = R.string.localizable
                 .stakingRestakeTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
             rootView.removePayoutAccountIfNeeded()
-        case let .payout(icon, title):
+        case let .payout(details):
+            // TODO: Fix viewModel application
             rootView.rewardDestinationView.valueLabel.text = R.string.localizable
                 .stakingPayoutTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
             rootView.addPayoutAccountIfNeeded()
@@ -131,11 +132,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
                 preferredLanguages: selectedLocale.rLanguages
             )
 
-            rootView.payoutAccountView?.iconImage = icon.imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
+            rootView.payoutAccountView?.iconImage = nil
             rootView.payoutAccountView?.subtitle = title
         }
 

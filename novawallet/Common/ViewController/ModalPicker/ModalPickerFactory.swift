@@ -107,8 +107,8 @@ enum ModalPickerFactory {
     }
 
     static func createPickerList(
-        _ accounts: [ChainAccountResponse],
-        selectedAccount: ChainAccountResponse?,
+        _ accounts: [MetaChainAccountResponse],
+        selectedAccount: MetaChainAccountResponse?,
         title: LocalizableResource<String>,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -123,8 +123,8 @@ enum ModalPickerFactory {
     }
 
     static func createPickerList(
-        _ accounts: [ChainAccountResponse],
-        selectedAccount: ChainAccountResponse?,
+        _ accounts: [MetaChainAccountResponse],
+        selectedAccount: MetaChainAccountResponse?,
         headerType: AccountHeaderType,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -148,7 +148,8 @@ enum ModalPickerFactory {
 
         if let selectedAccount = selectedAccount {
             viewController.selectedIndex = accounts.firstIndex { account in
-                account.chainId == selectedAccount.chainId && account.accountId == selectedAccount.accountId
+                account.chainAccount.chainId == selectedAccount.chainAccount.chainId &&
+                    account.chainAccount.accountId == selectedAccount.chainAccount.accountId
             } ?? NSNotFound
         } else {
             viewController.selectedIndex = NSNotFound
@@ -158,10 +159,10 @@ enum ModalPickerFactory {
 
         viewController.viewModels = accounts.compactMap { account in
             let viewModel: AccountPickerViewModel
-            if let icon = try? iconGenerator.generateFromAccountId(account.accountId) {
-                viewModel = AccountPickerViewModel(title: account.name, icon: icon)
+            if let icon = try? iconGenerator.generateFromAccountId(account.chainAccount.accountId) {
+                viewModel = AccountPickerViewModel(title: account.chainAccount.name, icon: icon)
             } else {
-                viewModel = AccountPickerViewModel(title: account.name, icon: EmptyAccountIcon())
+                viewModel = AccountPickerViewModel(title: account.chainAccount.name, icon: EmptyAccountIcon())
             }
 
             return LocalizableResource { _ in viewModel }
