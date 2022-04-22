@@ -20,7 +20,7 @@ class RewardSelectionView: BackgroundedContentControl {
     let amountLabel: UILabel = {
         let label = UILabel()
         label.font = .semiBoldCaps1
-        label.textColor = R.color.colorTransparentText()
+        label.textColor = R.color.colorWhite()
         return label
     }()
 
