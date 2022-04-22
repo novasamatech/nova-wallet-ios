@@ -10,7 +10,8 @@ protocol StakingRewardDestConfirmVMFactoryProtocol {
 }
 
 final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactoryProtocol {
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var addressIconGenerator = PolkadotIconGenerator()
+    private lazy var walletIconGenerator = NovaIconGenerator()
     private lazy var amountFactory = AmountFormatterFactory()
 
     func createViewModel(
@@ -18,7 +19,7 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
         rewardDestination: RewardDestination<ChainAccountResponse>,
         controller: ChainAccountResponse?
     ) throws -> StakingRewardDestConfirmViewModel {
-        let icon = try iconGenerator.generateFromAddress(stashItem.controller)
+        let controllerAddressIcon = try addressIconGenerator.generateFromAddress(stashItem.controller)
 
         let rewardDestViewModel: RewardDestinationTypeViewModel
 
@@ -26,13 +27,26 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
         case .restake:
             rewardDestViewModel = .restake
         case let .payout(account):
-            let payoutIcon = try iconGenerator.generateFromAccountId(account.accountId)
+            // TODO: Fix viewModel creation
+            let walletIcon = try walletIconGenerator.generateFromAccountId(account.accountId)
+            let walletIconViewModel = DrawableIconViewModel(icon: walletIcon)
 
-            rewardDestViewModel = .payout(icon: payoutIcon, title: account.name)
+            let payoutAddressIcon = try addressIconGenerator.generateFromAccountId(account.accountId)
+            let payoutAddressIconViewModel = DrawableIconViewModel(icon: payoutAddressIcon)
+            let payoutAddress = account.toAddress()
+
+            let detailsViewModel = WalletAccountViewModel(
+                walletName: account.name,
+                walletIcon: walletIconViewModel,
+                address: payoutAddress ?? "",
+                addressIcon: payoutAddressIconViewModel
+            )
+
+            rewardDestViewModel = .payout(details: detailsViewModel)
         }
 
         return StakingRewardDestConfirmViewModel(
-            senderIcon: icon,
+            senderIcon: controllerAddressIcon,
             senderName: controller?.name ?? stashItem.controller,
             rewardDestination: rewardDestViewModel
         )
