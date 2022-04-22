@@ -104,8 +104,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccount = accountResponse?.chainAccount
-                self?.presenter?.didReceiveController(result: .success(maybeAccount))
+                self?.presenter?.didReceiveController(result: .success(accountResponse))
             case let .failure(error):
                 self?.presenter?.didReceiveController(result: .failure(error))
             }
@@ -123,8 +122,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccount = accountResponse?.chainAccount
-                self?.presenter?.didReceiveStash(result: .success(maybeAccount))
+                self?.presenter?.didReceiveStash(result: .success(accountResponse))
             case let .failure(error):
                 self?.presenter?.didReceiveStash(result: .failure(error))
             }
@@ -180,8 +178,7 @@ extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInpu
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accounts = responses.map(\.chainAccount)
-                self?.presenter?.didReceiveAccounts(result: .success(accounts))
+                self?.presenter?.didReceiveAccounts(result: .success(responses))
             case let .failure(error):
                 self?.presenter?.didReceiveAccounts(result: .failure(error))
             }
@@ -284,7 +281,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
                 presenter?.didReceiveRewardDestinationAccount(result: .success(.restake))
             case let .payout(account):
                 let accountId = try account.toAccountId()
-                fetchFirstAccount(
+                fetchFirstMetaAccountResponse(
                     for: accountId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,

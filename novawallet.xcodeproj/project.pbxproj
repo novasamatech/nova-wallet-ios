@@ -1213,6 +1213,7 @@
 		84C5ADD728127A64006D7388 /* WalletAccountActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C5ADD628127A63006D7388 /* WalletAccountActionView.swift */; };
 		84C5ADD928127F4D006D7388 /* WalletAccountSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C5ADD828127F4C006D7388 /* WalletAccountSelectionView.swift */; };
 		84C5ADDB2812A244006D7388 /* WalletAccountViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C5ADDA2812A244006D7388 /* WalletAccountViewModelFactory.swift */; };
+		84C5ADDD2813248B006D7388 /* WalletDisplayAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */; };
 		84C6800E24D6ECE800006BF5 /* ExpandableActionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C6800D24D6ECE800006BF5 /* ExpandableActionControl.swift */; };
 		84C6801024D6EE4500006BF5 /* PlusIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C6800F24D6EE4500006BF5 /* PlusIndicatorView.swift */; };
 		84C6801224D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C6801124D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift */; };
@@ -3263,6 +3264,7 @@
 		84C5ADD628127A63006D7388 /* WalletAccountActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAccountActionView.swift; sourceTree = "<group>"; };
 		84C5ADD828127F4C006D7388 /* WalletAccountSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAccountSelectionView.swift; sourceTree = "<group>"; };
 		84C5ADDA2812A244006D7388 /* WalletAccountViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletAccountViewModelFactory.swift; sourceTree = "<group>"; };
+		84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDisplayAddress.swift; sourceTree = "<group>"; };
 		84C6800D24D6ECE800006BF5 /* ExpandableActionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandableActionControl.swift; sourceTree = "<group>"; };
 		84C6800F24D6EE4500006BF5 /* PlusIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusIndicatorView.swift; sourceTree = "<group>"; };
 		84C6801124D6F44400006BF5 /* ExpandableActionControl+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpandableActionControl+Inspectable.swift"; sourceTree = "<group>"; };
@@ -6662,6 +6664,7 @@
 				8499FEC927BF8D2200712589 /* NftModel.swift */,
 				8456C08127CF9DC9001282DE /* RemoteNftModel.swift */,
 				8499FEDF27C0AE3200712589 /* KnownChainIds.swift */,
+				84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -10707,6 +10710,7 @@
 				84939B1826E1690D000111DA /* TreasuryDepositEvent.swift in Sources */,
 				844CB56426F945E200396E13 /* SubstrateLocalSubscriptionFactory.swift in Sources */,
 				849244922514EDE800477C1B /* SelectableViewModel.swift in Sources */,
+				84C5ADDD2813248B006D7388 /* WalletDisplayAddress.swift in Sources */,
 				8466781E27ED982C007935D3 /* PhishingAddressValidatorFactory.swift in Sources */,
 				2AC7BC8027319FC7001D99B0 /* BalanceLockType.swift in Sources */,
 				84CFF1E826526FBC00DB7CF7 /* StakingBondMoreViewFactory.swift in Sources */,
