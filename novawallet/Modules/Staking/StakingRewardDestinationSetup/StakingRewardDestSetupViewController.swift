@@ -94,7 +94,9 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
 
             updateAccountView()
 
-        case let .payout(icon, title):
+        case let .payout(details):
+            // TODO: Fix viewModel application
+
             rootView.restakeOptionView.isSelected = false
             rootView.payoutOptionView.isSelected = true
 
@@ -104,7 +106,6 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
             rootView.payoutOptionView.amountLabel.textColor = activeTextColor
 
             updateAccountView()
-            applyPayoutAddress(icon, title: title)
         }
 
         rootView.restakeOptionView.setNeedsLayout()

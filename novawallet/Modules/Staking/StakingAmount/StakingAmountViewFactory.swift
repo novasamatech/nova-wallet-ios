@@ -12,7 +12,7 @@ final class StakingAmountViewFactory {
         guard
             let chainAsset = stakingState.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let accountItem = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let chainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
@@ -38,7 +38,7 @@ final class StakingAmountViewFactory {
             wireframe: wireframe,
             interactor: interactor,
             amount: amount,
-            selectedAccount: accountItem,
+            selectedAccount: chainAccount,
             assetInfo: assetInfo,
             rewardDestViewModelFactory: rewardDestViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,

@@ -95,18 +95,16 @@ final class StakingRewardDestConfirmViewLayout: UIView {
             typeView.valueLabel.text = R.string.localizable
                 .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
-        case let .payout(icon, title):
+        case let .payout(details):
+            // TODO: Fix viewModel application
+
             typeView.valueLabel.text = R.string.localizable
                 .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
             insertPayoutViewIfNeeded()
 
-            payoutAccountView?.iconImage = icon.imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
+            payoutAccountView?.iconImage = nil
 
-            payoutAccountView?.subtitle = title
+            payoutAccountView?.subtitle = details.walletName
         }
 
         setNeedsLayout()

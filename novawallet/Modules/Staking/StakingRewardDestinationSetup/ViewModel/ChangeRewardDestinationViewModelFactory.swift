@@ -30,8 +30,15 @@ final class ChangeRewardDestinationViewModelFactory {
             case .restake:
                 return rewardDestinationViewModelFactory.createRestake(from: reward, priceData: priceData)
             case let .payout(account):
+                // TODO: Fix viewModel creation
+                let metaAccount = MetaChainAccountResponse(
+                    metaId: "",
+                    substrateAccountId: account.accountId,
+                    ethereumAccountId: account.accountId,
+                    chainAccount: account
+                )
                 return try rewardDestinationViewModelFactory
-                    .createPayout(from: reward, priceData: priceData, account: account)
+                    .createPayout(from: reward, priceData: priceData, account: metaAccount)
             }
         }
 

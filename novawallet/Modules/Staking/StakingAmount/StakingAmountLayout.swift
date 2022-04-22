@@ -15,7 +15,8 @@ final class StakingAmountLayout: UIView {
 
     let restakeOptionView = RewardSelectionView()
     let payoutOptionView = RewardSelectionView()
-    let accountView = UIFactory.default.createAccountView(for: .selection, filled: false)
+
+    let accountView = WalletAccountSelectionView()
 
     let aboutLinkView = LinkCellView()
 
@@ -38,6 +39,14 @@ final class StakingAmountLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setAccountShown(_ isShown: Bool) {
+        accountView.isHidden = !isShown
+
+        let verticalSpacing = isShown ? 16.0 : 0.0
+
+        containerView.stackView.setCustomSpacing(verticalSpacing, after: payoutOptionView)
     }
 
     private func setupLayout() {
@@ -85,13 +94,7 @@ final class StakingAmountLayout: UIView {
             make.height.equalTo(56.0)
         }
 
-        containerView.stackView.setCustomSpacing(16.0, after: payoutOptionView)
-
         containerView.stackView.addArrangedSubview(accountView)
-        accountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(56.0)
-        }
 
         containerView.stackView.addArrangedSubview(networkFeeView)
         networkFeeView.snp.makeConstraints { make in
