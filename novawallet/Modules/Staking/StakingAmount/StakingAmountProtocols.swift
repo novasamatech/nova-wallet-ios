@@ -8,6 +8,7 @@ protocol StakingAmountViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)
+    func didCompletionAccountSelection()
 }
 
 protocol StakingAmountPresenterProtocol: AnyObject {
@@ -33,7 +34,7 @@ protocol StakingAmountInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingAmountInteractorOutputProtocol: AnyObject {
-    func didReceive(accounts: [ChainAccountResponse])
+    func didReceive(accounts: [MetaChainAccountResponse])
     func didReceive(price: PriceData?)
     func didReceive(balance: AccountData?)
     func didReceive(
@@ -53,8 +54,8 @@ protocol StakingAmountInteractorOutputProtocol: AnyObject {
 protocol StakingAmountWireframeProtocol: AlertPresentable, ErrorPresentable, WebPresentable,
     StakingErrorPresentable {
     func presentAccountSelection(
-        _ accounts: [ChainAccountResponse],
-        selectedAccountItem: ChainAccountResponse,
+        _ accounts: [MetaChainAccountResponse],
+        selectedAccount: MetaChainAccountResponse,
         delegate: ModalPickerViewControllerDelegate,
         from view: StakingAmountViewProtocol?,
         context: AnyObject?

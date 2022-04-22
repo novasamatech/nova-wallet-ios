@@ -7,8 +7,7 @@ protocol SelectValidatorsConfirmViewModelFactoryProtocol {
     func createViewModel(
         from state: SelectValidatorsConfirmationModel,
         assetInfo: AssetBalanceDisplayInfo
-    ) throws
-        -> LocalizableResource<SelectValidatorsConfirmViewModel>
+    ) throws -> LocalizableResource<SelectValidatorsConfirmViewModel>
 
     func createHints(from duration: StakingDuration) -> LocalizableResource<[TitleIconViewModel]>
 }
@@ -63,8 +62,7 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
     func createViewModel(
         from state: SelectValidatorsConfirmationModel,
         assetInfo: AssetBalanceDisplayInfo
-    ) throws
-        -> LocalizableResource<SelectValidatorsConfirmViewModel> {
+    ) throws -> LocalizableResource<SelectValidatorsConfirmViewModel> {
         let icon = try iconGenerator.generateFromAddress(state.wallet.address)
 
         let amountFormatter = amountFactory.createInputFormatter(for: assetInfo)
@@ -76,8 +74,18 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
             rewardViewModel = .restake
         case let .payout(account):
             let payoutIcon = try iconGenerator.generateFromAddress(account.address)
+            let payoutIconViewModel = DrawableIconViewModel(icon: payoutIcon)
 
-            rewardViewModel = .payout(icon: payoutIcon, title: account.username)
+            // TODO: Fix view model creation
+
+            let viewModel = WalletAccountViewModel(
+                walletName: account.username,
+                walletIcon: nil,
+                address: account.address,
+                addressIcon: payoutIconViewModel
+            )
+
+            rewardViewModel = .payout(details: viewModel)
         }
 
         return LocalizableResource { locale in
