@@ -172,9 +172,9 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
         
-    return cuckoo_manager.call("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
+    return cuckoo_manager.call("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
             parameters: (accounts, selectedAccountItem, title, delegate, view, context),
             escapingParameters: (accounts, selectedAccountItem, title, delegate, view, context),
             superclassCall:
@@ -194,9 +194,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountSelectionPresentable.self, method: "presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountSelectionPresentable.self, method: "presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -216,9 +216,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return cuckoo_manager.verify("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return cuckoo_manager.verify("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -232,7 +232,7 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -26253,9 +26253,9 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
         
-    return cuckoo_manager.call("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
+    return cuckoo_manager.call("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
             parameters: (accounts, selectedAccountItem, title, delegate, view, context),
             escapingParameters: (accounts, selectedAccountItem, title, delegate, view, context),
             superclassCall:
@@ -26320,9 +26320,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountWireframeProtocol.self, method: "presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountWireframeProtocol.self, method: "presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
 	    }
 	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
@@ -26370,9 +26370,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return cuckoo_manager.verify("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return cuckoo_manager.verify("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -26416,7 +26416,7 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -48332,9 +48332,9 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)  {
         
-    return cuckoo_manager.call("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
+    return cuckoo_manager.call("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)",
             parameters: (accounts, selectedAccountItem, title, delegate, view, context),
             escapingParameters: (accounts, selectedAccountItem, title, delegate, view, context),
             superclassCall:
@@ -48374,9 +48374,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupWireframeProtocol.self, method: "presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.ProtocolStubNoReturnFunction<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupWireframeProtocol.self, method: "presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -48420,9 +48420,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [ChainAccountResponse], M2.OptionalMatchedType == ChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
-	        let matchers: [Cuckoo.ParameterMatcher<([ChainAccountResponse], ChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
-	        return cuckoo_manager.verify("presentAccountSelection(_: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentAccountSelection<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.OptionalMatchable, M6: Cuckoo.OptionalMatchable>(_ accounts: M1, selectedAccountItem: M2, title: M3, delegate: M4, from view: M5, context: M6) -> Cuckoo.__DoNotUse<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?), Void> where M1.MatchedType == [MetaChainAccountResponse], M2.OptionalMatchedType == MetaChainAccountResponse, M3.MatchedType == LocalizableResource<String>, M4.MatchedType == ModalPickerViewControllerDelegate, M5.OptionalMatchedType == ControllerBackedProtocol, M6.OptionalMatchedType == AnyObject {
+	        let matchers: [Cuckoo.ParameterMatcher<([MetaChainAccountResponse], MetaChainAccountResponse?, LocalizableResource<String>, ModalPickerViewControllerDelegate, ControllerBackedProtocol?, AnyObject?)>] = [wrap(matchable: accounts) { $0.0 }, wrap(matchable: selectedAccountItem) { $0.1 }, wrap(matchable: title) { $0.2 }, wrap(matchable: delegate) { $0.3 }, wrap(matchable: view) { $0.4 }, wrap(matchable: context) { $0.5 }]
+	        return cuckoo_manager.verify("presentAccountSelection(_: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from: ControllerBackedProtocol?, context: AnyObject?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -48460,7 +48460,7 @@ import SoraFoundation
     
     
     
-     func presentAccountSelection(_ accounts: [ChainAccountResponse], selectedAccountItem: ChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
+     func presentAccountSelection(_ accounts: [MetaChainAccountResponse], selectedAccountItem: MetaChainAccountResponse?, title: LocalizableResource<String>, delegate: ModalPickerViewControllerDelegate, from view: ControllerBackedProtocol?, context: AnyObject?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

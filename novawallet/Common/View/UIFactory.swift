@@ -75,8 +75,6 @@ protocol UIFactoryProtocol {
 
     func createLearnMoreView() -> LearnMoreView
 
-    func createRewardSelectionView() -> RewardSelectionView
-
     func createInfoIndicatingView() -> ImageWithTitleView
 
     func createChainAssetSelectionView() -> ChainAssetSelectionControl
@@ -509,30 +507,6 @@ final class UIFactory: UIFactoryProtocol {
 
     func createTitleValueSelectionView() -> TitleValueSelectionView {
         TitleValueSelectionView()
-    }
-
-    func createRewardSelectionView() -> RewardSelectionView {
-        let view = RewardSelectionView()
-
-        view.borderWidth = 1.0
-        view.fillColor = .clear
-        view.highlightedFillColor = .clear
-        view.strokeColor = R.color.colorGray()!
-        view.highlightedStrokeColor = R.color.colorAccent()!
-        view.titleColor = R.color.colorWhite()!
-        view.amountTitleColor = R.color.colorWhite()!
-        view.priceColor = R.color.colorLightGray()!
-        view.incomeColor = R.color.colorGreen()!
-
-        view.titleLabel.font = .h5Title
-        view.amountLabel.font = .h6Title
-        view.priceLabel.font = .p2Paragraph
-        view.incomeLabel.font = .p2Paragraph
-
-        view.iconView.image = R.image.iconCheckmark()!
-        view.isSelected = false
-
-        return view
     }
 
     func createInfoIndicatingView() -> ImageWithTitleView {

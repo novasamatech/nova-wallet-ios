@@ -731,3 +731,4 @@
 "dapp.remove.authorized.title" = "Remove from Authorized?";
 "dapp.remove.authorized.message" = "\"%@\" will be removed from Authorized";
 "dapp.authorized.empty" = "List of websites will appear here";
+"staking.about.rewards" = "About rewards";

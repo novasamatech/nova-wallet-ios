@@ -280,9 +280,10 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
                     .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
             }
 
+            // TODO: Fix account selection
             wireframe.presentAccountSelection(
-                accounts,
-                selectedAccountItem: rewardDestination?.payoutAccount,
+                [],
+                selectedAccountItem: nil,
                 title: title,
                 delegate: self,
                 from: view,

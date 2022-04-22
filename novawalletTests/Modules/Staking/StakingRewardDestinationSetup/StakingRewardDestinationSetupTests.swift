@@ -51,7 +51,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 context: any()
             ).then { (accounts, _, _, delegate, _, context) in
                 if let index = accounts.firstIndex(
-                    where: { newPayoutAccount.substrateAccountId == $0.accountId }) {
+                    where: { newPayoutAccount.substrateAccountId == $0.substrateAccountId }) {
                     delegate.modalPickerDidSelectModelAtIndex(index, context: context)
 
                     payoutSelectionsExpectation.fulfill()

@@ -99,9 +99,11 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
             R.string.localizable
                 .stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
         }
+
+        // TODO: Fix accounts selection
         wireframe.presentAccountSelection(
-            accounts,
-            selectedAccountItem: chosenAccountItem,
+            [],
+            selectedAccountItem: nil,
             title: title,
             delegate: self,
             from: view,
