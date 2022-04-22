@@ -187,7 +187,6 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         case let .payout(details):
             restakeView.isSelected = false
             payoutView.isSelected = true
-            accountView.actionControl.isSelected = false
 
             rootView.setAccountShown(true)
             accountView.bind(viewModel: details)
@@ -249,6 +248,10 @@ extension StakingAmountViewController: StakingAmountViewProtocol {
         concreteViewModel.observable.add(observer: self)
 
         updateActionButton()
+    }
+
+    func didCompletionAccountSelection() {
+        rootView.accountView.actionControl.deactivate(animated: true)
     }
 }
 

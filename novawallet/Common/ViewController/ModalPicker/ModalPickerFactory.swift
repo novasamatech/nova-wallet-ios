@@ -146,6 +146,7 @@ enum ModalPickerFactory {
         viewController.context = context
         viewController.headerBorderType = []
         viewController.cellHeight = 56.0
+        viewController.footerHeight = 16.0
 
         if let selectedAccount = selectedAccount {
             viewController.selectedIndex = accounts.firstIndex { account in

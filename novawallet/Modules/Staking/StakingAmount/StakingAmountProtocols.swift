@@ -8,6 +8,7 @@ protocol StakingAmountViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)
+    func didCompletionAccountSelection()
 }
 
 protocol StakingAmountPresenterProtocol: AnyObject {
