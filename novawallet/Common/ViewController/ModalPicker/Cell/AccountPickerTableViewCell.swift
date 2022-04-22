@@ -2,32 +2,56 @@ import UIKit
 import SubstrateSdk
 
 final class AccountPickerTableViewCell: UITableViewCell, ModalPickerCellProtocol {
-    typealias Model = AccountPickerViewModel
+    typealias Model = WalletAccountViewModel
 
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var iconView: PolkadotIconView!
-    @IBOutlet private var checkmarkImageView: UIImageView!
+    let walletView = WalletAccountView()
+    let selectorView = RadioSelectorView()
 
     var checkmarked: Bool {
         get {
-            !checkmarkImageView.isHidden
+            selectorView.selected
         }
 
         set {
-            checkmarkImageView.isHidden = !newValue
+            selectorView.selected = newValue
         }
     }
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    func bind(model: WalletAccountViewModel) {
+        walletView.bind(viewModel: model)
+    }
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
         self.selectedBackgroundView = selectedBackgroundView
+
+        setupLayout()
     }
 
-    func bind(model: Model) {
-        titleLabel.text = model.title
-        iconView.bind(icon: model.icon)
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func setupLayout() {
+        contentView.addSubview(selectorView)
+
+        let selectorSize = 2 * selectorView.outerRadius
+
+        selectorView.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(selectorSize)
+        }
+
+        contentView.addSubview(walletView)
+        walletView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+            make.trailing.equalTo(selectorView.snp.leading).offset(-25.0)
+        }
     }
 }
