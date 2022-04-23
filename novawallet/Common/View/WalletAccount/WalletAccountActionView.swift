@@ -2,6 +2,8 @@ import UIKit
 import SoraUI
 
 final class WalletAccountActionView: BaseActionControl {
+    static let preferredHeight = 56.0
+
     let backgroundView: RoundedView = {
         let roundedView = UIFactory.default.createRoundedBackgroundView()
         roundedView.applyCellBackgroundStyle()
@@ -13,10 +15,21 @@ final class WalletAccountActionView: BaseActionControl {
         indicator as? ImageActionIndicator
     }
 
+    convenience init() {
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 375.0, height: 56.0))
+        self.init(frame: defaultFrame)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         configure()
+    }
+
+    var shouldEnableAction: Bool = true {
+        didSet {
+            updateActionState()
+        }
     }
 
     @available(*, unavailable)
@@ -73,7 +86,6 @@ final class WalletAccountActionView: BaseActionControl {
         addSubview(backgroundView)
 
         let imageIndicator = ImageActionIndicator()
-        imageIndicator.image = R.image.iconSmallArrowDown()?.tinted(with: R.color.colorWhite48()!)
         indicator = imageIndicator
         indicator?.backgroundColor = .clear
         indicator?.isUserInteractionEnabled = false
@@ -81,5 +93,15 @@ final class WalletAccountActionView: BaseActionControl {
         contentInsets = UIEdgeInsets(top: 9.0, left: 16.0, bottom: 9.0, right: 16.0)
 
         layoutType = .flexible
+
+        updateActionState()
+    }
+
+    private func updateActionState() {
+        isUserInteractionEnabled = shouldEnableAction
+
+        imageIndicator.image = shouldEnableAction ? R.image.iconSmallArrowDown()?.tinted(
+            with: R.color.colorWhite48()!
+        ) : nil
     }
 }

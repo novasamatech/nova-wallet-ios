@@ -6,3 +6,14 @@ struct WalletAccountViewModel {
     let address: String
     let addressIcon: ImageViewModelProtocol?
 }
+
+extension WalletAccountViewModel {
+    static var empty: WalletAccountViewModel {
+        WalletAccountViewModel(
+            walletName: nil,
+            walletIcon: nil,
+            address: "",
+            addressIcon: nil
+        )
+    }
+}

@@ -76,21 +76,18 @@ extension ControllerAccountViewController: Localizable {
 
 extension ControllerAccountViewController: ControllerAccountViewProtocol {
     func reload(with viewModel: ControllerAccountViewModel) {
-        let stashViewModel = viewModel.stashViewModel.value(for: selectedLocale)
-        rootView.stashAccountView.title = stashViewModel.title
-        rootView.stashAccountView.subtitle = stashViewModel.name
-        rootView.stashAccountView.iconImage = stashViewModel.icon
+        rootView.stashAccountView.bind(viewModel: viewModel.stashViewModel)
 
-        let controllerModel = viewModel.controllerViewModel.value(for: selectedLocale)
-        rootView.controllerAccountView.title = controllerModel.title
-        rootView.controllerAccountView.subtitle = controllerModel.name
-        rootView.controllerAccountView.iconImage = controllerModel.icon
+        rootView.controllerAccountView.bind(viewModel: viewModel.controllerViewModel)
 
         let isEnabled = viewModel.actionButtonIsEnabled
         rootView.actionButton.set(enabled: isEnabled)
         rootView.currentAccountIsControllerHint.isHidden = !viewModel.currentAccountIsController
 
-        let actionImage = viewModel.canChooseOtherController ? R.image.iconSmallArrowDown() : R.image.iconMore()
-        rootView.controllerAccountView.actionImage = actionImage
+        rootView.controllerAccountView.shouldEnableAction = viewModel.canChooseOtherController
+    }
+
+    func didCompleteControllerSelection() {
+        rootView.controllerAccountView.deactivate(animated: true)
     }
 }
