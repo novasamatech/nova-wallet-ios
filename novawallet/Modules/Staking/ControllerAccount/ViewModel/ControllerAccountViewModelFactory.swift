@@ -27,7 +27,7 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
                 ?? .empty
         }
 
-        let selectedControllerAddress = stashItem.stash
+        let selectedControllerAddress = stashItem.controller
         let controllerViewModel: WalletAccountViewModel
 
         if let controllerAccountItem = chosenAccountItem {

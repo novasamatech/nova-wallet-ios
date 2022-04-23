@@ -4,6 +4,11 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
     let titleView: T
     let valueView: V
 
+    convenience init() {
+        let defaultSize = CGRect(origin: .zero, size: CGSize(width: 340, height: 20))
+        self.init(frame: defaultSize)
+    }
+
     init(titleView: T = T(), valueView: V = V()) {
         self.titleView = titleView
         self.valueView = valueView
