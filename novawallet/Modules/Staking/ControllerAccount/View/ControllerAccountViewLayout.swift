@@ -16,6 +16,17 @@ final class ControllerAccountViewLayout: UIView {
         return label
     }()
 
+    let bannerView: GradientBannerView = {
+        let view = GradientBannerView()
+        view.infoView.imageView.image = R.image.iconBannerShield()
+        view.bindGradients(
+            left: GradientModel.stakingControllerLeft,
+            right: GradientModel.stakingControllerRight
+        )
+
+        return view
+    }()
+
     let stashAccountView = UIFactory.default.createAccountView()
 
     let stashHintView = UIFactory.default.createHintView()
@@ -65,6 +76,12 @@ final class ControllerAccountViewLayout: UIView {
         }
 
         containerView.stackView.spacing = 16
+
+        containerView.stackView.addArrangedSubview(bannerView)
+        bannerView.snp.makeConstraints { make in
+            make.height.equalTo(142.0)
+        }
+
         containerView.stackView.addArrangedSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
@@ -122,6 +139,14 @@ final class ControllerAccountViewLayout: UIView {
     }
 
     private func applyLocalization() {
+        bannerView.infoView.titleLabel.text = R.string.localizable.stakingControllerBannerTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingControllerBannerMessage(
+            preferredLanguages: locale.rLanguages
+        )
+
         descriptionLabel.text = R.string.localizable
             .stakingSetSeparateAccountController_v2_2_0(preferredLanguages: locale.rLanguages)
         stashHintView.titleLabel.text = R.string.localizable
