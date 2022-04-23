@@ -49,4 +49,11 @@ final class WalletAccountViewModelFactory {
             addressIcon: addressIconViewModel
         )
     }
+
+    func createDisplayViewModel(from response: MetaChainAccountResponse) throws -> DisplayWalletViewModel {
+        let walletIcon = try walletIconGenerator.generateFromAccountId(response.substrateAccountId)
+        let iconViewModel = DrawableIconViewModel(icon: walletIcon)
+
+        return DisplayWalletViewModel(name: response.chainAccount.name, imageViewModel: iconViewModel)
+    }
 }
