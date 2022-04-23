@@ -29,11 +29,11 @@ final class ControllerAccountViewLayout: UIView {
         return view
     }()
 
-    let stashAccountView = UIFactory.default.createAccountView()
+    let stashAccountView = WalletAccountInfoView()
 
     let stashHintView = UIFactory.default.createHintView()
 
-    let controllerAccountView = UIFactory.default.createAccountView()
+    let controllerAccountView = WalletAccountActionView()
 
     let controllerHintView = UIFactory.default.createHintView()
 
@@ -67,7 +67,6 @@ final class ControllerAccountViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // swiftlint:disable function_body_length
     private func setupLayout() {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
@@ -85,10 +84,6 @@ final class ControllerAccountViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(stashAccountView)
-        stashAccountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
 
         containerView.stackView.setCustomSpacing(8, after: stashAccountView)
         containerView.stackView.addArrangedSubview(stashHintView)
@@ -97,10 +92,6 @@ final class ControllerAccountViewLayout: UIView {
         }
 
         containerView.stackView.addArrangedSubview(controllerAccountView)
-        controllerAccountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
 
         containerView.stackView.setCustomSpacing(8, after: controllerAccountView)
         containerView.stackView.addArrangedSubview(controllerHintView)
