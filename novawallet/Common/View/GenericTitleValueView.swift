@@ -27,6 +27,17 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         setup()
     }
 
+    var spacing: CGFloat = 8.0 {
+        didSet {
+            valueView.snp.remakeConstraints { make in
+                make.trailing.centerY.equalToSuperview()
+                make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
+            }
+
+            setNeedsLayout()
+        }
+    }
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -46,7 +57,7 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         addSubview(valueView)
         valueView.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
         }
     }
 }

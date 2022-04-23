@@ -46,7 +46,7 @@ protocol ControllerAccountWireframeProtocol: WebPresentable,
     ErrorPresentable {
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        controllerAccountItem: ChainAccountResponse
+        controllerAccountItem: MetaChainAccountResponse
     )
     func close(view: ControllerBackedProtocol?)
 }

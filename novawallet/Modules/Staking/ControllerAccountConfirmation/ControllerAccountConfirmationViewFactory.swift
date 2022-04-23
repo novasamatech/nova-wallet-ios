@@ -7,13 +7,13 @@ import RobinHood
 struct ControllerAccountConfirmationViewFactory {
     static func createView(
         for state: StakingSharedState,
-        controllerAccountItem: ChainAccountResponse
+        controllerAccountItem: MetaChainAccountResponse
     ) -> ControllerAccountConfirmationViewProtocol? {
         guard
             let chainAsset = state.settings.value,
             let interactor = createInteractor(
                 for: state,
-                controllerAccountItem: controllerAccountItem
+                controllerAccountItem: controllerAccountItem.chainAccount
             ) else {
             return nil
         }
@@ -27,7 +27,6 @@ struct ControllerAccountConfirmationViewFactory {
         let presenter = ControllerAccountConfirmationPresenter(
             controllerAccountItem: controllerAccountItem,
             assetInfo: assetInfo,
-            iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory,
             dataValidatingFactory: dataValidatingFactory,
             explorers: chainAsset.chain.explorers
