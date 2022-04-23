@@ -52,11 +52,6 @@ final class WalletAccountView: UIView {
         return CGSize(width: width, height: height)
     }
 
-    convenience init() {
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 375.0, height: 56.0))
-        self.init(frame: defaultFrame)
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
