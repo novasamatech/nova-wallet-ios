@@ -10,14 +10,6 @@ final class ControllerAccountViewLayout: UIView {
         return view
     }()
 
-    let descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p1Paragraph
-        label.textColor = R.color.colorWhite()
-        label.numberOfLines = 0
-        return label
-    }()
-
     let bannerView: GradientBannerView = {
         let view = GradientBannerView()
         view.infoView.imageView.image = R.image.iconBannerShield()
@@ -31,11 +23,11 @@ final class ControllerAccountViewLayout: UIView {
 
     let stashAccountView = WalletAccountInfoView()
 
-    let stashHintView = UIFactory.default.createHintView()
+    let stashHintView = ControllerAccountViewLayout.createMultivalueView()
 
     let controllerAccountView = WalletAccountActionView()
 
-    let controllerHintView = UIFactory.default.createHintView()
+    let controllerHintView = ControllerAccountViewLayout.createMultivalueView()
 
     let currentAccountIsControllerHint: HintView = {
         let hintView = HintView()
@@ -74,30 +66,18 @@ final class ControllerAccountViewLayout: UIView {
             make.leading.bottom.trailing.equalToSuperview()
         }
 
-        containerView.stackView.spacing = 16
-
         containerView.stackView.addArrangedSubview(bannerView)
 
-        containerView.stackView.addArrangedSubview(descriptionLabel)
-        descriptionLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
+        containerView.stackView.addArrangedSubview(stashHintView)
+        containerView.stackView.setCustomSpacing(12.0, after: stashHintView)
 
         containerView.stackView.addArrangedSubview(stashAccountView)
+        containerView.stackView.setCustomSpacing(24.0, after: stashAccountView)
 
-        containerView.stackView.setCustomSpacing(8, after: stashAccountView)
-        containerView.stackView.addArrangedSubview(stashHintView)
-        stashHintView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
+        containerView.stackView.addArrangedSubview(controllerHintView)
+        containerView.stackView.setCustomSpacing(12.0, after: controllerHintView)
 
         containerView.stackView.addArrangedSubview(controllerAccountView)
-
-        containerView.stackView.setCustomSpacing(8, after: controllerAccountView)
-        containerView.stackView.addArrangedSubview(controllerHintView)
-        controllerHintView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
 
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -126,15 +106,40 @@ final class ControllerAccountViewLayout: UIView {
             preferredLanguages: locale.rLanguages
         )
 
-        descriptionLabel.text = R.string.localizable
-            .stakingSetSeparateAccountController_v2_2_0(preferredLanguages: locale.rLanguages)
-        stashHintView.titleLabel.text = R.string.localizable
-            .stakingStashCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
-        controllerHintView.titleLabel.text = R.string.localizable
-            .stakingControllerCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
+        stashHintView.valueTop.text = R.string.localizable.stakingStash(
+            preferredLanguages: locale.rLanguages
+        )
+
+        stashHintView.valueBottom.text = R.string.localizable.stakingStashHint(
+            preferredLanguages: locale.rLanguages
+        )
+
+        controllerHintView.valueTop.text = R.string.localizable.stakingController(
+            preferredLanguages: locale.rLanguages
+        )
+
+        controllerHintView.valueBottom.text = R.string.localizable.stakingControllerHint(
+            preferredLanguages: locale.rLanguages
+        )
+
         currentAccountIsControllerHint.titleLabel.text = R.string.localizable
             .stakingSwitchAccountToStash(preferredLanguages: locale.rLanguages)
-        actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: locale.rLanguages)
+        actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: locale.rLanguages
+        )
+    }
+
+    private static func createMultivalueView() -> MultiValueView {
+        let view = MultiValueView()
+        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.font = .semiBoldBody
+        view.valueTop.numberOfLines = 1
+        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.font = .regularFootnote
+        view.valueBottom.numberOfLines = 0
+        view.valueTop.textAlignment = .left
+        view.valueBottom.textAlignment = .left
+        view.spacing = 4.0
+        return view
     }
 }

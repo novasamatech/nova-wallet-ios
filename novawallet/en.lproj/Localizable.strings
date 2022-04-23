@@ -735,3 +735,7 @@
 "staking.controller.banner.title" = "Improve staking security";
 "staking.controller.banner.message" = "Select another account as a controller to delegate staking management operations to it";
 "common.find.more" = "Find out more";
+"staking.stash" = "Stash";
+"staking.stash.hint" = "Stash is used to: stake more and set the controller";
+"staking.controller" = "Controller";
+"staking.controller.hint" = "Controller is used to: unbond, redeem, return to stake, change validators and set rewards destination";
