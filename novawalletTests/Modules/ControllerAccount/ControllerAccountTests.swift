@@ -49,17 +49,19 @@ class ControllerAccountTests: XCTestCase {
                 showConfirmationExpectation.fulfill()
             }
         }
+
         stub(viewModelFactory) { stub in
             when(stub).createViewModel(stashItem: any(), stashAccountItem: any(), chosenAccountItem: any())
                 .then { _ in ControllerAccountViewModel(
-                    stashViewModel: .init(closure: { _ in AccountInfoViewModel(title: "", address: "", name: "", icon: nil)}),
-                    controllerViewModel: .init(closure: { _ in AccountInfoViewModel(title: "", address: "", name: "", icon: nil)}),
+                    stashViewModel: WalletAccountViewModel.empty,
+                    controllerViewModel: WalletAccountViewModel.empty,
                     currentAccountIsController: false,
                     actionButtonIsEnabled: true
                 )}
         }
         stub(view) { stub in
             when(stub).reload(with: any()).thenDoNothing()
+            when(stub).didCompleteControllerSelection().thenDoNothing()
         }
 
         let controllerAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
@@ -80,7 +82,14 @@ class ControllerAccountTests: XCTestCase {
             isChainAccount: false
         )
 
-        presenter.didReceiveControllerAccount(result: .success(controllerAccount))
+        let metaAccountResponse = MetaChainAccountResponse(
+            metaId: UUID().uuidString,
+            substrateAccountId: controllerId,
+            ethereumAccountId: nil,
+            chainAccount: controllerAccount
+        )
+
+        presenter.didReceiveControllerAccount(result: .success(metaAccountResponse))
 
         let controllerAccountInfo = AccountInfo(
             nonce: 0,
