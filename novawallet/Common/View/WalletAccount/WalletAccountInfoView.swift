@@ -7,7 +7,7 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
     static let preferredHeight = 56.0
 
     convenience init() {
-        let size = CGSize(width: 375.0, height: Self.preferredHeight)
+        let size = CGSize(width: 340.0, height: Self.preferredHeight)
         let defaultFrame = CGRect(origin: .zero, size: size)
         self.init(frame: defaultFrame)
     }
@@ -54,6 +54,16 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
         knownAddressView.isUserInteractionEnabled = false
         knownAddressView.valueView.image = R.image.iconActionIndicator()
 
+        knownAddressView.titleView.walletLabel.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+
+        knownAddressView.titleView.addressLabel.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
+
         knownAddressView.titleView.setContentCompressionResistancePriority(
             .defaultLow,
             for: .horizontal
@@ -77,6 +87,11 @@ final class WalletAccountInfoView: RowView<GenericTitleValueView<UIView, UIImage
         let unknownAddressView = UnknownAddressContentView()
         unknownAddressView.isUserInteractionEnabled = false
         unknownAddressView.valueView.image = R.image.iconActionIndicator()
+
+        unknownAddressView.titleView.addressLabel.setContentCompressionResistancePriority(
+            .defaultLow,
+            for: .horizontal
+        )
 
         unknownAddressView.titleView.setContentCompressionResistancePriority(
             .defaultLow,
