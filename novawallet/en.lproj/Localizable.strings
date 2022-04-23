@@ -734,3 +734,4 @@
 "staking.about.rewards" = "About rewards";
 "staking.controller.banner.title" = "Improve staking security";
 "staking.controller.banner.message" = "Select another account as a controller to delegate staking management operations to it";
+"common.find.more" = "Find out more";

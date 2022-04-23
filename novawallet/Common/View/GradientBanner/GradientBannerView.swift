@@ -32,18 +32,73 @@ class GradientBannerView: UIView {
         view.alignment = .leading
         view.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 16.0, right: 0.0)
         view.isLayoutMarginsRelativeArrangement = true
+        view.spacing = 8.0
         return view
     }()
+
+    private var linkView: LinkView?
+
+    private var loadingView: RoundedView?
+
+    var linkButton: RoundedButton? { linkView?.actionButton }
+    private(set) var actionButton: RoundedButton?
+
+    var showsLink: Bool = true {
+        didSet {
+            if showsLink {
+                setupLinkButton()
+            } else {
+                removeLinkButton()
+            }
+        }
+    }
+
+    var showsAction: Bool = false {
+        didSet {
+            if showsAction {
+                setupActionButton()
+            } else {
+                removeActionButton()
+            }
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         setupLayout()
+
+        if showsLink {
+            setupLinkButton()
+        }
+
+        if showsAction {
+            setupActionButton()
+        }
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func startLoading() {
+        guard showsAction else {
+            return
+        }
+
+        actionButton?.isHidden = true
+
+        setupLoadingView()
+    }
+
+    func stopLoading() {
+        guard showsAction else {
+            return
+        }
+
+        actionButton?.isHidden = false
+        removeLoadingView()
     }
 
     func bindGradients(left: GradientModel, right: GradientModel) {
@@ -85,5 +140,76 @@ class GradientBannerView: UIView {
         infoView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-widthOffset)
         }
+    }
+
+    private func setupLinkButton() {
+        guard linkButton == nil else {
+            return
+        }
+
+        let linkView = LinkView()
+        stackView.insertArranged(view: linkView, after: infoView)
+
+        self.linkView = linkView
+    }
+
+    private func removeLinkButton() {
+        linkView?.removeFromSuperview()
+        linkView = nil
+    }
+
+    private func setupActionButton() {
+        guard actionButton == nil else {
+            return
+        }
+
+        let actionButton = RoundedButton()
+        actionButton.applyEnabledStyle()
+        actionButton.roundedBackgroundView?.fillColor = R.color.colorAccentSelected()!
+        actionButton.roundedBackgroundView?.highlightedFillColor = R.color.colorAccentSelected()!
+        actionButton.changesContentOpacityWhenHighlighted = true
+        actionButton.roundedBackgroundView?.cornerRadius = 10.0
+
+        stackView.addArrangedSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(-32.0)
+        }
+
+        self.actionButton = actionButton
+    }
+
+    private func removeActionButton() {
+        actionButton?.removeFromSuperview()
+        actionButton = nil
+    }
+
+    private func setupLoadingView() {
+        guard loadingView == nil else {
+            return
+        }
+
+        let loadingView = RoundedView()
+        loadingView.applyFilledBackgroundStyle()
+        loadingView.fillColor = R.color.colorWhite8()!
+
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.tintColor = R.color.colorTransparentText()
+        loadingView.addSubview(activityIndicator)
+
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        stackView.addArrangedSubview(loadingView)
+        loadingView.snp.makeConstraints { make in
+            make.width.equalToSuperview().offset(-32)
+        }
+
+        activityIndicator.startAnimating()
+    }
+
+    private func removeLoadingView() {
+        loadingView?.removeFromSuperview()
+        loadingView = nil
     }
 }

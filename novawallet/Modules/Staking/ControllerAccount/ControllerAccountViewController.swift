@@ -38,7 +38,7 @@ final class ControllerAccountViewController: UIViewController, ViewHolder {
 
     private func setupActions() {
         rootView.actionButton.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
-        rootView.learnMoreView.addTarget(self, action: #selector(handleLearnMoreAction), for: .touchUpInside)
+        rootView.bannerView.linkButton?.addTarget(self, action: #selector(handleLearnMoreAction), for: .touchUpInside)
         rootView.stashAccountView.addTarget(self, action: #selector(handleStashAction), for: .touchUpInside)
         rootView.controllerAccountView.addTarget(self, action: #selector(handleControllerAction), for: .touchUpInside)
     }
