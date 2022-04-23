@@ -158,7 +158,7 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
 
             self.wireframe.showConfirmation(
                 from: self.view,
-                controllerAccountItem: controllerAccountItem.chainAccount
+                controllerAccountItem: controllerAccountItem
             )
         }
     }
