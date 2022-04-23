@@ -740,3 +740,4 @@
 "staking.controller" = "Controller";
 "staking.controller.hint" = "Controller is used to: unbond, redeem, return to stake, change validators and set rewards destination";
 "staking.controller.confirm.title" = "Change Controller";
+"staking.controller.select.title" = "Select the controller account";

@@ -96,8 +96,9 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
         }
         let context = PrimitiveContextWrapper(value: accounts)
         let title = LocalizableResource<String> { locale in
-            R.string.localizable
-                .stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.stakingControllerSelectTitle(
+                preferredLanguages: locale.rLanguages
+            )
         }
 
         wireframe.presentAccountSelection(
