@@ -82,7 +82,11 @@ extension ControllerAccountViewController: ControllerAccountViewProtocol {
 
         let isEnabled = viewModel.actionButtonIsEnabled
         rootView.actionButton.set(enabled: isEnabled)
-        rootView.currentAccountIsControllerHint.isHidden = !viewModel.currentAccountIsController
+
+        let shouldShowAccountWarning = viewModel.currentAccountIsController
+
+        rootView.setIsControllerHintShown(shouldShowAccountWarning)
+        rootView.actionButton.isHidden = shouldShowAccountWarning
 
         rootView.controllerAccountView.shouldEnableAction = viewModel.canChooseOtherController
     }

@@ -29,11 +29,7 @@ final class ControllerAccountViewLayout: UIView {
 
     let controllerHintView = ControllerAccountViewLayout.createMultivalueView()
 
-    let currentAccountIsControllerHint: HintView = {
-        let hintView = HintView()
-        hintView.iconView.image = R.image.iconWarning()
-        return hintView
-    }()
+    let currentAccountIsControllerHint = InlineAlertView.warning()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -59,14 +55,37 @@ final class ControllerAccountViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func setIsControllerHintShown(_ isShown: Bool) {
+        currentAccountIsControllerHint.isHidden = !isShown
+
+        let spacing = isShown ? 16.0 : 24.0
+        containerView.stackView.setCustomSpacing(spacing, after: bannerView)
+    }
+
     private func setupLayout() {
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
+        }
+
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.bottom.trailing.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-16.0)
         }
 
         containerView.stackView.addArrangedSubview(bannerView)
+        bannerView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: bannerView)
+
+        containerView.stackView.addArrangedSubview(currentAccountIsControllerHint)
+        containerView.stackView.setCustomSpacing(24.0, after: currentAccountIsControllerHint)
 
         containerView.stackView.addArrangedSubview(stashHintView)
         containerView.stackView.setCustomSpacing(12.0, after: stashHintView)
@@ -78,19 +97,6 @@ final class ControllerAccountViewLayout: UIView {
         containerView.stackView.setCustomSpacing(12.0, after: controllerHintView)
 
         containerView.stackView.addArrangedSubview(controllerAccountView)
-
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
-            make.height.equalTo(UIConstants.actionHeight)
-        }
-
-        addSubview(currentAccountIsControllerHint)
-        currentAccountIsControllerHint.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.bottom.equalTo(actionButton.snp.top).offset(-UIConstants.horizontalInset)
-        }
     }
 
     private func applyLocalization() {
@@ -122,8 +128,10 @@ final class ControllerAccountViewLayout: UIView {
             preferredLanguages: locale.rLanguages
         )
 
-        currentAccountIsControllerHint.titleLabel.text = R.string.localizable
-            .stakingSwitchAccountToStash(preferredLanguages: locale.rLanguages)
+        currentAccountIsControllerHint.contentView.detailsLabel.text = R.string.localizable.stakingSwitchAccountToStash(
+            preferredLanguages: locale.rLanguages
+        )
+
         actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
             preferredLanguages: locale.rLanguages
         )

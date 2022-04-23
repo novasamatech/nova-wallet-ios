@@ -16,7 +16,7 @@ final class WalletAccountActionView: BaseActionControl {
     }
 
     convenience init() {
-        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 375.0, height: 56.0))
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 340.0, height: 56.0))
         self.init(frame: defaultFrame)
     }
 
