@@ -734,3 +734,4 @@
 "staking.about.rewards" = "О наградах";
 "staking.controller.banner.title" = "Улучшите безопасноть стекинга";
 "staking.controller.banner.message" = "Выберите другой аккаунта в качестве контроллера для делегирования операций по управление стекингом на него";
+"common.find.more" = "Узнайте больше";

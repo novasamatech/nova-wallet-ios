@@ -4,7 +4,9 @@ final class ControllerAccountViewLayout: UIView {
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
+        view.stackView.spacing = 0.0
         return view
     }()
 
@@ -34,8 +36,6 @@ final class ControllerAccountViewLayout: UIView {
     let controllerAccountView = UIFactory.default.createAccountView()
 
     let controllerHintView = UIFactory.default.createHintView()
-
-    let learnMoreView = UIFactory.default.createNovaLearnMoreView()
 
     let currentAccountIsControllerHint: HintView = {
         let hintView = HintView()
@@ -78,9 +78,6 @@ final class ControllerAccountViewLayout: UIView {
         containerView.stackView.spacing = 16
 
         containerView.stackView.addArrangedSubview(bannerView)
-        bannerView.snp.makeConstraints { make in
-            make.height.equalTo(142.0)
-        }
 
         containerView.stackView.addArrangedSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
@@ -111,19 +108,6 @@ final class ControllerAccountViewLayout: UIView {
             make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
         }
 
-        containerView.stackView.addArrangedSubview(learnMoreView)
-        learnMoreView.snp.makeConstraints { make in
-            make.width.equalTo(self)
-        }
-
-        let bottomSeparator = UIView.createSeparator(color: R.color.colorDarkGray())
-        containerView.stackView.addArrangedSubview(bottomSeparator)
-        containerView.stackView.setCustomSpacing(0, after: learnMoreView)
-        bottomSeparator.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.separatorHeight)
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
@@ -147,14 +131,16 @@ final class ControllerAccountViewLayout: UIView {
             preferredLanguages: locale.rLanguages
         )
 
+        bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonFindMore(
+            preferredLanguages: locale.rLanguages
+        )
+
         descriptionLabel.text = R.string.localizable
             .stakingSetSeparateAccountController_v2_2_0(preferredLanguages: locale.rLanguages)
         stashHintView.titleLabel.text = R.string.localizable
             .stakingStashCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
         controllerHintView.titleLabel.text = R.string.localizable
             .stakingControllerCanHint_v2_2_0(preferredLanguages: locale.rLanguages)
-        learnMoreView.titleLabel.text = R.string.localizable
-            .commonLearnMore_v2_2_0(preferredLanguages: locale.rLanguages)
         currentAccountIsControllerHint.titleLabel.text = R.string.localizable
             .stakingSwitchAccountToStash(preferredLanguages: locale.rLanguages)
         actionButton.imageWithTitleView?.title = R.string.localizable
