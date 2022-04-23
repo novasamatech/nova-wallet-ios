@@ -1,4 +1,5 @@
 import UIKit
+import SoraUI
 
 final class GradientBannerInfoView: UIView {
     let titleLabel: UILabel = {
