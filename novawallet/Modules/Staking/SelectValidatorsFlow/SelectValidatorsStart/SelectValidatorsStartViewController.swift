@@ -64,6 +64,12 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
             for: .touchUpInside
         )
 
+        rootView.bannerView.linkButton?.addTarget(
+            self,
+            action: #selector(actionLearnMore),
+            for: .touchUpInside
+        )
+
         rootView.customValidatorsCell.addTarget(
             self,
             action: #selector(actionCustomValidators),
@@ -152,6 +158,10 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
 
     @objc private func actionCustomValidators() {
         presenter.selectCustomValidators()
+    }
+
+    @objc private func actionLearnMore() {
+        presenter.selectLearnMore()
     }
 }
 
