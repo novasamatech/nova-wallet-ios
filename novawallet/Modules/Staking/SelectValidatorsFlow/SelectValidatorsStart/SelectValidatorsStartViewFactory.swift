@@ -92,6 +92,7 @@ final class SelectValidatorsStartViewFactory {
             wireframe: wireframe,
             existingStashAddress: existingStashAddress,
             initialTargets: selectedValidators,
+            applicationConfig: ApplicationConfig.shared,
             logger: Logger.shared
         )
 
