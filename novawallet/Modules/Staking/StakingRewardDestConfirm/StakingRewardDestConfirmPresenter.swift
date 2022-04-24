@@ -5,7 +5,7 @@ final class StakingRewardDestConfirmPresenter {
     weak var view: StakingRewardDestConfirmViewProtocol?
     let wireframe: StakingRewardDestConfirmWireframeProtocol
     let interactor: StakingRewardDestConfirmInteractorInputProtocol
-    let rewardDestination: RewardDestination<ChainAccountResponse>
+    let rewardDestination: RewardDestination<MetaChainAccountResponse>
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol
     let dataValidatingFactory: StakingDataValidatingFactoryProtocol
@@ -13,7 +13,7 @@ final class StakingRewardDestConfirmPresenter {
     let explorers: [ChainModel.Explorer]?
     let logger: LoggerProtocol?
 
-    private var controllerAccount: ChainAccountResponse?
+    private var controllerAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var fee: Decimal?
     private var balance: Decimal?
@@ -22,7 +22,7 @@ final class StakingRewardDestConfirmPresenter {
     init(
         interactor: StakingRewardDestConfirmInteractorInputProtocol,
         wireframe: StakingRewardDestConfirmWireframeProtocol,
-        rewardDestination: RewardDestination<ChainAccountResponse>,
+        rewardDestination: RewardDestination<MetaChainAccountResponse>,
         confirmModelFactory: StakingRewardDestConfirmVMFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
@@ -47,13 +47,12 @@ final class StakingRewardDestConfirmPresenter {
     }
 
     private func provideConfirmationViewModel() {
-        guard let controller = controllerAccount, let stashItem = stashItem else {
+        guard let controller = controllerAccount else {
             return
         }
 
         do {
             let viewModel = try confirmModelFactory.createViewModel(
-                from: stashItem,
                 rewardDestination: rewardDestination,
                 controller: controller
             )
@@ -85,7 +84,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                controller: controllerAccount,
+                controller: controllerAccount?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             ),
@@ -111,7 +110,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
 
     func presentSenderAccountOptions() {
         guard
-            let address = controllerAccount?.toAddress(),
+            let address = controllerAccount?.chainAccount.toAddress(),
             let view = view,
             let locale = view.localizationManager?.selectedLocale else {
             return
@@ -127,7 +126,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
 
     func presentPayoutAccountOptions() {
         guard
-            let address = rewardDestination.payoutAccount?.toAddress(),
+            let address = rewardDestination.payoutAccount?.chainAccount.toAddress(),
             let view = view,
             let locale = view.localizationManager?.selectedLocale else {
             return
@@ -180,7 +179,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         }
     }
 
-    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(controller):
             controllerAccount = controller
