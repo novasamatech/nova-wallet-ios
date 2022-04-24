@@ -6,7 +6,7 @@ import SoraFoundation
 struct StakingRewardDestConfirmViewFactory {
     static func createView(
         for state: StakingSharedState,
-        rewardDestination: RewardDestination<ChainAccountResponse>
+        rewardDestination: RewardDestination<MetaChainAccountResponse>
     ) -> StakingRewardDestConfirmViewProtocol? {
         guard
             let chainAsset = state.settings.value,
