@@ -3,23 +3,22 @@ import SubstrateSdk
 
 protocol StakingRewardDestConfirmVMFactoryProtocol {
     func createViewModel(
-        from stashItem: StashItem,
-        rewardDestination: RewardDestination<ChainAccountResponse>,
-        controller: ChainAccountResponse?
+        rewardDestination: RewardDestination<MetaChainAccountResponse>,
+        controller: MetaChainAccountResponse
     ) throws -> StakingRewardDestConfirmViewModel
 }
 
 final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactoryProtocol {
-    private lazy var addressIconGenerator = PolkadotIconGenerator()
-    private lazy var walletIconGenerator = NovaIconGenerator()
+    private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var amountFactory = AmountFormatterFactory()
 
     func createViewModel(
-        from stashItem: StashItem,
-        rewardDestination: RewardDestination<ChainAccountResponse>,
-        controller: ChainAccountResponse?
+        rewardDestination: RewardDestination<MetaChainAccountResponse>,
+        controller: MetaChainAccountResponse
     ) throws -> StakingRewardDestConfirmViewModel {
-        let controllerAddressIcon = try addressIconGenerator.generateFromAddress(stashItem.controller)
+        let walletDetails = try walletViewModelFactory.createViewModel(from: controller)
+        let accountViewModel = walletDetails.rawDisplayAddress()
+        let walletViewModel = walletDetails.displayWallet()
 
         let rewardDestViewModel: RewardDestinationTypeViewModel
 
@@ -27,27 +26,13 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
         case .restake:
             rewardDestViewModel = .restake
         case let .payout(account):
-            // TODO: Fix viewModel creation
-            let walletIcon = try walletIconGenerator.generateFromAccountId(account.accountId)
-            let walletIconViewModel = DrawableIconViewModel(icon: walletIcon)
-
-            let payoutAddressIcon = try addressIconGenerator.generateFromAccountId(account.accountId)
-            let payoutAddressIconViewModel = DrawableIconViewModel(icon: payoutAddressIcon)
-            let payoutAddress = account.toAddress()
-
-            let detailsViewModel = WalletAccountViewModel(
-                walletName: account.name,
-                walletIcon: walletIconViewModel,
-                address: payoutAddress ?? "",
-                addressIcon: payoutAddressIconViewModel
-            )
-
-            rewardDestViewModel = .payout(details: detailsViewModel)
+            let payoutViewModel = try walletViewModelFactory.createViewModel(from: account)
+            rewardDestViewModel = .payout(details: payoutViewModel)
         }
 
         return StakingRewardDestConfirmViewModel(
-            senderIcon: controllerAddressIcon,
-            senderName: controller?.name ?? stashItem.controller,
+            walletViewModel: walletViewModel,
+            accountViewModel: accountViewModel,
             rewardDestination: rewardDestViewModel
         )
     }
