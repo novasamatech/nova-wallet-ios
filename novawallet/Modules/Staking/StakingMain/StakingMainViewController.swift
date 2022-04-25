@@ -373,7 +373,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private func applyNominator(viewModel: LocalizableResource<NominationViewModel>) {
         let nominatorView = setupNominatorViewIfNeeded()
-        nominatorView?.delegate = self
         nominatorView?.bind(viewModel: viewModel)
     }
 
@@ -390,7 +389,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
         let validatorView = setupValidatorViewIfNeeded()
-        validatorView?.delegate = self
         validatorView?.bind(viewModel: viewModel)
     }
 
@@ -530,20 +528,6 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
 
     func didChangeExpansion(isExpanded: Bool, view _: NetworkInfoView) {
         presenter.networkInfoViewDidChangeExpansion(isExpanded: isExpanded)
-    }
-}
-
-// MARK: - StakingStateViewDelegate
-
-extension StakingMainViewController: StakingStateViewDelegate {
-    func stakingStateViewDidReceiveMoreAction(_: StakingStateView) {}
-
-    func stakingStateViewDidReceiveStatusAction(_ view: StakingStateView) {
-        if view is NominatorStateView {
-            presenter.performNominationStatusAction()
-        } else if view is ValidatorStateView {
-            presenter.performValidationStatusAction()
-        }
     }
 }
 
