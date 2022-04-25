@@ -37,6 +37,7 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         setupBalanceAccessoryView()
         setupLocalization()
         updateActionButton()
+        updateRewardDestination()
         setupHandlers()
 
         presenter.setup()
@@ -117,6 +118,21 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
             rootView.actionButton.applyDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
         }
+    }
+
+    private func updateRewardDestination() {
+        let hasAmount = !(amountInputViewModel?.displayAmount ?? "").isEmpty
+
+        let textColor: UIColor?
+
+        if hasAmount {
+            textColor = R.color.colorWhite()
+        } else {
+            textColor = R.color.colorTransparentText()
+        }
+
+        rootView.restakeOptionView.amountLabel.textColor = textColor
+        rootView.payoutOptionView.amountLabel.textColor = textColor
     }
 
     private func applyAsset() {
@@ -248,6 +264,7 @@ extension StakingAmountViewController: StakingAmountViewProtocol {
         concreteViewModel.observable.add(observer: self)
 
         updateActionButton()
+        updateRewardDestination()
     }
 
     func didCompletionAccountSelection() {
@@ -269,22 +286,11 @@ extension StakingAmountViewController: AmountInputAccessoryViewDelegate {
 
 extension StakingAmountViewController: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        rootView.amountInputView.textField.text = amountInputViewModel?.displayAmount
-
         updateActionButton()
+        updateRewardDestination()
 
         let amount = amountInputViewModel?.decimalAmount ?? 0.0
         presenter.updateAmount(amount)
-    }
-}
-
-extension StakingAmountViewController: UITextFieldDelegate {
-    func textField(
-        _: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString string: String
-    ) -> Bool {
-        amountInputViewModel?.didReceiveReplacement(string, for: range) ?? false
     }
 }
 

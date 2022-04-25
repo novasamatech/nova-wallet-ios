@@ -36,6 +36,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             when(stub).localizationManager.get.then { nil }
 
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub).didCompletionAccountSelection().thenDoNothing()
         }
 
         let payoutSelectionsExpectation = XCTestExpectation()

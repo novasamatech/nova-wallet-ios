@@ -13,10 +13,6 @@ final class WalletAccountActionView: BaseActionControl {
         indicator as? ImageActionIndicator
     }
 
-    var contentView: WalletAccountView! {
-        title as? WalletAccountView
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -29,7 +25,14 @@ final class WalletAccountActionView: BaseActionControl {
     }
 
     func bind(viewModel: WalletAccountViewModel) {
-        contentView.bind(viewModel: viewModel)
+        if viewModel.walletName != nil {
+            setupWalletAccountViewIfNeeded().bind(viewModel: viewModel)
+        } else {
+            setupUnknowAddressViewIfNeeded().bind(
+                address: viewModel.address,
+                iconViewModel: viewModel.addressIcon
+            )
+        }
 
         invalidateLayout()
     }
@@ -38,6 +41,30 @@ final class WalletAccountActionView: BaseActionControl {
         super.layoutSubviews()
 
         backgroundView.frame = bounds
+    }
+
+    private func setupWalletAccountViewIfNeeded() -> WalletAccountView {
+        if let walletAccountView = title as? WalletAccountView {
+            return walletAccountView
+        }
+
+        let walletAccountView = WalletAccountView()
+        walletAccountView.isUserInteractionEnabled = false
+        title = walletAccountView
+
+        return walletAccountView
+    }
+
+    private func setupUnknowAddressViewIfNeeded() -> UnknownAddressView {
+        if let unknownAddressView = title as? UnknownAddressView {
+            return unknownAddressView
+        }
+
+        let unknownAddressView = UnknownAddressView()
+        unknownAddressView.isUserInteractionEnabled = false
+        title = unknownAddressView
+
+        return unknownAddressView
     }
 
     private func configure() {
@@ -50,9 +77,6 @@ final class WalletAccountActionView: BaseActionControl {
         indicator = imageIndicator
         indicator?.backgroundColor = .clear
         indicator?.isUserInteractionEnabled = false
-
-        title = WalletAccountView()
-        title?.isUserInteractionEnabled = false
 
         contentInsets = UIEdgeInsets(top: 9.0, left: 16.0, bottom: 9.0, right: 16.0)
 
