@@ -327,8 +327,8 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         let actions: [StakingManageOption] = [
             .stakeMore,
             .unstake,
-            .setupValidators,
             .rewardDestination,
+            .setupValidators,
             .controllerAccount
         ]
 
@@ -396,8 +396,8 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         let actions: [StakingManageOption] = [
             .stakeMore,
             .unstake,
-            .pendingRewards,
             .rewardDestination,
+            .pendingRewards,
             .changeValidators(count: state.nomination.targets.count),
             .controllerAccount
         ]
@@ -466,8 +466,8 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         let actions: [StakingManageOption] = [
             .stakeMore,
             .unstake,
-            .pendingRewards,
             .rewardDestination,
+            .pendingRewards,
             .yourValidator,
             .controllerAccount
         ]

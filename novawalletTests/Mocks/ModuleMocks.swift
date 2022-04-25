@@ -38920,36 +38920,6 @@ import SoraFoundation
     
     
     
-     func performNominationStatusAction()  {
-        
-    return cuckoo_manager.call("performNominationStatusAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performNominationStatusAction())
-        
-    }
-    
-    
-    
-     func performValidationStatusAction()  {
-        
-    return cuckoo_manager.call("performValidationStatusAction()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.performValidationStatusAction())
-        
-    }
-    
-    
-    
      func performRewardInfoAction()  {
         
     return cuckoo_manager.call("performRewardInfoAction()",
@@ -39112,16 +39082,6 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performAccountAction()", parameterMatchers: matchers))
 	    }
 	    
-	    func performNominationStatusAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performNominationStatusAction()", parameterMatchers: matchers))
-	    }
-	    
-	    func performValidationStatusAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performValidationStatusAction()", parameterMatchers: matchers))
-	    }
-	    
 	    func performRewardInfoAction() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainPresenterProtocol.self, method: "performRewardInfoAction()", parameterMatchers: matchers))
@@ -39208,18 +39168,6 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func performNominationStatusAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performNominationStatusAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func performValidationStatusAction() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("performValidationStatusAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func performRewardInfoAction() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("performRewardInfoAction()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -39303,18 +39251,6 @@ import SoraFoundation
     
     
      func performAccountAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performNominationStatusAction()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func performValidationStatusAction()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
