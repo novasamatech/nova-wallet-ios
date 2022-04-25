@@ -746,3 +746,4 @@
 "common.how.it.works" = "How it works";
 "staking.change.validators" = "Change validators";
 "staking.set.validators" = "Set validators";
+"common.staked.prefix" = "Staked:";
