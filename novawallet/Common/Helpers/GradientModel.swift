@@ -62,28 +62,4 @@ extension GradientModel {
             locations: [0.0, 1.0]
         )
     }
-
-    static var stakingControllerLeft: GradientModel {
-        GradientModel(
-            startPoint: CGPoint(x: 1.0, y: 0.3),
-            endPoint: CGPoint(x: 0.0, y: 0.7),
-            colors: [
-                UIColor(red: 131.0 / 255.0, green: 153.0 / 255.0, blue: 173.0 / 255.0, alpha: 0.64),
-                UIColor(red: 131.0 / 255.0, green: 153.0 / 255.0, blue: 173.0 / 255.0, alpha: 0.0)
-            ],
-            locations: [0, 0.48]
-        )
-    }
-
-    static var stakingControllerRight: GradientModel {
-        GradientModel(
-            startPoint: CGPoint(x: 0.0, y: 0.2),
-            endPoint: CGPoint(x: 1.0, y: 0.8),
-            colors: [
-                UIColor(red: 131.0 / 255.0, green: 153.0 / 255.0, blue: 173.0 / 255.0, alpha: 0.64),
-                UIColor(red: 131.0 / 255.0, green: 153.0 / 255.0, blue: 173.0 / 255.0, alpha: 0.0)
-            ],
-            locations: [0, 0.48]
-        )
-    }
 }

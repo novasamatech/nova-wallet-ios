@@ -141,7 +141,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupPresenterProtoc
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
 
         ]).runValidation { [weak self] in
-            guard let rewardDestination = self?.rewardDestination?.chainPayoutRewardDestination else { return }
+            guard let rewardDestination = self?.rewardDestination else { return }
 
             self?.wireframe.proceed(view: self?.view, rewardDestination: rewardDestination)
         }

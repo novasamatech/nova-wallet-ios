@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct StakingRewardDestConfirmViewModel {
-    let senderIcon: DrawableIcon
-    let senderName: String
+    let walletViewModel: DisplayWalletViewModel
+    let accountViewModel: DisplayAddressViewModel
     let rewardDestination: RewardDestinationTypeViewModel
 }

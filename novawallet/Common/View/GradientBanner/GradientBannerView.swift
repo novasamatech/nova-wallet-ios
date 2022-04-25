@@ -41,7 +41,7 @@ class GradientBannerView: UIView {
     private var loadingView: RoundedView?
 
     var linkButton: RoundedButton? { linkView?.actionButton }
-    private(set) var actionButton: RoundedButton?
+    private(set) var actionButton: TriangularedButton?
 
     var showsLink: Bool = true {
         didSet {
@@ -99,6 +99,10 @@ class GradientBannerView: UIView {
 
         actionButton?.isHidden = false
         removeLoadingView()
+    }
+
+    func bind(model: GradientBannerModel) {
+        bindGradients(left: model.left, right: model.right)
     }
 
     func bindGradients(left: GradientModel, right: GradientModel) {
@@ -163,16 +167,16 @@ class GradientBannerView: UIView {
             return
         }
 
-        let actionButton = RoundedButton()
-        actionButton.applyEnabledStyle()
-        actionButton.roundedBackgroundView?.fillColor = R.color.colorAccentSelected()!
-        actionButton.roundedBackgroundView?.highlightedFillColor = R.color.colorAccentSelected()!
+        let actionButton = TriangularedButton()
+        actionButton.applyDefaultStyle()
         actionButton.changesContentOpacityWhenHighlighted = true
-        actionButton.roundedBackgroundView?.cornerRadius = 10.0
+        actionButton.triangularedView?.sideLength = 10.0
+        actionButton.imageWithTitleView?.titleFont = .semiBoldSubheadline
 
         stackView.addArrangedSubview(actionButton)
         actionButton.snp.makeConstraints { make in
-            make.width.equalToSuperview().offset(-32.0)
+            make.width.equalTo(self).offset(-32.0)
+            make.height.equalTo(44.0)
         }
 
         self.actionButton = actionButton
@@ -202,8 +206,11 @@ class GradientBannerView: UIView {
 
         stackView.addArrangedSubview(loadingView)
         loadingView.snp.makeConstraints { make in
-            make.width.equalToSuperview().offset(-32)
+            make.width.equalTo(self).offset(-32)
+            make.height.equalTo(44.0)
         }
+
+        self.loadingView = loadingView
 
         activityIndicator.startAnimating()
     }
