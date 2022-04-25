@@ -1,6 +1,7 @@
 import SoraFoundation
 
 struct ControllerAccountConfirmationVM {
-    let stashViewModel: AccountInfoViewModel
-    let controllerViewModel: AccountInfoViewModel
+    let walletViewModel: DisplayWalletViewModel
+    let accountViewModel: DisplayAddressViewModel
+    let controllerViewModel: DisplayAddressViewModel
 }

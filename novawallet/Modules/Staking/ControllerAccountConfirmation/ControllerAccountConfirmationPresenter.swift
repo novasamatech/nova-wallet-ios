@@ -8,24 +8,25 @@ final class ControllerAccountConfirmationPresenter {
     var wireframe: ControllerAccountConfirmationWireframeProtocol!
     var interactor: ControllerAccountConfirmationInteractorInputProtocol!
 
-    private let iconGenerator: IconGenerating
-    private let controllerAccountItem: ChainAccountResponse
+    private let controllerAccountItem: MetaChainAccountResponse
     private let assetInfo: AssetBalanceDisplayInfo
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let logger: LoggerProtocol?
     private let dataValidatingFactory: StakingDataValidatingFactoryProtocol
     private let explorers: [ChainModel.Explorer]?
 
-    private var stashAccountItem: ChainAccountResponse?
+    private var stashAccountItem: MetaChainAccountResponse?
     private var fee: Decimal?
     private var priceData: PriceData?
     private var balance: Decimal?
     private var stakingLedger: StakingLedger?
 
+    private lazy var addressViewModelFactory = DisplayAddressViewModelFactory()
+    private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
+
     init(
-        controllerAccountItem: ChainAccountResponse,
+        controllerAccountItem: MetaChainAccountResponse,
         assetInfo: AssetBalanceDisplayInfo,
-        iconGenerator: IconGenerating,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         dataValidatingFactory: StakingDataValidatingFactoryProtocol,
         explorers: [ChainModel.Explorer]?,
@@ -33,7 +34,6 @@ final class ControllerAccountConfirmationPresenter {
     ) {
         self.controllerAccountItem = controllerAccountItem
         self.assetInfo = assetInfo
-        self.iconGenerator = iconGenerator
         self.balanceViewModelFactory = balanceViewModelFactory
         self.dataValidatingFactory = dataValidatingFactory
         self.explorers = explorers
@@ -41,43 +41,23 @@ final class ControllerAccountConfirmationPresenter {
     }
 
     private func updateView() {
-        guard let stashAccountItem = stashAccountItem else { return }
+        guard
+            let stashAccountItem = stashAccountItem,
+            let stashAddress = stashAccountItem.chainAccount.toAddress(),
+            let controllerAddress = controllerAccountItem.chainAccount.toAddress(),
+            let walletViewModel = try? walletViewModelFactory.createDisplayViewModel(from: stashAccountItem)
+        else { return }
 
-        let viewModel = LocalizableResource<ControllerAccountConfirmationVM> { locale in
-            let stashViewModel = self.createAccountInfoViewModel(
-                stashAccountItem,
-                title: R.string.localizable.stackingStashAccount(preferredLanguages: locale.rLanguages)
-            )
-            let controllerViewModel = self.createAccountInfoViewModel(
-                self.controllerAccountItem,
-                title: R.string.localizable.stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
-            )
+        let accountViewModel = addressViewModelFactory.createViewModel(from: stashAddress)
+        let controllerViewModel = addressViewModelFactory.createViewModel(from: controllerAddress)
 
-            return ControllerAccountConfirmationVM(
-                stashViewModel: stashViewModel,
-                controllerViewModel: controllerViewModel
-            )
-        }
-        view?.reload(with: viewModel)
-    }
-
-    private func createAccountInfoViewModel(
-        _ accountItem: ChainAccountResponse,
-        title: String
-    ) -> AccountInfoViewModel {
-        let icon = try? iconGenerator
-            .generateFromAccountId(accountItem.accountId)
-            .imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
-        return AccountInfoViewModel(
-            title: title,
-            address: accountItem.toAddress() ?? "",
-            name: accountItem.name,
-            icon: icon
+        let viewModel = ControllerAccountConfirmationVM(
+            walletViewModel: walletViewModel,
+            accountViewModel: accountViewModel,
+            controllerViewModel: controllerViewModel
         )
+
+        view?.reload(with: viewModel)
     }
 
     private func provideFeeViewModel() {
@@ -102,11 +82,11 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
     }
 
     func handleStashAction() {
-        presentAccountOptions(for: stashAccountItem?.toAddress())
+        presentAccountOptions(for: stashAccountItem?.chainAccount.toAddress())
     }
 
     func handleControllerAction() {
-        presentAccountOptions(for: controllerAccountItem.toAddress())
+        presentAccountOptions(for: controllerAccountItem.chainAccount.toAddress())
     }
 
     func confirm() {
@@ -149,9 +129,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
     func didReceiveStashItem(result: Result<StashItem?, Error>) {
         switch result {
         case let .success(stashItem):
-            if let stashItem = stashItem {
-                interactor.fetchStashAccountItem(for: stashItem.stash)
-            } else {
+            if stashItem == nil {
                 wireframe.close(view: view)
             }
         case let .failure(error):
@@ -159,7 +137,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationI
         }
     }
 
-    func didReceiveStashAccount(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveStashAccount(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             stashAccountItem = accountItem
