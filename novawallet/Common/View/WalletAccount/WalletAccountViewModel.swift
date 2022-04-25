@@ -16,4 +16,24 @@ extension WalletAccountViewModel {
             addressIcon: nil
         )
     }
+
+    func displayAddress() -> DisplayAddressViewModel {
+        DisplayAddressViewModel(
+            address: address,
+            name: walletName,
+            imageViewModel: addressIcon
+        )
+    }
+
+    func rawDisplayAddress() -> DisplayAddressViewModel {
+        DisplayAddressViewModel(
+            address: address,
+            name: nil,
+            imageViewModel: addressIcon
+        )
+    }
+
+    func displayWallet() -> DisplayWalletViewModel {
+        DisplayWalletViewModel(name: walletName ?? "", imageViewModel: walletIcon)
+    }
 }

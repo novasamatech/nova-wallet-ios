@@ -22,7 +22,7 @@ final class TitleValueSelectionView: UIView {
         return label
     }()
 
-    let arrowIconView: UIView = {
+    let arrowIconView: UIImageView = {
         let imageView = UIImageView(image: R.image.iconSmallArrow())
         imageView.tintColor = .white
         imageView.contentMode = .scaleAspectFit

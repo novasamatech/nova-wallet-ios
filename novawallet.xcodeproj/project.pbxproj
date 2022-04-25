@@ -786,6 +786,7 @@
 		8473D4082657E9AD00B394B2 /* CrowdloanLastContribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D4072657E9AD00B394B2 /* CrowdloanLastContribution.swift */; };
 		8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D40C2657E9DC00B394B2 /* MultiSigner.swift */; };
 		8473D4212657FFFB00B394B2 /* Crowdloan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D4202657FFFB00B394B2 /* Crowdloan.swift */; };
+		84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84746B2F28153E4C002642F4 /* GradientBannerModel.swift */; };
 		84754C852510A1A400854599 /* ModalAlertPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754C842510A1A400854599 /* ModalAlertPresenting.swift */; };
 		84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754C872510BAFE00854599 /* ModalAlertFactory.swift */; };
 		84754C9A2513871300854599 /* SNAddressType+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754C992513871300854599 /* SNAddressType+Codable.swift */; };
@@ -2836,6 +2837,7 @@
 		8473D4072657E9AD00B394B2 /* CrowdloanLastContribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLastContribution.swift; sourceTree = "<group>"; };
 		8473D40C2657E9DC00B394B2 /* MultiSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSigner.swift; sourceTree = "<group>"; };
 		8473D4202657FFFB00B394B2 /* Crowdloan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crowdloan.swift; sourceTree = "<group>"; };
+		84746B2F28153E4C002642F4 /* GradientBannerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBannerModel.swift; sourceTree = "<group>"; };
 		84754C842510A1A400854599 /* ModalAlertPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAlertPresenting.swift; sourceTree = "<group>"; };
 		84754C872510BAFE00854599 /* ModalAlertFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAlertFactory.swift; sourceTree = "<group>"; };
 		84754C992513871300854599 /* SNAddressType+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SNAddressType+Codable.swift"; sourceTree = "<group>"; };
@@ -7663,6 +7665,7 @@
 			children = (
 				84C5ADE12813E8C0006D7388 /* GradientBannerInfoView.swift */,
 				84C5ADE32813EBAB006D7388 /* GradientBannerView.swift */,
+				84746B2F28153E4C002642F4 /* GradientBannerModel.swift */,
 			);
 			path = GradientBanner;
 			sourceTree = "<group>";
@@ -10818,6 +10821,7 @@
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletNewTransactionInserted.swift in Sources */,
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
+				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				8499FEDC27BFDD4300712589 /* NftLocalSubscriptionFactory.swift in Sources */,
 				F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */,
