@@ -1,35 +1,35 @@
 import UIKit
 
 final class StakingBMConfirmationViewLayout: UIView {
-    let stackView: UIStackView = {
-        let view = UIStackView()
-        view.isLayoutMarginsRelativeArrangement = true
-        view.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
-        view.axis = .vertical
-        view.alignment = .center
-        view.distribution = .fill
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
         return view
     }()
 
-    let accountView: DetailsTriangularedView = UIFactory.default.createAccountView()
+    let amountView = MultilineBalanceView()
 
-    let amountView: AmountInputView = {
-        let view = UIFactory().createAmountInputView(filled: true)
-        view.isUserInteractionEnabled = false
-        return view
+    let walletTableView = StackTableView()
+
+    let walletCell = StackTableCell()
+
+    let accountCell: StackInfoTableCell = {
+        let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        return cell
     }()
 
-    let hintView: IconDetailsView = {
-        let view = IconDetailsView()
-        view.iconWidth = 16.0
-        view.stackView.alignment = .top
-        view.detailsLabel.font = .caption1
-        view.detailsLabel.textColor = R.color.colorTransparentText()
-        view.imageView.image = R.image.iconStarGray16()
-        return view
-    }()
+    let networkFeeCell = StackNetworkFeeCell()
 
-    let networkFeeConfirmView: NetworkFeeConfirmView = UIFactory().createNetworkFeeConfirmView()
+    let hintView: IconDetailsView = .hint()
+
+    let actionButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
+    }()
 
     var locale = Locale.current {
         didSet {
@@ -54,99 +54,48 @@ final class StakingBMConfirmationViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(confirmationViewModel: StakingBondMoreConfirmViewModel) {
-        if let senderName = confirmationViewModel.senderName {
-            accountView.subtitleLabel?.lineBreakMode = .byTruncatingTail
-            accountView.subtitle = senderName
-        } else {
-            accountView.subtitleLabel?.lineBreakMode = .byTruncatingMiddle
-            accountView.subtitle = confirmationViewModel.senderAddress
-        }
-
-        let iconSize = 2.0 * accountView.iconRadius
-        accountView.iconImage = confirmationViewModel.senderIcon.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: CGSize(width: iconSize, height: iconSize),
-            contentScale: UIScreen.main.scale
-        )
-
-        amountView.fieldText = confirmationViewModel.amount.value(for: locale)
-
-        setNeedsLayout()
-    }
-
-    func bind(feeViewModel: BalanceViewModelProtocol?) {
-        networkFeeConfirmView.networkFeeView.bind(viewModel: feeViewModel)
-        setNeedsLayout()
-    }
-
-    func bind(assetViewModel: AssetBalanceViewModelProtocol) {
-        amountView.priceText = assetViewModel.price
-
-        if let balance = assetViewModel.balance {
-            amountView.balanceText = R.string.localizable.commonAvailableFormat(
-                balance,
-                preferredLanguages: locale.rLanguages
-            )
-        } else {
-            amountView.balanceText = nil
-        }
-
-        assetViewModel.iconViewModel?.cancel(on: amountView.iconView)
-        amountView.assetIcon = nil
-
-        assetViewModel.iconViewModel?.loadAmountInputIcon(on: amountView.iconView, animated: true)
-
-        amountView.symbol = assetViewModel.symbol.uppercased()
-
-        setNeedsLayout()
-    }
-
     private func applyLocalization() {
-        accountView.title = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
-
-        amountView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
+        walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: locale.rLanguages)
+        accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
 
         hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore_v2_2_0(
             preferredLanguages: locale.rLanguages
         )
 
-        networkFeeConfirmView.locale = locale
+        networkFeeCell.rowContentView.locale = locale
+
+        actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+            preferredLanguages: locale.rLanguages
+        )
 
         setNeedsLayout()
     }
 
     private func setupLayout() {
-        addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        stackView.addArrangedSubview(accountView)
-        accountView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-            make.height.equalTo(52)
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
 
-        stackView.setCustomSpacing(16.0, after: accountView)
-        stackView.addArrangedSubview(amountView)
-        amountView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-            make.height.equalTo(72.0)
-        }
+        containerView.stackView.addArrangedSubview(amountView)
+        containerView.stackView.setCustomSpacing(24.0, after: amountView)
 
-        stackView.setCustomSpacing(16.0, after: amountView)
-        stackView.addArrangedSubview(hintView)
-        hintView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-        }
+        containerView.stackView.addArrangedSubview(walletTableView)
 
-        addSubview(networkFeeConfirmView)
+        walletTableView.addArrangedSubview(walletCell)
+        walletTableView.addArrangedSubview(accountCell)
+        walletTableView.addArrangedSubview(networkFeeCell)
 
-        networkFeeConfirmView.snp.makeConstraints { make in
-            make.leading.bottom.trailing.equalToSuperview()
-        }
+        containerView.stackView.setCustomSpacing(16.0, after: walletTableView)
+
+        containerView.stackView.addArrangedSubview(hintView)
     }
 }
