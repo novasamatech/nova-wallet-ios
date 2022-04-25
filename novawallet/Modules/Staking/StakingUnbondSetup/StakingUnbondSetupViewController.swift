@@ -70,11 +70,13 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.networkFeeView.locale = selectedLocale
+        rootView.hintListView.locale = selectedLocale
 
         setupBalanceAccessoryView()
         applyTransferableViewModel()
         applyAssetViewModel()
         applyFeeViewModel()
+        applyBondingDuration()
     }
 
     private func setupAmountInputView() {
@@ -123,6 +125,11 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
         rootView.networkFeeView.bind(viewModel: viewModel)
     }
 
+    private func applyBondingDuration() {
+        let bondingDuration = bondingDurationViewModel?.value(for: selectedLocale)
+        rootView.hintListView.bondingDuration = bondingDuration
+    }
+
     @objc private func actionClose() {
         presenter.close()
     }
@@ -169,6 +176,7 @@ extension StakingUnbondSetupViewController: StakingUnbondSetupViewProtocol {
 
     func didReceiveBonding(duration: LocalizableResource<String>) {
         bondingDurationViewModel = duration
+        applyBondingDuration()
     }
 }
 

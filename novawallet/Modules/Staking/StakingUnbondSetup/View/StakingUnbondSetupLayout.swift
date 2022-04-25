@@ -22,6 +22,8 @@ final class StakingUnbondSetupLayout: UIView {
         return view
     }()
 
+    let hintListView = StakingUnbondHintView()
+
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
         button.applyDefaultStyle()
@@ -72,5 +74,7 @@ final class StakingUnbondSetupLayout: UIView {
         containerView.stackView.addArrangedSubview(networkFeeView)
 
         containerView.stackView.setCustomSpacing(24.0, after: networkFeeView)
+
+        containerView.stackView.addArrangedSubview(hintListView)
     }
 }
