@@ -13,10 +13,10 @@ final class ControllerAccountPresenter {
     weak var view: ControllerAccountViewProtocol?
 
     private let logger: LoggerProtocol?
-    private var stashAccountItem: ChainAccountResponse?
+    private var stashAccountItem: MetaChainAccountResponse?
     private var stashItem: StashItem?
-    private var chosenAccountItem: ChainAccountResponse?
-    private var accounts: [ChainAccountResponse]?
+    private var chosenAccountItem: MetaChainAccountResponse?
+    private var accounts: [MetaChainAccountResponse]?
     private var canChooseOtherController = false
     private var fee: Decimal?
     private var balance: Decimal?
@@ -60,14 +60,14 @@ final class ControllerAccountPresenter {
         guard fee == nil else { return }
 
         if let stashAccountItem = stashAccountItem {
-            interactor.estimateFee(for: stashAccountItem)
+            interactor.estimateFee(for: stashAccountItem.chainAccount)
         } else if let chosenAccountItem = chosenAccountItem {
-            interactor.estimateFee(for: chosenAccountItem)
+            interactor.estimateFee(for: chosenAccountItem.chainAccount)
         }
     }
 
     private func refreshControllerInfoIfNeeded() {
-        guard let chosenControllerAddress = chosenAccountItem?.toAddress() else {
+        guard let chosenControllerAddress = chosenAccountItem?.chainAccount.toAddress() else {
             return
         }
 
@@ -96,14 +96,14 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
         }
         let context = PrimitiveContextWrapper(value: accounts)
         let title = LocalizableResource<String> { locale in
-            R.string.localizable
-                .stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
+            R.string.localizable.stakingControllerSelectTitle(
+                preferredLanguages: locale.rLanguages
+            )
         }
 
-        // TODO: Fix accounts selection
         wireframe.presentAccountSelection(
-            [],
-            selectedAccountItem: nil,
+            accounts,
+            selectedAccountItem: chosenAccountItem,
             title: title,
             delegate: self,
             from: view,
@@ -179,7 +179,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveStashAccount(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveStashAccount(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             stashAccountItem = accountItem
@@ -189,7 +189,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveControllerAccount(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveControllerAccount(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             chosenAccountItem = accountItem
@@ -199,7 +199,7 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>) {
+    func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>) {
         switch result {
         case let .success(accounts):
             self.accounts = accounts
@@ -228,14 +228,14 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
                     precision: assetInfo.assetPrecision
                 )
                 switch address {
-                case chosenAccountItem?.toAddress():
+                case chosenAccountItem?.chainAccount.toAddress():
                     controllerBalance = amount
                 case stashItem?.stash:
                     balance = amount
                 default:
                     logger?.warning("Recieved \(String(describing: amount)) for unknown address \(address)")
                 }
-            } else if chosenAccountItem?.toAddress() == address {
+            } else if chosenAccountItem?.chainAccount.toAddress() == address {
                 controllerBalance = nil
             }
         case let .failure(error):
@@ -254,8 +254,14 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
 }
 
 extension ControllerAccountPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompleteControllerSelection()
+    }
+
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard let accounts = (context as? PrimitiveContextWrapper<[ChainAccountResponse]>)?.value else {
+        view?.didCompleteControllerSelection()
+
+        guard let accounts = (context as? PrimitiveContextWrapper<[MetaChainAccountResponse]>)?.value else {
             return
         }
 
