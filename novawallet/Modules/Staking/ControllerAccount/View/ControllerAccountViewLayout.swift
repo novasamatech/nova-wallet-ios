@@ -13,10 +13,7 @@ final class ControllerAccountViewLayout: UIView {
     let bannerView: GradientBannerView = {
         let view = GradientBannerView()
         view.infoView.imageView.image = R.image.iconBannerShield()
-        view.bindGradients(
-            left: GradientModel.stakingControllerLeft,
-            right: GradientModel.stakingControllerRight
-        )
+        view.bind(model: .stakingController())
 
         return view
     }()

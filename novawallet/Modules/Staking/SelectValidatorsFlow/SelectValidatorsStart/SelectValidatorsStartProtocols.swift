@@ -11,6 +11,7 @@ protocol SelectValidatorsStartPresenterProtocol: AnyObject {
 
     func selectRecommendedValidators()
     func selectCustomValidators()
+    func selectLearnMore()
 }
 
 protocol SelectValidatorsStartInteractorInputProtocol: AnyObject {
@@ -22,7 +23,7 @@ protocol SelectValidatorsStartInteractorOutputProtocol: AnyObject {
     func didReceiveMaxNominations(result: Result<Int, Error>)
 }
 
-protocol SelectValidatorsStartWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol SelectValidatorsStartWireframeProtocol: WebPresentable, AlertPresentable, ErrorPresentable {
     func proceedToCustomList(
         from view: ControllerBackedProtocol?,
         validatorList: [SelectedValidatorInfo],

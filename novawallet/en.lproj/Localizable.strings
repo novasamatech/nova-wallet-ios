@@ -741,3 +741,8 @@
 "staking.controller.hint" = "Controller is used to: unbond, redeem, return to stake, change validators and set rewards destination";
 "staking.controller.confirm.title" = "Change Controller";
 "staking.controller.select.title" = "Select the controller account";
+"staking.recommended.banner.title" = "Stake with recommended validators";
+"staking.recommended.banner.message" = "Nova Wallet will select the top validators based on security and profitability criteria";
+"common.how.it.works" = "How it works";
+"staking.change.validators" = "Change validators";
+"staking.set.validators" = "Set validators";
