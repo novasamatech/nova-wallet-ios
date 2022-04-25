@@ -266,45 +266,6 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
         }
     }
 
-    func performNominationStatusAction() {
-        let optViewModel: AlertPresentableViewModel? = {
-            let locale = view?.localizationManager?.selectedLocale
-
-            if let nominatorState = stateMachine.viewState(using: { (state: NominatorState) in state }) {
-                return nominatorState.createStatusPresentableViewModel(locale: locale)
-            }
-
-            if let bondedState = stateMachine.viewState(using: { (state: BondedState) in state }) {
-                return bondedState.createStatusPresentableViewModel(locale: locale)
-            }
-
-            return nil
-        }()
-
-        if let viewModel = optViewModel {
-            wireframe.present(
-                viewModel: viewModel,
-                style: .alert,
-                from: view
-            )
-        }
-    }
-
-    func performValidationStatusAction() {
-        let optViewModel: AlertPresentableViewModel? = stateMachine.viewState { (state: ValidatorState) in
-            let locale = view?.localizationManager?.selectedLocale
-            return state.createStatusPresentableViewModel(for: locale)
-        }
-
-        if let viewModel = optViewModel {
-            wireframe.present(
-                viewModel: viewModel,
-                style: .alert,
-                from: view
-            )
-        }
-    }
-
     func performAccountAction() {
         wireframe.showAccountsSelection(from: view)
     }
