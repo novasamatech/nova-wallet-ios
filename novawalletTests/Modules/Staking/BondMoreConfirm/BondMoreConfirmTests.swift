@@ -22,7 +22,7 @@ class BondMoreConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
+            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
 
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
 
@@ -111,7 +111,7 @@ class BondMoreConfirmTests: XCTestCase {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmViewModelFactory = StakingBondMoreConfirmViewModelFactory(assetInfo: assetInfo)
+        let confirmViewModelFactory = StakingBondMoreConfirmViewModelFactory()
 
         let presenter = StakingBondMoreConfirmationPresenter(
             interactor: interactor,
@@ -134,8 +134,10 @@ class BondMoreConfirmTests: XCTestCase {
         let confirmViewModelExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
-                if let balance = viewModel.value(for: Locale.current).balance, !balance.isEmpty {
+            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+                let balance = viewModel.value(for: Locale.current).amount
+
+                if !balance.isEmpty {
                     assetExpectation.fulfill()
                 }
             }
