@@ -75,8 +75,7 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accounts = responses.map(\.chainAccount)
-                self?.presenter.didReceiveAccounts(result: .success(accounts))
+                self?.presenter.didReceiveAccounts(result: .success(responses))
             case let .failure(error):
                 self?.presenter.didReceiveAccounts(result: .failure(error))
             }
@@ -229,20 +228,20 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                             )
                             self?.estimateFee(for: account)
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccount))
+                        self?.presenter.didReceiveStashAccount(result: .success(accountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveStashAccount(result: .failure(error))
                     }
                 }
 
-                fetchFirstAccount(
+                fetchFirstMetaAccountResponse(
                     for: controllerId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,
                     operationManager: operationManager
                 ) { [weak self] result in
                     if case let .success(maybeController) = result, let controller = maybeController {
-                        self?.estimateFee(for: controller)
+                        self?.estimateFee(for: controller.chainAccount)
                     }
 
                     self?.presenter.didReceiveControllerAccount(result: result)

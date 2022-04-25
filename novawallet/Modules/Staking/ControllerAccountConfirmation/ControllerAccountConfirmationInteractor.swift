@@ -125,30 +125,6 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
         }
     }
 
-    func fetchStashAccountItem(for address: AccountAddress) {
-        do {
-            let stashId = try address.toAccountId()
-
-            fetchFirstMetaAccountResponse(
-                for: stashId,
-                accountRequest: chainAsset.chain.accountRequest(),
-                repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
-            ) { [weak self] result in
-                switch result {
-                case let .success(accountResponse):
-                    let maybeAccount = accountResponse?.chainAccount
-
-                    self?.presenter.didReceiveStashAccount(result: .success(maybeAccount))
-                case let .failure(error):
-                    self?.presenter.didReceiveStashAccount(result: .failure(error))
-                }
-            }
-        } catch {
-            presenter.didReceiveStashAccount(result: .failure(error))
-        }
-    }
-
     func estimateFee() {
         guard let extrinsicService = extrinsicService else { return }
         do {
@@ -215,8 +191,6 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeAccountResponse):
-                        let maybeAccount = maybeAccountResponse?.chainAccount
-
                         if let accountResponse = maybeAccountResponse {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
                                 accountId: accountResponse.chainAccount.accountId,
@@ -226,7 +200,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
 
                             self?.estimateFee()
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccount))
+                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveStashAccount(result: .failure(error))
                     }

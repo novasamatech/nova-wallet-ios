@@ -16,10 +16,7 @@ struct ControllerAccountViewFactory {
 
         let wireframe = ControllerAccountWireframe(state: state)
 
-        let viewModelFactory = ControllerAccountViewModelFactory(
-            selectedAddress: selectedAddress,
-            iconGenerator: PolkadotIconGenerator()
-        )
+        let viewModelFactory = ControllerAccountViewModelFactory(selectedAddress: selectedAddress)
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
         let presenter = ControllerAccountPresenter(
