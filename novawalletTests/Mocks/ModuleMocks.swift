@@ -47231,6 +47231,21 @@ import SoraFoundation
     
     
     
+     func didCompletionAccountSelection()  {
+        
+    return cuckoo_manager.call("didCompletionAccountSelection()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didCompletionAccountSelection())
+        
+    }
+    
+    
+    
     public func applyLocalization()  {
         
     return cuckoo_manager.call("applyLocalization()",
@@ -47276,6 +47291,11 @@ import SoraFoundation
 	    func didReceiveRewardDestination<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ChangeRewardDestinationViewModel?)> where M1.OptionalMatchedType == ChangeRewardDestinationViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChangeRewardDestinationViewModel?)>] = [wrap(matchable: viewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupViewProtocol.self, method: "didReceiveRewardDestination(viewModel: ChangeRewardDestinationViewModel?)", parameterMatchers: matchers))
+	    }
+	    
+	    func didCompletionAccountSelection() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupViewProtocol.self, method: "didCompletionAccountSelection()", parameterMatchers: matchers))
 	    }
 	    
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -47324,6 +47344,12 @@ import SoraFoundation
 	    func didReceiveRewardDestination<M1: Cuckoo.OptionalMatchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(ChangeRewardDestinationViewModel?), Void> where M1.OptionalMatchedType == ChangeRewardDestinationViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(ChangeRewardDestinationViewModel?)>] = [wrap(matchable: viewModel) { $0 }]
 	        return cuckoo_manager.verify("didReceiveRewardDestination(viewModel: ChangeRewardDestinationViewModel?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didCompletionAccountSelection() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("didCompletionAccountSelection()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -47379,6 +47405,12 @@ import SoraFoundation
     
     
      func didReceiveRewardDestination(viewModel: ChangeRewardDestinationViewModel?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didCompletionAccountSelection()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -47872,9 +47904,9 @@ import SoraFoundation
     
     
     
-     func didReceiveController(result: Result<ChainAccountResponse?, Error>)  {
+     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)  {
         
-    return cuckoo_manager.call("didReceiveController(result: Result<ChainAccountResponse?, Error>)",
+    return cuckoo_manager.call("didReceiveController(result: Result<MetaChainAccountResponse?, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -47887,9 +47919,9 @@ import SoraFoundation
     
     
     
-     func didReceiveStash(result: Result<ChainAccountResponse?, Error>)  {
+     func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)  {
         
-    return cuckoo_manager.call("didReceiveStash(result: Result<ChainAccountResponse?, Error>)",
+    return cuckoo_manager.call("didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -47917,9 +47949,9 @@ import SoraFoundation
     
     
     
-     func didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)  {
+     func didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)  {
         
-    return cuckoo_manager.call("didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)",
+    return cuckoo_manager.call("didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -47962,9 +47994,9 @@ import SoraFoundation
     
     
     
-     func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)  {
+     func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)  {
         
-    return cuckoo_manager.call("didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)",
+    return cuckoo_manager.call("didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)",
             parameters: (result),
             escapingParameters: (result),
             superclassCall:
@@ -48029,14 +48061,14 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveStashItem(result: Result<StashItem?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ChainAccountResponse?, Error>)> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<ChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveController(result: Result<ChainAccountResponse?, Error>)", parameterMatchers: matchers))
+	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveController(result: Result<MetaChainAccountResponse?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<ChainAccountResponse?, Error>)> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<ChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveStash(result: Result<ChainAccountResponse?, Error>)", parameterMatchers: matchers))
+	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<MetaChainAccountResponse?, Error>)> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStakingLedger<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<StakingLedger?, Error>)> where M1.MatchedType == Result<StakingLedger?, Error> {
@@ -48044,9 +48076,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveStakingLedger(result: Result<StakingLedger?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveRewardDestinationAccount<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RewardDestination<ChainAccountResponse>?, Error>)> where M1.MatchedType == Result<RewardDestination<ChainAccountResponse>?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<ChainAccountResponse>?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)", parameterMatchers: matchers))
+	    func didReceiveRewardDestinationAccount<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RewardDestination<MetaChainAccountResponse>?, Error>)> where M1.MatchedType == Result<RewardDestination<MetaChainAccountResponse>?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<MetaChainAccountResponse>?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveRewardDestinationAddress<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RewardDestination<AccountAddress>?, Error>)> where M1.MatchedType == Result<RewardDestination<AccountAddress>?, Error> {
@@ -48059,9 +48091,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveCalculator(result: Result<RewardCalculatorEngineProtocol?, Error>)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveAccounts<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[ChainAccountResponse], Error>)> where M1.MatchedType == Result<[ChainAccountResponse], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAccountResponse], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)", parameterMatchers: matchers))
+	    func didReceiveAccounts<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<[MetaChainAccountResponse], Error>)> where M1.MatchedType == Result<[MetaChainAccountResponse], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[MetaChainAccountResponse], Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDestSetupInteractorOutputProtocol.self, method: "didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveNomination<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Nomination?, Error>)> where M1.MatchedType == Result<Nomination?, Error> {
@@ -48109,15 +48141,15 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ChainAccountResponse?, Error>), Void> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<ChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveController(result: Result<ChainAccountResponse?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveController<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<MetaChainAccountResponse?, Error>), Void> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveController(result: Result<MetaChainAccountResponse?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<ChainAccountResponse?, Error>), Void> where M1.MatchedType == Result<ChainAccountResponse?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<ChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveStash(result: Result<ChainAccountResponse?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveStash<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<MetaChainAccountResponse?, Error>), Void> where M1.MatchedType == Result<MetaChainAccountResponse?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<MetaChainAccountResponse?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -48127,9 +48159,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveRewardDestinationAccount<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RewardDestination<ChainAccountResponse>?, Error>), Void> where M1.MatchedType == Result<RewardDestination<ChainAccountResponse>?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<ChainAccountResponse>?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveRewardDestinationAccount<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RewardDestination<MetaChainAccountResponse>?, Error>), Void> where M1.MatchedType == Result<RewardDestination<MetaChainAccountResponse>?, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<MetaChainAccountResponse>?, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -48145,9 +48177,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveAccounts<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[ChainAccountResponse], Error>), Void> where M1.MatchedType == Result<[ChainAccountResponse], Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<[ChainAccountResponse], Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveAccounts<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<[MetaChainAccountResponse], Error>), Void> where M1.MatchedType == Result<[MetaChainAccountResponse], Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<[MetaChainAccountResponse], Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -48191,13 +48223,13 @@ import SoraFoundation
     
     
     
-     func didReceiveController(result: Result<ChainAccountResponse?, Error>)   {
+     func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func didReceiveStash(result: Result<ChainAccountResponse?, Error>)   {
+     func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -48209,7 +48241,7 @@ import SoraFoundation
     
     
     
-     func didReceiveRewardDestinationAccount(result: Result<RewardDestination<ChainAccountResponse>?, Error>)   {
+     func didReceiveRewardDestinationAccount(result: Result<RewardDestination<MetaChainAccountResponse>?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -48227,7 +48259,7 @@ import SoraFoundation
     
     
     
-     func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>)   {
+     func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

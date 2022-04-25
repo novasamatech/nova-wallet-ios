@@ -13,13 +13,15 @@ protocol RewardDestinationViewModelFactoryProtocol {
         account: MetaChainAccountResponse
     ) throws -> LocalizableResource<RewardDestinationViewModelProtocol>
 
-    func createPayout(from model: CalculatedReward?, priceData: PriceData?, address: AccountAddress) throws
-        -> LocalizableResource<RewardDestinationViewModelProtocol>
+    func createPayout(
+        from model: CalculatedReward?,
+        priceData: PriceData?,
+        address: AccountAddress
+    ) throws -> LocalizableResource<RewardDestinationViewModelProtocol>
 }
 
 final class RewardDestinationViewModelFactory: RewardDestinationViewModelFactoryProtocol {
-    private lazy var addressIconGenerator = PolkadotIconGenerator()
-    private lazy var walletIconGenerator = NovaIconGenerator()
+    private lazy var walletAccountViewModelFactory = WalletAccountViewModelFactory()
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
@@ -46,19 +48,7 @@ final class RewardDestinationViewModelFactory: RewardDestinationViewModelFactory
         priceData: PriceData?,
         account: MetaChainAccountResponse
     ) throws -> LocalizableResource<RewardDestinationViewModelProtocol> {
-        let addressIcon = try addressIconGenerator.generateFromAccountId(account.chainAccount.accountId)
-        let addressIconViewModel = DrawableIconViewModel(icon: addressIcon)
-
-        let walletIcon = try walletIconGenerator.generateFromAccountId(account.substrateAccountId)
-        let walletIconViewModel = DrawableIconViewModel(icon: walletIcon)
-        let address = account.chainAccount.toAddress() ?? ""
-
-        let viewModel = WalletAccountViewModel(
-            walletName: account.chainAccount.name,
-            walletIcon: walletIconViewModel,
-            address: address,
-            addressIcon: addressIconViewModel
-        )
+        let viewModel = try walletAccountViewModelFactory.createViewModel(from: account)
 
         let type = RewardDestinationTypeViewModel.payout(details: viewModel)
 
@@ -78,16 +68,8 @@ final class RewardDestinationViewModelFactory: RewardDestinationViewModelFactory
         priceData: PriceData?,
         address: AccountAddress
     ) throws -> LocalizableResource<RewardDestinationViewModelProtocol> {
-        // TODO: Fix viewModel creation
-
-        let icon = try addressIconGenerator.generateFromAddress(address)
-        let iconViewModel = DrawableIconViewModel(icon: icon)
-
-        let details = WalletAccountViewModel(
-            walletName: address,
-            walletIcon: nil,
-            address: address,
-            addressIcon: iconViewModel
+        let details = try walletAccountViewModelFactory.createViewModel(
+            from: address
         )
 
         let type = RewardDestinationTypeViewModel.payout(details: details)
@@ -123,12 +105,12 @@ final class RewardDestinationViewModelFactory: RewardDestinationViewModelFactory
 
         let localizedRestakeBalance = balanceViewModelFactory.balanceFromPrice(
             model.restakeReturn,
-            priceData: priceData
+            priceData: priceData ?? .zero
         )
 
         let localizedPayoutBalance = balanceViewModelFactory.balanceFromPrice(
             model.payoutReturn,
-            priceData: priceData
+            priceData: priceData ?? .zero
         )
 
         return LocalizableResource { locale in

@@ -72,40 +72,22 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
 
     // MARK: - Private functions
 
-    // MARK: UI changes -
-
-    private func updateAccountView() {
-        rootView.accountView.isHidden = rootView.restakeOptionView.isSelected
-    }
-
     private func applyRewardDestinationType(from viewModel: RewardDestinationViewModelProtocol) {
-        let activeTextColor = R.color.colorWhite()!
-        let inactiveTextColor = R.color.colorLightGray()!
-
         switch viewModel.type {
         case .restake:
             rootView.restakeOptionView.isSelected = true
             rootView.payoutOptionView.isSelected = false
 
-            rootView.restakeOptionView.titleLabel.textColor = activeTextColor
-            rootView.restakeOptionView.amountLabel.textColor = activeTextColor
-            rootView.payoutOptionView.titleLabel.textColor = inactiveTextColor
-            rootView.payoutOptionView.amountLabel.textColor = inactiveTextColor
-
-            updateAccountView()
+            rootView.setupPayoutAccountShown(false)
 
         case let .payout(details):
-            // TODO: Fix viewModel application
 
             rootView.restakeOptionView.isSelected = false
             rootView.payoutOptionView.isSelected = true
 
-            rootView.restakeOptionView.titleLabel.textColor = inactiveTextColor
-            rootView.restakeOptionView.amountLabel.textColor = inactiveTextColor
-            rootView.payoutOptionView.titleLabel.textColor = activeTextColor
-            rootView.payoutOptionView.amountLabel.textColor = activeTextColor
+            rootView.setupPayoutAccountShown(true)
 
-            updateAccountView()
+            rootView.accountView.bind(viewModel: details)
         }
 
         rootView.restakeOptionView.setNeedsLayout()
@@ -130,17 +112,6 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
         }
     }
 
-    private func applyPayoutAddress(_ icon: DrawableIcon, title: String) {
-        let icon = icon.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: UIConstants.smallAddressIconSize,
-            contentScale: UIScreen.main.scale
-        )
-
-        rootView.accountView.iconImage = icon
-        rootView.accountView.subtitle = title
-    }
-
     // MARK: Data changes -
 
     private func applyRewardDestinationViewModel() {
@@ -162,11 +133,21 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
     // MARK: Setup -
 
     private func setupView() {
-        rootView.learnMoreView.addTarget(self, action: #selector(actionLearnMore), for: .touchUpInside)
+        rootView.learnMoreView.actionButton.addTarget(
+            self,
+            action: #selector(actionLearnMore),
+            for: .touchUpInside
+        )
+
         rootView.actionButton.addTarget(self, action: #selector(actionProceed), for: .touchUpInside)
         rootView.restakeOptionView.addTarget(self, action: #selector(actionRestake), for: .touchUpInside)
         rootView.payoutOptionView.addTarget(self, action: #selector(actionPayout), for: .touchUpInside)
-        rootView.accountView.addTarget(self, action: #selector(actionSelectPayoutAccount), for: .touchUpInside)
+
+        rootView.accountView.actionControl.addTarget(
+            self,
+            action: #selector(actionSelectPayoutAccount),
+            for: .touchUpInside
+        )
 
         rootView.restakeOptionView.isSelected = true
         rootView.payoutOptionView.isSelected = false
@@ -182,6 +163,10 @@ extension StakingRewardDestSetupViewController: StakingRewardDestSetupViewProtoc
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?) {
         feeViewModel = viewModel
         applyFee()
+    }
+
+    func didCompletionAccountSelection() {
+        rootView.accountView.actionControl.deactivate(animated: true)
     }
 }
 

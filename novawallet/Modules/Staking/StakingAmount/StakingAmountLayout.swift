@@ -76,9 +76,7 @@ final class StakingAmountLayout: UIView {
         containerView.stackView.setCustomSpacing(12.0, after: amountInputView)
 
         containerView.stackView.addArrangedSubview(aboutLinkView)
-        aboutLinkView.snp.makeConstraints { make in
-            make.height.equalTo(44.0)
-        }
+        containerView.stackView.setCustomSpacing(12.0, after: aboutLinkView)
 
         containerView.stackView.addArrangedSubview(restakeOptionView)
         restakeOptionView.snp.makeConstraints { make in

@@ -15,11 +15,11 @@ final class StakingRewardDestSetupPresenter {
     let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol?
 
-    private var rewardDestination: RewardDestination<ChainAccountResponse>?
+    private var rewardDestination: RewardDestination<MetaChainAccountResponse>?
     private var calculator: RewardCalculatorEngineProtocol?
     private var originalDestination: RewardDestination<AccountAddress>?
-    private var stashAccount: ChainAccountResponse?
-    private var controllerAccount: ChainAccountResponse?
+    private var stashAccount: MetaChainAccountResponse?
+    private var controllerAccount: MetaChainAccountResponse?
     private var priceData: PriceData?
     private var stashItem: StashItem?
     private var bonded: Decimal?
@@ -129,7 +129,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupPresenterProtoc
         let locale = view?.localizationManager?.selectedLocale ?? Locale.current
         DataValidationRunner(validators: [
             dataValidatingFactory.has(
-                controller: controllerAccount,
+                controller: controllerAccount?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             ),
@@ -141,21 +141,24 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupPresenterProtoc
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
 
         ]).runValidation { [weak self] in
-            guard let rewardDestination = self?.rewardDestination else { return }
+            guard let rewardDestination = self?.rewardDestination?.chainPayoutRewardDestination else { return }
 
-            self?.wireframe.proceed(
-                view: self?.view,
-                rewardDestination: rewardDestination
-            )
+            self?.wireframe.proceed(view: self?.view, rewardDestination: rewardDestination)
         }
     }
 }
 
 extension StakingRewardDestSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompletionAccountSelection()
+    }
+
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        view?.didCompletionAccountSelection()
+
         guard
             let accounts =
-            (context as? PrimitiveContextWrapper<[ChainAccountResponse]>)?.value
+            (context as? PrimitiveContextWrapper<[MetaChainAccountResponse]>)?.value
         else {
             return
         }
@@ -200,7 +203,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(account):
             controllerAccount = account
@@ -209,7 +212,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveStash(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(account):
             stashAccount = account
@@ -232,7 +235,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
     }
 
     func didReceiveRewardDestinationAccount(
-        result: Result<RewardDestination<ChainAccountResponse>?, Error>
+        result: Result<RewardDestination<MetaChainAccountResponse>?, Error>
     ) {
         switch result {
         case let .success(rewardDestination):
@@ -270,7 +273,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
         }
     }
 
-    func didReceiveAccounts(result: Result<[ChainAccountResponse], Error>) {
+    func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>) {
         switch result {
         case let .success(accounts):
             let context = PrimitiveContextWrapper(value: accounts)
@@ -280,10 +283,11 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupInteractorOutpu
                     .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
             }
 
-            // TODO: Fix account selection
+            let payoutAccount = rewardDestination?.payoutAccount
+
             wireframe.presentAccountSelection(
-                [],
-                selectedAccountItem: nil,
+                accounts,
+                selectedAccountItem: payoutAccount,
                 title: title,
                 delegate: self,
                 from: view,
