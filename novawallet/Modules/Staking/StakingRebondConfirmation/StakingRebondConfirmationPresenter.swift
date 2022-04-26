@@ -17,19 +17,14 @@ final class StakingRebondConfirmationPresenter {
     var inputAmount: Decimal? {
         switch variant {
         case .all:
-            if
-                let ledger = stakingLedger,
-                let era = activeEra {
-                let value = ledger.unbonding(inEra: era)
+            if let ledger = stakingLedger {
+                let value = ledger.unbonding()
                 return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
             }
         case .last:
-            if
-                let ledger = stakingLedger,
-                let era = activeEra,
-                let chunk = ledger.unbondings(inEra: era).last {
+            if let ledger = stakingLedger, let chunk = ledger.unlocking.last {
                 return Decimal.fromSubstrateAmount(chunk.value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
@@ -40,7 +35,7 @@ final class StakingRebondConfirmationPresenter {
     }
 
     var unbonding: Decimal? {
-        if let activeEra = activeEra, let value = stakingLedger?.unbonding(inEra: activeEra) {
+        if let value = stakingLedger?.unbonding() {
             return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
         } else {
             return nil
