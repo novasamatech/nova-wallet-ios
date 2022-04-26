@@ -7,13 +7,20 @@ enum StakingViewState {
         viewModel: LocalizableResource<NominationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>,
-        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?
+        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
+        unbondings: StakingUnbondingViewModel?,
+        actions: [StakingManageOption]
     )
     case validator(
         viewModel: LocalizableResource<ValidationViewModel>,
         alerts: [StakingAlert],
         reward: LocalizableResource<StakingRewardViewModel>,
-        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?
+        analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
+        unbondings: StakingUnbondingViewModel?,
+        actions: [StakingManageOption]
     )
-    case noStash(viewModel: StakingEstimationViewModel, alerts: [StakingAlert])
+    case noStash(
+        viewModel: StakingEstimationViewModel,
+        alerts: [StakingAlert]
+    )
 }

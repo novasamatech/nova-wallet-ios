@@ -16,7 +16,7 @@ final class StakingRebondSetupPresenter {
     private var fee: Decimal?
     private var priceData: PriceData?
     private var stashItem: StashItem?
-    private var controller: AccountItem?
+    private var controller: ChainAccountResponse?
     private var stakingLedger: StakingLedger?
     private var activeEraInfo: ActiveEraInfo?
 
@@ -174,7 +174,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtoco
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             controller = accountItem

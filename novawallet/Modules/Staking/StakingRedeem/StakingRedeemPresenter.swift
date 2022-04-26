@@ -19,7 +19,7 @@ final class StakingRedeemPresenter {
     private var minimalBalance: BigUInt?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: ChainAccountResponse?
     private var stashItem: StashItem?
 
     private func provideFeeViewModel() {
@@ -230,7 +230,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {

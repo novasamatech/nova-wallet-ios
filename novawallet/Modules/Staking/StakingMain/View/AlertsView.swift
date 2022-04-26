@@ -8,13 +8,26 @@ protocol AlertsViewDelegate: AnyObject {
 final class AlertsView: UIView {
     weak var delegate: AlertsViewDelegate?
 
-    private let backgroundView: UIView = TriangularedBlurView()
+    private let backgroundView: TriangularedBlurView = {
+        let view = TriangularedBlurView()
+        view.sideLength = 12
+        return view
+    }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .h5Title
-        label.textColor = R.color.colorWhite()
-        return label
+    private let titleView: IconDetailsView = {
+        let view = IconDetailsView()
+        view.mode = .iconDetails
+        view.spacing = 8.0
+        view.iconWidth = 16.0
+
+        view.detailsLabel.numberOfLines = 1
+        view.detailsLabel.font = .regularSubheadline
+        view.detailsLabel.textColor = R.color.colorYellow()
+
+        let icon = R.image.iconWarning()?.tinted(with: R.color.colorYellow()!)
+        view.imageView.image = icon
+
+        return view
     }()
 
     private let alertsStackView: UIStackView = {
@@ -47,30 +60,26 @@ final class AlertsView: UIView {
     }
 
     private func applyLocalization() {
-        titleLabel.text = R.string.localizable.stakingAlertsTitle(preferredLanguages: locale.rLanguages)
+        titleView.detailsLabel.text = R.string.localizable.stakingAlertsTitle(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func setupLayout() {
         addSubview(backgroundView)
         backgroundView.snp.makeConstraints { $0.edges.equalToSuperview() }
 
-        addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        let separatorView = UIView.createSeparator(color: R.color.colorWhite()?.withAlphaComponent(0.24))
-        addSubview(separatorView)
-        separatorView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(15)
-            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.height.equalTo(UIConstants.separatorHeight)
+        addSubview(titleView)
+        titleView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(16.0)
+            make.leading.equalToSuperview().inset(16.0)
         }
 
         addSubview(alertsStackView)
         alertsStackView.snp.makeConstraints { make in
-            make.top.equalTo(separatorView.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(titleView.snp.bottom).offset(3.0)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(13.0)
         }
     }
 
@@ -91,20 +100,18 @@ final class AlertsView: UIView {
             alertsStackView.isHidden = false
 
             var itemViews = [UIView]()
-            for (index, alert) in alerts.enumerated() {
+            for alert in alerts {
                 let alertView = AlertItemView(stakingAlert: alert, locale: locale)
                 let rowView = RowView(contentView: alertView)
                 rowView.borderView.strokeColor = R.color.colorBlurSeparator()!
+                rowView.borderView.borderType = .none
+
                 rowView.contentInsets = UIEdgeInsets(
                     top: 0.0,
                     left: UIConstants.horizontalInset,
                     bottom: 0.0,
                     right: UIConstants.horizontalInset
                 )
-
-                if index == alerts.count - 1 {
-                    rowView.borderView.borderType = .none
-                }
 
                 rowView.addTarget(self, action: #selector(handleSelectItem), for: .touchUpInside)
                 itemViews.append(rowView)
@@ -124,15 +131,9 @@ final class AlertsView: UIView {
 private class AlertItemView: UIView {
     let alertType: StakingAlert
 
-    let iconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         label.textColor = R.color.colorWhite()
         label.numberOfLines = 0
         return label
@@ -140,7 +141,7 @@ private class AlertItemView: UIView {
 
     let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .caption1
         label.textColor = R.color.colorTransparentText()
         label.numberOfLines = 0
         return label
@@ -148,8 +149,7 @@ private class AlertItemView: UIView {
 
     let accessoryView: UIView = {
         let view = UIImageView()
-        view.image = R.image.iconSmallArrow()?.withRenderingMode(.alwaysTemplate)
-        view.tintColor = R.color.colorWhite48()
+        view.image = R.image.iconSmallArrow()?.tinted(with: R.color.colorWhite48()!)
         return view
     }()
 
@@ -160,7 +160,6 @@ private class AlertItemView: UIView {
 
         setupLayout()
 
-        iconImageView.image = stakingAlert.icon
         titleLabel.text = stakingAlert.title(for: locale)
         descriptionLabel.text = stakingAlert.description(for: locale)
         accessoryView.isHidden = !stakingAlert.hasAssociatedAction
@@ -172,16 +171,9 @@ private class AlertItemView: UIView {
     }
 
     private func setupLayout() {
-        addSubview(iconImageView)
-        iconImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(13)
-            make.leading.equalToSuperview()
-            make.size.equalTo(16)
-        }
-
         addSubview(accessoryView)
         accessoryView.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(9)
+            make.centerY.equalToSuperview()
             make.trailing.equalToSuperview()
             make.size.equalTo(24)
         }
@@ -189,16 +181,16 @@ private class AlertItemView: UIView {
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(13)
-            make.leading.equalTo(iconImageView.snp.trailing).offset(8)
-            make.trailing.lessThanOrEqualTo(accessoryView.snp.leading).offset(UIConstants.horizontalInset)
+            make.leading.equalToSuperview()
+            make.trailing.lessThanOrEqualTo(accessoryView.snp.leading).offset(-UIConstants.horizontalInset)
         }
 
         addSubview(descriptionLabel)
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel.snp.leading)
-            make.bottom.equalToSuperview().inset(14)
-            make.trailing.lessThanOrEqualTo(accessoryView.snp.leading).offset(UIConstants.horizontalInset)
+            make.bottom.equalToSuperview().inset(8)
+            make.trailing.lessThanOrEqualTo(accessoryView.snp.leading).offset(-UIConstants.horizontalInset)
         }
     }
 }

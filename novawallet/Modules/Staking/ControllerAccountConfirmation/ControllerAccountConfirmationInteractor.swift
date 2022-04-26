@@ -7,7 +7,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
     weak var presenter: ControllerAccountConfirmationInteractorOutputProtocol!
 
     let selectedAccount: ChainAccountResponse
-    let controllerAccountItem: AccountItem
+    let controllerAccountItem: ChainAccountResponse
     let chainAsset: ChainAsset
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -30,7 +30,7 @@ final class ControllerAccountConfirmationInteractor: AccountFetching {
 
     init(
         selectedAccount: ChainAccountResponse,
-        controllerAccountItem: AccountItem,
+        controllerAccountItem: ChainAccountResponse,
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -104,7 +104,11 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
 
     func confirm() {
         do {
-            let setController = try callFactory.setController(controllerAccountItem.address)
+            guard let accountAddress = controllerAccountItem.toAddress() else {
+                return
+            }
+
+            let setController = try callFactory.setController(accountAddress)
 
             extrinsicService?.submit(
                 { builder in
@@ -121,35 +125,15 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
         }
     }
 
-    func fetchStashAccountItem(for address: AccountAddress) {
-        do {
-            let stashId = try address.toAccountId()
-
-            fetchFirstMetaAccountResponse(
-                for: stashId,
-                accountRequest: chainAsset.chain.accountRequest(),
-                repositoryFactory: accountRepositoryFactory,
-                operationManager: operationManager
-            ) { [weak self] result in
-                switch result {
-                case let .success(accountResponse):
-                    let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-
-                    self?.presenter.didReceiveStashAccount(result: .success(maybeAccountItem))
-                case let .failure(error):
-                    self?.presenter.didReceiveStashAccount(result: .failure(error))
-                }
-            }
-        } catch {
-            presenter.didReceiveStashAccount(result: .failure(error))
-        }
-    }
-
     func estimateFee() {
         guard let extrinsicService = extrinsicService else { return }
         do {
-            let setController = try callFactory.setController(controllerAccountItem.address)
-            let identifier = setController.callName + controllerAccountItem.identifier
+            guard let accountAddress = controllerAccountItem.toAddress() else {
+                return
+            }
+
+            let setController = try callFactory.setController(accountAddress)
+            let identifier = setController.callName + accountAddress
 
             feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
                 try builder.adding(call: setController)
@@ -160,27 +144,24 @@ extension ControllerAccountConfirmationInteractor: ControllerAccountConfirmation
     }
 
     func fetchLedger() {
-        do {
-            let accountId = try controllerAccountItem.address.toAccountId()
+        let accountId = controllerAccountItem.accountId
 
-            let ledgerOperataion = createLedgerFetchOperation(accountId)
-            ledgerOperataion.targetOperation.completionBlock = { [weak presenter] in
-                DispatchQueue.main.async {
-                    do {
-                        let ledger = try ledgerOperataion.targetOperation.extractNoCancellableResultData()
-                        presenter?.didReceiveStakingLedger(result: .success(ledger))
-                    } catch {
-                        presenter?.didReceiveStakingLedger(result: .failure(error))
-                    }
+        let ledgerOperataion = createLedgerFetchOperation(accountId)
+        ledgerOperataion.targetOperation.completionBlock = { [weak presenter] in
+            DispatchQueue.main.async {
+                do {
+                    let ledger = try ledgerOperataion.targetOperation.extractNoCancellableResultData()
+                    presenter?.didReceiveStakingLedger(result: .success(ledger))
+                } catch {
+                    presenter?.didReceiveStakingLedger(result: .failure(error))
                 }
             }
-            operationManager.enqueue(
-                operations: ledgerOperataion.allOperations,
-                in: .transient
-            )
-        } catch {
-            presenter.didReceiveStakingLedger(result: .failure(error))
         }
+
+        operationManager.enqueue(
+            operations: ledgerOperataion.allOperations,
+            in: .transient
+        )
     }
 }
 
@@ -210,8 +191,6 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                 ) { [weak self] result in
                     switch result {
                     case let .success(maybeAccountResponse):
-                        let maybeAccountItem = try? maybeAccountResponse?.chainAccount.toAccountItem()
-
                         if let accountResponse = maybeAccountResponse {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
                                 accountId: accountResponse.chainAccount.accountId,
@@ -221,7 +200,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
 
                             self?.estimateFee()
                         }
-                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccountItem))
+                        self?.presenter.didReceiveStashAccount(result: .success(maybeAccountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveStashAccount(result: .failure(error))
                     }

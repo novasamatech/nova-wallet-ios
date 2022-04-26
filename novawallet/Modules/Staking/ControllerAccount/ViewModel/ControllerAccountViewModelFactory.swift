@@ -3,51 +3,39 @@ import SoraFoundation
 import SubstrateSdk
 
 final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactoryProtocol {
-    let iconGenerator: IconGenerating
     let selectedAddress: AccountAddress
 
-    init(selectedAddress: AccountAddress, iconGenerator: IconGenerating) {
+    private lazy var accountViewModelFactory = WalletAccountViewModelFactory()
+
+    init(selectedAddress: AccountAddress) {
         self.selectedAddress = selectedAddress
-        self.iconGenerator = iconGenerator
     }
 
     func createViewModel(
         stashItem: StashItem,
-        stashAccountItem: AccountItem?,
-        chosenAccountItem: AccountItem?
+        stashAccountItem: MetaChainAccountResponse?,
+        chosenAccountItem: MetaChainAccountResponse?
     ) -> ControllerAccountViewModel {
         let stashAddress = stashItem.stash
-        let stashViewModel = LocalizableResource<AccountInfoViewModel> { locale in
-            let stashIcon = try? self.iconGenerator
-                .generateFromAddress(stashAddress)
-                .imageWithFillColor(
-                    R.color.colorWhite()!,
-                    size: UIConstants.smallAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
-            return AccountInfoViewModel(
-                title: R.string.localizable.stackingStashAccount(preferredLanguages: locale.rLanguages),
-                address: stashAddress,
-                name: stashAccountItem?.username ?? stashAddress,
-                icon: stashIcon
-            )
+        let stashViewModel: WalletAccountViewModel
+
+        if let stashAccountItem = stashAccountItem {
+            stashViewModel = (try? accountViewModelFactory.createViewModel(from: stashAccountItem))
+                ?? .empty
+        } else {
+            stashViewModel = (try? accountViewModelFactory.createViewModel(from: stashAddress))
+                ?? .empty
         }
 
-        let controllerViewModel = LocalizableResource<AccountInfoViewModel> { locale in
-            let selectedControllerAddress = chosenAccountItem?.address ?? stashItem.controller
-            let controllerIcon = try? self.iconGenerator
-                .generateFromAddress(selectedControllerAddress)
-                .imageWithFillColor(
-                    R.color.colorWhite()!,
-                    size: UIConstants.smallAddressIconSize,
-                    contentScale: UIScreen.main.scale
-                )
-            return AccountInfoViewModel(
-                title: R.string.localizable.stakingControllerAccountTitle(preferredLanguages: locale.rLanguages),
-                address: selectedControllerAddress,
-                name: chosenAccountItem?.username ?? selectedControllerAddress,
-                icon: controllerIcon
-            )
+        let selectedControllerAddress = stashItem.controller
+        let controllerViewModel: WalletAccountViewModel
+
+        if let controllerAccountItem = chosenAccountItem {
+            controllerViewModel = (try? accountViewModelFactory.createViewModel(from: controllerAccountItem))
+                ?? .empty
+        } else {
+            controllerViewModel = (try? accountViewModelFactory.createViewModel(from: selectedControllerAddress))
+                ?? .empty
         }
 
         let currentAccountIsController =
@@ -58,12 +46,15 @@ final class ControllerAccountViewModelFactory: ControllerAccountViewModelFactory
             if stashAddress != selectedAddress {
                 return false
             }
+
             guard let chosenAccountItem = chosenAccountItem else {
                 return false
             }
-            if chosenAccountItem.address == stashItem.controller {
+
+            if chosenAccountItem.chainAccount.toAddress() == stashItem.controller {
                 return false
             }
+
             return true
         }()
 

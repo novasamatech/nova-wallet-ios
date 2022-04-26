@@ -5,17 +5,18 @@ final class StakingRewardDestSetupLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
-    let restakeOptionView = UIFactory.default.createRewardSelectionView()
-    let payoutOptionView = UIFactory.default.createRewardSelectionView()
-    let accountView = UIFactory.default.createAccountView(for: .selection, filled: false)
+    let restakeOptionView = RewardSelectionView()
+    let payoutOptionView = RewardSelectionView()
+    let accountView = WalletAccountSelectionView()
 
-    let networkFeeView = UIFactory.default.createNetworkFeeView()
+    let networkFeeView = UIFactory.default.createNetwork26FeeView()
     let actionButton: TriangularedButton = UIFactory.default.createMainActionButton()
-    let learnMoreView = UIFactory.default.createNovaLearnMoreView()
+    let learnMoreView = LinkCellView()
 
     var locale = Locale.current {
         didSet {
@@ -31,6 +32,8 @@ final class StakingRewardDestSetupLayout: UIView {
         backgroundColor = R.color.colorBlack()!
 
         setupLayout()
+        setupPayoutAccountShown(false)
+
         applyLocalization()
     }
 
@@ -42,20 +45,34 @@ final class StakingRewardDestSetupLayout: UIView {
     private func applyLocalization() {
         networkFeeView.locale = locale
 
-        learnMoreView.titleLabel.text = R.string.localizable
-            .stakingRewardsLearnMore_2_2_0(preferredLanguages: locale.rLanguages)
+        learnMoreView.titleView.text = R.string.localizable.stakingRewardsDestinationTitle(
+            preferredLanguages: locale.rLanguages
+        )
 
-        restakeOptionView.title = R.string.localizable
+        learnMoreView.actionButton.imageWithTitleView?.title = R.string.localizable.stakingAboutRewards(
+            preferredLanguages: locale.rLanguages
+        )
+
+        restakeOptionView.titleLabel.text = R.string.localizable
             .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
-        payoutOptionView.title = R.string.localizable
+        payoutOptionView.titleLabel.text = R.string.localizable
             .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
 
-        accountView.title = R.string.localizable
-            .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+        accountView.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
+            preferredLanguages: locale.rLanguages
+        )
 
         actionButton.imageWithTitleView?.title = R.string.localizable
             .commonContinue(preferredLanguages: locale.rLanguages)
+    }
+
+    func setupPayoutAccountShown(_ isShown: Bool) {
+        accountView.isHidden = !isShown
+
+        let spacing = isShown ? 16.0 : 0.0
+
+        contentView.stackView.setCustomSpacing(spacing, after: payoutOptionView)
     }
 
     private func setupLayout() {
@@ -65,39 +82,30 @@ final class StakingRewardDestSetupLayout: UIView {
             make.bottom.leading.trailing.equalToSuperview()
         }
 
-        contentView.stackView.addArrangedSubview(restakeOptionView)
-        restakeOptionView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
+        contentView.stackView.addArrangedSubview(learnMoreView)
+        learnMoreView.snp.makeConstraints { make in
+            make.height.equalTo(44.0)
         }
 
-        contentView.stackView.setCustomSpacing(16.0, after: restakeOptionView)
+        contentView.stackView.addArrangedSubview(restakeOptionView)
+        restakeOptionView.snp.makeConstraints { make in
+            make.height.equalTo(56.0)
+        }
+
+        contentView.stackView.setCustomSpacing(12.0, after: restakeOptionView)
 
         contentView.stackView.addArrangedSubview(payoutOptionView)
         payoutOptionView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
+            make.height.equalTo(56.0)
         }
 
         contentView.stackView.setCustomSpacing(16.0, after: payoutOptionView)
 
         contentView.stackView.addArrangedSubview(accountView)
-        accountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
-
-        contentView.stackView.setCustomSpacing(16.0, after: payoutOptionView)
-        contentView.stackView.setCustomSpacing(16.0, after: accountView)
-
-        contentView.stackView.addArrangedSubview(learnMoreView)
-        learnMoreView.snp.makeConstraints { make in
-            make.width.equalTo(self)
-        }
 
         contentView.stackView.addArrangedSubview(networkFeeView)
         networkFeeView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+            make.height.equalTo(64.0)
         }
 
         addSubview(actionButton)

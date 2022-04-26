@@ -11,7 +11,7 @@ final class StakingPayoutConfirmationPresenter {
     private var fee: Decimal?
     private var rewardAmount: Decimal = 0.0
     private var priceData: PriceData?
-    private var account: AccountItem?
+    private var account: ChainAccountResponse?
     private var rewardDestination: RewardDestination<DisplayAddress>?
 
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -194,7 +194,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         handle(error: error)
     }
 
-    func didRecieve(account: AccountItem, rewardAmount: Decimal) {
+    func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal) {
         self.account = account
         self.rewardAmount = rewardAmount
 
