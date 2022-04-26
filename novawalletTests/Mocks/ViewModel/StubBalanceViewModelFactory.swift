@@ -22,6 +22,15 @@ struct StubBalanceViewModelFactory: BalanceViewModelFactoryProtocol {
         }
     }
 
+    func lockingAmountFromPrice(
+        _ amount: Decimal,
+        priceData: PriceData?
+    ) -> LocalizableResource<BalanceViewModelProtocol> {
+        LocalizableResource { _ in
+            BalanceViewModel(amount: amount.description, price: priceData?.price.description)
+        }
+    }
+
     func spendingAmountFromPrice(
         _ amount: Decimal,
         priceData: PriceData?
