@@ -21,7 +21,7 @@ final class StakingUnbondConfirmPresenter {
     private var nomination: Nomination?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: ChainAccountResponse?
+    private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var payee: RewardDestinationArg?
 
@@ -55,14 +55,14 @@ final class StakingUnbondConfirmPresenter {
         }
     }
 
-    private func provideAssetViewModel() {
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            inputAmount,
-            balance: bonded,
-            priceData: priceData
-        )
+    private func provideAmountViewModel() {
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(inputAmount, priceData: priceData)
 
-        view?.didReceiveAsset(viewModel: viewModel)
+        view?.didReceiveAmount(viewModel: viewModel)
+    }
+
+    private func provideShouldResetRewardsDestination() {
+        view?.didSetShouldResetRewardsDestination(value: shouldResetRewardDestination)
     }
 
     private func provideConfirmationViewModel() {
@@ -72,9 +72,7 @@ final class StakingUnbondConfirmPresenter {
 
         do {
             let viewModel = try confirmViewModelFactory.createUnbondConfirmViewModel(
-                controllerItem: controller,
-                amount: inputAmount,
-                shouldResetRewardDestination: shouldResetRewardDestination
+                controllerItem: controller
             )
 
             view?.didReceiveConfirmation(viewModel: viewModel)
@@ -121,8 +119,9 @@ final class StakingUnbondConfirmPresenter {
 extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
     func setup() {
         provideConfirmationViewModel()
-        provideAssetViewModel()
+        provideAmountViewModel()
         provideFeeViewModel()
+        provideShouldResetRewardsDestination()
 
         interactor.setup()
     }
@@ -139,7 +138,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
 
             dataValidatingFactory.has(
-                controller: controller,
+                controller: controller?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             )
@@ -201,7 +200,8 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 bonded = nil
             }
 
-            provideAssetViewModel()
+            provideAmountViewModel()
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Staking ledger subscription error: \(error)")
@@ -213,7 +213,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         case let .success(priceData):
             self.priceData = priceData
 
-            provideAssetViewModel()
+            provideAmountViewModel()
             provideFeeViewModel()
             provideConfirmationViewModel()
         case let .failure(error):
@@ -242,14 +242,15 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 precision: assetInfo.assetPrecision
             )
 
-            provideAssetViewModel()
+            provideAmountViewModel()
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Minimal balance fetching error: \(error)")
         }
     }
 
-    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {
@@ -280,6 +281,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             refreshFeeIfNeeded()
 
             provideConfirmationViewModel()
+            provideShouldResetRewardsDestination()
         case let .failure(error):
             logger?.error("Did receive payee item error: \(error)")
         }
@@ -297,6 +299,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 self.minNominatorBonded = nil
             }
 
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Did receive min bonded error: \(error)")

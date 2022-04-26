@@ -41,7 +41,7 @@ struct StakingUnbondConfirmViewFactory {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory(assetInfo: assetInfo)
+        let confirmationViewModelFactory = StakingUnbondConfirmViewModelFactory()
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 

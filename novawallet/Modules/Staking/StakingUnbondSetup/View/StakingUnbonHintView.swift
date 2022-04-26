@@ -9,6 +9,14 @@ final class StakingUnbondHintView: HintListView {
         }
     }
 
+    var shouldResetRewardDestination: Bool = false {
+        didSet {
+            if shouldResetRewardDestination != oldValue {
+                applyHints()
+            }
+        }
+    }
+
     var locale = Locale.current {
         didSet {
             if oldValue != locale {
@@ -38,6 +46,14 @@ final class StakingUnbondHintView: HintListView {
             )
 
             hints.append(bondingDurationHint)
+        }
+
+        if shouldResetRewardDestination {
+            let killStashHint = R.string.localizable.stakingHintUnbondKillsStash(
+                preferredLanguages: locale.rLanguages
+            )
+
+            hints.append(killStashHint)
         }
 
         hints.append(contentsOf: [
