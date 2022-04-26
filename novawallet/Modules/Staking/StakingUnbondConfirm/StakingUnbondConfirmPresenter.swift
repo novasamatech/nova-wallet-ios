@@ -1,5 +1,6 @@
 import Foundation
 import BigInt
+import SoraFoundation
 
 final class StakingUnbondConfirmPresenter {
     weak var view: StakingUnbondConfirmViewProtocol?
@@ -24,6 +25,8 @@ final class StakingUnbondConfirmPresenter {
     private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var payee: RewardDestinationArg?
+    private var stakingDuration: StakingDuration?
+    private var bondingDuration: UInt32?
 
     private var shouldResetRewardDestination: Bool {
         switch payee {
@@ -79,6 +82,26 @@ final class StakingUnbondConfirmPresenter {
         } catch {
             logger?.error("Did receive view model factory error: \(error)")
         }
+    }
+
+    private func provideBondingDuration() {
+        guard let erasPerDay = stakingDuration?.era.intervalsInDay else {
+            return
+        }
+
+        let daysCount = bondingDuration.map { erasPerDay > 0 ? Int($0) / erasPerDay : 0 }
+        let bondingDuration: LocalizableResource<String> = LocalizableResource { locale in
+            guard let daysCount = daysCount else {
+                return ""
+            }
+
+            return R.string.localizable.commonDaysFormat(
+                format: daysCount,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        view?.didReceiveBonding(duration: bondingDuration)
     }
 
     func refreshFeeIfNeeded() {
@@ -328,6 +351,26 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             wireframe.complete(from: view)
         case .failure:
             wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        }
+    }
+
+    func didReceiveBondingDuration(result: Result<UInt32, Error>) {
+        switch result {
+        case let .success(bondingDuration):
+            self.bondingDuration = bondingDuration
+            provideBondingDuration()
+        case let .failure(error):
+            logger?.error("Boding duration fetching error: \(error)")
+        }
+    }
+
+    func didReceiveStakingDuration(result: Result<StakingDuration, Error>) {
+        switch result {
+        case let .success(duration):
+            stakingDuration = duration
+            provideBondingDuration()
+        case let .failure(error):
+            logger?.error("Did receive stash item error: \(error)")
         }
     }
 }
