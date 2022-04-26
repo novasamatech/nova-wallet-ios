@@ -10,7 +10,7 @@ final class ControllerAccountWireframe: ControllerAccountWireframeProtocol {
 
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        controllerAccountItem: AccountItem
+        controllerAccountItem: MetaChainAccountResponse
     ) {
         guard let confirmation = ControllerAccountConfirmationViewFactory.createView(
             for: state,

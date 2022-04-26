@@ -2,13 +2,14 @@ import SoraFoundation
 
 protocol ControllerAccountViewProtocol: ControllerBackedProtocol, Localizable {
     func reload(with viewModel: ControllerAccountViewModel)
+    func didCompleteControllerSelection()
 }
 
 protocol ControllerAccountViewModelFactoryProtocol: AnyObject {
     func createViewModel(
         stashItem: StashItem,
-        stashAccountItem: AccountItem?,
-        chosenAccountItem: AccountItem?
+        stashAccountItem: MetaChainAccountResponse?,
+        chosenAccountItem: MetaChainAccountResponse?
     ) -> ControllerAccountViewModel
 }
 
@@ -22,16 +23,16 @@ protocol ControllerAccountPresenterProtocol: AnyObject {
 
 protocol ControllerAccountInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for account: AccountItem)
+    func estimateFee(for account: ChainAccountResponse)
     func fetchLedger(controllerAddress: AccountAddress)
     func fetchControllerAccountInfo(controllerAddress: AccountAddress)
 }
 
 protocol ControllerAccountInteractorOutputProtocol: AnyObject {
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveStashAccount(result: Result<AccountItem?, Error>)
-    func didReceiveControllerAccount(result: Result<AccountItem?, Error>)
-    func didReceiveAccounts(result: Result<[AccountItem], Error>)
+    func didReceiveStashAccount(result: Result<MetaChainAccountResponse?, Error>)
+    func didReceiveControllerAccount(result: Result<MetaChainAccountResponse?, Error>)
+    func didReceiveAccounts(result: Result<[MetaChainAccountResponse], Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
@@ -45,7 +46,7 @@ protocol ControllerAccountWireframeProtocol: WebPresentable,
     ErrorPresentable {
     func showConfirmation(
         from view: ControllerBackedProtocol?,
-        controllerAccountItem: AccountItem
+        controllerAccountItem: MetaChainAccountResponse
     )
     func close(view: ControllerBackedProtocol?)
 }

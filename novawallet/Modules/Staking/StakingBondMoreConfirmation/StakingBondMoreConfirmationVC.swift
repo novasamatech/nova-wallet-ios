@@ -11,7 +11,7 @@ final class StakingBondMoreConfirmationVC: UIViewController, ViewHolder, Importa
     }
 
     private var confirmationViewModel: StakingBondMoreConfirmViewModel?
-    private var assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>?
+    private var amountViewModel: LocalizableResource<BalanceViewModelProtocol>?
     private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
 
     init(
@@ -44,40 +44,40 @@ final class StakingBondMoreConfirmationVC: UIViewController, ViewHolder, Importa
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonConfirmTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.stakingBondMore_v190(preferredLanguages: selectedLocale.rLanguages)
 
         rootView.locale = selectedLocale
 
-        applyAssetViewModel()
+        applyAmountViewModel()
         applyFeeViewModel()
         applyConfirmationViewModel()
     }
 
     private func configureActions() {
-        rootView.networkFeeConfirmView.actionButton.addTarget(
+        rootView.actionButton.addTarget(
             self,
             action: #selector(actionConfirm),
             for: .touchUpInside
         )
 
-        rootView.accountView.addTarget(
+        rootView.accountCell.addTarget(
             self,
             action: #selector(actionSelectAccount),
             for: .touchUpInside
         )
     }
 
-    private func applyAssetViewModel() {
-        guard let viewModel = assetViewModel?.value(for: selectedLocale) else {
+    private func applyAmountViewModel() {
+        guard let viewModel = amountViewModel?.value(for: selectedLocale) else {
             return
         }
 
-        rootView.bind(assetViewModel: viewModel)
+        rootView.amountView.bind(viewModel: viewModel)
     }
 
     private func applyFeeViewModel() {
         let viewModel = feeViewModel?.value(for: selectedLocale)
-        rootView.bind(feeViewModel: viewModel)
+        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
     private func applyConfirmationViewModel() {
@@ -85,7 +85,8 @@ final class StakingBondMoreConfirmationVC: UIViewController, ViewHolder, Importa
             return
         }
 
-        rootView.bind(confirmationViewModel: confirmViewModel)
+        rootView.walletCell.bind(viewModel: confirmViewModel.walletViewModel.cellViewModel)
+        rootView.accountCell.bind(viewModel: confirmViewModel.accountViewModel.cellViewModel)
     }
 
     @objc private func actionConfirm() {
@@ -103,9 +104,9 @@ extension StakingBondMoreConfirmationVC: StakingBondMoreConfirmationViewProtocol
         applyConfirmationViewModel()
     }
 
-    func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>) {
-        assetViewModel = viewModel
-        applyAssetViewModel()
+    func didReceiveAmount(viewModel: LocalizableResource<BalanceViewModelProtocol>) {
+        amountViewModel = viewModel
+        applyAmountViewModel()
     }
 
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?) {

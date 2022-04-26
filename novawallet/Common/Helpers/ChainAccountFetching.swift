@@ -27,6 +27,8 @@ struct MetaEthereumAccountResponse {
 
 struct MetaChainAccountResponse {
     let metaId: String
+    let substrateAccountId: AccountId
+    let ethereumAccountId: AccountId?
     let chainAccount: ChainAccountResponse
 }
 
@@ -37,19 +39,6 @@ enum ChainAccountFetchingError: Error {
 extension ChainAccountResponse {
     var chainFormat: ChainFormat {
         isEthereumBased ? .ethereum : .substrate(addressPrefix)
-    }
-
-    func toAccountItem() throws -> AccountItem {
-        let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
-        let address = try accountId.toAddress(using: chainFormat)
-        let cryptoType = CryptoType(rawValue: self.cryptoType.rawValue) ?? .ecdsa
-
-        return AccountItem(
-            address: address,
-            cryptoType: cryptoType,
-            username: name,
-            publicKeyData: publicKey
-        )
     }
 
     func toDisplayAddress() throws -> DisplayAddress {
@@ -146,7 +135,12 @@ extension MetaAccountModel {
 
     func fetchMetaChainAccount(for request: ChainAccountRequest) -> MetaChainAccountResponse? {
         fetch(for: request).map {
-            MetaChainAccountResponse(metaId: metaId, chainAccount: $0)
+            MetaChainAccountResponse(
+                metaId: metaId,
+                substrateAccountId: substrateAccountId,
+                ethereumAccountId: ethereumAddress,
+                chainAccount: $0
+            )
         }
     }
 

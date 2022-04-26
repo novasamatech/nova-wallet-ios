@@ -5,7 +5,7 @@ import SoraFoundation
 
 protocol StakingPayoutConfirmViewModelFactoryProtocol {
     func createPayoutConfirmViewModel(
-        with account: AccountItem,
+        with account: ChainAccountResponse,
         rewardAmount: Decimal,
         rewardDestination: RewardDestination<DisplayAddress>?,
         priceData: PriceData?
@@ -23,8 +23,10 @@ final class StakingPayoutConfirmViewModelFactory {
 
     // MARK: - Private functions
 
-    private func createAccountRow(with account: AccountItem) -> LocalizableResource<PayoutConfirmViewModel> {
-        let userIcon = try? iconGenerator.generateFromAddress(account.address)
+    private func createAccountRow(
+        with account: ChainAccountResponse
+    ) -> LocalizableResource<PayoutConfirmViewModel> {
+        let userIcon = try? iconGenerator.generateFromAccountId(account.accountId)
             .imageWithFillColor(
                 .white,
                 size: UIConstants.smallAddressIconSize,
@@ -37,8 +39,8 @@ final class StakingPayoutConfirmViewModelFactory {
 
             return .accountInfo(.init(
                 title: title,
-                address: account.address,
-                name: account.username,
+                address: account.toAddress() ?? "",
+                name: account.name,
                 icon: userIcon
             ))
         }
@@ -120,9 +122,8 @@ final class StakingPayoutConfirmViewModelFactory {
 }
 
 extension StakingPayoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol {
-    func createPayoutConfirmViewModel
-    (
-        with account: AccountItem,
+    func createPayoutConfirmViewModel(
+        with account: ChainAccountResponse,
         rewardAmount: Decimal,
         rewardDestination: RewardDestination<DisplayAddress>?,
         priceData: PriceData?

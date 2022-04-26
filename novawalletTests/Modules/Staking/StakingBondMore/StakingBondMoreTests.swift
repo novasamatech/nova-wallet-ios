@@ -65,11 +65,16 @@ class StakingBondMoreTests: XCTestCase {
         presenter.didReceiveStashItem(result: .success(stashItem))
 
         let publicKeyData = try SS58AddressFactory().accountId(from: stashItem.stash)
-        let stashAccount = AccountItem(
-            address: stashItem.stash,
+        let stashAccountId = try stashItem.stash.toAccountId()
+        let stashAccount = ChainAccountResponse(
+            chainId: chain.chainId,
+            accountId: stashAccountId,
+            publicKey: publicKeyData,
+            name: "test",
             cryptoType: .sr25519,
-            username: "test",
-            publicKeyData: publicKeyData
+            addressPrefix: chain.addressPrefix,
+            isEthereumBased: chain.isEthereumBased,
+            isChainAccount: false
         )
 
         presenter.didReceiveStash(result: .success(stashAccount))

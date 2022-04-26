@@ -12,6 +12,7 @@ extension StakingMainInteractor {
         clear(dataProvider: &payeeProvider)
         clear(singleValueProvider: &rewardAnalyticsProvider)
         clear(streamableProvider: &controllerAccountProvider)
+        clear(streamableProvider: &stashAccountProvider)
 
         if
             let stashItem = stashItem,
@@ -36,6 +37,11 @@ extension StakingMainInteractor {
             }
 
             subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
+
+            if stashItem.controller != stashItem.stash {
+                subscribeToStashAccount(address: stashItem.stash, chain: chainAsset.chain)
+            }
+
             // TODO: Temporary disable Analytics feature
             // subscribeRewardsAnalytics(for: stashItem.stash)
         }
@@ -102,44 +108,15 @@ extension StakingMainInteractor {
             return
         }
 
-        let controllerAccountItemProvider = accountProviderFactory.createStreambleProvider(for: accountId)
+        controllerAccountProvider = subscribeForAccountId(accountId, chain: chain)
+    }
 
-        controllerAccountProvider = controllerAccountItemProvider
-
-        let updateClosure = { [weak presenter] (changes: [DataProviderChange<MetaAccountModel>]) in
-            let maybeController: MetaChainAccountResponse? = changes.compactMap { change in
-                switch change {
-                case let .insert(newItem), let .update(newItem):
-                    if let accountResponse = newItem.fetchMetaChainAccount(for: chain.accountRequest()) {
-                        return accountResponse.chainAccount.accountId == accountId ? accountResponse : nil
-                    } else {
-                        return nil
-                    }
-                case .delete:
-                    return nil
-                }
-            }.first
-
-            if let controller = maybeController {
-                presenter?.didReceiveControllerAccount(result: .success(controller))
-            } else {
-                presenter?.didReceiveControllerAccount(result: .success(nil))
-            }
-        }
-
-        let failureClosure = { [weak presenter] (error: Error) in
-            presenter?.didReceiveControllerAccount(result: .failure(error))
+    func subscribeToStashAccount(address: AccountAddress, chain: ChainModel) {
+        guard stashAccountProvider == nil, let accountId = try? address.toAccountId() else {
             return
         }
 
-        let options = StreamableProviderObserverOptions()
-        controllerAccountItemProvider.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
+        stashAccountProvider = subscribeForAccountId(accountId, chain: chain)
     }
 
     func clearNominatorsLimitProviders() {
@@ -296,5 +273,20 @@ extension StakingMainInteractor: StakingAnalyticsLocalStorageSubscriber,
         url _: URL
     ) {
         presenter.didReceieve(subqueryRewards: result, period: .week)
+    }
+}
+
+extension StakingMainInteractor: AccountLocalSubscriptionHandler, AccountLocalStorageSubscriber {
+    func handleAccountResponse(
+        result: Result<MetaChainAccountResponse?, Error>,
+        accountId: AccountId,
+        chain _: ChainModel
+    ) {
+        switch result {
+        case let .success(account):
+            presenter.didReceiveAccount(account, for: accountId)
+        case .failure:
+            presenter.didReceiveAccount(nil, for: accountId)
+        }
     }
 }

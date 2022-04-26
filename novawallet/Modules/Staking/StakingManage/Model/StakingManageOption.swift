@@ -1,7 +1,8 @@
 import UIKit.UIImage
 
 enum StakingManageOption {
-    case stakingBalance
+    case stakeMore
+    case unstake
     case pendingRewards
     case rewardDestination
     case setupValidators
@@ -11,8 +12,10 @@ enum StakingManageOption {
 
     func titleForLocale(_ locale: Locale) -> String {
         switch self {
-        case .stakingBalance:
-            return R.string.localizable.stakingBalanceTitle_v2_2_0(preferredLanguages: locale.rLanguages)
+        case .stakeMore:
+            return R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+        case .unstake:
+            return R.string.localizable.stakingUnbond_v190(preferredLanguages: locale.rLanguages)
         case .pendingRewards:
             return R.string.localizable.stakingPendingRewards_v2_0_0(preferredLanguages: locale.rLanguages)
         case .rewardDestination:
@@ -43,8 +46,10 @@ enum StakingManageOption {
 
     var icon: UIImage? {
         switch self {
-        case .stakingBalance:
-            return R.image.iconStakingBalance()
+        case .stakeMore:
+            return R.image.iconBondMore()
+        case .unstake:
+            return R.image.iconUnbond()
         case .pendingRewards:
             return R.image.iconPendingRewards()
         case .rewardDestination:

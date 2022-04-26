@@ -40,8 +40,8 @@ extension TriangularedButton {
 
     func applySecondaryEnabledStyle() {
         triangularedView?.shadowOpacity = 0.0
-        triangularedView?.fillColor = R.color.colorWhite8()!
-        triangularedView?.highlightedFillColor = R.color.colorWhite8()!
+        triangularedView?.fillColor = R.color.colorWhite16()!
+        triangularedView?.highlightedFillColor = R.color.colorWhite16()!
         triangularedView?.strokeColor = .clear
         triangularedView?.highlightedStrokeColor = .clear
 
@@ -58,6 +58,18 @@ extension TriangularedButton {
         triangularedView?.highlightedStrokeColor = .clear
 
         imageWithTitleView?.titleColor = R.color.colorStrokeGray()
+
+        contentOpacityWhenDisabled = 1.0
+    }
+
+    func applyTranslucentDisabledStyle() {
+        triangularedView?.shadowOpacity = 0.0
+        triangularedView?.fillColor = R.color.colorWhite8()!
+        triangularedView?.highlightedFillColor = R.color.colorWhite8()!
+        triangularedView?.strokeColor = .clear
+        triangularedView?.highlightedStrokeColor = .clear
+
+        imageWithTitleView?.titleColor = R.color.colorWhite32()!
 
         contentOpacityWhenDisabled = 1.0
     }

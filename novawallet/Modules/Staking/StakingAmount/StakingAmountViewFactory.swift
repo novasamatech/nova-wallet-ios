@@ -9,19 +9,10 @@ final class StakingAmountViewFactory {
         with amount: Decimal?,
         stakingState: StakingSharedState
     ) -> StakingAmountViewProtocol? {
-        guard let chainAsset = stakingState.settings.value else {
-            return nil
-        }
-
-        let view = StakingAmountViewController(nib: R.nib.stakingAmountViewController)
-        let wireframe = StakingAmountWireframe(stakingState: stakingState)
-
-        guard let presenter = createPresenter(
-            view: view,
-            wireframe: wireframe,
-            amount: amount,
-            chainAsset: chainAsset
-        ) else {
+        guard
+            let chainAsset = stakingState.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let chainAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
@@ -29,29 +20,7 @@ final class StakingAmountViewFactory {
             return nil
         }
 
-        view.uiFactory = UIFactory()
-        view.localizationManager = LocalizationManager.shared
-
-        presenter.interactor = interactor
-        interactor.presenter = presenter
-        view.presenter = presenter
-
-        return view
-    }
-
-    private static func createPresenter(
-        view: StakingAmountViewProtocol,
-        wireframe: StakingAmountWireframeProtocol,
-        amount: Decimal?,
-        chainAsset: ChainAsset
-    ) -> StakingAmountPresenter? {
-        guard
-            let metaAccount = SelectedWalletSettings.shared.value,
-            let accountItem = try? metaAccount.fetch(
-                for: chainAsset.chain.accountRequest()
-            )?.toAccountItem() else {
-            return nil
-        }
+        let wireframe = StakingAmountWireframe(stakingState: stakingState)
 
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
@@ -66,8 +35,10 @@ final class StakingAmountViewFactory {
         )
 
         let presenter = StakingAmountPresenter(
+            wireframe: wireframe,
+            interactor: interactor,
             amount: amount,
-            selectedAccount: accountItem,
+            selectedAccount: chainAccount,
             assetInfo: assetInfo,
             rewardDestViewModelFactory: rewardDestViewModelFactory,
             balanceViewModelFactory: balanceViewModelFactory,
@@ -76,11 +47,16 @@ final class StakingAmountViewFactory {
             logger: Logger.shared
         )
 
+        let view = StakingAmountViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
+        interactor.presenter = presenter
         presenter.view = view
-        presenter.wireframe = wireframe
         dataValidatingFactory.view = view
 
-        return presenter
+        return view
     }
 
     private static func createInteractor(
