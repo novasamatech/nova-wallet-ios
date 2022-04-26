@@ -225,7 +225,7 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        if let account = response?.chainAccount {
+                        if let account = response {
                             self?.presenter.didReceiveController(result: .success(account))
                         }
                     case let .failure(error):
