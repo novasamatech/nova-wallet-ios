@@ -210,7 +210,7 @@ final class StakingMainPresenter {
             return action
         }
 
-        let title = R.string.localizable.stakingRebondActionsTitle(preferredLanguages: locale?.rLanguages)
+        let title = R.string.localizable.stakingRebond(preferredLanguages: locale?.rLanguages)
         let closeTitle = R.string.localizable.commonCancel(preferredLanguages: locale?.rLanguages)
         let viewModel = AlertPresentableViewModel(
             title: title,

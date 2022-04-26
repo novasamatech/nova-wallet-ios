@@ -747,8 +747,8 @@
 "staking.change.validators" = "Изменить валидаторов";
 "staking.set.validators" = "Установить валидаторов";
 "common.staked.prefix" = "Застейкано:";
-"staking.rebond.actions.title" = "Вернуть в стекинг";
 "staking.rebond.action.all" = "Весь вывод";
 "staking.rebond.action.last" = "Последний вывод";
 "staking.rebond.action.custom" = "Ввести сумму";
 "staking.rebond.hint" = "Возвращенные токены будут учитываться со следующей эры";
+"common.unstaking.prefix" = "Выведено:";
