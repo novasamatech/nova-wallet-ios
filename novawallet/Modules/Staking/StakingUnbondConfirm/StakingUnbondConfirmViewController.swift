@@ -56,7 +56,7 @@ final class StakingUnbondConfirmViewController: UIViewController, ViewHolder, Im
     }
 
     private func configureActions() {
-        rootView.networkFeeCell.addTarget(
+        rootView.actionButton.addTarget(
             self,
             action: #selector(actionConfirm),
             for: .touchUpInside

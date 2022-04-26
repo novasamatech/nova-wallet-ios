@@ -31,6 +31,7 @@ class StakingUnbondSetupTests: XCTestCase {
             when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
             when(stub).didReceiveBonding(duration: any()).thenDoNothing()
+            when(stub).didReceiveTransferable(viewModel: any()).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
@@ -144,6 +145,7 @@ class StakingUnbondSetupTests: XCTestCase {
         let inputExpectation = XCTestExpectation()
         let assetExpectation = XCTestExpectation()
         let bondingDurationExpectation = XCTestExpectation()
+        let transferableExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
@@ -167,13 +169,23 @@ class StakingUnbondSetupTests: XCTestCase {
             when(stub).didReceiveInput(viewModel: any()).then { _ in
                 inputExpectation.fulfill()
             }
+
+            when(stub).didReceiveTransferable(viewModel: any()).then { _ in
+                transferableExpectation.fulfill()
+            }
         }
 
         presenter.setup()
 
         // then
 
-        wait(for: [inputExpectation, assetExpectation, feeExpectation, bondingDurationExpectation], timeout: 10)
+        wait(for: [
+            inputExpectation,
+            assetExpectation,
+            feeExpectation,
+            bondingDurationExpectation,
+            transferableExpectation
+        ], timeout: 10)
 
         return presenter
     }
