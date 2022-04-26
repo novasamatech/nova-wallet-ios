@@ -751,3 +751,4 @@
 "staking.rebond.action.all" = "Весь вывод";
 "staking.rebond.action.last" = "Последний вывод";
 "staking.rebond.action.custom" = "Ввести сумму";
+"staking.rebond.hint" = "Возвращенные токены будут учитываться со следующей эры";

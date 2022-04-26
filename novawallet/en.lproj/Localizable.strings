@@ -751,3 +751,4 @@
 "staking.rebond.action.all" = "All unstaking";
 "staking.rebond.action.last" = "Latest unstaked";
 "staking.rebond.action.custom" = "Custom amount";
+"staking.rebond.hint" = "Returned tokens will be counted from the next era";
