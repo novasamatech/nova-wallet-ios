@@ -44,7 +44,7 @@ final class StakingRebondConfirmationViewController: UIViewController, ViewHolde
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingRebondActionsTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.stakingRebond(preferredLanguages: selectedLocale.rLanguages)
 
         rootView.locale = selectedLocale
 
