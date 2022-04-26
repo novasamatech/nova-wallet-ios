@@ -747,3 +747,7 @@
 "staking.change.validators" = "Change validators";
 "staking.set.validators" = "Set validators";
 "common.staked.prefix" = "Staked:";
+"staking.rebond.actions.title" = "Return to stake";
+"staking.rebond.action.all" = "All unstaking";
+"staking.rebond.action.last" = "Latest unstaked";
+"staking.rebond.action.custom" = "Custom amount";
