@@ -47,9 +47,7 @@ struct StakingRebondConfirmationViewFactory {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmationViewModelFactory = StakingRebondConfirmationViewModelFactory(
-            assetInfo: assetInfo
-        )
+        let confirmationViewModelFactory = StakingRebondConfirmationViewModelFactory()
 
         return StakingRebondConfirmationPresenter(
             variant: variant,
