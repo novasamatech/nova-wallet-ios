@@ -4,7 +4,7 @@ import BigInt
 
 protocol StakingRedeemViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceiveConfirmation(viewModel: StakingRedeemViewModel)
-    func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
+    func didReceiveAmount(viewModel: LocalizableResource<BalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }
 
@@ -26,7 +26,7 @@ protocol StakingRedeemInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveController(result: Result<ChainAccountResponse?, Error>)
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
 

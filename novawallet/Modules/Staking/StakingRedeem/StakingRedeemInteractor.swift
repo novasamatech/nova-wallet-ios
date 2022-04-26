@@ -254,8 +254,7 @@ extension StakingRedeemInteractor: StakingLocalStorageSubscriber, StakingLocalSu
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        let account = maybeResponse?.chainAccount
-                        self?.presenter.didReceiveController(result: .success(account))
+                        self?.presenter.didReceiveController(result: .success(maybeResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveController(result: .failure(error))
                     }
