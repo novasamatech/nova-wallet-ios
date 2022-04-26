@@ -11,10 +11,10 @@ final class StakingBondMoreConfirmViewModelFactory: StakingBondMoreConfirmViewMo
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
     func createViewModel(stash: MetaChainAccountResponse) throws -> StakingBondMoreConfirmViewModel {
-        let viewModel = try walletViewModelFactory.createViewModel(from: stash)
-
-        let walletViewModel = viewModel.displayWallet()
-        let accountViewModel = viewModel.displayAddress()
+        let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: stash)
+        let accountViewModel = try walletViewModelFactory.createViewModel(
+            from: stash.chainAccount.toAddress() ?? ""
+        ).displayAddress()
 
         return StakingBondMoreConfirmViewModel(
             walletViewModel: walletViewModel,
