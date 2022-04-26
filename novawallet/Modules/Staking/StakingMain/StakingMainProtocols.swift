@@ -15,8 +15,6 @@ protocol StakingMainPresenterProtocol: AnyObject {
     func performAssetSelection()
     func performMainAction()
     func performAccountAction()
-    func performNominationStatusAction()
-    func performValidationStatusAction()
     func performRewardInfoAction()
     func performChangeValidatorsAction()
     func performSetupValidatorsForBondedAction()

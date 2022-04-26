@@ -151,8 +151,7 @@ extension StakingBondMoreConfirmationInteractor: StakingLocalStorageSubscriber,
 
                 switch result {
                 case let .success(response):
-                    let account = response?.chainAccount
-                    self?.presenter.didReceiveStash(result: .success(account))
+                    self?.presenter.didReceiveStash(result: .success(response))
                 case let .failure(error):
                     self?.presenter.didReceiveStash(result: .failure(error))
                 }
