@@ -42,9 +42,7 @@ struct StakingBondMoreConfirmViewFactory {
     ) -> StakingBondMoreConfirmationPresenter {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmationViewModelFactory = StakingBondMoreConfirmViewModelFactory(
-            assetInfo: assetInfo
-        )
+        let confirmationViewModelFactory = StakingBondMoreConfirmViewModelFactory()
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 

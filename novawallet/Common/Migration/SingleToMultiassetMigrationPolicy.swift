@@ -70,8 +70,8 @@ class SingleToMultiassetMigrationPolicy: NSEntityMigrationPolicy {
             fatalError("No settings migrator found in context")
         }
 
-        settingsMigrator.remove(key: SettingsKey.selectedAccount.rawValue)
-        settingsMigrator.remove(key: SettingsKey.selectedConnection.rawValue)
+        settingsMigrator.remove(key: "selectedAccount")
+        settingsMigrator.remove(key: "selectedConnection")
 
         try super.end(mapping, manager: manager)
     }

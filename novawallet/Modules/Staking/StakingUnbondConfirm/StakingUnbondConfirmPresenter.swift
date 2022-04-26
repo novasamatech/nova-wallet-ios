@@ -21,7 +21,7 @@ final class StakingUnbondConfirmPresenter {
     private var nomination: Nomination?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: ChainAccountResponse?
     private var stashItem: StashItem?
     private var payee: RewardDestinationArg?
 
@@ -249,7 +249,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {

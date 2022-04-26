@@ -3,7 +3,7 @@ import SubstrateSdk
 
 enum RewardDestinationTypeViewModel {
     case restake
-    case payout(icon: DrawableIcon, title: String)
+    case payout(details: WalletAccountViewModel)
 }
 
 protocol DestinationReturnViewModelProtocol {

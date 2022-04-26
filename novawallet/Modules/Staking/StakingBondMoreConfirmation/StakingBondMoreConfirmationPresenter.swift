@@ -17,7 +17,7 @@ final class StakingBondMoreConfirmationPresenter {
     private var balance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var stashAccount: AccountItem?
+    private var stashAccount: MetaChainAccountResponse?
     private var stashItem: StashItem?
 
     init(
@@ -52,13 +52,9 @@ final class StakingBondMoreConfirmationPresenter {
     }
 
     private func provideAssetViewModel() {
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            inputAmount,
-            balance: balance,
-            priceData: priceData
-        )
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(inputAmount, priceData: priceData)
 
-        view?.didReceiveAsset(viewModel: viewModel)
+        view?.didReceiveAmount(viewModel: viewModel)
     }
 
     private func provideConfirmationViewModel() {
@@ -67,10 +63,7 @@ final class StakingBondMoreConfirmationPresenter {
         }
 
         do {
-            let viewModel = try confirmViewModelFactory.createViewModel(
-                controllerItem: stashAccount,
-                amount: inputAmount
-            )
+            let viewModel = try confirmViewModelFactory.createViewModel(stash: stashAccount)
 
             view?.didReceiveConfirmation(viewModel: viewModel)
         } catch {
@@ -111,7 +104,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationPrese
             ),
 
             dataValidatingFactory.has(
-                stash: stashAccount,
+                stash: stashAccount?.chainAccount,
                 for: stashItem?.stash ?? "",
                 locale: locale
             )
@@ -188,7 +181,7 @@ extension StakingBondMoreConfirmationPresenter: StakingBondMoreConfirmationOutpu
         }
     }
 
-    func didReceiveStash(result: Result<AccountItem?, Error>) {
+    func didReceiveStash(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(stashAccount):
             self.stashAccount = stashAccount

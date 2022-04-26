@@ -1,28 +1,39 @@
 import UIKit
 
 final class StakingRewardDestConfirmViewLayout: UIView {
-    let stackView: UIStackView = {
-        let view = UIStackView()
-        view.isLayoutMarginsRelativeArrangement = true
-        view.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
-        view.axis = .vertical
-        view.alignment = .center
-        view.distribution = .fill
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView()
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
-    let senderAccountView: DetailsTriangularedView = UIFactory.default.createAccountView()
-    let typeView: TitleValueView = {
-        let view = UIFactory.default.createTitleValueView()
-        view.borderView.borderType = .none
-        return view
+    var stackView: UIStackView { containerView.stackView }
+
+    let walletTableView = StackTableView()
+
+    let walletCell = StackTableCell()
+
+    let accountCell: StackInfoTableCell = {
+        let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        return cell
     }()
 
-    private(set) var payoutAccountView: DetailsTriangularedView?
+    let networkFeeCell = StackNetworkFeeCell()
 
-    private(set) var separatorView = UIFactory.default.createSeparatorView()
+    let destinationTableView = StackTableView()
 
-    let networkFeeConfirmView: NetworkFeeConfirmView = UIFactory().createNetworkFeeConfirmView()
+    let destinationCell = StackTableCell()
+
+    private(set) var payoutAccountCell: StackInfoTableCell?
+
+    let actionButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
+    }()
 
     var locale = Locale.current {
         didSet {
@@ -43,36 +54,27 @@ final class StakingRewardDestConfirmViewLayout: UIView {
     }
 
     private func insertPayoutViewIfNeeded() {
-        guard payoutAccountView == nil else {
+        guard payoutAccountCell == nil else {
             return
         }
 
-        let payoutView = UIFactory.default.createAccountView(for: .options, filled: true)
-        payoutView.title = R.string.localizable
-            .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+        let payoutAccountCell = StackInfoTableCell()
+        payoutAccountCell.detailsLabel.lineBreakMode = .byTruncatingMiddle
 
-        if let insertionIndex = stackView.arrangedSubviews
-            .firstIndex(where: { $0 == typeView }) {
-            stackView.insertArrangedSubview(payoutView, at: insertionIndex + 1)
+        payoutAccountCell.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
+            preferredLanguages: locale.rLanguages
+        )
 
-            payoutView.snp.makeConstraints { make in
-                make.width.equalTo(stackView)
-                make.height.equalTo(52)
-            }
+        destinationTableView.addArrangedSubview(payoutAccountCell)
 
-            stackView.setCustomSpacing(16.0, after: payoutView)
-
-            payoutAccountView = payoutView
-        }
+        self.payoutAccountCell = payoutAccountCell
     }
 
     private func removePayoutViewIfNeeded() {
-        if let payoutAccountView = payoutAccountView {
-            stackView.removeArrangedSubview(payoutAccountView)
-            payoutAccountView.removeFromSuperview()
+        payoutAccountCell?.removeFromSuperview()
+        payoutAccountCell = nil
 
-            self.payoutAccountView = nil
-        }
+        destinationTableView.updateLayout()
     }
 
     @available(*, unavailable)
@@ -81,87 +83,82 @@ final class StakingRewardDestConfirmViewLayout: UIView {
     }
 
     func bind(confirmationViewModel: StakingRewardDestConfirmViewModel) {
-        senderAccountView.subtitle = confirmationViewModel.senderName
-
-        let iconSize = 2.0 * senderAccountView.iconRadius
-        senderAccountView.iconImage = confirmationViewModel.senderIcon.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: CGSize(width: iconSize, height: iconSize),
-            contentScale: UIScreen.main.scale
-        )
+        walletCell.bind(viewModel: confirmationViewModel.walletViewModel.cellViewModel)
+        accountCell.bind(viewModel: confirmationViewModel.accountViewModel.cellViewModel)
 
         switch confirmationViewModel.rewardDestination {
         case .restake:
-            typeView.valueLabel.text = R.string.localizable
-                .stakingRestakeTitle_v2_2_0(preferredLanguages: locale.rLanguages)
-
-        case let .payout(icon, title):
-            typeView.valueLabel.text = R.string.localizable
-                .stakingPayoutTitle_v2_2_0(preferredLanguages: locale.rLanguages)
-            insertPayoutViewIfNeeded()
-
-            payoutAccountView?.iconImage = icon.imageWithFillColor(
-                R.color.colorWhite()!,
-                size: UIConstants.smallAddressIconSize,
-                contentScale: UIScreen.main.scale
+            destinationCell.detailsLabel.text = R.string.localizable.stakingRestakeTitle_v2_2_0(
+                preferredLanguages: locale.rLanguages
             )
 
-            payoutAccountView?.subtitle = title
+            removePayoutViewIfNeeded()
+
+        case let .payout(details):
+            destinationCell.detailsLabel.text = R.string.localizable.stakingPayoutTitle_v2_2_0(
+                preferredLanguages: locale.rLanguages
+            )
+
+            insertPayoutViewIfNeeded()
+
+            payoutAccountCell?.bind(viewModel: details.rawDisplayAddress().cellViewModel)
         }
 
         setNeedsLayout()
     }
 
     func bind(feeViewModel: BalanceViewModelProtocol?) {
-        networkFeeConfirmView.networkFeeView.bind(viewModel: feeViewModel)
+        networkFeeCell.rowContentView.bind(viewModel: feeViewModel)
         setNeedsLayout()
     }
 
     private func applyLocalization() {
-        senderAccountView.title = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
+        walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: locale.rLanguages)
+        accountCell.titleLabel.text = R.string.localizable.commonAccount(preferredLanguages: locale.rLanguages)
 
-        typeView.titleLabel.text = R.string.localizable
-            .stakingRewardsDestinationTitle_v2_0_0(preferredLanguages: locale.rLanguages)
+        destinationCell.titleLabel.text = R.string.localizable.stakingRewardsDestinationTitle_v2_0_0(
+            preferredLanguages: locale.rLanguages
+        )
 
-        payoutAccountView?.title = R.string.localizable
-            .stakingRewardPayoutAccount(preferredLanguages: locale.rLanguages)
+        payoutAccountCell?.titleLabel.text = R.string.localizable.stakingRewardPayoutAccount(
+            preferredLanguages: locale.rLanguages
+        )
 
-        networkFeeConfirmView.locale = locale
+        networkFeeCell.rowContentView.locale = locale
+
+        actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+            preferredLanguages: locale.rLanguages
+        )
 
         setNeedsLayout()
     }
 
     private func setupLayout() {
-        addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        stackView.addArrangedSubview(senderAccountView)
-        senderAccountView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-            make.height.equalTo(52)
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
 
-        stackView.setCustomSpacing(16.0, after: senderAccountView)
+        containerView.stackView.spacing = 12
 
-        stackView.addArrangedSubview(typeView)
-        typeView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-            make.height.equalTo(48.0)
+        containerView.stackView.addArrangedSubview(walletTableView)
+        walletTableView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
         }
 
-        stackView.addArrangedSubview(separatorView)
-        separatorView.snp.makeConstraints { make in
-            make.width.equalTo(stackView)
-            make.height.equalTo(UIConstants.separatorHeight)
-        }
+        walletTableView.addArrangedSubview(walletCell)
+        walletTableView.addArrangedSubview(accountCell)
+        walletTableView.addArrangedSubview(networkFeeCell)
 
-        addSubview(networkFeeConfirmView)
-
-        networkFeeConfirmView.snp.makeConstraints { make in
-            make.leading.bottom.trailing.equalToSuperview()
-        }
+        containerView.stackView.addArrangedSubview(destinationTableView)
+        destinationTableView.addArrangedSubview(destinationCell)
     }
 }

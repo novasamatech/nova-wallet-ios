@@ -155,10 +155,8 @@ extension StakingRewardDestConfirmInteractor: StakingLocalStorageSubscriber,
                             self?.setupExtrinsicService(accountResponse)
                         }
 
-                        let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-
                         self?.presenter.didReceiveStashItem(result: .success(stashItem))
-                        self?.presenter.didReceiveController(result: .success(maybeAccountItem))
+                        self?.presenter.didReceiveController(result: .success(accountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveStashItem(result: .failure(error))
                         self?.presenter.didReceiveController(result: .failure(error))

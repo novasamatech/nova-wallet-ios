@@ -79,6 +79,8 @@ final class ScrollableContainerView: UIView {
             stackView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
         case .vertical:
             stackView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        @unknown default:
+            break
         }
 
         stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true

@@ -4,6 +4,11 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
     let titleView: T
     let valueView: V
 
+    convenience init() {
+        let defaultSize = CGRect(origin: .zero, size: CGSize(width: 340, height: 20))
+        self.init(frame: defaultSize)
+    }
+
     init(titleView: T = T(), valueView: V = V()) {
         self.titleView = titleView
         self.valueView = valueView
@@ -20,6 +25,17 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         super.init(frame: frame)
 
         setup()
+    }
+
+    var spacing: CGFloat = 8.0 {
+        didSet {
+            valueView.snp.remakeConstraints { make in
+                make.trailing.centerY.equalToSuperview()
+                make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
+            }
+
+            setNeedsLayout()
+        }
     }
 
     @available(*, unavailable)
@@ -41,7 +57,7 @@ class GenericTitleValueView<T: UIView, V: UIView>: UIView {
         addSubview(valueView)
         valueView.snp.makeConstraints { make in
             make.trailing.centerY.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(8.0)
+            make.leading.greaterThanOrEqualTo(titleView.snp.trailing).offset(spacing)
         }
     }
 }
