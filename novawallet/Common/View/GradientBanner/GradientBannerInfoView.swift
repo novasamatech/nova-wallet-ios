@@ -52,8 +52,11 @@ final class GradientBannerInfoView: UIView {
             make.trailing.equalTo(imageView.snp.leading).offset(-16.0)
         }
 
+        imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         subtitleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        subtitleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 }
