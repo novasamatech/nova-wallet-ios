@@ -746,3 +746,4 @@
 "common.how.it.works" = "Как это работает";
 "staking.change.validators" = "Изменить валидаторов";
 "staking.set.validators" = "Установить валидаторов";
+"common.staked.prefix" = "Застейкано:";
