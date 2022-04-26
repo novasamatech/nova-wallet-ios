@@ -3,8 +3,6 @@ import SubstrateSdk
 import SoraFoundation
 
 struct StakingRedeemViewModel {
-    let senderAddress: AccountAddress
-    let senderIcon: DrawableIcon
-    let senderName: String?
-    let amount: LocalizableResource<String>
+    let walletViewModel: DisplayWalletViewModel
+    let accountViewModel: DisplayAddressViewModel
 }
