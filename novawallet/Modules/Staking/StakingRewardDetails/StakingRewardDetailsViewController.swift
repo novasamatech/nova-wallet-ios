@@ -91,6 +91,7 @@ extension StakingRewardDetailsViewController: StakingRewardDetailsViewProtocol {
 
     func didReceive(remainedTime: NSAttributedString) {
         rootView.titleLabel.attributedText = remainedTime
+        rootView.titleLabel.sizeToFit()
     }
 }
 
