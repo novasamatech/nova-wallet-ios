@@ -80,7 +80,6 @@ final class StakingRewardPayoutsViewController: UIViewController, ViewHolder {
     }
 
     private func setupPayoutButtonAction() {
-        rootView.payoutButton.isHidden = true
         rootView.payoutButton.addTarget(
             self,
             action: #selector(handlePayoutButtonAction),
@@ -100,8 +99,9 @@ extension StakingRewardPayoutsViewController: StakingRewardPayoutsViewProtocol {
         countdownTimer.stop()
 
         switch state {
-        case let .loading(isLoading):
-            isLoading ? didStartLoading() : didStopLoading()
+        case .loading:
+            rootView.payoutButton.isHidden = true
+            rootView.tableView.reloadData()
         case let .payoutsList(viewModel):
             rootView.payoutButton.isHidden = false
 
@@ -204,7 +204,14 @@ extension StakingRewardPayoutsViewController: EmptyStateDataSource {
             emptyView.titleColor = R.color.colorTransparentText()!
             emptyView.titleFont = .regularFootnote
             return emptyView
-        case .loading, .payoutsList:
+        case .loading:
+            let loadingView = ListLoadingView()
+            loadingView.titleLabel.text = R.string.localizable.stakingPendingRewardSearch(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            loadingView.start()
+            return loadingView
+        case .payoutsList:
             return nil
         }
     }
@@ -214,9 +221,9 @@ extension StakingRewardPayoutsViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let state = viewState else { return false }
         switch state {
-        case .error, .emptyList:
+        case .error, .emptyList, .loading:
             return true
-        case .loading, .payoutsList:
+        case .payoutsList:
             return false
         }
     }
