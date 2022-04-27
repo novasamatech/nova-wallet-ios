@@ -22,9 +22,7 @@ final class StakingRewardDetailsViewFactory {
 
         let localizationManager = LocalizationManager.shared
 
-        let timeleftFactory = StakingPayoutViewModelFactory(
-            chainFormat: chainAsset.chain.chainFormat,
-            balanceViewModelFactory: balanceViewModelFactory,
+        let timeleftFactory = PayoutTimeViewModelFactory(
             timeFormatter: TotalTimeFormatter(),
             normalTimelefColor: R.color.colorWhite()!
         )

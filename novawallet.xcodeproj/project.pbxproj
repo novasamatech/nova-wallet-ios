@@ -1425,6 +1425,7 @@
 		84E8AC7727BBC8E400402635 /* NFTIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E8AC7627BBC8E400402635 /* NFTIntegrationTests.swift */; };
 		84EA0B2A25E579DF00AFB0DC /* AssetBalanceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */; };
 		84EAC2F82642EA52003CC2ED /* StakingRebondConfirmationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EAC2F72642EA52003CC2ED /* StakingRebondConfirmationTests.swift */; };
+		84EB6C4E281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EB6C4D281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift */; };
 		84EBA4F027AD26A5000AEEAD /* AssetBalanceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */; };
 		84EBAB06265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBAB05265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift */; };
 		84EBAB0B265E28590015E446 /* ChainDateCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBAB0A265E28590015E446 /* ChainDateCalculator.swift */; };
@@ -3491,6 +3492,7 @@
 		84E8AC7627BBC8E400402635 /* NFTIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTIntegrationTests.swift; sourceTree = "<group>"; };
 		84EA0B2925E579DF00AFB0DC /* AssetBalanceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceViewModel.swift; sourceTree = "<group>"; };
 		84EAC2F72642EA52003CC2ED /* StakingRebondConfirmationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRebondConfirmationTests.swift; sourceTree = "<group>"; };
+		84EB6C4D281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutTimeViewModelFactory.swift; sourceTree = "<group>"; };
 		84EBA4EF27AD26A5000AEEAD /* AssetBalanceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceId.swift; sourceTree = "<group>"; };
 		84EBAB05265DC24C0015E446 /* CrowdloanContributionViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionViewModelFactory.swift; sourceTree = "<group>"; };
 		84EBAB0A265E28590015E446 /* ChainDateCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainDateCalculator.swift; sourceTree = "<group>"; };
@@ -9646,6 +9648,7 @@
 			children = (
 				F429324E26280F6B00752C2C /* StakingRewardDetailsViewModel.swift */,
 				F477CD39262EE0E7004DF739 /* StakingRewardDetailsViewModelFactory.swift */,
+				84EB6C4D281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -10980,6 +10983,7 @@
 				84585A2F251BFC8400390F7A /* TriangularedButton+Style.swift in Sources */,
 				84C6801A24D75E2A00006BF5 /* BorderedSubtitleActionView+Inspectable.swift in Sources */,
 				84FACCD425F8B07B00F32ED4 /* ReceiveAccountViewModel.swift in Sources */,
+				84EB6C4E281999E100CFD8B2 /* PayoutTimeViewModelFactory.swift in Sources */,
 				8430AAD42602285B005B1066 /* StakingStateCommonData.swift in Sources */,
 				F4F2296C260DBDCE00ACFDB8 /* StakingPayoutLabelTableCell.swift in Sources */,
 				844CB57826FA702700396E13 /* CrowdloansViewInfo.swift in Sources */,
