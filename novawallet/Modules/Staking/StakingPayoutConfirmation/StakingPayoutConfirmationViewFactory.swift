@@ -18,9 +18,7 @@ final class StakingPayoutConfirmationViewFactory {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let payoutConfirmViewModelFactory = StakingPayoutConfirmViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
-        )
+        let payoutConfirmViewModelFactory = StakingPayoutConfirmViewModelFactory()
 
         let wireframe = StakingPayoutConfirmationWireframe()
 
@@ -64,7 +62,9 @@ final class StakingPayoutConfirmationViewFactory {
         guard
             let chainAsset = state.settings.value,
             let metaAccount = SelectedWalletSettings.shared.value,
-            let selectedAccount = metaAccount.fetch(for: chainAsset.chain.accountRequest()) else {
+            let selectedAccount = metaAccount.fetchMetaChainAccount(
+                for: chainAsset.chain.accountRequest()
+            ) else {
             return nil
         }
 
@@ -78,18 +78,18 @@ final class StakingPayoutConfirmationViewFactory {
         }
 
         let extrinsicService = ExtrinsicService(
-            accountId: selectedAccount.accountId,
+            accountId: selectedAccount.chainAccount.accountId,
             chainFormat: chainAsset.chain.chainFormat,
-            cryptoType: selectedAccount.cryptoType,
+            cryptoType: selectedAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
             operationManager: operationManager
         )
 
         let extrinsicOperationFactory = ExtrinsicOperationFactory(
-            accountId: selectedAccount.accountId,
+            accountId: selectedAccount.chainAccount.accountId,
             chainFormat: chainAsset.chain.chainFormat,
-            cryptoType: selectedAccount.cryptoType,
+            cryptoType: selectedAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
@@ -98,7 +98,7 @@ final class StakingPayoutConfirmationViewFactory {
         let signer = SigningWrapper(
             keystore: keystore,
             metaId: metaAccount.metaId,
-            accountResponse: selectedAccount
+            accountResponse: selectedAccount.chainAccount
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
