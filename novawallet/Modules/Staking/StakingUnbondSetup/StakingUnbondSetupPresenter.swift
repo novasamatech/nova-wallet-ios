@@ -202,6 +202,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             self.priceData = priceData
             provideAssetViewModel()
             provideFeeViewModel()
+            provideTransferableViewModel()
         case let .failure(error):
             logger?.error("Price data subscription error: \(error)")
         }

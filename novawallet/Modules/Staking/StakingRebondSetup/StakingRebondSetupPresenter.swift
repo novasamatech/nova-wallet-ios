@@ -18,12 +18,9 @@ final class StakingRebondSetupPresenter {
     private var stashItem: StashItem?
     private var controller: ChainAccountResponse?
     private var stakingLedger: StakingLedger?
-    private var activeEraInfo: ActiveEraInfo?
 
     var unbonding: Decimal? {
-        if
-            let activeEra = activeEraInfo?.index,
-            let value = stakingLedger?.unbonding(inEra: activeEra) {
+        if let value = stakingLedger?.unbonding() {
             return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
         } else {
             return nil
@@ -72,6 +69,15 @@ final class StakingRebondSetupPresenter {
         )
 
         view?.didReceiveAsset(viewModel: viewModel)
+    }
+
+    private func provideTransferableViewModel() {
+        if let balance = balance {
+            let viewModel = balanceViewModelFactory.balanceFromPrice(balance, priceData: priceData)
+            view?.didReceiveTransferable(viewModel: viewModel)
+        } else {
+            view?.didReceiveTransferable(viewModel: nil)
+        }
     }
 }
 
@@ -122,6 +128,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupPresenterProtocol {
         provideInputViewModel()
         provideFeeViewModel()
         provideAssetViewModel()
+        provideTransferableViewModel()
 
         interactor.setup()
     }
@@ -159,18 +166,9 @@ extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtoco
             self.priceData = priceData
             provideAssetViewModel()
             provideFeeViewModel()
+            provideTransferableViewModel()
         case let .failure(error):
             logger?.error("Price data subscription error: \(error)")
-        }
-    }
-
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>) {
-        switch result {
-        case let .success(eraInfo):
-            activeEraInfo = eraInfo
-            provideAssetViewModel()
-        case let .failure(error):
-            logger?.error("Active era subscription error: \(error)")
         }
     }
 
@@ -203,6 +201,8 @@ extension StakingRebondSetupPresenter: StakingRebondSetupInteractorOutputProtoco
             } else {
                 balance = nil
             }
+
+            provideTransferableViewModel()
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
         }

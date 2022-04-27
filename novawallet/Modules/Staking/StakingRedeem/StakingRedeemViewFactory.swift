@@ -44,7 +44,7 @@ final class StakingRedeemViewFactory {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmationViewModelFactory = StakingRedeemViewModelFactory(assetInfo: assetInfo)
+        let confirmationViewModelFactory = StakingRedeemViewModelFactory()
 
         return StakingRedeemPresenter(
             interactor: interactor,

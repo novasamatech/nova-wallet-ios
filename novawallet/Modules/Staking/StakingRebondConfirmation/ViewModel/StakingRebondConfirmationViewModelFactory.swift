@@ -4,39 +4,23 @@ import SoraFoundation
 import SubstrateSdk
 
 protocol StakingRebondConfirmationViewModelFactoryProtocol {
-    func createViewModel(
-        controllerItem: ChainAccountResponse,
-        amount: Decimal
-    ) throws -> StakingRebondConfirmationViewModel
+    func createViewModel(controllerItem: MetaChainAccountResponse) throws -> StakingRebondConfirmationViewModel
 }
 
 final class StakingRebondConfirmationViewModelFactory: StakingRebondConfirmationViewModelFactoryProtocol {
-    let assetInfo: AssetBalanceDisplayInfo
-
-    private lazy var formatterFactory = AssetBalanceFormatterFactory()
-    private lazy var iconGenerator = PolkadotIconGenerator()
-
-    init(assetInfo: AssetBalanceDisplayInfo) {
-        self.assetInfo = assetInfo
-    }
+    private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
     func createViewModel(
-        controllerItem: ChainAccountResponse,
-        amount: Decimal
+        controllerItem: MetaChainAccountResponse
     ) throws -> StakingRebondConfirmationViewModel {
-        let formatter = formatterFactory.createInputFormatter(for: assetInfo)
-
-        let amount = LocalizableResource { locale in
-            formatter.value(for: locale).string(from: amount as NSNumber) ?? ""
-        }
-
-        let icon = try iconGenerator.generateFromAccountId(controllerItem.accountId)
+        let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: controllerItem)
+        let accountViewModel = try walletViewModelFactory.createViewModel(
+            from: controllerItem.chainAccount.toAddress() ?? ""
+        ).displayAddress()
 
         return StakingRebondConfirmationViewModel(
-            senderAddress: controllerItem.toAddress() ?? "",
-            senderIcon: icon,
-            senderName: controllerItem.name,
-            amount: amount
+            walletViewModel: walletViewModel,
+            addressViewModel: accountViewModel
         )
     }
 }
