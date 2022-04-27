@@ -4,6 +4,7 @@ protocol StakingRewardDetailsViewProtocol: ControllerBackedProtocol {
     func didReceive(amountViewModel: BalanceViewModelProtocol)
     func didReceive(validatorViewModel: StackCellViewModel)
     func didReceive(eraViewModel: StackCellViewModel)
+    func didReceive(remainedTime: NSAttributedString)
 }
 
 protocol StakingRewardDetailsPresenterProtocol: AnyObject {
@@ -28,5 +29,9 @@ struct StakingRewardDetailsInput {
     let payoutInfo: PayoutInfo
     let activeEra: EraIndex
     let historyDepth: UInt32
-    let erasPerDay: UInt32
+    let eraCountdown: EraCountdown
+
+    var timeTillRewardExpiration: TimeInterval {
+        eraCountdown.timeIntervalTillSet(targetEra: payoutInfo.era + historyDepth + 1)
+    }
 }

@@ -37,7 +37,7 @@ protocol StakingRewardPayoutsWireframeProtocol: AnyObject {
         payoutInfo: PayoutInfo,
         activeEra: EraIndex,
         historyDepth: UInt32,
-        erasPerDay: UInt32
+        eraCountdown: EraCountdown
     )
 
     func showPayoutConfirmation(
@@ -58,4 +58,11 @@ protocol StakingPayoutViewModelFactoryProtocol {
         payoutsInfo: PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString>
+
+    func timeLeftAttributedString(
+        payoutEra: EraIndex,
+        historyDepth: UInt32,
+        eraCountdown: EraCountdown?,
+        locale: Locale
+    ) -> NSAttributedString
 }
