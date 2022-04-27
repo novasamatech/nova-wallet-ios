@@ -62,7 +62,7 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsPresenterProtocol {
             payoutInfo: payoutInfo,
             activeEra: payoutsInfo.activeEra,
             historyDepth: payoutsInfo.historyDepth,
-            erasPerDay: UInt32(eraCountdown.eraTimeInterval.intervalsInDay)
+            eraCountdown: eraCountdown
         )
     }
 

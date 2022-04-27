@@ -12,13 +12,13 @@ final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol
         payoutInfo: PayoutInfo,
         activeEra: EraIndex,
         historyDepth: UInt32,
-        erasPerDay: UInt32
+        eraCountdown: EraCountdown
     ) {
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
             activeEra: activeEra,
             historyDepth: historyDepth,
-            erasPerDay: erasPerDay
+            eraCountdown: eraCountdown
         )
         guard
             let rewardDetails = StakingRewardDetailsViewFactory.createView(for: state, input: input)
