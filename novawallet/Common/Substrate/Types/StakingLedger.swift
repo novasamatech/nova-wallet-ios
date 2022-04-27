@@ -31,4 +31,8 @@ extension StakingLedger {
     func unbondings(inEra activeEra: UInt32) -> [UnlockChunk] {
         unlocking.filter { $0.era > activeEra }
     }
+
+    func unbonding() -> BigUInt {
+        unlocking.reduce(BigUInt(0)) { $0 + $1.value }
+    }
 }

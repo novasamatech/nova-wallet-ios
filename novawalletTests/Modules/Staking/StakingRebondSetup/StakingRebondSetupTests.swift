@@ -24,6 +24,7 @@ class StakingRebondSetupTests: XCTestCase {
 
             when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub).didReceiveTransferable(viewModel: any()).thenDoNothing()
         }
 
         let completionExpectation = XCTestExpectation()
@@ -139,6 +140,7 @@ class StakingRebondSetupTests: XCTestCase {
         let feeExpectation = XCTestExpectation()
         let inputExpectation = XCTestExpectation()
         let assetExpectation = XCTestExpectation()
+        let transferableExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
@@ -155,6 +157,10 @@ class StakingRebondSetupTests: XCTestCase {
 
             when(stub).didReceiveInput(viewModel: any()).then { _ in
                 inputExpectation.fulfill()
+            }
+
+            when(stub).didReceiveTransferable(viewModel: any()).then { _ in
+                transferableExpectation.fulfill()
             }
         }
 
