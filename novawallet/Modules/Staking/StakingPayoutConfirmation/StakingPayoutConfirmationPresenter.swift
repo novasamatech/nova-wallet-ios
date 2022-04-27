@@ -57,7 +57,7 @@ final class StakingPayoutConfirmationPresenter {
     }
 
     private func provideAmountViewModel() {
-        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(rewardAmount, priceData: priceData)
+        let viewModel = balanceViewModelFactory.balanceFromPrice(rewardAmount, priceData: priceData)
         view?.didRecieve(amountViewModel: viewModel)
     }
 
