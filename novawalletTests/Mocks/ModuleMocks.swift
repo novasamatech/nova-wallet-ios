@@ -48601,6 +48601,21 @@ import SoraFoundation
         
     }
     
+    
+    
+     func didReceive(remainedTime: NSAttributedString)  {
+        
+    return cuckoo_manager.call("didReceive(remainedTime: NSAttributedString)",
+            parameters: (remainedTime),
+            escapingParameters: (remainedTime),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceive(remainedTime: remainedTime))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingRewardDetailsViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -48633,6 +48648,11 @@ import SoraFoundation
 	    func didReceive<M1: Cuckoo.Matchable>(eraViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StackCellViewModel)> where M1.MatchedType == StackCellViewModel {
 	        let matchers: [Cuckoo.ParameterMatcher<(StackCellViewModel)>] = [wrap(matchable: eraViewModel) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDetailsViewProtocol.self, method: "didReceive(eraViewModel: StackCellViewModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceive<M1: Cuckoo.Matchable>(remainedTime: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(NSAttributedString)> where M1.MatchedType == NSAttributedString {
+	        let matchers: [Cuckoo.ParameterMatcher<(NSAttributedString)>] = [wrap(matchable: remainedTime) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardDetailsViewProtocol.self, method: "didReceive(remainedTime: NSAttributedString)", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -48679,6 +48699,12 @@ import SoraFoundation
 	        return cuckoo_manager.verify("didReceive(eraViewModel: StackCellViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func didReceive<M1: Cuckoo.Matchable>(remainedTime: M1) -> Cuckoo.__DoNotUse<(NSAttributedString), Void> where M1.MatchedType == NSAttributedString {
+	        let matchers: [Cuckoo.ParameterMatcher<(NSAttributedString)>] = [wrap(matchable: remainedTime) { $0 }]
+	        return cuckoo_manager.verify("didReceive(remainedTime: NSAttributedString)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -48721,6 +48747,12 @@ import SoraFoundation
     
     
      func didReceive(eraViewModel: StackCellViewModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceive(remainedTime: NSAttributedString)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -49934,16 +49966,16 @@ import SoraUI
     
     
     
-     func showRewardDetails(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)  {
+     func showRewardDetails(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo, historyDepth: UInt32, eraCountdown: EraCountdown)  {
         
-    return cuckoo_manager.call("showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)",
-            parameters: (view, payoutInfo, activeEra, historyDepth, erasPerDay),
-            escapingParameters: (view, payoutInfo, activeEra, historyDepth, erasPerDay),
+    return cuckoo_manager.call("showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, historyDepth: UInt32, eraCountdown: EraCountdown)",
+            parameters: (view, payoutInfo, historyDepth, eraCountdown),
+            escapingParameters: (view, payoutInfo, historyDepth, eraCountdown),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.showRewardDetails(from: view, payoutInfo: payoutInfo, activeEra: activeEra, historyDepth: historyDepth, erasPerDay: erasPerDay))
+            defaultCall: __defaultImplStub!.showRewardDetails(from: view, payoutInfo: payoutInfo, historyDepth: historyDepth, eraCountdown: eraCountdown))
         
     }
     
@@ -49971,9 +50003,9 @@ import SoraUI
 	    }
 	    
 	    
-	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(from view: M1, payoutInfo: M2, activeEra: M3, historyDepth: M4, erasPerDay: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, PayoutInfo, EraIndex, UInt32, UInt32)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == PayoutInfo, M3.MatchedType == EraIndex, M4.MatchedType == UInt32, M5.MatchedType == UInt32 {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PayoutInfo, EraIndex, UInt32, UInt32)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: payoutInfo) { $0.1 }, wrap(matchable: activeEra) { $0.2 }, wrap(matchable: historyDepth) { $0.3 }, wrap(matchable: erasPerDay) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsWireframeProtocol.self, method: "showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)", parameterMatchers: matchers))
+	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, payoutInfo: M2, historyDepth: M3, eraCountdown: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, PayoutInfo, UInt32, EraCountdown)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == PayoutInfo, M3.MatchedType == UInt32, M4.MatchedType == EraCountdown {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PayoutInfo, UInt32, EraCountdown)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: payoutInfo) { $0.1 }, wrap(matchable: historyDepth) { $0.2 }, wrap(matchable: eraCountdown) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsWireframeProtocol.self, method: "showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, historyDepth: UInt32, eraCountdown: EraCountdown)", parameterMatchers: matchers))
 	    }
 	    
 	    func showPayoutConfirmation<M1: Cuckoo.Matchable, M2: Cuckoo.OptionalMatchable>(for payouts: M1, from view: M2) -> Cuckoo.ProtocolStubNoReturnFunction<([PayoutInfo], ControllerBackedProtocol?)> where M1.MatchedType == [PayoutInfo], M2.OptionalMatchedType == ControllerBackedProtocol {
@@ -49998,9 +50030,9 @@ import SoraUI
 	
 	    
 	    @discardableResult
-	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(from view: M1, payoutInfo: M2, activeEra: M3, historyDepth: M4, erasPerDay: M5) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, PayoutInfo, EraIndex, UInt32, UInt32), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == PayoutInfo, M3.MatchedType == EraIndex, M4.MatchedType == UInt32, M5.MatchedType == UInt32 {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PayoutInfo, EraIndex, UInt32, UInt32)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: payoutInfo) { $0.1 }, wrap(matchable: activeEra) { $0.2 }, wrap(matchable: historyDepth) { $0.3 }, wrap(matchable: erasPerDay) { $0.4 }]
-	        return cuckoo_manager.verify("showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func showRewardDetails<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, payoutInfo: M2, historyDepth: M3, eraCountdown: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, PayoutInfo, UInt32, EraCountdown), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == PayoutInfo, M3.MatchedType == UInt32, M4.MatchedType == EraCountdown {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, PayoutInfo, UInt32, EraCountdown)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: payoutInfo) { $0.1 }, wrap(matchable: historyDepth) { $0.2 }, wrap(matchable: eraCountdown) { $0.3 }]
+	        return cuckoo_manager.verify("showRewardDetails(from: ControllerBackedProtocol?, payoutInfo: PayoutInfo, historyDepth: UInt32, eraCountdown: EraCountdown)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -50020,7 +50052,7 @@ import SoraUI
     
     
     
-     func showRewardDetails(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo, activeEra: EraIndex, historyDepth: UInt32, erasPerDay: UInt32)   {
+     func showRewardDetails(from view: ControllerBackedProtocol?, payoutInfo: PayoutInfo, historyDepth: UInt32, eraCountdown: EraCountdown)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -50087,6 +50119,21 @@ import SoraUI
         
     }
     
+    
+    
+     func timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString {
+        
+    return cuckoo_manager.call("timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString",
+            parameters: (payoutEra, historyDepth, eraCountdown, locale),
+            escapingParameters: (payoutEra, historyDepth, eraCountdown, locale),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.timeLeftAttributedString(payoutEra: payoutEra, historyDepth: historyDepth, eraCountdown: eraCountdown, locale: locale))
+        
+    }
+    
 
 	 struct __StubbingProxy_StakingPayoutViewModelFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -50104,6 +50151,11 @@ import SoraUI
 	    func timeLeftString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(at index: M1, payoutsInfo: M2, eraCountdown: M3) -> Cuckoo.ProtocolStubFunction<(Int, PayoutsInfo, EraCountdown?), LocalizableResource<NSAttributedString>> where M1.MatchedType == Int, M2.MatchedType == PayoutsInfo, M3.OptionalMatchedType == EraCountdown {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int, PayoutsInfo, EraCountdown?)>] = [wrap(matchable: index) { $0.0 }, wrap(matchable: payoutsInfo) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutViewModelFactoryProtocol.self, method: "timeLeftString(at: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>", parameterMatchers: matchers))
+	    }
+	    
+	    func timeLeftAttributedString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(payoutEra: M1, historyDepth: M2, eraCountdown: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<(EraIndex, UInt32, EraCountdown?, Locale), NSAttributedString> where M1.MatchedType == EraIndex, M2.MatchedType == UInt32, M3.OptionalMatchedType == EraCountdown, M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(EraIndex, UInt32, EraCountdown?, Locale)>] = [wrap(matchable: payoutEra) { $0.0 }, wrap(matchable: historyDepth) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutViewModelFactoryProtocol.self, method: "timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -50134,6 +50186,12 @@ import SoraUI
 	        return cuckoo_manager.verify("timeLeftString(at: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
+	    @discardableResult
+	    func timeLeftAttributedString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(payoutEra: M1, historyDepth: M2, eraCountdown: M3, locale: M4) -> Cuckoo.__DoNotUse<(EraIndex, UInt32, EraCountdown?, Locale), NSAttributedString> where M1.MatchedType == EraIndex, M2.MatchedType == UInt32, M3.OptionalMatchedType == EraCountdown, M4.MatchedType == Locale {
+	        let matchers: [Cuckoo.ParameterMatcher<(EraIndex, UInt32, EraCountdown?, Locale)>] = [wrap(matchable: payoutEra) { $0.0 }, wrap(matchable: historyDepth) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }, wrap(matchable: locale) { $0.3 }]
+	        return cuckoo_manager.verify("timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
 	}
 }
 
@@ -50153,6 +50211,12 @@ import SoraUI
     
      func timeLeftString(at index: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<NSAttributedString>).self)
+    }
+    
+    
+    
+     func timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString  {
+        return DefaultValueRegistry.defaultValue(for: (NSAttributedString).self)
     }
     
 }

@@ -35,7 +35,6 @@ protocol StakingRewardPayoutsWireframeProtocol: AnyObject {
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
         payoutInfo: PayoutInfo,
-        activeEra: EraIndex,
         historyDepth: UInt32,
         eraCountdown: EraCountdown
     )
