@@ -106,10 +106,11 @@ final class StakingRewardPayoutsViewFactory {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
+        let timeleftViewModelFactory = PayoutTimeViewModelFactory(timeFormatter: TotalTimeFormatter())
         let payoutsViewModelFactory = StakingPayoutViewModelFactory(
             chainFormat: chainAsset.chain.chainFormat,
             balanceViewModelFactory: balanceViewModelFactory,
-            timeFormatter: TotalTimeFormatter()
+            timeViewModelFactory: timeleftViewModelFactory
         )
 
         let presenter = StakingRewardPayoutsPresenter(viewModelFactory: payoutsViewModelFactory)
