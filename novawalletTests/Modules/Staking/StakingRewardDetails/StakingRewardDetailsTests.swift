@@ -35,11 +35,24 @@ class StakingRewardDetailsTests: XCTestCase {
             reward: 1,
             identity: nil
         )
+
+        let eraCountdown = EraCountdown(
+            activeEra: 102,
+            currentEra: 102,
+            eraLength: 10,
+            sessionLength: 1,
+            activeEraStartSessionIndex: 1,
+            currentSessionIndex: 1,
+            currentSlot: 2,
+            genesisSlot: 1,
+            blockCreationTime: 6000,
+            createdAtDate: Date()
+        )
+
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
-            activeEra: 101,
             historyDepth: 84,
-            erasPerDay: 4
+            eraCountdown: eraCountdown
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
@@ -48,9 +61,17 @@ class StakingRewardDetailsTests: XCTestCase {
             balanceViewModelFactory: balanceViewModelFactory,
             chainFormat: chain.chainFormat
         )
+
+        let timeleftFactory = StakingPayoutViewModelFactory(
+            chainFormat: chain.chainFormat,
+            balanceViewModelFactory: balanceViewModelFactory,
+            timeFormatter: TotalTimeFormatter()
+        )
+
         let presenter = StakingRewardDetailsPresenter(
             input: input,
             viewModelFactory: viewModelFactory,
+            timeleftFactory: timeleftFactory,
             explorers: nil,
             chainFormat: chain.chainFormat,
             localizationManager: LocalizationManager.shared
@@ -63,6 +84,7 @@ class StakingRewardDetailsTests: XCTestCase {
         let amountExpectation = XCTestExpectation()
         let validatorExpectation = XCTestExpectation()
         let eraExpectation = XCTestExpectation()
+        let remainedTimeExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(amountViewModel: any()).then { _ in
@@ -75,6 +97,10 @@ class StakingRewardDetailsTests: XCTestCase {
 
             when(stub).didReceive(eraViewModel: any()).then { _ in
                 eraExpectation.fulfill()
+            }
+
+            when(stub).didReceive(remainedTime: any()).then { _ in
+                remainedTimeExpectation.fulfill()
             }
         }
 

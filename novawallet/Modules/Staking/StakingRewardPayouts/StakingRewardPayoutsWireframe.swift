@@ -10,13 +10,11 @@ final class StakingRewardPayoutsWireframe: StakingRewardPayoutsWireframeProtocol
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
         payoutInfo: PayoutInfo,
-        activeEra: EraIndex,
         historyDepth: UInt32,
         eraCountdown: EraCountdown
     ) {
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
-            activeEra: activeEra,
             historyDepth: historyDepth,
             eraCountdown: eraCountdown
         )

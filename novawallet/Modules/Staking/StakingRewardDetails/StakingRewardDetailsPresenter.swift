@@ -63,11 +63,10 @@ final class StakingRewardDetailsPresenter {
     }
 
     private func startTimerIfNeeded() {
-        guard timer == nil, input.timeTillRewardExpiration.daysFromSeconds < 1 else {
+        let remainedTime = input.timeTillRewardExpiration
+        guard timer == nil, remainedTime > 0 else {
             return
         }
-
-        let remainedTime = input.timeTillRewardExpiration
 
         timer = CountdownTimer()
         timer?.delegate = self
