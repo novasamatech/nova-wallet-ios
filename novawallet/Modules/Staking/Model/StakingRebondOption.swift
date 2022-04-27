@@ -10,11 +10,11 @@ extension StakingRebondOption {
     func titleForLocale(_ locale: Locale?) -> String {
         switch self {
         case .all:
-            return R.string.localizable.stakingRebondAll(preferredLanguages: locale?.rLanguages)
+            return R.string.localizable.stakingRebondActionAll(preferredLanguages: locale?.rLanguages)
         case .last:
-            return R.string.localizable.stakingRebondLast(preferredLanguages: locale?.rLanguages)
+            return R.string.localizable.stakingRebondActionLast(preferredLanguages: locale?.rLanguages)
         case .customAmount:
-            return R.string.localizable.stakingRebondCustomAmount(preferredLanguages: locale?.rLanguages)
+            return R.string.localizable.stakingRebondActionCustom(preferredLanguages: locale?.rLanguages)
         }
     }
 }

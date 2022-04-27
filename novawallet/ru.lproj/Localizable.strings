@@ -738,7 +738,7 @@
 "staking.stash" = "Стэш";
 "staking.stash.hint" = "Стэш используется для того чтобы застейкать еще и установить контроллер";
 "staking.controller" = "Контроллер";
-"staking.controller.hint" = "Контроллер используется для того, чтобы запросить вывод токенов, забрать их или вернуть в стейк, выбрать валидаторов и установить назначение вознаграждений";
+"staking.controller.hint" = "Контроллер используется для того, чтобы запросить вывод токенов, забрать их или вернуть в стекинг, выбрать валидаторов и установить назначение вознаграждений";
 "staking.controller.confirm.title" = "Изменить контроллер";
 "staking.controller.select.title" = "Выберите контроллер аккаунт";
 "staking.recommended.banner.title" = "Стекинг с рекомендованными валидаторами";
@@ -747,3 +747,8 @@
 "staking.change.validators" = "Изменить валидаторов";
 "staking.set.validators" = "Установить валидаторов";
 "common.staked.prefix" = "Застейкано:";
+"staking.rebond.action.all" = "Весь вывод";
+"staking.rebond.action.last" = "Последний вывод";
+"staking.rebond.action.custom" = "Ввести сумму";
+"staking.rebond.hint" = "Возвращенные токены будут учитываться со следующей эры";
+"common.unstaking.prefix" = "Выведено:";

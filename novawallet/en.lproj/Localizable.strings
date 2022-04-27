@@ -738,7 +738,7 @@
 "staking.stash" = "Stash";
 "staking.stash.hint" = "Stash is used to: stake more and set the controller";
 "staking.controller" = "Controller";
-"staking.controller.hint" = "Controller is used to: unbond, redeem, return to stake, change validators and set rewards destination";
+"staking.controller.hint" = "Controller is used to: unstake, redeem, return to stake, change validators and set rewards destination";
 "staking.controller.confirm.title" = "Change Controller";
 "staking.controller.select.title" = "Select the controller account";
 "staking.recommended.banner.title" = "Stake with recommended validators";
@@ -747,3 +747,8 @@
 "staking.change.validators" = "Change validators";
 "staking.set.validators" = "Set validators";
 "common.staked.prefix" = "Staked:";
+"staking.rebond.action.all" = "All unstaking";
+"staking.rebond.action.last" = "Latest unstaked";
+"staking.rebond.action.custom" = "Custom amount";
+"staking.rebond.hint" = "Returned tokens will be counted from the next era";
+"common.unstaking.prefix" = "Unstaking:";

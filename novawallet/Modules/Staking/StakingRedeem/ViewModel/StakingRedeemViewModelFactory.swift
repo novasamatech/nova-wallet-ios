@@ -4,39 +4,21 @@ import SoraFoundation
 import SubstrateSdk
 
 protocol StakingRedeemViewModelFactoryProtocol {
-    func createRedeemViewModel(
-        controllerItem: ChainAccountResponse,
-        amount: Decimal
-    ) throws -> StakingRedeemViewModel
+    func createRedeemViewModel(controllerItem: MetaChainAccountResponse) throws -> StakingRedeemViewModel
 }
 
 final class StakingRedeemViewModelFactory: StakingRedeemViewModelFactoryProtocol {
-    let assetInfo: AssetBalanceDisplayInfo
+    private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
 
-    private lazy var formatterFactory = AssetBalanceFormatterFactory()
-    private lazy var iconGenerator = PolkadotIconGenerator()
-
-    init(assetInfo: AssetBalanceDisplayInfo) {
-        self.assetInfo = assetInfo
-    }
-
-    func createRedeemViewModel(
-        controllerItem: ChainAccountResponse,
-        amount: Decimal
-    ) throws -> StakingRedeemViewModel {
-        let formatter = formatterFactory.createInputFormatter(for: assetInfo)
-
-        let amount = LocalizableResource { locale in
-            formatter.value(for: locale).string(from: amount as NSNumber) ?? ""
-        }
-
-        let icon = try iconGenerator.generateFromAccountId(controllerItem.accountId)
+    func createRedeemViewModel(controllerItem: MetaChainAccountResponse) throws -> StakingRedeemViewModel {
+        let walletViewModel = try walletViewModelFactory.createDisplayViewModel(from: controllerItem)
+        let accountViewModel = try walletViewModelFactory.createViewModel(
+            from: controllerItem.chainAccount.toAddress() ?? ""
+        ).displayAddress()
 
         return StakingRedeemViewModel(
-            senderAddress: controllerItem.toAddress() ?? "",
-            senderIcon: icon,
-            senderName: controllerItem.name,
-            amount: amount
+            walletViewModel: walletViewModel,
+            accountViewModel: accountViewModel
         )
     }
 }
