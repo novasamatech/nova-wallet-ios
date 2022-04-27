@@ -28,6 +28,17 @@ extension GradientBannerModel {
         return createModel(with: color)
     }
 
+    static func stakingUnpaidRewards() -> GradientBannerModel {
+        let color = UIColor(
+            red: 226.0 / 255.0,
+            green: 207.0 / 255.0,
+            blue: 34.0 / 255.0,
+            alpha: 0.64
+        )
+
+        return createModel(with: color)
+    }
+
     static func createModel(with color: UIColor) -> GradientBannerModel {
         let finalColor = color.withAlphaComponent(0.0)
         let locations: [Float] = [0, 0.48]

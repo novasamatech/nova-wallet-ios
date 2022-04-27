@@ -81,7 +81,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
             return StakingRewardHistoryCellViewModel(
                 addressOrName: self.addressTitle(payout),
                 daysLeftText: daysLeftText,
-                tokenAmountText: "+" + self.tokenAmountText(payout.reward, locale: locale),
+                tokenAmountText: self.tokenAmountText(payout.reward, locale: locale),
                 usdAmountText: priceText(payout.reward, priceData: priceData, locale: locale)
             )
         }
@@ -143,7 +143,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         let erasPerDay = eraCountdown.eraTimeInterval.intervalsInDay
         let historyDepthDays = erasPerDay > 0 ? (historyDepth / 2) / UInt32(erasPerDay) : 0
         let textColor: UIColor = daysLeft < historyDepthDays ?
-            R.color.colorRed()! : R.color.colorLightGray()!
+            R.color.colorRed()! : R.color.colorWhite48()!
 
         let attrubutedString = NSAttributedString(
             string: timeLeftText,
