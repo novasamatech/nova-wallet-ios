@@ -27,7 +27,6 @@ protocol StakingRewardDetailsWireframeProtocol: AnyObject, AddressOptionsPresent
 
 struct StakingRewardDetailsInput {
     let payoutInfo: PayoutInfo
-    let activeEra: EraIndex
     let historyDepth: UInt32
     let eraCountdown: EraCountdown
 
