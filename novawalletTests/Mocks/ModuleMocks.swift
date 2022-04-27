@@ -41301,9 +41301,9 @@ import SoraFoundation
     
     
     
-     func didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])  {
+     func didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)  {
         
-    return cuckoo_manager.call("didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])",
+    return cuckoo_manager.call("didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)",
             parameters: (viewModel),
             escapingParameters: (viewModel),
             superclassCall:
@@ -41311,6 +41311,21 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.didRecieve(viewModel: viewModel))
+        
+    }
+    
+    
+    
+     func didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)  {
+        
+    return cuckoo_manager.call("didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)",
+            parameters: (amountViewModel),
+            escapingParameters: (amountViewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didRecieve(amountViewModel: amountViewModel))
         
     }
     
@@ -41408,9 +41423,14 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didRecieve<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<([LocalizableResource<PayoutConfirmViewModel>])> where M1.MatchedType == [LocalizableResource<PayoutConfirmViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([LocalizableResource<PayoutConfirmViewModel>])>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationViewProtocol.self, method: "didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])", parameterMatchers: matchers))
+	    func didRecieve<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LocalizableResource<PayoutConfirmViewModel>)> where M1.MatchedType == LocalizableResource<PayoutConfirmViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<PayoutConfirmViewModel>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationViewProtocol.self, method: "didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)", parameterMatchers: matchers))
+	    }
+	    
+	    func didRecieve<M1: Cuckoo.Matchable>(amountViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LocalizableResource<BalanceViewModelProtocol>)> where M1.MatchedType == LocalizableResource<BalanceViewModelProtocol> {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<BalanceViewModelProtocol>)>] = [wrap(matchable: amountViewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationViewProtocol.self, method: "didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceive<M1: Cuckoo.OptionalMatchable>(feeViewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(LocalizableResource<BalanceViewModelProtocol>?)> where M1.OptionalMatchedType == LocalizableResource<BalanceViewModelProtocol> {
@@ -41475,9 +41495,15 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didRecieve<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<([LocalizableResource<PayoutConfirmViewModel>]), Void> where M1.MatchedType == [LocalizableResource<PayoutConfirmViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<([LocalizableResource<PayoutConfirmViewModel>])>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didRecieve<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(LocalizableResource<PayoutConfirmViewModel>), Void> where M1.MatchedType == LocalizableResource<PayoutConfirmViewModel> {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<PayoutConfirmViewModel>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didRecieve<M1: Cuckoo.Matchable>(amountViewModel: M1) -> Cuckoo.__DoNotUse<(LocalizableResource<BalanceViewModelProtocol>), Void> where M1.MatchedType == LocalizableResource<BalanceViewModelProtocol> {
+	        let matchers: [Cuckoo.ParameterMatcher<(LocalizableResource<BalanceViewModelProtocol>)>] = [wrap(matchable: amountViewModel) { $0 }]
+	        return cuckoo_manager.verify("didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -41562,7 +41588,13 @@ import SoraFoundation
     
     
     
-     func didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>])   {
+     func didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41649,16 +41681,16 @@ import SoraFoundation
     
     
     
-     func presentAccountOptions(for viewModel: AccountInfoViewModel)  {
+     func presentAccountOptions()  {
         
-    return cuckoo_manager.call("presentAccountOptions(for: AccountInfoViewModel)",
-            parameters: (viewModel),
-            escapingParameters: (viewModel),
+    return cuckoo_manager.call("presentAccountOptions()",
+            parameters: (),
+            escapingParameters: (),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentAccountOptions(for: viewModel))
+            defaultCall: __defaultImplStub!.presentAccountOptions())
         
     }
     
@@ -41681,9 +41713,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationPresenterProtocol.self, method: "proceed()", parameterMatchers: matchers))
 	    }
 	    
-	    func presentAccountOptions<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(AccountInfoViewModel)> where M1.MatchedType == AccountInfoViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountInfoViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationPresenterProtocol.self, method: "presentAccountOptions(for: AccountInfoViewModel)", parameterMatchers: matchers))
+	    func presentAccountOptions() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationPresenterProtocol.self, method: "presentAccountOptions()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -41715,9 +41747,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func presentAccountOptions<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.__DoNotUse<(AccountInfoViewModel), Void> where M1.MatchedType == AccountInfoViewModel {
-	        let matchers: [Cuckoo.ParameterMatcher<(AccountInfoViewModel)>] = [wrap(matchable: viewModel) { $0 }]
-	        return cuckoo_manager.verify("presentAccountOptions(for: AccountInfoViewModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentAccountOptions() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("presentAccountOptions()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -41743,7 +41775,7 @@ import SoraFoundation
     
     
     
-     func presentAccountOptions(for viewModel: AccountInfoViewModel)   {
+     func presentAccountOptions()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41933,9 +41965,9 @@ import SoraFoundation
     
     
     
-     func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)  {
+     func didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)  {
         
-    return cuckoo_manager.call("didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)",
+    return cuckoo_manager.call("didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)",
             parameters: (account, rewardAmount),
             escapingParameters: (account, rewardAmount),
             superclassCall:
@@ -41973,21 +42005,6 @@ import SoraFoundation
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
             defaultCall: __defaultImplStub!.didReceiveAccountInfo(result: result))
-        
-    }
-    
-    
-    
-     func didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)  {
-        
-    return cuckoo_manager.call("didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)",
-            parameters: (result),
-            escapingParameters: (result),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didReceiveRewardDestination(result: result))
         
     }
     
@@ -42060,9 +42077,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ChainAccountResponse, Decimal)> where M1.MatchedType == ChainAccountResponse, M2.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)", parameterMatchers: matchers))
+	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaChainAccountResponse, Decimal)> where M1.MatchedType == MetaChainAccountResponse, M2.MatchedType == Decimal {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceivePriceData<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<PriceData?, Error>)> where M1.MatchedType == Result<PriceData?, Error> {
@@ -42073,11 +42090,6 @@ import SoraFoundation
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>)> where M1.MatchedType == Result<AccountInfo?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didReceiveAccountInfo(result: Result<AccountInfo?, Error>)", parameterMatchers: matchers))
-	    }
-	    
-	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<RewardDestination<DisplayAddress>?, Error>)> where M1.MatchedType == Result<RewardDestination<DisplayAddress>?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<DisplayAddress>?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutConfirmationInteractorOutputProtocol.self, method: "didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveFee<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<Decimal, Error>)> where M1.MatchedType == Result<Decimal, Error> {
@@ -42117,9 +42129,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.__DoNotUse<(ChainAccountResponse, Decimal), Void> where M1.MatchedType == ChainAccountResponse, M2.MatchedType == Decimal {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
-	        return cuckoo_manager.verify("didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didRecieve<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(account: M1, rewardAmount: M2) -> Cuckoo.__DoNotUse<(MetaChainAccountResponse, Decimal), Void> where M1.MatchedType == MetaChainAccountResponse, M2.MatchedType == Decimal {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse, Decimal)>] = [wrap(matchable: account) { $0.0 }, wrap(matchable: rewardAmount) { $0.1 }]
+	        return cuckoo_manager.verify("didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -42132,12 +42144,6 @@ import SoraFoundation
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<AccountInfo?, Error>), Void> where M1.MatchedType == Result<AccountInfo?, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveAccountInfo(result: Result<AccountInfo?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func didReceiveRewardDestination<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<RewardDestination<DisplayAddress>?, Error>), Void> where M1.MatchedType == Result<RewardDestination<DisplayAddress>?, Error> {
-	        let matchers: [Cuckoo.ParameterMatcher<(Result<RewardDestination<DisplayAddress>?, Error>)>] = [wrap(matchable: result) { $0 }]
-	        return cuckoo_manager.verify("didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -42175,7 +42181,7 @@ import SoraFoundation
     
     
     
-     func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal)   {
+     func didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -42188,12 +42194,6 @@ import SoraFoundation
     
     
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -49254,34 +49254,6 @@ import SoraUI
         
     }
     
-    
-    
-     var loadableContentView: UIView! {
-        get {
-            return cuckoo_manager.getter("loadableContentView",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.loadableContentView)
-        }
-        
-    }
-    
-    
-    
-     var shouldDisableInteractionWhenLoading: Bool {
-        get {
-            return cuckoo_manager.getter("shouldDisableInteractionWhenLoading",
-                superclassCall:
-                    
-                    Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                    ,
-                defaultCall: __defaultImplStub!.shouldDisableInteractionWhenLoading)
-        }
-        
-    }
-    
 
     
 
@@ -49316,36 +49288,6 @@ import SoraUI
         
     }
     
-    
-    
-     func didStartLoading()  {
-        
-    return cuckoo_manager.call("didStartLoading()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didStartLoading())
-        
-    }
-    
-    
-    
-     func didStopLoading()  {
-        
-    return cuckoo_manager.call("didStopLoading()",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.didStopLoading())
-        
-    }
-    
 
 	 struct __StubbingProxy_StakingRewardPayoutsViewProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -49370,16 +49312,6 @@ import SoraUI
 	    }
 	    
 	    
-	    var loadableContentView: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingRewardPayoutsViewProtocol, UIView?> {
-	        return .init(manager: cuckoo_manager, name: "loadableContentView")
-	    }
-	    
-	    
-	    var shouldDisableInteractionWhenLoading: Cuckoo.ProtocolToBeStubbedReadOnlyProperty<MockStakingRewardPayoutsViewProtocol, Bool> {
-	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading")
-	    }
-	    
-	    
 	    func reload<M1: Cuckoo.Matchable>(with state: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingRewardPayoutsViewState)> where M1.MatchedType == StakingRewardPayoutsViewState {
 	        let matchers: [Cuckoo.ParameterMatcher<(StakingRewardPayoutsViewState)>] = [wrap(matchable: state) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsViewProtocol.self, method: "reload(with: StakingRewardPayoutsViewState)", parameterMatchers: matchers))
@@ -49388,16 +49320,6 @@ import SoraUI
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsViewProtocol.self, method: "applyLocalization()", parameterMatchers: matchers))
-	    }
-	    
-	    func didStartLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsViewProtocol.self, method: "didStartLoading()", parameterMatchers: matchers))
-	    }
-	    
-	    func didStopLoading() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingRewardPayoutsViewProtocol.self, method: "didStopLoading()", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -49429,16 +49351,6 @@ import SoraUI
 	        return .init(manager: cuckoo_manager, name: "localizationManager", callMatcher: callMatcher, sourceLocation: sourceLocation)
 	    }
 	    
-	    
-	    var loadableContentView: Cuckoo.VerifyReadOnlyProperty<UIView?> {
-	        return .init(manager: cuckoo_manager, name: "loadableContentView", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
-	    
-	    var shouldDisableInteractionWhenLoading: Cuckoo.VerifyReadOnlyProperty<Bool> {
-	        return .init(manager: cuckoo_manager, name: "shouldDisableInteractionWhenLoading", callMatcher: callMatcher, sourceLocation: sourceLocation)
-	    }
-	    
 	
 	    
 	    @discardableResult
@@ -49451,18 +49363,6 @@ import SoraUI
 	    func applyLocalization() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("applyLocalization()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func didStartLoading() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("didStartLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func didStopLoading() -> Cuckoo.__DoNotUse<(), Void> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("didStopLoading()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -49498,24 +49398,6 @@ import SoraUI
         set { }
         
     }
-        
-    
-    
-     var loadableContentView: UIView! {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (UIView?).self)
-        }
-        
-    }
-        
-    
-    
-     var shouldDisableInteractionWhenLoading: Bool {
-        get {
-            return DefaultValueRegistry.defaultValue(for: (Bool).self)
-        }
-        
-    }
     
 
     
@@ -49530,18 +49412,6 @@ import SoraUI
     
     
     public func applyLocalization()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func didStartLoading()   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func didStopLoading()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
