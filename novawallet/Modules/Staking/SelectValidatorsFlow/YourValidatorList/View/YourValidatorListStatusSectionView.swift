@@ -3,13 +3,13 @@ import SoraUI
 import SoraFoundation
 
 class YourValidatorListStatusSectionView: YourValidatorListDescSectionView {
-    let statusView: IconTitleValueView = {
-        let view = UIFactory.default.createIconTitleValueView()
-        view.titleLabel.font = .h4Title
-        view.titleLabel.textColor = R.color.colorWhite()
-        view.valueLabel.font = .capsTitle
-        view.valueLabel.textColor = R.color.colorLightGray()
-        view.borderView.borderType = .none
+    let statusView: IconDetailsView = {
+        let view = IconDetailsView()
+        view.detailsLabel.font = .semiBoldBody
+        view.detailsLabel.textColor = R.color.colorWhite()
+        view.detailsLabel.numberOfLines = 0
+        view.mode = .iconDetails
+        view.spacing = 8.0
         return view
     }()
 
@@ -22,12 +22,11 @@ class YourValidatorListStatusSectionView: YourValidatorListDescSectionView {
             make.height.equalTo(20.0)
         }
 
-        mainStackView.setCustomSpacing(15, after: statusView)
+        mainStackView.setCustomSpacing(8, after: statusView)
     }
 
-    func bind(icon: UIImage, title: String, value: String) {
+    func bind(icon: UIImage, title: String) {
         statusView.imageView.image = icon
-        statusView.titleLabel.text = title
-        statusView.valueLabel.text = value
+        statusView.detailsLabel.text = title
     }
 }

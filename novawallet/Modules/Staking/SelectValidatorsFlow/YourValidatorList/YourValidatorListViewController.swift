@@ -5,21 +5,21 @@ import SoraUI
 final class YourValidatorListViewController: UIViewController, ViewHolder {
     private enum Constants {
         static let warningHeaderMargins = UIEdgeInsets(
-            top: 0.0,
+            top: 8.0,
             left: 0.0,
             bottom: 8.0,
             right: 0.0
         )
 
         static let regularHeaderMargins = UIEdgeInsets(
-            top: 16.0,
+            top: 8.0,
             left: 0.0,
             bottom: 8.0,
             right: 0.0
         )
 
         static let notTopStatusHeaderMargins = UIEdgeInsets(
-            top: 32.0,
+            top: 20.0,
             left: 0.0,
             bottom: 8.0,
             right: 0.0
@@ -88,7 +88,7 @@ final class YourValidatorListViewController: UIViewController, ViewHolder {
             action: #selector(actionChange)
         )
 
-        resetItem.setupDefaultTitleStyle(with: UIFont.p0Paragraph)
+        resetItem.setupDefaultTitleStyle(with: UIFont.regularBody)
 
         navigationItem.rightBarButtonItem = resetItem
     }
@@ -110,7 +110,7 @@ final class YourValidatorListViewController: UIViewController, ViewHolder {
             withClass: YourValidatorListWarningSectionView.self
         )
 
-        rootView.tableView.rowHeight = 48
+        rootView.tableView.rowHeight = 44
 
         rootView.tableView.dataSource = self
         rootView.tableView.delegate = self
@@ -195,15 +195,7 @@ extension YourValidatorListViewController: UITableViewDelegate {
             }
         case .stakeNotAllocated:
             let headerView: YourValidatorListDescSectionView = tableView.dequeueReusableHeaderFooterView()
-            configureNotAllocated(headerView: headerView)
-
-            if section > 0 {
-                headerView.borderView.borderType = .top
-            } else {
-                headerView.borderView.borderType = .none
-            }
-
-            headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
+            configureNotAllocated(headerView: headerView, section: section)
 
             return headerView
         case .unelected:
@@ -236,7 +228,6 @@ extension YourValidatorListViewController: UITableViewDelegate {
 
         headerView.bind(warningText: text)
 
-        headerView.borderView.borderType = .none
         headerView.mainStackView.layoutMargins = Constants.warningHeaderMargins
     }
 
@@ -249,28 +240,30 @@ extension YourValidatorListViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let value = R.string.localizable
-            .stakingCommonRewardsApy(preferredLanguages: selectedLocale.rLanguages).uppercased()
-
         let description = R.string.localizable.stakingYourAllocatedDescription_2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.titleLabel.textColor = R.color.colorWhite()
+        headerView.statusView.detailsLabel.textColor = R.color.colorWhite()
 
-        headerView.bind(icon: icon, title: title, value: value)
+        headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
 
-        headerView.borderView.borderType = .none
         headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
     }
 
-    private func configureNotAllocated(headerView: YourValidatorListDescSectionView) {
+    private func configureNotAllocated(headerView: YourValidatorListDescSectionView, section: Int) {
         let description = R.string.localizable.stakingYourNotAllocatedDescription_v2_2_0(
             preferredLanguages: selectedLocale.rLanguages
         )
 
         headerView.bind(description: description)
+
+        if section > 0 {
+            headerView.mainStackView.layoutMargins = Constants.notTopStatusHeaderMargins
+        } else {
+            headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
+        }
     }
 
     private func configureUnelected(
@@ -290,16 +283,14 @@ extension YourValidatorListViewController: UITableViewDelegate {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.titleLabel.textColor = R.color.colorLightGray()
+        headerView.statusView.detailsLabel.textColor = R.color.colorTransparentText()
 
-        headerView.bind(icon: icon, title: title, value: "")
+        headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
 
         if section > 0 {
-            headerView.borderView.borderType = .top
             headerView.mainStackView.layoutMargins = Constants.notTopStatusHeaderMargins
         } else {
-            headerView.borderView.borderType = .none
             headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
         }
     }
@@ -321,16 +312,14 @@ extension YourValidatorListViewController: UITableViewDelegate {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.titleLabel.textColor = R.color.colorLightGray()
+        headerView.statusView.detailsLabel.textColor = R.color.colorTransparentText()
 
-        headerView.bind(icon: icon, title: title, value: "")
+        headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
 
         if section > 0 {
-            headerView.borderView.borderType = .top
             headerView.mainStackView.layoutMargins = Constants.notTopStatusHeaderMargins
         } else {
-            headerView.borderView.borderType = .none
             headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
         }
     }
