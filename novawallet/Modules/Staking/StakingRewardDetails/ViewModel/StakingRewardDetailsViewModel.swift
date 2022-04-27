@@ -1,5 +1,7 @@
 import Foundation
 
 struct StakingRewardDetailsViewModel {
-    let rows: [RewardDetailsRow]
+    let amount: BalanceViewModelProtocol
+    let validator: StackCellViewModel
+    let era: StackCellViewModel
 }
