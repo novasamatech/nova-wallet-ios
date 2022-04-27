@@ -1,13 +1,15 @@
 import SoraFoundation
 
-protocol StakingRewardDetailsViewProtocol: ControllerBackedProtocol, Localizable {
-    func reload(with viewModel: LocalizableResource<StakingRewardDetailsViewModel>)
+protocol StakingRewardDetailsViewProtocol: ControllerBackedProtocol {
+    func didReceive(amountViewModel: BalanceViewModelProtocol)
+    func didReceive(validatorViewModel: StackCellViewModel)
+    func didReceive(eraViewModel: StackCellViewModel)
 }
 
 protocol StakingRewardDetailsPresenterProtocol: AnyObject {
     func setup()
     func handlePayoutAction()
-    func handleValidatorAccountAction(locale: Locale)
+    func handleValidatorAccountAction()
 }
 
 protocol StakingRewardDetailsInteractorInputProtocol: AnyObject {
