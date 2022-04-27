@@ -46,33 +46,48 @@ class StakingRewardDetailsTests: XCTestCase {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            iconGenerator: PolkadotIconGenerator(),
             chainFormat: chain.chainFormat
         )
         let presenter = StakingRewardDetailsPresenter(
             input: input,
             viewModelFactory: viewModelFactory,
-            explorers: nil
+            explorers: nil,
+            chainFormat: chain.chainFormat,
+            localizationManager: LocalizationManager.shared
         )
         presenter.wireframe = wireframe
         presenter.view = view
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-        let rowsExpectation = XCTestExpectation(description: "rows count is equal to 4")
+        let amountExpectation = XCTestExpectation()
+        let validatorExpectation = XCTestExpectation()
+        let eraExpectation = XCTestExpectation()
+
         stub(view) { stub in
-            when(stub).reload(with: any()).then { resource in
-                let rows = resource.value(for: .current).rows
-                if rows.count == 4 {
-                    rowsExpectation.fulfill()
-                }
+            when(stub).didReceive(amountViewModel: any()).then { _ in
+                amountExpectation.fulfill()
+            }
+
+            when(stub).didReceive(validatorViewModel: any()).then { _ in
+                validatorExpectation.fulfill()
+            }
+
+            when(stub).didReceive(eraViewModel: any()).then { _ in
+                eraExpectation.fulfill()
             }
         }
 
         // when
+
         presenter.setup()
+
         // then
-        wait(for: [rowsExpectation], timeout: Constants.defaultExpectationDuration)
+
+        wait(
+            for: [amountExpectation, validatorExpectation, eraExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         let handlePayoutActionExpectation = XCTestExpectation(description: "wireframe method is called")
         stub(wireframe) { stub in
