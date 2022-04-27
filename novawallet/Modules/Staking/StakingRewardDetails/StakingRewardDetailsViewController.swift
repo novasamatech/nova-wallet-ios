@@ -27,9 +27,14 @@ final class StakingRewardDetailsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupTopTitle()
         setupLocalization()
         setupHandlers()
         presenter.setup()
+    }
+
+    private func setupTopTitle() {
+        navigationItem.titleView = rootView.titleLabel
     }
 
     private func setupHandlers() {
@@ -47,12 +52,6 @@ final class StakingRewardDetailsViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingRewardDetailsTitle(preferredLanguages: selectedLocale.rLanguages)
-
-        let title = R.string.localizable.stakingRewardDetailsPayout(
-            preferredLanguages: selectedLocale.rLanguages
-        )
-
         rootView.validatorCell.titleLabel.text = R.string.localizable.stakingCommonValidator(
             preferredLanguages: selectedLocale.rLanguages
         )
@@ -61,7 +60,11 @@ final class StakingRewardDetailsViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.actionButton.imageWithTitleView?.title = title
+        let actionTitle = R.string.localizable.stakingRewardDetailsPayout(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = actionTitle
     }
 
     @objc private func handlePayoutButtonAction() {
@@ -84,6 +87,10 @@ extension StakingRewardDetailsViewController: StakingRewardDetailsViewProtocol {
 
     func didReceive(eraViewModel: StackCellViewModel) {
         rootView.eraCell.bind(viewModel: eraViewModel)
+    }
+
+    func didReceive(remainedTime: NSAttributedString) {
+        rootView.titleLabel.attributedText = remainedTime
     }
 }
 

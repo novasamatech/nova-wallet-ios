@@ -10,13 +10,21 @@ final class StakingRewardDetailsPresenter {
 
     private let input: StakingRewardDetailsInput
     private let viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol
+    private let timeleftFactory: StakingPayoutViewModelFactoryProtocol
     private let explorers: [ChainModel.Explorer]?
     private let chainFormat: ChainFormat
     private var priceData: PriceData?
 
+    private var timer: CountdownTimer?
+
+    deinit {
+        stopTimer()
+    }
+
     init(
         input: StakingRewardDetailsInput,
         viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol,
+        timeleftFactory: StakingPayoutViewModelFactoryProtocol,
         explorers: [ChainModel.Explorer]?,
         chainFormat: ChainFormat,
         localizationManager: LocalizationManagerProtocol
@@ -25,6 +33,7 @@ final class StakingRewardDetailsPresenter {
         self.viewModelFactory = viewModelFactory
         self.explorers = explorers
         self.chainFormat = chainFormat
+        self.timeleftFactory = timeleftFactory
         self.localizationManager = localizationManager
     }
 
@@ -41,11 +50,43 @@ final class StakingRewardDetailsPresenter {
         view?.didReceive(validatorViewModel: viewModel.validator)
         view?.didReceive(eraViewModel: viewModel.era)
     }
+
+    private func updateRemainedTimeTitle() {
+        let remainedTime = timeleftFactory.timeLeftAttributedString(
+            payoutEra: input.payoutInfo.era,
+            historyDepth: input.historyDepth,
+            eraCountdown: input.eraCountdown,
+            locale: selectedLocale
+        )
+
+        view?.didReceive(remainedTime: remainedTime)
+    }
+
+    private func startTimerIfNeeded() {
+        guard timer == nil, input.timeTillRewardExpiration.daysFromSeconds < 1 else {
+            return
+        }
+
+        let remainedTime = input.timeTillRewardExpiration
+
+        timer = CountdownTimer()
+        timer?.delegate = self
+        timer?.start(with: remainedTime)
+    }
+
+    private func stopTimer() {
+        timer?.delegate = nil
+        timer?.stop()
+        timer = nil
+    }
 }
 
 extension StakingRewardDetailsPresenter: StakingRewardDetailsPresenterProtocol {
     func setup() {
         updateView()
+        updateRemainedTimeTitle()
+
+        startTimerIfNeeded()
         interactor.setup()
     }
 
@@ -85,6 +126,22 @@ extension StakingRewardDetailsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateView()
+            updateRemainedTimeTitle()
         }
+    }
+}
+
+extension StakingRewardDetailsPresenter: CountdownTimerDelegate {
+    func didStart(with _: TimeInterval) {
+        updateRemainedTimeTitle()
+    }
+
+    func didCountdown(remainedInterval _: TimeInterval) {
+        updateRemainedTimeTitle()
+    }
+
+    func didStop(with _: TimeInterval) {
+        updateRemainedTimeTitle()
+        stopTimer()
     }
 }
