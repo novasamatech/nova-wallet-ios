@@ -57,11 +57,4 @@ protocol StakingPayoutViewModelFactoryProtocol {
         payoutsInfo: PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString>
-
-    func timeLeftAttributedString(
-        payoutEra: EraIndex,
-        historyDepth: UInt32,
-        eraCountdown: EraCountdown?,
-        locale: Locale
-    ) -> NSAttributedString
 }

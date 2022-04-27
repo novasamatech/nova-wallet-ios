@@ -7,22 +7,16 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
     private let addressFactory = SS58AddressFactory()
     private let chainFormat: ChainFormat
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    private let timeFormatter: TimeFormatterProtocol
-    private let normalTimelefColor: UIColor
-    private let deadlineTimelefColor: UIColor
+    private let timeViewModelFactory: PayoutTimeViewModelFactoryProtocol
 
     init(
         chainFormat: ChainFormat,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        timeFormatter: TimeFormatterProtocol,
-        normalTimelefColor: UIColor = R.color.colorWhite48()!,
-        deadlineTimelefColor: UIColor = R.color.colorRed()!
+        timeViewModelFactory: PayoutTimeViewModelFactoryProtocol
     ) {
         self.chainFormat = chainFormat
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.timeFormatter = timeFormatter
-        self.normalTimelefColor = normalTimelefColor
-        self.deadlineTimelefColor = deadlineTimelefColor
+        self.timeViewModelFactory = timeViewModelFactory
     }
 
     func createPayoutsViewModel(
@@ -60,54 +54,17 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         payoutsInfo: PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString> {
-        LocalizableResource { locale in
+        let viewModelFactory = timeViewModelFactory
+
+        return LocalizableResource { locale in
             let payout = payoutsInfo.payouts[index]
-            return self.timeLeftAttributedString(
+            return viewModelFactory.timeLeftAttributedString(
                 payoutEra: payout.era,
                 historyDepth: payoutsInfo.historyDepth,
                 eraCountdown: eraCountdown,
                 locale: locale
             )
         }
-    }
-
-    func timeLeftAttributedString(
-        payoutEra: EraIndex,
-        historyDepth: UInt32,
-        eraCountdown: EraCountdown?,
-        locale: Locale
-    ) -> NSAttributedString {
-        guard let eraCountdown = eraCountdown else { return .init(string: "") }
-
-        let eraCompletionTime = eraCountdown.timeIntervalTillSet(targetEra: payoutEra + historyDepth + 1)
-        let daysLeft = eraCompletionTime.daysFromSeconds
-
-        let timeLeftText: String = {
-            if eraCompletionTime <= .leastNormalMagnitude {
-                return R.string.localizable.stakingPayoutExpired(preferredLanguages: locale.rLanguages)
-            }
-            if daysLeft == 0 {
-                let formattedTime = (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
-                return R.string.localizable.commonTimeLeftFormat(
-                    formattedTime,
-                    preferredLanguages: locale.rLanguages
-                )
-            } else {
-                return R.string.localizable
-                    .commonDaysLeftFormat(format: daysLeft, preferredLanguages: locale.rLanguages)
-            }
-        }()
-
-        let erasPerDay = eraCountdown.eraTimeInterval.intervalsInDay
-        let historyDepthDays = erasPerDay > 0 ? (historyDepth / 2) / UInt32(erasPerDay) : 0
-        let textColor: UIColor = daysLeft < historyDepthDays ?
-            deadlineTimelefColor : normalTimelefColor
-
-        let attrubutedString = NSAttributedString(
-            string: timeLeftText,
-            attributes: [.foregroundColor: textColor]
-        )
-        return attrubutedString
     }
 
     private func createCellViewModels(
@@ -117,7 +74,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         locale: Locale
     ) -> [StakingRewardHistoryCellViewModel] {
         payoutsInfo.payouts.map { payout in
-            let daysLeftText = timeLeftAttributedString(
+            let daysLeftText = timeViewModelFactory.timeLeftAttributedString(
                 payoutEra: payout.era,
                 historyDepth: payoutsInfo.historyDepth,
                 eraCountdown: eraCountdown,

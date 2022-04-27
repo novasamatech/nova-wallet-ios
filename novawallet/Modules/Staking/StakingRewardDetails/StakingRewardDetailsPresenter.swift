@@ -10,7 +10,7 @@ final class StakingRewardDetailsPresenter {
 
     private let input: StakingRewardDetailsInput
     private let viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol
-    private let timeleftFactory: StakingPayoutViewModelFactoryProtocol
+    private let timeleftFactory: PayoutTimeViewModelFactoryProtocol
     private let explorers: [ChainModel.Explorer]?
     private let chainFormat: ChainFormat
     private var priceData: PriceData?
@@ -24,7 +24,7 @@ final class StakingRewardDetailsPresenter {
     init(
         input: StakingRewardDetailsInput,
         viewModelFactory: StakingRewardDetailsViewModelFactoryProtocol,
-        timeleftFactory: StakingPayoutViewModelFactoryProtocol,
+        timeleftFactory: PayoutTimeViewModelFactoryProtocol,
         explorers: [ChainModel.Explorer]?,
         chainFormat: ChainFormat,
         localizationManager: LocalizationManagerProtocol

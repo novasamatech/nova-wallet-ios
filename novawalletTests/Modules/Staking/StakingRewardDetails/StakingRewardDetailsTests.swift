@@ -62,9 +62,7 @@ class StakingRewardDetailsTests: XCTestCase {
             chainFormat: chain.chainFormat
         )
 
-        let timeleftFactory = StakingPayoutViewModelFactory(
-            chainFormat: chain.chainFormat,
-            balanceViewModelFactory: balanceViewModelFactory,
+        let timeleftFactory = PayoutTimeViewModelFactory(
             timeFormatter: TotalTimeFormatter()
         )
 

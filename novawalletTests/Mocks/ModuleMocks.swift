@@ -50119,21 +50119,6 @@ import SoraUI
         
     }
     
-    
-    
-     func timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString {
-        
-    return cuckoo_manager.call("timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString",
-            parameters: (payoutEra, historyDepth, eraCountdown, locale),
-            escapingParameters: (payoutEra, historyDepth, eraCountdown, locale),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.timeLeftAttributedString(payoutEra: payoutEra, historyDepth: historyDepth, eraCountdown: eraCountdown, locale: locale))
-        
-    }
-    
 
 	 struct __StubbingProxy_StakingPayoutViewModelFactoryProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -50151,11 +50136,6 @@ import SoraUI
 	    func timeLeftString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(at index: M1, payoutsInfo: M2, eraCountdown: M3) -> Cuckoo.ProtocolStubFunction<(Int, PayoutsInfo, EraCountdown?), LocalizableResource<NSAttributedString>> where M1.MatchedType == Int, M2.MatchedType == PayoutsInfo, M3.OptionalMatchedType == EraCountdown {
 	        let matchers: [Cuckoo.ParameterMatcher<(Int, PayoutsInfo, EraCountdown?)>] = [wrap(matchable: index) { $0.0 }, wrap(matchable: payoutsInfo) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutViewModelFactoryProtocol.self, method: "timeLeftString(at: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>", parameterMatchers: matchers))
-	    }
-	    
-	    func timeLeftAttributedString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(payoutEra: M1, historyDepth: M2, eraCountdown: M3, locale: M4) -> Cuckoo.ProtocolStubFunction<(EraIndex, UInt32, EraCountdown?, Locale), NSAttributedString> where M1.MatchedType == EraIndex, M2.MatchedType == UInt32, M3.OptionalMatchedType == EraCountdown, M4.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(EraIndex, UInt32, EraCountdown?, Locale)>] = [wrap(matchable: payoutEra) { $0.0 }, wrap(matchable: historyDepth) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingPayoutViewModelFactoryProtocol.self, method: "timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -50186,12 +50166,6 @@ import SoraUI
 	        return cuckoo_manager.verify("timeLeftString(at: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
-	    @discardableResult
-	    func timeLeftAttributedString<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.Matchable>(payoutEra: M1, historyDepth: M2, eraCountdown: M3, locale: M4) -> Cuckoo.__DoNotUse<(EraIndex, UInt32, EraCountdown?, Locale), NSAttributedString> where M1.MatchedType == EraIndex, M2.MatchedType == UInt32, M3.OptionalMatchedType == EraCountdown, M4.MatchedType == Locale {
-	        let matchers: [Cuckoo.ParameterMatcher<(EraIndex, UInt32, EraCountdown?, Locale)>] = [wrap(matchable: payoutEra) { $0.0 }, wrap(matchable: historyDepth) { $0.1 }, wrap(matchable: eraCountdown) { $0.2 }, wrap(matchable: locale) { $0.3 }]
-	        return cuckoo_manager.verify("timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	}
 }
 
@@ -50211,12 +50185,6 @@ import SoraUI
     
      func timeLeftString(at index: Int, payoutsInfo: PayoutsInfo, eraCountdown: EraCountdown?) -> LocalizableResource<NSAttributedString>  {
         return DefaultValueRegistry.defaultValue(for: (LocalizableResource<NSAttributedString>).self)
-    }
-    
-    
-    
-     func timeLeftAttributedString(payoutEra: EraIndex, historyDepth: UInt32, eraCountdown: EraCountdown?, locale: Locale) -> NSAttributedString  {
-        return DefaultValueRegistry.defaultValue(for: (NSAttributedString).self)
     }
     
 }
