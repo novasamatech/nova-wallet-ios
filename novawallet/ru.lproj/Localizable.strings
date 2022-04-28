@@ -752,3 +752,7 @@
 "staking.rebond.action.custom" = "Ввести сумму";
 "staking.rebond.hint" = "Возвращенные токены будут учитываться со следующей эры";
 "common.unstaking.prefix" = "Выведено:";
+"staking.pending.rewards.hint.title" = "Валидаторы выплачивают вознаграждения каждые 2–5 дней";
+"staking.pending.rewards.hint.message" = "Вы можете инициировать выплату самостоятельно, особенно, если срок вознаграждения истекает, но этом случае придётся заплатить комиссию";
+"staking.pending.rewards.payout.all" = "Выплатить все";
+"staking.pending.reward.search" = "Поиск вознаграждений...";

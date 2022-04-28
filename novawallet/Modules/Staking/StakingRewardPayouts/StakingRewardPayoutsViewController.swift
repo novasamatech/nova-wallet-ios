@@ -62,17 +62,17 @@ final class StakingRewardPayoutsViewController: UIViewController, ViewHolder {
     }
 
     private func setupButtonLocalization() {
-        guard let state = viewState else { return }
-        if case let StakingRewardPayoutsViewState.payoutsList(viewModel) = state {
-            let buttonTitle = viewModel.value(for: selectedLocale).bottomButtonTitle
-            rootView.payoutButton.imageWithTitleView?.title = buttonTitle
-        }
+        rootView.payoutButton.imageWithTitleView?.title = R.string.localizable.stakingPendingRewardsPayoutAll(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     private func setupTable() {
         rootView.tableView.registerClassesForCell(
-            [StakingRewardHistoryTableCell.self,
-             MultilineTableViewCell.self]
+            [
+                StakingRewardHistoryTableCell.self,
+                StakingRewardsHeaderCell.self
+            ]
         )
 
         rootView.tableView.delegate = self
@@ -80,7 +80,6 @@ final class StakingRewardPayoutsViewController: UIViewController, ViewHolder {
     }
 
     private func setupPayoutButtonAction() {
-        rootView.payoutButton.isHidden = true
         rootView.payoutButton.addTarget(
             self,
             action: #selector(handlePayoutButtonAction),
@@ -100,13 +99,13 @@ extension StakingRewardPayoutsViewController: StakingRewardPayoutsViewProtocol {
         countdownTimer.stop()
 
         switch state {
-        case let .loading(isLoading):
-            isLoading ? didStartLoading() : didStopLoading()
+        case .loading:
+            rootView.payoutButton.isHidden = true
+            rootView.tableView.reloadData()
         case let .payoutsList(viewModel):
-            let localizedViewModel = viewModel.value(for: selectedLocale)
-            let buttonTitle = localizedViewModel.bottomButtonTitle
-            rootView.payoutButton.imageWithTitleView?.title = buttonTitle
             rootView.payoutButton.isHidden = false
+
+            let localizedViewModel = viewModel.value(for: selectedLocale)
             if let time = localizedViewModel.eraComletionTime {
                 countdownTimer.start(with: time, runLoop: .main, mode: .common)
             }
@@ -130,6 +129,7 @@ extension StakingRewardPayoutsViewController: Localizable {
         if isViewLoaded {
             reloadEmptyState(animated: false)
             setupLocalization()
+            rootView.tableView.reloadData()
             view.setNeedsLayout()
         }
     }
@@ -166,11 +166,8 @@ extension StakingRewardPayoutsViewController: UITableViewDataSource {
             case let StakingRewardPayoutsViewState.payoutsList(viewModel) = state,
             indexPath.section > 0
         else {
-            let titleCell = rootView.tableView.dequeueReusableCellWithType(MultilineTableViewCell.self)!
-            let title = R.string.localizable.stakingPendingRewardsExplanationMessage_2_2_0(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-            titleCell.bind(title: title)
+            let titleCell = rootView.tableView.dequeueReusableCellWithType(StakingRewardsHeaderCell.self)!
+            titleCell.locale = selectedLocale
             return titleCell
         }
 
@@ -200,14 +197,21 @@ extension StakingRewardPayoutsViewController: EmptyStateDataSource {
             return errorView
         case .emptyList:
             let emptyView = EmptyStateView()
-            emptyView.image = R.image.iconEmptyHistory()
+            emptyView.image = R.image.iconSearchHappy()!
             emptyView.title = R.string.localizable.stakingRewardPayoutsEmptyRewards_2_2_0(
                 preferredLanguages: selectedLocale.rLanguages
             )
-            emptyView.titleColor = R.color.colorLightGray()!
-            emptyView.titleFont = .p2Paragraph
+            emptyView.titleColor = R.color.colorTransparentText()!
+            emptyView.titleFont = .regularFootnote
             return emptyView
-        case .loading, .payoutsList:
+        case .loading:
+            let loadingView = ListLoadingView()
+            loadingView.titleLabel.text = R.string.localizable.stakingPendingRewardSearch(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            loadingView.start()
+            return loadingView
+        case .payoutsList:
             return nil
         }
     }
@@ -217,9 +221,9 @@ extension StakingRewardPayoutsViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let state = viewState else { return false }
         switch state {
-        case .error, .emptyList:
+        case .error, .emptyList, .loading:
             return true
-        case .loading, .payoutsList:
+        case .payoutsList:
             return false
         }
     }

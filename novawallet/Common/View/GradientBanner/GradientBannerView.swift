@@ -36,6 +36,17 @@ class GradientBannerView: UIView {
         return view
     }()
 
+    var contentInsets: UIEdgeInsets {
+        get {
+            stackView.layoutMargins
+        }
+
+        set {
+            stackView.layoutMargins = newValue
+            setNeedsLayout()
+        }
+    }
+
     private var linkView: LinkView?
 
     private var loadingView: RoundedView?
