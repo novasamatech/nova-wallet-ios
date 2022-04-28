@@ -5,13 +5,17 @@ final class ValidatorInfoViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 24.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
     var stackView: UIStackView {
         contentView.stackView
     }
+
+    private var stakingTableView: StackTableView?
+    private var identityTableView: StackTableView?
 
     let factory = UIFactory.default
 
@@ -38,31 +42,21 @@ final class ValidatorInfoViewLayout: UIView {
     }
 
     @discardableResult
-    func addAccountView(for viewModel: AccountInfoViewModel) -> DetailsTriangularedView {
-        let accountView: DetailsTriangularedView
-
-        if viewModel.name.isEmpty {
-            accountView = factory.createIdentityView(isSingleTitle: true)
-            accountView.title = viewModel.address
-        } else {
-            accountView = factory.createIdentityView(isSingleTitle: false)
-            accountView.title = viewModel.name
-            accountView.subtitle = viewModel.address
-        }
-
-        accountView.iconImage = viewModel.icon
+    func addAccountView(for viewModel: WalletAccountViewModel) -> WalletAccountInfoView {
+        let accountView = WalletAccountInfoView()
 
         stackView.addArrangedSubview(accountView)
         accountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52)
+            make.height.equalTo(56)
         }
+
+        accountView.bind(viewModel: viewModel)
 
         return accountView
     }
 
     @discardableResult
-    func addSectionHeader(with title: String) -> UIView {
+    func addStakingSection(with title: String) -> UIView {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .h4Title
