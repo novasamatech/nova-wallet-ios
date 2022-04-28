@@ -1,13 +1,16 @@
 import SoraFoundation
 
-protocol StakingRewardDetailsViewProtocol: ControllerBackedProtocol, Localizable {
-    func reload(with viewModel: LocalizableResource<StakingRewardDetailsViewModel>)
+protocol StakingRewardDetailsViewProtocol: ControllerBackedProtocol {
+    func didReceive(amountViewModel: BalanceViewModelProtocol)
+    func didReceive(validatorViewModel: StackCellViewModel)
+    func didReceive(eraViewModel: StackCellViewModel)
+    func didReceive(remainedTime: NSAttributedString)
 }
 
 protocol StakingRewardDetailsPresenterProtocol: AnyObject {
     func setup()
     func handlePayoutAction()
-    func handleValidatorAccountAction(locale: Locale)
+    func handleValidatorAccountAction()
 }
 
 protocol StakingRewardDetailsInteractorInputProtocol: AnyObject {
@@ -24,7 +27,10 @@ protocol StakingRewardDetailsWireframeProtocol: AnyObject, AddressOptionsPresent
 
 struct StakingRewardDetailsInput {
     let payoutInfo: PayoutInfo
-    let activeEra: EraIndex
     let historyDepth: UInt32
-    let erasPerDay: UInt32
+    let eraCountdown: EraCountdown
+
+    var timeTillRewardExpiration: TimeInterval {
+        eraCountdown.timeIntervalTillSet(targetEra: payoutInfo.era + historyDepth + 1)
+    }
 }
