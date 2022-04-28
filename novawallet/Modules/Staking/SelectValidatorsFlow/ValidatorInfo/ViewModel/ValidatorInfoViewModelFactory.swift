@@ -17,14 +17,11 @@ protocol ValidatorInfoViewModelFactoryProtocol {
 }
 
 final class ValidatorInfoViewModelFactory {
-    private let iconGenerator: IconGenerating
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
-    init(
-        iconGenerator: IconGenerating,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    ) {
-        self.iconGenerator = iconGenerator
+    private lazy var accountViewModelFactory = WalletAccountViewModelFactory()
+
+    init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
         self.balanceViewModelFactory = balanceViewModelFactory
     }
 
@@ -54,24 +51,6 @@ final class ValidatorInfoViewModelFactory {
     private func createRiotRow(with riot: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
         let title = R.string.localizable.identityRiotNameTitle(preferredLanguages: locale.rLanguages)
         return .init(title: title, value: .link(riot, tag: .riot))
-    }
-
-    private func createAccountViewModel(from validatorInfo: ValidatorInfoProtocol) -> AccountInfoViewModel {
-        let identityName: String = validatorInfo.identity?.displayName ?? ""
-
-        let icon = try? iconGenerator.generateFromAddress(validatorInfo.address)
-            .imageWithFillColor(
-                .white,
-                size: UIConstants.normalAddressIconSize,
-                contentScale: UIScreen.main.scale
-            )
-
-        return AccountInfoViewModel(
-            title: "",
-            address: validatorInfo.address,
-            name: identityName,
-            icon: icon
-        )
     }
 
     private func createExposure(
@@ -190,7 +169,7 @@ extension ValidatorInfoViewModelFactory: ValidatorInfoViewModelFactoryProtocol {
         priceData: PriceData?,
         locale: Locale
     ) -> ValidatorInfoViewModel {
-        let accountViewModel = createAccountViewModel(from: validatorInfo)
+        let accountViewModel = accountViewModelFactory.createViewModel(from: validatorInfo)
 
         let status: ValidatorInfoViewModel.StakingStatus
 

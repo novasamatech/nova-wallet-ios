@@ -54,7 +54,7 @@ struct ValidatorInfoViewModel {
         let slashed: Bool
     }
 
-    let account: AccountInfoViewModel
+    let account: WalletAccountViewModel
     let staking: Staking
     let identity: [IdentityItem]?
 }
