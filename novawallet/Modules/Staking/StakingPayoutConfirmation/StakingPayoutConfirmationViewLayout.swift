@@ -2,30 +2,39 @@ import UIKit
 import SnapKit
 
 final class StakingPayoutConfirmationViewLayout: UIView {
-    private enum Constants {
-        static let bottomViewHeight: CGFloat = 164.0
-    }
-
-    let tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
-        return tableView
+    let containerView: ScrollableContainerView = {
+        let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.isLayoutMarginsRelativeArrangement = true
+        view.stackView.alignment = .fill
+        return view
     }()
 
-    let networkFeeConfirmView: NetworkFeeConfirmView = UIFactory().createNetworkFeeConfirmView()
+    let amountView = MultilineBalanceView()
 
-    var locale = Locale.current {
-        didSet {
-            if locale != oldValue {
-                applyLocalization()
-            }
-        }
-    }
+    let walletTableView = StackTableView()
+
+    let walletCell = StackTableCell()
+
+    let accountCell: StackInfoTableCell = {
+        let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        return cell
+    }()
+
+    let networkFeeCell = StackNetworkFeeCell()
+
+    let actionButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
+    }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorBlack()
+
         setupLayout()
     }
 
@@ -35,20 +44,26 @@ final class StakingPayoutConfirmationViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(tableView)
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.bottom.trailing.equalToSuperview()
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(networkFeeConfirmView)
-        networkFeeConfirmView.snp.makeConstraints { make in
-            make.leading.bottom.trailing.equalToSuperview()
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
-    }
 
-    private func applyLocalization() {
-        networkFeeConfirmView.locale = locale
-        setNeedsLayout()
+        containerView.stackView.addArrangedSubview(amountView)
+        containerView.stackView.setCustomSpacing(24.0, after: amountView)
+
+        containerView.stackView.addArrangedSubview(walletTableView)
+
+        walletTableView.addArrangedSubview(walletCell)
+        walletTableView.addArrangedSubview(accountCell)
+        walletTableView.addArrangedSubview(networkFeeCell)
     }
 }

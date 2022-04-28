@@ -11,8 +11,7 @@ final class StakingPayoutConfirmationPresenter {
     private var fee: Decimal?
     private var rewardAmount: Decimal = 0.0
     private var priceData: PriceData?
-    private var account: ChainAccountResponse?
-    private var rewardDestination: RewardDestination<DisplayAddress>?
+    private var account: MetaChainAccountResponse?
 
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let payoutConfirmViewModelFactory: StakingPayoutConfirmViewModelFactoryProtocol
@@ -49,16 +48,17 @@ final class StakingPayoutConfirmationPresenter {
     }
 
     private func provideViewModel() {
-        guard let account = self.account else { return }
-
-        let viewModel = payoutConfirmViewModelFactory.createPayoutConfirmViewModel(
-            with: account,
-            rewardAmount: rewardAmount,
-            rewardDestination: rewardDestination,
-            priceData: priceData
-        )
+        guard
+            let account = self.account,
+            let viewModel = try? payoutConfirmViewModelFactory.createPayoutConfirmViewModel(with: account)
+        else { return }
 
         view?.didRecieve(viewModel: viewModel)
+    }
+
+    private func provideAmountViewModel() {
+        let viewModel = balanceViewModelFactory.balanceFromPrice(rewardAmount, priceData: priceData)
+        view?.didRecieve(amountViewModel: viewModel)
     }
 
     private func handle(error: Error) {
@@ -74,6 +74,7 @@ final class StakingPayoutConfirmationPresenter {
 extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenterProtocol {
     func setup() {
         provideFee()
+        provideAmountViewModel()
         interactor.setup()
     }
 
@@ -105,8 +106,8 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
         }
     }
 
-    func presentAccountOptions(for viewModel: AccountInfoViewModel) {
-        guard let view = view else {
+    func presentAccountOptions() {
+        guard let view = view, let address = account?.chainAccount.toAddress() else {
             return
         }
 
@@ -114,7 +115,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
 
         wireframe.presentAccountOptions(
             from: view,
-            address: viewModel.address,
+            address: address,
             explorers: explorers,
             locale: locale
         )
@@ -141,6 +142,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
             self.priceData = priceData
             provideFee()
             provideViewModel()
+            provideAmountViewModel()
 
         case let .failure(error):
             logger?.error("Price data subscription error: \(error)")
@@ -164,16 +166,6 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         }
     }
 
-    func didReceiveRewardDestination(result: Result<RewardDestination<DisplayAddress>?, Error>) {
-        switch result {
-        case let .success(rewardDestination):
-            self.rewardDestination = rewardDestination
-            provideViewModel()
-        case let .failure(error):
-            logger?.error("Did receive reward destination error: \(error)")
-        }
-    }
-
     func didStartPayout() {
         view?.didStartLoading()
     }
@@ -194,7 +186,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationInteracto
         handle(error: error)
     }
 
-    func didRecieve(account: ChainAccountResponse, rewardAmount: Decimal) {
+    func didRecieve(account: MetaChainAccountResponse, rewardAmount: Decimal) {
         self.account = account
         self.rewardAmount = rewardAmount
 

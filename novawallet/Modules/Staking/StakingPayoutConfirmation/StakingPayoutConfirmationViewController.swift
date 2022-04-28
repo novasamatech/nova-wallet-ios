@@ -7,7 +7,8 @@ final class StakingPayoutConfirmationViewController: UIViewController, ViewHolde
     let presenter: StakingPayoutConfirmationPresenterProtocol
 
     private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
-    private var viewModel: [LocalizableResource<PayoutConfirmViewModel>] = []
+    private var viewModel: LocalizableResource<PayoutConfirmViewModel>?
+    private var amountViewModel: LocalizableResource<BalanceViewModelProtocol>?
 
     init(
         presenter: StakingPayoutConfirmationPresenterProtocol,
@@ -30,10 +31,10 @@ final class StakingPayoutConfirmationViewController: UIViewController, ViewHolde
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        rootView.networkFeeConfirmView.actionButton
-            .addTarget(self, action: #selector(confirmAction), for: .touchUpInside)
-        applyLocalization()
-        setupTable()
+        rootView.actionButton.addTarget(self, action: #selector(confirmAction), for: .touchUpInside)
+        rootView.accountCell.addTarget(self, action: #selector(actionAccount), for: .touchUpInside)
+
+        setupLocalization()
         presenter.setup()
     }
 
@@ -43,30 +44,8 @@ final class StakingPayoutConfirmationViewController: UIViewController, ViewHolde
         presenter.proceed()
     }
 
-    @objc
-    private func presentPayoutOptionsAction() {}
-
-    private func setupTable() {
-        rootView.tableView.registerClassesForCell([
-            AccountInfoTableViewCell.self,
-            StakingPayoutRewardTableCell.self,
-            StakingPayoutLabelTableCell.self
-        ])
-
-        rootView.tableView.dataSource = self
-        rootView.tableView.delegate = self
-        rootView.tableView.allowsSelection = false
-    }
-
-    private func lastAccountInfoIndex() -> Int? {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        return viewModel.lastIndex { item in
-            if case .accountInfo = item.value(for: locale) {
-                return true
-            } else {
-                return false
-            }
-        }
+    @objc private func actionAccount() {
+        presenter.presentAccountOptions()
     }
 }
 
@@ -74,74 +53,51 @@ final class StakingPayoutConfirmationViewController: UIViewController, ViewHolde
 
 extension StakingPayoutConfirmationViewController: Localizable {
     private func setupLocalization() {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+        let languages = selectedLocale.rLanguages
+        title = R.string.localizable.stakingPayoutTitle(preferredLanguages: languages)
 
-        rootView.locale = locale
+        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(preferredLanguages: languages)
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
+            preferredLanguages: languages
+        )
 
-        setupTitleLocalization(locale)
-        setupConfirmViewLocalization(locale)
+        rootView.networkFeeCell.rowContentView.locale = selectedLocale
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+            preferredLanguages: languages
+        )
+
+        applyFeeViewModel()
+        applyConfirmationViewModel()
+        applyAmountViewModel()
     }
 
-    private func setupTitleLocalization(_ locale: Locale) {
-        title = R.string.localizable.commonConfirmTitle(preferredLanguages: locale.rLanguages)
+    func applyFeeViewModel() {
+        let viewModel = feeViewModel?.value(for: selectedLocale)
+        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
-    private func setupConfirmViewLocalization(_ locale: Locale) {
-        let localizedViewModel = feeViewModel?.value(for: locale)
-        rootView.networkFeeConfirmView.networkFeeView.bind(viewModel: localizedViewModel)
+    func applyConfirmationViewModel() {
+        guard let viewModel = viewModel?.value(for: selectedLocale) else {
+            return
+        }
+
+        rootView.walletCell.bind(viewModel: viewModel.walletViewModel.cellViewModel)
+        rootView.accountCell.bind(viewModel: viewModel.accountViewModel.cellViewModel)
+    }
+
+    func applyAmountViewModel() {
+        guard let viewModel = amountViewModel?.value(for: selectedLocale) else {
+            return
+        }
+
+        rootView.amountView.bind(viewModel: viewModel)
     }
 
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
-            rootView.tableView.reloadData()
             view.setNeedsLayout()
-        }
-    }
-}
-
-// MARK: - UITableViewDataSource
-
-extension StakingPayoutConfirmationViewController: UITableViewDataSource {
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        viewModel.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-
-        switch viewModel[indexPath.row].value(for: locale) {
-        case let .rewardAmountViewModel(viewModel):
-            let cell = tableView.dequeueReusableCellWithType(
-                StakingPayoutRewardTableCell.self)!
-            cell.bind(
-                model: viewModel
-            )
-            return cell
-
-        case let .accountInfo(viewModel):
-            let cell = tableView.dequeueReusableCellWithType(
-                AccountInfoTableViewCell.self)!
-            cell.delegate = self
-            cell.bind(model: viewModel)
-            return cell
-
-        case let .restakeDestination(viewModel):
-            let cell = tableView.dequeueReusableCellWithType(StakingPayoutLabelTableCell.self)!
-            cell.bind(model: viewModel)
-            return cell
-        }
-    }
-}
-
-extension StakingPayoutConfirmationViewController: UITableViewDelegate {
-    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        switch viewModel[indexPath.row].value(for: locale) {
-        case .accountInfo:
-            return lastAccountInfoIndex() == indexPath.row ? 82 : 66.0
-        default:
-            return 48.0
         }
     }
 }
@@ -151,29 +107,19 @@ extension StakingPayoutConfirmationViewController: UITableViewDelegate {
 extension StakingPayoutConfirmationViewController: StakingPayoutConfirmationViewProtocol {
     func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?) {
         self.feeViewModel = feeViewModel
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        setupConfirmViewLocalization(locale)
+
+        applyFeeViewModel()
     }
 
-    func didRecieve(viewModel: [LocalizableResource<PayoutConfirmViewModel>]) {
+    func didRecieve(amountViewModel: LocalizableResource<BalanceViewModelProtocol>) {
+        self.amountViewModel = amountViewModel
+
+        applyAmountViewModel()
+    }
+
+    func didRecieve(viewModel: LocalizableResource<PayoutConfirmViewModel>) {
         self.viewModel = viewModel
-        rootView.tableView.reloadData()
-    }
-}
 
-extension StakingPayoutConfirmationViewController: AccountInfoTableViewCellDelegate {
-    func accountInfoCellDidReceiveAction(_ cell: AccountInfoTableViewCell) {
-        guard let indexPath = rootView.tableView.indexPath(for: cell) else {
-            return
-        }
-
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-
-        guard case let .accountInfo(viewModel) = viewModel[indexPath.row]
-            .value(for: locale) else {
-            return
-        }
-
-        presenter.presentAccountOptions(for: viewModel)
+        applyConfirmationViewModel()
     }
 }
