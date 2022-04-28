@@ -74,15 +74,14 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
         rootView.clearStackView()
         linkPairs = []
 
-        let sectionSpacing: CGFloat = 25.0
         let accountView = rootView.addAccountView(for: viewModel.account)
-        rootView.stackView.setCustomSpacing(sectionSpacing, after: accountView)
 
         accountView.addTarget(self, action: #selector(actionOnAccount), for: .touchUpInside)
 
-        rootView.addSectionHeader(
+        rootView.addStakingSection(
             with: R.string.localizable.stakingTitle(preferredLanguages: selectedLocale.rLanguages)
         )
+
         rootView.addStakingStatusView(viewModel.staking, locale: selectedLocale)
 
         if case let .elected(exposure) = viewModel.staking.status {
@@ -91,20 +90,19 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
             let totalStakeView = rootView.addTotalStakeView(exposure, locale: selectedLocale)
             totalStakeView.addTarget(self, action: #selector(actionOnTotalStake), for: .touchUpInside)
 
-            rootView.addTitleValueView(
-                for: R.string.localizable.stakingValidatorEstimatedReward(
-                    preferredLanguages: selectedLocale.rLanguages
-                ),
-                value: exposure.estimatedReward
-            )
+            if let stakingTableView = rootView.stakingTableView {
+                rootView.addTitleValueView(
+                    for: R.string.localizable.stakingValidatorEstimatedReward(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    value: exposure.estimatedReward,
+                    to: stakingTableView
+                )
+            }
         }
 
         if let identityItems = viewModel.identity, !identityItems.isEmpty {
-            rootView.stackView.arrangedSubviews.last.map { lastView in
-                rootView.stackView.setCustomSpacing(sectionSpacing, after: lastView)
-            }
-
-            rootView.addSectionHeader(
+            rootView.addIdentitySection(
                 with: R.string.localizable.identityTitle(preferredLanguages: selectedLocale.rLanguages)
             )
 
@@ -113,14 +111,16 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
                 case let .link(value, _):
                     addLinkView(for: item, title: item.title, value: value)
                 case let .text(text):
-                    rootView.addTitleValueView(for: item.title, value: text)
+                    if let identityTableView = rootView.identityTableView {
+                        rootView.addTitleValueView(for: item.title, value: text, to: identityTableView)
+                    }
                 }
             }
         }
     }
 
     private func addLinkView(for item: ValidatorInfoViewModel.IdentityItem, title: String, value: String) {
-        let itemView = rootView.addLinkView(for: title, url: value)
+        let itemView = rootView.addIdentityLinkView(for: title, url: value)
         linkPairs.append(LinkPair(view: itemView, item: item))
 
         itemView.addTarget(
