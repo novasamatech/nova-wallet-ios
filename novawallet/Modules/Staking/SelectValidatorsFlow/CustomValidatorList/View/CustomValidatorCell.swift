@@ -10,20 +10,19 @@ class CustomValidatorCell: UITableViewCell {
 
     let selectionImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.tintColor = R.color.colorWhite()
         return imageView
     }()
 
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = .clear
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularFootnote
         label.textColor = R.color.colorWhite()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -32,7 +31,7 @@ class CustomValidatorCell: UITableViewCell {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         label.textAlignment = .right
         label.textColor = R.color.colorWhite()
         return label
@@ -40,15 +39,16 @@ class CustomValidatorCell: UITableViewCell {
 
     let detailsAuxLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .caption1
         label.textAlignment = .right
-        label.textColor = R.color.colorGray()
+        label.textColor = R.color.colorTransparentText()
         return label
     }()
 
     let infoButton: UIButton = {
         let button = UIButton()
-        button.setImage(R.image.iconInfo(), for: .normal)
+        let icon = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
+        button.setImage(icon, for: .normal)
         return button
     }()
 
@@ -90,7 +90,7 @@ class CustomValidatorCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = .clear
 
         infoButton.addTarget(self, action: #selector(tapInfoButton), for: .touchUpInside)
     }
@@ -113,7 +113,7 @@ class CustomValidatorCell: UITableViewCell {
         contentView.addSubview(infoButton)
         infoButton.snp.makeConstraints { make in
             make.size.equalTo(24)
-            make.trailing.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(12)
             make.centerY.equalToSuperview()
         }
 
@@ -126,7 +126,7 @@ class CustomValidatorCell: UITableViewCell {
         contentView.addSubview(statusStackView)
         statusStackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4)
         }
 
         detailsStackView.addArrangedSubview(detailsLabel)
@@ -135,7 +135,7 @@ class CustomValidatorCell: UITableViewCell {
         contentView.addSubview(detailsStackView)
         detailsStackView.snp.makeConstraints { make in
             make.leading.equalTo(statusStackView.snp.trailing).offset(8)
-            make.trailing.equalTo(infoButton.snp.leading).offset(-16)
+            make.trailing.equalTo(infoButton.snp.leading).offset(-8)
             make.centerY.equalToSuperview()
         }
     }
@@ -161,16 +161,16 @@ class CustomValidatorCell: UITableViewCell {
         clearStatusView()
         setupStatus(for: viewModel.shouldShowWarning, shouldShowError: viewModel.shouldShowError)
 
-        detailsLabel.text = viewModel.details
-
         if let auxDetailsText = viewModel.auxDetails {
+            detailsLabel.text = viewModel.details
             detailsAuxLabel.text = auxDetailsText
-            detailsAuxLabel.isHidden = false
+            detailsLabel.isHidden = false
         } else {
-            detailsAuxLabel.isHidden = true
+            detailsAuxLabel.text = viewModel.details
+            detailsLabel.isHidden = true
         }
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckmark() : nil
+        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
     }
 
     func bind(viewModel: ValidatorSearchCellViewModel) {
@@ -189,11 +189,11 @@ class CustomValidatorCell: UITableViewCell {
         clearStatusView()
         setupStatus(for: viewModel.shouldShowWarning, shouldShowError: viewModel.shouldShowError)
 
-        detailsLabel.text = viewModel.details
+        detailsLabel.isHidden = true
 
-        detailsAuxLabel.isHidden = true
+        detailsAuxLabel.text = viewModel.details
 
-        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckmark() : nil
+        selectionImageView.image = viewModel.isSelected ? R.image.iconCheckbox() : R.image.iconCheckboxEmpty()
     }
 
     private func clearStatusView() {

@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class CustomValidatorListViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = CustomValidatorListViewLayout
@@ -67,7 +68,7 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         rootView.tableView.delegate = self
         rootView.tableView.registerClassForCell(CustomValidatorCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: CustomValidatorListHeaderView.self)
-        rootView.tableView.rowHeight = 48.0
+        rootView.tableView.rowHeight = 44.0
     }
 
     private func setupNavigationBar() {
@@ -102,30 +103,34 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
         rootView.fillRestButton.isEnabled = isEnabled
 
         if isEnabled {
-            rootView.fillRestButton.applyEnabledStyle()
+            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.colorAccent()!
+            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorWhite()!
         } else {
-            rootView.fillRestButton.applyDisabledStyle()
+            rootView.fillRestButton.roundedBackgroundView?.fillColor = R.color.color0x1D1D20()!
+            rootView.fillRestButton.imageWithTitleView?.titleColor = R.color.colorWhite48()!
         }
     }
 
     private func updateClearFiltersButton() {
         rootView.clearButton.isEnabled = filterIsApplied
 
-        if filterIsApplied {
-            rootView.clearButton.applyEnabledStyle()
-        } else {
-            rootView.clearButton.applyDisabledStyle()
-        }
+        applyDarkButtonStyle(rootView.clearButton, isEnabled: filterIsApplied)
     }
 
     private func updateDeselectButton() {
         let isEnabled = selectedValidatorsCount > 0
         rootView.deselectButton.isEnabled = isEnabled
 
+        applyDarkButtonStyle(rootView.deselectButton, isEnabled: isEnabled)
+    }
+
+    private func applyDarkButtonStyle(_ button: RoundedButton, isEnabled: Bool) {
         if isEnabled {
-            rootView.deselectButton.applyEnabledStyle()
+            button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
+            button.imageWithTitleView?.titleColor = R.color.colorWhite()!
         } else {
-            rootView.deselectButton.applyDisabledStyle()
+            button.roundedBackgroundView?.fillColor = R.color.color0x1D1D20()!
+            button.imageWithTitleView?.titleColor = R.color.colorWhite48()!
         }
     }
 
@@ -197,11 +202,11 @@ extension CustomValidatorListViewController: Localizable {
                 .stakingCustomValidatorsListTitle(preferredLanguages: selectedLocale.rLanguages)
 
             rootView.fillRestButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomFillButtonTitle(preferredLanguages: selectedLocale.rLanguages).uppercased()
+                .stakingCustomFillButtonTitle(preferredLanguages: selectedLocale.rLanguages)
             rootView.clearButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomClearButtonTitle(preferredLanguages: selectedLocale.rLanguages).uppercased()
+                .stakingCustomClearButtonTitle(preferredLanguages: selectedLocale.rLanguages)
             rootView.deselectButton.imageWithTitleView?.title = R.string.localizable
-                .stakingCustomDeselectButtonTitle(preferredLanguages: selectedLocale.rLanguages).uppercased()
+                .stakingCustomDeselectButtonTitle(preferredLanguages: selectedLocale.rLanguages)
 
             updateProceedButton()
         }
