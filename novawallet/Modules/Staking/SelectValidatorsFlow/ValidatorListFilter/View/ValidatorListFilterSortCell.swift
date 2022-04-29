@@ -1,16 +1,11 @@
 import UIKit
 
 final class ValidatorListFilterSortCell: UITableViewCell {
-    let selectionImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.tintColor = R.color.colorWhite()
-        imageView.image = R.image.iconCheckmark()
-        return imageView
-    }()
+    let selectionView = RadioSelectorView()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularFootnote
         label.textColor = R.color.colorWhite()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -39,12 +34,12 @@ final class ValidatorListFilterSortCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
+        selectedBackgroundView?.backgroundColor = .clear
     }
 
     private func setupLayout() {
-        contentView.addSubview(selectionImageView)
-        selectionImageView.snp.makeConstraints { make in
+        contentView.addSubview(selectionView)
+        selectionView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()
             make.size.equalTo(24)
@@ -52,7 +47,7 @@ final class ValidatorListFilterSortCell: UITableViewCell {
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(selectionImageView.snp.trailing).offset(16)
+            make.leading.equalTo(selectionView.snp.trailing).offset(12)
             make.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
@@ -60,6 +55,6 @@ final class ValidatorListFilterSortCell: UITableViewCell {
 
     func bind(viewModel: SelectableViewModel<TitleWithSubtitleViewModel>) {
         titleLabel.text = viewModel.underlyingViewModel.title
-        selectionImageView.isHidden = !viewModel.selectable
+        selectionView.selected = viewModel.selectable
     }
 }
