@@ -758,3 +758,4 @@
 "staking.pending.reward.search" = "Searching pending rewards...";
 "staking.your.nominated.prefix" = "Nominated: ";
 "staking.max.nominator.rewarded.format" = "%@ rewarded";
+"staking.loading.validators" = "Loading validators...";

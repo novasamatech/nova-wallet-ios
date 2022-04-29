@@ -758,3 +758,4 @@
 "staking.pending.reward.search" = "Поиск вознаграждений...";
 "staking.your.nominated.prefix" = "Номинировано: ";
 "staking.max.nominator.rewarded.format" = "%@ вознаграждено";
+"staking.loading.validators" = "Загрузка валидаторов...";
