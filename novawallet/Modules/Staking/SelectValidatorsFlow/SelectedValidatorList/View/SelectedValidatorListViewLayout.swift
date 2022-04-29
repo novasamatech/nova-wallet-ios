@@ -4,8 +4,8 @@ final class SelectedValidatorListViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
         return tableView
     }()
@@ -32,7 +32,8 @@ final class SelectedValidatorListViewLayout: UIView {
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.leading.bottom.trailing.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.top.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
 
         addSubview(proceedButton)
