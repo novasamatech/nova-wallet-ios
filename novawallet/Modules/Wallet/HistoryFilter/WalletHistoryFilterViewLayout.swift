@@ -6,16 +6,8 @@ final class WalletHistoryFilterViewLayout: UIView {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .clear
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.separatorColor = R.color.colorWhite16()
         return tableView
-    }()
-
-    let headerView: IconTitleHeaderView = {
-        let view = R.nib.iconTitleHeaderView(owner: nil)!
-        view.titleView.titleColor = R.color.colorWhite()
-        view.titleView.titleFont = .h4Title
-        view.titleView.spacingBetweenLabelAndIcon = 0
-        return view
     }()
 
     let applyButton: TriangularedButton = {
@@ -46,12 +38,6 @@ final class WalletHistoryFilterViewLayout: UIView {
             make.bottom.leading.trailing.equalToSuperview()
             make.top.equalTo(safeAreaLayoutGuide)
         }
-
-        headerView.snp.makeConstraints { make in
-            make.height.equalTo(UIConstants.tableHeaderHeight)
-        }
-
-        tableView.tableHeaderView = headerView
 
         addSubview(applyButton)
 
