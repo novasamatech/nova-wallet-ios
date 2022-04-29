@@ -55,6 +55,8 @@ final class StackTitleMultiValueCell: RowView<GenericTitleValueView<IconDetailsV
         bottomValueLabel.textColor = R.color.colorTransparentText()
         bottomValueLabel.font = .caption1
 
+        borderView.strokeColor = R.color.colorWhite8()!
+
         updateSelection()
     }
 }
