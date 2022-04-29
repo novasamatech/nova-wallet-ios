@@ -63,9 +63,11 @@ final class ValidatorInfoViewModelFactory {
         let nominatorsCount = validatorInfo.stakeInfo?.nominators.count ?? 0
         let maxNominatorsReward = validatorInfo.stakeInfo?.maxNominatorsRewarded ?? 0
 
-        let nominators = R.string.localizable.stakingValidatorInfoNominators(
-            formatter.string(from: NSNumber(value: nominatorsCount)) ?? "",
-            formatter.string(from: NSNumber(value: maxNominatorsReward)) ?? ""
+        let nominators = formatter.string(from: NSNumber(value: nominatorsCount)) ?? ""
+
+        let maxNominatorsRewardedString = R.string.localizable.stakingMaxNominatorRewardedFormat(
+            formatter.string(from: NSNumber(value: maxNominatorsReward)) ?? "",
+            preferredLanguages: locale.rLanguages
         )
 
         let myNomination: ValidatorInfoViewModel.MyNomination?
@@ -88,6 +90,7 @@ final class ValidatorInfoViewModelFactory {
 
         return ValidatorInfoViewModel.Exposure(
             nominators: nominators,
+            maxNominators: maxNominatorsRewardedString,
             myNomination: myNomination,
             totalStake: totalStake,
             estimatedReward: estimatedReward,
