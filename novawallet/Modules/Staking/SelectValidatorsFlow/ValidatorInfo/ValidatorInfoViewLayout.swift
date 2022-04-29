@@ -210,6 +210,9 @@ final class ValidatorInfoViewLayout: UIView {
 
         stackView.addArrangedSubview(stackTableView)
 
+        stackTableView.setCustomHeight(32.0, at: 0)
+        stackTableView.contentInsets = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+
         return stackTableView
     }
 
