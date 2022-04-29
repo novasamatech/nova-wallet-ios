@@ -51,26 +51,18 @@ final class WalletHistoryFilterViewController: UIViewController, ViewHolder {
             action: #selector(actionReset)
         )
 
-        let normalAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
-            .font: UIFont.p0Paragraph
-        ]
-
-        let highlightedAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!.withAlphaComponent(0.5),
-            .font: UIFont.p0Paragraph
-        ]
-
-        resetItem.setTitleTextAttributes(normalAttributes, for: .normal)
-        resetItem.setTitleTextAttributes(highlightedAttributes, for: .highlighted)
-        resetItem.setTitleTextAttributes(highlightedAttributes, for: .disabled)
+        resetItem.setupDefaultTitleStyle(with: .regularBody)
 
         navigationItem.rightBarButtonItem = resetItem
     }
 
     private func setupTableView() {
         rootView.tableView.registerClassForCell(SwitchTableViewCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
+
         rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+
         rootView.tableView.rowHeight = 48.0
         rootView.tableView.separatorInset = UIEdgeInsets(
             top: 0.0,
@@ -90,9 +82,6 @@ final class WalletHistoryFilterViewController: UIViewController, ViewHolder {
         rootView.applyButton.imageWithTitleView?.title = R.string.localizable
             .commonApply(preferredLanguages: languages)
         rootView.applyButton.invalidateLayout()
-
-        let title = R.string.localizable.walletFiltersHeader(preferredLanguages: languages)
-        rootView.headerView.bind(title: title, icon: nil)
     }
 
     private func updateActionsState() {
@@ -128,6 +117,20 @@ extension WalletHistoryFilterViewController: UITableViewDataSource {
         cell.bind(title: title, isOn: isOn)
 
         return cell
+    }
+}
+
+extension WalletHistoryFilterViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+
+        let title = R.string.localizable.walletFiltersHeader(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        view.bind(title: title, icon: nil)
+
+        return view
     }
 }
 

@@ -4,10 +4,6 @@ import SoraFoundation
 final class ValidatorListFilterViewController: UIViewController, ViewHolder {
     typealias RootViewType = ValidatorListFilterViewLayout
 
-    private enum Constants {
-        static let headerId = "validatorListFilterHeaderId"
-    }
-
     let presenter: ValidatorListFilterPresenterProtocol
 
     private var viewModel: ValidatorListFilterViewModel?
@@ -49,10 +45,7 @@ final class ValidatorListFilterViewController: UIViewController, ViewHolder {
     // MARK: - Private functions
 
     private func setupTableView() {
-        rootView.tableView.register(
-            UINib(resource: R.nib.iconTitleHeaderView),
-            forHeaderFooterViewReuseIdentifier: Constants.headerId
-        )
+        rootView.tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
         rootView.tableView.registerClassForCell(TitleSubtitleSwitchTableViewCell.self)
         rootView.tableView.registerClassForCell(ValidatorListFilterSortCell.self)
 
@@ -90,7 +83,14 @@ final class ValidatorListFilterViewController: UIViewController, ViewHolder {
 
     private func updateActionButtons() {
         let isEnabled = viewModel?.canApply ?? false
-        rootView.applyButton.set(enabled: isEnabled)
+        rootView.applyButton.isUserInteractionEnabled = isEnabled
+
+        if isEnabled {
+            rootView.applyButton.applyEnabledStyle()
+        } else {
+            rootView.applyButton.applyTranslucentDisabledStyle()
+        }
+
         navigationItem.rightBarButtonItem?.isEnabled = viewModel?.canReset ?? false
     }
 
@@ -157,29 +157,28 @@ extension ValidatorListFilterViewController: UITableViewDataSource {
 
 extension ValidatorListFilterViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let view = tableView.dequeueReusableHeaderFooterView(
-            withIdentifier: Constants.headerId
-        ) as? IconTitleHeaderView else { return nil }
+        let view: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
 
-        view.titleView.titleColor = R.color.colorWhite()
-        view.titleView?.titleFont = .semiBoldBody
-        view.titleView.spacingBetweenLabelAndIcon = 0
-        view.titleView.displacementBetweenLabelAndIcon = 0
+        switch section {
+        case 0:
+            let title = viewModel?.filterModel.title ?? ""
+            view.bind(title: title, icon: nil)
 
-        let sectionTitle: String = {
-            switch section {
-            case 0:
-                return viewModel?.filterModel.title ?? ""
-            case 1:
-                return viewModel?.sortModel.title ?? ""
-            default:
-                return ""
-            }
-        }()
+            view.contentInsets = UIEdgeInsets(top: 8.0, left: 0.0, bottom: 8.0, right: 0.0)
+        case 1:
+            let title = viewModel?.sortModel.title ?? ""
+            view.bind(title: title, icon: nil)
 
-        view.bind(title: sectionTitle, icon: nil)
+            view.contentInsets = UIEdgeInsets(top: 24.0, left: 0.0, bottom: 8.0, right: 0.0)
+        default:
+            break
+        }
 
         return view
+    }
+
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        indexPath.section == 0 ? 48.0 : 55.0
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
