@@ -40,6 +40,8 @@ final class StackTableView: RoundedView {
         }
     }
 
+    private var customHeights: [Int: CGFloat] = [:]
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -72,15 +74,21 @@ final class StackTableView: RoundedView {
         updateLayout()
     }
 
+    func setCustomHeight(_ height: CGFloat?, at index: Int) {
+        customHeights[index] = height
+
+        updateLayout()
+    }
+
     func updateLayout() {
         let views = stackView.arrangedSubviews
 
-        views.forEach { view in
+        views.enumerated().forEach { index, view in
             guard let rowView = view as? StackTableViewCellProtocol else {
                 return
             }
 
-            rowView.preferredHeight = cellHeight
+            rowView.preferredHeight = customHeights[index] ?? cellHeight
             rowView.borderView.borderType = hasSeparators ? [.bottom] : []
             rowView.roundedBackgroundView.cornerRadius = 0.0
             rowView.roundedBackgroundView.roundingCorners = []
@@ -119,7 +127,7 @@ final class StackTableView: RoundedView {
         firstViewInsets.top = contentInsets.top
         firstView.contentInsets = firstViewInsets
 
-        let firstViewHeight = lastView.preferredHeight ?? cellHeight
+        let firstViewHeight = firstView.preferredHeight ?? cellHeight
         firstView.preferredHeight = firstViewHeight + contentInsets.top
 
         var firstRoundingCorners = firstView.roundedBackgroundView.roundingCorners
