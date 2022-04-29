@@ -3,12 +3,10 @@ import SoraUI
 import SoraFoundation
 
 class YourValidatorListDescSectionView: UITableViewHeaderFooterView {
-    let borderView = UIFactory.default.createBorderedContainerView()
-
     let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()!
+        label.font = .regularFootnote
+        label.textColor = R.color.colorTransparentText()!
         label.numberOfLines = 0
         return label
     }()
@@ -36,15 +34,10 @@ class YourValidatorListDescSectionView: UITableViewHeaderFooterView {
     }
 
     func setupLayout() {
-        contentView.addSubview(borderView)
-        borderView.snp.makeConstraints { make in
+        contentView.addSubview(mainStackView)
+        mainStackView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-        }
-
-        borderView.addSubview(mainStackView)
-        mainStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
         }
 
         mainStackView.addArrangedSubview(descriptionLabel)

@@ -285,7 +285,11 @@ enum ModalPickerFactory {
         viewController.context = context
         viewController.selectedIndex = NSNotFound
         viewController.separatorStyle = .singleLine
-        viewController.separatorColor = R.color.colorDarkGray()
+        viewController.separatorColor = R.color.colorWhite8()
+        viewController.cellHeight = 50.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
 
         viewController.viewModels = items
 
