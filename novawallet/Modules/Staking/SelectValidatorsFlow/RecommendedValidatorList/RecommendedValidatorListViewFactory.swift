@@ -38,8 +38,6 @@ final class RecommendedValidatorListViewFactory {
         maxTargets: Int,
         with wireframe: RecommendedValidatorListWireframeProtocol
     ) -> RecommendedValidatorListViewProtocol? {
-        let view = RecommendedValidatorListViewController(nib: R.nib.recommendedValidatorListViewController)
-
         let viewModelFactory = RecommendedValidatorListViewModelFactory(
             iconGenerator: PolkadotIconGenerator()
         )
@@ -51,7 +49,11 @@ final class RecommendedValidatorListViewFactory {
             logger: Logger.shared
         )
 
-        view.presenter = presenter
+        let view = RecommendedValidatorListViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
+
         presenter.view = view
         presenter.wireframe = wireframe
 
