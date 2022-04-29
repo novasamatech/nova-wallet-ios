@@ -5,13 +5,13 @@ class SelectedValidatorCell: UITableViewCell {
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = .clear
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularFootnote
         label.textColor = R.color.colorWhite()
         label.lineBreakMode = .byTruncatingTail
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -20,9 +20,9 @@ class SelectedValidatorCell: UITableViewCell {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         label.textAlignment = .right
-        label.textColor = R.color.colorWhite()
+        label.textColor = R.color.colorTransparentText()
         return label
     }()
 
@@ -37,7 +37,7 @@ class SelectedValidatorCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfo()
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite40()!)
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return imageView
@@ -78,7 +78,7 @@ class SelectedValidatorCell: UITableViewCell {
 
         contentView.addSubview(infoImageView)
         infoImageView.snp.makeConstraints { make in
-            make.size.equalTo(24)
+            make.size.equalTo(16)
             make.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
@@ -98,7 +98,7 @@ class SelectedValidatorCell: UITableViewCell {
         contentView.addSubview(detailsLabel)
         detailsLabel.snp.makeConstraints { make in
             make.leading.equalTo(statusStackView.snp.trailing).offset(8)
-            make.trailing.equalTo(infoImageView.snp.leading).offset(-16)
+            make.trailing.equalTo(infoImageView.snp.leading).offset(-8)
             make.centerY.equalToSuperview()
         }
     }
