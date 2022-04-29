@@ -5,13 +5,13 @@ class YourValidatorTableCell: UITableViewCell {
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
-        view.fillColor = R.color.colorWhite()!
+        view.fillColor = .clear
         return view
     }()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularFootnote
         label.textColor = R.color.colorWhite()!
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -20,8 +20,7 @@ class YourValidatorTableCell: UITableViewCell {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.font = .caption1
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         return label
@@ -37,7 +36,7 @@ class YourValidatorTableCell: UITableViewCell {
 
     let errorImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconErrorFilled()
+        imageView.image = R.image.iconSlash()
         imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         imageView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return imageView
@@ -45,15 +44,16 @@ class YourValidatorTableCell: UITableViewCell {
 
     let infoImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = R.image.iconInfo()
+        imageView.image = R.image.iconInfoFilled()?.tinted(with: R.color.colorWhite48()!)
         return imageView
     }()
 
     let apyLabel: UILabel = {
         let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .p2Paragraph
-        label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        label.textColor = R.color.colorTransparentText()
+        label.font = .regularFootnote
+        label.textAlignment = .right
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         label.setContentHuggingPriority(.defaultHigh, for: .vertical)
         return label
     }()
@@ -82,7 +82,7 @@ class YourValidatorTableCell: UITableViewCell {
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.spacing = 9.0
+        stackView.spacing = 4.0
         return stackView
     }()
 
@@ -135,12 +135,12 @@ class YourValidatorTableCell: UITableViewCell {
 
         mainStackView.addArrangedSubview(infoImageView)
         infoImageView.snp.makeConstraints { make in
-            make.size.equalTo(24)
+            make.size.equalTo(16)
         }
 
         mainStackView.setCustomSpacing(12, after: iconView)
-        mainStackView.setCustomSpacing(8.0, after: labelsStackView)
-        mainStackView.setCustomSpacing(13.0, after: iconsStackView)
+        mainStackView.setCustomSpacing(4.0, after: labelsStackView)
+        mainStackView.setCustomSpacing(8.0, after: iconsStackView)
     }
 
     func bind(viewModel: YourValidatorViewModel, for locale: Locale) {
@@ -153,12 +153,29 @@ class YourValidatorTableCell: UITableViewCell {
         }
 
         if let amount = viewModel.amount {
-            detailsLabel.text = R.string.localizable.stakingYourNominatedFormat(
-                amount,
+            let prefixString = R.string.localizable.stakingYourNominatedPrefix(
                 preferredLanguages: locale.rLanguages
             )
+
+            let details = NSMutableAttributedString()
+
+            details.append(
+                NSAttributedString(
+                    string: prefixString,
+                    attributes: [.foregroundColor: R.color.colorTransparentText()!]
+                )
+            )
+
+            details.append(
+                NSAttributedString(
+                    string: amount,
+                    attributes: [.foregroundColor: R.color.colorWhite()!]
+                )
+            )
+
+            detailsLabel.attributedText = details
         } else {
-            detailsLabel.text = nil
+            detailsLabel.attributedText = nil
         }
 
         iconView.bind(icon: viewModel.icon)
@@ -167,10 +184,8 @@ class YourValidatorTableCell: UITableViewCell {
         errorImageView.isHidden = !viewModel.shouldHaveError
 
         if let apy = viewModel.apy {
-            apyLabel.isHidden = false
             apyLabel.text = apy
         } else {
-            apyLabel.isHidden = true
             apyLabel.text = nil
         }
     }

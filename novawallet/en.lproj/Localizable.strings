@@ -756,3 +756,6 @@
 "staking.pending.rewards.hint.message" = "You can payout them by yourself, when they are close to expire, but you will pay the fee";
 "staking.pending.rewards.payout.all" = "Payout all rewards";
 "staking.pending.reward.search" = "Searching pending rewards...";
+"staking.your.nominated.prefix" = "Nominated: ";
+"staking.max.nominator.rewarded.format" = "%@ rewarded";
+"staking.loading.validators" = "Loading validators...";
