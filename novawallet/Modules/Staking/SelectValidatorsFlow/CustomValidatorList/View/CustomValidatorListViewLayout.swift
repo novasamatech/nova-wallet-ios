@@ -29,22 +29,31 @@ final class CustomValidatorListViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
         tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
         return tableView
     }()
 
-    let fillRestButton: GradientButton = {
-        createGradientButton()
+    let fillRestButton: RoundedButton = {
+        let button = createRoundedButton()
+        button.roundedBackgroundView?.fillColor = R.color.colorAccent()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorAccent()!
+        return button
     }()
 
     let clearButton: RoundedButton = {
-        createRoundedButton()
+        let button = createRoundedButton()
+        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        return button
     }()
 
     let deselectButton: RoundedButton = {
-        createRoundedButton()
+        let button = createRoundedButton()
+        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        return button
     }()
 
     let proceedButton: TriangularedButton = {
@@ -54,28 +63,21 @@ final class CustomValidatorListViewLayout: UIView {
         return button
     }()
 
-    private static func createGradientButton() -> GradientButton {
-        let button = GradientButton()
-        button.applyEnabledStyle()
-        button.opacityAnimationDuration = 0
-        button.gradientBackgroundView?.cornerRadius = Constants.auxButtonHeight / 2.0
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = UIFont.capsTitle
-        return button
-    }
-
     private static func createRoundedButton() -> RoundedButton {
         let button = RoundedButton()
         button.applyEnabledStyle()
-        button.opacityAnimationDuration = 0
-        button.roundedBackgroundView?.cornerRadius = Constants.auxButtonHeight / 2.0
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = UIFont.capsTitle
+        button.roundedBackgroundView?.cornerRadius = 10.0
+        button.contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
+        button.imageWithTitleView?.titleFont = .semiBoldFootnote
+        button.imageWithTitleView?.titleColor = R.color.colorWhite()!
         return button
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorBlack()
+
         setupLayout()
     }
 
@@ -91,7 +93,8 @@ final class CustomValidatorListViewLayout: UIView {
 
         stackContainerView.addSubview(stackView)
         stackView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(16)
+            make.top.equalToSuperview().inset(8)
+            make.bottom.equalToSuperview().inset(12.0)
             make.leading.equalTo(stackContainerView.snp.leading).inset(UIConstants.horizontalInset)
             make.trailing.equalTo(stackContainerView.snp.trailing).inset(UIConstants.horizontalInset)
         }
