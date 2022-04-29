@@ -572,6 +572,9 @@
 		844D229925EE5E8400C022F7 /* SingleValueProviderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D229825EE5E8400C022F7 /* SingleValueProviderStub.swift */; };
 		844D229E25EE79EA00C022F7 /* ExtrinsicServiceStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */; };
 		844D22A325EE7E4600C022F7 /* AnySingleValueProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D22A225EE7E4600C022F7 /* AnySingleValueProvider.swift */; };
+		844D2A40281B0ED70049CF5E /* StackTableHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */; };
+		844D2A42281B24510049CF5E /* StackUrlCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D2A41281B24510049CF5E /* StackUrlCell.swift */; };
+		844D2A44281B28FB0049CF5E /* StackTitleMultiValueCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */; };
 		844DB61F262D9C070025A8F0 /* ChainHistoryRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DB61E262D9C070025A8F0 /* ChainHistoryRange.swift */; };
 		844DB624262D9C710025A8F0 /* ErasRewardDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DB623262D9C710025A8F0 /* ErasRewardDistribution.swift */; };
 		844DBC5E274D1B13009F8351 /* IconWithTitleSubtitleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844DBC5D274D1B13009F8351 /* IconWithTitleSubtitleTableViewCell.swift */; };
@@ -2631,6 +2634,9 @@
 		844D229825EE5E8400C022F7 /* SingleValueProviderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleValueProviderStub.swift; sourceTree = "<group>"; };
 		844D229D25EE79EA00C022F7 /* ExtrinsicServiceStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicServiceStub.swift; sourceTree = "<group>"; };
 		844D22A225EE7E4600C022F7 /* AnySingleValueProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnySingleValueProvider.swift; sourceTree = "<group>"; };
+		844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTableHeaderCell.swift; sourceTree = "<group>"; };
+		844D2A41281B24510049CF5E /* StackUrlCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackUrlCell.swift; sourceTree = "<group>"; };
+		844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTitleMultiValueCell.swift; sourceTree = "<group>"; };
 		844DB61E262D9C070025A8F0 /* ChainHistoryRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainHistoryRange.swift; sourceTree = "<group>"; };
 		844DB623262D9C710025A8F0 /* ErasRewardDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErasRewardDistribution.swift; sourceTree = "<group>"; };
 		844DBC5D274D1B13009F8351 /* IconWithTitleSubtitleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconWithTitleSubtitleTableViewCell.swift; sourceTree = "<group>"; };
@@ -7042,6 +7048,9 @@
 				8446F5EF2817279600B7A86C /* HintListView.swift */,
 				8446F5F72819235B00B7A86C /* AssetIconView+Style.swift */,
 				8446F5F928192FF500B7A86C /* ListLoadingView.swift */,
+				844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */,
+				844D2A41281B24510049CF5E /* StackUrlCell.swift */,
+				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11388,6 +11397,7 @@
 				84E25BF627E9A51D00290BF1 /* LeaseParam.swift in Sources */,
 				843939902636F88F0087658D /* YourValidatorsModel.swift in Sources */,
 				842BDB2E278C506F00AB4B5A /* DAppBrowserDeniedState.swift in Sources */,
+				844D2A40281B0ED70049CF5E /* StackTableHeaderCell.swift in Sources */,
 				84A2A60A26B82B35000C6C6C /* ValidatorOperationFactory+Protocol.swift in Sources */,
 				845C407D2702812E00BFA50B /* StakingAccountUpdatingService.swift in Sources */,
 				8430D6C92801A2B500FFB6AE /* WebSocketProtocols.swift in Sources */,
@@ -11428,6 +11438,7 @@
 				8489A6E227FEFC730040C066 /* StakingRebondOption.swift in Sources */,
 				84CFF1E626526FBC00DB7CF7 /* StakingBondMoreInteractor.swift in Sources */,
 				AE39838A272AFAD500BC8A85 /* WalletManagementWireframe.swift in Sources */,
+				844D2A44281B28FB0049CF5E /* StackTitleMultiValueCell.swift in Sources */,
 				8487583727F06AF300495306 /* TransferScanDelegate.swift in Sources */,
 				3E480EEAF501AEB5D543506D /* UsernameSetupPresenter.swift in Sources */,
 				84F4387525D9C6EB00AEDA56 /* SubstrateDataProviderFactory.swift in Sources */,
@@ -12117,6 +12128,7 @@
 				2EC610DC06643A00876BED6E /* WalletListWireframe.swift in Sources */,
 				8499FE6A27BD2FA900712589 /* RMRKNftV2.swift in Sources */,
 				2932BD7922FDCD64F4E9A57D /* WalletListPresenter.swift in Sources */,
+				844D2A42281B24510049CF5E /* StackUrlCell.swift in Sources */,
 				98DADEB52480817D191188C1 /* WalletListInteractor.swift in Sources */,
 				8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */,
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,

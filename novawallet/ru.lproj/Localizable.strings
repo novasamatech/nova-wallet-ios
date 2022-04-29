@@ -756,3 +756,6 @@
 "staking.pending.rewards.hint.message" = "Вы можете инициировать выплату самостоятельно, особенно, если срок вознаграждения истекает, но этом случае придётся заплатить комиссию";
 "staking.pending.rewards.payout.all" = "Выплатить все";
 "staking.pending.reward.search" = "Поиск вознаграждений...";
+"staking.your.nominated.prefix" = "Номинировано: ";
+"staking.max.nominator.rewarded.format" = "%@ вознаграждено";
+"staking.loading.validators" = "Загрузка валидаторов...";
