@@ -66,6 +66,7 @@ final class StackUrlCell: RoundedView {
         actionButton.imageWithTitleView?.titleColor = R.color.colorNovaBlue()!
         actionButton.imageWithTitleView?.titleFont = .regularFootnote
         actionButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
+        actionButton.contentInsets = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 16.0, right: 0.0)
 
         applyFilledBackgroundStyle()
         fillColor = .clear
