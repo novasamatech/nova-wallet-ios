@@ -148,7 +148,7 @@ final class ValidatorInfoViewLayout: UIView {
 
         cell.rowContentView.valueView.bind(
             topValue: exposure.nominators,
-            bottomValue: ""
+            bottomValue: exposure.maxNominators
         )
 
         stakingTableView?.addArrangedSubview(cell)

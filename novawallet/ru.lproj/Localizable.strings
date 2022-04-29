@@ -757,3 +757,4 @@
 "staking.pending.rewards.payout.all" = "Выплатить все";
 "staking.pending.reward.search" = "Поиск вознаграждений...";
 "staking.your.nominated.prefix" = "Номинировано: ";
+"staking.max.nominator.rewarded.format" = "%@ вознаграждено";

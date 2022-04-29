@@ -78,6 +78,10 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
 
         accountView.addTarget(self, action: #selector(actionOnAccount), for: .touchUpInside)
 
+        addSlashedAlertIfNeeded(for: viewModel)
+
+        addOversubscriptionAlertIfNeeded(for: viewModel.staking)
+
         rootView.addStakingSection(
             with: R.string.localizable.stakingTitle(preferredLanguages: selectedLocale.rLanguages)
         )
@@ -116,6 +120,34 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
                     }
                 }
             }
+        }
+    }
+
+    private func addSlashedAlertIfNeeded(for model: ValidatorInfoViewModel) {
+        if model.staking.slashed {
+            let text = R.string.localizable.stakingValidatorSlashedDesc(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            rootView.addErrorView(message: text)
+        }
+    }
+
+    private func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
+        if case let .elected(exposure) = model.status, exposure.oversubscribed {
+            let message: String = {
+                if let myNomination = exposure.myNomination, !myNomination.isRewarded {
+                    return R.string.localizable.stakingValidatorMyOversubscribedMessage(
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+                } else {
+                    return R.string.localizable.stakingValidatorOtherOversubscribedMessage(
+                        preferredLanguages: selectedLocale.rLanguages
+                    )
+                }
+            }()
+
+            rootView.addWarningView(message: message)
         }
     }
 
