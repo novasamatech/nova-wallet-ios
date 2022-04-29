@@ -122,6 +122,18 @@ class SelectedValidatorCell: UITableViewCell {
         detailsLabel.text = viewModel.details
     }
 
+    func bind(viewModel: RecommendedValidatorViewModelProtocol) {
+        iconView.bind(icon: viewModel.icon)
+
+        titleLabel.lineBreakMode = .byTruncatingMiddle
+        titleLabel.text = viewModel.title
+
+        clearStatusView()
+        setupStatus(for: false, shouldShowError: false)
+
+        detailsLabel.text = viewModel.details
+    }
+
     private func clearStatusView() {
         let arrangedSubviews = statusStackView.arrangedSubviews
 
