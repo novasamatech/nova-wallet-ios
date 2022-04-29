@@ -35,7 +35,6 @@ class ValidatorInfoTests: XCTestCase {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
-            iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory
         )
 
@@ -98,7 +97,6 @@ class ValidatorInfoTests: XCTestCase {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
-            iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory
         )
 
