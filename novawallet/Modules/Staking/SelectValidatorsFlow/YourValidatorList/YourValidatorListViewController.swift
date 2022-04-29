@@ -355,7 +355,14 @@ extension YourValidatorListViewController: EmptyStateDataSource {
             errorView.delegate = self
             errorView.locale = selectedLocale
             return errorView
-        case .loading, .validatorList:
+        case .loading:
+            let loadingView = ListLoadingView()
+            loadingView.titleLabel.text = R.string.localizable.stakingPendingRewardSearch(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            loadingView.start()
+            return loadingView
+        case .validatorList:
             return nil
         }
     }
@@ -365,9 +372,9 @@ extension YourValidatorListViewController: EmptyStateDelegate {
     var shouldDisplayEmptyState: Bool {
         guard let state = viewState else { return false }
         switch state {
-        case .error:
+        case .error, .loading:
             return true
-        case .loading, .validatorList:
+        case .validatorList:
             return false
         }
     }
@@ -376,12 +383,6 @@ extension YourValidatorListViewController: EmptyStateDelegate {
 extension YourValidatorListViewController: YourValidatorListViewProtocol {
     func reload(state: YourValidatorListViewState) {
         viewState = state
-
-        if case .loading = viewState {
-            didStartLoading()
-        } else {
-            didStopLoading()
-        }
 
         rootView.tableView.reloadData()
         reloadEmptyState(animated: true)
