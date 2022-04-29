@@ -357,7 +357,7 @@ extension YourValidatorListViewController: EmptyStateDataSource {
             return errorView
         case .loading:
             let loadingView = ListLoadingView()
-            loadingView.titleLabel.text = R.string.localizable.stakingPendingRewardSearch(
+            loadingView.titleLabel.text = R.string.localizable.stakingLoadingValidators(
                 preferredLanguages: selectedLocale.rLanguages
             )
             loadingView.start()
