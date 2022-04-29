@@ -75,7 +75,7 @@ final class ValidatorListFilterViewController: UIViewController, ViewHolder {
             action: #selector(didTapResetButton)
         )
 
-        resetButton.setupDefaultTitleStyle(with: .p0Paragraph)
+        resetButton.setupDefaultTitleStyle(with: .regularBody)
 
         navigationItem.rightBarButtonItem = resetButton
     }
@@ -162,7 +162,7 @@ extension ValidatorListFilterViewController: UITableViewDelegate {
         ) as? IconTitleHeaderView else { return nil }
 
         view.titleView.titleColor = R.color.colorWhite()
-        view.titleView?.titleFont = .h4Title
+        view.titleView?.titleFont = .semiBoldBody
         view.titleView.spacingBetweenLabelAndIcon = 0
         view.titleView.displacementBetweenLabelAndIcon = 0
 
