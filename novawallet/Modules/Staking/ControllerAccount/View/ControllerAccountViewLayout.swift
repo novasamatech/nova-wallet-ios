@@ -121,7 +121,7 @@ final class ControllerAccountViewLayout: UIView {
             preferredLanguages: locale.rLanguages
         )
 
-        controllerHintView.valueBottom.text = R.string.localizable.stakingControllerHint(
+        controllerHintView.valueBottom.text = R.string.localizable.stakingControllerCanHint_v2_2_0(
             preferredLanguages: locale.rLanguages
         )
 
