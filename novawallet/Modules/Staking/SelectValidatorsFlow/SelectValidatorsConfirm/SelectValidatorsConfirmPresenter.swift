@@ -75,17 +75,13 @@ final class SelectValidatorsConfirmPresenter {
         }
     }
 
-    private func provideAsset() {
+    private func provideAmount() {
         guard let state = state else {
             return
         }
 
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            state.amount,
-            balance: balance,
-            priceData: priceData
-        )
-        view?.didReceive(assetViewModel: viewModel)
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(state.amount, priceData: priceData)
+        view?.didReceive(amountViewModel: viewModel)
     }
 
     private func handle(error: Error) {
@@ -202,7 +198,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         case let .success(model):
             state = model
 
-            provideAsset()
+            provideAmount()
             provideConfirmationState()
         case let .failure(error):
             handle(error: error)
@@ -214,7 +210,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         case let .success(priceData):
             self.priceData = priceData
 
-            provideAsset()
+            provideAmount()
             provideFee()
         case let .failure(error):
             handle(error: error)
@@ -232,8 +228,6 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
             } else {
                 balance = 0.0
             }
-
-            provideAsset()
         case let .failure(error):
             handle(error: error)
         }
