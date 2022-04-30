@@ -50,7 +50,7 @@ final class SelectValidatorsConfirmPresenter {
         }
 
         do {
-            let viewModel = try confirmationViewModelFactory.createViewModel(from: state, assetInfo: assetInfo)
+            let viewModel = try confirmationViewModelFactory.createViewModel(from: state)
             view?.didReceive(confirmationViewModel: viewModel)
         } catch {
             logger?.error("Did receive error: \(error)")
@@ -58,12 +58,21 @@ final class SelectValidatorsConfirmPresenter {
     }
 
     private func provideHints() {
-        guard let duration = stakingDuration else {
+        guard let state = state else {
             return
         }
 
-        let viewModel = confirmationViewModelFactory.createHints(from: duration)
-        view?.didReceive(hintsViewModel: viewModel)
+        if state.hasExistingBond {
+            let viewModel = confirmationViewModelFactory.createChangeValidatorsHints()
+            view?.didReceive(hintsViewModel: viewModel)
+        } else {
+            guard let duration = stakingDuration else {
+                return
+            }
+
+            let viewModel = confirmationViewModelFactory.createStartStakingHints(from: duration)
+            view?.didReceive(hintsViewModel: viewModel)
+        }
     }
 
     private func provideFee() {
@@ -75,17 +84,13 @@ final class SelectValidatorsConfirmPresenter {
         }
     }
 
-    private func provideAsset() {
-        guard let state = state else {
-            return
+    private func provideAmount() {
+        if let state = state, !state.hasExistingBond {
+            let viewModel = balanceViewModelFactory.lockingAmountFromPrice(state.amount, priceData: priceData)
+            view?.didReceive(amountViewModel: viewModel)
+        } else {
+            view?.didReceive(amountViewModel: nil)
         }
-
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            state.amount,
-            balance: balance,
-            priceData: priceData
-        )
-        view?.didReceive(assetViewModel: viewModel)
     }
 
     private func handle(error: Error) {
@@ -202,8 +207,9 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         case let .success(model):
             state = model
 
-            provideAsset()
+            provideAmount()
             provideConfirmationState()
+            provideHints()
         case let .failure(error):
             handle(error: error)
         }
@@ -214,7 +220,7 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
         case let .success(priceData):
             self.priceData = priceData
 
-            provideAsset()
+            provideAmount()
             provideFee()
         case let .failure(error):
             handle(error: error)
@@ -232,8 +238,6 @@ extension SelectValidatorsConfirmPresenter: SelectValidatorsConfirmInteractorOut
             } else {
                 balance = 0.0
             }
-
-            provideAsset()
         case let .failure(error):
             handle(error: error)
         }
