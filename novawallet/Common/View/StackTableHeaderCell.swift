@@ -26,5 +26,7 @@ final class StackTableHeaderCell: RowView<UILabel>, StackTableViewCellProtocol {
         titleLabel.textAlignment = .left
 
         borderView.strokeWidth = 0.0
+
+        isUserInteractionEnabled = false
     }
 }
