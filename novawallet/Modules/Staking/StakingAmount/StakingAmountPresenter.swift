@@ -173,11 +173,6 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 provideAmountInputViewModel()
                 provideAsset()
                 provideRewardDestination()
-            } else if let view = view {
-                wireframe.presentAmountTooHigh(
-                    from: view,
-                    locale: view.localizationManager?.selectedLocale
-                )
             }
         }
     }

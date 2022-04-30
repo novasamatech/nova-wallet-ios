@@ -753,3 +753,4 @@
 "staking.pending.reward.search" = "Searching pending rewards...";
 "staking.your.nominated.prefix" = "Nominated: ";
 "staking.loading.validators" = "Loading validators...";
+"common.input.amount.hint" = "Input the amount...";
