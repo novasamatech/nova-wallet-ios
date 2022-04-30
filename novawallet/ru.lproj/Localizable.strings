@@ -729,6 +729,7 @@
 "staking.change.validators" = "Сменить валидаторов";
 "staking.rebond.action.custom" = "Выбрать сумму";
 "staking.about.rewards" = "О наградах";
+"staking.stake.format" = "Застейкать %@";
 "staking.rebond.hint" = "Возвращенные токены будут учитываться со следующей эры";
 "staking.set.validators" = "Установить валидаторов";
 "dapp.phishing.action" = "Хорошо, уходим отсюда";

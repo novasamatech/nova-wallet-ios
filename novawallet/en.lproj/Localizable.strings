@@ -729,6 +729,7 @@
 "staking.change.validators" = "Change validators";
 "staking.rebond.action.custom" = "Custom amount";
 "staking.about.rewards" = "About rewards";
+"staking.stake.format" = "Stake %@";
 "staking.rebond.hint" = "Returned tokens will be counted from the next era";
 "staking.set.validators" = "Set validators";
 "dapp.phishing.action" = "Okay, take me back";

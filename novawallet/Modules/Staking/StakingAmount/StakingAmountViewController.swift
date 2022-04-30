@@ -65,8 +65,6 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         let languages = locale.rLanguages
 
-        title = R.string.localizable.stakingStake(preferredLanguages: languages)
-
         rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
             preferredLanguages: languages
         )
@@ -142,8 +140,12 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
     }
 
     private func applyAsset() {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        if let viewModel = assetViewModel?.value(for: locale) {
+        if let viewModel = assetViewModel?.value(for: selectedLocale) {
+            title = R.string.localizable.stakingStakeFormat(
+                viewModel.symbol,
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
             let assetViewModel = AssetViewModel(
                 symbol: viewModel.symbol,
                 imageViewModel: viewModel.iconViewModel
