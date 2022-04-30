@@ -128,7 +128,7 @@ final class SelectValidatorsConfirmViewFactory {
             let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let displayAddress = try? selectedMetaAccount.chainAccount.toDisplayAddress() else {
+            let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress() else {
             return nil
         }
 
@@ -148,7 +148,7 @@ final class SelectValidatorsConfirmViewFactory {
         )
 
         return InitiatedBondingConfirmInteractor(
-            selectedAccount: displayAddress,
+            selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: stakingState.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

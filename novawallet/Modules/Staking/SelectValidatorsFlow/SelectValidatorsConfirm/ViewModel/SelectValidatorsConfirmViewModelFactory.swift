@@ -7,16 +7,15 @@ protocol SelectValidatorsConfirmViewModelFactoryProtocol {
     func createViewModel(
         from state: SelectValidatorsConfirmationModel,
         assetInfo: AssetBalanceDisplayInfo
-    ) throws -> LocalizableResource<SelectValidatorsConfirmViewModel>
+    ) throws -> SelectValidatorsConfirmViewModel
 
-    func createHints(from duration: StakingDuration) -> LocalizableResource<[TitleIconViewModel]>
+    func createHints(from duration: StakingDuration) -> LocalizableResource<[String]>
 }
 
 final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmViewModelFactoryProtocol {
-    private lazy var iconGenerator = PolkadotIconGenerator()
-    private lazy var amountFactory = AssetBalanceFormatterFactory()
+    private lazy var walletAccountViewModelFactory = WalletAccountViewModelFactory()
 
-    func createHints(from duration: StakingDuration) -> LocalizableResource<[TitleIconViewModel]> {
+    func createHints(from duration: StakingDuration) -> LocalizableResource<[String]> {
         LocalizableResource { locale in
             let eraDurationString = R.string.localizable.commonHoursFormat(
                 format: duration.era.hoursFromSeconds,
@@ -29,31 +28,19 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
             )
 
             return [
-                TitleIconViewModel(
-                    title: R.string.localizable.stakingHintRewardsFormat_v2_2_0(
-                        eraDurationString,
-                        preferredLanguages: locale.rLanguages
-                    ),
-                    icon: R.image.iconStarGray16()
+                R.string.localizable.stakingHintRewardsFormat_v2_2_0(
+                    eraDurationString,
+                    preferredLanguages: locale.rLanguages
                 ),
-                TitleIconViewModel(
-                    title: R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                        unlockingDurationString,
-                        preferredLanguages: locale.rLanguages
-                    ),
-                    icon: R.image.iconStarGray16()
+                R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
+                    unlockingDurationString,
+                    preferredLanguages: locale.rLanguages
                 ),
-                TitleIconViewModel(
-                    title: R.string.localizable.stakingHintNoRewards_V2_2_0(
-                        preferredLanguages: locale.rLanguages
-                    ),
-                    icon: R.image.iconStarGray16()
+                R.string.localizable.stakingHintNoRewards_V2_2_0(
+                    preferredLanguages: locale.rLanguages
                 ),
-                TitleIconViewModel(
-                    title: R.string.localizable.stakingHintRedeem_v2_2_0(
-                        preferredLanguages: locale.rLanguages
-                    ),
-                    icon: R.image.iconStarGray16()
+                R.string.localizable.stakingHintRedeem_v2_2_0(
+                    preferredLanguages: locale.rLanguages
                 )
             ]
         }
@@ -61,11 +48,9 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
 
     func createViewModel(
         from state: SelectValidatorsConfirmationModel,
-        assetInfo: AssetBalanceDisplayInfo
-    ) throws -> LocalizableResource<SelectValidatorsConfirmViewModel> {
-        let icon = try iconGenerator.generateFromAddress(state.wallet.address)
-
-        let amountFormatter = amountFactory.createInputFormatter(for: assetInfo)
+        assetInfo _: AssetBalanceDisplayInfo
+    ) throws -> SelectValidatorsConfirmViewModel {
+        let genericViewModel = try walletAccountViewModelFactory.createViewModel(from: state.wallet)
 
         let rewardViewModel: RewardDestinationTypeViewModel
 
@@ -73,32 +58,16 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
         case .restake:
             rewardViewModel = .restake
         case let .payout(account):
-            let payoutIcon = try iconGenerator.generateFromAddress(account.address)
-            let payoutIconViewModel = DrawableIconViewModel(icon: payoutIcon)
-
-            // TODO: Fix view model creation
-
-            let viewModel = WalletAccountViewModel(
-                walletName: account.username,
-                walletIcon: nil,
-                address: account.address,
-                addressIcon: payoutIconViewModel
-            )
-
+            let viewModel = try walletAccountViewModelFactory.createViewModel(from: account.address)
             rewardViewModel = .payout(details: viewModel)
         }
 
-        return LocalizableResource { locale in
-            let amount = amountFormatter.value(for: locale).string(from: state.amount as NSNumber)
-
-            return SelectValidatorsConfirmViewModel(
-                senderIcon: icon,
-                senderName: state.wallet.username,
-                amount: amount ?? "",
-                rewardDestination: rewardViewModel,
-                validatorsCount: state.targets.count,
-                maxValidatorCount: state.maxTargets
-            )
-        }
+        return SelectValidatorsConfirmViewModel(
+            walletViewModel: genericViewModel.displayWallet(),
+            accountViewModel: genericViewModel.rawDisplayAddress(),
+            rewardDestination: rewardViewModel,
+            validatorsCount: state.targets.count,
+            maxValidatorCount: state.maxTargets
+        )
     }
 }
