@@ -5,17 +5,18 @@ import SoraFoundation
 
 protocol SelectValidatorsConfirmViewModelFactoryProtocol {
     func createViewModel(
-        from state: SelectValidatorsConfirmationModel,
-        assetInfo: AssetBalanceDisplayInfo
+        from state: SelectValidatorsConfirmationModel
     ) throws -> SelectValidatorsConfirmViewModel
 
-    func createHints(from duration: StakingDuration) -> LocalizableResource<[String]>
+    func createStartStakingHints(from duration: StakingDuration) -> LocalizableResource<[String]>
+
+    func createChangeValidatorsHints() -> LocalizableResource<[String]>
 }
 
 final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmViewModelFactoryProtocol {
     private lazy var walletAccountViewModelFactory = WalletAccountViewModelFactory()
 
-    func createHints(from duration: StakingDuration) -> LocalizableResource<[String]> {
+    func createStartStakingHints(from duration: StakingDuration) -> LocalizableResource<[String]> {
         LocalizableResource { locale in
             let eraDurationString = R.string.localizable.commonHoursFormat(
                 format: duration.era.hoursFromSeconds,
@@ -46,20 +47,33 @@ final class SelectValidatorsConfirmViewModelFactory: SelectValidatorsConfirmView
         }
     }
 
+    func createChangeValidatorsHints() -> LocalizableResource<[String]> {
+        LocalizableResource { locale in
+            [
+                R.string.localizable.stakingYourValidatorsChangingTitle(
+                    preferredLanguages: locale.rLanguages
+                )
+            ]
+        }
+    }
+
     func createViewModel(
-        from state: SelectValidatorsConfirmationModel,
-        assetInfo _: AssetBalanceDisplayInfo
+        from state: SelectValidatorsConfirmationModel
     ) throws -> SelectValidatorsConfirmViewModel {
         let genericViewModel = try walletAccountViewModelFactory.createViewModel(from: state.wallet)
 
-        let rewardViewModel: RewardDestinationTypeViewModel
+        let rewardViewModel: RewardDestinationTypeViewModel?
 
-        switch state.rewardDestination {
-        case .restake:
-            rewardViewModel = .restake
-        case let .payout(account):
-            let viewModel = try walletAccountViewModelFactory.createViewModel(from: account.address)
-            rewardViewModel = .payout(details: viewModel)
+        if !state.hasExistingBond {
+            switch state.rewardDestination {
+            case .restake:
+                rewardViewModel = .restake
+            case let .payout(account):
+                let viewModel = try walletAccountViewModelFactory.createViewModel(from: account.address)
+                rewardViewModel = .payout(details: viewModel)
+            }
+        } else {
+            rewardViewModel = nil
         }
 
         return SelectValidatorsConfirmViewModel(

@@ -5,7 +5,7 @@ import BigInt
 protocol SelectValidatorsConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceive(confirmationViewModel: SelectValidatorsConfirmViewModel)
     func didReceive(hintsViewModel: LocalizableResource<[String]>)
-    func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>)
+    func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }
 
