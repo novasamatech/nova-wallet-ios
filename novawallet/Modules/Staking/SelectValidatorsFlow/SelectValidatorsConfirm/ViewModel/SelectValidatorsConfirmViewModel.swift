@@ -2,9 +2,8 @@ import Foundation
 import SubstrateSdk
 
 struct SelectValidatorsConfirmViewModel {
-    let senderIcon: DrawableIcon
-    let senderName: String
-    let amount: String
+    let walletViewModel: DisplayWalletViewModel
+    let accountViewModel: DisplayAddressViewModel
     let rewardDestination: RewardDestinationTypeViewModel
     let validatorsCount: Int
     let maxValidatorCount: Int
