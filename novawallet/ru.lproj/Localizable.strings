@@ -753,3 +753,4 @@
 "staking.pending.reward.search" = "Поиск вознаграждений...";
 "staking.your.nominated.prefix" = "Номинировано: ";
 "staking.loading.validators" = "Загрузка валидаторов...";
+"common.input.amount.hint" = "Введите сумму...";
