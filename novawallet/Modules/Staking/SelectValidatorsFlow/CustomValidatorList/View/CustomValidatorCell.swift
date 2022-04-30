@@ -112,7 +112,7 @@ class CustomValidatorCell: UITableViewCell {
 
         contentView.addSubview(infoButton)
         infoButton.snp.makeConstraints { make in
-            make.size.equalTo(16)
+            make.size.equalTo(24)
             make.trailing.equalToSuperview().inset(12)
             make.centerY.equalToSuperview()
         }
@@ -120,7 +120,7 @@ class CustomValidatorCell: UITableViewCell {
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(12)
-            make.top.bottom.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
         }
 
         contentView.addSubview(statusStackView)
