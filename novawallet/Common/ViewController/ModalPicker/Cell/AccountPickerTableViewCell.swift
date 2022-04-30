@@ -24,6 +24,8 @@ final class AccountPickerTableViewCell: UITableViewCell, ModalPickerCellProtocol
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        backgroundColor = .clear
+
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
         self.selectedBackgroundView = selectedBackgroundView
