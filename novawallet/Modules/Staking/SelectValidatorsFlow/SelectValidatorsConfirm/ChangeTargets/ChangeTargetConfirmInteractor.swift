@@ -103,9 +103,10 @@ final class ChangeTargetsConfirmInteractor: SelectValidatorsConfirmInteractorBas
             let controller = currentNomination.bonding.controllerAccount
             let rewardDestination = try rewardDestWrapper.targetOperation.extractNoCancellableResultData()
 
-            let controllerDisplayAddress = DisplayAddress(
+            let controllerDisplayAddress = WalletDisplayAddress(
                 address: controllerAddress,
-                username: controller.chainAccount.name
+                walletName: controller.chainAccount.name,
+                walletIconData: controller.substrateAccountId
             )
 
             return SelectValidatorsConfirmationModel(
