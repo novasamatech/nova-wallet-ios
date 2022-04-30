@@ -3,8 +3,8 @@ import UIKit
 class CustomValidatorListHeaderView: UITableViewHeaderFooterView {
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .capsTitle
-        label.textColor = R.color.colorLightGray()
+        label.font = .semiBoldCaps2
+        label.textColor = R.color.colorWhite80()
         label.lineBreakMode = .byTruncatingHead
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
         return label
@@ -12,9 +12,9 @@ class CustomValidatorListHeaderView: UITableViewHeaderFooterView {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.font = .capsTitle
+        label.font = .semiBoldCaps2
         label.textAlignment = .right
-        label.textColor = R.color.colorLightGray()
+        label.textColor = R.color.colorWhite80()
         label.lineBreakMode = .byTruncatingTail
         label.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         return label
