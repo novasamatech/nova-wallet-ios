@@ -48,7 +48,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
         let extrinsicService = ExtrinsicServiceStub.dummy()
 
         let selectedMetaAccount  = AccountGenerator.generateMetaAccount()
-        let selectedAccount = selectedMetaAccount.fetch(for: chain.accountRequest())!
+        let selectedAccount = selectedMetaAccount.fetchMetaChainAccount(for: chain.accountRequest())!
 
         let chainRegistry = MockChainRegistryProtocol().applyDefault(for: [chain])
         let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId)!
@@ -60,7 +60,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
         )
 
         let interactor = InitiatedBondingConfirmInteractor(
-            selectedAccount: try selectedAccount.toDisplayAddress(),
+            selectedAccount: try selectedAccount.toWalletDisplayAddress(),
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
@@ -101,7 +101,7 @@ class SelectValidatorsConfirmTests: XCTestCase {
                 }
             }
 
-            when(stub).didReceive(assetViewModel: any()).then { _ in
+            when(stub).didReceive(amountViewModel: any()).then { _ in
                 assetExpectation.fulfill()
             }
 
