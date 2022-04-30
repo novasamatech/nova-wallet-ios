@@ -73,6 +73,22 @@ final class SelectValidatorsConfirmViewLayout: UIView {
         rewardDestinationTableView.updateLayout()
     }
 
+    func addAmountIfNeeded() {
+        amountView.isHidden = false
+    }
+
+    func removeAmountIfNeeded() {
+        amountView.isHidden = true
+    }
+
+    func addRewardDestinationIfNeeded() {
+        rewardDestinationTableView.isHidden = false
+    }
+
+    func removeRewardDestinationIfNeeded() {
+        rewardDestinationTableView.isHidden = true
+    }
+
     private func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in

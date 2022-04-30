@@ -7,6 +7,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
     let presenter: SelectValidatorsConfirmPresenterProtocol
     let quantityFormatter: NumberFormatter
+    let localizableTitle: LocalizableResource<String>
 
     private var confirmationViewModel: SelectValidatorsConfirmViewModel?
     private var amountViewModel: LocalizableResource<BalanceViewModelProtocol>?
@@ -15,10 +16,12 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
     init(
         presenter: SelectValidatorsConfirmPresenterProtocol,
+        localizableTitle: LocalizableResource<String>,
         quantityFormatter: NumberFormatter,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.localizableTitle = localizableTitle
         self.quantityFormatter = quantityFormatter
 
         super.init(nibName: nil, bundle: nil)
@@ -42,6 +45,9 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
         setupLocalization()
         updateActionButton()
 
+        rootView.removeAmountIfNeeded()
+        rootView.removeRewardDestinationIfNeeded()
+
         presenter.setup()
     }
 
@@ -62,7 +68,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
+        title = localizableTitle.value(for: selectedLocale)
 
         rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
             preferredLanguages: languages
@@ -114,7 +120,21 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
         rootView.walletCell.bind(viewModel: viewModel.walletViewModel.cellViewModel)
         rootView.accountCell.bind(viewModel: viewModel.accountViewModel.cellViewModel)
 
-        switch viewModel.rewardDestination {
+        if let rewardDestination = viewModel.rewardDestination {
+            rootView.addRewardDestinationIfNeeded()
+            applyRewardDestinationViewModel(rewardDestination)
+        } else {
+            rootView.removeRewardDestinationIfNeeded()
+        }
+
+        rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
+            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
+            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
+        )
+    }
+
+    private func applyRewardDestinationViewModel(_ viewModel: RewardDestinationTypeViewModel) {
+        switch viewModel {
         case .restake:
             rootView.rewardDestinationCell.detailsLabel.text = R.string.localizable
                 .stakingRestakeTitle_v2_2_0(preferredLanguages: selectedLocale.rLanguages)
@@ -137,11 +157,6 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
             rootView.payoutAccountCell?.bind(viewModel: details.displayAddress().cellViewModel)
         }
-
-        rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
-            quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
-            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
-        )
     }
 
     private func applyHints() {
@@ -153,12 +168,12 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
     }
 
     private func applyAmountViewModel() {
-        let locale = localizationManager?.selectedLocale ?? Locale.current
-        guard let viewModel = amountViewModel?.value(for: locale) else {
-            return
+        if let viewModel = amountViewModel?.value(for: selectedLocale) {
+            rootView.addAmountIfNeeded()
+            rootView.amountView.bind(viewModel: viewModel)
+        } else {
+            rootView.removeAmountIfNeeded()
         }
-
-        rootView.amountView.bind(viewModel: viewModel)
     }
 
     private func applyFeeViewModel() {
@@ -185,6 +200,7 @@ extension SelectValidatorsConfirmViewController: SelectValidatorsConfirmViewProt
     func didReceive(confirmationViewModel: SelectValidatorsConfirmViewModel) {
         self.confirmationViewModel = confirmationViewModel
         applyConfirmationViewModel()
+        updateActionButton()
     }
 
     func didReceive(hintsViewModel: LocalizableResource<[String]>) {
@@ -192,10 +208,9 @@ extension SelectValidatorsConfirmViewController: SelectValidatorsConfirmViewProt
         applyHints()
     }
 
-    func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>) {
+    func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>?) {
         self.amountViewModel = amountViewModel
         applyAmountViewModel()
-        updateActionButton()
     }
 
     func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?) {
