@@ -91,10 +91,6 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
-            preferredLanguages: languages
-        )
-
         rootView.networkFeeView.locale = locale
 
         applyAsset()
@@ -106,16 +102,26 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
         )
 
         setupBalanceAccessoryView()
+
+        updateActionButton()
     }
 
     private func updateActionButton() {
         let isEnabled = (amountInputViewModel?.isValid == true)
 
         if isEnabled {
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
             rootView.actionButton.applyEnabledStyle()
             rootView.actionButton.isUserInteractionEnabled = true
         } else {
-            rootView.actionButton.applyDisabledStyle()
+            rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonInputAmountHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            rootView.actionButton.applyTranslucentDisabledStyle()
             rootView.actionButton.isUserInteractionEnabled = false
         }
     }
