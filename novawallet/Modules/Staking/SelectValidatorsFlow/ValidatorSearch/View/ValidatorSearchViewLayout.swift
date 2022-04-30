@@ -94,7 +94,8 @@ final class ValidatorSearchViewLayout: UIView {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(searchContainer.snp.bottom)
-            make.leading.bottom.trailing.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.equalTo(safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
     }
 }
