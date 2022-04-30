@@ -61,6 +61,7 @@ final class SelectValidatorsConfirmViewLayout: UIView {
         }
 
         let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
         payoutAccountCell = cell
 
         rewardDestinationTableView.addArrangedSubview(cell)
@@ -89,6 +90,16 @@ final class SelectValidatorsConfirmViewLayout: UIView {
         rewardDestinationTableView.isHidden = true
     }
 
+    func bindHints(_ hints: [String]) {
+        if hints.count > 1 {
+            stackView.setCustomSpacing(24.0, after: validatorsTableView)
+        } else {
+            stackView.setCustomSpacing(12.0, after: validatorsTableView)
+        }
+
+        hintListView.bind(texts: hints)
+    }
+
     private func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -112,11 +123,11 @@ final class SelectValidatorsConfirmViewLayout: UIView {
         walletTableView.addArrangedSubview(accountCell)
         walletTableView.addArrangedSubview(networkFeeCell)
 
-        stackView.setCustomSpacing(16.0, after: walletTableView)
+        stackView.setCustomSpacing(12.0, after: walletTableView)
 
         stackView.addArrangedSubview(rewardDestinationTableView)
         rewardDestinationTableView.addArrangedSubview(rewardDestinationCell)
-        stackView.setCustomSpacing(16, after: rewardDestinationTableView)
+        stackView.setCustomSpacing(12, after: rewardDestinationTableView)
 
         stackView.addArrangedSubview(validatorsTableView)
         validatorsTableView.addArrangedSubview(validatorsCell)
