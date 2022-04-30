@@ -129,7 +129,8 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
 
         rootView.validatorsCell.detailsLabel.text = R.string.localizable.stakingValidatorInfoNominators(
             quantityFormatter.string(from: NSNumber(value: viewModel.validatorsCount)) ?? "",
-            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? ""
+            quantityFormatter.string(from: NSNumber(value: viewModel.maxValidatorCount)) ?? "",
+            preferredLanguages: selectedLocale.rLanguages
         )
     }
 
@@ -164,7 +165,7 @@ final class SelectValidatorsConfirmViewController: UIViewController, ViewHolder,
             return
         }
 
-        rootView.hintListView.bind(texts: hints)
+        rootView.bindHints(hints)
     }
 
     private func applyAmountViewModel() {
