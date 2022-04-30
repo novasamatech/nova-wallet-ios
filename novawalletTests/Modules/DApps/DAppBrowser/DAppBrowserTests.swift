@@ -104,7 +104,7 @@ class DAppBrowserTests: XCTestCase {
 
         // then
 
-        wait(for: [loadingExpectation], timeout: 10)
+        wait(for: [loadingExpectation, favoritesExpectation], timeout: 10)
 
         XCTAssertEqual(loadedModel?.url, URL(string: dAppURL)!)
 
