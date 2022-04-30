@@ -54,7 +54,7 @@ final class ControllerAccountConfirmationVC: UIViewController, ViewHolder, Impor
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
             preferredLanguages: selectedLocale.rLanguages
         )
 
