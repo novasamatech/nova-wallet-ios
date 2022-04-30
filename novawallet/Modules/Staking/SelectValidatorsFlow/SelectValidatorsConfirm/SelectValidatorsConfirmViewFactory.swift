@@ -26,10 +26,15 @@ final class SelectValidatorsConfirmViewFactory {
 
         let wireframe = SelectValidatorsConfirmWireframe()
 
+        let title = LocalizableResource { locale in
+            R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
+        }
+
         return createView(
             for: interactor,
             wireframe: wireframe,
-            stakingState: stakingState
+            stakingState: stakingState,
+            title: title
         )
     }
 
@@ -64,17 +69,23 @@ final class SelectValidatorsConfirmViewFactory {
             return nil
         }
 
+        let title = LocalizableResource { locale in
+            R.string.localizable.stakingChangeValidators(preferredLanguages: locale.rLanguages)
+        }
+
         return createView(
             for: interactor,
             wireframe: wireframe,
-            stakingState: stakingState
+            stakingState: stakingState,
+            title: title
         )
     }
 
     private static func createView(
         for interactor: SelectValidatorsConfirmInteractorBase,
         wireframe: SelectValidatorsConfirmWireframeProtocol,
-        stakingState: StakingSharedState
+        stakingState: StakingSharedState,
+        title: LocalizableResource<String>
     ) -> SelectValidatorsConfirmViewProtocol? {
         guard let chainAsset = stakingState.settings.value else {
             return nil
@@ -103,6 +114,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         let view = SelectValidatorsConfirmViewController(
             presenter: presenter,
+            localizableTitle: title,
             quantityFormatter: .quantity,
             localizationManager: LocalizationManager.shared
         )
@@ -128,7 +140,7 @@ final class SelectValidatorsConfirmViewFactory {
             let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let displayAddress = try? selectedMetaAccount.chainAccount.toDisplayAddress() else {
+            let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress() else {
             return nil
         }
 
@@ -148,7 +160,7 @@ final class SelectValidatorsConfirmViewFactory {
         )
 
         return InitiatedBondingConfirmInteractor(
-            selectedAccount: displayAddress,
+            selectedAccount: selectedAccount,
             chainAsset: chainAsset,
             stakingLocalSubscriptionFactory: stakingState.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,

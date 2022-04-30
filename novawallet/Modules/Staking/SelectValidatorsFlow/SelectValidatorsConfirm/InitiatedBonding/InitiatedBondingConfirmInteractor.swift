@@ -4,10 +4,10 @@ import SoraKeystore
 
 final class InitiatedBondingConfirmInteractor: SelectValidatorsConfirmInteractorBase {
     let nomination: PreparedNomination<InitiatedBonding>
-    let selectedAccount: DisplayAddress
+    let selectedAccount: WalletDisplayAddress
 
     init(
-        selectedAccount: DisplayAddress,
+        selectedAccount: WalletDisplayAddress,
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,

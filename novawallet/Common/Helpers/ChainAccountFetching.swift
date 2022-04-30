@@ -36,6 +36,18 @@ enum ChainAccountFetchingError: Error {
     case accountNotExists
 }
 
+extension MetaChainAccountResponse {
+    func toWalletDisplayAddress() throws -> WalletDisplayAddress {
+        let displayAddress = try chainAccount.toDisplayAddress()
+
+        return WalletDisplayAddress(
+            address: displayAddress.address,
+            walletName: displayAddress.username,
+            walletIconData: substrateAccountId
+        )
+    }
+}
+
 extension ChainAccountResponse {
     var chainFormat: ChainFormat {
         isEthereumBased ? .ethereum : .substrate(addressPrefix)
