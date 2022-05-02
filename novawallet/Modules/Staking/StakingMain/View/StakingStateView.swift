@@ -15,27 +15,14 @@ struct StakingStateSkeletonOptions: OptionSet {
     }
 }
 
-protocol StakingStateViewDelegate: AnyObject {
-    func stakingStateViewDidReceiveMoreAction(_ view: StakingStateView)
-}
-
 class StakingStateView: UIView {
-    weak var delegate: StakingStateViewDelegate?
-
     let backgroundView: UIView = TriangularedBlurView()
 
     let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorTransparentText()
         return label
-    }()
-
-    let iconMore: UIImageView = {
-        let view = UIImageView()
-        view.image = R.image.iconMore()?.withRenderingMode(.alwaysTemplate)
-        view.tintColor = R.color.colorWhite48()
-        return view
     }()
 
     let stakeAmountView: MultiValueView = {
@@ -43,7 +30,7 @@ class StakingStateView: UIView {
         view.valueTop.font = .boldTitle1
         view.valueTop.textColor = R.color.colorWhite()
         view.valueTop.textAlignment = .center
-        view.valueBottom.font = .p0Paragraph
+        view.valueBottom.font = .regularBody
         view.valueBottom.textColor = R.color.colorTransparentText()
         view.valueBottom.textAlignment = .center
         view.spacing = 6.0
@@ -59,15 +46,6 @@ class StakingStateView: UIView {
         return view
     }()
 
-    let moreButton: RoundedButton = {
-        let button = RoundedButton()
-        button.roundedBackgroundView?.cornerRadius = 12.0
-        button.roundedBackgroundView?.fillColor = .clear
-        button.roundedBackgroundView?.highlightedFillColor = R.color.colorAccentSelected()!
-        button.roundedBackgroundView?.shadowOpacity = 0.0
-        return button
-    }()
-
     private var skeletonView: SkrullableView?
     private var skeletonOptions: StakingStateSkeletonOptions?
 
@@ -75,16 +53,11 @@ class StakingStateView: UIView {
         super.init(frame: frame)
 
         setupLayout()
-        configure()
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure() {
-        moreButton.addTarget(self, action: #selector(actionOnMore), for: .touchUpInside)
     }
 
     func setupLayout() {
@@ -93,17 +66,10 @@ class StakingStateView: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(iconMore)
-        iconMore.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16.0)
-            make.top.equalToSuperview().inset(12.0)
-        }
-
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(20.0)
             make.centerX.equalToSuperview()
-            make.trailing.lessThanOrEqualTo(iconMore.snp.leading).offset(2.0)
         }
 
         addSubview(stakeAmountView)
@@ -118,11 +84,6 @@ class StakingStateView: UIView {
             make.top.equalTo(stakeAmountView.snp.bottom).offset(14.0)
             make.bottom.equalToSuperview().offset(-24.0)
         }
-
-        insertSubview(moreButton, aboveSubview: backgroundView)
-        moreButton.snp.makeConstraints { make in
-            make.edges.equalTo(backgroundView)
-        }
     }
 
     override func layoutSubviews() {
@@ -131,10 +92,6 @@ class StakingStateView: UIView {
         if let options = skeletonOptions {
             setupSkeleton(options: options)
         }
-    }
-
-    @objc private func actionOnMore() {
-        delegate?.stakingStateViewDidReceiveMoreAction(self)
     }
 }
 

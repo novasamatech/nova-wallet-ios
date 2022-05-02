@@ -3,22 +3,22 @@ import SubstrateSdk
 
 protocol StakingRewardDestConfirmVMFactoryProtocol {
     func createViewModel(
-        from stashItem: StashItem,
-        rewardDestination: RewardDestination<AccountItem>,
-        controller: AccountItem?
+        rewardDestination: RewardDestination<MetaChainAccountResponse>,
+        controller: MetaChainAccountResponse
     ) throws -> StakingRewardDestConfirmViewModel
 }
 
 final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactoryProtocol {
-    private lazy var iconGenerator = PolkadotIconGenerator()
+    private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var amountFactory = AmountFormatterFactory()
 
     func createViewModel(
-        from stashItem: StashItem,
-        rewardDestination: RewardDestination<AccountItem>,
-        controller: AccountItem?
+        rewardDestination: RewardDestination<MetaChainAccountResponse>,
+        controller: MetaChainAccountResponse
     ) throws -> StakingRewardDestConfirmViewModel {
-        let icon = try iconGenerator.generateFromAddress(stashItem.controller)
+        let walletDetails = try walletViewModelFactory.createViewModel(from: controller)
+        let accountViewModel = walletDetails.rawDisplayAddress()
+        let walletViewModel = walletDetails.displayWallet()
 
         let rewardDestViewModel: RewardDestinationTypeViewModel
 
@@ -26,14 +26,13 @@ final class StakingRewardDestConfirmVMFactory: StakingRewardDestConfirmVMFactory
         case .restake:
             rewardDestViewModel = .restake
         case let .payout(account):
-            let payoutIcon = try iconGenerator.generateFromAddress(account.address)
-
-            rewardDestViewModel = .payout(icon: payoutIcon, title: account.username)
+            let payoutViewModel = try walletViewModelFactory.createViewModel(from: account)
+            rewardDestViewModel = .payout(details: payoutViewModel)
         }
 
         return StakingRewardDestConfirmViewModel(
-            senderIcon: icon,
-            senderName: controller?.username ?? stashItem.controller,
+            walletViewModel: walletViewModel,
+            accountViewModel: accountViewModel,
             rewardDestination: rewardDestViewModel
         )
     }

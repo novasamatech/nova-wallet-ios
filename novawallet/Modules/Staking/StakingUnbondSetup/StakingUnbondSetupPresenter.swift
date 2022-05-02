@@ -20,7 +20,7 @@ final class StakingUnbondSetupPresenter {
     private var minimalBalance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: ChainAccountResponse?
     private var stashItem: StashItem?
     private var stakingDuration: StakingDuration?
 
@@ -64,6 +64,15 @@ final class StakingUnbondSetupPresenter {
         view?.didReceiveAsset(viewModel: viewModel)
     }
 
+    private func provideTransferableViewModel() {
+        if let balance = balance {
+            let viewModel = balanceViewModelFactory.balanceFromPrice(balance, priceData: priceData)
+            view?.didReceiveTransferable(viewModel: viewModel)
+        } else {
+            view?.didReceiveTransferable(viewModel: nil)
+        }
+    }
+
     private func provideBondingDuration() {
         guard let erasPerDay = stakingDuration?.era.intervalsInDay else {
             return
@@ -89,6 +98,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupPresenterProtocol {
     func setup() {
         provideInputViewModel()
         provideFeeViewModel()
+        provideTransferableViewModel()
         provideBondingDuration()
         provideAssetViewModel()
 
@@ -161,6 +171,8 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             } else {
                 balance = nil
             }
+
+            provideTransferableViewModel()
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
         }
@@ -190,6 +202,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
             self.priceData = priceData
             provideAssetViewModel()
             provideFeeViewModel()
+            provideTransferableViewModel()
         case let .failure(error):
             logger?.error("Price data subscription error: \(error)")
         }
@@ -230,7 +243,7 @@ extension StakingUnbondSetupPresenter: StakingUnbondSetupInteractorOutputProtoco
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {

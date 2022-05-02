@@ -104,8 +104,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-                self?.presenter?.didReceiveController(result: .success(maybeAccountItem))
+                self?.presenter?.didReceiveController(result: .success(accountResponse))
             case let .failure(error):
                 self?.presenter?.didReceiveController(result: .failure(error))
             }
@@ -123,8 +122,7 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
                     self?.setupExtrinsicServiceIfNeeded(response: accountResponse)
                 }
 
-                let maybeAccountItem = try? accountResponse?.chainAccount.toAccountItem()
-                self?.presenter?.didReceiveStash(result: .success(maybeAccountItem))
+                self?.presenter?.didReceiveStash(result: .success(accountResponse))
             case let .failure(error):
                 self?.presenter?.didReceiveStash(result: .failure(error))
             }
@@ -180,8 +178,7 @@ extension StakingRewardDestSetupInteractor: StakingRewardDestSetupInteractorInpu
         ) { [weak self] result in
             switch result {
             case let .success(responses):
-                let accountItems = responses.compactMap { try? $0.chainAccount.toAccountItem() }
-                self?.presenter?.didReceiveAccounts(result: .success(accountItems))
+                self?.presenter?.didReceiveAccounts(result: .success(responses))
             case let .failure(error):
                 self?.presenter?.didReceiveAccounts(result: .failure(error))
             }
@@ -284,7 +281,7 @@ extension StakingRewardDestSetupInteractor: StakingLocalStorageSubscriber,
                 presenter?.didReceiveRewardDestinationAccount(result: .success(.restake))
             case let .payout(account):
                 let accountId = try account.toAccountId()
-                fetchFirstAccount(
+                fetchFirstMetaAccountResponse(
                     for: accountId,
                     accountRequest: chainAsset.chain.accountRequest(),
                     repositoryFactory: accountRepositoryFactory,

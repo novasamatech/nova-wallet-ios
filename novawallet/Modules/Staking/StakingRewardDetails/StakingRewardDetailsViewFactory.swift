@@ -17,17 +17,27 @@ final class StakingRewardDetailsViewFactory {
 
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            iconGenerator: PolkadotIconGenerator(),
             chainFormat: chainAsset.chain.chainFormat
         )
+
+        let localizationManager = LocalizationManager.shared
+
+        let timeleftFactory = PayoutTimeViewModelFactory(
+            timeFormatter: TotalTimeFormatter(),
+            normalTimelefColor: R.color.colorWhite()!
+        )
+
         let presenter = StakingRewardDetailsPresenter(
             input: input,
             viewModelFactory: viewModelFactory,
-            explorers: chainAsset.chain.explorers
+            timeleftFactory: timeleftFactory,
+            explorers: chainAsset.chain.explorers,
+            chainFormat: chainAsset.chain.chainFormat,
+            localizationManager: localizationManager
         )
         let view = StakingRewardDetailsViewController(
             presenter: presenter,
-            localizationManager: LocalizationManager.shared
+            localizationManager: localizationManager
         )
 
         let interactor = StakingRewardDetailsInteractor(

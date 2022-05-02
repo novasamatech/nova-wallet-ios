@@ -4,7 +4,7 @@ import SoraFoundation
 protocol ChangeRewardDestinationViewModelFactoryProtocol {
     func createViewModel(
         from originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bondedAmount: Decimal,
         calculator: RewardCalculatorEngineProtocol,
         nomination: Nomination?,
@@ -22,7 +22,7 @@ final class ChangeRewardDestinationViewModelFactory {
     private func createRewardDestinationViewModelForReward(
         _ reward: CalculatedReward,
         originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         priceData: PriceData?
     ) throws -> LocalizableResource<RewardDestinationViewModelProtocol>? {
         if let rewardDestination = selectedRewardDestination {
@@ -30,8 +30,11 @@ final class ChangeRewardDestinationViewModelFactory {
             case .restake:
                 return rewardDestinationViewModelFactory.createRestake(from: reward, priceData: priceData)
             case let .payout(account):
-                return try rewardDestinationViewModelFactory
-                    .createPayout(from: reward, priceData: priceData, account: account)
+                return try rewardDestinationViewModelFactory.createPayout(
+                    from: reward,
+                    priceData: priceData,
+                    account: account
+                )
             }
         }
 
@@ -39,15 +42,18 @@ final class ChangeRewardDestinationViewModelFactory {
         case .restake:
             return rewardDestinationViewModelFactory.createRestake(from: reward, priceData: priceData)
         case let .payout(address):
-            return try rewardDestinationViewModelFactory
-                .createPayout(from: reward, priceData: priceData, address: address)
+            return try rewardDestinationViewModelFactory.createPayout(
+                from: reward,
+                priceData: priceData,
+                address: address
+            )
         }
     }
 
     private func createRewardDestinationViewModelForValidatorId(
         _ validatorId: AccountId,
         originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bonded: Decimal,
         calculator: RewardCalculatorEngineProtocol,
         priceData: PriceData?
@@ -82,7 +88,7 @@ final class ChangeRewardDestinationViewModelFactory {
     private func createMaxReturnRewardDestinationViewModel(
         for bonded: Decimal,
         originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         calculator: RewardCalculatorEngineProtocol,
         priceData: PriceData?
     ) throws -> LocalizableResource<RewardDestinationViewModelProtocol>? {
@@ -107,7 +113,7 @@ final class ChangeRewardDestinationViewModelFactory {
     private func createRewardDestinationViewModelFromNomination(
         _ nomination: Nomination,
         originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bonded: Decimal,
         using calculator: RewardCalculatorEngineProtocol,
         priceData: PriceData?
@@ -151,7 +157,7 @@ final class ChangeRewardDestinationViewModelFactory {
 extension ChangeRewardDestinationViewModelFactory: ChangeRewardDestinationViewModelFactoryProtocol {
     func createViewModel(
         from originalRewardDestination: RewardDestination<AccountAddress>,
-        selectedRewardDestination: RewardDestination<AccountItem>?,
+        selectedRewardDestination: RewardDestination<MetaChainAccountResponse>?,
         bondedAmount: Decimal,
         calculator: RewardCalculatorEngineProtocol,
         nomination: Nomination?,
@@ -182,8 +188,9 @@ extension ChangeRewardDestinationViewModelFactory: ChangeRewardDestinationViewMo
             return nil
         }
 
-        let alreadyApplied = selectedRewardDestination == nil ||
-            (selectedRewardDestination?.accountAddress == originalRewardDestination)
+        let selectedAddress = selectedRewardDestination?.accountAddress?.account
+        let originalAddress = originalRewardDestination.account
+        let alreadyApplied = selectedRewardDestination == nil || (selectedAddress == originalAddress)
 
         return ChangeRewardDestinationViewModel(
             selectionViewModel: selectionViewModel,

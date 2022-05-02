@@ -27,6 +27,7 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
     private var amountInputViewModel: AmountInputViewModelProtocol?
     private var assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>?
     private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
+    private var transferableViewModel: LocalizableResource<BalanceViewModelProtocol>?
     private var bondingDurationViewModel: LocalizableResource<String>?
 
     @available(*, unavailable)
@@ -52,10 +53,27 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.stakingUnbond_v190(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.locale = selectedLocale
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonStakedPrefix(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.transferrableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
+        rootView.hintListView.locale = selectedLocale
 
         setupBalanceAccessoryView()
-
+        applyTransferableViewModel()
         applyAssetViewModel()
         applyFeeViewModel()
         applyBondingDuration()
@@ -89,24 +107,17 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
             return
         }
 
-        let amountView = rootView.amountInputView
-        amountView.priceText = viewModel.price
+        let assetViewModel = AssetViewModel(symbol: viewModel.symbol, imageViewModel: viewModel.iconViewModel)
 
-        if let balance = viewModel.balance {
-            amountView.balanceText = R.string.localizable.stakingBondedFormat(
-                balance,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        } else {
-            amountView.balanceText = nil
-        }
+        rootView.amountInputView.bind(assetViewModel: assetViewModel)
+        rootView.amountInputView.bind(priceViewModel: viewModel.price)
 
-        amountView.symbol = viewModel.symbol.uppercased()
+        rootView.amountView.detailsValueLabel.text = viewModel.balance
+    }
 
-        viewModel.iconViewModel?.cancel(on: amountView.iconView)
-        amountView.assetIcon = nil
-
-        viewModel.iconViewModel?.loadAmountInputIcon(on: amountView.iconView, animated: true)
+    private func applyTransferableViewModel() {
+        let viewModel = transferableViewModel?.value(for: selectedLocale)
+        rootView.transferrableView.bind(viewModel: viewModel)
     }
 
     private func applyFeeViewModel() {
@@ -115,11 +126,8 @@ final class StakingUnbondSetupViewController: UIViewController, ViewHolder {
     }
 
     private func applyBondingDuration() {
-        guard let details = bondingDurationViewModel?.value(for: selectedLocale) else {
-            return
-        }
-
-        rootView.durationView.valueLabel.text = details
+        let bondingDuration = bondingDurationViewModel?.value(for: selectedLocale)
+        rootView.hintListView.bondingDuration = bondingDuration
     }
 
     @objc private func actionClose() {
@@ -152,12 +160,18 @@ extension StakingUnbondSetupViewController: StakingUnbondSetupViewProtocol {
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>) {
         amountInputViewModel?.observable.remove(observer: self)
 
-        amountInputViewModel = viewModel.value(for: selectedLocale)
+        let inputViewModel = viewModel.value(for: selectedLocale)
+        amountInputViewModel = inputViewModel
         amountInputViewModel?.observable.add(observer: self)
 
-        rootView.amountInputView.fieldText = amountInputViewModel?.displayAmount
+        rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
         updateActionButton()
+    }
+
+    func didReceiveTransferable(viewModel: LocalizableResource<BalanceViewModelProtocol>?) {
+        transferableViewModel = viewModel
+        applyTransferableViewModel()
     }
 
     func didReceiveBonding(duration: LocalizableResource<String>) {
@@ -188,8 +202,6 @@ extension StakingUnbondSetupViewController: AmountInputAccessoryViewDelegate {
 
 extension StakingUnbondSetupViewController: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        rootView.amountInputView.fieldText = amountInputViewModel?.displayAmount
-
         updateActionButton()
 
         let amount = amountInputViewModel?.decimalAmount ?? 0.0

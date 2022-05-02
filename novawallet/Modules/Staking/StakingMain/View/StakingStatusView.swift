@@ -12,7 +12,7 @@ final class StakingStatusView: UIView {
 
     let detailsLabel: UILabel = {
         let label = UILabel()
-        label.font = .capsTitleMedium
+        label.font = .semiBoldCaps2
         return label
     }()
 

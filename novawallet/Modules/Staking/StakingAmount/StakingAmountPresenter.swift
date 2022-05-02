@@ -4,12 +4,12 @@ import BigInt
 
 final class StakingAmountPresenter {
     weak var view: StakingAmountViewProtocol?
-    var wireframe: StakingAmountWireframeProtocol!
-    var interactor: StakingAmountInteractorInputProtocol!
+    let wireframe: StakingAmountWireframeProtocol
+    let interactor: StakingAmountInteractorInputProtocol
 
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let rewardDestViewModelFactory: RewardDestinationViewModelFactoryProtocol
-    let selectedAccount: AccountItem
+    let selectedAccount: MetaChainAccountResponse
     let assetInfo: AssetBalanceDisplayInfo
     let logger: LoggerProtocol
     let applicationConfig: ApplicationConfigProtocol
@@ -21,8 +21,8 @@ final class StakingAmountPresenter {
     private var fee: Decimal?
     private var loadingFee: Bool = false
     private var amount: Decimal?
-    private var rewardDestination: RewardDestination<AccountItem> = .restake
-    private var payoutAccount: AccountItem
+    private var rewardDestination: RewardDestination<ChainAccountResponse> = .restake
+    private var payoutAccount: MetaChainAccountResponse
     private var loadingPayouts: Bool = false
     private var minimalBalance: Decimal?
     private var minBondAmount: Decimal?
@@ -30,8 +30,10 @@ final class StakingAmountPresenter {
     private var maxNominatorsCount: UInt32?
 
     init(
+        wireframe: StakingAmountWireframeProtocol,
+        interactor: StakingAmountInteractorInputProtocol,
         amount: Decimal?,
-        selectedAccount: AccountItem,
+        selectedAccount: MetaChainAccountResponse,
         assetInfo: AssetBalanceDisplayInfo,
         rewardDestViewModelFactory: RewardDestinationViewModelFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
@@ -39,6 +41,8 @@ final class StakingAmountPresenter {
         applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol
     ) {
+        self.wireframe = wireframe
+        self.interactor = interactor
         self.amount = amount
         self.selectedAccount = selectedAccount
         payoutAccount = selectedAccount
@@ -81,8 +85,11 @@ final class StakingAmountPresenter {
                 let viewModel = rewardDestViewModelFactory.createRestake(from: reward, priceData: priceData)
                 view?.didReceiveRewardDestination(viewModel: viewModel)
             case .payout:
-                let viewModel = try rewardDestViewModelFactory
-                    .createPayout(from: reward, priceData: priceData, account: payoutAccount)
+                let viewModel = try rewardDestViewModelFactory.createPayout(
+                    from: reward,
+                    priceData: priceData,
+                    account: payoutAccount
+                )
                 view?.didReceiveRewardDestination(viewModel: viewModel)
             }
         } catch {
@@ -120,13 +127,14 @@ final class StakingAmountPresenter {
     }
 
     private func estimateFee() {
-        if let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: assetInfo.assetPrecision) {
+        if
+            let amount = StakingConstants.maxAmount.toSubstrateAmount(precision: assetInfo.assetPrecision),
+            let address = payoutAccount.chainAccount.toAddress() {
             loadingFee = true
-            interactor.estimateFee(
-                for: selectedAccount.address,
-                amount: amount,
-                rewardDestination: .payout(account: payoutAccount)
-            )
+
+            let rewardDestination = RewardDestination.payout(account: payoutAccount.chainAccount)
+
+            interactor.estimateFee(for: address, amount: amount, rewardDestination: rewardDestination)
         }
     }
 }
@@ -149,7 +157,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
     }
 
     func selectPayoutDestination() {
-        rewardDestination = .payout(account: payoutAccount)
+        rewardDestination = .payout(account: payoutAccount.chainAccount)
         provideRewardDestination()
 
         scheduleFeeEstimation()
@@ -165,11 +173,6 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 provideAmountInputViewModel()
                 provideAsset()
                 provideRewardDestination()
-            } else if let view = view {
-                wireframe.presentAmountTooHigh(
-                    from: view,
-                    locale: view.localizationManager?.selectedLocale
-                )
             }
         }
     }
@@ -234,10 +237,7 @@ extension StakingAmountPresenter: StakingAmountPresenterProtocol {
                 return
             }
 
-            let stakingState = InitiatedBonding(
-                amount: amount,
-                rewardDestination: rewardDestination
-            )
+            let stakingState = InitiatedBonding(amount: amount, rewardDestination: rewardDestination)
 
             self?.wireframe.proceed(from: self?.view, state: stakingState)
         }
@@ -255,14 +255,14 @@ extension StakingAmountPresenter: SchedulerDelegate {
 }
 
 extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
-    func didReceive(accounts: [AccountItem]) {
+    func didReceive(accounts: [MetaChainAccountResponse]) {
         loadingPayouts = false
 
         let context = PrimitiveContextWrapper(value: accounts)
 
         wireframe.presentAccountSelection(
             accounts,
-            selectedAccountItem: payoutAccount,
+            selectedAccount: payoutAccount,
             delegate: self,
             from: view,
             context: context
@@ -289,7 +289,7 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
     func didReceive(
         paymentInfo: RuntimeDispatchInfo,
         for _: BigUInt,
-        rewardDestination _: RewardDestination<AccountItem>
+        rewardDestination _: RewardDestination<ChainAccountResponse>
     ) {
         loadingFee = false
 
@@ -350,10 +350,16 @@ extension StakingAmountPresenter: StakingAmountInteractorOutputProtocol {
 }
 
 extension StakingAmountPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompletionAccountSelection()
+    }
+
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        view?.didCompletionAccountSelection()
+
         guard
             let accounts =
-            (context as? PrimitiveContextWrapper<[AccountItem]>)?.value
+            (context as? PrimitiveContextWrapper<[MetaChainAccountResponse]>)?.value
         else {
             return
         }
@@ -361,7 +367,7 @@ extension StakingAmountPresenter: ModalPickerViewControllerDelegate {
         payoutAccount = accounts[index]
 
         if case .payout = rewardDestination {
-            rewardDestination = .payout(account: payoutAccount)
+            rewardDestination = .payout(account: payoutAccount.chainAccount)
         }
 
         provideRewardDestination()

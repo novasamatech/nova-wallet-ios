@@ -144,7 +144,7 @@ class StakingRewardDestConfirmTests: XCTestCase {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let newPayoutItem = try newPayout?.fetch(for: chain.accountRequest())?.toAccountItem()
+        let newPayoutItem = newPayout?.fetchMetaChainAccount(for: chain.accountRequest())
         let rewardDestination = newPayoutItem.map { RewardDestination.payout(account: $0) } ?? .restake
 
         let dataValidating = StakingDataValidatingFactory(presentable: wireframe)

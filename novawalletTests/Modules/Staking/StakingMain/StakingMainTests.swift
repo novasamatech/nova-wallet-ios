@@ -209,62 +209,6 @@ class StakingMainTests: XCTestCase {
         wait(for: expectations, timeout: 5)
     }
 
-    func testManageStakingBalanceAction() {
-        // given
-
-        let options: [StakingManageOption] = [
-            .stakingBalance,
-            .pendingRewards,
-            .changeValidators(count: 16)
-        ]
-
-        let wireframe = MockStakingMainWireframeProtocol()
-
-        let showStakingBalanceExpectation = XCTestExpectation()
-        stub(wireframe) { stub in
-            when(stub).showStakingBalance(from: any()).then { _ in
-                showStakingBalanceExpectation.fulfill()
-            }
-        }
-
-        // when
-
-        let presenter = performStakingManageTestSetup(for: wireframe)
-
-        presenter.modalPickerDidSelectModelAtIndex(0, context: options as NSArray)
-
-        // then
-        wait(for: [showStakingBalanceExpectation], timeout: Constants.defaultExpectationDuration)
-    }
-
-    func testManageStakingValidatorsAction() {
-        // given
-
-        let options: [StakingManageOption] = [
-            .stakingBalance,
-            .pendingRewards,
-            .changeValidators(count: 16)
-        ]
-
-        let wireframe = MockStakingMainWireframeProtocol()
-
-        let showValidatorsExpectation = XCTestExpectation()
-        stub(wireframe) { stub in
-            when(stub).showNominatorValidators(from: any()).then { _ in
-                showValidatorsExpectation.fulfill()
-            }
-        }
-
-        // when
-
-        let presenter = performStakingManageTestSetup(for: wireframe)
-
-        presenter.modalPickerDidSelectModelAtIndex(2, context: options as NSArray)
-
-        // then
-        wait(for: [showValidatorsExpectation], timeout: Constants.defaultExpectationDuration)
-    }
-
     private func performStakingManageTestSetup(
         for wireframe: StakingMainWireframeProtocol
     ) -> StakingMainPresenter {

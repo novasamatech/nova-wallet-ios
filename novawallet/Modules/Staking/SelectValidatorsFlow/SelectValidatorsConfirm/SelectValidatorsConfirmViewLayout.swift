@@ -1,41 +1,47 @@
 import UIKit
 
 final class SelectValidatorsConfirmViewLayout: UIView {
-    let contentView: ScrollableContainerView = {
+    let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
-    var stackView: UIStackView { contentView.stackView }
+    var stackView: UIStackView { containerView.stackView }
 
-    let mainAccountView: DetailsTriangularedView = UIFactory.default.createAccountView()
+    let amountView = MultilineBalanceView()
 
-    let amountView: AmountInputView = {
-        let view = UIFactory().createAmountInputView(filled: true)
-        view.isUserInteractionEnabled = false
-        return view
+    let walletTableView = StackTableView()
+
+    let walletCell = StackTableCell()
+
+    let accountCell: StackInfoTableCell = {
+        let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        return cell
     }()
 
-    let rewardDestinationView: TitleValueView = {
-        let view = UIFactory.default.createTitleValueView()
-        view.borderView.borderType = .none
-        return view
+    let networkFeeCell = StackNetworkFeeCell()
+
+    let rewardDestinationTableView = StackTableView()
+
+    let rewardDestinationCell = StackTableCell()
+
+    private(set) var payoutAccountCell: StackInfoTableCell?
+
+    let validatorsTableView = StackTableView()
+
+    let validatorsCell = StackTableCell()
+
+    let actionButton: TriangularedButton = {
+        let button = TriangularedButton()
+        button.applyDefaultStyle()
+        return button
     }()
 
-    private(set) var payoutAccountView: DetailsTriangularedView?
-
-    let validatorsView: TitleValueView = {
-        let view = UIFactory.default.createTitleValueView()
-        view.borderView.strokeWidth = UIConstants.separatorHeight
-        view.borderView.borderType = [.top, .bottom]
-        return view
-    }()
-
-    let networkFeeConfirmView: NetworkFeeConfirmView = UIFactory().createNetworkFeeConfirmView()
-
-    private(set) var hintViews: [UIView] = []
+    let hintListView = HintListView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,98 +56,83 @@ final class SelectValidatorsConfirmViewLayout: UIView {
     }
 
     func addPayoutAccountIfNeeded() {
-        guard payoutAccountView == nil else {
+        guard payoutAccountCell == nil else {
             return
         }
 
-        let view = UIFactory.default.createAccountView()
+        let cell = StackInfoTableCell()
+        cell.detailsLabel.lineBreakMode = .byTruncatingMiddle
+        payoutAccountCell = cell
 
-        stackView.insertArranged(view: view, after: rewardDestinationView)
-        view.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
-
-        stackView.setCustomSpacing(13.0, after: view)
-
-        payoutAccountView = view
+        rewardDestinationTableView.addArrangedSubview(cell)
     }
 
     func removePayoutAccountIfNeeded() {
-        payoutAccountView?.removeFromSuperview()
-        payoutAccountView = nil
+        payoutAccountCell?.removeFromSuperview()
+        payoutAccountCell = nil
+
+        rewardDestinationTableView.updateLayout()
     }
 
-    func setHints(_ hints: [TitleIconViewModel]) {
-        hintViews.forEach { $0.removeFromSuperview() }
+    func addAmountIfNeeded() {
+        amountView.isHidden = false
+    }
 
-        hintViews = hints.map { hint in
-            let view = IconDetailsView()
-            view.iconWidth = 16.0
-            view.stackView.alignment = .top
-            view.detailsLabel.font = .caption1
-            view.detailsLabel.textColor = R.color.colorTransparentText()
-            view.detailsLabel.text = hint.title
-            view.imageView.image = hint.icon
-            return view
+    func removeAmountIfNeeded() {
+        amountView.isHidden = true
+    }
+
+    func addRewardDestinationIfNeeded() {
+        rewardDestinationTableView.isHidden = false
+    }
+
+    func removeRewardDestinationIfNeeded() {
+        rewardDestinationTableView.isHidden = true
+    }
+
+    func bindHints(_ hints: [String]) {
+        if hints.count > 1 {
+            stackView.setCustomSpacing(24.0, after: validatorsTableView)
+        } else {
+            stackView.setCustomSpacing(12.0, after: validatorsTableView)
         }
 
-        for (index, view) in hintViews.enumerated() {
-            if index > 0 {
-                stackView.insertArranged(view: view, after: hintViews[index - 1])
-            } else {
-                stackView.insertArranged(view: view, after: validatorsView)
-            }
-
-            view.snp.makeConstraints { make in
-                make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            }
-
-            stackView.setCustomSpacing(9, after: view)
-        }
+        hintListView.bind(texts: hints)
     }
 
     private func setupLayout() {
-        addSubview(networkFeeConfirmView)
-        networkFeeConfirmView.snp.makeConstraints { make in
-            make.leading.bottom.trailing.equalToSuperview()
+        addSubview(actionButton)
+        actionButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
+            make.height.equalTo(UIConstants.actionHeight)
         }
 
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(networkFeeConfirmView.snp.top)
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
         }
-
-        stackView.addArrangedSubview(mainAccountView)
-        mainAccountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(52.0)
-        }
-
-        stackView.setCustomSpacing(16.0, after: mainAccountView)
 
         stackView.addArrangedSubview(amountView)
-        amountView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(72.0)
-        }
+        stackView.setCustomSpacing(24.0, after: amountView)
 
-        stackView.setCustomSpacing(16.0, after: amountView)
+        stackView.addArrangedSubview(walletTableView)
 
-        stackView.addArrangedSubview(rewardDestinationView)
-        rewardDestinationView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
-        }
+        walletTableView.addArrangedSubview(walletCell)
+        walletTableView.addArrangedSubview(accountCell)
+        walletTableView.addArrangedSubview(networkFeeCell)
 
-        stackView.addArrangedSubview(validatorsView)
-        validatorsView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
-        }
+        stackView.setCustomSpacing(12.0, after: walletTableView)
 
-        stackView.setCustomSpacing(13.0, after: validatorsView)
+        stackView.addArrangedSubview(rewardDestinationTableView)
+        rewardDestinationTableView.addArrangedSubview(rewardDestinationCell)
+        stackView.setCustomSpacing(12, after: rewardDestinationTableView)
+
+        stackView.addArrangedSubview(validatorsTableView)
+        validatorsTableView.addArrangedSubview(validatorsCell)
+        stackView.setCustomSpacing(24.0, after: validatorsTableView)
+
+        stackView.addArrangedSubview(hintListView)
     }
 }

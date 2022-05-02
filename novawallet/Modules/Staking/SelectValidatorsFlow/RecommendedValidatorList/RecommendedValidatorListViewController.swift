@@ -1,17 +1,31 @@
 import UIKit
 import SoraFoundation
 
-final class RecommendedValidatorListViewController: UIViewController {
-    var presenter: RecommendedValidatorListPresenterProtocol!
+final class RecommendedValidatorListViewController: UIViewController, ViewHolder {
+    typealias RootViewType = SelectedValidatorListViewLayout
 
-    @IBOutlet private var tableView: UITableView!
-    @IBOutlet var continueButton: TriangularedButton!
+    let presenter: RecommendedValidatorListPresenterProtocol
 
     private var viewModel: RecommendedValidatorListViewModelProtocol?
-    private weak var headerView: RecommendedValidatorListHeaderView?
 
-    var selectedLocale: Locale {
-        localizationManager?.selectedLocale ?? .autoupdatingCurrent
+    init(
+        presenter: RecommendedValidatorListPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol? = nil
+    ) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = SelectedValidatorListViewLayout()
     }
 
     override func viewDidLoad() {
@@ -19,54 +33,36 @@ final class RecommendedValidatorListViewController: UIViewController {
 
         setupTableView()
         setupLocalization()
+        setupHandlers()
+
         presenter.setup()
     }
 
     private func setupTableView() {
-        tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
-        tableView.tableFooterView = UIView()
-
-        tableView.register(R.nib.recommendedValidatorCell)
-        tableView.rowHeight = UIConstants.cellHeight
-
-        if let headerView = R.nib.recommendedValidatorListHeaderView.firstView(owner: nil) {
-            headerView.heightAnchor.constraint(equalToConstant: UIConstants.tableHeaderHeight)
-                .isActive = true
-            tableView.tableHeaderView = headerView
-
-            self.headerView = headerView
-        }
+        rootView.tableView.dataSource = self
+        rootView.tableView.delegate = self
+        rootView.tableView.registerClassForCell(SelectedValidatorCell.self)
+        rootView.tableView.registerHeaderFooterView(withClass: SelectedValidatorListHeaderView.self)
     }
 
-    private func updateHeaderView() {
-        if let viewModel = viewModel {
-            let languages = selectedLocale.rLanguages
-            let title = viewModel
-                .itemsCountString.value(for: selectedLocale)
-
-            let details = R.string.localizable
-                .stakingFilterTitleRewards(preferredLanguages: languages)
-
-            headerView?.bind(
-                title: title.uppercased(),
-                details: details.uppercased()
-            )
-        }
+    private func setupHandlers() {
+        rootView.proceedButton.addTarget(
+            self,
+            action: #selector(actionContinue),
+            for: .touchUpInside
+        )
     }
 
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
-        title = R.string.localizable
-            .stakingRecommendedSectionTitle(preferredLanguages: languages)
+        title = R.string.localizable.stakingRecommendedSectionTitle(preferredLanguages: languages)
 
-        continueButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: languages)
-        continueButton.invalidateLayout()
-
-        updateHeaderView()
+        rootView.proceedButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: languages
+        )
     }
 
-    @IBAction private func actionContinue() {
+    @objc private func actionContinue() {
         presenter.proceed()
     }
 }
@@ -77,16 +73,30 @@ extension RecommendedValidatorListViewController: UITableViewDelegate, UITableVi
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView
-            .dequeueReusableCell(
-                withIdentifier: R.reuseIdentifier.selectedValidatorCellId,
-                for: indexPath
-            )!
+        let cell = tableView.dequeueReusableCellWithType(SelectedValidatorCell.self)!
 
         let items = viewModel?.itemViewModels ?? []
-        cell.bind(viewModel: items[indexPath.row].value(for: selectedLocale))
+        let viewModel = items[indexPath.row].value(for: selectedLocale)
+        cell.bind(viewModel: viewModel)
 
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection _: Int) -> UIView? {
+        guard let viewModel = viewModel else {
+            return nil
+        }
+
+        let headerView: SelectedValidatorListHeaderView = tableView.dequeueReusableHeaderFooterView()
+
+        let languages = selectedLocale.rLanguages
+        let title = viewModel.itemsCountString.value(for: selectedLocale)
+
+        let details = R.string.localizable.stakingFilterTitleRewards(preferredLanguages: languages)
+
+        headerView.bind(title: title, details: details)
+
+        return headerView
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -98,9 +108,8 @@ extension RecommendedValidatorListViewController: UITableViewDelegate, UITableVi
 extension RecommendedValidatorListViewController: RecommendedValidatorListViewProtocol {
     func didReceive(viewModel: RecommendedValidatorListViewModelProtocol) {
         self.viewModel = viewModel
-        updateHeaderView()
 
-        tableView.reloadData()
+        rootView.tableView.reloadData()
     }
 }
 
@@ -108,6 +117,7 @@ extension RecommendedValidatorListViewController {
     func applyLocalization() {
         if isViewLoaded {
             setupLocalization()
+            rootView.tableView.reloadData()
             view.setNeedsLayout()
         }
     }

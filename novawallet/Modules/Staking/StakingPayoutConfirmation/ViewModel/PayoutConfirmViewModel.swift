@@ -1,7 +1,6 @@
 import UIKit.UIImage
 
-enum PayoutConfirmViewModel {
-    case accountInfo(AccountInfoViewModel)
-    case restakeDestination(StakingRewardDetailsSimpleLabelViewModel)
-    case rewardAmountViewModel(StakingRewardTokenUsdViewModel)
+struct PayoutConfirmViewModel {
+    let walletViewModel: DisplayWalletViewModel
+    let accountViewModel: DisplayAddressViewModel
 }

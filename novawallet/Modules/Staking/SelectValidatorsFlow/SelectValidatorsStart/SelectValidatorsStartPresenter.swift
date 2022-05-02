@@ -5,6 +5,7 @@ final class SelectValidatorsStartPresenter {
     weak var view: SelectValidatorsStartViewProtocol?
     let wireframe: SelectValidatorsStartWireframeProtocol
     let interactor: SelectValidatorsStartInteractorInputProtocol
+    let applicationConfig: ApplicationConfigProtocol
 
     let initialTargets: [SelectedValidatorInfo]?
     let existingStashAddress: AccountAddress?
@@ -20,12 +21,14 @@ final class SelectValidatorsStartPresenter {
         wireframe: SelectValidatorsStartWireframeProtocol,
         existingStashAddress: AccountAddress?,
         initialTargets: [SelectedValidatorInfo]?,
+        applicationConfig: ApplicationConfigProtocol,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.existingStashAddress = existingStashAddress
         self.initialTargets = initialTargets
+        self.applicationConfig = applicationConfig
         self.logger = logger
     }
 
@@ -135,6 +138,18 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
             recommendedValidatorList: recommendedValidatorList,
             selectedValidatorList: selectedValidators,
             maxTargets: maxNominations
+        )
+    }
+
+    func selectLearnMore() {
+        guard let view = view else {
+            return
+        }
+
+        wireframe.showWeb(
+            url: applicationConfig.learnRecommendedValidatorsURL,
+            from: view,
+            style: .automatic
         )
     }
 }
