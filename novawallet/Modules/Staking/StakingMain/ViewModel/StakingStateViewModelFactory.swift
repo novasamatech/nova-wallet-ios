@@ -202,6 +202,34 @@ final class StakingStateViewModelFactory {
             reward: reward
         )
     }
+
+    private func createUnbondingViewModel(
+        from stakingLedger: StakingLedger,
+        chainAsset: ChainAsset,
+        eraCountdown: EraCountdown?
+    ) -> StakingUnbondingViewModel? {
+        let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
+        let balanceFactory = getBalanceViewModelFactory(for: chainAsset)
+
+        let viewModels = stakingLedger
+            .unlocking
+            .sorted(by: { $0.era < $1.era })
+            .map { unbondingItem -> StakingUnbondingItemViewModel in
+                let unbondingAmountDecimal = Decimal
+                    .fromSubstrateAmount(
+                        unbondingItem.value,
+                        precision: assetPrecision
+                    ) ?? .zero
+                let tokenAmount = balanceFactory.amountFromValue(unbondingAmountDecimal)
+
+                return StakingUnbondingItemViewModel(
+                    amount: tokenAmount,
+                    unbondingEra: unbondingItem.era
+                )
+            }
+
+        return StakingUnbondingViewModel(eraCountdown: eraCountdown, items: viewModels)
+    }
 }
 
 extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
@@ -295,11 +323,30 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForBondedState(state)
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .rewardDestination,
+            .setupValidators,
+            .controllerAccount
+        ]
+
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
+            actions: actions
         )
     }
 
@@ -345,11 +392,31 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForNominatorState(state)
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .rewardDestination,
+            .pendingRewards,
+            .changeValidators(count: state.nomination.targets.count),
+            .controllerAccount
+        ]
+
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .nominator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
+            actions: actions
         )
     }
 
@@ -390,15 +457,36 @@ extension StakingStateViewModelFactory: StakingStateVisitorProtocol {
         )
 
         let alerts = stakingAlertsForValidatorState(state)
+
         let analyticsViewModel = createAnalyticsViewModel(
             commonData: state.commonData,
             chainAsset: chainAsset
         )
+
+        let actions: [StakingManageOption] = [
+            .stakeMore,
+            .unstake,
+            .rewardDestination,
+            .pendingRewards,
+            .yourValidator,
+            .controllerAccount
+        ]
+
+        let unbondings = state.commonData.eraCountdown.flatMap { countdown in
+            createUnbondingViewModel(
+                from: state.ledgerInfo,
+                chainAsset: chainAsset,
+                eraCountdown: countdown
+            )
+        }
+
         lastViewModel = .validator(
             viewModel: viewModel,
             alerts: alerts,
             reward: rewardViewModel,
-            analyticsViewModel: analyticsViewModel
+            analyticsViewModel: analyticsViewModel,
+            unbondings: unbondings,
+            actions: actions
         )
     }
 }

@@ -10,6 +10,7 @@ final class StakingRebondSetupViewController: UIViewController, ViewHolder {
     private var amountInputViewModel: AmountInputViewModelProtocol?
     private var assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>?
     private var feeViewModel: LocalizableResource<BalanceViewModelProtocol>?
+    private var transferableViewModel: LocalizableResource<BalanceViewModelProtocol>?
 
     var uiFactory: UIFactoryProtocol = UIFactory()
 
@@ -86,23 +87,17 @@ final class StakingRebondSetupViewController: UIViewController, ViewHolder {
             return
         }
 
-        let amountView = rootView.amountInputView
-        amountView.priceText = viewModel.price
+        let assetViewModel = AssetViewModel(symbol: viewModel.symbol, imageViewModel: viewModel.iconViewModel)
 
-        if let balance = viewModel.balance {
-            amountView.balanceText = R.string.localizable.stakingUnbondingFormat(
-                balance,
-                preferredLanguages: selectedLocale.rLanguages
-            )
-        } else {
-            amountView.balanceText = nil
-        }
+        rootView.amountInputView.bind(assetViewModel: assetViewModel)
+        rootView.amountInputView.bind(priceViewModel: viewModel.price)
 
-        amountView.symbol = viewModel.symbol.uppercased()
+        rootView.amountView.detailsValueLabel.text = viewModel.balance
+    }
 
-        viewModel.iconViewModel?.cancel(on: amountView.iconView)
-        amountView.assetIcon = nil
-        viewModel.iconViewModel?.loadAmountInputIcon(on: amountView.iconView, animated: true)
+    private func applyTransferableViewModel() {
+        let viewModel = transferableViewModel?.value(for: selectedLocale)
+        rootView.transferrableView.bind(viewModel: viewModel)
     }
 
     private func applyFeeViewModel() {
@@ -133,12 +128,33 @@ extension StakingRebondSetupViewController: Localizable {
 
         title = R.string.localizable.stakingRebond(preferredLanguages: languages)
 
-        rootView.locale = selectedLocale
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonUnstakingPrefix(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.transferrableView.titleLabel.text = R.string.localizable.walletBalanceAvailable(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.hintView.detailsLabel.text = R.string.localizable.stakingRebondHint(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
 
         setupBalanceAccessoryView()
 
         applyAssetViewModel()
         applyFeeViewModel()
+        applyTransferableViewModel()
     }
 
     func applyLocalization() {
@@ -163,12 +179,18 @@ extension StakingRebondSetupViewController: StakingRebondSetupViewProtocol {
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>) {
         amountInputViewModel?.observable.remove(observer: self)
 
-        amountInputViewModel = viewModel.value(for: selectedLocale)
+        let inputViewModel = viewModel.value(for: selectedLocale)
+        amountInputViewModel = inputViewModel
         amountInputViewModel?.observable.add(observer: self)
 
-        rootView.amountInputView.fieldText = amountInputViewModel?.displayAmount
+        rootView.amountInputView.bind(inputViewModel: inputViewModel)
 
         updateActionButton()
+    }
+
+    func didReceiveTransferable(viewModel: LocalizableResource<BalanceViewModelProtocol>?) {
+        transferableViewModel = viewModel
+        applyTransferableViewModel()
     }
 }
 
@@ -186,8 +208,6 @@ extension StakingRebondSetupViewController: AmountInputAccessoryViewDelegate {
 
 extension StakingRebondSetupViewController: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        rootView.amountInputView.fieldText = amountInputViewModel?.displayAmount
-
         updateActionButton()
 
         let amount = amountInputViewModel?.decimalAmount ?? 0.0

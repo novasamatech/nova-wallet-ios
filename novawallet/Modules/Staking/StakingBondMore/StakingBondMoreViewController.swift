@@ -38,8 +38,34 @@ final class StakingBondMoreViewController: UIViewController, ViewHolder {
 
         setupAmountInputView()
         setupActionButton()
-        applyLocalization()
+        setupLocalization()
         presenter.setup()
+    }
+
+    private func setupLocalization() {
+        let languages = selectedLocale.rLanguages
+
+        title = R.string.localizable.stakingBondMore_v190(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.amountView.detailsTitleLabel.text = R.string.localizable.commonTransferablePrefix(
+            preferredLanguages: languages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: languages
+        )
+
+        rootView.hintView.detailsLabel.text = R.string.localizable.stakingHintRewardBondMore_v2_2_0(
+            preferredLanguages: languages
+        )
+
+        rootView.networkFeeView.locale = selectedLocale
     }
 
     private func setupAmountInputView() {
@@ -66,20 +92,15 @@ final class StakingBondMoreViewController: UIViewController, ViewHolder {
 
     private func applyAsset() {
         if let viewModel = assetViewModel?.value(for: selectedLocale) {
-            rootView.amountInputView.balanceText = R.string.localizable
-                .commonAvailableFormat(
-                    viewModel.balance ?? "",
-                    preferredLanguages: selectedLocale.rLanguages
-                )
-            rootView.amountInputView.priceText = viewModel.price
-            rootView.amountInputView.symbol = viewModel.symbol
+            let assetViewModel = AssetViewModel(
+                symbol: viewModel.symbol,
+                imageViewModel: viewModel.iconViewModel
+            )
 
-            viewModel.iconViewModel?.cancel(on: rootView.amountInputView.iconView)
-            rootView.amountInputView.assetIcon = nil
+            rootView.amountInputView.bind(assetViewModel: assetViewModel)
+            rootView.amountInputView.bind(priceViewModel: viewModel.price)
 
-            viewModel.iconViewModel.map {
-                $0.loadAmountInputIcon(on: rootView.amountInputView.iconView, animated: true)
-            }
+            rootView.amountView.detailsValueLabel.text = viewModel.balance
         }
     }
 
@@ -109,7 +130,7 @@ extension StakingBondMoreViewController: StakingBondMoreViewProtocol {
 
         amountInputViewModel = concreteViewModel
 
-        rootView.amountInputView.fieldText = concreteViewModel.displayAmount
+        rootView.amountInputView.bind(inputViewModel: concreteViewModel)
         concreteViewModel.observable.add(observer: self)
 
         updateActionButton()
@@ -119,9 +140,7 @@ extension StakingBondMoreViewController: StakingBondMoreViewProtocol {
 extension StakingBondMoreViewController: Localizable {
     func applyLocalization() {
         if isViewLoaded {
-            title = R.string.localizable
-                .stakingBondMore_v190(preferredLanguages: selectedLocale.rLanguages)
-            rootView.locale = selectedLocale
+            setupLocalization()
         }
     }
 }
@@ -140,8 +159,6 @@ extension StakingBondMoreViewController: AmountInputAccessoryViewDelegate {
 
 extension StakingBondMoreViewController: AmountInputViewModelObserver {
     func amountInputDidChange() {
-        rootView.amountInputView.fieldText = amountInputViewModel?.displayAmount
-
         updateActionButton()
 
         let amount = amountInputViewModel?.decimalAmount ?? 0.0

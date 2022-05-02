@@ -1,5 +1,6 @@
 import Foundation
 import BigInt
+import SoraFoundation
 
 final class StakingUnbondConfirmPresenter {
     weak var view: StakingUnbondConfirmViewProtocol?
@@ -21,9 +22,11 @@ final class StakingUnbondConfirmPresenter {
     private var nomination: Nomination?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
     private var payee: RewardDestinationArg?
+    private var stakingDuration: StakingDuration?
+    private var bondingDuration: UInt32?
 
     private var shouldResetRewardDestination: Bool {
         switch payee {
@@ -55,14 +58,14 @@ final class StakingUnbondConfirmPresenter {
         }
     }
 
-    private func provideAssetViewModel() {
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            inputAmount,
-            balance: bonded,
-            priceData: priceData
-        )
+    private func provideAmountViewModel() {
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(inputAmount, priceData: priceData)
 
-        view?.didReceiveAsset(viewModel: viewModel)
+        view?.didReceiveAmount(viewModel: viewModel)
+    }
+
+    private func provideShouldResetRewardsDestination() {
+        view?.didSetShouldResetRewardsDestination(value: shouldResetRewardDestination)
     }
 
     private func provideConfirmationViewModel() {
@@ -72,15 +75,33 @@ final class StakingUnbondConfirmPresenter {
 
         do {
             let viewModel = try confirmViewModelFactory.createUnbondConfirmViewModel(
-                controllerItem: controller,
-                amount: inputAmount,
-                shouldResetRewardDestination: shouldResetRewardDestination
+                controllerItem: controller
             )
 
             view?.didReceiveConfirmation(viewModel: viewModel)
         } catch {
             logger?.error("Did receive view model factory error: \(error)")
         }
+    }
+
+    private func provideBondingDuration() {
+        guard let erasPerDay = stakingDuration?.era.intervalsInDay else {
+            return
+        }
+
+        let daysCount = bondingDuration.map { erasPerDay > 0 ? Int($0) / erasPerDay : 0 }
+        let bondingDuration: LocalizableResource<String> = LocalizableResource { locale in
+            guard let daysCount = daysCount else {
+                return ""
+            }
+
+            return R.string.localizable.commonDaysFormat(
+                format: daysCount,
+                preferredLanguages: locale.rLanguages
+            )
+        }
+
+        view?.didReceiveBonding(duration: bondingDuration)
     }
 
     func refreshFeeIfNeeded() {
@@ -121,8 +142,9 @@ final class StakingUnbondConfirmPresenter {
 extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
     func setup() {
         provideConfirmationViewModel()
-        provideAssetViewModel()
+        provideAmountViewModel()
         provideFeeViewModel()
+        provideShouldResetRewardsDestination()
 
         interactor.setup()
     }
@@ -139,7 +161,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
 
             dataValidatingFactory.has(
-                controller: controller,
+                controller: controller?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             )
@@ -201,7 +223,8 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 bonded = nil
             }
 
-            provideAssetViewModel()
+            provideAmountViewModel()
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Staking ledger subscription error: \(error)")
@@ -213,7 +236,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         case let .success(priceData):
             self.priceData = priceData
 
-            provideAssetViewModel()
+            provideAmountViewModel()
             provideFeeViewModel()
             provideConfirmationViewModel()
         case let .failure(error):
@@ -242,14 +265,15 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 precision: assetInfo.assetPrecision
             )
 
-            provideAssetViewModel()
+            provideAmountViewModel()
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Minimal balance fetching error: \(error)")
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {
@@ -280,6 +304,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             refreshFeeIfNeeded()
 
             provideConfirmationViewModel()
+            provideShouldResetRewardsDestination()
         case let .failure(error):
             logger?.error("Did receive payee item error: \(error)")
         }
@@ -297,6 +322,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
                 self.minNominatorBonded = nil
             }
 
+            provideShouldResetRewardsDestination()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Did receive min bonded error: \(error)")
@@ -325,6 +351,26 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
             wireframe.complete(from: view)
         case .failure:
             wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        }
+    }
+
+    func didReceiveBondingDuration(result: Result<UInt32, Error>) {
+        switch result {
+        case let .success(bondingDuration):
+            self.bondingDuration = bondingDuration
+            provideBondingDuration()
+        case let .failure(error):
+            logger?.error("Boding duration fetching error: \(error)")
+        }
+    }
+
+    func didReceiveStakingDuration(result: Result<StakingDuration, Error>) {
+        switch result {
+        case let .success(duration):
+            stakingDuration = duration
+            provideBondingDuration()
+        case let .failure(error):
+            logger?.error("Did receive stash item error: \(error)")
         }
     }
 }

@@ -1,18 +1,51 @@
 import Foundation
 import SoraUI
+import UIKit
 
 class RewardSelectionView: BackgroundedContentControl {
-    private(set) var titleLabel: UILabel!
-    private(set) var incomeLabel: UILabel!
-    private(set) var amountLabel: UILabel!
-    private(set) var priceLabel: UILabel!
-    private(set) var iconView: UIImageView!
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorWhite()
+        return label
+    }()
 
-    var triangularedBackgroundView: TriangularedView? {
-        backgroundView as? TriangularedView
-    }
+    let incomeLabel: UILabel = {
+        let label = UILabel()
+        label.font = .caption1
+        label.textColor = R.color.colorGreen()
+        return label
+    }()
 
-    var horizontalSpacing: CGFloat = 8.0 {
+    let amountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .semiBoldCaps1
+        label.textColor = R.color.colorWhite()
+        return label
+    }()
+
+    let priceLabel: UILabel = {
+        let label = UILabel()
+        label.font = .caption1
+        label.textColor = R.color.colorTransparentText()
+        return label
+    }()
+
+    let selectorView = RadioSelectorView()
+
+    let triangularedBackgroundView: TriangularedView = {
+        let triangularedView = TriangularedView()
+        triangularedView.isUserInteractionEnabled = false
+        triangularedView.shadowOpacity = 0.0
+        triangularedView.fillColor = R.color.colorWhite8()!
+        triangularedView.highlightedFillColor = R.color.colorWhite8()!
+        triangularedView.strokeColor = .clear
+        triangularedView.highlightedStrokeColor = .clear
+
+        return triangularedView
+    }()
+
+    var horizontalSpacing: CGFloat = 18.0 {
         didSet {
             setNeedsLayout()
         }
@@ -24,15 +57,14 @@ class RewardSelectionView: BackgroundedContentControl {
         }
     }
 
-    var selectionWidth: CGFloat = 48.0 {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-
     override var isSelected: Bool {
-        didSet {
-            applySelectionState()
+        get {
+            selectorView.selected
+        }
+
+        set {
+            triangularedBackgroundView.isHighlighted = newValue
+            selectorView.selected = newValue
         }
     }
 
@@ -75,16 +107,16 @@ class RewardSelectionView: BackgroundedContentControl {
     }
 
     private func layoutMiddleContent() {
-        iconView.frame = CGRect(
-            x: bounds.minX,
-            y: bounds.minY,
-            width: selectionWidth,
-            height: bounds.height
+        selectorView.frame = CGRect(
+            x: contentInsets.left,
+            y: bounds.midY - selectorView.outerRadius,
+            width: 2 * selectorView.outerRadius,
+            height: 2 * selectorView.outerRadius
         )
     }
 
     private func layoutTopContent() {
-        let availableWidth = bounds.width - selectionWidth - contentInsets.right
+        let availableWidth = bounds.width - 2 * selectorView.outerRadius - 2 * horizontalSpacing - contentInsets.right
 
         let amountSize = amountLabel.intrinsicContentSize
 
@@ -99,10 +131,10 @@ class RewardSelectionView: BackgroundedContentControl {
 
         let titleSize = titleLabel.intrinsicContentSize
 
-        let titleClippedWidth = max(min(availableWidth - amountClippedWidth - horizontalSpacing, titleSize.width), 0)
+        let titleClippedWidth = max(min(availableWidth - amountClippedWidth, titleSize.width), 0)
 
         titleLabel.frame = CGRect(
-            x: bounds.minX + selectionWidth,
+            x: bounds.minX + contentInsets.left + 2 * selectorView.outerRadius + horizontalSpacing,
             y: bounds.minY + contentInsets.top,
             width: titleClippedWidth,
             height: titleSize.height
@@ -110,14 +142,14 @@ class RewardSelectionView: BackgroundedContentControl {
     }
 
     private func layoutBottomContent() {
-        let availableWidth = bounds.width - selectionWidth - contentInsets.right
+        let availableWidth = bounds.width - 2 * selectorView.outerRadius - 2 * horizontalSpacing - contentInsets.right
 
         let incomeSize = incomeLabel.intrinsicContentSize
 
         let incomeClippedWidth = max(min(availableWidth, incomeSize.width), 0.0)
 
         incomeLabel.frame = CGRect(
-            x: bounds.minX + selectionWidth,
+            x: bounds.minX + contentInsets.left + 2 * selectorView.outerRadius + horizontalSpacing,
             y: bounds.maxY - contentInsets.bottom - incomeSize.height,
             width: incomeClippedWidth,
             height: incomeSize.height
@@ -142,16 +174,11 @@ class RewardSelectionView: BackgroundedContentControl {
 
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
-        applyStyle()
     }
 
     private func configureBackgroundViewIfNeeded() {
         if backgroundView == nil {
-            let triangularedView = TriangularedView()
-            triangularedView.isUserInteractionEnabled = false
-            triangularedView.shadowOpacity = 0.0
-
-            backgroundView = triangularedView
+            backgroundView = triangularedBackgroundView
         }
     }
 
@@ -163,38 +190,26 @@ class RewardSelectionView: BackgroundedContentControl {
             self.contentView = contentView
         }
 
-        if titleLabel == nil {
-            titleLabel = UILabel()
+        if titleLabel.superview == nil {
             contentView?.addSubview(titleLabel)
         }
 
-        if amountLabel == nil {
-            amountLabel = UILabel()
+        if amountLabel.superview == nil {
             contentView?.addSubview(amountLabel)
         }
 
-        if priceLabel == nil {
-            priceLabel = UILabel()
+        if priceLabel.superview == nil {
             contentView?.addSubview(priceLabel)
         }
 
-        if incomeLabel == nil {
-            incomeLabel = UILabel()
+        if incomeLabel.superview == nil {
             contentView?.addSubview(incomeLabel)
         }
 
-        if iconView == nil {
-            iconView = UIImageView()
-            iconView.contentMode = .center
-            contentView?.addSubview(iconView)
+        if selectorView.superview == nil {
+            contentView?.addSubview(selectorView)
         }
-    }
 
-    private func applyStyle() {
-        iconView.tintColor = triangularedBackgroundView?.highlightedStrokeColor
-    }
-
-    private func applySelectionState() {
-        iconView.isHidden = !isSelected
+        contentInsets = UIEdgeInsets(top: 10.0, left: 18.0, bottom: 10.0, right: 16.0)
     }
 }

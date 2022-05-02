@@ -3,9 +3,9 @@ import SoraFoundation
 import BigInt
 
 protocol SelectValidatorsConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
-    func didReceive(confirmationViewModel: LocalizableResource<SelectValidatorsConfirmViewModel>)
-    func didReceive(hintsViewModel: LocalizableResource<[TitleIconViewModel]>)
-    func didReceive(assetViewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
+    func didReceive(confirmationViewModel: SelectValidatorsConfirmViewModel)
+    func didReceive(hintsViewModel: LocalizableResource<[String]>)
+    func didReceive(amountViewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceive(feeViewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }
 

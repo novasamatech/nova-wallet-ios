@@ -4,7 +4,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetching {
+final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetching, StakingDurationFetching {
     weak var presenter: StakingUnbondConfirmInteractorOutputProtocol!
 
     let selectedAccount: ChainAccountResponse
@@ -13,6 +13,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol
     let extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol
     let accountRepositoryFactory: AccountRepositoryFactoryProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
@@ -38,6 +39,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
+        stakingDurationOperationFactory: StakingDurationOperationFactoryProtocol,
         extrinsicServiceFactory: ExtrinsicServiceFactoryProtocol,
         accountRepositoryFactory: AccountRepositoryFactoryProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
@@ -50,6 +52,7 @@ final class StakingUnbondConfirmInteractor: RuntimeConstantFetching, AccountFetc
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.extrinsicServiceFactory = extrinsicServiceFactory
+        self.stakingDurationOperationFactory = stakingDurationOperationFactory
         self.accountRepositoryFactory = accountRepositoryFactory
         self.feeProxy = feeProxy
         self.operationManager = operationManager
@@ -113,6 +116,22 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
         minBondedProvider = subscribeToMinNominatorBond(for: chainAsset.chain.chainId)
 
         if let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) {
+            fetchStakingDuration(
+                runtimeCodingService: runtimeService,
+                operationFactory: stakingDurationOperationFactory,
+                operationManager: operationManager
+            ) { [weak self] result in
+                self?.presenter.didReceiveStakingDuration(result: result)
+            }
+
+            fetchConstant(
+                for: .lockUpPeriod,
+                runtimeCodingService: runtimeService,
+                operationManager: operationManager
+            ) { [weak self] (result: Result<UInt32, Error>) in
+                self?.presenter.didReceiveBondingDuration(result: result)
+            }
+
             fetchConstant(
                 for: .existentialDeposit,
                 runtimeCodingService: runtimeService,
@@ -121,9 +140,10 @@ extension StakingUnbondConfirmInteractor: StakingUnbondConfirmInteractorInputPro
                 self?.presenter.didReceiveExistentialDeposit(result: result)
             }
         } else {
-            presenter.didReceiveExistentialDeposit(
-                result: .failure(ChainRegistryError.runtimeMetadaUnavailable)
-            )
+            let error = ChainRegistryError.runtimeMetadaUnavailable
+            presenter.didReceiveBondingDuration(result: .failure(error))
+            presenter.didReceiveExistentialDeposit(result: .failure(error))
+            presenter.didReceiveStakingDuration(result: .failure(error))
         }
 
         feeProxy.delegate = self
@@ -225,8 +245,8 @@ extension StakingUnbondConfirmInteractor: StakingLocalStorageSubscriber, Staking
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        if let accountItem = try? response?.chainAccount.toAccountItem() {
-                            self?.presenter.didReceiveController(result: .success(accountItem))
+                        if let account = response {
+                            self?.presenter.didReceiveController(result: .success(account))
                         }
                     case let .failure(error):
                         self?.presenter.didReceiveController(result: .failure(error))

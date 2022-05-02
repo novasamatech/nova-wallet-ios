@@ -2,7 +2,7 @@ import Foundation
 
 struct DisplayWalletViewModel {
     let name: String
-    let imageViewModel: DrawableIconViewModel?
+    let imageViewModel: ImageViewModelProtocol?
 }
 
 extension DisplayWalletViewModel {

@@ -4,8 +4,8 @@ final class ValidatorListFilterViewLayout: UIView {
     let tableView: UITableView = {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
-        tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.separatorColor = R.color.colorWhite16()
+        tableView.backgroundColor = .clear
         tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 100.0, right: 0.0)
         return tableView
     }()
@@ -18,6 +18,9 @@ final class ValidatorListFilterViewLayout: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        backgroundColor = R.color.colorBlack()
+
         setupLayout()
     }
 

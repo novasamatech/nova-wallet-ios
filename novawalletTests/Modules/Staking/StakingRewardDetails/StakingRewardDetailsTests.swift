@@ -35,44 +35,83 @@ class StakingRewardDetailsTests: XCTestCase {
             reward: 1,
             identity: nil
         )
+
+        let eraCountdown = EraCountdown(
+            activeEra: 102,
+            currentEra: 102,
+            eraLength: 10,
+            sessionLength: 1,
+            activeEraStartSessionIndex: 1,
+            currentSessionIndex: 1,
+            currentSlot: 2,
+            genesisSlot: 1,
+            blockCreationTime: 6000,
+            createdAtDate: Date()
+        )
+
         let input = StakingRewardDetailsInput(
             payoutInfo: payoutInfo,
-            activeEra: 101,
             historyDepth: 84,
-            erasPerDay: 4
+            eraCountdown: eraCountdown
         )
 
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
         let viewModelFactory = StakingRewardDetailsViewModelFactory(
             balanceViewModelFactory: balanceViewModelFactory,
-            iconGenerator: PolkadotIconGenerator(),
             chainFormat: chain.chainFormat
         )
+
+        let timeleftFactory = PayoutTimeViewModelFactory(
+            timeFormatter: TotalTimeFormatter()
+        )
+
         let presenter = StakingRewardDetailsPresenter(
             input: input,
             viewModelFactory: viewModelFactory,
-            explorers: nil
+            timeleftFactory: timeleftFactory,
+            explorers: nil,
+            chainFormat: chain.chainFormat,
+            localizationManager: LocalizationManager.shared
         )
         presenter.wireframe = wireframe
         presenter.view = view
         presenter.interactor = interactor
         interactor.presenter = presenter
 
-        let rowsExpectation = XCTestExpectation(description: "rows count is equal to 4")
+        let amountExpectation = XCTestExpectation()
+        let validatorExpectation = XCTestExpectation()
+        let eraExpectation = XCTestExpectation()
+        let remainedTimeExpectation = XCTestExpectation()
+
         stub(view) { stub in
-            when(stub).reload(with: any()).then { resource in
-                let rows = resource.value(for: .current).rows
-                if rows.count == 4 {
-                    rowsExpectation.fulfill()
-                }
+            when(stub).didReceive(amountViewModel: any()).then { _ in
+                amountExpectation.fulfill()
+            }
+
+            when(stub).didReceive(validatorViewModel: any()).then { _ in
+                validatorExpectation.fulfill()
+            }
+
+            when(stub).didReceive(eraViewModel: any()).then { _ in
+                eraExpectation.fulfill()
+            }
+
+            when(stub).didReceive(remainedTime: any()).then { _ in
+                remainedTimeExpectation.fulfill()
             }
         }
 
         // when
+
         presenter.setup()
+
         // then
-        wait(for: [rowsExpectation], timeout: Constants.defaultExpectationDuration)
+
+        wait(
+            for: [amountExpectation, validatorExpectation, eraExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         let handlePayoutActionExpectation = XCTestExpectation(description: "wireframe method is called")
         stub(wireframe) { stub in

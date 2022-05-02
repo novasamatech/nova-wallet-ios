@@ -6,6 +6,7 @@ protocol StakingRebondSetupViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)
+    func didReceiveTransferable(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }
 
 protocol StakingRebondSetupPresenterProtocol: AnyObject {
@@ -25,8 +26,7 @@ protocol StakingRebondSetupInteractorOutputProtocol: AnyObject {
     func didReceiveStakingLedger(result: Result<StakingLedger?, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
-    func didReceiveController(result: Result<AccountItem?, Error>)
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
 }

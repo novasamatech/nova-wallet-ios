@@ -4,7 +4,8 @@ final class SelectValidatorsViewLayout: UIView {
     let contentView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 8.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
@@ -12,56 +13,33 @@ final class SelectValidatorsViewLayout: UIView {
         contentView.stackView
     }
 
-    let recommendedValidatorsCell: RowView<TitleValueSelectionView> = {
-        let view = UIFactory.default.createTitleValueSelectionView()
-        view.detailsLabel.textColor = R.color.colorWhite()
-        view.iconView.image = R.image.iconValidators()
-        return RowView(contentView: view, preferredHeight: 48.0)
+    let bannerView: GradientBannerView = {
+        let view = GradientBannerView()
+        view.showsAction = true
+        view.infoView.imageView.image = R.image.iconBannerStar()
+        view.bind(model: .stakingValidators())
+        return view
     }()
 
-    private(set) lazy var recommendedValidatorsActivityIndicator = createActivityIndicatorView()
+    let customValidatorsCell: StackTableCell = {
+        let view = StackTableCell()
+        view.titleLabel.textColor = R.color.colorWhite()
+        view.titleLabel.font = .regularSubheadline
+        view.detailsLabel.textColor = R.color.colorTransparentText()
+        view.detailsLabel.font = .regularSubheadline
+        view.rowContentView.valueView.spacing = 8.0
+        view.rowContentView.valueView.mode = .detailsIcon
+        view.iconImageView.image = R.image.iconSmallArrow()?.tinted(
+            with: R.color.colorTransparentText()!
+        )
+        view.preferredHeight = 52.0
+        view.isUserInteractionEnabled = true
 
-    private(set) lazy var customValidatorsActivityIndicator = createActivityIndicatorView()
+        view.roundedBackgroundView.fillColor = R.color.colorWhite8()!
+        view.roundedBackgroundView.roundingCorners = .allCorners
+        view.roundedBackgroundView.cornerRadius = 12.0
 
-    let algoSectionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .h4Title
-        label.textColor = R.color.colorWhite()
-        label.numberOfLines = 0
-        return label
-    }()
-
-    let algoDetailsLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
-        label.numberOfLines = 0
-        return label
-    }()
-
-    private(set) var algoSteps: [IconDetailsView] = []
-
-    let customValidatorsCell: RowView<TitleValueSelectionView> = {
-        let view = UIFactory.default.createTitleValueSelectionView()
-        view.detailsLabel.textColor = R.color.colorWhite()
-        view.iconView.image = R.image.iconList()
-        return RowView(contentView: view, preferredHeight: 48.0)
-    }()
-
-    let customValidatorsSectionLabel: UILabel = {
-        let label = UILabel()
-        label.font = .h4Title
-        label.textColor = R.color.colorWhite()
-        label.numberOfLines = 0
-        return label
-    }()
-
-    let customValidatorsDetailsLabel: UILabel = {
-        let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
-        label.numberOfLines = 0
-        return label
+        return view
     }()
 
     override init(frame: CGRect) {
@@ -77,40 +55,6 @@ final class SelectValidatorsViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setAlgoSteps(_ steps: [String]) {
-        algoSteps.forEach {
-            stackView.removeArrangedSubview($0)
-            $0.removeFromSuperview()
-        }
-
-        guard !steps.isEmpty else {
-            return
-        }
-
-        algoSteps = steps.map { step in
-            let view = IconDetailsView()
-            view.imageView.image = R.image.iconAlgoItem()
-            view.detailsLabel.text = step
-            return view
-        }
-
-        let prevView: UIView = algoDetailsLabel
-
-        let lastStepView = algoSteps.reduce(prevView) { prevView, stepView in
-            stackView.insertArranged(view: stepView, after: prevView)
-
-            stepView.snp.makeConstraints { make in
-                make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            }
-
-            stackView.setCustomSpacing(6.0, after: stepView)
-
-            return stepView
-        }
-
-        stackView.setCustomSpacing(8.0, after: lastStepView)
-    }
-
     private func setupLayout() {
         addSubview(contentView)
         contentView.snp.makeConstraints { make in
@@ -118,63 +62,13 @@ final class SelectValidatorsViewLayout: UIView {
             make.bottom.leading.trailing.equalToSuperview()
         }
 
-        stackView.addArrangedSubview(algoSectionLabel)
-        algoSectionLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
+        stackView.addArrangedSubview(bannerView)
+        bannerView.snp.makeConstraints { make in
+            make.width.equalTo(self).offset(-2 * UIConstants.horizontalInset)
         }
 
-        stackView.setCustomSpacing(8.0, after: algoSectionLabel)
-
-        stackView.addArrangedSubview(algoDetailsLabel)
-        algoDetailsLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-
-        stackView.setCustomSpacing(16.0, after: algoDetailsLabel)
-
-        stackView.addArrangedSubview(recommendedValidatorsCell)
-        recommendedValidatorsCell.snp.makeConstraints { make in
-            make.width.equalTo(self)
-        }
-
-        stackView.setCustomSpacing(24.0, after: recommendedValidatorsCell)
-
-        recommendedValidatorsCell.rowContentView.addSubview(recommendedValidatorsActivityIndicator)
-        recommendedValidatorsActivityIndicator.snp.makeConstraints { make in
-            make.trailing.centerY.equalToSuperview()
-        }
-
-        stackView.addArrangedSubview(customValidatorsSectionLabel)
-        customValidatorsSectionLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-
-        stackView.setCustomSpacing(8.0, after: customValidatorsSectionLabel)
-
-        stackView.addArrangedSubview(customValidatorsDetailsLabel)
-        customValidatorsDetailsLabel.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-        }
-
-        stackView.setCustomSpacing(8.0, after: customValidatorsDetailsLabel)
+        stackView.setCustomSpacing(16.0, after: bannerView)
 
         stackView.addArrangedSubview(customValidatorsCell)
-        customValidatorsCell.snp.makeConstraints { make in
-            make.width.equalTo(self)
-        }
-
-        customValidatorsCell.rowContentView.addSubview(customValidatorsActivityIndicator)
-        customValidatorsActivityIndicator.snp.makeConstraints { make in
-            make.trailing.centerY.equalToSuperview()
-        }
-    }
-
-    private func createActivityIndicatorView() -> UIActivityIndicatorView {
-        let view = UIActivityIndicatorView()
-        view.hidesWhenStopped = true
-        view.isUserInteractionEnabled = false
-        view.color = R.color.colorWhite()
-        view.style = .white
-        return view
     }
 }

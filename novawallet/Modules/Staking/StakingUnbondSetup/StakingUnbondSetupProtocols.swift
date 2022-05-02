@@ -7,6 +7,7 @@ protocol StakingUnbondSetupViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveInput(viewModel: LocalizableResource<AmountInputViewModelProtocol>)
+    func didReceiveTransferable(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
     func didReceiveBonding(duration: LocalizableResource<String>)
 }
 
@@ -30,7 +31,7 @@ protocol StakingUnbondSetupInteractorOutputProtocol: AnyObject {
     func didReceiveBondingDuration(result: Result<UInt32, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveController(result: Result<AccountItem?, Error>)
+    func didReceiveController(result: Result<ChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 }

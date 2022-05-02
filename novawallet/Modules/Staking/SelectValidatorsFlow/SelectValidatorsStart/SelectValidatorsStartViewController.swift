@@ -58,9 +58,15 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
     }
 
     private func configure() {
-        rootView.recommendedValidatorsCell.addTarget(
+        rootView.bannerView.actionButton?.addTarget(
             self,
             action: #selector(actionRecommendedValidators),
+            for: .touchUpInside
+        )
+
+        rootView.bannerView.linkButton?.addTarget(
+            self,
+            action: #selector(actionLearnMore),
             for: .touchUpInside
         )
 
@@ -74,62 +80,50 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
-        title = R.string.localizable.stakingRecommendedTitle(preferredLanguages: languages)
-        rootView.algoSectionLabel.text = R.string.localizable
-            .stakingSelectValidatorsRecommendedTitle(preferredLanguages: languages)
-        rootView.algoDetailsLabel.text = R.string.localizable
-            .stakingSelectValidatorsRecommendedDesc_v2_2_0(preferredLanguages: languages)
-
-        rootView.setAlgoSteps(
-            [
-                R.string.localizable.stakingRecommendedHint1(preferredLanguages: languages),
-                R.string.localizable.stakingRecommendedHint2(preferredLanguages: languages),
-                R.string.localizable.stakingRecommendedHint3(preferredLanguages: languages),
-                R.string.localizable.stakingRecommendedHint4(preferredLanguages: languages),
-                R.string.localizable.stakingRecommendedHint5(preferredLanguages: languages)
-            ]
+        rootView.bannerView.infoView.titleLabel.text = R.string.localizable.stakingRecommendedBannerTitle(
+            preferredLanguages: languages
         )
 
-        rootView.recommendedValidatorsCell.rowContentView.titleLabel.text = R.string.localizable
-            .stakingSelectValidatorsRecommendedButtonTitle(preferredLanguages: languages)
+        rootView.bannerView.infoView.subtitleLabel.text = R.string.localizable.stakingRecommendedBannerMessage(
+            preferredLanguages: languages
+        )
 
-        rootView.customValidatorsSectionLabel.text = R.string.localizable
-            .stakingSelectValidatorsCustomTitle(preferredLanguages: languages)
+        rootView.bannerView.linkButton?.imageWithTitleView?.title = R.string.localizable.commonHowItWorks(
+            preferredLanguages: languages
+        )
 
-        rootView.customValidatorsDetailsLabel.text = R.string.localizable
-            .stakingSelectValidatorsCustomDesc_2_2_0(preferredLanguages: languages)
+        rootView.bannerView.actionButton?.imageWithTitleView?.title = R.string.localizable.commonContinue(
+            preferredLanguages: languages
+        )
+
+        rootView.customValidatorsCell.titleLabel.text = R.string.localizable
+            .stakingSelectValidatorsCustomButtonTitle(preferredLanguages: languages)
 
         switch phase {
         case .setup:
-            rootView.customValidatorsCell.rowContentView.titleLabel.text = R.string.localizable
-                .stakingSelectValidatorsCustomButtonTitle(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.stakingSetValidators(preferredLanguages: languages)
         case .update:
-            rootView.customValidatorsCell.rowContentView.titleLabel.text = R.string.localizable
-                .stakingCustomValidatorsUpdateList(preferredLanguages: selectedLocale.rLanguages)
+            title = R.string.localizable.stakingChangeValidators(preferredLanguages: languages)
         }
 
         updateSelected()
     }
 
     private func toggleActivityViews() {
-        [
-            rootView.recommendedValidatorsActivityIndicator,
-            rootView.customValidatorsActivityIndicator
-        ].forEach { view in
-            if viewModelIsSet {
-                view.stopAnimating()
-            } else {
-                view.startAnimating()
-            }
+        if viewModelIsSet {
+            rootView.bannerView.stopLoading()
+        } else {
+            rootView.bannerView.startLoading()
         }
     }
 
     private func toggleNextStepIndicators() {
-        [
-            rootView.recommendedValidatorsCell.rowContentView.arrowIconView,
-            rootView.customValidatorsCell.rowContentView.arrowIconView
-        ].forEach { view in
-            view.isHidden = !viewModelIsSet
+        if viewModelIsSet {
+            rootView.customValidatorsCell.rowContentView.alpha = 1.0
+            rootView.customValidatorsCell.isUserInteractionEnabled = true
+        } else {
+            rootView.customValidatorsCell.rowContentView.alpha = 0.5
+            rootView.customValidatorsCell.isUserInteractionEnabled = false
         }
     }
 
@@ -140,7 +134,7 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
 
     private func updateSelected() {
         guard let viewModel = viewModel else {
-            rootView.customValidatorsCell.rowContentView.detailsLabel.text = ""
+            rootView.customValidatorsCell.detailsLabel.text = ""
             return
         }
 
@@ -152,9 +146,9 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
                     "\(viewModel.totalCount)",
                     preferredLanguages: languages
                 )
-            rootView.customValidatorsCell.rowContentView.detailsLabel.text = text
+            rootView.customValidatorsCell.detailsLabel.text = text
         } else {
-            rootView.customValidatorsCell.rowContentView.detailsLabel.text = ""
+            rootView.customValidatorsCell.detailsLabel.text = ""
         }
     }
 
@@ -164,6 +158,10 @@ final class SelectValidatorsStartViewController: UIViewController, ViewHolder, I
 
     @objc private func actionCustomValidators() {
         presenter.selectCustomValidators()
+    }
+
+    @objc private func actionLearnMore() {
+        presenter.selectLearnMore()
     }
 }
 

@@ -143,11 +143,14 @@ class StakingRewardPayoutsTests: XCTestCase {
 
         let showRewardDetailsExpectation = XCTestExpectation()
         stub(wireframe) { stub in
-            when(stub)
-                .showRewardDetails(from: any(), payoutInfo: any(), activeEra: any(), historyDepth: any(), erasPerDay: any())
-                .then { _ in
-                    showRewardDetailsExpectation.fulfill()
-                }
+            when(stub).showRewardDetails(
+                    from: any(),
+                    payoutInfo: any(),
+                    historyDepth: any(),
+                    eraCountdown: any()
+            ).then { _ in
+                showRewardDetailsExpectation.fulfill()
+            }
         }
 
         let showPayoutConfirmationExpectation = XCTestExpectation()

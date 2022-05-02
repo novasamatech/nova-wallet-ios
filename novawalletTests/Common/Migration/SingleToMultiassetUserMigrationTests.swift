@@ -113,8 +113,8 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
         )
 
         // we put some dummy data for serialized settings just to make sure that it is cleared
-        settings.set(value: Data(), for: SettingsKey.selectedAccount.rawValue)
-        settings.set(value: Data(), for: SettingsKey.selectedConnection.rawValue)
+        settings.set(value: Data(), for: "selectedAccount")
+        settings.set(value: Data(), for: "selectedConnection")
 
         let migrator = UserStorageMigrator(
             targetVersion: .version2,
@@ -217,8 +217,8 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
         let hasSelected = newEntities.contains { $0.isSelected }
         XCTAssertTrue(hasSelected)
 
-        XCTAssertNil(settings.data(for: SettingsKey.selectedAccount.rawValue))
-        XCTAssertNil(settings.data(for: SettingsKey.selectedConnection.rawValue))
+        XCTAssertNil(settings.data(for: "selectedAccount"))
+        XCTAssertNil(settings.data(for: "selectedConnection"))
     }
 
     // MARK: Private

@@ -17,19 +17,14 @@ final class StakingRebondConfirmationPresenter {
     var inputAmount: Decimal? {
         switch variant {
         case .all:
-            if
-                let ledger = stakingLedger,
-                let era = activeEra {
-                let value = ledger.unbonding(inEra: era)
+            if let ledger = stakingLedger {
+                let value = ledger.unbonding()
                 return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
             }
         case .last:
-            if
-                let ledger = stakingLedger,
-                let era = activeEra,
-                let chunk = ledger.unbondings(inEra: era).last {
+            if let ledger = stakingLedger, let chunk = ledger.unlocking.last {
                 return Decimal.fromSubstrateAmount(chunk.value, precision: assetInfo.assetPrecision)
             } else {
                 return nil
@@ -40,7 +35,7 @@ final class StakingRebondConfirmationPresenter {
     }
 
     var unbonding: Decimal? {
-        if let activeEra = activeEra, let value = stakingLedger?.unbonding(inEra: activeEra) {
+        if let value = stakingLedger?.unbonding() {
             return Decimal.fromSubstrateAmount(value, precision: assetInfo.assetPrecision)
         } else {
             return nil
@@ -48,11 +43,10 @@ final class StakingRebondConfirmationPresenter {
     }
 
     private var stakingLedger: StakingLedger?
-    private var activeEra: UInt32?
     private var balance: Decimal?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
 
     init(
@@ -86,33 +80,23 @@ final class StakingRebondConfirmationPresenter {
         }
     }
 
-    private func provideAssetViewModel() {
-        guard
-            let inputAmount = inputAmount,
-            let unbonding = unbonding else {
+    private func provideAmountViewModel() {
+        guard let inputAmount = inputAmount else {
             return
         }
 
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            inputAmount,
-            balance: unbonding,
-            priceData: priceData
-        )
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(inputAmount, priceData: priceData)
 
-        view?.didReceiveAsset(viewModel: viewModel)
+        view?.didReceiveAmount(viewModel: viewModel)
     }
 
     private func provideConfirmationViewModel() {
-        guard let controller = controller,
-              let inputAmount = inputAmount else {
+        guard let controller = controller else {
             return
         }
 
         do {
-            let viewModel = try confirmViewModelFactory.createViewModel(
-                controllerItem: controller,
-                amount: inputAmount
-            )
+            let viewModel = try confirmViewModelFactory.createViewModel(controllerItem: controller)
 
             view?.didReceiveConfirmation(viewModel: viewModel)
         } catch {
@@ -132,7 +116,7 @@ final class StakingRebondConfirmationPresenter {
 extension StakingRebondConfirmationPresenter: StakingRebondConfirmationPresenterProtocol {
     func setup() {
         provideConfirmationViewModel()
-        provideAssetViewModel()
+        provideAmountViewModel()
         provideFeeViewModel()
 
         interactor.setup()
@@ -150,7 +134,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationPresenter
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
 
             dataValidatingFactory.has(
-                controller: controller,
+                controller: controller?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             )
@@ -202,7 +186,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
             self.stakingLedger = stakingLedger
 
             provideConfirmationViewModel()
-            provideAssetViewModel()
+            provideAmountViewModel()
             refreshFeeIfNeeded()
         case let .failure(error):
             logger?.error("Staking ledger subscription error: \(error)")
@@ -214,7 +198,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         case let .success(priceData):
             self.priceData = priceData
 
-            provideAssetViewModel()
+            provideAmountViewModel()
             provideFeeViewModel()
             provideConfirmationViewModel()
         case let .failure(error):
@@ -237,7 +221,7 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             controller = accountItem
@@ -255,18 +239,6 @@ extension StakingRebondConfirmationPresenter: StakingRebondConfirmationInteracto
             self.stashItem = stashItem
         case let .failure(error):
             logger?.error("Did receive stash item error: \(error)")
-        }
-    }
-
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>) {
-        switch result {
-        case let .success(eraInfo):
-            activeEra = eraInfo?.index
-
-            provideAssetViewModel()
-            provideConfirmationViewModel()
-        case let .failure(error):
-            logger?.error("Did receive active era error: \(error)")
         }
     }
 

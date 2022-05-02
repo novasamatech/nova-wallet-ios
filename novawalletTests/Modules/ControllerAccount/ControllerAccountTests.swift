@@ -8,7 +8,7 @@ import SoraFoundation
 
 class ControllerAccountTests: XCTestCase {
 
-    func testContinueAction() {
+    func testContinueAction() throws {
         let wireframe = MockControllerAccountWireframeProtocol()
         let interactor = MockControllerAccountInteractorInputProtocol()
         let viewModelFactory = MockControllerAccountViewModelFactoryProtocol()
@@ -49,27 +49,47 @@ class ControllerAccountTests: XCTestCase {
                 showConfirmationExpectation.fulfill()
             }
         }
+
         stub(viewModelFactory) { stub in
             when(stub).createViewModel(stashItem: any(), stashAccountItem: any(), chosenAccountItem: any())
                 .then { _ in ControllerAccountViewModel(
-                    stashViewModel: .init(closure: { _ in AccountInfoViewModel(title: "", address: "", name: "", icon: nil)}),
-                    controllerViewModel: .init(closure: { _ in AccountInfoViewModel(title: "", address: "", name: "", icon: nil)}),
+                    stashViewModel: WalletAccountViewModel.empty,
+                    controllerViewModel: WalletAccountViewModel.empty,
                     currentAccountIsController: false,
                     actionButtonIsEnabled: true
                 )}
         }
         stub(view) { stub in
             when(stub).reload(with: any()).thenDoNothing()
+            when(stub).didCompleteControllerSelection().thenDoNothing()
         }
 
-        let controllerAddress = "controllerAddress"
-        let stashAddress = "stashAddress"
+        let controllerAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
+        let stashAddress = try Data.random(of: 32)!.toAddress(using: chain.chainFormat)
 
         let stashItem = StashItem(stash: stashAddress, controller: controllerAddress)
         presenter.didReceiveStashItem(result: .success(stashItem))
 
-        let accountItem = AccountItem(address: controllerAddress, cryptoType: .ecdsa, username: "usename", publicKeyData: Data())
-        presenter.didReceiveControllerAccount(result: .success(accountItem))
+        let controllerId = try controllerAddress.toAccountId()
+        let controllerAccount = ChainAccountResponse(
+            chainId: chain.chainId,
+            accountId: controllerId,
+            publicKey: controllerId,
+            name: "username",
+            cryptoType: .substrateEcdsa,
+            addressPrefix: chain.addressPrefix,
+            isEthereumBased: chain.isEthereumBased,
+            isChainAccount: false
+        )
+
+        let metaAccountResponse = MetaChainAccountResponse(
+            metaId: UUID().uuidString,
+            substrateAccountId: controllerId,
+            ethereumAccountId: nil,
+            chainAccount: controllerAccount
+        )
+
+        presenter.didReceiveControllerAccount(result: .success(metaAccountResponse))
 
         let controllerAccountInfo = AccountInfo(
             nonce: 0,

@@ -2,17 +2,14 @@ import UIKit
 
 final class StakingRewardHistoryTableCell: UITableViewCell {
     private enum Constants {
-        static let verticalInset: CGFloat = 11
-        static let iconSize: CGFloat = 32
+        static let verticalInset: CGFloat = 8
     }
 
-    private let transactionTypeView: UIView = {
-        UIImageView(image: R.image.iconStakingTransactionType())
-    }()
+    private let iconView = AssetIconView.cellRewards()
 
     private let addressLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.lineBreakMode = .byTruncatingMiddle
         label.textColor = R.color.colorWhite()
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
@@ -21,14 +18,14 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
 
     private let daysLeftLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return label
     }()
 
     private let tokenAmountLabel: UILabel = {
         let label = UILabel()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         label.textColor = R.color.colorWhite()
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
@@ -36,8 +33,8 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
 
     private let usdAmountLabel: UILabel = {
         let label = UILabel()
-        label.font = .p2Paragraph
-        label.textColor = R.color.colorLightGray()
+        label.font = .regularFootnote
+        label.textColor = R.color.colorWhite48()
         label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         return label
     }()
@@ -58,22 +55,22 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
     }
 
     private func setupLayout() {
-        contentView.addSubview(transactionTypeView)
-        transactionTypeView.snp.makeConstraints { make in
+        contentView.addSubview(iconView)
+        iconView.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalToSuperview()
-            make.width.equalTo(Constants.iconSize)
+            make.size.equalTo(2 * iconView.backgroundView.cornerRadius)
         }
 
         contentView.addSubview(addressLabel)
         addressLabel.snp.makeConstraints { make in
-            make.leading.equalTo(transactionTypeView.snp.trailing).offset(UIConstants.horizontalInset / 2)
+            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalToSuperview().inset(Constants.verticalInset)
         }
 
         contentView.addSubview(daysLeftLabel)
         daysLeftLabel.snp.makeConstraints { make in
-            make.leading.equalTo(transactionTypeView.snp.trailing).offset(UIConstants.horizontalInset / 2)
+            make.leading.equalTo(iconView.snp.trailing).offset(12.0)
             make.top.equalTo(addressLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
         }
@@ -82,7 +79,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
         tokenAmountLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalToSuperview().inset(Constants.verticalInset)
-            make.leading.greaterThanOrEqualTo(addressLabel.snp.trailing).offset(UIConstants.horizontalInset / 2)
+            make.leading.greaterThanOrEqualTo(addressLabel.snp.trailing).offset(12)
         }
 
         contentView.addSubview(usdAmountLabel)
@@ -90,6 +87,7 @@ final class StakingRewardHistoryTableCell: UITableViewCell {
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalTo(tokenAmountLabel.snp.bottom)
             make.bottom.equalToSuperview().inset(Constants.verticalInset)
+            make.leading.greaterThanOrEqualTo(daysLeftLabel.snp.trailing).offset(12)
         }
     }
 }

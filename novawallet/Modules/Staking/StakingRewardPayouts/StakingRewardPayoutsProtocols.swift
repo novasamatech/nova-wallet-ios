@@ -1,9 +1,7 @@
 import SoraFoundation
 import SoraUI
 
-protocol StakingRewardPayoutsViewProtocol: ControllerBackedProtocol,
-    Localizable,
-    LoadableViewProtocol {
+protocol StakingRewardPayoutsViewProtocol: ControllerBackedProtocol, Localizable {
     func reload(with state: StakingRewardPayoutsViewState)
 }
 
@@ -37,9 +35,8 @@ protocol StakingRewardPayoutsWireframeProtocol: AnyObject {
     func showRewardDetails(
         from view: ControllerBackedProtocol?,
         payoutInfo: PayoutInfo,
-        activeEra: EraIndex,
         historyDepth: UInt32,
-        erasPerDay: UInt32
+        eraCountdown: EraCountdown
     )
 
     func showPayoutConfirmation(

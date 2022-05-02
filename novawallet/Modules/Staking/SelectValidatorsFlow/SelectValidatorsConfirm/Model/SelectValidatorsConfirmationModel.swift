@@ -2,7 +2,7 @@ import Foundation
 import CommonWallet
 
 struct SelectValidatorsConfirmationModel {
-    let wallet: DisplayAddress
+    let wallet: WalletDisplayAddress
     let amount: Decimal
     let rewardDestination: RewardDestination<DisplayAddress>
     let targets: [SelectedValidatorInfo]

@@ -1,32 +1,5 @@
 import Foundation
 
-@available(*, deprecated, message: "Use ChainAccountImportMnemonicRequest instead")
-struct AccountImportMnemonicRequest {
-    let mnemonic: String
-    let username: String
-    let networkType: Chain
-    let derivationPath: String
-    let cryptoType: CryptoType
-}
-
-@available(*, deprecated, message: "Use ChainAccountImportSeedRequest instead")
-struct AccountImportSeedRequest {
-    let seed: String
-    let username: String
-    let networkType: Chain
-    let derivationPath: String
-    let cryptoType: CryptoType
-}
-
-@available(*, deprecated, message: "Use ChainAccountImportKeystoreRequest instead")
-struct AccountImportKeystoreRequest {
-    let keystore: String
-    let password: String
-    let username: String
-    let networkType: Chain
-    let cryptoType: CryptoType
-}
-
 struct MetaAccountImportMnemonicRequest {
     let mnemonic: String
     let username: String
