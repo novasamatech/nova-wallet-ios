@@ -5,7 +5,7 @@ final class YourValidatorListViewLayout: UIView {
         let tableView = UITableView()
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = R.color.colorBlack()
-        tableView.separatorColor = R.color.colorDarkGray()
+        tableView.separatorStyle = .none
         return tableView
     }()
 

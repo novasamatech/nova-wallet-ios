@@ -22,11 +22,15 @@ class StakingUnbondConfirmTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).thenDoNothing()
+            when(stub).didReceiveAmount(viewModel: any()).thenDoNothing()
 
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
 
             when(stub).didReceiveConfirmation(viewModel: any()).thenDoNothing()
+
+            when(stub).didSetShouldResetRewardsDestination(value: any()).thenDoNothing()
+
+            when(stub).didReceiveBonding(duration: any()).thenDoNothing()
 
             when(stub).localizationManager.get.then { nil }
 
@@ -112,6 +116,8 @@ class StakingUnbondConfirmTests: XCTestCase {
             priceData: PriceData(price: "0.1", usdDayChange: nil)
         )
 
+        let stakingDurationOperationFactory = StakingDurationOperationFactory()
+
         let interactor = StakingUnbondConfirmInteractor(
             selectedAccount: selectedAccount,
             chainAsset: chainAsset,
@@ -119,6 +125,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            stakingDurationOperationFactory: stakingDurationOperationFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
@@ -128,7 +135,7 @@ class StakingUnbondConfirmTests: XCTestCase {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let confirmViewModelFactory = StakingUnbondConfirmViewModelFactory(assetInfo: assetInfo)
+        let confirmViewModelFactory = StakingUnbondConfirmViewModelFactory()
 
         let presenter = StakingUnbondConfirmPresenter(
             interactor: interactor,
@@ -149,10 +156,13 @@ class StakingUnbondConfirmTests: XCTestCase {
         let feeExpectation = XCTestExpectation()
         let assetExpectation = XCTestExpectation()
         let confirmViewModelExpectation = XCTestExpectation()
+        let bondingDurationExpectation = XCTestExpectation()
+        let resetsRewardsDestinationExpectation = XCTestExpectation()
 
         stub(view) { stub in
-            when(stub).didReceiveAsset(viewModel: any()).then { viewModel in
-                if let balance = viewModel.value(for: Locale.current).balance, !balance.isEmpty {
+            when(stub).didReceiveAmount(viewModel: any()).then { viewModel in
+                let balance = viewModel.value(for: Locale.current).amount
+                if !balance.isEmpty {
                     assetExpectation.fulfill()
                 }
             }
@@ -166,13 +176,27 @@ class StakingUnbondConfirmTests: XCTestCase {
             when(stub).didReceiveConfirmation(viewModel: any()).then { viewModel in
                 confirmViewModelExpectation.fulfill()
             }
+
+            when(stub).didReceiveBonding(duration: any()).then { _ in
+                bondingDurationExpectation.fulfill()
+            }
+
+            when(stub).didSetShouldResetRewardsDestination(value: any()).then { _ in
+                resetsRewardsDestinationExpectation.fulfill()
+            }
         }
 
         presenter.setup()
 
         // then
 
-        wait(for: [assetExpectation, feeExpectation, confirmViewModelExpectation], timeout: 10)
+        wait(for: [
+            assetExpectation,
+            feeExpectation,
+            confirmViewModelExpectation,
+            bondingDurationExpectation,
+            resetsRewardsDestinationExpectation
+        ], timeout: 10)
 
         return presenter
     }

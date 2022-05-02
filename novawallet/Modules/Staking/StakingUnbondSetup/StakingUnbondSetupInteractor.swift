@@ -172,8 +172,8 @@ extension StakingUnbondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
 
                 switch result {
                 case let .success(response):
-                    let accountItem = try? response?.chainAccount.toAccountItem()
-                    self?.presenter.didReceiveController(result: .success(accountItem))
+                    let account = response?.chainAccount
+                    self?.presenter.didReceiveController(result: .success(account))
                 case let .failure(error):
                     self?.presenter.didReceiveController(result: .failure(error))
                 }

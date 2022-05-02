@@ -4,8 +4,10 @@ import BigInt
 
 protocol StakingUnbondConfirmViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceiveConfirmation(viewModel: StakingUnbondConfirmViewModel)
-    func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
+    func didReceiveAmount(viewModel: LocalizableResource<BalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
+    func didReceiveBonding(duration: LocalizableResource<String>)
+    func didSetShouldResetRewardsDestination(value: Bool)
 }
 
 protocol StakingUnbondConfirmPresenterProtocol: AnyObject {
@@ -26,11 +28,13 @@ protocol StakingUnbondConfirmInteractorOutputProtocol: AnyObject {
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveExistentialDeposit(result: Result<BigUInt, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveController(result: Result<AccountItem?, Error>)
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
     func didReceivePayee(result: Result<RewardDestinationArg?, Error>)
     func didReceiveMinBonded(result: Result<BigUInt?, Error>)
     func didReceiveNomination(result: Result<Nomination?, Error>)
+    func didReceiveBondingDuration(result: Result<UInt32, Error>)
+    func didReceiveStakingDuration(result: Result<StakingDuration, Error>)
 
     func didSubmitUnbonding(result: Result<String, Error>)
 }

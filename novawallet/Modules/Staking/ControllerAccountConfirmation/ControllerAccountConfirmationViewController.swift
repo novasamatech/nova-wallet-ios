@@ -38,22 +38,40 @@ final class ControllerAccountConfirmationVC: UIViewController, ViewHolder, Impor
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.commonConfirmTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = R.string.localizable.stakingControllerConfirmTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
-        rootView.locale = selectedLocale
+        rootView.walletCell.titleLabel.text = R.string.localizable.commonWallet(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.accountCell.titleLabel.text = R.string.localizable.commonAccount(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.controllerCell.titleLabel.text = R.string.localizable.stakingControllerAccountTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.actionButton.imageWithTitleView?.title = R.string.localizable.commonConfirm(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.networkFeeCell.rowContentView.locale = selectedLocale
+
         applyFeeViewModel()
     }
 
     private func applyFeeViewModel() {
         let viewModel = feeViewModel?.value(for: selectedLocale)
-        rootView.networkFeeConfirmView.networkFeeView.bind(viewModel: viewModel)
+        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
 
     private func setupActions() {
-        rootView.networkFeeConfirmView
-            .actionButton.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
-        rootView.stashAccountView.addTarget(self, action: #selector(handleStashAction), for: .touchUpInside)
-        rootView.controllerAccountView.addTarget(self, action: #selector(handleControllerAction), for: .touchUpInside)
+        rootView.actionButton.addTarget(self, action: #selector(handleActionButton), for: .touchUpInside)
+        rootView.accountCell.addTarget(self, action: #selector(handleStashAction), for: .touchUpInside)
+        rootView.controllerCell.addTarget(self, action: #selector(handleControllerAction), for: .touchUpInside)
     }
 
     @objc
@@ -73,18 +91,18 @@ final class ControllerAccountConfirmationVC: UIViewController, ViewHolder, Impor
 }
 
 extension ControllerAccountConfirmationVC: ControllerAccountConfirmationViewProtocol {
-    func reload(with viewModel: LocalizableResource<ControllerAccountConfirmationVM>) {
-        let localizedViewModel = viewModel.value(for: selectedLocale)
+    func reload(with viewModel: ControllerAccountConfirmationVM) {
+        rootView.walletCell.bind(
+            viewModel: viewModel.walletViewModel.cellViewModel
+        )
 
-        let stashViewModel = localizedViewModel.stashViewModel
-        rootView.stashAccountView.title = stashViewModel.title
-        rootView.stashAccountView.subtitle = stashViewModel.name
-        rootView.stashAccountView.iconImage = stashViewModel.icon
+        rootView.accountCell.bind(
+            viewModel: viewModel.accountViewModel.cellViewModel
+        )
 
-        let controllerModel = localizedViewModel.controllerViewModel
-        rootView.controllerAccountView.title = controllerModel.title
-        rootView.controllerAccountView.subtitle = controllerModel.name
-        rootView.controllerAccountView.iconImage = controllerModel.icon
+        rootView.controllerCell.bind(
+            viewModel: viewModel.controllerViewModel.cellViewModel
+        )
     }
 
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?) {

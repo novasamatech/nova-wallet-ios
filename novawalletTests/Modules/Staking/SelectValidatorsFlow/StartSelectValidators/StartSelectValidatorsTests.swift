@@ -61,7 +61,8 @@ class SelectValidatorsStartTests: XCTestCase {
             interactor: interactor,
             wireframe: wireframe,
             existingStashAddress: nil,
-            initialTargets: selectedTargets
+            initialTargets: selectedTargets,
+            applicationConfig: ApplicationConfig.shared
         )
 
         presenter.view = view

@@ -2,19 +2,27 @@ import UIKit
 import SnapKit
 
 final class StakingRebondSetupLayout: UIView {
-    let contentView: ScrollableContainerView = {
+    let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView()
         view.stackView.isLayoutMarginsRelativeArrangement = true
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 0.0, bottom: 0.0, right: 0.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.alignment = .fill
         return view
     }()
 
-    let amountInputView: AmountInputView = {
-        let view = UIFactory().createAmountInputView(filled: false)
+    let amountView = TitleHorizontalMultiValueView()
+
+    let amountInputView = NewAmountInputView()
+
+    let transferrableView = TitleAmountView.dark()
+
+    let networkFeeView: NetworkFeeView = {
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
         return view
     }()
 
-    let networkFeeView = NetworkFeeView()
+    let hintView: IconDetailsView = .hint()
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -22,19 +30,12 @@ final class StakingRebondSetupLayout: UIView {
         return button
     }()
 
-    var locale = Locale.current {
-        didSet {
-            if locale != oldValue {
-                applyLocalization()
-            }
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        backgroundColor = R.color.colorBlack()!
+
         setupLayout()
-        applyLocalization()
     }
 
     @available(*, unavailable)
@@ -42,42 +43,38 @@ final class StakingRebondSetupLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func applyLocalization() {
-        networkFeeView.locale = locale
-
-        amountInputView.title = R.string.localizable
-            .walletSendAmountTitle(preferredLanguages: locale.rLanguages)
-
-        actionButton.imageWithTitleView?.title = R.string.localizable
-            .commonContinue(preferredLanguages: locale.rLanguages)
-    }
-
     private func setupLayout() {
-        addSubview(contentView)
-        contentView.snp.makeConstraints { make in
-            make.top.equalTo(safeAreaLayoutGuide)
-            make.bottom.leading.trailing.equalToSuperview()
-        }
-
-        contentView.stackView.addArrangedSubview(amountInputView)
-        amountInputView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(72.0)
-        }
-
-        contentView.stackView.setCustomSpacing(16.0, after: amountInputView)
-
-        contentView.stackView.addArrangedSubview(networkFeeView)
-        networkFeeView.snp.makeConstraints { make in
-            make.width.equalTo(self).offset(-2.0 * UIConstants.horizontalInset)
-            make.height.equalTo(48.0)
-        }
-
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
         }
+
+        addSubview(containerView)
+        containerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
+        }
+
+        containerView.stackView.addArrangedSubview(amountView)
+        amountView.snp.makeConstraints { make in
+            make.height.equalTo(34.0)
+        }
+
+        containerView.stackView.addArrangedSubview(amountInputView)
+        amountInputView.snp.makeConstraints { make in
+            make.height.equalTo(64)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(transferrableView)
+
+        containerView.stackView.addArrangedSubview(networkFeeView)
+
+        containerView.stackView.setCustomSpacing(16.0, after: networkFeeView)
+
+        containerView.stackView.addArrangedSubview(hintView)
     }
 }

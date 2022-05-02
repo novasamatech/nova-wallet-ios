@@ -1,8 +1,8 @@
 import SoraFoundation
 
 struct ControllerAccountViewModel {
-    let stashViewModel: LocalizableResource<AccountInfoViewModel>
-    let controllerViewModel: LocalizableResource<AccountInfoViewModel>
+    let stashViewModel: WalletAccountViewModel
+    let controllerViewModel: WalletAccountViewModel
     let currentAccountIsController: Bool
     let actionButtonIsEnabled: Bool
 }

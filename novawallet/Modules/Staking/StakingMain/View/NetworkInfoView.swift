@@ -35,12 +35,11 @@ final class NetworkInfoView: UIView {
 
     let titleControl: ActionTitleControl = {
         let control = ActionTitleControl()
-        control.imageView.image = R.image.iconArrowUp()?.withRenderingMode(.alwaysTemplate)
-        control.imageView.tintColor = R.color.colorWhite48()
+        control.imageView.image = R.image.iconArrowUp()?.tinted(with: R.color.colorWhite48()!)
         control.identityIconAngle = CGFloat.pi
         control.activationIconAngle = 0.0
         control.titleLabel.textColor = R.color.colorWhite()
-        control.titleLabel.font = .p1Paragraph
+        control.titleLabel.font = .regularSubheadline
         control.layoutType = .flexible
         control.contentInsets = Constants.contentMargins
         control.horizontalSpacing = 0.0

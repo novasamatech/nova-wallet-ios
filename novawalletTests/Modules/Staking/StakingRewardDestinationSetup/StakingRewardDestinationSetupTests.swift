@@ -36,6 +36,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
             when(stub).localizationManager.get.then { nil }
 
             when(stub).didReceiveFee(viewModel: any()).thenDoNothing()
+            when(stub).didCompletionAccountSelection().thenDoNothing()
         }
 
         let payoutSelectionsExpectation = XCTestExpectation()
@@ -51,7 +52,7 @@ class StakingRewardDestinationSetupTests: XCTestCase {
                 context: any()
             ).then { (accounts, _, _, delegate, _, context) in
                 if let index = accounts.firstIndex(
-                    where: { newPayoutAccount.substrateAccountId == (try? $0.address.toAccountId()) }) {
+                    where: { newPayoutAccount.substrateAccountId == $0.substrateAccountId }) {
                     delegate.modalPickerDidSelectModelAtIndex(index, context: context)
 
                     payoutSelectionsExpectation.fulfill()

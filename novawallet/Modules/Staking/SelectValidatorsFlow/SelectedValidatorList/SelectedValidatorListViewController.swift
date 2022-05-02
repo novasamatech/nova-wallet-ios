@@ -62,13 +62,7 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
             action: #selector(tapEditButton)
         )
 
-        let attributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: R.color.colorWhite()!,
-            .font: UIFont.h5Title
-        ]
-
-        rightBarButtonItem.setTitleTextAttributes(attributes, for: .normal)
-        rightBarButtonItem.setTitleTextAttributes(attributes, for: .highlighted)
+        rightBarButtonItem.setupDefaultTitleStyle(with: .regularBody)
 
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
@@ -111,7 +105,14 @@ final class SelectedValidatorListViewController: UIViewController, ViewHolder, I
         }
 
         rootView.proceedButton.imageWithTitleView?.title = buttonTitle
-        rootView.proceedButton.set(enabled: isEnabled)
+
+        if isEnabled {
+            rootView.proceedButton.isUserInteractionEnabled = true
+            rootView.proceedButton.applyEnabledStyle()
+        } else {
+            rootView.proceedButton.isUserInteractionEnabled = false
+            rootView.proceedButton.applyTranslucentDisabledStyle()
+        }
     }
 
     private func updateHeaderView() {

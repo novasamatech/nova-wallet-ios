@@ -39,6 +39,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     private lazy var analyticsContainerView = UIView()
     private lazy var analyticsView = RewardAnalyticsWidgetView()
 
+    private var actionsView: StakingActionsView?
+    private var unbondingsView: StakingUnbondingsView?
+
     private var stateContainerView: UIView?
     private var stateView: LocalizableView?
 
@@ -58,6 +61,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         setupNetworkInfoView()
         setupAlertsView()
         setupAnalyticsView()
+        setupScrollView()
         setupLocalization()
         presenter.setup()
     }
@@ -106,6 +110,10 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     }
 
     // MARK: - Private functions
+
+    private func setupScrollView() {
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    }
 
     private func setupBackgroundView() {
         view.insertSubview(backgroundView, at: 0)
@@ -205,6 +213,60 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         rewardContainerView?.removeFromSuperview()
         rewardContainerView = nil
         rewardView = nil
+    }
+
+    private func updateActionsView(for stakingActions: [StakingManageOption]?) {
+        guard let stakingActions = stakingActions, !stakingActions.isEmpty else {
+            actionsView?.removeFromSuperview()
+            actionsView = nil
+
+            return
+        }
+
+        if actionsView == nil {
+            let newActionsView = StakingActionsView()
+            newActionsView.locale = selectedLocale
+            newActionsView.delegate = self
+            stackView.addArrangedSubview(newActionsView)
+            newActionsView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            actionsView = newActionsView
+        }
+
+        actionsView?.bind(actions: stakingActions)
+    }
+
+    private func updateUnbondingsView(for unbondingViewModel: StakingUnbondingViewModel?) {
+        guard let unbondingViewModel = unbondingViewModel, !unbondingViewModel.items.isEmpty else {
+            unbondingsView?.removeFromSuperview()
+            unbondingsView = nil
+
+            return
+        }
+
+        if unbondingsView == nil {
+            let newUnbondingsView = StakingUnbondingsView()
+            newUnbondingsView.locale = selectedLocale
+            newUnbondingsView.delegate = self
+
+            if let stateView = stateContainerView {
+                stackView.insertArranged(view: newUnbondingsView, after: stateView)
+            } else {
+                stackView.addArrangedSubview(newUnbondingsView)
+            }
+
+            newUnbondingsView.snp.makeConstraints { make in
+                make.width.equalToSuperview()
+            }
+
+            stackView.setCustomSpacing(8.0, after: newUnbondingsView)
+
+            unbondingsView = newUnbondingsView
+        }
+
+        unbondingsView?.bind(viewModel: unbondingViewModel)
     }
 
     @objc
@@ -311,7 +373,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private func applyNominator(viewModel: LocalizableResource<NominationViewModel>) {
         let nominatorView = setupNominatorViewIfNeeded()
-        nominatorView?.delegate = self
         nominatorView?.bind(viewModel: viewModel)
     }
 
@@ -328,7 +389,6 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private func applyValidator(viewModel: LocalizableResource<ValidationViewModel>) {
         let validatorView = setupValidatorViewIfNeeded()
-        validatorView?.delegate = self
         validatorView?.bind(viewModel: viewModel)
     }
 
@@ -367,6 +427,8 @@ extension StakingMainViewController: Localizable {
         alertsView.locale = locale
         analyticsView.locale = locale
         rewardView?.locale = locale
+        actionsView?.locale = locale
+        unbondingsView?.locale = locale
     }
 
     func applyLocalization() {
@@ -426,23 +488,31 @@ extension StakingMainViewController: StakingMainViewProtocol {
         case .undefined:
             clearStateView()
             clearStakingRewardViewIfNeeded()
+            updateActionsView(for: nil)
+            updateUnbondingsView(for: nil)
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
             expandNetworkInfoView(true)
             clearStakingRewardViewIfNeeded()
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel):
+            updateActionsView(for: nil)
+            updateUnbondingsView(for: nil)
+        case let .nominator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel):
+            updateActionsView(for: actions)
+            updateUnbondingsView(for: unbondings)
+        case let .validator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
             applyStakingReward(viewModel: reward)
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
+            updateActionsView(for: actions)
+            updateUnbondingsView(for: unbondings)
         }
     }
 
@@ -461,22 +531,6 @@ extension StakingMainViewController: NetworkInfoViewDelegate {
     }
 }
 
-// MARK: - StakingStateViewDelegate
-
-extension StakingMainViewController: StakingStateViewDelegate {
-    func stakingStateViewDidReceiveMoreAction(_: StakingStateView) {
-        presenter.performManageStakingAction()
-    }
-
-    func stakingStateViewDidReceiveStatusAction(_ view: StakingStateView) {
-        if view is NominatorStateView {
-            presenter.performNominationStatusAction()
-        } else if view is ValidatorStateView {
-            presenter.performValidationStatusAction()
-        }
-    }
-}
-
 extension StakingMainViewController: HiddableBarWhenPushed {}
 
 extension StakingMainViewController: AlertsViewDelegate {
@@ -487,11 +541,27 @@ extension StakingMainViewController: AlertsViewDelegate {
         case .bondedSetValidators:
             presenter.performSetupValidatorsForBondedAction()
         case .nominatorLowStake:
-            presenter.performBondMoreAction()
+            presenter.performStakeMoreAction()
         case .redeemUnbonded:
             presenter.performRedeemAction()
         case .waitingNextEra:
             break
         }
+    }
+}
+
+extension StakingMainViewController: StakingActionsViewDelegate {
+    func actionsViewDidSelectAction(_ action: StakingManageOption) {
+        presenter.performManageAction(action)
+    }
+}
+
+extension StakingMainViewController: StakingUnbondingsViewDelegate {
+    func stakingUnbondingViewDidCancel(_: StakingUnbondingsView) {
+        presenter.performRebondAction()
+    }
+
+    func stakingUnbondingViewDidRedeem(_: StakingUnbondingsView) {
+        presenter.performRedeemAction()
     }
 }

@@ -19,8 +19,28 @@ final class StakingRedeemPresenter {
     private var minimalBalance: BigUInt?
     private var priceData: PriceData?
     private var fee: Decimal?
-    private var controller: AccountItem?
+    private var controller: MetaChainAccountResponse?
     private var stashItem: StashItem?
+
+    init(
+        interactor: StakingRedeemInteractorInputProtocol,
+        wireframe: StakingRedeemWireframeProtocol,
+        confirmViewModelFactory: StakingRedeemViewModelFactoryProtocol,
+        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
+        assetInfo: AssetBalanceDisplayInfo,
+        explorers: [ChainModel.Explorer]?,
+        logger: LoggerProtocol? = nil
+    ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
+        self.confirmViewModelFactory = confirmViewModelFactory
+        self.balanceViewModelFactory = balanceViewModelFactory
+        self.dataValidatingFactory = dataValidatingFactory
+        self.assetInfo = assetInfo
+        self.explorers = explorers
+        self.logger = logger
+    }
 
     private func provideFeeViewModel() {
         if let fee = fee {
@@ -42,31 +62,18 @@ final class StakingRedeemPresenter {
             return
         }
 
-        let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            redeemableDecimal,
-            balance: redeemableDecimal,
-            priceData: priceData
-        )
+        let viewModel = balanceViewModelFactory.lockingAmountFromPrice(redeemableDecimal, priceData: priceData)
 
-        view?.didReceiveAsset(viewModel: viewModel)
+        view?.didReceiveAmount(viewModel: viewModel)
     }
 
     private func provideConfirmationViewModel() {
-        guard let controller = controller,
-              let era = activeEra,
-              let redeemable = stakingLedger?.redeemable(inEra: era),
-              let redeemableDecimal = Decimal.fromSubstrateAmount(
-                  redeemable,
-                  precision: assetInfo.assetPrecision
-              ) else {
+        guard let controller = controller else {
             return
         }
 
         do {
-            let viewModel = try confirmViewModelFactory.createRedeemViewModel(
-                controllerItem: controller,
-                amount: redeemableDecimal
-            )
+            let viewModel = try confirmViewModelFactory.createRedeemViewModel(controllerItem: controller)
 
             view?.didReceiveConfirmation(viewModel: viewModel)
         } catch {
@@ -85,26 +92,6 @@ final class StakingRedeemPresenter {
         }
 
         interactor.estimateFeeForStash(stashItem.stash)
-    }
-
-    init(
-        interactor: StakingRedeemInteractorInputProtocol,
-        wireframe: StakingRedeemWireframeProtocol,
-        confirmViewModelFactory: StakingRedeemViewModelFactoryProtocol,
-        balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        dataValidatingFactory: StakingDataValidatingFactoryProtocol,
-        assetInfo: AssetBalanceDisplayInfo,
-        explorers: [ChainModel.Explorer]?,
-        logger: LoggerProtocol? = nil
-    ) {
-        self.interactor = interactor
-        self.wireframe = wireframe
-        self.confirmViewModelFactory = confirmViewModelFactory
-        self.balanceViewModelFactory = balanceViewModelFactory
-        self.dataValidatingFactory = dataValidatingFactory
-        self.assetInfo = assetInfo
-        self.explorers = explorers
-        self.logger = logger
     }
 }
 
@@ -133,7 +120,7 @@ extension StakingRedeemPresenter: StakingRedeemPresenterProtocol {
             dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
 
             dataValidatingFactory.has(
-                controller: controller,
+                controller: controller?.chainAccount,
                 for: stashItem?.controller ?? "",
                 locale: locale
             )
@@ -230,7 +217,7 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         }
     }
 
-    func didReceiveController(result: Result<AccountItem?, Error>) {
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>) {
         switch result {
         case let .success(accountItem):
             if let accountItem = accountItem {

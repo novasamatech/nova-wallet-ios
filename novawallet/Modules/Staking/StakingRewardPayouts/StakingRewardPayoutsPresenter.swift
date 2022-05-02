@@ -60,9 +60,8 @@ extension StakingRewardPayoutsPresenter: StakingRewardPayoutsPresenterProtocol {
         wireframe.showRewardDetails(
             from: view,
             payoutInfo: payoutInfo,
-            activeEra: payoutsInfo.activeEra,
             historyDepth: payoutsInfo.historyDepth,
-            erasPerDay: UInt32(eraCountdown.eraTimeInterval.intervalsInDay)
+            eraCountdown: eraCountdown
         )
     }
 

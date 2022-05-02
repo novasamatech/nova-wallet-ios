@@ -1,21 +1,22 @@
 import Foundation
 import SoraFoundation
 import IrohaCrypto
+import UIKit
 
 final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol {
     private let addressFactory = SS58AddressFactory()
     private let chainFormat: ChainFormat
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
-    private let timeFormatter: TimeFormatterProtocol
+    private let timeViewModelFactory: PayoutTimeViewModelFactoryProtocol
 
     init(
         chainFormat: ChainFormat,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        timeFormatter: TimeFormatterProtocol
+        timeViewModelFactory: PayoutTimeViewModelFactoryProtocol
     ) {
         self.chainFormat = chainFormat
         self.balanceViewModelFactory = balanceViewModelFactory
-        self.timeFormatter = timeFormatter
+        self.timeViewModelFactory = timeViewModelFactory
     }
 
     func createPayoutsViewModel(
@@ -53,9 +54,11 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         payoutsInfo: PayoutsInfo,
         eraCountdown: EraCountdown?
     ) -> LocalizableResource<NSAttributedString> {
-        LocalizableResource { locale in
+        let viewModelFactory = timeViewModelFactory
+
+        return LocalizableResource { locale in
             let payout = payoutsInfo.payouts[index]
-            return self.timeLeftAttributedString(
+            return viewModelFactory.timeLeftAttributedString(
                 payoutEra: payout.era,
                 historyDepth: payoutsInfo.historyDepth,
                 eraCountdown: eraCountdown,
@@ -71,7 +74,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         locale: Locale
     ) -> [StakingRewardHistoryCellViewModel] {
         payoutsInfo.payouts.map { payout in
-            let daysLeftText = timeLeftAttributedString(
+            let daysLeftText = timeViewModelFactory.timeLeftAttributedString(
                 payoutEra: payout.era,
                 historyDepth: payoutsInfo.historyDepth,
                 eraCountdown: eraCountdown,
@@ -81,7 +84,7 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
             return StakingRewardHistoryCellViewModel(
                 addressOrName: self.addressTitle(payout),
                 daysLeftText: daysLeftText,
-                tokenAmountText: "+" + self.tokenAmountText(payout.reward, locale: locale),
+                tokenAmountText: self.tokenAmountText(payout.reward, locale: locale),
                 usdAmountText: priceText(payout.reward, priceData: priceData, locale: locale)
             )
         }
@@ -111,45 +114,6 @@ final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol
         let price = balanceViewModelFactory
             .priceFromAmount(amount, priceData: priceData).value(for: locale)
         return price
-    }
-
-    private func timeLeftAttributedString(
-        payoutEra: EraIndex,
-        historyDepth: UInt32,
-        eraCountdown: EraCountdown?,
-        locale: Locale
-    ) -> NSAttributedString {
-        guard let eraCountdown = eraCountdown else { return .init(string: "") }
-
-        let eraCompletionTime = eraCountdown.timeIntervalTillSet(targetEra: payoutEra + historyDepth + 1)
-        let daysLeft = eraCompletionTime.daysFromSeconds
-
-        let timeLeftText: String = {
-            if eraCompletionTime <= .leastNormalMagnitude {
-                return R.string.localizable.stakingPayoutExpired(preferredLanguages: locale.rLanguages)
-            }
-            if daysLeft == 0 {
-                let formattedTime = (try? timeFormatter.string(from: eraCompletionTime)) ?? ""
-                return R.string.localizable.commonTimeLeftFormat(
-                    formattedTime,
-                    preferredLanguages: locale.rLanguages
-                )
-            } else {
-                return R.string.localizable
-                    .commonDaysLeftFormat(format: daysLeft, preferredLanguages: locale.rLanguages)
-            }
-        }()
-
-        let erasPerDay = eraCountdown.eraTimeInterval.intervalsInDay
-        let historyDepthDays = erasPerDay > 0 ? (historyDepth / 2) / UInt32(erasPerDay) : 0
-        let textColor: UIColor = daysLeft < historyDepthDays ?
-            R.color.colorRed()! : R.color.colorLightGray()!
-
-        let attrubutedString = NSAttributedString(
-            string: timeLeftText,
-            attributes: [.foregroundColor: textColor]
-        )
-        return attrubutedString
     }
 
     private func defineBottomButtonTitle(

@@ -42,8 +42,8 @@ final class StakingRewardDestConfirmViewController: UIViewController, ViewHolder
     }
 
     private func configure() {
-        rootView.senderAccountView.addTarget(self, action: #selector(actionSenderAccount), for: .touchUpInside)
-        rootView.networkFeeConfirmView.actionButton.addTarget(
+        rootView.accountCell.addTarget(self, action: #selector(actionSenderAccount), for: .touchUpInside)
+        rootView.actionButton.addTarget(
             self,
             action: #selector(actionConfirm),
             for: .touchUpInside
@@ -51,9 +51,9 @@ final class StakingRewardDestConfirmViewController: UIViewController, ViewHolder
     }
 
     private func setupLocalization() {
-        let languages = selectedLocale.rLanguages
-
-        title = R.string.localizable.commonConfirmTitle(preferredLanguages: languages)
+        title = R.string.localizable.stakingRewardsDestinationTitle_v2_0_0(
+            preferredLanguages: selectedLocale.rLanguages
+        )
 
         rootView.locale = selectedLocale
 
@@ -74,7 +74,7 @@ final class StakingRewardDestConfirmViewController: UIViewController, ViewHolder
         rootView.bind(confirmationViewModel: viewModel)
 
         if
-            let payoutAccount = rootView.payoutAccountView,
+            let payoutAccount = rootView.payoutAccountCell,
             payoutAccount.actions(forTarget: self, forControlEvent: .touchUpInside) == nil {
             payoutAccount.addTarget(self, action: #selector(actionPayoutAccount), for: .touchUpInside)
         }

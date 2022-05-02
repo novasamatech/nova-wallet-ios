@@ -19,7 +19,6 @@ final class StakingRebondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     private var accountInfoProvider: AnyDataProvider<DecodedAccountInfo>?
     private var ledgerProvider: AnyDataProvider<DecodedLedgerInfo>?
     private var extrinisicService: ExtrinsicServiceProtocol?
-    private var activeEraProvider: AnyDataProvider<DecodedActiveEra>?
 
     private lazy var callFactory = SubstrateCallFactory()
 
@@ -69,8 +68,6 @@ extension StakingRebondSetupInteractor: StakingRebondSetupInteractorInputProtoco
         } else {
             presenter.didReceivePriceData(result: .success(nil))
         }
-
-        activeEraProvider = subscribeActiveEra(for: chainAsset.chain.chainId)
 
         feeProxy.delegate = self
     }
@@ -123,8 +120,8 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        let accountItem = try? maybeResponse?.chainAccount.toAccountItem()
-                        self?.presenter.didReceiveController(result: .success(accountItem))
+                        let accountResponse = try? maybeResponse?.chainAccount
+                        self?.presenter.didReceiveController(result: .success(accountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveController(result: .failure(error))
                     }
@@ -148,10 +145,6 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
         chainId _: ChainModel.Id
     ) {
         presenter.didReceiveStakingLedger(result: result)
-    }
-
-    func handleActiveEra(result: Result<ActiveEraInfo?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveActiveEra(result: result)
     }
 }
 

@@ -81,7 +81,7 @@ final class ValidatorSearchViewController: UIViewController, ViewHolder, Importa
     }
 
     private func setupNavigationBar() {
-        doneButton.setupDefaultTitleStyle(with: .p0Paragraph)
+        doneButton.setupDefaultTitleStyle(with: .regularBody)
         doneButton.isEnabled = false
 
         navigationItem.rightBarButtonItem = doneButton

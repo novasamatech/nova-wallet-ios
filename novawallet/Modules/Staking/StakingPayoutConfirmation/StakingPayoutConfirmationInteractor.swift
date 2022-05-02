@@ -8,7 +8,7 @@ import BigInt
 final class StakingPayoutConfirmationInteractor: AccountFetching {
     typealias Batch = [PayoutInfo]
 
-    let selectedAccount: ChainAccountResponse
+    let selectedAccount: MetaChainAccountResponse
     let chainAsset: ChainAsset
     let stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
@@ -35,7 +35,7 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
     weak var presenter: StakingPayoutConfirmationInteractorOutputProtocol!
 
     init(
-        selectedAccount: ChainAccountResponse,
+        selectedAccount: MetaChainAccountResponse,
         chainAsset: ChainAsset,
         stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
@@ -105,60 +105,9 @@ final class StakingPayoutConfirmationInteractor: AccountFetching {
     }
 
     private func provideRewardAmount() {
-        guard let accountItem = try? selectedAccount.toAccountItem() else {
-            return
-        }
-
         let rewardAmount = payouts.map(\.reward).reduce(0, +)
 
-        presenter.didRecieve(account: accountItem, rewardAmount: rewardAmount)
-    }
-
-    private func provideRewardDestination(with payee: RewardDestinationArg) {
-        guard let stashItem = stashItem else {
-            presenter.didReceiveRewardDestination(result: .failure(CommonError.undefined))
-            return
-        }
-
-        do {
-            let rewardDestination = try RewardDestination(
-                payee: payee,
-                stashItem: stashItem,
-                chainFormat: chainAsset.chain.chainFormat
-            )
-
-            switch rewardDestination {
-            case .restake:
-                presenter.didReceiveRewardDestination(result: .success(.restake))
-
-            case let .payout(payoutAddress):
-                let payoutId = try payoutAddress.toAccountId()
-
-                fetchFirstAccount(
-                    for: payoutId,
-                    accountRequest: chainAsset.chain.accountRequest(),
-                    repositoryFactory: accountRepositoryFactory,
-                    operationManager: operationManager
-                ) { [weak self] result in
-                    switch result {
-                    case let .success(accountItem):
-                        let displayAddress = DisplayAddress(
-                            address: payoutAddress,
-                            username: accountItem?.username ?? ""
-                        )
-
-                        let result: RewardDestination = .payout(account: displayAddress)
-
-                        self?.presenter.didReceiveRewardDestination(result: .success(result))
-                    case let .failure(error):
-                        self?.presenter.didReceiveRewardDestination(result: .failure(error))
-                    }
-                }
-            }
-        } catch {
-            presenter.didReceiveRewardDestination(result: .failure(error))
-            logger?.error("Did receive reward destination error: \(error)")
-        }
+        presenter.didRecieve(account: selectedAccount, rewardAmount: rewardAmount)
     }
 
     private func createFeeOperationWrapper() -> CompoundOperationWrapper<Decimal>? {
@@ -278,14 +227,8 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
     func setup() {
         generateBatches { self.estimateFee() }
 
-        if let accountAddress = selectedAccount.toAddress() {
-            stashItemProvider = subscribeStashItemProvider(for: accountAddress)
-        } else {
-            presenter.didReceiveRewardDestination(result: .failure(ChainAccountFetchingError.accountNotExists))
-        }
-
         balanceProvider = subscribeToAccountInfoProvider(
-            for: selectedAccount.accountId,
+            for: selectedAccount.chainAccount.accountId,
             chainId: chainAsset.chain.chainId
         )
 
@@ -341,42 +284,6 @@ extension StakingPayoutConfirmationInteractor: StakingPayoutConfirmationInteract
         }
 
         operationManager.enqueue(operations: feeOperation.allOperations, in: .transient)
-    }
-}
-
-extension StakingPayoutConfirmationInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
-    AnyProviderAutoCleaning {
-    func handlePayee(result: Result<RewardDestinationArg?, Error>, accountId _: AccountId, chainId _: ChainModel.Id) {
-        switch result {
-        case let .success(payee):
-            guard let payee = payee else {
-                return
-            }
-
-            provideRewardDestination(with: payee)
-
-        case let .failure(error):
-            presenter.didReceiveRewardDestination(result: .failure(error))
-        }
-    }
-
-    func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
-        do {
-            clear(dataProvider: &payeeProvider)
-
-            stashItem = try result.get()
-
-            let maybeStashId = try stashItem?.stash.toAccountId()
-
-            if let stashId = maybeStashId {
-                payeeProvider = subscribePayee(for: stashId, chainId: chainAsset.chain.chainId)
-            } else {
-                presenter.didReceiveRewardDestination(result: .success(nil))
-            }
-        } catch {
-            presenter.didReceiveRewardDestination(result: .failure(error))
-            logger?.error("Stash subscription item error: \(error)")
-        }
     }
 }
 

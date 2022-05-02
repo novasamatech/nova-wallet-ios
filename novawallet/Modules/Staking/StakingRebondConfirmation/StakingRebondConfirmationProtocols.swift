@@ -4,7 +4,7 @@ import BigInt
 
 protocol StakingRebondConfirmationViewProtocol: ControllerBackedProtocol, Localizable, LoadableViewProtocol {
     func didReceiveConfirmation(viewModel: StakingRebondConfirmationViewModel)
-    func didReceiveAsset(viewModel: LocalizableResource<AssetBalanceViewModelProtocol>)
+    func didReceiveAmount(viewModel: LocalizableResource<BalanceViewModelProtocol>)
     func didReceiveFee(viewModel: LocalizableResource<BalanceViewModelProtocol>?)
 }
 
@@ -25,9 +25,8 @@ protocol StakingRebondConfirmationInteractorOutputProtocol: AnyObject {
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveController(result: Result<AccountItem?, Error>)
+    func didReceiveController(result: Result<MetaChainAccountResponse?, Error>)
     func didReceiveStashItem(result: Result<StashItem?, Error>)
-    func didReceiveActiveEra(result: Result<ActiveEraInfo?, Error>)
 
     func didSubmitRebonding(result: Result<String, Error>)
 }

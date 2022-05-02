@@ -17,6 +17,7 @@ struct StakingAmountViewModel {
 struct ValidatorInfoViewModel {
     struct Exposure {
         let nominators: String
+        let maxNominators: String
         let myNomination: MyNomination?
         let totalStake: BalanceViewModelProtocol
         let estimatedReward: String
@@ -54,7 +55,7 @@ struct ValidatorInfoViewModel {
         let slashed: Bool
     }
 
-    let account: AccountInfoViewModel
+    let account: WalletAccountViewModel
     let staking: Staking
     let identity: [IdentityItem]?
 }

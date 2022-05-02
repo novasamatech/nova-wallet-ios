@@ -17,14 +17,14 @@ final class RewardEstimationView: LocalizableView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
-        label.font = .p1Paragraph
+        label.font = .regularSubheadline
         return label
     }()
 
     let monthlyTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTransparentText()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         return label
     }()
 
@@ -38,7 +38,7 @@ final class RewardEstimationView: LocalizableView {
     let yearlyTitleLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorTransparentText()
-        label.font = .p2Paragraph
+        label.font = .regularFootnote
         return label
     }()
 

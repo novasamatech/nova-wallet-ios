@@ -24,7 +24,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
         let chainAsset = ChainAsset(chain: chain, asset: chain.assets.first!)
 
         let metaAccount = AccountGenerator.generateMetaAccount()
-        let selectedAccount = metaAccount.fetch(for: chain.accountRequest())!
+        let selectedAccount = metaAccount.fetchMetaChainAccount(for: chain.accountRequest())!
 
         let view = MockStakingPayoutConfirmationViewProtocol()
         let wireframe = MockStakingPayoutConfirmationWireframeProtocol()
@@ -32,9 +32,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
-        let viewModelFactory = StakingPayoutConfirmViewModelFactory(
-            balanceViewModelFactory: balanceViewModelFactory
-        )
+        let viewModelFactory = StakingPayoutConfirmViewModelFactory()
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
         let presenter = StakingPayoutConfirmationPresenter(
@@ -88,6 +86,7 @@ class StakingPayoutsConfirmTests: XCTestCase {
 
         let feeExpectation = XCTestExpectation()
         let viewModelExpectation = XCTestExpectation()
+        let amounExpectation = XCTestExpectation()
 
         stub(view) { stub in
             when(stub).didReceive(feeViewModel: any()).then { viewModel in
@@ -98,6 +97,10 @@ class StakingPayoutsConfirmTests: XCTestCase {
 
             when(stub).didRecieve(viewModel: any()).then {_ in
                 viewModelExpectation.fulfill()
+            }
+
+            when(stub).didRecieve(amountViewModel: any()).then { _ in
+                amounExpectation.fulfill()
             }
 
             when(stub).didStartLoading().thenDoNothing()
@@ -126,7 +129,10 @@ class StakingPayoutsConfirmTests: XCTestCase {
 
         // then
 
-        wait(for: [feeExpectation, viewModelExpectation], timeout: Constants.defaultExpectationDuration)
+        wait(
+            for: [feeExpectation, viewModelExpectation, amounExpectation],
+            timeout: Constants.defaultExpectationDuration
+        )
 
         // when
 

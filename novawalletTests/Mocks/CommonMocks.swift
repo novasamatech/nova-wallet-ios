@@ -192,21 +192,31 @@ public class KeystoreProtocolStub: KeystoreProtocol {
     
 
     
+    
+    
     public func addKey(_ key: Data, with identifier: String) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func updateKey(_ key: Data, with identifier: String) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func fetchKey(for identifier: String) throws -> Data  {
         return DefaultValueRegistry.defaultValue(for: (Data).self)
     }
     
+    
+    
     public func checkKey(for identifier: String) throws -> Bool  {
         return DefaultValueRegistry.defaultValue(for: (Bool).self)
     }
+    
+    
     
     public func deleteKey(for identifier: String) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -298,6 +308,8 @@ public class SecretDataRepresentableStub: SecretDataRepresentable {
 
     
 
+    
+    
     
     public func asSecretData() -> Data?  {
         return DefaultValueRegistry.defaultValue(for: (Data?).self)
@@ -494,21 +506,31 @@ public class SecretStoreManagerProtocolStub: SecretStoreManagerProtocol {
     
 
     
+    
+    
     public func loadSecret(for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (SecretDataRepresentable?) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func saveSecret(_ secret: SecretDataRepresentable, for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func removeSecret(for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
     public func checkSecret(for identifier: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func checkSecret(for identifier: String) -> Bool  {
         return DefaultValueRegistry.defaultValue(for: (Bool).self)
@@ -633,9 +655,13 @@ public class JSONRPCResponseHandlingStub: JSONRPCResponseHandling {
     
 
     
+    
+    
     public func handle(data: Data)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func handle(error: Error)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -855,6 +881,7 @@ public class MockJSONRPCSubscribing: JSONRPCSubscribing, Cuckoo.ProtocolMock {
 }
 
 public class JSONRPCSubscribingStub: JSONRPCSubscribing {
+        
     
     
     public var requestId: UInt16 {
@@ -863,6 +890,7 @@ public class JSONRPCSubscribingStub: JSONRPCSubscribing {
         }
         
     }
+        
     
     
     public var requestData: Data {
@@ -871,6 +899,7 @@ public class JSONRPCSubscribingStub: JSONRPCSubscribing {
         }
         
     }
+        
     
     
     public var requestOptions: JSONRPCOptions {
@@ -879,6 +908,7 @@ public class JSONRPCSubscribingStub: JSONRPCSubscribing {
         }
         
     }
+        
     
     
     public var remoteId: String? {
@@ -894,9 +924,13 @@ public class JSONRPCSubscribingStub: JSONRPCSubscribing {
     
 
     
+    
+    
     public func handle(data: Data) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
     public func handle(error: Error, unsubscribed: Bool)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1041,13 +1075,19 @@ public class JSONRPCEngineStub: JSONRPCEngine {
     
 
     
+    
+    
     public func callMethod<P: Encodable, T: Decodable>(_ method: String, params: P?, options: JSONRPCOptions, completion closure: ((Result<T, Error>) -> Void)?) throws -> UInt16  {
         return DefaultValueRegistry.defaultValue(for: (UInt16).self)
     }
     
+    
+    
     public func subscribe<P: Encodable, T: Decodable>(_ method: String, params: P?, updateClosure: @escaping (T) -> Void, failureClosure: @escaping (Error, Bool) -> Void) throws -> UInt16  {
         return DefaultValueRegistry.defaultValue(for: (UInt16).self)
     }
+    
+    
     
     public func cancelForIdentifier(_ identifier: UInt16)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1145,6 +1185,8 @@ import Foundation
 
     
 
+    
+    
     
      func accept(visitor: EventVisitorProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1289,13 +1331,19 @@ import Foundation
     
 
     
+    
+    
      func notify(with event: EventProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func add(observer: EventVisitorProtocol, dispatchIn queue: DispatchQueue?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func remove(observer: EventVisitorProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1335,53 +1383,6 @@ import RobinHood
 
     
 
-    
-    
-    
-    @available(*, deprecated, message: "Use createMetaAccountRepository(for filter:, sortDescriptors:) instead")
-    
-     func createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem> {
-        
-    return cuckoo_manager.call("createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createManagedRepository())
-        
-    }
-    
-    
-    
-     func createRepository() -> AnyDataProviderRepository<AccountItem> {
-        
-    return cuckoo_manager.call("createRepository() -> AnyDataProviderRepository<AccountItem>",
-            parameters: (),
-            escapingParameters: (),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createRepository())
-        
-    }
-    
-    
-    
-     func createAccountRepository(for networkType: SNAddressType) -> AnyDataProviderRepository<AccountItem> {
-        
-    return cuckoo_manager.call("createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>",
-            parameters: (networkType),
-            escapingParameters: (networkType),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.createAccountRepository(for: networkType))
-        
-    }
     
     
     
@@ -1452,21 +1453,6 @@ import RobinHood
 	    }
 	    
 	    
-	    func createManagedRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<ManagedAccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>", parameterMatchers: matchers))
-	    }
-	    
-	    func createRepository() -> Cuckoo.ProtocolStubFunction<(), AnyDataProviderRepository<AccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createRepository() -> AnyDataProviderRepository<AccountItem>", parameterMatchers: matchers))
-	    }
-	    
-	    func createAccountRepository<M1: Cuckoo.Matchable>(for networkType: M1) -> Cuckoo.ProtocolStubFunction<(SNAddressType), AnyDataProviderRepository<AccountItem>> where M1.MatchedType == SNAddressType {
-	        let matchers: [Cuckoo.ParameterMatcher<(SNAddressType)>] = [wrap(matchable: networkType) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>", parameterMatchers: matchers))
-	    }
-	    
 	    func createMetaAccountRepository<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(for filter: M1, sortDescriptors: M2) -> Cuckoo.ProtocolStubFunction<(NSPredicate?, [NSSortDescriptor]), AnyDataProviderRepository<MetaAccountModel>> where M1.OptionalMatchedType == NSPredicate, M2.MatchedType == [NSSortDescriptor] {
 	        let matchers: [Cuckoo.ParameterMatcher<(NSPredicate?, [NSSortDescriptor])>] = [wrap(matchable: filter) { $0.0 }, wrap(matchable: sortDescriptors) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountRepositoryFactoryProtocol.self, method: "createMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>", parameterMatchers: matchers))
@@ -1504,24 +1490,6 @@ import RobinHood
 	
 	    
 	    @discardableResult
-	    func createManagedRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<ManagedAccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func createRepository() -> Cuckoo.__DoNotUse<(), AnyDataProviderRepository<AccountItem>> {
-	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
-	        return cuckoo_manager.verify("createRepository() -> AnyDataProviderRepository<AccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func createAccountRepository<M1: Cuckoo.Matchable>(for networkType: M1) -> Cuckoo.__DoNotUse<(SNAddressType), AnyDataProviderRepository<AccountItem>> where M1.MatchedType == SNAddressType {
-	        let matchers: [Cuckoo.ParameterMatcher<(SNAddressType)>] = [wrap(matchable: networkType) { $0 }]
-	        return cuckoo_manager.verify("createAccountRepository(for: SNAddressType) -> AnyDataProviderRepository<AccountItem>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
 	    func createMetaAccountRepository<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(for filter: M1, sortDescriptors: M2) -> Cuckoo.__DoNotUse<(NSPredicate?, [NSSortDescriptor]), AnyDataProviderRepository<MetaAccountModel>> where M1.OptionalMatchedType == NSPredicate, M2.MatchedType == [NSSortDescriptor] {
 	        let matchers: [Cuckoo.ParameterMatcher<(NSPredicate?, [NSSortDescriptor])>] = [wrap(matchable: filter) { $0.0 }, wrap(matchable: sortDescriptors) { $0.1 }]
 	        return cuckoo_manager.verify("createMetaAccountRepository(for: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -1554,29 +1522,25 @@ import RobinHood
     
 
     
-     func createManagedRepository() -> AnyDataProviderRepository<ManagedAccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ManagedAccountItem>).self)
-    }
     
-     func createRepository() -> AnyDataProviderRepository<AccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<AccountItem>).self)
-    }
-    
-     func createAccountRepository(for networkType: SNAddressType) -> AnyDataProviderRepository<AccountItem>  {
-        return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<AccountItem>).self)
-    }
     
      func createMetaAccountRepository(for filter: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<MetaAccountModel>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<MetaAccountModel>).self)
     }
     
+    
+    
      func createManagedMetaAccountRepository(for filter: NSPredicate?, sortDescriptors: [NSSortDescriptor]) -> AnyDataProviderRepository<ManagedMetaAccountModel>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<ManagedMetaAccountModel>).self)
     }
     
+    
+    
      func createFavoriteDAppsRepository() -> AnyDataProviderRepository<DAppFavorite>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppFavorite>).self)
     }
+    
+    
     
      func createAuthorizedDAppsRepository(for metaId: String) -> AnyDataProviderRepository<DAppSettings>  {
         return DefaultValueRegistry.defaultValue(for: (AnyDataProviderRepository<DAppSettings>).self)
@@ -1701,9 +1665,13 @@ import Foundation
     
 
     
+    
+    
      func notifyAfter(_ seconds: TimeInterval)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func cancel()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1795,6 +1763,8 @@ import Foundation
 
     
 
+    
+    
     
      func didTrigger(scheduler: SchedulerProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -1914,6 +1884,7 @@ import UIKit.UIImage
 }
 
  class BiometryAuthProtocolStub: BiometryAuthProtocol {
+        
     
     
      var availableBiometryType: AvailableBiometryType {
@@ -1926,6 +1897,8 @@ import UIKit.UIImage
 
     
 
+    
+    
     
      func authenticate(localizedReason: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2037,6 +2010,7 @@ import UIKit.UIImage
 }
 
  class BiometryAuthStub: BiometryAuth {
+        
     
     
      override var availableBiometryType: AvailableBiometryType {
@@ -2049,6 +2023,8 @@ import UIKit.UIImage
 
     
 
+    
+    
     
      override func authenticate(localizedReason: String, completionQueue: DispatchQueue, completionBlock: @escaping (Bool) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2166,6 +2142,7 @@ import Foundation
 }
 
  class ConnectionAutobalancingStub: ConnectionAutobalancing {
+        
     
     
      var urls: [URL] {
@@ -2178,6 +2155,8 @@ import Foundation
 
     
 
+    
+    
     
      func changeUrls(_ newUrls: [URL])   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2270,6 +2249,7 @@ import SubstrateSdk
 }
 
  class ConnectionStateReportingStub: ConnectionStateReporting {
+        
     
     
      var state: WebSocketEngine.State {
@@ -2377,6 +2357,8 @@ import RobinHood
     
 
     
+    
+    
      func fetchData(from url: URL) -> BaseOperation<Data>  {
         return DefaultValueRegistry.defaultValue(for: (BaseOperation<Data>).self)
     }
@@ -2475,6 +2457,8 @@ import SubstrateSdk
 
     
 
+    
+    
     
      func fetchChainOperation(_ url: URL) -> BaseOperation<String>  {
         return DefaultValueRegistry.defaultValue(for: (BaseOperation<String>).self)
@@ -2599,9 +2583,13 @@ import Foundation
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func throttle()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -2902,6 +2890,7 @@ import RobinHood
 }
 
  class ChainRegistryProtocolStub: ChainRegistryProtocol {
+        
     
     
      var availableChainIds: Set<ChainModel.Id>? {
@@ -2915,33 +2904,49 @@ import RobinHood
     
 
     
+    
+    
      func getChain(for chainId: ChainModel.Id) -> ChainModel?  {
         return DefaultValueRegistry.defaultValue(for: (ChainModel?).self)
     }
+    
+    
     
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection?  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection?).self)
     }
     
+    
+    
      func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?  {
         return DefaultValueRegistry.defaultValue(for: (RuntimeProviderProtocol?).self)
     }
+    
+    
     
      func chainsSubscribe(_ target: AnyObject, runningInQueue: DispatchQueue, updateClosure: @escaping ([DataProviderChange<ChainModel>]) -> Void)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func chainsUnsubscribe(_ target: AnyObject)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func subscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func unsubscribeChainState(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func syncUp()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3067,9 +3072,13 @@ import SubstrateSdk
     
 
     
+    
+    
      func createConnection(for chain: ChainModel, delegate: WebSocketEngineDelegate?) throws -> ChainConnection  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection).self)
     }
+    
+    
     
      func updateConnection(_ connection: ChainConnection, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3248,17 +3257,25 @@ import SubstrateSdk
     
 
     
+    
+    
      func setupConnection(for chain: ChainModel) throws -> ChainConnection  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection).self)
     }
+    
+    
     
      func getConnection(for chainId: ChainModel.Id) -> ChainConnection?  {
         return DefaultValueRegistry.defaultValue(for: (ChainConnection?).self)
     }
     
+    
+    
      func subscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func unsubscribe(_ subscriber: ConnectionStateSubscription, chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3350,6 +3367,8 @@ import SubstrateSdk
 
     
 
+    
+    
     
      func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3459,6 +3478,7 @@ import SubstrateSdk
 }
 
  class ConnectionPoolStub: ConnectionPool {
+        
     
     
      override var connections: [ChainModel.Id: WeakWrapper] {
@@ -3467,6 +3487,7 @@ import SubstrateSdk
         }
         
     }
+        
     
     
      override var stateSubscriptions: [ChainModel.Id: [WeakWrapper]] {
@@ -3652,17 +3673,25 @@ import RobinHood
     
 
     
+    
+    
      func fetchCommonTypesOperation() -> CompoundOperationWrapper<Data?>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Data?>).self)
     }
+    
+    
     
      func fetchChainTypesOperation(for chainId: ChainModel.Id) -> CompoundOperationWrapper<Data?>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Data?>).self)
     }
     
+    
+    
      func saveCommonTypesOperation(data closure: @escaping () throws -> Data) -> CompoundOperationWrapper<Void>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Void>).self)
     }
+    
+    
     
      func saveChainTypesOperation(for chainId: ChainModel.Id, data closure: @escaping () throws -> Data) -> CompoundOperationWrapper<Void>  {
         return DefaultValueRegistry.defaultValue(for: (CompoundOperationWrapper<Void>).self)
@@ -3762,6 +3791,8 @@ import SubstrateSdk
 
     
 
+    
+    
     
      func syncUp()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -3871,6 +3902,7 @@ import SubstrateSdk
 }
 
  class CommonTypesSyncServiceStub: CommonTypesSyncService {
+        
     
     
      override var isSyncing: Bool {
@@ -3879,6 +3911,7 @@ import SubstrateSdk
         }
         
     }
+        
     
     
      override var retryAttempt: Int {
@@ -3985,6 +4018,8 @@ import RobinHood
 
     
 
+    
+    
     
      func fetchCoderFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol>  {
         return DefaultValueRegistry.defaultValue(for: (BaseOperation<RuntimeCoderFactoryProtocol>).self)
@@ -4182,6 +4217,7 @@ import SubstrateSdk
 }
 
  class RuntimeProviderProtocolStub: RuntimeProviderProtocol {
+        
     
     
      var chainId: ChainModel.Id {
@@ -4195,17 +4231,25 @@ import SubstrateSdk
     
 
     
+    
+    
      func setup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func replaceTypesUsage(_ newTypeUsage: ChainModel.TypesUsage)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func cleanup()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func fetchCoderFactoryOperation() -> BaseOperation<RuntimeCoderFactoryProtocol>  {
         return DefaultValueRegistry.defaultValue(for: (BaseOperation<RuntimeCoderFactoryProtocol>).self)
@@ -4304,6 +4348,8 @@ import RobinHood
 
     
 
+    
+    
     
      func createRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol  {
         return DefaultValueRegistry.defaultValue(for: (RuntimeProviderProtocol).self)
@@ -4454,13 +4500,19 @@ import Foundation
     
 
     
+    
+    
      func setupRuntimeProvider(for chain: ChainModel) -> RuntimeProviderProtocol  {
         return DefaultValueRegistry.defaultValue(for: (RuntimeProviderProtocol).self)
     }
     
+    
+    
      func destroyRuntimeProvider(for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func getRuntimeProvider(for chainId: ChainModel.Id) -> RuntimeProviderProtocol?  {
         return DefaultValueRegistry.defaultValue(for: (RuntimeProviderProtocol?).self)
@@ -4665,21 +4717,31 @@ import SubstrateSdk
     
 
     
+    
+    
      func register(chain: ChainModel, with connection: ChainConnection)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func unregister(chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func apply(version: RuntimeVersion, for chainId: ChainModel.Id)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func hasChain(with chainId: ChainModel.Id) -> Bool  {
         return DefaultValueRegistry.defaultValue(for: (Bool).self)
     }
+    
+    
     
      func isChainSyncing(_ chainId: ChainModel.Id) -> Bool  {
         return DefaultValueRegistry.defaultValue(for: (Bool).self)
@@ -4805,9 +4867,13 @@ import SubstrateSdk
     
 
     
+    
+    
      func subscribe()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func unsubscribe()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -4906,6 +4972,8 @@ import SubstrateSdk
 
     
 
+    
+    
     
      func createSubscription(for chainId: ChainModel.Id, connection: JSONRPCEngine) -> SpecVersionSubscriptionProtocol  {
         return DefaultValueRegistry.defaultValue(for: (SpecVersionSubscriptionProtocol).self)
@@ -5030,9 +5098,13 @@ import Foundation
     
 
     
+    
+    
      func attach(for chainId: ChainModel.Id, runningCompletionIn queue: DispatchQueue?, completion closure: RemoteSubscriptionClosure?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      func detach(for subscriptionId: UUID, chainId: ChainModel.Id, runningCompletionIn queue: DispatchQueue?, completion closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5151,9 +5223,13 @@ import Foundation
     
 
     
+    
+    
      override func attach(for chainId: ChainModel.Id, runningCompletionIn queue: DispatchQueue?, completion closure: RemoteSubscriptionClosure?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      override func detach(for subscriptionId: UUID, chainId: ChainModel.Id, runningCompletionIn queue: DispatchQueue?, completion closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5279,9 +5355,13 @@ import RobinHood
     
 
     
+    
+    
      func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      func clearSubscription()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5400,9 +5480,13 @@ import RobinHood
     
 
     
+    
+    
      override func setupSubscription(for accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat) throws  {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
+    
+    
     
      override func clearSubscription()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5528,9 +5612,13 @@ import SubstrateSdk
     
 
     
+    
+    
      func attachToGlobalData(for chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      func detachFromGlobalData(for subscriptionId: UUID, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -5760,25 +5848,37 @@ import SubstrateSdk
     
 
     
+    
+    
      func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      func detachFromAccountInfo(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func attachToAsset(of accountId: AccountId, assetId: String, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, assetBalanceUpdater: AssetsBalanceUpdater, transactionSubscription: TransactionSubscription?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      func detachFromAsset(for subscriptionId: UUID, accountId: AccountId, assetId: String, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      func detachFromOrmlToken(for subscriptionId: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6001,25 +6101,37 @@ import SubstrateSdk
     
 
     
+    
+    
      override func attachToAccountInfo(of accountId: AccountId, chainId: ChainModel.Id, chainFormat: ChainFormat, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      override func detachFromAccountInfo(for subscriptionId: UUID, accountId: AccountId, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      override func attachToAsset(of accountId: AccountId, assetId: String, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, assetBalanceUpdater: AssetsBalanceUpdater, transactionSubscription: TransactionSubscription?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      override func detachFromAsset(for subscriptionId: UUID, accountId: AccountId, assetId: String, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
+    
+    
      override func attachToOrmlToken(of accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?, subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol?) -> UUID?  {
         return DefaultValueRegistry.defaultValue(for: (UUID?).self)
     }
+    
+    
     
      override func detachFromOrmlToken(for subscriptionId: UUID, accountId: AccountId, currencyId: Data, chainId: ChainModel.Id, queue: DispatchQueue?, closure: RemoteSubscriptionClosure?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
@@ -6145,9 +6257,13 @@ import RobinHood
     
 
     
+    
+    
      func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol  {
         return DefaultValueRegistry.defaultValue(for: (EraValidatorServiceProtocol).self)
     }
+    
+    
     
      func createRewardCalculatorService(for chainId: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol  {
         return DefaultValueRegistry.defaultValue(for: (RewardCalculatorServiceProtocol).self)

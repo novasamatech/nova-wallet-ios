@@ -12,7 +12,6 @@ final class ValidatorInfoViewFactory {
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
         let validatorInfoViewModelFactory = ValidatorInfoViewModelFactory(
-            iconGenerator: PolkadotIconGenerator(),
             balanceViewModelFactory: balanceViewModelFactory
         )
 
