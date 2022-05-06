@@ -15,9 +15,37 @@ protocol LocalStorageRequestFactoryProtocol {
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         params: StorageRequestParams
     ) -> CompoundOperationWrapper<LocalStorageResponse<T>> where T: Decodable
+
+    func queryItemList<T>(
+        repository: AnyDataProviderRepository<ChainStorageItem>,
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        params: StorageRequestParams
+    ) -> CompoundOperationWrapper<[LocalStorageResponse<T>]> where T: Decodable
 }
 
-final class LocalStorageRequestFactory: LocalStorageRequestFactoryProtocol {
+extension LocalStorageRequestFactoryProtocol {
+    func queryItems<T>(
+        repository: AnyDataProviderRepository<ChainStorageItem>,
+        key: @escaping () throws -> String,
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        params: StorageRequestParams
+    ) -> CompoundOperationWrapper<T?> where T: Decodable {
+        let wrapper: CompoundOperationWrapper<LocalStorageResponse<T>> =
+            queryItems(repository: repository, key: key, factory: factory, params: params)
+
+        let mapOperation = ClosureOperation<T?> {
+            try wrapper.targetOperation.extractNoCancellableResultData().value
+        }
+
+        wrapper.allOperations.forEach { mapOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
+}
+
+final class LocalStorageRequestFactory {}
+
+extension LocalStorageRequestFactory: LocalStorageRequestFactoryProtocol {
     func queryItems<T>(
         repository: AnyDataProviderRepository<ChainStorageItem>,
         key: @escaping () throws -> String,
@@ -58,24 +86,42 @@ final class LocalStorageRequestFactory: LocalStorageRequestFactoryProtocol {
             dependencies: dependencies
         )
     }
-}
 
-extension LocalStorageRequestFactoryProtocol {
-    func queryItems<T>(
+    func queryItemList<T>(
         repository: AnyDataProviderRepository<ChainStorageItem>,
-        key: @escaping () throws -> String,
         factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
         params: StorageRequestParams
-    ) -> CompoundOperationWrapper<T?> where T: Decodable {
-        let wrapper: CompoundOperationWrapper<LocalStorageResponse<T>> =
-            queryItems(repository: repository, key: key, factory: factory, params: params)
+    ) -> CompoundOperationWrapper<[LocalStorageResponse<T>]> where T: Decodable {
+        let queryOperation = repository.fetchAllOperation(with: RepositoryFetchOptions())
 
-        let mapOperation = ClosureOperation<T?> {
-            try wrapper.targetOperation.extractNoCancellableResultData().value
+        let decodingOperation = StorageDecodingListOperation<T>(path: params.path)
+        decodingOperation.configurationBlock = {
+            do {
+                let result = try queryOperation.extractNoCancellableResultData()
+
+                decodingOperation.codingFactory = try factory()
+
+                decodingOperation.dataList = result.map(\.data)
+            } catch {
+                decodingOperation.result = .failure(error)
+            }
         }
 
-        wrapper.allOperations.forEach { mapOperation.addDependency($0) }
+        decodingOperation.addDependency(queryOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+        let mapOperation = ClosureOperation<[LocalStorageResponse<T>]> {
+            let fetchResult = try queryOperation.extractNoCancellableResultData()
+            let decodedResult = try decodingOperation.extractNoCancellableResultData()
+            return zip(decodedResult, fetchResult).map { result in
+                LocalStorageResponse(key: result.1.identifier, data: result.1.data, value: result.0)
+            }
+        }
+
+        mapOperation.addDependency(decodingOperation)
+
+        return CompoundOperationWrapper(
+            targetOperation: mapOperation,
+            dependencies: [queryOperation, decodingOperation]
+        )
     }
 }
