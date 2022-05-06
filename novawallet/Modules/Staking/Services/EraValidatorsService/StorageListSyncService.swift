@@ -25,6 +25,7 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
         connection: JSONRPCEngine,
         runtimeCodingService: RuntimeCodingServiceProtocol,
         operationQueue: OperationQueue,
+        logger: LoggerProtocol,
         completionQueue: DispatchQueue,
         completionClosure: @escaping (StorageListSyncResult<U, T>) -> Void
     ) {
@@ -37,8 +38,20 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
         self.operationQueue = operationQueue
         self.completionQueue = completionQueue
         self.completionClosure = completionClosure
+
+        super.init(retryStrategy: ExponentialReconnection(), logger: logger)
     }
 
+    override func performSyncUp() {
+        fetchLocalAndUpdateIfNeeded(for: chainId, storagePath: storagePath)
+    }
+
+    override func stopSyncUp() {
+        operationQueue.cancelAllOperations()
+    }
+}
+
+extension StorageListSyncService {
     private func notifyCompletion(for result: StorageListSyncResult<U, T>) {
         completionQueue.async { [weak self] in
             self?.completionClosure(result)
@@ -329,13 +342,5 @@ final class StorageListSyncService<K: Encodable, U: JSONListConvertible, T: Deco
             localFetchWrapper.allOperations
 
         operationQueue.addOperations(operations, waitUntilFinished: false)
-    }
-
-    override func performSyncUp() {
-        fetchLocalAndUpdateIfNeeded(for: chainId, storagePath: storagePath)
-    }
-
-    override func stopSyncUp() {
-        operationQueue.cancelAllOperations()
     }
 }

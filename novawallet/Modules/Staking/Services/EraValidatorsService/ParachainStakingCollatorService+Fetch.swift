@@ -13,7 +13,7 @@ extension ParachainStakingCollatorService {
         result: SyncResult
     ) {
         guard roundInfo == self.roundInfo, collatorCommission == self.collatorCommission else {
-            logger?.warning("Collators fetched but parameters changed. Cancelled.")
+            logger.warning("Collators fetched but parameters changed. Cancelled.")
             return
         }
 
@@ -53,7 +53,7 @@ extension ParachainStakingCollatorService {
         collatorCommission: BigUInt
     ) {
         guard roundInfo == self.roundInfo, collatorCommission == self.collatorCommission else {
-            logger?.warning("Prefix key for formed but parameters changed. Cancelled.")
+            logger.warning("Prefix key for formed but parameters changed. Cancelled.")
             return
         }
 
@@ -67,6 +67,7 @@ extension ParachainStakingCollatorService {
             connection: connection,
             runtimeCodingService: runtimeCodingService,
             operationQueue: operationQueue,
+            logger: logger,
             completionQueue: syncQueue
         ) { [weak self] result in
             self?.updateCollators(
