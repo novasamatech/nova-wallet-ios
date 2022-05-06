@@ -22,7 +22,7 @@ extension ParachainStakingCollatorService {
             let collator = item.value
 
             let invidualExposures = collator.delegations.map { delegation in
-                IndividualExposure(who: delegation.account, value: delegation.amount)
+                IndividualExposure(who: delegation.owner, value: delegation.amount)
             }
 
             let exposure = ValidatorExposure(
@@ -60,7 +60,7 @@ extension ParachainStakingCollatorService {
         syncService?.throttle()
 
         syncService = StorageListSyncService(
-            key: roundInfo.current,
+            key: String(roundInfo.current),
             chainId: chainId,
             storagePath: ParachainStaking.atStakePath,
             repositoryFactory: SubstrateRepositoryFactory(storageFacade: storageFacade),

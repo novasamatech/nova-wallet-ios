@@ -19,7 +19,8 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
     ) throws -> AnyDataProvider<DecodedBigUInt>
 }
 
-final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory {
+final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
+    ParachainStakingLocalSubscriptionFactoryProtocol {
     func getRoundProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedRoundInfo> {

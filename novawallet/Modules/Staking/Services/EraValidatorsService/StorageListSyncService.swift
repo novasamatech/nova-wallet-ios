@@ -217,7 +217,7 @@ extension StorageListSyncService {
         mapOperation.addDependency(keysDecodingOperation)
         mapOperation.addDependency(remoteFetchWrapper.targetOperation)
 
-        let dependencies = [keysFetchOperation] + remoteFetchWrapper.allOperations
+        let dependencies = [keysFetchOperation, keysDecodingOperation] + remoteFetchWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
