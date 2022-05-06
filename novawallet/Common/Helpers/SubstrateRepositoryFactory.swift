@@ -3,6 +3,8 @@ import RobinHood
 
 protocol SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository() -> AnyDataProviderRepository<ChainStorageItem>
+    func createChainStorageItemRepository(filter: NSPredicate) -> AnyDataProviderRepository<ChainStorageItem>
+
     func createAssetBalanceRepository() -> AnyDataProviderRepository<AssetBalance>
     func createStashItemRepository() -> AnyDataProviderRepository<StashItem>
     func createSingleValueRepository() -> AnyDataProviderRepository<SingleValueProviderObject>
@@ -45,6 +47,15 @@ final class SubstrateRepositoryFactory: SubstrateRepositoryFactoryProtocol {
     func createChainStorageItemRepository() -> AnyDataProviderRepository<ChainStorageItem> {
         let repository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
             storageFacade.createRepository()
+
+        return AnyDataProviderRepository(repository)
+    }
+
+    func createChainStorageItemRepository(
+        filter: NSPredicate
+    ) -> AnyDataProviderRepository<ChainStorageItem> {
+        let repository: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
+            storageFacade.createRepository(filter: filter)
 
         return AnyDataProviderRepository(repository)
     }
