@@ -38,7 +38,7 @@ final class ParachainStakingCollatorService {
     let providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
-    let logger: LoggerProtocol?
+    let logger: LoggerProtocol
 
     init(
         chainId: ChainModel.Id,
@@ -48,7 +48,7 @@ final class ParachainStakingCollatorService {
         providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         eventCenter: EventCenterProtocol,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.chainId = chainId
         self.storageFacade = storageFacade
@@ -61,7 +61,7 @@ final class ParachainStakingCollatorService {
     }
 
     func didReceiveSnapshot(_ snapshot: EraStakersInfo) {
-        logger?.debug("Attempt fulfill pendings \(pendingRequests.count)")
+        logger.debug("Attempt fulfill pendings \(pendingRequests.count)")
 
         self.snapshot = snapshot
 
@@ -71,7 +71,7 @@ final class ParachainStakingCollatorService {
 
             requests.forEach { deliver(snapshot: snapshot, to: $0) }
 
-            logger?.debug("Fulfilled pendings")
+            logger.debug("Fulfilled pendings")
         }
 
         DispatchQueue.main.async {
@@ -106,7 +106,7 @@ final class ParachainStakingCollatorService {
         } catch {
             unsubscribe()
 
-            logger?.error("Can't make subscription")
+            logger.error("Can't make subscription")
         }
     }
 
@@ -131,7 +131,7 @@ final class ParachainStakingCollatorService {
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger?.error("Did receive error: \(error)")
+            self?.logger.error("Did receive error: \(error)")
         }
 
         let options = DataProviderObserverOptions(
@@ -171,7 +171,7 @@ final class ParachainStakingCollatorService {
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
-            self?.logger?.error("Did receive error: \(error)")
+            self?.logger.error("Did receive error: \(error)")
         }
 
         let options = DataProviderObserverOptions(
