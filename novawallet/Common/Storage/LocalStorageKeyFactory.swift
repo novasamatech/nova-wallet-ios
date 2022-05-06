@@ -7,6 +7,8 @@ enum LocalStorageKeyFactoryError: Error {
 
 protocol LocalStorageKeyFactoryProtocol {
     func createKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String
+    func createRestorableKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String
+    func restoreRemoteKey(from localKey: String, chainId: ChainModel.Id) throws -> Data
 }
 
 extension LocalStorageKeyFactoryProtocol {
@@ -71,5 +73,18 @@ final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
         let concatData = (try Data(hexString: chainId)) + remoteKey
         let localKey = try StorageHasher.twox256.hash(data: concatData)
         return localKey.toHex()
+    }
+
+    func createRestorableKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String {
+        let chainIdData = try Data(hexString: chainId)
+
+        return (chainIdData + remoteKey).toHex()
+    }
+
+    func restoreRemoteKey(from localKey: String, chainId: ChainModel.Id) throws -> Data {
+        let chainIdData = try Data(hexString: chainId)
+        let fullKey = try Data(hexString: localKey)
+
+        return fullKey.suffix(fullKey.count - chainIdData.count)
     }
 }
