@@ -4,7 +4,7 @@ import BigInt
 
 extension ParachainStaking {
     struct Bond: Equatable, Codable {
-        let account: AccountId
+        @BytesCodable var owner: AccountId
         @StringCodable var amount: BigUInt
     }
 
@@ -23,7 +23,7 @@ extension ParachainStaking {
             }
 
             roundIndex = try jsonList[0].map(to: StringScaleMapper<RoundIndex>.self, with: context).value
-            accountId = try jsonList[1].map(to: AccountId.self, with: context)
+            accountId = try jsonList[1].map(to: BytesCodable.self, with: context).wrappedValue
         }
     }
 

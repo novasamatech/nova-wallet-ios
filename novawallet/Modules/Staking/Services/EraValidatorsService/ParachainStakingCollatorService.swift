@@ -26,7 +26,7 @@ final class ParachainStakingCollatorService {
     private var pendingRequests: [PendingRequest] = []
 
     var syncService: StorageListSyncService<
-        ParachainStaking.RoundIndex,
+        String,
         ParachainStaking.CollatorSnapshotKey,
         ParachainStaking.CollatorSnapshot
     >?
