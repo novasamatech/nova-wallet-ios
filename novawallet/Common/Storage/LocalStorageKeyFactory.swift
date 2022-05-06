@@ -66,6 +66,18 @@ extension LocalStorageKeyFactoryProtocol {
 
         return try createKey(from: storagePathData + data, chainId: chainId)
     }
+
+    func createRestorableKey(
+        from storagePath: StorageCodingPath,
+        chainId: ChainModel.Id
+    ) throws -> String {
+        let data = try StorageKeyFactory().createStorageKey(
+            moduleName: storagePath.moduleName,
+            storageName: storagePath.itemName
+        )
+
+        return try createRestorableKey(from: data, chainId: chainId)
+    }
 }
 
 final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
@@ -85,6 +97,6 @@ final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
         let chainIdData = try Data(hexString: chainId)
         let fullKey = try Data(hexString: localKey)
 
-        return fullKey.suffix(fullKey.count - chainIdData.count)
+        return Data(fullKey.suffix(fullKey.count - chainIdData.count))
     }
 }
