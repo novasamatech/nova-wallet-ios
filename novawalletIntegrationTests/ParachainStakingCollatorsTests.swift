@@ -3,17 +3,86 @@ import XCTest
 import RobinHood
 
 class ParachainStakingCollatorsTests: XCTestCase {
-    func testSyncCompletes() {
+    func testRemoteSyncCompletes() throws {
         let chainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
+        guard let collators = try syncCollators(
+            for: chainId,
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry
+        ) else {
+            XCTFail("Can't sync collators")
+            return
+        }
+
+        let savedCollatorsCount = try fetchCollatorsCount(for: chainId, storageFacade: storageFacade)
+
+        XCTAssert(!collators.validators.isEmpty)
+        XCTAssertEqual(savedCollatorsCount, collators.validators.count)
+    }
+
+    func testRemoteSyncAndLocalFetch() throws {
+        let chainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+
+        let storageFacade = SubstrateStorageTestFacade()
+        let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
+
+        guard let remoteCollators = try syncCollators(
+            for: chainId,
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry
+        ) else {
+            XCTFail("Can't sync remote collators")
+            return
+        }
+
+        guard let localCollators = try syncCollators(
+            for: chainId,
+            storageFacade: storageFacade,
+            chainRegistry: chainRegistry
+        ) else {
+            XCTFail("Can't sync remote collators")
+            return
+        }
+
+        XCTAssertEqual(remoteCollators.activeEra, localCollators.activeEra)
+        XCTAssertEqual(remoteCollators.validators.count, localCollators.validators.count)
+    }
+
+    private func fetchCollatorsCount(
+        for chainId: ChainModel.Id,
+        storageFacade: StorageFacadeProtocol
+    ) throws -> Int {
+        let prefixKey = try LocalStorageKeyFactory().createRestorableKey(
+            from: ParachainStaking.atStakePath,
+            chainId: chainId
+        )
+
+        let filter = NSPredicate.filterByIdPrefix(prefixKey)
+
+        let repository = SubstrateRepositoryFactory(
+            storageFacade: storageFacade
+        ).createChainStorageItemRepository(filter: filter)
+
+        let operation = repository.fetchAllOperation(with: RepositoryFetchOptions())
+
+        OperationQueue().addOperations([operation], waitUntilFinished: true)
+
+        return try operation.extractNoCancellableResultData().count
+    }
+
+    private func syncCollators(
+        for chainId: ChainModel.Id,
+        storageFacade: StorageFacadeProtocol,
+        chainRegistry: ChainRegistryProtocol
+    ) throws -> EraStakersInfo? {
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            XCTFail("Can't get connection or runtime service")
-            return
+            return nil
         }
 
         let operationQueue = OperationQueue()
@@ -34,8 +103,7 @@ class ParachainStakingCollatorsTests: XCTestCase {
             queue: nil,
             closure: nil
         ) else {
-            XCTFail("Can't subscribe to parachain staking data")
-            return
+            return nil
         }
 
         let providerFactory = ParachainStakingLocalSubscriptionFactory(
@@ -68,5 +136,7 @@ class ParachainStakingCollatorsTests: XCTestCase {
             queue: nil,
             closure: nil
         )
+
+        return try collatorsOperation.extractNoCancellableResultData()
     }
 }

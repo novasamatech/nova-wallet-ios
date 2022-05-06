@@ -235,8 +235,8 @@ extension StorageListSyncService {
         )
 
         let localStorateKeyFactory = LocalStorageKeyFactory()
-        let baseLocalKey = try localStorateKeyFactory.createFromStoragePath(
-            storagePath,
+        let baseLocalKey = try localStorateKeyFactory.createRestorableKey(
+            from: storagePath,
             chainId: chainId
         )
 
@@ -251,7 +251,7 @@ extension StorageListSyncService {
                     return nil
                 }
 
-                let localKey = try localStorateKeyFactory.createKey(
+                let localKey = try localStorateKeyFactory.createRestorableKey(
                     from: remoteItem.response.key,
                     chainId: chainId
                 )
