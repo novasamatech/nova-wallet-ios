@@ -1,0 +1,160 @@
+import Foundation
+import BigInt
+
+final class ParaStakingRewardCalculatorEngine {
+    let totalIssuance: BigUInt
+    let totalStaked: BigUInt
+    let inflation: ParachainStaking.InflationConfig
+    let parachainBond: ParachainStaking.ParachainBondConfig
+    let selectedCollators: EraStakersInfo
+    let assetPrecision: Int16
+
+    init(
+        totalIssuance: BigUInt,
+        totalStaked: BigUInt,
+        inflation: ParachainStaking.InflationConfig,
+        parachainBond: ParachainStaking.ParachainBondConfig,
+        selectedCollators: EraStakersInfo,
+        assetPrecision: Int16
+    ) {
+        self.totalIssuance = totalIssuance
+        self.totalStaked = totalStaked
+        self.inflation = inflation
+        self.parachainBond = parachainBond
+        self.selectedCollators = selectedCollators
+        self.assetPrecision = assetPrecision
+    }
+
+    private(set) lazy var collatorCommision: Decimal = {
+        let commissionPerbil = selectedCollators.validators.first?.prefs.commission ?? 0
+
+        return Decimal.fromSubstratePerbill(value: commissionPerbil) ?? 0.0
+    }()
+
+    private(set) lazy var parachainBondPercent: Decimal = {
+        Decimal.fromSubstratePercent(value: parachainBond.percent) ?? 0.0
+    }()
+
+    private(set) lazy var averageStake: Decimal = {
+        let collatorsCount = selectedCollators.validators.count
+        guard collatorsCount > 0 else {
+            return 0.0
+        }
+
+        let selectedStake = selectedCollators.validators.reduce(BigUInt(0)) {
+            $0 + $1.exposure.total
+        }
+
+        let decimalStake = Decimal.fromSubstrateAmount(
+            selectedStake,
+            precision: assetPrecision
+        ) ?? 0
+
+        return decimalStake / Decimal(collatorsCount)
+    }()
+
+    private func annualInlation() throws -> Decimal {
+        let result: BigUInt
+
+        if totalStaked < inflation.expect.min.value {
+            result = inflation.annual.min.value
+        } else if totalStaked > inflation.expect.max.value {
+            result = inflation.annual.max.value
+        } else {
+            result = inflation.annual.ideal.value
+        }
+
+        guard let decimalResult = Decimal.fromSubstratePerbill(value: result) else {
+            throw CommonError.dataCorruption
+        }
+
+        return decimalResult
+    }
+
+    private func calculateAnnualReturn(for stakeDeviation: Decimal) throws -> Decimal {
+        guard
+            let decimalTotalIssuance = Decimal.fromSubstrateAmount(
+                totalIssuance,
+                precision: assetPrecision
+            ),
+            let decimalTotalStaked = Decimal.fromSubstrateAmount(
+                totalStaked,
+                precision: assetPrecision
+            )
+        else {
+            throw CommonError.dataCorruption
+        }
+
+        guard decimalTotalIssuance > 0.0, decimalTotalStaked > 0.0 else {
+            return 0.0
+        }
+
+        let stakedPortion = decimalTotalStaked / decimalTotalIssuance
+
+        let decimalInflation = try annualInlation()
+
+        let decimalReturn = (decimalInflation / stakedPortion) * stakeDeviation
+
+        return decimalReturn * (1.0 - parachainBondPercent) * (1.0 - collatorCommision)
+    }
+}
+
+extension ParaStakingRewardCalculatorEngine: RewardCalculatorEngineProtocol {
+    func calculateEarnings(
+        amount _: Decimal,
+        validatorAccountId: AccountId,
+        isCompound _: Bool,
+        period: CalculationPeriod
+    ) throws -> Decimal {
+        guard
+            let stake = selectedCollators.validators.max(
+                by: { $0.exposure.total < $1.exposure.total }
+            )?.exposure.total,
+            let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision) else {
+            throw RewardCalculatorEngineError.unexpectedValidator(accountId: validatorAccountId)
+        }
+
+        let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
+
+        let dailyReturn = annualReturn / CalculationPeriod.daysInYear
+
+        return dailyReturn * Decimal(period.inDays)
+    }
+
+    func calculateMaxEarnings(
+        amount: Decimal,
+        isCompound _: Bool,
+        period: CalculationPeriod
+    ) -> Decimal {
+        guard
+            let stake = selectedCollators.validators.max(
+                by: { $0.exposure.total < $1.exposure.total }
+            )?.exposure.total,
+            let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
+            decimalStake > 0.0 else {
+            return 0.0
+        }
+
+        if let annualReturn = try? calculateAnnualReturn(for: averageStake / decimalStake) {
+            let dailyReturn = annualReturn / CalculationPeriod.daysInYear
+
+            return amount * dailyReturn * Decimal(period.inDays)
+        } else {
+            return 0.0
+        }
+    }
+
+    func calculateAvgEarnings(
+        amount: Decimal,
+        isCompound _: Bool,
+        period: CalculationPeriod
+    ) -> Decimal {
+        if let annualReturn = try? calculateAnnualReturn(for: 1.0) {
+            let dailyReturn = annualReturn / CalculationPeriod.daysInYear
+
+            return amount * dailyReturn * Decimal(period.inDays)
+        } else {
+            return 0.0
+        }
+    }
+}
