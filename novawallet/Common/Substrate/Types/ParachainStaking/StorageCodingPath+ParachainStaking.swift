@@ -16,4 +16,16 @@ extension ParachainStaking {
     static var atStakePath: StorageCodingPath {
         StorageCodingPath(moduleName: "ParachainStaking", itemName: "AtStake")
     }
+
+    static var inflationConfigPath: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainStaking", itemName: "InflationConfig")
+    }
+
+    static var parachainBondInfoPath: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainStaking", itemName: "ParachainBondInfo")
+    }
+
+    static var stakedPath: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainStaking", itemName: "Staked")
+    }
 }
