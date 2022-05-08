@@ -25,6 +25,8 @@ class ParaStakingRewardCalculatorTests: XCTestCase {
 
         logger.info("Max APR: \(maxApr)")
         logger.info("Average APR: \(avgApr)")
+
+        XCTAssertTrue(avgApr <= maxApr)
     }
 
     private func setupCalculator(
