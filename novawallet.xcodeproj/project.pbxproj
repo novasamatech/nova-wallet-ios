@@ -324,6 +324,8 @@
 		841E6B0A25EC1C140007DDFE /* ValidatorOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 841E6B0925EC1C140007DDFE /* ValidatorOperationFactory.swift */; };
 		84205897260C795B007D26C6 /* NominatorState+Status.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84205896260C795B007D26C6 /* NominatorState+Status.swift */; };
 		84216FCF28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FCE28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift */; };
+		84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD0282797EC00479375 /* ParachainStakingCollatorServiceProtocol.swift */; };
+		84216FD42827982800479375 /* SelectedRoundCollators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD32827982800479375 /* SelectedRoundCollators.swift */; };
 		842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842348E82614F6EA002127AF /* SkeletonLoadable.swift */; };
 		842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */; };
 		8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */; };
@@ -2388,6 +2390,8 @@
 		841E6B0925EC1C140007DDFE /* ValidatorOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorOperationFactory.swift; sourceTree = "<group>"; };
 		84205896260C795B007D26C6 /* NominatorState+Status.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NominatorState+Status.swift"; sourceTree = "<group>"; };
 		84216FCE28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStakingRewardCalculatorEngine.swift; sourceTree = "<group>"; };
+		84216FD0282797EC00479375 /* ParachainStakingCollatorServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCollatorServiceProtocol.swift; sourceTree = "<group>"; };
+		84216FD32827982800479375 /* SelectedRoundCollators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedRoundCollators.swift; sourceTree = "<group>"; };
 		842348E82614F6EA002127AF /* SkeletonLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadable.swift; sourceTree = "<group>"; };
 		842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstrateAccountId.swift; sourceTree = "<group>"; };
 		8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantFlowViewFactory.swift; sourceTree = "<group>"; };
@@ -5061,6 +5065,14 @@
 			path = AccountExportPassword;
 			sourceTree = "<group>";
 		};
+		84216FD22827981600479375 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				84216FD32827982800479375 /* SelectedRoundCollators.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		8424308B265B17EC003E07EC /* Operation */ = {
 			isa = PBXGroup;
 			children = (
@@ -6494,6 +6506,7 @@
 		848FFE6425E670CE00652AA5 /* EraValidatorsService */ = {
 			isa = PBXGroup;
 			children = (
+				84216FD22827981600479375 /* Model */,
 				848FFE6525E6742400652AA5 /* EraValidatorService.swift */,
 				848FFE8A25E69A6000652AA5 /* EraValidatorServiceProtocol.swift */,
 				84786DA725F9F58E0089DFF7 /* EraValidatorService+Fetch.swift */,
@@ -6501,6 +6514,7 @@
 				848DAF032822B7FE00D56F55 /* ParachainStakingCollatorService+Fetch.swift */,
 				841816722824FD0A0007684A /* StorageListSyncService.swift */,
 				8418167428251BBC0007684A /* StorageListSyncResult.swift */,
+				84216FD0282797EC00479375 /* ParachainStakingCollatorServiceProtocol.swift */,
 			);
 			path = EraValidatorsService;
 			sourceTree = "<group>";
@@ -10498,6 +10512,7 @@
 				847F2D5327AAB59200AFD476 /* GradientFactory.swift in Sources */,
 				8494D857252465AC00614D8F /* WalletDisplayTokenView.swift in Sources */,
 				84D1110E26B931C20016D962 /* ChainModel.swift in Sources */,
+				84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */,
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
@@ -12131,6 +12146,7 @@
 				237AD34CD1C2778834D7B330 /* AnalyticsValidatorsViewFactory.swift in Sources */,
 				843CE3A627D2098100436F4E /* NftDetailsLabel.swift in Sources */,
 				31E260D462BF33CFCDFEBA6C /* AnalyticsRewardDetailsProtocols.swift in Sources */,
+				84216FD42827982800479375 /* SelectedRoundCollators.swift in Sources */,
 				849E17DC27909179002D1744 /* DAppSearchQueryTableViewCell.swift in Sources */,
 				76F74188F16A370D79033A12 /* AnalyticsRewardDetailsWireframe.swift in Sources */,
 				2AC7BC842731A214001D99B0 /* BalanceLocks+Sort.swift in Sources */,
