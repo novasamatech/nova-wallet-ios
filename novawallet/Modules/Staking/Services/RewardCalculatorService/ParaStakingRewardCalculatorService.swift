@@ -18,7 +18,7 @@ final class ParaStakingRewardCalculatorService {
         let parachainBond: ParachainStaking.ParachainBondConfig
     }
 
-    private let syncQueue = DispatchQueue(
+    let syncQueue = DispatchQueue(
         label: "\(queueLabelPrefix).\(UUID().uuidString)",
         qos: .userInitiated
     )
@@ -35,7 +35,9 @@ final class ParaStakingRewardCalculatorService {
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var inflationProvider: AnyDataProvider<ParachainStaking.DecodedInflationConfig>?
     private var parachainBondProvider: AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>?
-    private var totalStakedService: StorageItemSyncService<StringScaleMapper<BigUInt>>?
+
+    var totalStakedService: StorageItemSyncService<StringScaleMapper<BigUInt>>?
+
     private var pendingRequests: [PendingRequest] = []
 
     let chainId: ChainModel.Id
@@ -71,6 +73,11 @@ final class ParaStakingRewardCalculatorService {
     }
 
     // MARK: - Private
+
+    func didUpdateTotalStaked(_ totalStaked: BigUInt) {
+        self.totalStaked = totalStaked
+        didUpdateShapshotParam()
+    }
 
     private func didUpdateShapshotParam() {
         if
@@ -172,6 +179,25 @@ final class ParaStakingRewardCalculatorService {
         }
     }
 
+    private func unsubscribe() {
+        totalIssuanceProvider?.removeObserver(self)
+        totalIssuanceProvider = nil
+
+        roundProvider?.removeObserver(self)
+        roundProvider = nil
+
+        inflationProvider?.removeObserver(self)
+        inflationProvider = nil
+
+        parachainBondProvider?.removeObserver(self)
+        parachainBondProvider = nil
+
+        totalStakedService?.throttle()
+        totalStakedService = nil
+    }
+}
+
+extension ParaStakingRewardCalculatorService {
     private func subscribeTotalIssuance() throws {
         guard totalIssuanceProvider == nil else {
             return
@@ -200,47 +226,6 @@ final class ParaStakingRewardCalculatorService {
             failing: failureClosure,
             options: options
         )
-    }
-
-    private func updateStaked(for roundInfo: ParachainStaking.RoundInfo) {
-        totalStakedService?.throttle()
-        totalStakedService = nil
-
-        let storagePath = ParachainStaking.stakedPath
-
-        guard let localKey = try? LocalStorageKeyFactory().createFromStoragePath(
-            storagePath,
-            encodableElement: roundInfo.current,
-            chainId: chainId
-        ) else {
-            logger.error("Can't encode local key")
-            return
-        }
-
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        let request = MapSubscriptionRequest(
-            storagePath: storagePath,
-            localKey: localKey,
-            keyParamClosure: { String(roundInfo.current) }
-        )
-
-        totalStakedService = StorageItemSyncService(
-            chainId: chainId,
-            storagePath: storagePath,
-            request: request,
-            repository: repository,
-            connection: connection,
-            runtimeCodingService: runtimeCodingService,
-            operationQueue: operationQueue,
-            logger: logger,
-            completionQueue: syncQueue
-        ) { [weak self] totalStaked in
-            self?.totalStaked = totalStaked?.value
-            self?.didUpdateShapshotParam()
-        }
-
-        totalStakedService?.setup()
     }
 
     private func subscribeRound() throws {
@@ -338,23 +323,6 @@ final class ParaStakingRewardCalculatorService {
             failing: failureClosure,
             options: options
         )
-    }
-
-    private func unsubscribe() {
-        totalIssuanceProvider?.removeObserver(self)
-        totalIssuanceProvider = nil
-
-        roundProvider?.removeObserver(self)
-        roundProvider = nil
-
-        inflationProvider?.removeObserver(self)
-        inflationProvider = nil
-
-        parachainBondProvider?.removeObserver(self)
-        parachainBondProvider = nil
-
-        totalStakedService?.throttle()
-        totalStakedService = nil
     }
 }
 
