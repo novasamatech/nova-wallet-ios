@@ -6,12 +6,10 @@ extension ParachainStaking {
         StakingRemoteSubscriptionServiceProtocol {
         private static let globalDataStoragePaths: [StorageCodingPath] = [
             ParachainStaking.roundPath,
-            ParachainStaking.totalPath,
             ParachainStaking.collatorCommissionPath,
             StorageCodingPath.totalIssuance,
             ParachainStaking.inflationConfigPath,
-            ParachainStaking.parachainBondInfoPath,
-            ParachainStaking.stakedPath
+            ParachainStaking.parachainBondInfoPath
         ]
 
         private static func globalDataParamsCacheKey(for chainId: ChainModel.Id) throws -> String {

@@ -32,15 +32,19 @@ final class ParaStakingRewardCalculatorService {
     private var parachainBondConfig: ParachainStaking.ParachainBondConfig?
 
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
-    private var totalStakedProvider: AnyDataProvider<DecodedBigUInt>?
+    private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var inflationProvider: AnyDataProvider<ParachainStaking.DecodedInflationConfig>?
     private var parachainBondProvider: AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>?
+    private var totalStakedService: StorageItemSyncService<StringScaleMapper<BigUInt>>?
     private var pendingRequests: [PendingRequest] = []
 
     let chainId: ChainModel.Id
     let collatorsService: ParachainStakingCollatorServiceProtocol
     let providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeCodingService: RuntimeProviderProtocol
     let logger: LoggerProtocol
     let assetPrecision: Int16
 
@@ -48,6 +52,9 @@ final class ParaStakingRewardCalculatorService {
         chainId: ChainModel.Id,
         collatorsService: ParachainStakingCollatorServiceProtocol,
         providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
+        connection: JSONRPCEngine,
+        runtimeCodingService: RuntimeProviderProtocol,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
         logger: LoggerProtocol
@@ -55,6 +62,9 @@ final class ParaStakingRewardCalculatorService {
         self.chainId = chainId
         self.collatorsService = collatorsService
         self.providerFactory = providerFactory
+        self.connection = connection
+        self.runtimeCodingService = runtimeCodingService
+        self.repositoryFactory = repositoryFactory
         self.operationQueue = operationQueue
         self.assetPrecision = assetPrecision
         self.logger = logger
@@ -154,7 +164,7 @@ final class ParaStakingRewardCalculatorService {
     private func subscribe() {
         do {
             try subscribeTotalIssuance()
-            try subscribeTotalStaked()
+            try subscribeRound()
             try subscribeInflationConfig()
             try subscribeParachainBondConfig()
         } catch {
@@ -192,16 +202,60 @@ final class ParaStakingRewardCalculatorService {
         )
     }
 
-    private func subscribeTotalStaked() throws {
-        guard totalStakedProvider == nil else {
+    private func updateStaked(for roundInfo: ParachainStaking.RoundInfo) {
+        totalStakedService?.throttle()
+        totalStakedService = nil
+
+        let storagePath = ParachainStaking.stakedPath
+
+        guard let localKey = try? LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            encodableElement: roundInfo.current,
+            chainId: chainId
+        ) else {
+            logger.error("Can't encode local key")
             return
         }
 
-        totalStakedProvider = try providerFactory.getStakedProvider(for: chainId)
+        let repository = repositoryFactory.createChainStorageItemRepository()
 
-        let updateClosure: ([DataProviderChange<DecodedBigUInt>]) -> Void = { [weak self] changes in
-            self?.totalStaked = changes.reduceToLastChange()?.item?.value
+        let request = MapSubscriptionRequest(
+            storagePath: storagePath,
+            localKey: localKey,
+            keyParamClosure: { String(roundInfo.current) }
+        )
+
+        totalStakedService = StorageItemSyncService(
+            chainId: chainId,
+            storagePath: storagePath,
+            request: request,
+            repository: repository,
+            connection: connection,
+            runtimeCodingService: runtimeCodingService,
+            operationQueue: operationQueue,
+            logger: logger,
+            completionQueue: syncQueue
+        ) { [weak self] totalStaked in
+            self?.totalStaked = totalStaked?.value
             self?.didUpdateShapshotParam()
+        }
+
+        totalStakedService?.setup()
+    }
+
+    private func subscribeRound() throws {
+        guard roundProvider == nil else {
+            return
+        }
+
+        roundProvider = try providerFactory.getRoundProvider(for: chainId)
+
+        let updateClosure: ([DataProviderChange<ParachainStaking.DecodedRoundInfo>]) -> Void
+
+        updateClosure = { [weak self] changes in
+            if let round = changes.reduceToLastChange()?.item {
+                self?.updateStaked(for: round)
+            }
         }
 
         let failureClosure: (Error) -> Void = { [weak self] error in
@@ -213,7 +267,7 @@ final class ParaStakingRewardCalculatorService {
             waitsInProgressSyncOnAdd: false
         )
 
-        totalStakedProvider?.addObserver(
+        roundProvider?.addObserver(
             self,
             deliverOn: syncQueue,
             executing: updateClosure,
@@ -290,14 +344,17 @@ final class ParaStakingRewardCalculatorService {
         totalIssuanceProvider?.removeObserver(self)
         totalIssuanceProvider = nil
 
-        totalStakedProvider?.removeObserver(self)
-        totalStakedProvider = nil
+        roundProvider?.removeObserver(self)
+        roundProvider = nil
 
         inflationProvider?.removeObserver(self)
         inflationProvider = nil
 
         parachainBondProvider?.removeObserver(self)
         parachainBondProvider = nil
+
+        totalStakedService?.throttle()
+        totalStakedService = nil
     }
 }
 
