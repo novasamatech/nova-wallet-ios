@@ -326,6 +326,7 @@
 		84216FCF28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FCE28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift */; };
 		84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD0282797EC00479375 /* ParachainStakingCollatorServiceProtocol.swift */; };
 		84216FD42827982800479375 /* SelectedRoundCollators.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD32827982800479375 /* SelectedRoundCollators.swift */; };
+		84216FD628279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD528279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift */; };
 		842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842348E82614F6EA002127AF /* SkeletonLoadable.swift */; };
 		842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */; };
 		8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */; };
@@ -2392,6 +2393,7 @@
 		84216FCE28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStakingRewardCalculatorEngine.swift; sourceTree = "<group>"; };
 		84216FD0282797EC00479375 /* ParachainStakingCollatorServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCollatorServiceProtocol.swift; sourceTree = "<group>"; };
 		84216FD32827982800479375 /* SelectedRoundCollators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedRoundCollators.swift; sourceTree = "<group>"; };
+		84216FD528279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStakingRewardCalculatorServiceProtocol.swift; sourceTree = "<group>"; };
 		842348E82614F6EA002127AF /* SkeletonLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadable.swift; sourceTree = "<group>"; };
 		842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstrateAccountId.swift; sourceTree = "<group>"; };
 		8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantFlowViewFactory.swift; sourceTree = "<group>"; };
@@ -9189,6 +9191,7 @@
 				AEE4E35125E945AA00D6DF31 /* RewardCalculatorFacade.swift */,
 				841816782825A20E0007684A /* ParaStakingRewardCalculatorService.swift */,
 				84216FCE28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift */,
+				84216FD528279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift */,
 			);
 			path = RewardCalculatorService;
 			sourceTree = "<group>";
@@ -10929,6 +10932,7 @@
 				846F757E27B53F5100536547 /* DAppMetamaskSigningState.swift in Sources */,
 				849E17E0279094E7002D1744 /* DAppSearchHeaderView.swift in Sources */,
 				F40966CE26B297D6008CD244 /* AnalyticsStakeProtocols.swift in Sources */,
+				84216FD628279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift in Sources */,
 				F47F640B263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift in Sources */,
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
 				F40966DC26B29839008CD244 /* SubqueryStakeData.swift in Sources */,
