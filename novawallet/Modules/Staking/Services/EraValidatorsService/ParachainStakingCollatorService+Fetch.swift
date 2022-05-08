@@ -17,7 +17,9 @@ extension ParachainStakingCollatorService {
             return
         }
 
-        let collators: [ParachainStaking.CollatorSnapshot] = result.items.map(\.value)
+        let collators: [CollatorInfo] = result.items.map { item in
+            CollatorInfo(accountId: item.key.accountId, snapshot: item.value)
+        }
 
         let snapshot = SelectedRoundCollators(
             round: roundInfo.current,
