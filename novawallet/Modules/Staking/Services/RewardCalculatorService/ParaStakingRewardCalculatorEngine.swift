@@ -1,12 +1,34 @@
 import Foundation
 import BigInt
 
+protocol ParaStakingRewardCalculatorEngineProtocol {
+    func calculateEarnings(
+        amount: Decimal,
+        collatorAccountId: AccountId,
+        period: CalculationPeriod
+    ) throws -> Decimal
+
+    func calculateMaxEarnings(
+        amount: Decimal,
+        period: CalculationPeriod
+    ) -> Decimal
+
+    func calculateAvgEarnings(
+        amount: Decimal,
+        period: CalculationPeriod
+    ) -> Decimal
+}
+
+enum ParaStakingRewardCalculatorEngineError: Error {
+    case missingCollator(_ collatorAccountId: AccountId)
+}
+
 final class ParaStakingRewardCalculatorEngine {
     let totalIssuance: BigUInt
     let totalStaked: BigUInt
     let inflation: ParachainStaking.InflationConfig
     let parachainBond: ParachainStaking.ParachainBondConfig
-    let selectedCollators: EraStakersInfo
+    let selectedCollators: SelectedRoundCollators
     let assetPrecision: Int16
 
     init(
@@ -14,7 +36,7 @@ final class ParaStakingRewardCalculatorEngine {
         totalStaked: BigUInt,
         inflation: ParachainStaking.InflationConfig,
         parachainBond: ParachainStaking.ParachainBondConfig,
-        selectedCollators: EraStakersInfo,
+        selectedCollators: SelectedRoundCollators,
         assetPrecision: Int16
     ) {
         self.totalIssuance = totalIssuance
@@ -26,9 +48,7 @@ final class ParaStakingRewardCalculatorEngine {
     }
 
     private(set) lazy var collatorCommision: Decimal = {
-        let commissionPerbil = selectedCollators.validators.first?.prefs.commission ?? 0
-
-        return Decimal.fromSubstratePerbill(value: commissionPerbil) ?? 0.0
+        Decimal.fromSubstratePerbill(value: selectedCollators.commission) ?? 0.0
     }()
 
     private(set) lazy var parachainBondPercent: Decimal = {
@@ -36,13 +56,13 @@ final class ParaStakingRewardCalculatorEngine {
     }()
 
     private(set) lazy var averageStake: Decimal = {
-        let collatorsCount = selectedCollators.validators.count
+        let collatorsCount = selectedCollators.collators.count
         guard collatorsCount > 0 else {
             return 0.0
         }
 
-        let selectedStake = selectedCollators.validators.reduce(BigUInt(0)) {
-            $0 + $1.exposure.total
+        let selectedStake = selectedCollators.collators.reduce(BigUInt(0)) {
+            $0 + $1.snapshot.total
         }
 
         let decimalStake = Decimal.fromSubstrateAmount(
@@ -99,37 +119,35 @@ final class ParaStakingRewardCalculatorEngine {
     }
 }
 
-extension ParaStakingRewardCalculatorEngine: RewardCalculatorEngineProtocol {
+extension ParaStakingRewardCalculatorEngine: ParaStakingRewardCalculatorEngineProtocol {
     func calculateEarnings(
-        amount _: Decimal,
-        validatorAccountId: AccountId,
-        isCompound _: Bool,
+        amount: Decimal,
+        collatorAccountId: AccountId,
         period: CalculationPeriod
     ) throws -> Decimal {
         guard
-            let stake = selectedCollators.validators.max(
-                by: { $0.exposure.total < $1.exposure.total }
-            )?.exposure.total,
+            let stake = selectedCollators.collators.first(
+                where: { $0.accountId == collatorAccountId }
+            )?.snapshot.total,
             let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision) else {
-            throw RewardCalculatorEngineError.unexpectedValidator(accountId: validatorAccountId)
+            throw ParaStakingRewardCalculatorEngineError.missingCollator(collatorAccountId)
         }
 
         let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
 
         let dailyReturn = annualReturn / CalculationPeriod.daysInYear
 
-        return dailyReturn * Decimal(period.inDays)
+        return amount * dailyReturn * Decimal(period.inDays)
     }
 
     func calculateMaxEarnings(
         amount: Decimal,
-        isCompound _: Bool,
         period: CalculationPeriod
     ) -> Decimal {
         guard
-            let stake = selectedCollators.validators.max(
-                by: { $0.exposure.total < $1.exposure.total }
-            )?.exposure.total,
+            let stake = selectedCollators.collators.min(
+                by: { $0.snapshot.total < $1.snapshot.total }
+            )?.snapshot.total,
             let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
             decimalStake > 0.0 else {
             return 0.0
@@ -146,7 +164,6 @@ extension ParaStakingRewardCalculatorEngine: RewardCalculatorEngineProtocol {
 
     func calculateAvgEarnings(
         amount: Decimal,
-        isCompound _: Bool,
         period: CalculationPeriod
     ) -> Decimal {
         if let annualReturn = try? calculateAnnualReturn(for: 1.0) {

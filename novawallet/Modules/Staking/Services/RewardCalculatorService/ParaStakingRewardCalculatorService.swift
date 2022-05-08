@@ -7,7 +7,7 @@ final class ParaStakingRewardCalculatorService {
     static let queueLabelPrefix = "com.novawallet.parastk.rewcalculator"
 
     private struct PendingRequest {
-        let resultClosure: (RewardCalculatorEngineProtocol) -> Void
+        let resultClosure: (ParaStakingRewardCalculatorEngineProtocol) -> Void
         let queue: DispatchQueue?
     }
 
@@ -38,7 +38,7 @@ final class ParaStakingRewardCalculatorService {
     private var pendingRequests: [PendingRequest] = []
 
     let chainId: ChainModel.Id
-    let eraValidatorsService: EraValidatorServiceProtocol
+    let collatorsService: ParachainStakingCollatorServiceProtocol
     let providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
     let logger: LoggerProtocol
@@ -46,14 +46,14 @@ final class ParaStakingRewardCalculatorService {
 
     init(
         chainId: ChainModel.Id,
-        eraValidatorsService: EraValidatorServiceProtocol,
+        collatorsService: ParachainStakingCollatorServiceProtocol,
         providerFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         operationQueue: OperationQueue,
         assetPrecision: Int16,
         logger: LoggerProtocol
     ) {
         self.chainId = chainId
-        self.eraValidatorsService = eraValidatorsService
+        self.collatorsService = collatorsService
         self.providerFactory = providerFactory
         self.operationQueue = operationQueue
         self.assetPrecision = assetPrecision
@@ -83,17 +83,12 @@ final class ParaStakingRewardCalculatorService {
 
     private func fetchInfoFactory(
         runCompletionIn queue: DispatchQueue?,
-        executing closure: @escaping (RewardCalculatorEngineProtocol) -> Void
+        executing closure: @escaping (ParaStakingRewardCalculatorEngineProtocol) -> Void
     ) {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
         if let snapshot = snapshot {
-            deliver(
-                snapshot: snapshot,
-                to: request,
-                chainId: chainId,
-                assetPrecision: assetPrecision
-            )
+            deliver(snapshot: snapshot, to: request, assetPrecision: assetPrecision)
         } else {
             pendingRequests.append(request)
         }
@@ -102,13 +97,12 @@ final class ParaStakingRewardCalculatorService {
     private func deliver(
         snapshot: Snapshot,
         to request: PendingRequest,
-        chainId _: ChainModel.Id,
         assetPrecision: Int16
     ) {
-        let eraOperation = eraValidatorsService.fetchInfoOperation()
+        let collatorsOperation = collatorsService.fetchInfoOperation()
 
-        let mapOperation = ClosureOperation<RewardCalculatorEngineProtocol> {
-            let selectedCollators = try eraOperation.extractNoCancellableResultData()
+        let mapOperation = ClosureOperation<ParaStakingRewardCalculatorEngineProtocol> {
+            let selectedCollators = try collatorsOperation.extractNoCancellableResultData()
 
             return ParaStakingRewardCalculatorEngine(
                 totalIssuance: snapshot.totalIssuance,
@@ -120,7 +114,7 @@ final class ParaStakingRewardCalculatorService {
             )
         }
 
-        mapOperation.addDependency(eraOperation)
+        mapOperation.addDependency(collatorsOperation)
 
         mapOperation.completionBlock = {
             dispatchInQueueWhenPossible(request.queue) {
@@ -135,7 +129,9 @@ final class ParaStakingRewardCalculatorService {
             }
         }
 
-        operationQueue.addOperations([eraOperation, mapOperation], waitUntilFinished: false)
+        let operations = [collatorsOperation, mapOperation]
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     private func notifyPendingClosures(with snapshot: Snapshot) {
@@ -149,12 +145,7 @@ final class ParaStakingRewardCalculatorService {
         pendingRequests = []
 
         requests.forEach {
-            deliver(
-                snapshot: snapshot,
-                to: $0,
-                chainId: chainId,
-                assetPrecision: assetPrecision
-            )
+            deliver(snapshot: snapshot, to: $0, assetPrecision: assetPrecision)
         }
 
         logger.debug("Fulfilled pendings")
@@ -310,7 +301,7 @@ final class ParaStakingRewardCalculatorService {
     }
 }
 
-extension ParaStakingRewardCalculatorService: RewardCalculatorServiceProtocol {
+extension ParaStakingRewardCalculatorService: ParaStakingRewardCalculatorServiceProtocol {
     func setup() {
         syncQueue.async {
             guard !self.isActive else {
@@ -335,9 +326,9 @@ extension ParaStakingRewardCalculatorService: RewardCalculatorServiceProtocol {
         }
     }
 
-    func fetchCalculatorOperation() -> BaseOperation<RewardCalculatorEngineProtocol> {
+    func fetchCalculatorOperation() -> BaseOperation<ParaStakingRewardCalculatorEngineProtocol> {
         ClosureOperation {
-            var fetchedInfo: RewardCalculatorEngineProtocol?
+            var fetchedInfo: ParaStakingRewardCalculatorEngineProtocol?
 
             let semaphore = DispatchSemaphore(value: 0)
 
