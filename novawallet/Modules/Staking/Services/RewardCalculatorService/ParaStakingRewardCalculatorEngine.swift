@@ -73,6 +73,22 @@ final class ParaStakingRewardCalculatorEngine {
         return decimalStake / Decimal(collatorsCount)
     }()
 
+    private(set) lazy var minStake: Decimal = {
+        guard
+            let stake = selectedCollators.collators.min(
+                by: { $0.snapshot.total < $1.snapshot.total }
+            )?.snapshot.total else {
+            return 0.0
+        }
+
+        let decimalStake = Decimal.fromSubstrateAmount(
+            stake,
+            precision: assetPrecision
+        ) ?? 0
+
+        return decimalStake
+    }()
+
     private func annualInlation() throws -> Decimal {
         let result: BigUInt
 
@@ -129,7 +145,8 @@ extension ParaStakingRewardCalculatorEngine: ParaStakingRewardCalculatorEnginePr
             let stake = selectedCollators.collators.first(
                 where: { $0.accountId == collatorAccountId }
             )?.snapshot.total,
-            let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision) else {
+            let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
+            decimalStake > 0.0 else {
             throw ParaStakingRewardCalculatorEngineError.missingCollator(collatorAccountId)
         }
 
@@ -144,16 +161,11 @@ extension ParaStakingRewardCalculatorEngine: ParaStakingRewardCalculatorEnginePr
         amount: Decimal,
         period: CalculationPeriod
     ) -> Decimal {
-        guard
-            let stake = selectedCollators.collators.min(
-                by: { $0.snapshot.total < $1.snapshot.total }
-            )?.snapshot.total,
-            let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
-            decimalStake > 0.0 else {
+        guard minStake > 0.0 else {
             return 0.0
         }
 
-        if let annualReturn = try? calculateAnnualReturn(for: averageStake / decimalStake) {
+        if let annualReturn = try? calculateAnnualReturn(for: averageStake / minStake) {
             let dailyReturn = annualReturn / CalculationPeriod.daysInYear
 
             return amount * dailyReturn * Decimal(period.inDays)
@@ -166,6 +178,10 @@ extension ParaStakingRewardCalculatorEngine: ParaStakingRewardCalculatorEnginePr
         amount: Decimal,
         period: CalculationPeriod
     ) -> Decimal {
+        guard minStake > 0.0 else {
+            return 0.0
+        }
+
         if let annualReturn = try? calculateAnnualReturn(for: 1.0) {
             let dailyReturn = annualReturn / CalculationPeriod.daysInYear
 

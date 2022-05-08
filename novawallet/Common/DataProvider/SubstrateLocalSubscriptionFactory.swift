@@ -10,6 +10,8 @@ class SubstrateLocalSubscriptionFactory {
     let logger: LoggerProtocol
     let stremableProviderFactory: SubstrateDataProviderFactoryProtocol
 
+    private let mutex = NSLock()
+
     init(
         chainRegistry: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
@@ -28,12 +30,32 @@ class SubstrateLocalSubscriptionFactory {
     }
 
     func saveProvider(_ provider: AnyObject, for key: String) {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         providers[key] = WeakWrapper(target: provider)
     }
 
-    func getProvider(for key: String) -> AnyObject? { providers[key]?.target }
+    func getProvider(for key: String) -> AnyObject? {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        return providers[key]?.target
+    }
 
     func clearIfNeeded() {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
         providers = providers.filter { $0.value.target != nil }
     }
 

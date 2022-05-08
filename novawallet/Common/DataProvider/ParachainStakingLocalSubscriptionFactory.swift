@@ -14,19 +14,11 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedRoundInfo>
 
-    func getTotalProvider(
-        for chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedBigUInt>
-
     func getCollatorCommissionProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBigUInt>
 
     func getTotalIssuanceProvider(
-        for chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedBigUInt>
-
-    func getStakedProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBigUInt>
 
@@ -64,12 +56,6 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
         try getPlainProvider(for: chainId, storagePath: ParachainStaking.roundPath)
     }
 
-    func getTotalProvider(
-        for chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedBigUInt> {
-        try getPlainProvider(for: chainId, storagePath: ParachainStaking.totalPath)
-    }
-
     func getCollatorCommissionProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBigUInt> {
@@ -80,12 +66,6 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<DecodedBigUInt> {
         try getPlainProvider(for: chainId, storagePath: StorageCodingPath.totalIssuance)
-    }
-
-    func getStakedProvider(
-        for chainId: ChainModel.Id
-    ) throws -> AnyDataProvider<DecodedBigUInt> {
-        try getPlainProvider(for: chainId, storagePath: ParachainStaking.stakedPath)
     }
 
     func getInflationProvider(
