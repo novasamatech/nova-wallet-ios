@@ -61,12 +61,8 @@ final class ParaStakingRewardCalculatorEngine {
             return 0.0
         }
 
-        let selectedStake = selectedCollators.collators.reduce(BigUInt(0)) {
-            $0 + $1.snapshot.total
-        }
-
         let decimalStake = Decimal.fromSubstrateAmount(
-            selectedStake,
+            totalStaked,
             precision: assetPrecision
         ) ?? 0
 
