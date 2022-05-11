@@ -330,6 +330,7 @@
 		84216FD82827A35F00479375 /* ParaStakingRewardCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD72827A35F00479375 /* ParaStakingRewardCalculatorTests.swift */; };
 		84216FDA2827B25F00479375 /* StorageItemSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FD92827B25F00479375 /* StorageItemSyncService.swift */; };
 		84216FDC2827E0E100479375 /* ParaStakingRewardCalculatorService+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FDB2827E0E100479375 /* ParaStakingRewardCalculatorService+Fetch.swift */; };
+		84216FDE282B979900479375 /* Decimal+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84216FDD282B979900479375 /* Decimal+Conversion.swift */; };
 		842348E92614F6EA002127AF /* SkeletonLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842348E82614F6EA002127AF /* SkeletonLoadable.swift */; };
 		842349C02624E7B40066ACFE /* SubstrateAccountId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */; };
 		8423ADD026B2C38600057EDD /* ImportantFlowViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */; };
@@ -2400,6 +2401,7 @@
 		84216FD72827A35F00479375 /* ParaStakingRewardCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStakingRewardCalculatorTests.swift; sourceTree = "<group>"; };
 		84216FD92827B25F00479375 /* StorageItemSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageItemSyncService.swift; sourceTree = "<group>"; };
 		84216FDB2827E0E100479375 /* ParaStakingRewardCalculatorService+Fetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStakingRewardCalculatorService+Fetch.swift"; sourceTree = "<group>"; };
+		84216FDD282B979900479375 /* Decimal+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Conversion.swift"; sourceTree = "<group>"; };
 		842348E82614F6EA002127AF /* SkeletonLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonLoadable.swift; sourceTree = "<group>"; };
 		842349BF2624E7B40066ACFE /* SubstrateAccountId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubstrateAccountId.swift; sourceTree = "<group>"; };
 		8423ADCF26B2C38600057EDD /* ImportantFlowViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportantFlowViewFactory.swift; sourceTree = "<group>"; };
@@ -6957,6 +6959,7 @@
 				84D33995262250B800130A89 /* String+Substrate.swift */,
 				84443BA126C123F100C33B5D /* Data+Random.swift */,
 				84E25BE727E751B400290BF1 /* Charset+Encoding.swift */,
+				84216FDD282B979900479375 /* Decimal+Conversion.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -11511,6 +11514,7 @@
 				84D1ABDE27E1B5240073C631 /* AssetViewModel.swift in Sources */,
 				842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */,
 				8439399C2636FAB40087658D /* YourValidatorViewModel.swift in Sources */,
+				84216FDE282B979900479375 /* Decimal+Conversion.swift in Sources */,
 				841E2E4E2738159400F250C1 /* RemoteSubscriptionHandlingFactory.swift in Sources */,
 				846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */,
 				84CFF1EA26526FBC00DB7CF7 /* StakingBondMoreConfirmationViewFactory.swift in Sources */,
