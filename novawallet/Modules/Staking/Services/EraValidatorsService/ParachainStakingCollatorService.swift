@@ -7,7 +7,7 @@ final class ParachainStakingCollatorService {
     static let queueLabelPrefix = "com.novawallet.selected.collators"
 
     private struct PendingRequest {
-        let resultClosure: (EraStakersInfo) -> Void
+        let resultClosure: (SelectedRoundCollators) -> Void
         let queue: DispatchQueue?
     }
 
@@ -20,7 +20,7 @@ final class ParachainStakingCollatorService {
     private(set) var collatorCommission: BigUInt?
     private var isActive: Bool = false
 
-    private var snapshot: EraStakersInfo?
+    private var snapshot: SelectedRoundCollators?
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     private var collatorCommissionProvider: AnyDataProvider<DecodedBigUInt>?
     private var pendingRequests: [PendingRequest] = []
@@ -60,7 +60,7 @@ final class ParachainStakingCollatorService {
         self.logger = logger
     }
 
-    func didReceiveSnapshot(_ snapshot: EraStakersInfo) {
+    func didReceiveSnapshot(_ snapshot: SelectedRoundCollators) {
         logger.debug("Attempt fulfill pendings \(pendingRequests.count)")
 
         self.snapshot = snapshot
@@ -82,7 +82,7 @@ final class ParachainStakingCollatorService {
 
     private func fetchInfoFactory(
         runCompletionIn queue: DispatchQueue?,
-        executing closure: @escaping (EraStakersInfo) -> Void
+        executing closure: @escaping (SelectedRoundCollators) -> Void
     ) {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
@@ -93,7 +93,7 @@ final class ParachainStakingCollatorService {
         }
     }
 
-    private func deliver(snapshot: EraStakersInfo, to request: PendingRequest) {
+    private func deliver(snapshot: SelectedRoundCollators, to request: PendingRequest) {
         dispatchInQueueWhenPossible(request.queue) {
             request.resultClosure(snapshot)
         }
@@ -200,7 +200,7 @@ final class ParachainStakingCollatorService {
     }
 }
 
-extension ParachainStakingCollatorService: EraValidatorServiceProtocol {
+extension ParachainStakingCollatorService: ParachainStakingCollatorServiceProtocol {
     func setup() {
         syncQueue.async {
             guard !self.isActive else {
@@ -225,9 +225,9 @@ extension ParachainStakingCollatorService: EraValidatorServiceProtocol {
         }
     }
 
-    func fetchInfoOperation() -> BaseOperation<EraStakersInfo> {
+    func fetchInfoOperation() -> BaseOperation<SelectedRoundCollators> {
         ClosureOperation {
-            var fetchedInfo: EraStakersInfo?
+            var fetchedInfo: SelectedRoundCollators?
 
             let semaphore = DispatchSemaphore(value: 0)
 

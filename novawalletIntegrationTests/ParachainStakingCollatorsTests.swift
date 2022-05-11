@@ -20,8 +20,8 @@ class ParachainStakingCollatorsTests: XCTestCase {
 
         let savedCollatorsCount = try fetchCollatorsCount(for: chainId, storageFacade: storageFacade)
 
-        XCTAssert(!collators.validators.isEmpty)
-        XCTAssertEqual(savedCollatorsCount, collators.validators.count)
+        XCTAssert(!collators.collators.isEmpty)
+        XCTAssertEqual(savedCollatorsCount, collators.collators.count)
     }
 
     func testRemoteSyncAndLocalFetch() throws {
@@ -48,8 +48,9 @@ class ParachainStakingCollatorsTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(remoteCollators.activeEra, localCollators.activeEra)
-        XCTAssertEqual(remoteCollators.validators.count, localCollators.validators.count)
+        XCTAssertEqual(remoteCollators.round, localCollators.round)
+        XCTAssertEqual(remoteCollators.commission, localCollators.commission)
+        XCTAssertEqual(remoteCollators.collators.count, localCollators.collators.count)
     }
 
     private func fetchCollatorsCount(
@@ -78,7 +79,7 @@ class ParachainStakingCollatorsTests: XCTestCase {
         for chainId: ChainModel.Id,
         storageFacade: StorageFacadeProtocol,
         chainRegistry: ChainRegistryProtocol
-    ) throws -> EraStakersInfo? {
+    ) throws -> SelectedRoundCollators? {
         guard
             let connection = chainRegistry.getConnection(for: chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {

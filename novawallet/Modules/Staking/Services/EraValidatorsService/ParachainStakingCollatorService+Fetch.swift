@@ -17,32 +17,14 @@ extension ParachainStakingCollatorService {
             return
         }
 
-        let collators: [EraValidatorInfo] = result.items.compactMap { item in
-            let key = item.key
-            let collator = item.value
-
-            let invidualExposures = collator.delegations.map { delegation in
-                IndividualExposure(who: delegation.owner, value: delegation.amount)
-            }
-
-            let exposure = ValidatorExposure(
-                total: collator.total,
-                own: collator.bond,
-                others: invidualExposures
-            )
-
-            let prefs = ValidatorPrefs(commission: collatorCommission, blocked: false)
-
-            return EraValidatorInfo(
-                accountId: key.accountId,
-                exposure: exposure,
-                prefs: prefs
-            )
+        let collators: [CollatorInfo] = result.items.map { item in
+            CollatorInfo(accountId: item.key.accountId, snapshot: item.value)
         }
 
-        let snapshot = EraStakersInfo(
-            activeEra: roundInfo.current,
-            validators: collators
+        let snapshot = SelectedRoundCollators(
+            round: roundInfo.current,
+            commission: collatorCommission,
+            collators: collators
         )
 
         didReceiveSnapshot(snapshot)
