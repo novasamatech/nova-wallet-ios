@@ -43,7 +43,7 @@ class StakingMainTests: XCTestCase {
         let eventCenter = MockEventCenterProtocol().applyingDefaultStub()
 
         let view = MockStakingMainViewProtocol()
-        let wireframe = MockStakingMainWireframeProtocol()
+        let wireframe = MockStakingRelaychainWireframeProtocol()
 
         let calculatorService = RewardCalculatorServiceStub(engine: WestendStub.rewardCalculator)
         let eraValidatorService = EraValidatorServiceStub.westendStub()
@@ -64,11 +64,13 @@ class StakingMainTests: XCTestCase {
         let networkViewModelFactory = NetworkInfoViewModelFactory()
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
-        let presenter = StakingMainPresenter(stateViewModelFactory: stateViewModelFactory,
-                                             networkInfoViewModelFactory: networkViewModelFactory,
-                                             viewModelFacade: viewModelFacade,
-                                             dataValidatingFactory: dataValidatingFactory,
-                                             logger: Logger.shared)
+        let presenter = StakingRelaychainPresenter(
+            stateViewModelFactory: stateViewModelFactory,
+            networkInfoViewModelFactory: networkViewModelFactory,
+            viewModelFacade: viewModelFacade,
+            dataValidatingFactory: dataValidatingFactory,
+            logger: Logger.shared
+        )
 
         let eraInfoOperationFactory = MockNetworkStakingInfoOperationFactoryProtocol()
 
@@ -124,7 +126,7 @@ class StakingMainTests: XCTestCase {
             balance: BigUInt(1e+18)
         )
 
-        let interactor = StakingMainInteractor(
+        let interactor = StakingRelaychainInteractor(
             selectedWalletSettings: walletSettings,
             sharedState: sharedState,
             chainRegistry: chainRegistry,
@@ -138,8 +140,7 @@ class StakingMainTests: XCTestCase {
             operationManager: operationManager,
             eraInfoOperationFactory: eraInfoOperationFactory,
             applicationHandler: ApplicationHandler(),
-            eraCountdownOperationFactory: eraCountdownOperationFactory,
-            commonSettings: InMemorySettingsManager()
+            eraCountdownOperationFactory: eraCountdownOperationFactory
         )
 
         presenter.view = view
@@ -150,10 +151,8 @@ class StakingMainTests: XCTestCase {
 
         // when
 
-        let accountExpectation = XCTestExpectation()
         let nominatorStateExpectation = XCTestExpectation()
         let networkStakingInfoExpectation = XCTestExpectation()
-        let networkStakingInfoExpandedExpectation = XCTestExpectation()
 
         stub(eraInfoOperationFactory) { stub in
             when(stub).networkStakingOperation(for: any(), runtimeService: any()).then { _ in
@@ -175,12 +174,6 @@ class StakingMainTests: XCTestCase {
         }
 
         stub(view) { stub in
-            stub.didReceive(viewModel: any()).then { viewModel in
-                if viewModel.balanceViewModel != nil {
-                    accountExpectation.fulfill()
-                }
-            }
-
             stub.didRecieveNetworkStakingInfo(viewModel: any()).then { _ in
                 networkStakingInfoExpectation.fulfill()
             }
@@ -190,9 +183,6 @@ class StakingMainTests: XCTestCase {
                     nominatorStateExpectation.fulfill()
                 }
             }
-            stub.expandNetworkInfoView(any()).then { _ in
-                networkStakingInfoExpandedExpectation.fulfill()
-            }
         }
 
         presenter.setup()
@@ -200,19 +190,17 @@ class StakingMainTests: XCTestCase {
         // then
 
         let expectations = [
-            accountExpectation,
             nominatorStateExpectation,
             networkStakingInfoExpectation,
-            networkStakingInfoExpandedExpectation
         ]
 
         wait(for: expectations, timeout: 5)
     }
 
     private func performStakingManageTestSetup(
-        for wireframe: StakingMainWireframeProtocol
-    ) -> StakingMainPresenter {
-        let interactor = StakingMainInteractorInputProtocolStub()
+        for wireframe: StakingRelaychainWireframeProtocol
+    ) -> StakingRelaychainPresenter {
+        let interactor = StakingRelaychainInteractorInputProtocolStub()
 
         let viewModelFacade = StakingViewModelFacade()
         let analyticsRewardsViewModelFactoryBuilder: AnalyticsRewardsViewModelFactoryBuilder = { chainAsset, balance in
@@ -231,7 +219,7 @@ class StakingMainTests: XCTestCase {
 
         let dataValidatingFactory = StakingDataValidatingFactory(presentable: wireframe)
 
-        let presenter = StakingMainPresenter(
+        let presenter = StakingRelaychainPresenter(
             stateViewModelFactory: stateViewModelFactory,
             networkInfoViewModelFactory: networkViewModelFactory,
             viewModelFacade: viewModelFacade,
