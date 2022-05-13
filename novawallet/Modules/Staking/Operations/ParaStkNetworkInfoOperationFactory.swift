@@ -19,7 +19,7 @@ final class ParaStkNetworkInfoOperationFactory {
 
     private func deriveMinimalStake(
         from collatorsInfo: SelectedRoundCollators,
-        limitedBy maxDelegators: Int
+        limitedBy maxDelegators: UInt32
     ) -> BigUInt {
         let allFull = collatorsInfo.collators.allSatisfy { collator in
             collator.snapshot.delegations.count == maxDelegators
@@ -58,15 +58,13 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
             dependingOn: codingFactoryOperation
         )
 
-        let maxDeletorsOperation: BaseOperation<Int> = PrimitiveConstantOperation
-            .operation(
-                for: ParachainStaking.maxTopDelegationsPerCandidate,
-                dependingOn: codingFactoryOperation
-            )
+        let maxDelegatorsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
+            for: ParachainStaking.maxTopDelegationsPerCandidate,
+            dependingOn: codingFactoryOperation
+        )
 
-        [minStakeOperation, maxDeletorsOperation].forEach {
-            $0.addDependency(codingFactoryOperation)
-        }
+        let constantsOperations = [minStakeOperation, maxDelegatorsOperation]
+        constantsOperations.forEach { $0.addDependency(codingFactoryOperation) }
 
         let collatorsOperation = collatorService.fetchInfoOperation()
         let rewardEngineOperation = rewardCalculatorService.fetchCalculatorOperation()
@@ -74,7 +72,7 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
 
         let mapOperation = ClosureOperation<ParachainStaking.NetworkInfo> {
             let minStake = try minStakeOperation.extractNoCancellableResultData()
-            let maxDelegators = try maxDeletorsOperation.extractNoCancellableResultData()
+            let maxDelegators = try maxDelegatorsOperation.extractNoCancellableResultData()
             let collatorsInfo = try collatorsOperation.extractNoCancellableResultData()
             let rewardEngine = try rewardEngineOperation.extractNoCancellableResultData()
             let stakingDuration = try stakingDurationWrapper.targetOperation
@@ -90,6 +88,7 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
                 totalStake: rewardEngine.totalStaked,
                 minStakeForRewards: minDelegatorStake,
                 minTechStake: minStake,
+                maximumDelegatorsPerCollator: maxDelegators,
                 activeDelegatorsCount: activeDelegatorsCount,
                 stakingDuration: stakingDuration
             )
@@ -98,7 +97,7 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
         let regularOperations = [
             codingFactoryOperation,
             minStakeOperation,
-            maxDeletorsOperation,
+            maxDelegatorsOperation,
             collatorsOperation,
             rewardEngineOperation
         ]
@@ -107,9 +106,6 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
 
         dependencies.forEach { mapOperation.addDependency($0) }
 
-        return CompoundOperationWrapper(
-            targetOperation: mapOperation,
-            dependencies: dependencies
-        )
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }
