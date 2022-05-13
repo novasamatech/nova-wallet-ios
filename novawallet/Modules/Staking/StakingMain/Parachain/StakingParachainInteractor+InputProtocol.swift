@@ -22,6 +22,7 @@ extension StakingParachainInteractor: EventVisitorProtocol {
 
         provideSelectedCollatorsInfo(from: collatorService)
         provideRewardCalculator(from: rewardCalculationService)
+        provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
     }
 }
 

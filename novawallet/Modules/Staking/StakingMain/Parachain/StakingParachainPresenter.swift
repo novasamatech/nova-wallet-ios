@@ -61,6 +61,10 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         logger.info("Did receive calculator")
     }
 
+    func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo) {
+        logger.info("Did receive network info: \(networkInfo)")
+    }
+
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
     }

@@ -2,6 +2,9 @@ import Foundation
 import BigInt
 
 protocol ParaStakingRewardCalculatorEngineProtocol {
+    var totalIssuance: BigUInt { get }
+    var totalStaked: BigUInt { get }
+
     func calculateEarnings(
         amount: Decimal,
         collatorAccountId: AccountId,

@@ -17,6 +17,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingServiceFactory: ParachainStakingServiceFactoryProtocol
+    let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
@@ -26,6 +27,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var accountSubscriptionId: UUID?
     var collatorsInfoCancellable: CancellableCall?
     var rewardCalculatorCancellable: CancellableCall?
+    var networkInfoCancellable: CancellableCall?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
@@ -44,6 +46,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingServiceFactory: ParachainStakingServiceFactoryProtocol,
+        networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -57,6 +60,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingServiceFactory = stakingServiceFactory
+        self.networkInfoFactory = networkInfoFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -140,6 +144,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
+        provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
@@ -225,5 +230,50 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         collatorsInfoCancellable = operation
 
         operationQueue.addOperation(operation)
+    }
+
+    func provideNetworkInfo(
+        for collatorService: ParachainStakingCollatorServiceProtocol,
+        rewardService: ParaStakingRewardCalculatorServiceProtocol
+    ) {
+        clear(cancellable: &networkInfoCancellable)
+
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
+            return
+        }
+
+        let wrapper = networkInfoFactory.networkStakingOperation(
+            for: collatorService,
+            rewardCalculatorService: rewardService,
+            runtimeService: runtimeService
+        )
+
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async { [weak self] in
+                guard self?.networkInfoCancellable === wrapper else {
+                    return
+                }
+
+                self?.networkInfoCancellable = nil
+
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveNetworkInfo(info)
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        networkInfoCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }
