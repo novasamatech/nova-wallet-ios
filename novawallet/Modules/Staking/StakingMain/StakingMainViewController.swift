@@ -465,7 +465,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
         let sideSize = iconButtonWidth.constant - iconButton.contentInsets.left
             - iconButton.contentInsets.right
         let size = CGSize(width: sideSize, height: sideSize)
-        let icon = try? iconGenerator?.generateFromAddress(viewModel.address)
+        let icon = try? iconGenerator?.generateFromAccountId(viewModel.accountId)
             .imageWithFillColor(R.color.colorWhite()!, size: size, contentScale: UIScreen.main.scale)
         iconButton.imageWithTitleView?.iconImage = icon
         iconButton.invalidateLayout()
