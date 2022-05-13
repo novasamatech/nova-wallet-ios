@@ -8,14 +8,7 @@ protocol StakingMainPresenterFactoryProtocol {
     ) -> StakingMainChildPresenterProtocol?
 }
 
-final class StakingMainPresenterFactory {
-    func createParachainPresenter(
-        for _: StakingAssetSettings,
-        view _: StakingMainViewProtocol
-    ) -> StakingMainChildPresenterProtocol? {
-        fatalError("Not implemented")
-    }
-}
+final class StakingMainPresenterFactory {}
 
 extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
     func createPresenter(
