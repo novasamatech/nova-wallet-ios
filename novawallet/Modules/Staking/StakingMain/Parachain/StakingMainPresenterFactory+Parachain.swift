@@ -63,6 +63,11 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
+        let stakingDurationFactory = ParaStkDurationOperationFactory()
+        let networkInfoFactory = ParaStkNetworkInfoOperationFactory(
+            durationFactory: stakingDurationFactory
+        )
+
         return StakingParachainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
@@ -72,6 +77,7 @@ extension StakingMainPresenterFactory {
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingServiceFactory: serviceFactory,
+            networkInfoFactory: networkInfoFactory,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
             operationQueue: operationQueue,
