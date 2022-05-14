@@ -14,6 +14,18 @@ extension ParachainStaking {
 }
 
 extension ParachainStaking.CommonData {
+    static var empty: ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: nil,
+            chainAsset: nil,
+            balance: nil,
+            price: nil,
+            networkInfo: nil,
+            calculatorEngine: nil,
+            collatorsInfo: nil
+        )
+    }
+
     func byReplacing(account: MetaChainAccountResponse?) -> ParachainStaking.CommonData {
         ParachainStaking.CommonData(
             account: account,

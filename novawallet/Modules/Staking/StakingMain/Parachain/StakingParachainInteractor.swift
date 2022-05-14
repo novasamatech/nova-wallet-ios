@@ -131,6 +131,9 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         sharedState.collatorService?.setup()
         sharedState.rewardCalculationService?.setup()
 
+        provideSelectedChainAsset()
+        provideSelectedAccount()
+
         guard
             let collatorService = sharedState.collatorService,
             let rewardCalculationService = sharedState.rewardCalculationService else {
@@ -158,20 +161,33 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(dataProvider: &scheduledRequestsProvider)
 
         guard let selectedChain = selectedChainAsset?.chain,
-              let selectedMetaAccount = selectedWalletSettings.value,
-              let newSelectedAccount = selectedMetaAccount.fetchMetaChainAccount(
-                  for: selectedChain.accountRequest()
-              ) else {
+              let selectedMetaAccount = selectedWalletSettings.value else {
             return
         }
 
-        selectedAccount = newSelectedAccount
+        selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
+            for: selectedChain.accountRequest()
+        )
+
+        presenter?.didReceiveAccount(selectedAccount)
 
         setupAccountRemoteSubscription()
 
         performAssetBalanceSubscription()
         performDelegatorSubscription()
         performScheduledRequestsSubscription()
+    }
+
+    func provideSelectedChainAsset() {
+        guard let chainAsset = selectedChainAsset else {
+            return
+        }
+
+        presenter?.didReceiveChainAsset(chainAsset)
+    }
+
+    func provideSelectedAccount() {
+        presenter?.didReceiveAccount(selectedAccount)
     }
 
     func provideRewardCalculator(
