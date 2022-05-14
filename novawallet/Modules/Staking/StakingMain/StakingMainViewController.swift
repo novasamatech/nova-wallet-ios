@@ -497,18 +497,30 @@ extension StakingMainViewController: StakingMainViewProtocol {
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .nominator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .validator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
             expandNetworkInfoView(false)
             updateActionsView(for: actions)
