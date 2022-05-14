@@ -6,9 +6,15 @@ final class StakingParachainPresenter {
     let interactor: StakingParachainInteractorInputProtocol
     let logger: LoggerProtocol
 
+    let stateMachine: ParaStkStateMachineProtocol
+
     init(interactor: StakingParachainInteractorInputProtocol, logger: LoggerProtocol) {
         self.interactor = interactor
         self.logger = logger
+
+        let stateMachine = ParachainStaking.StateMachine()
+        self.stateMachine = stateMachine
+        stateMachine.delegate = self
     }
 }
 
@@ -37,35 +43,47 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
 }
 
 extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
+    func didReceiveChainAsset(_ chainAsset: ChainAsset) {
+        stateMachine.state.process(chainAsset: chainAsset)
+    }
+
+    func didReceiveAccount(_ account: MetaChainAccountResponse?) {
+        stateMachine.state.process(account: account)
+    }
+
     func didReceivePrice(_ price: PriceData?) {
-        logger.info("Did receive price data: \(price)")
+        stateMachine.state.process(price: price)
     }
 
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
-        logger.info("Did receive asset balance: \(assetBalance)")
+        stateMachine.state.process(balance: assetBalance)
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
-        logger.info("Did receive delegator: \(delegator)")
+        stateMachine.state.process(delegatorState: delegator)
     }
 
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.ScheduledRequest]?) {
-        logger.info("Did receive requests: \(requests)")
+        stateMachine.state.process(scheduledRequests: requests)
     }
 
-    func didReceiveSelectedCollators(_: SelectedRoundCollators) {
-        logger.info("Did receive collators")
+    func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators) {
+        stateMachine.state.process(collatorsInfo: collatorsInfo)
     }
 
-    func didReceiveRewardCalculator(_: ParaStakingRewardCalculatorEngineProtocol) {
-        logger.info("Did receive calculator")
+    func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
+        stateMachine.state.process(calculatorEngine: calculator)
     }
 
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo) {
-        logger.info("Did receive network info: \(networkInfo)")
+        stateMachine.state.process(networkInfo: networkInfo)
     }
 
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
     }
+}
+
+extension StakingParachainPresenter: ParaStkStateMachineDelegate {
+    func stateMachineDidChangeState(_: ParaStkStateMachineProtocol) {}
 }

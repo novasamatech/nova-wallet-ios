@@ -17,39 +17,64 @@ extension ParachainStaking {
         func accept(visitor _: ParaStkStateVisitorProtocol) {}
 
         func process(chainAsset: ChainAsset?) {
+            if chainAsset != commonData.chainAsset {
+                let commonData = ParachainStaking.CommonData.empty
+                    .byReplacing(chainAsset: chainAsset)
 
+                let nextState = ParachainStaking.InitState(
+                    stateMachine: stateMachine,
+                    commonData: commonData
+                )
+
+                stateMachine?.transit(to: nextState)
+            }
         }
 
         func process(account: MetaChainAccountResponse?) {
-            
+            let commonData = commonData
+                .byReplacing(account: account)
+                .byReplacing(balance: nil)
+
+            let nextState = ParachainStaking.InitState(
+                stateMachine: stateMachine,
+                commonData: commonData
+            )
+
+            stateMachine?.transit(to: nextState)
         }
 
         func process(balance: AssetBalance?) {
+            commonData = commonData.byReplacing(balance: balance)
 
+            stateMachine?.transit(to: self)
         }
 
         func process(price: PriceData?) {
-            
+            commonData = commonData.byReplacing(price: price)
+
+            stateMachine?.transit(to: self)
         }
 
         func process(networkInfo: ParachainStaking.NetworkInfo?) {
+            commonData = commonData.byReplacing(networkInfo: networkInfo)
 
+            stateMachine?.transit(to: self)
         }
 
         func process(collatorsInfo: SelectedRoundCollators?) {
+            commonData = commonData.byReplacing(collatorsInfo: collatorsInfo)
 
+            stateMachine?.transit(to: self)
         }
 
         func process(calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?) {
+            commonData = commonData.byReplacing(calculatorEngine: calculatorEngine)
 
+            stateMachine?.transit(to: self)
         }
 
-        func process(delegatorState: ParachainStaking.Delegator?) {
+        func process(delegatorState _: ParachainStaking.Delegator?) {}
 
-        }
-
-        func process(scheduledRequests: [ParachainStaking.ScheduledRequest]?) {
-            
-        }
+        func process(scheduledRequests _: [ParachainStaking.ScheduledRequest]?) {}
     }
 }

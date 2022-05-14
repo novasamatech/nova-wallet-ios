@@ -5,6 +5,8 @@ protocol StakingParachainInteractorInputProtocol: AnyObject {
 }
 
 protocol StakingParachainInteractorOutputProtocol: AnyObject {
+    func didReceiveChainAsset(_ chainAsset: ChainAsset)
+    func didReceiveAccount(_ account: MetaChainAccountResponse?)
     func didReceivePrice(_ price: PriceData?)
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
