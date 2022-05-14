@@ -17,8 +17,11 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Presenter
 
+        let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory()
+
         let presenter = StakingParachainPresenter(
             interactor: interactor,
+            networkInfoViewModelFactory: networkInfoViewModelFactory,
             logger: Logger.shared
         )
 

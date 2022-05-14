@@ -7,19 +7,51 @@ final class StakingParachainPresenter {
     let logger: LoggerProtocol
 
     let stateMachine: ParaStkStateMachineProtocol
+    let networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol
 
-    init(interactor: StakingParachainInteractorInputProtocol, logger: LoggerProtocol) {
+    init(
+        interactor: StakingParachainInteractorInputProtocol,
+        networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
+        logger: LoggerProtocol
+    ) {
         self.interactor = interactor
+        self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.logger = logger
 
         let stateMachine = ParachainStaking.StateMachine()
         self.stateMachine = stateMachine
         stateMachine.delegate = self
     }
+
+    private func provideNetworkInfo() {
+        let optCommonData = stateMachine.viewState { (state: ParachainStaking.BaseState) in
+            state.commonData
+        }
+
+        if
+            let networkInfo = optCommonData?.networkInfo,
+            let chainAsset = optCommonData?.chainAsset {
+            let viewModel = networkInfoViewModelFactory.createViewModel(
+                from: networkInfo,
+                chainAsset: chainAsset,
+                price: optCommonData?.price
+            )
+            view?.didRecieveNetworkStakingInfo(viewModel: viewModel)
+        } else {
+            view?.didRecieveNetworkStakingInfo(viewModel: nil)
+        }
+    }
+
+    private func provideStateViewModel() {
+        view?.didReceiveStakingState(viewModel: .undefined)
+    }
 }
 
 extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func setup() {
+        provideNetworkInfo()
+        provideStateViewModel()
+
         interactor.setup()
     }
 
@@ -53,6 +85,8 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceivePrice(_ price: PriceData?) {
         stateMachine.state.process(price: price)
+
+        provideNetworkInfo()
     }
 
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?) {
@@ -77,6 +111,8 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo) {
         stateMachine.state.process(networkInfo: networkInfo)
+
+        provideNetworkInfo()
     }
 
     func didReceiveError(_ error: Error) {
@@ -85,5 +121,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 }
 
 extension StakingParachainPresenter: ParaStkStateMachineDelegate {
-    func stateMachineDidChangeState(_: ParaStkStateMachineProtocol) {}
+    func stateMachineDidChangeState(_: ParaStkStateMachineProtocol) {
+        provideStateViewModel()
+    }
 }
