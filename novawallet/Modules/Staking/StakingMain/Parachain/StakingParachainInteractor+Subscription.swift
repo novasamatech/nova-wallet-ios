@@ -79,7 +79,7 @@ extension StakingParachainInteractor {
         }
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveError(ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceiveAssetBalance(nil)
             return
         }
 
@@ -97,7 +97,7 @@ extension StakingParachainInteractor {
         }
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveError(ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceiveDelegator(nil)
             return
         }
 
@@ -114,7 +114,7 @@ extension StakingParachainInteractor {
         }
 
         guard let accountId = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveError(ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceiveScheduledRequests(nil)
             return
         }
 
