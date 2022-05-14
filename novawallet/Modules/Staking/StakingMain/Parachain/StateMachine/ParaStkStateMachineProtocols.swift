@@ -23,7 +23,7 @@ protocol ParaStkStateMachineProtocol: AnyObject {
 }
 
 extension ParaStkStateMachineProtocol {
-    func viewState<S: StakingStateProtocol, V>(using closure: (S) -> V?) -> V? {
+    func viewState<S: ParaStkStateProtocol, V>(using closure: (S) -> V?) -> V? {
         if let concreteState = state as? S {
             return closure(concreteState)
         } else {
