@@ -22,6 +22,12 @@ protocol ParaStakingRewardCalculatorEngineProtocol {
     ) -> Decimal
 }
 
+extension ParaStakingRewardCalculatorEngineProtocol {
+    func calculateMaxReturn(for period: CalculationPeriod) -> Decimal {
+        calculateMaxEarnings(amount: 1.0, period: period)
+    }
+}
+
 enum ParaStakingRewardCalculatorEngineError: Error {
     case missingCollator(_ collatorAccountId: AccountId)
 }

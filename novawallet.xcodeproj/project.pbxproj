@@ -561,6 +561,7 @@
 		84403D7F25E91BC100494FD4 /* SuperIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84403D7E25E91BC100494FD4 /* SuperIdentity.swift */; };
 		844138E8282FE92400AFEF6D /* ParachainStakingPendingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844138E7282FE92400AFEF6D /* ParachainStakingPendingState.swift */; };
 		844138EC2830106C00AFEF6D /* ParaStkNetworkInfoViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844138EB2830106B00AFEF6D /* ParaStkNetworkInfoViewModelFactory.swift */; };
+		844138EE28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844138ED28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift */; };
 		84415BCA26E783EB005A3683 /* PayoutValidatorsForNominatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84415BC926E783EB005A3683 /* PayoutValidatorsForNominatorFactory.swift */; };
 		8443FDB12554B7640092893D /* TitledMnemonicView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443FDB02554B7640092893D /* TitledMnemonicView.swift */; };
 		8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8443FDB5255540570092893D /* ExportMnemonicData.swift */; };
@@ -2670,6 +2671,7 @@
 		84412EE026DAC3300049577A /* SubqueryHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubqueryHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		844138E7282FE92400AFEF6D /* ParachainStakingPendingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingPendingState.swift; sourceTree = "<group>"; };
 		844138EB2830106B00AFEF6D /* ParaStkNetworkInfoViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkNetworkInfoViewModelFactory.swift; sourceTree = "<group>"; };
+		844138ED28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkStateViewModelFactory.swift; sourceTree = "<group>"; };
 		84415BC926E783EB005A3683 /* PayoutValidatorsForNominatorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutValidatorsForNominatorFactory.swift; sourceTree = "<group>"; };
 		8443FDB02554B7640092893D /* TitledMnemonicView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitledMnemonicView.swift; sourceTree = "<group>"; };
 		8443FDB5255540570092893D /* ExportMnemonicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportMnemonicData.swift; sourceTree = "<group>"; };
@@ -5816,6 +5818,7 @@
 			isa = PBXGroup;
 			children = (
 				844138EB2830106B00AFEF6D /* ParaStkNetworkInfoViewModelFactory.swift */,
+				844138ED28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -11091,6 +11094,7 @@
 				847119D5262EF95A00716580 /* PayoutInfoFactoryProtocol.swift in Sources */,
 				846A2C50252A063800731018 /* WalletSelectAccountCommandFactory.swift in Sources */,
 				AEF507BA262486F80098574D /* MoonpayProviderFactory.swift in Sources */,
+				844138EE28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift in Sources */,
 				84100F3826A6085C00A5054E /* YourValidatorListDescSectionView.swift in Sources */,
 				843E9B3427C8B804009C143A /* FileDownloadOperationFactory.swift in Sources */,
 				841E5549282D88FC00C8438F /* StakingParachainInteractor.swift in Sources */,

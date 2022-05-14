@@ -2,8 +2,8 @@ import Foundation
 
 extension ParachainStaking {
     final class DelegatorState: BaseState {
-        private var delegatorState: ParachainStaking.Delegator
-        private var scheduledRequests: [ParachainStaking.ScheduledRequest]?
+        private(set) var delegatorState: ParachainStaking.Delegator
+        private(set) var scheduledRequests: [ParachainStaking.ScheduledRequest]?
 
         init(
             stateMachine: ParaStkStateMachineProtocol?,
@@ -15,6 +15,10 @@ extension ParachainStaking {
             self.scheduledRequests = scheduledRequests
 
             super.init(stateMachine: stateMachine, commonData: commonData)
+        }
+
+        override func accept(visitor: ParaStkStateVisitorProtocol) {
+            visitor.visit(state: self)
         }
 
         override func process(delegatorState: ParachainStaking.Delegator?) {

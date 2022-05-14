@@ -14,6 +14,10 @@ extension ParachainStaking {
             super.init(stateMachine: stateMachine, commonData: commonData)
         }
 
+        override func accept(visitor: ParaStkStateVisitorProtocol) {
+            visitor.visit(state: self)
+        }
+
         override func process(scheduledRequests: [ParachainStaking.ScheduledRequest]?) {
             if let scheduledRequests = scheduledRequests {
                 self.scheduledRequests = scheduledRequests

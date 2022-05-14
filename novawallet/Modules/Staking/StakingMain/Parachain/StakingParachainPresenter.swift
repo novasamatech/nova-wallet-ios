@@ -8,14 +8,17 @@ final class StakingParachainPresenter {
 
     let stateMachine: ParaStkStateMachineProtocol
     let networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol
+    let stateViewModelFactory: ParaStkStateViewModelFactoryProtocol
 
     init(
         interactor: StakingParachainInteractorInputProtocol,
         networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
+        stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
+        self.stateViewModelFactory = stateViewModelFactory
         self.logger = logger
 
         let stateMachine = ParachainStaking.StateMachine()
@@ -43,7 +46,8 @@ final class StakingParachainPresenter {
     }
 
     private func provideStateViewModel() {
-        view?.didReceiveStakingState(viewModel: .undefined)
+        let stateViewModel = stateViewModelFactory.createViewModel(from: stateMachine.state)
+        view?.didReceiveStakingState(viewModel: stateViewModel)
     }
 }
 
