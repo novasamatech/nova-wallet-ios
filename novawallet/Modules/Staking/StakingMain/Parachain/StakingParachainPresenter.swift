@@ -4,6 +4,7 @@ final class StakingParachainPresenter {
     weak var view: StakingMainViewProtocol?
 
     let interactor: StakingParachainInteractorInputProtocol
+    let wireframe: StakingParachainWireframeProtocol
     let logger: LoggerProtocol
 
     let stateMachine: ParaStkStateMachineProtocol
@@ -12,11 +13,13 @@ final class StakingParachainPresenter {
 
     init(
         interactor: StakingParachainInteractorInputProtocol,
+        wireframe: StakingParachainWireframeProtocol,
         networkInfoViewModelFactory: ParaStkNetworkInfoViewModelFactoryProtocol,
         stateViewModelFactory: ParaStkStateViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
+        self.wireframe = wireframe
         self.networkInfoViewModelFactory = networkInfoViewModelFactory
         self.stateViewModelFactory = stateViewModelFactory
         self.logger = logger
@@ -61,7 +64,18 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
 
     func performMainAction() {}
 
-    func performRewardInfoAction() {}
+    func performRewardInfoAction() {
+        guard let rewardCalculator = stateMachine.viewState(
+            using: { (state: ParachainStaking.BaseState) in state }
+        )?.commonData.calculatorEngine else {
+            return
+        }
+
+        let maxReward = rewardCalculator.calculateMaxReturn(for: .year)
+        let avgReward = rewardCalculator.calculateAvgReturn(for: .year)
+
+        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
+    }
 
     func performChangeValidatorsAction() {}
 

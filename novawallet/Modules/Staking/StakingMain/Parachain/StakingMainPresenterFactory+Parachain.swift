@@ -15,6 +15,8 @@ extension StakingMainPresenterFactory {
 
         // MARK: - Router
 
+        let wireframe = StakingParachainWireframe(state: sharedState)
+
         // MARK: - Presenter
 
         let networkInfoViewModelFactory = ParachainStaking.NetworkInfoViewModelFactory()
@@ -22,6 +24,7 @@ extension StakingMainPresenterFactory {
 
         let presenter = StakingParachainPresenter(
             interactor: interactor,
+            wireframe: wireframe,
             networkInfoViewModelFactory: networkInfoViewModelFactory,
             stateViewModelFactory: stateViewModelFactory,
             logger: Logger.shared
@@ -69,9 +72,7 @@ extension StakingMainPresenterFactory {
         )
 
         let stakingDurationFactory = ParaStkDurationOperationFactory()
-        let networkInfoFactory = ParaStkNetworkInfoOperationFactory(
-            durationFactory: stakingDurationFactory
-        )
+        let networkInfoFactory = ParaStkNetworkInfoOperationFactory(durationFactory: stakingDurationFactory)
 
         return StakingParachainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
