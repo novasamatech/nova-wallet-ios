@@ -26,6 +26,10 @@ extension ParaStakingRewardCalculatorEngineProtocol {
     func calculateMaxReturn(for period: CalculationPeriod) -> Decimal {
         calculateMaxEarnings(amount: 1.0, period: period)
     }
+
+    func calculateAvgReturn(for period: CalculationPeriod) -> Decimal {
+        calculateAvgEarnings(amount: 1.0, period: period)
+    }
 }
 
 enum ParaStakingRewardCalculatorEngineError: Error {

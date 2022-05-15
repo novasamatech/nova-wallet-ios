@@ -1269,6 +1269,7 @@
 		84C2802126F541DE006E8014 /* WebSocketEngine+Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */; };
 		84C2F27725E296CD0050A4AD /* RewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */; };
 		84C2F27D25E297350050A4AD /* CalculatedReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C2F27C25E297350050A4AD /* CalculatedReward.swift */; };
+		84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C34203283124C600156569 /* StakingParachainWireframe.swift */; };
 		84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F77A2601F08B00D47501 /* NominationViewModel.swift */; };
 		84C3F7832602086100D47501 /* StakingViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F7822602086100D47501 /* StakingViewState.swift */; };
 		84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */; };
@@ -3386,6 +3387,7 @@
 		84C2802026F541DE006E8014 /* WebSocketEngine+Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebSocketEngine+Connection.swift"; sourceTree = "<group>"; };
 		84C2F27625E296CD0050A4AD /* RewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
 		84C2F27C25E297350050A4AD /* CalculatedReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalculatedReward.swift; sourceTree = "<group>"; };
+		84C34203283124C600156569 /* StakingParachainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingParachainWireframe.swift; sourceTree = "<group>"; };
 		84C3F77A2601F08B00D47501 /* NominationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationViewModel.swift; sourceTree = "<group>"; };
 		84C3F7822602086100D47501 /* StakingViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingViewState.swift; sourceTree = "<group>"; };
 		84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachineProtocols.swift; sourceTree = "<group>"; };
@@ -5135,6 +5137,7 @@
 				841E554E282E2C0300C8438F /* StakingParachainInteractor+InputProtocol.swift */,
 				841E5550282E2C1700C8438F /* StakingParachainInteractor+Subscription.swift */,
 				841E5552282E35D000C8438F /* StakingParachainPresenter.swift */,
+				84C34203283124C600156569 /* StakingParachainWireframe.swift */,
 			);
 			path = Parachain;
 			sourceTree = "<group>";
@@ -11950,6 +11953,7 @@
 				846A682C274693F700D1A47A /* CrowdloanExternalContributionSource.swift in Sources */,
 				AE39838E272AFAEF00BC8A85 /* WalletManagementInteractor.swift in Sources */,
 				AEAC690026EA729300346599 /* CoingeckoPriceData.swift in Sources */,
+				84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */,
 				84F13F1C26F2B8C2006725FF /* JSONRPCError+Presentable.swift in Sources */,
 				84BAFCD226AF5EE700871E86 /* IconDetailsView.swift in Sources */,
 				841E5563282E9EF400C8438F /* ParachainStakingCommonData.swift in Sources */,

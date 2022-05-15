@@ -16,3 +16,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo)
     func didReceiveError(_ error: Error)
 }
+
+protocol StakingParachainWireframeProtocol: AnyObject {
+    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
+}
