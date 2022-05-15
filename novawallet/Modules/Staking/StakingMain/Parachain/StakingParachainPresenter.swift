@@ -112,10 +112,22 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+        let oldLessTotal = stateMachine.viewState { (state: ParachainStaking.DelegatorState) in
+            state.delegatorState.lessTotal
+        } ?? 0
+
         stateMachine.state.process(delegatorState: delegator)
+
+        let optNewState = stateMachine.viewState { (state: ParachainStaking.DelegatorState) in
+            state.delegatorState
+        }
+
+        if let newState = optNewState, newState.lessTotal > 0, newState.lessTotal != oldLessTotal {
+            interactor.fetchScheduledRequests(for: newState.collators())
+        }
     }
 
-    func didReceiveScheduledRequests(_ requests: [ParachainStaking.ScheduledRequest]?) {
+    func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?) {
         stateMachine.state.process(scheduledRequests: requests)
     }
 

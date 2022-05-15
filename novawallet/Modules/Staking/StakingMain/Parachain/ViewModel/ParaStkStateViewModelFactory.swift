@@ -61,14 +61,36 @@ final class ParaStkStateViewModelFactory {
             )
         }
     }
+
+    private func createUnstakingViewModel(
+        from requests: [ParachainStaking.DelegatorScheduledRequest],
+        chainAsset: ChainAsset
+    ) -> StakingUnbondingViewModel {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let balanceFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+
+        let viewModels = requests
+            .sorted(by: { $0.whenExecutable < $1.whenExecutable })
+            .map { unstakingItem -> StakingUnbondingItemViewModel in
+                let unbondingAmountDecimal = Decimal
+                    .fromSubstrateAmount(
+                        unstakingItem.unstakingAmount,
+                        precision: assetDisplayInfo.assetPrecision
+                    ) ?? .zero
+                let tokenAmount = balanceFactory.amountFromValue(unbondingAmountDecimal)
+
+                return StakingUnbondingItemViewModel(
+                    amount: tokenAmount,
+                    unbondingEra: unstakingItem.whenExecutable
+                )
+            }
+
+        return StakingUnbondingViewModel(eraCountdown: nil, items: viewModels)
+    }
 }
 
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
     func visit(state _: ParachainStaking.InitState) {
-        lastViewModel = .undefined
-    }
-
-    func visit(state _: ParachainStaking.PendingState) {
         lastViewModel = .undefined
     }
 
@@ -102,12 +124,16 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             viewStatus: .active
         )
 
+        let unbondings = state.scheduledRequests.map {
+            createUnstakingViewModel(from: $0, chainAsset: chainAsset)
+        }
+
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
             alerts: [],
             reward: nil,
             analyticsViewModel: nil,
-            unbondings: nil,
+            unbondings: unbondings,
             actions: [
                 .stakeMore,
                 .unstake,
