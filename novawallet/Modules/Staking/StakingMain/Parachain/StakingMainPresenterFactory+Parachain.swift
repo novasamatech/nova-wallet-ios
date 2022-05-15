@@ -36,9 +36,7 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    func createParachainInteractor(
-        state: ParachainStakingSharedState
-    ) -> StakingParachainInteractor {
+    func createParachainInteractor(state: ParachainStakingSharedState) -> StakingParachainInteractor {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let storageFacade = SubstrateDataStorageFacade.shared
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
@@ -84,6 +82,7 @@ extension StakingMainPresenterFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingServiceFactory: serviceFactory,
             networkInfoFactory: networkInfoFactory,
+            scheduledRequestsFactory: ParachainStaking.ScheduledRequestsQueryFactory(operationQueue: operationQueue),
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
             operationQueue: operationQueue,

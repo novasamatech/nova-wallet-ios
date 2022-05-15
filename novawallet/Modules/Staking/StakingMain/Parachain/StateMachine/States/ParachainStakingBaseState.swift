@@ -75,6 +75,6 @@ extension ParachainStaking {
 
         func process(delegatorState _: ParachainStaking.Delegator?) {}
 
-        func process(scheduledRequests _: [ParachainStaking.ScheduledRequest]?) {}
+        func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}
     }
 }

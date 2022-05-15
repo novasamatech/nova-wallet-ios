@@ -3,13 +3,13 @@ import Foundation
 extension ParachainStaking {
     final class DelegatorState: BaseState {
         private(set) var delegatorState: ParachainStaking.Delegator
-        private(set) var scheduledRequests: [ParachainStaking.ScheduledRequest]?
+        private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
 
         init(
             stateMachine: ParaStkStateMachineProtocol?,
             commonData: ParachainStaking.CommonData,
             delegatorState: ParachainStaking.Delegator,
-            scheduledRequests: [ParachainStaking.ScheduledRequest]?
+            scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
         ) {
             self.delegatorState = delegatorState
             self.scheduledRequests = scheduledRequests
@@ -26,14 +26,6 @@ extension ParachainStaking {
                 self.delegatorState = delegatorState
 
                 stateMachine?.transit(to: self)
-            } else if let scheduledRequests = scheduledRequests {
-                let pendingState = ParachainStaking.PendingState(
-                    stateMachine: stateMachine,
-                    commonData: commonData,
-                    scheduledRequests: scheduledRequests
-                )
-
-                stateMachine?.transit(to: pendingState)
             } else {
                 let noStakingState = ParachainStaking.NoStakingState(
                     stateMachine: stateMachine,
@@ -44,7 +36,7 @@ extension ParachainStaking {
             }
         }
 
-        override func process(scheduledRequests: [ParachainStaking.ScheduledRequest]?) {
+        override func process(scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
             self.scheduledRequests = scheduledRequests
 
             stateMachine?.transit(to: self)
