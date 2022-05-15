@@ -22,8 +22,7 @@ extension ParachainStaking {
     final class AccountSubscriptionService: RemoteSubscriptionService,
         ParachainStakingAccountSubscriptionServiceProtocol {
         private static let storagePaths: [StorageCodingPath] = [
-            ParachainStaking.delegatorStatePath,
-            ParachainStaking.delegationRequestsPath
+            ParachainStaking.delegatorStatePath
         ]
 
         private static func createCacheKey(

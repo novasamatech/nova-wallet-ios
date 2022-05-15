@@ -106,23 +106,6 @@ extension StakingParachainInteractor {
             accountId: accountId
         )
     }
-
-    func performScheduledRequestsSubscription() {
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
-            return
-        }
-
-        guard let accountId = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveScheduledRequests(nil)
-            return
-        }
-
-        scheduledRequestsProvider = subscribeToScheduledRequests(
-            for: chainId,
-            accountId: accountId
-        )
-    }
 }
 
 extension StakingParachainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -178,25 +161,6 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         switch result {
         case let .success(delegator):
             presenter?.didReceiveDelegator(delegator)
-        case let .failure(error):
-            presenter?.didReceiveError(error)
-        }
-    }
-
-    func handleParastakingScheduledRequests(
-        result: Result<[ParachainStaking.ScheduledRequest]?, Error>,
-        for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) {
-        guard
-            chainId == selectedChainAsset?.chain.chainId,
-            selectedAccount?.chainAccount.accountId == accountId else {
-            return
-        }
-
-        switch result {
-        case let .success(requests):
-            presenter?.didReceiveScheduledRequests(requests)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

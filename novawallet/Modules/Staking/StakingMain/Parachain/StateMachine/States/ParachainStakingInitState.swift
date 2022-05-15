@@ -25,19 +25,5 @@ extension ParachainStaking {
                 stateMachine?.transit(to: noStakingState)
             }
         }
-
-        override func process(scheduledRequests: [ParachainStaking.ScheduledRequest]?) {
-            if let scheduledRequests = scheduledRequests {
-                let pendingState = ParachainStaking.PendingState(
-                    stateMachine: stateMachine,
-                    commonData: commonData,
-                    scheduledRequests: scheduledRequests
-                )
-
-                stateMachine?.transit(to: pendingState)
-            } else {
-                stateMachine?.transit(to: self)
-            }
-        }
     }
 }

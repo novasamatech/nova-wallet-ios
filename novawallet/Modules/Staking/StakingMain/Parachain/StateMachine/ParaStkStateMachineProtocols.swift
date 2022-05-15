@@ -2,7 +2,6 @@ import Foundation
 
 protocol ParaStkStateVisitorProtocol {
     func visit(state: ParachainStaking.InitState)
-    func visit(state: ParachainStaking.PendingState)
     func visit(state: ParachainStaking.NoStakingState)
     func visit(state: ParachainStaking.DelegatorState)
 }
@@ -18,7 +17,7 @@ protocol ParaStkStateProtocol {
     func process(collatorsInfo: SelectedRoundCollators?)
     func process(calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?)
     func process(delegatorState: ParachainStaking.Delegator?)
-    func process(scheduledRequests: [ParachainStaking.ScheduledRequest]?)
+    func process(scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
 }
 
 protocol ParaStkStateMachineProtocol: AnyObject {

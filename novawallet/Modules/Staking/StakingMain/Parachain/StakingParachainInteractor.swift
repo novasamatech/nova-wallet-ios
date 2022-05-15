@@ -14,6 +14,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     let chainRegistry: ChainRegistryProtocol
     let stakingAssetSubscriptionService: StakingRemoteSubscriptionServiceProtocol
     let stakingAccountSubscriptionService: ParachainStakingAccountSubscriptionServiceProtocol
+    let scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingServiceFactory: ParachainStakingServiceFactoryProtocol
@@ -28,6 +29,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var collatorsInfoCancellable: CancellableCall?
     var rewardCalculatorCancellable: CancellableCall?
     var networkInfoCancellable: CancellableCall?
+    var scheduledRequestsCancellable: CancellableCall?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
@@ -47,6 +49,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingServiceFactory: ParachainStakingServiceFactoryProtocol,
         networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
+        scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         operationQueue: OperationQueue,
@@ -61,6 +64,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingServiceFactory = stakingServiceFactory
         self.networkInfoFactory = networkInfoFactory
+        self.scheduledRequestsFactory = scheduledRequestsFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
         self.operationQueue = operationQueue
@@ -82,6 +86,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     func clearCancellable() {
         clear(cancellable: &collatorsInfoCancellable)
         clear(cancellable: &rewardCalculatorCancellable)
+        clear(cancellable: &networkInfoCancellable)
+        clear(cancellable: &scheduledRequestsCancellable)
     }
 
     func setupSelectedAccountAndChainAsset() {
@@ -143,7 +149,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performPriceSubscription()
         performAssetBalanceSubscription()
         performDelegatorSubscription()
-        performScheduledRequestsSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
@@ -175,7 +180,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         performAssetBalanceSubscription()
         performDelegatorSubscription()
-        performScheduledRequestsSubscription()
     }
 
     func provideSelectedChainAsset() {
