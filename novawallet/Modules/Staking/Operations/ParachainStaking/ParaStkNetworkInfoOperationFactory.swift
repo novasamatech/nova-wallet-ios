@@ -11,12 +11,6 @@ protocol ParaStkNetworkInfoOperationFactoryProtocol {
 }
 
 final class ParaStkNetworkInfoOperationFactory {
-    let durationFactory: ParaStkDurationOperationFactoryProtocol
-
-    init(durationFactory: ParaStkDurationOperationFactoryProtocol) {
-        self.durationFactory = durationFactory
-    }
-
     private func deriveMinimalStake(
         from collatorsInfo: SelectedRoundCollators,
         limitedBy maxDelegators: UInt32
@@ -68,41 +62,32 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
 
         let collatorsOperation = collatorService.fetchInfoOperation()
         let rewardEngineOperation = rewardCalculatorService.fetchCalculatorOperation()
-        let stakingDurationWrapper = durationFactory.createDurationOperation(from: runtimeService)
 
         let mapOperation = ClosureOperation<ParachainStaking.NetworkInfo> {
             let minStake = try minStakeOperation.extractNoCancellableResultData()
             let maxDelegators = try maxDelegatorsOperation.extractNoCancellableResultData()
             let collatorsInfo = try collatorsOperation.extractNoCancellableResultData()
             let rewardEngine = try rewardEngineOperation.extractNoCancellableResultData()
-            let stakingDuration = try stakingDurationWrapper.targetOperation
-                .extractNoCancellableResultData()
 
             let activeDelegatorsCount = self.deriveActiveDelegatorsCount(from: collatorsInfo)
-            let minDelegatorStake = self.deriveMinimalStake(
-                from: collatorsInfo,
-                limitedBy: maxDelegators
-            )
+            let minDelegatorStake = self.deriveMinimalStake(from: collatorsInfo, limitedBy: maxDelegators)
 
             return ParachainStaking.NetworkInfo(
                 totalStake: rewardEngine.totalStaked,
                 minStakeForRewards: minDelegatorStake,
                 minTechStake: minStake,
                 maximumDelegatorsPerCollator: maxDelegators,
-                activeDelegatorsCount: activeDelegatorsCount,
-                stakingDuration: stakingDuration
+                activeDelegatorsCount: activeDelegatorsCount
             )
         }
 
-        let regularOperations = [
+        let dependencies = [
             codingFactoryOperation,
             minStakeOperation,
             maxDelegatorsOperation,
             collatorsOperation,
             rewardEngineOperation
         ]
-
-        let dependencies = regularOperations + stakingDurationWrapper.allOperations
 
         dependencies.forEach { mapOperation.addDependency($0) }
 

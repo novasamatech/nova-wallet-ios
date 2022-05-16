@@ -11,6 +11,8 @@ protocol ParachainStakingServiceFactoryProtocol {
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
     ) throws -> ParaStakingRewardCalculatorServiceProtocol
+
+    func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol
 }
 
 final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtocol {
@@ -84,6 +86,30 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
             repositoryFactory: repositoryFactory,
             operationQueue: operationQueue,
             assetPrecision: assetPrecision,
+            logger: logger
+        )
+    }
+
+    func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
+        guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
+            throw ChainRegistryError.runtimeMetadaUnavailable
+        }
+
+        guard let connection = chainRegisty.getConnection(for: chainId) else {
+            throw ChainRegistryError.connectionUnavailable
+        }
+
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+
+        let repository = repositoryFactory.createChainStorageItemRepository()
+
+        return BlockTimeEstimationService(
+            chainId: chainId,
+            connection: connection,
+            runtimeService: runtimeService,
+            repository: repository,
+            eventCenter: eventCenter,
+            operationQueue: operationQueue,
             logger: logger
         )
     }

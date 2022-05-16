@@ -5,6 +5,7 @@ import BigInt
 protocol ParaStkNetworkInfoViewModelFactoryProtocol {
     func createViewModel(
         from model: ParachainStaking.NetworkInfo,
+        duration: ParachainStakingDuration?,
         chainAsset: ChainAsset,
         price: PriceData?
     ) -> LocalizableResource<NetworkStakingInfoViewModel>
@@ -75,20 +76,22 @@ extension ParachainStaking {
         }
 
         private func createUnstakingPeriodViewModel(
-            with networkInfo: ParachainStaking.NetworkInfo
+            with _: ParachainStaking.NetworkInfo,
+            duration: ParachainStakingDuration?
         ) -> LocalizableResource<String> {
-            let unstakingInDays = networkInfo.stakingDuration.unstaking.daysFromSeconds
-
-            return LocalizableResource { locale in
-                R.string.localizable.commonDaysFormat(
-                    format: unstakingInDays,
-                    preferredLanguages: locale.rLanguages
-                )
+            if let unstaking = duration?.unstaking {
+                return LocalizableResource { locale in
+                    let formattedString = unstaking.localizedDaysHours(for: locale)
+                    return "~\(formattedString)"
+                }
+            } else {
+                return LocalizableResource { _ in "" }
             }
         }
 
         func createViewModel(
             from model: ParachainStaking.NetworkInfo,
+            duration: ParachainStakingDuration?,
             chainAsset: ChainAsset,
             price: PriceData?
         ) -> LocalizableResource<NetworkStakingInfoViewModel> {
@@ -113,7 +116,10 @@ extension ParachainStaking {
 
             let nominatorsCount = createActiveNominatorsViewModel(with: model)
 
-            let localizedUnstakingPeriod = createUnstakingPeriodViewModel(with: model)
+            let localizedUnstakingPeriod = createUnstakingPeriodViewModel(
+                with: model,
+                duration: duration
+            )
 
             return LocalizableResource { locale in
                 let stakingPeriod = R.string.localizable.stakingNetworkInfoStakingPeriodValue(

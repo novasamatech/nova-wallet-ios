@@ -61,6 +61,12 @@ extension ParachainStaking {
             stateMachine?.transit(to: self)
         }
 
+        func process(stakingDuration: ParachainStakingDuration?) {
+            commonData = commonData.byReplacing(stakingDuration: stakingDuration)
+
+            stateMachine?.transit(to: self)
+        }
+
         func process(collatorsInfo: SelectedRoundCollators?) {
             commonData = commonData.byReplacing(collatorsInfo: collatorsInfo)
 
