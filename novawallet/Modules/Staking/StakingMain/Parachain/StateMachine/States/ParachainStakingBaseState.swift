@@ -79,6 +79,18 @@ extension ParachainStaking {
             stateMachine?.transit(to: self)
         }
 
+        func process(blockNumber: BlockNumber?) {
+            commonData = commonData.byReplacing(blockNumber: blockNumber)
+
+            stateMachine?.transit(to: self)
+        }
+
+        func process(roundInfo: ParachainStaking.RoundInfo?) {
+            commonData = commonData.byReplacing(roundInfo: roundInfo)
+
+            stateMachine?.transit(to: self)
+        }
+
         func process(delegatorState _: ParachainStaking.Delegator?) {}
 
         func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}

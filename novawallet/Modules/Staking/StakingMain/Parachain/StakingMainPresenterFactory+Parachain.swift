@@ -105,12 +105,20 @@ extension StakingMainPresenterFactory {
             logger: Logger.shared
         )
 
+        let generalLocalSubscriptionFactory = GeneralStorageSubscriptionFactory(
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            storageFacade: storageFacade,
+            operationManager: OperationManagerFacade.sharedManager,
+            logger: Logger.shared
+        )
+
         return ParachainStakingSharedState(
             settings: stakingAssetSettings,
             collatorService: nil,
             rewardCalculationService: nil,
             blockTimeService: nil,
-            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
+            stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
+            generalLocalSubscriptionFactory: generalLocalSubscriptionFactory
         )
     }
 }
