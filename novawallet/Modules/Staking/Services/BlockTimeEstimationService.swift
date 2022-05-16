@@ -57,6 +57,8 @@ final class BlockTimeEstimationService {
 
     private(set) var isActive: Bool = false
 
+    private lazy var localKeyFactory = LocalStorageKeyFactory()
+
     init(
         chainId: ChainModel.Id,
         connection: JSONRPCEngine,
@@ -152,17 +154,18 @@ final class BlockTimeEstimationService {
     }
 
     private func subscribeBlockNumber() {
-        guard isActive else {
+        guard
+            isActive,
+            let localKey = try? localKeyFactory.createFromStoragePath(.blockNumber, chainId: chainId) else {
             return
         }
-
-        let localKey = EstimatedBlockTime.storageKey(for: chainId)
 
         subscription = CallbackStorageSubscription(
             request: UnkeyedSubscriptionRequest(storagePath: .blockNumber, localKey: localKey),
             storagePath: .blockNumber,
             connection: connection,
             runtimeService: runtimeService,
+            repository: repository,
             operationQueue: operationQueue,
             callbackQueue: syncQueue
         ) { [weak self] (result: Result<StringScaleMapper<Moment>?, Error>) in

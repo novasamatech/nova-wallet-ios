@@ -27,7 +27,10 @@ extension RoundCountdown: EraCountdownDisplayProtocol {
         let progressInBlocks = (currentBlockNumber - roundInfo.first) % roundInfo.length
         let roundProgress = TimeInterval(progressInBlocks) * blockTime
 
-        return TimeInterval(remainedRounds * roundInfo.length) * blockTime - roundProgress
+        let remainedTime = TimeInterval(remainedRounds * roundInfo.length) * blockTime - roundProgress
+        let timerSpent = Date().timeIntervalSince(createdAtDate)
+
+        return max(remainedTime - timerSpent, 0)
     }
 
     func timeIntervalTillNextActiveEraStart() -> TimeInterval {

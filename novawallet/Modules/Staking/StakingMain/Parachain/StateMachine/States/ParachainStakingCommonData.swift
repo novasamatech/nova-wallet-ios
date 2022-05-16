@@ -11,6 +11,8 @@ extension ParachainStaking {
         let stakingDuration: ParachainStakingDuration?
         let calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?
         let collatorsInfo: SelectedRoundCollators?
+        let blockNumber: BlockNumber?
+        let roundInfo: ParachainStaking.RoundInfo?
     }
 }
 
@@ -24,7 +26,9 @@ extension ParachainStaking.CommonData {
             networkInfo: nil,
             stakingDuration: nil,
             calculatorEngine: nil,
-            collatorsInfo: nil
+            collatorsInfo: nil,
+            blockNumber: nil,
+            roundInfo: nil
         )
     }
 
@@ -37,7 +41,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -50,7 +56,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -63,7 +71,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -76,7 +86,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -89,7 +101,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -104,7 +118,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -119,7 +135,9 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 
@@ -134,7 +152,43 @@ extension ParachainStaking.CommonData {
             networkInfo: networkInfo,
             stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
-            collatorsInfo: collatorsInfo
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
+        )
+    }
+
+    func byReplacing(
+        blockNumber: BlockNumber?
+    ) -> ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
+        )
+    }
+
+    func byReplacing(
+        roundInfo: ParachainStaking.RoundInfo?
+    ) -> ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo
         )
     }
 }

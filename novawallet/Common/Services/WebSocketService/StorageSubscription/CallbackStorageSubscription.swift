@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 final class CallbackStorageSubscription<T: Decodable> {
     let request: SubscriptionRequestProtocol
@@ -7,6 +8,7 @@ final class CallbackStorageSubscription<T: Decodable> {
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let operationQueue: OperationQueue
+    let repository: AnyDataProviderRepository<ChainStorageItem>?
 
     let callbackQueue: DispatchQueue
     let callbackClosure: (Result<T?, Error>) -> Void
@@ -23,6 +25,7 @@ final class CallbackStorageSubscription<T: Decodable> {
         storagePath: StorageCodingPath,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
+        repository: AnyDataProviderRepository<ChainStorageItem>?,
         operationQueue: OperationQueue,
         callbackQueue: DispatchQueue,
         callbackClosure: @escaping (Result<T?, Error>) -> Void
@@ -31,6 +34,7 @@ final class CallbackStorageSubscription<T: Decodable> {
         self.storagePath = storagePath
         self.connection = connection
         self.runtimeService = runtimeService
+        self.repository = repository
         self.operationQueue = operationQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
@@ -137,6 +141,8 @@ final class CallbackStorageSubscription<T: Decodable> {
     }
 
     func processUpdate(_ data: Data?, blockHash _: Data?) {
+        saveIfNeeded(data: data, localKey: request.localKey)
+
         guard let data = data else {
             notify(result: .success(nil))
             return
@@ -170,5 +176,28 @@ final class CallbackStorageSubscription<T: Decodable> {
         }
 
         operationQueue.addOperations([codingFactoryOperation, decodingOperation], waitUntilFinished: false)
+    }
+
+    private func saveIfNeeded(data: Data?, localKey: String) {
+        guard let repository = repository else {
+            return
+        }
+
+        let operation = repository.saveOperation({
+            if let data = data {
+                let item = ChainStorageItem(identifier: localKey, data: data)
+                return [item]
+            } else {
+                return []
+            }
+        }, {
+            if data == nil {
+                return [localKey]
+            } else {
+                return []
+            }
+        })
+
+        operationQueue.addOperation(operation)
     }
 }

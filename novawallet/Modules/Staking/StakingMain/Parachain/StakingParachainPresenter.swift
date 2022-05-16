@@ -152,6 +152,14 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         provideNetworkInfo()
     }
 
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
+        stateMachine.state.process(blockNumber: blockNumber)
+    }
+
+    func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?) {
+        stateMachine.state.process(roundInfo: roundInfo)
+    }
+
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
     }
