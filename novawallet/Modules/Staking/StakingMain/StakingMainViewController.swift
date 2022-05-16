@@ -48,6 +48,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     private var balanceViewModel: LocalizableResource<String>?
     private var assetIconViewModel: ImageViewModelProtocol?
 
+    private var stateRawType: Int?
+
     var iconGenerator: IconGenerating?
     var uiFactory: UIFactoryProtocol?
 
@@ -484,6 +486,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
     }
 
     func didReceiveStakingState(viewModel: StakingViewState) {
+        let hasSameTypes = viewModel.rawType == stateRawType
+        stateRawType = viewModel.rawType
+
         switch viewModel {
         case .undefined:
             clearStateView()
@@ -493,7 +498,11 @@ extension StakingMainViewController: StakingMainViewProtocol {
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
-            expandNetworkInfoView(true)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(true)
+            }
+
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
@@ -508,7 +517,11 @@ extension StakingMainViewController: StakingMainViewProtocol {
             }
 
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
         case let .validator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
@@ -522,7 +535,11 @@ extension StakingMainViewController: StakingMainViewProtocol {
             }
 
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
         }
