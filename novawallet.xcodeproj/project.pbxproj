@@ -485,6 +485,7 @@
 		84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84326220281050E6008C52C7 /* EthereumSigner.swift */; };
 		84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */; };
 		84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */; };
+		84329ED22832636F0020BC1C /* RoundCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84329ED12832636F0020BC1C /* RoundCountdown.swift */; };
 		8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */; };
 		843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */; };
 		843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */; };
@@ -2599,6 +2600,7 @@
 		84326220281050E6008C52C7 /* EthereumSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSigner.swift; sourceTree = "<group>"; };
 		84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeOperationFactory.swift; sourceTree = "<group>"; };
 		84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Localization.swift"; sourceTree = "<group>"; };
+		84329ED12832636F0020BC1C /* RoundCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundCountdown.swift; sourceTree = "<group>"; };
 		8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapperTests.swift; sourceTree = "<group>"; };
 		843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteHistoryFiltering.swift; sourceTree = "<group>"; };
@@ -5190,6 +5192,7 @@
 				846C372D26B199D10098F303 /* StakingDurationOperationFactory.swift */,
 				8467F4C426B1E4E200C5B6F4 /* StakingDurationFetching.swift */,
 				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
+				84329ED12832636F0020BC1C /* RoundCountdown.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -12299,6 +12302,7 @@
 				84300B2C26C10C9B00D64514 /* ConnectionStateReporting.swift in Sources */,
 				9E4E458C92D12B24D5EAD893 /* ControllerAccountInteractor.swift in Sources */,
 				83A98B972B3EA69B357E5002 /* ControllerAccountViewController.swift in Sources */,
+				84329ED22832636F0020BC1C /* RoundCountdown.swift in Sources */,
 				EB5F587A71CCE1F0F86154CF /* ControllerAccountViewFactory.swift in Sources */,
 				9A940CBA3F309D438945A90C /* ControllerAccountConfirmationProtocols.swift in Sources */,
 				AE1000F226679886004753B7 /* ChangeTargetsRecommendationWireframe.swift in Sources */,
