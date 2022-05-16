@@ -23,4 +23,17 @@ enum StakingViewState {
         viewModel: StakingEstimationViewModel,
         alerts: [StakingAlert]
     )
+
+    var rawType: Int {
+        switch self {
+        case .undefined:
+            return 0
+        case .nominator:
+            return 1
+        case .validator:
+            return 2
+        case .noStash:
+            return 3
+        }
+    }
 }
