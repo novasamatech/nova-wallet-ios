@@ -69,8 +69,10 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
-        let stakingDurationFactory = ParaStkDurationOperationFactory()
-        let networkInfoFactory = ParaStkNetworkInfoOperationFactory(durationFactory: stakingDurationFactory)
+        let networkInfoFactory = ParaStkNetworkInfoOperationFactory()
+
+        let blockTimeFactory = BlockTimeOperationFactory(chain: state.settings.value.chain)
+        let durationFactory = ParaStkDurationOperationFactory(blockTimeOperationFactory: blockTimeFactory)
 
         return StakingParachainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
@@ -82,6 +84,7 @@ extension StakingMainPresenterFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             stakingServiceFactory: serviceFactory,
             networkInfoFactory: networkInfoFactory,
+            durationOperationFactory: durationFactory,
             scheduledRequestsFactory: ParachainStaking.ScheduledRequestsQueryFactory(operationQueue: operationQueue),
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
@@ -106,6 +109,7 @@ extension StakingMainPresenterFactory {
             settings: stakingAssetSettings,
             collatorService: nil,
             rewardCalculationService: nil,
+            blockTimeService: nil,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory
         )
     }

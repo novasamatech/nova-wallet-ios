@@ -19,6 +19,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let stakingServiceFactory: ParachainStakingServiceFactoryProtocol
     let networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol
+    let durationOperationFactory: ParaStkDurationOperationFactoryProtocol
     let operationQueue: OperationQueue
     let eventCenter: EventCenterProtocol
     let applicationHandler: ApplicationHandlerProtocol
@@ -30,6 +31,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var rewardCalculatorCancellable: CancellableCall?
     var networkInfoCancellable: CancellableCall?
     var scheduledRequestsCancellable: CancellableCall?
+    var durationCancellable: CancellableCall?
 
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
@@ -49,6 +51,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         stakingServiceFactory: ParachainStakingServiceFactoryProtocol,
         networkInfoFactory: ParaStkNetworkInfoOperationFactoryProtocol,
+        durationOperationFactory: ParaStkDurationOperationFactoryProtocol,
         scheduledRequestsFactory: ParaStkScheduledRequestsQueryFactoryProtocol,
         eventCenter: EventCenterProtocol,
         applicationHandler: ApplicationHandlerProtocol,
@@ -64,6 +67,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.stakingServiceFactory = stakingServiceFactory
         self.networkInfoFactory = networkInfoFactory
+        self.durationOperationFactory = durationOperationFactory
         self.scheduledRequestsFactory = scheduledRequestsFactory
         self.eventCenter = eventCenter
         self.applicationHandler = applicationHandler
@@ -81,6 +85,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         sharedState.collatorService?.throttle()
         sharedState.rewardCalculationService?.throttle()
+        sharedState.blockTimeService?.throttle()
     }
 
     func clearCancellable() {
@@ -88,6 +93,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(cancellable: &rewardCalculatorCancellable)
         clear(cancellable: &networkInfoCancellable)
         clear(cancellable: &scheduledRequestsCancellable)
+        clear(cancellable: &durationCancellable)
     }
 
     func setupSelectedAccountAndChainAsset() {
@@ -121,8 +127,13 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
                 collatorService: collatorsService
             )
 
+            let blockTimeService = try stakingServiceFactory.createBlockTimeService(
+                for: chainId
+            )
+
             sharedState.replaceCollatorService(collatorsService)
             sharedState.replaceRewardCalculatorService(rewardCalculatorService)
+            sharedState.replaceBlockTimeService(blockTimeService)
         } catch {
             logger?.error("Couldn't create shared state")
             presenter?.didReceiveError(error)
@@ -136,13 +147,15 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         sharedState.collatorService?.setup()
         sharedState.rewardCalculationService?.setup()
+        sharedState.blockTimeService?.setup()
 
         provideSelectedChainAsset()
         provideSelectedAccount()
 
         guard
             let collatorService = sharedState.collatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService else {
+            let rewardCalculationService = sharedState.rewardCalculationService,
+            let blockTimeService = sharedState.blockTimeService else {
             return
         }
 
@@ -153,6 +166,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
         provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
+        provideDurationInfo(for: blockTimeService)
 
         eventCenter.add(observer: self, dispatchIn: .main)
 
@@ -293,6 +307,47 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         }
 
         networkInfoCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func provideDurationInfo(for blockTimeService: BlockTimeEstimationServiceProtocol) {
+        clear(cancellable: &durationCancellable)
+
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
+        guard
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
+            return
+        }
+
+        let wrapper = durationOperationFactory.createDurationOperation(
+            from: runtimeService,
+            blockTimeEstimationService: blockTimeService
+        )
+
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async { [weak self] in
+                guard self?.durationCancellable === wrapper else {
+                    return
+                }
+
+                self?.durationCancellable = nil
+
+                do {
+                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveStakingDuration(info)
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        durationCancellable = wrapper
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }

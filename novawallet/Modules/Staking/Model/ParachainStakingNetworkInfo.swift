@@ -8,6 +8,5 @@ extension ParachainStaking {
         let minTechStake: BigUInt
         let maximumDelegatorsPerCollator: UInt32
         let activeDelegatorsCount: Int
-        let stakingDuration: ParachainStakingDuration
     }
 }
