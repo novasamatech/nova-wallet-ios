@@ -483,6 +483,8 @@
 		8430D6C52800040A00FFB6AE /* EthereumExecuted.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */; };
 		8430D6C92801A2B500FFB6AE /* WebSocketProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8430D6C82801A2B500FFB6AE /* WebSocketProtocols.swift */; };
 		84326221281050E6008C52C7 /* EthereumSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84326220281050E6008C52C7 /* EthereumSigner.swift */; };
+		84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */; };
+		84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */; };
 		8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */; };
 		843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */; };
 		843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */; };
@@ -1271,6 +1273,10 @@
 		84C34204283124C600156569 /* StakingParachainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C34203283124C600156569 /* StakingParachainWireframe.swift */; };
 		84C3420728314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3420628314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift */; };
 		84C342092831645800156569 /* EraCountdownDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C342082831645800156569 /* EraCountdownDisplay.swift */; };
+		84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3420A283187D800156569 /* BlockTimeEstimationService.swift */; };
+		84C3420D283192D000156569 /* CallbackStorageSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3420C283192D000156569 /* CallbackStorageSubscription.swift */; };
+		84C3420F2831A67200156569 /* BlockTimeEstimationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3420E2831A67200156569 /* BlockTimeEstimationServiceTests.swift */; };
+		84C342132831BE8200156569 /* BlockTimeChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C342122831BE8200156569 /* BlockTimeChanged.swift */; };
 		84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F77A2601F08B00D47501 /* NominationViewModel.swift */; };
 		84C3F7832602086100D47501 /* StakingViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F7822602086100D47501 /* StakingViewState.swift */; };
 		84C3F78C26020DE800D47501 /* StakingStateMachineProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */; };
@@ -2591,6 +2597,8 @@
 		8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumExecuted.swift; sourceTree = "<group>"; };
 		8430D6C82801A2B500FFB6AE /* WebSocketProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketProtocols.swift; sourceTree = "<group>"; };
 		84326220281050E6008C52C7 /* EthereumSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumSigner.swift; sourceTree = "<group>"; };
+		84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeOperationFactory.swift; sourceTree = "<group>"; };
+		84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Localization.swift"; sourceTree = "<group>"; };
 		8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapperTests.swift; sourceTree = "<group>"; };
 		843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteHistoryFiltering.swift; sourceTree = "<group>"; };
@@ -3390,6 +3398,10 @@
 		84C34203283124C600156569 /* StakingParachainWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingParachainWireframe.swift; sourceTree = "<group>"; };
 		84C3420628314D9600156569 /* ParaStkScheduledRequestsQueryFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkScheduledRequestsQueryFactory.swift; sourceTree = "<group>"; };
 		84C342082831645800156569 /* EraCountdownDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdownDisplay.swift; sourceTree = "<group>"; };
+		84C3420A283187D800156569 /* BlockTimeEstimationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeEstimationService.swift; sourceTree = "<group>"; };
+		84C3420C283192D000156569 /* CallbackStorageSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallbackStorageSubscription.swift; sourceTree = "<group>"; };
+		84C3420E2831A67200156569 /* BlockTimeEstimationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeEstimationServiceTests.swift; sourceTree = "<group>"; };
+		84C342122831BE8200156569 /* BlockTimeChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTimeChanged.swift; sourceTree = "<group>"; };
 		84C3F77A2601F08B00D47501 /* NominationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NominationViewModel.swift; sourceTree = "<group>"; };
 		84C3F7822602086100D47501 /* StakingViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingViewState.swift; sourceTree = "<group>"; };
 		84C3F78B26020DE800D47501 /* StakingStateMachineProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingStateMachineProtocols.swift; sourceTree = "<group>"; };
@@ -5177,6 +5189,7 @@
 				84690796264154E80030E693 /* SlashesOperationFactory.swift */,
 				846C372D26B199D10098F303 /* StakingDurationOperationFactory.swift */,
 				8467F4C426B1E4E200C5B6F4 /* StakingDurationFetching.swift */,
+				84329ECD28322E150020BC1C /* BlockTimeOperationFactory.swift */,
 			);
 			path = Operations;
 			sourceTree = "<group>";
@@ -5597,6 +5610,7 @@
 				E2F3E725280823CF00CF31B5 /* ETHAccountInjection.swift */,
 				8418167628253B120007684A /* ParachainStakingCollatorsTests.swift */,
 				84216FD72827A35F00479375 /* ParaStakingRewardCalculatorTests.swift */,
+				84C3420E2831A67200156569 /* BlockTimeEstimationServiceTests.swift */,
 			);
 			path = novawalletIntegrationTests;
 			sourceTree = "<group>";
@@ -6411,6 +6425,7 @@
 				84B73AD1279B47700071AE16 /* AssetsBalanceUpdater.swift */,
 				84B73AD7279C2EDA0071AE16 /* AssetAccountSubscription.swift */,
 				84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */,
+				84C3420C283192D000156569 /* CallbackStorageSubscription.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -7114,6 +7129,7 @@
 				84443BA126C123F100C33B5D /* Data+Random.swift */,
 				84E25BE727E751B400290BF1 /* Charset+Encoding.swift */,
 				84216FDD282B979900479375 /* Decimal+Conversion.swift */,
+				84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -7488,6 +7504,7 @@
 				8418167428251BBC0007684A /* StorageListSyncResult.swift */,
 				84216FD92827B25F00479375 /* StorageItemSyncService.swift */,
 				841E554C282DAA8000C8438F /* ParachainStakingServiceFactory.swift */,
+				84C3420A283187D800156569 /* BlockTimeEstimationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -8476,6 +8493,7 @@
 				8436E94126C840C8003D4EA7 /* RuntimeCoderEvents.swift */,
 				2AC7BC7D2731604B001D99B0 /* ChainAccountChanged.swift */,
 				8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */,
+				84C342122831BE8200156569 /* BlockTimeChanged.swift */,
 			);
 			path = Events;
 			sourceTree = "<group>";
@@ -10659,6 +10677,7 @@
 				84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */,
 				846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */,
 				F49F49A326A5C45600A25931 /* EraCountdownOperationFactoryTests.swift in Sources */,
+				84C3420F2831A67200156569 /* BlockTimeEstimationServiceTests.swift in Sources */,
 				84FACB6A25F5759C00F32ED4 /* AccountCreationHelper.swift in Sources */,
 				843E9B3827C8CAC1009C143A /* NftDownloadIntegrationTests.swift in Sources */,
 				8499FE7D27BE61E000712589 /* UniquesIntegrationTests.swift in Sources */,
@@ -11081,6 +11100,7 @@
 				843B1D7A263EED5C00AF8957 /* StakingUnbondConfirmLayout.swift in Sources */,
 				8499FEDC27BFDD4300712589 /* NftLocalSubscriptionFactory.swift in Sources */,
 				F4B06BFA264509E8003214D5 /* SetControllerCall.swift in Sources */,
+				84C3420D283192D000156569 /* CallbackStorageSubscription.swift in Sources */,
 				84F30E9C25FD3DBC00039D09 /* EmptyHandlingStorageSubscription.swift in Sources */,
 				84DF21B525388B35005454AE /* Scheduler.swift in Sources */,
 				848DE76826D64F7F0045CD29 /* UserStorageVersion.swift in Sources */,
@@ -11426,6 +11446,7 @@
 				844CB57026F9CB3300396E13 /* CrowdloanLocalSubscriptionHandler.swift in Sources */,
 				843910B9253EFB8100E3C217 /* StorageKeyFactory+Implicit.swift in Sources */,
 				849ABE562627738900011A2A /* Mapping.swift in Sources */,
+				84329ECE28322E150020BC1C /* BlockTimeOperationFactory.swift in Sources */,
 				8428765B24ADDE0200D91AD8 /* SettingsWireframe.swift in Sources */,
 				84D2F19D2771E5610040C680 /* ExtrinsicBuilder+Signing.swift in Sources */,
 				8430AAFB260230C5005B1066 /* ValidatorState.swift in Sources */,
@@ -11457,6 +11478,7 @@
 				AE398382272AF91D00BC8A85 /* ManagedWalletViewModelItem.swift in Sources */,
 				84216FCF28264A1E00479375 /* ParaStakingRewardCalculatorEngine.swift in Sources */,
 				84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */,
+				84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */,
 				846AF8442525BE0100868F37 /* Price.swift in Sources */,
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
@@ -12196,6 +12218,7 @@
 				1795E946F1E386442E96E2BC /* StakingPayoutConfirmationPresenter.swift in Sources */,
 				AEFA82BC4285117096BCBB16 /* StakingPayoutConfirmationInteractor.swift in Sources */,
 				84DBBE13274BE955009F52BB /* HintView.swift in Sources */,
+				84C342132831BE8200156569 /* BlockTimeChanged.swift in Sources */,
 				F48EB5512722C9D600AE15ED /* AcalaKeys.swift in Sources */,
 				6D47EAB127FAB7559A9FA107 /* StakingPayoutConfirmationViewController.swift in Sources */,
 				F4EF24C826BA713300F28B4E /* AnalyticsStakeHeaderView.swift in Sources */,
@@ -12487,6 +12510,7 @@
 				841816712824F4F30007684A /* ParachainStakingCollatorSnapshot.swift in Sources */,
 				5B54978244C37502DD592486 /* NftListPresenter.swift in Sources */,
 				6797F109D7C270DE4877B435 /* NftListInteractor.swift in Sources */,
+				84C3420B283187D800156569 /* BlockTimeEstimationService.swift in Sources */,
 				EB376E61CD1C39AC148DE80C /* NftListViewController.swift in Sources */,
 				84C5ADD02811E6FA006D7388 /* LinkCellView.swift in Sources */,
 				EBDDDEE1BAB05E95DC720783 /* NftListViewLayout.swift in Sources */,

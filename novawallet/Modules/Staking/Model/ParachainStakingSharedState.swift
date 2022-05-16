@@ -4,17 +4,20 @@ final class ParachainStakingSharedState {
     let settings: StakingAssetSettings
     private(set) var collatorService: ParachainStakingCollatorServiceProtocol?
     private(set) var rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol?
+    private(set) var blockTimeService: BlockTimeEstimationServiceProtocol?
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
 
     init(
         settings: StakingAssetSettings,
         collatorService: ParachainStakingCollatorServiceProtocol?,
-        rewardCalculationService _: RewardCalculatorServiceProtocol?,
+        rewardCalculationService: ParaStakingRewardCalculatorServiceProtocol?,
+        blockTimeService: BlockTimeEstimationServiceProtocol?,
         stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     ) {
         self.settings = settings
         self.collatorService = collatorService
-        self.collatorService = collatorService
+        self.rewardCalculationService = rewardCalculationService
+        self.blockTimeService = blockTimeService
         self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
     }
 
@@ -26,5 +29,9 @@ final class ParachainStakingSharedState {
         _ newService: ParaStakingRewardCalculatorServiceProtocol
     ) {
         rewardCalculationService = newService
+    }
+
+    func replaceBlockTimeService(_ newService: BlockTimeEstimationServiceProtocol) {
+        blockTimeService = newService
     }
 }

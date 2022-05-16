@@ -8,6 +8,7 @@ extension ParachainStaking {
         let balance: AssetBalance?
         let price: PriceData?
         let networkInfo: ParachainStaking.NetworkInfo?
+        let stakingDuration: ParachainStakingDuration?
         let calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?
         let collatorsInfo: SelectedRoundCollators?
     }
@@ -21,6 +22,7 @@ extension ParachainStaking.CommonData {
             balance: nil,
             price: nil,
             networkInfo: nil,
+            stakingDuration: nil,
             calculatorEngine: nil,
             collatorsInfo: nil
         )
@@ -33,6 +35,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -45,6 +48,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -57,6 +61,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -69,6 +74,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -81,6 +87,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -95,6 +102,7 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )
@@ -109,6 +117,22 @@ extension ParachainStaking.CommonData {
             balance: balance,
             price: price,
             networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            collatorsInfo: collatorsInfo
+        )
+    }
+
+    func byReplacing(
+        stakingDuration: ParachainStakingDuration?
+    ) -> ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo
         )

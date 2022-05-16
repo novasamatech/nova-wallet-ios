@@ -39,6 +39,7 @@ final class StakingParachainPresenter {
             let chainAsset = optCommonData?.chainAsset {
             let viewModel = networkInfoViewModelFactory.createViewModel(
                 from: networkInfo,
+                duration: optCommonData?.stakingDuration,
                 chainAsset: chainAsset,
                 price: optCommonData?.price
             )
@@ -141,6 +142,12 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo) {
         stateMachine.state.process(networkInfo: networkInfo)
+
+        provideNetworkInfo()
+    }
+
+    func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration) {
+        stateMachine.state.process(stakingDuration: stakingDuration)
 
         provideNetworkInfo()
     }

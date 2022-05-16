@@ -73,6 +73,14 @@ extension StakingParachainInteractor: EventVisitorProtocol {
         provideRewardCalculator(from: rewardCalculationService)
         provideNetworkInfo(for: collatorService, rewardService: rewardCalculationService)
     }
+
+    func processBlockTimeChanged(event _: BlockTimeChanged) {
+        guard let blockTimeService = sharedState.blockTimeService else {
+            return
+        }
+
+        provideDurationInfo(for: blockTimeService)
+    }
 }
 
 extension StakingParachainInteractor: ApplicationHandlerDelegate {

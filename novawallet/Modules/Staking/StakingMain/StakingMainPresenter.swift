@@ -48,6 +48,9 @@ final class StakingMainPresenter {
 
 extension StakingMainPresenter: StakingMainPresenterProtocol {
     func setup() {
+        // setup default view state
+        view?.didReceiveStakingState(viewModel: .undefined)
+
         provideMainViewModel()
 
         interactor.setup()

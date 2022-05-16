@@ -157,7 +157,7 @@ extension EraValidatorService: EraValidatorServiceProtocol {
 
     func throttle() {
         syncQueue.async {
-            guard !self.isActive else {
+            guard self.isActive else {
                 return
             }
 

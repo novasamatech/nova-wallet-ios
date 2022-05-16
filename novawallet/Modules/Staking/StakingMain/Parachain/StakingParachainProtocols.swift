@@ -15,6 +15,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo)
+    func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration)
     func didReceiveError(_ error: Error)
 }
 
