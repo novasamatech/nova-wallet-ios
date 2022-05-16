@@ -64,7 +64,8 @@ final class ParaStkStateViewModelFactory {
 
     private func createUnstakingViewModel(
         from requests: [ParachainStaking.DelegatorScheduledRequest],
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        roundCountdown: RoundCountdown?
     ) -> StakingUnbondingViewModel {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
@@ -85,7 +86,7 @@ final class ParaStkStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: nil, items: viewModels)
+        return StakingUnbondingViewModel(eraCountdown: roundCountdown, items: viewModels)
     }
 }
 
@@ -124,8 +125,24 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             viewStatus: .active
         )
 
-        let unbondings = state.scheduledRequests.map {
-            createUnstakingViewModel(from: $0, chainAsset: chainAsset)
+        let unbondings: StakingUnbondingViewModel? = state.scheduledRequests.map {
+            let roundCountdown: RoundCountdown?
+
+            if
+                let blockNumber = state.commonData.blockNumber,
+                let roundInfo = state.commonData.roundInfo,
+                let blockTime = state.commonData.stakingDuration?.block {
+                roundCountdown = RoundCountdown(
+                    roundInfo: roundInfo,
+                    blockTime: blockTime,
+                    currentBlock: blockNumber,
+                    createdAtDate: Date()
+                )
+            } else {
+                roundCountdown = nil
+            }
+
+            return createUnstakingViewModel(from: $0, chainAsset: chainAsset, roundCountdown: roundCountdown)
         }
 
         lastViewModel = .nominator(

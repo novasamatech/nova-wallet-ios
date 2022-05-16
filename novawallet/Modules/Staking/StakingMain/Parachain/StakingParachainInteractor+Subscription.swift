@@ -106,6 +106,24 @@ extension StakingParachainInteractor {
             accountId: accountId
         )
     }
+
+    func performBlockNumberSubscription() {
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
+        blockNumberProvider = subscribeToBlockNumber(for: chainId)
+    }
+
+    func performRoundInfoSubscription() {
+        guard let chainId = selectedChainAsset?.chain.chainId else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
+        roundInfoProvider = subscribeToRound(for: chainId)
+    }
 }
 
 extension StakingParachainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -147,6 +165,19 @@ extension StakingParachainInteractor: WalletLocalStorageSubscriber,
 
 extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
     ParastakingLocalStorageHandler {
+    func handleParastakingRound(result: Result<ParachainStaking.RoundInfo?, Error>, for chainId: ChainModel.Id) {
+        guard selectedChainAsset?.chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(roundInfo):
+            presenter?.didReceiveRoundInfo(roundInfo)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
     func handleParastakingDelegatorState(
         result: Result<ParachainStaking.Delegator?, Error>,
         for chainId: ChainModel.Id,
@@ -161,6 +192,24 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         switch result {
         case let .success(delegator):
             presenter?.didReceiveDelegator(delegator)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension StakingParachainInteractor: GeneralLocalStorageSubscriber, GeneralLocalStorageHandler {
+    func handleBlockNumber(
+        result: Result<BlockNumber?, Error>,
+        chainId: ChainModel.Id
+    ) {
+        guard selectedChainAsset?.chain.chainId == chainId else {
+            return
+        }
+
+        switch result {
+        case let .success(blockNumber):
+            presenter?.didReceiveBlockNumber(blockNumber)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
