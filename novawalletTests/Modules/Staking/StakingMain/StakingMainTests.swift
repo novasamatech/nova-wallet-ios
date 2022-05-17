@@ -153,6 +153,7 @@ class StakingMainTests: XCTestCase {
 
         let nominatorStateExpectation = XCTestExpectation()
         let networkStakingInfoExpectation = XCTestExpectation()
+        let staticsExpectation = XCTestExpectation()
 
         stub(eraInfoOperationFactory) { stub in
             when(stub).networkStakingOperation(for: any(), runtimeService: any()).then { _ in
@@ -183,6 +184,10 @@ class StakingMainTests: XCTestCase {
                     nominatorStateExpectation.fulfill()
                 }
             }
+
+            stub.didReceiveStatics(viewModel: any()).then { state in
+                staticsExpectation.fulfill()
+            }
         }
 
         presenter.setup()
@@ -192,6 +197,7 @@ class StakingMainTests: XCTestCase {
         let expectations = [
             nominatorStateExpectation,
             networkStakingInfoExpectation,
+            staticsExpectation
         ]
 
         wait(for: expectations, timeout: 5)
