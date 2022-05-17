@@ -40235,6 +40235,21 @@ import SoraFoundation
     
     
     
+     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)  {
+        
+    return cuckoo_manager.call("didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveStatics(viewModel: viewModel))
+        
+    }
+    
+    
+    
     public func applyLocalization()  {
         
     return cuckoo_manager.call("applyLocalization()",
@@ -40290,6 +40305,11 @@ import SoraFoundation
 	    func expandNetworkInfoView<M1: Cuckoo.Matchable>(_ isExpanded: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Bool)> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isExpanded) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "expandNetworkInfoView(_: Bool)", parameterMatchers: matchers))
+	    }
+	    
+	    func didReceiveStatics<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingMainStaticViewModelProtocol)> where M1.MatchedType == StakingMainStaticViewModelProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainStaticViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainViewProtocol.self, method: "didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)", parameterMatchers: matchers))
 	    }
 	    
 	    func applyLocalization() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -40350,6 +40370,12 @@ import SoraFoundation
 	    func expandNetworkInfoView<M1: Cuckoo.Matchable>(_ isExpanded: M1) -> Cuckoo.__DoNotUse<(Bool), Void> where M1.MatchedType == Bool {
 	        let matchers: [Cuckoo.ParameterMatcher<(Bool)>] = [wrap(matchable: isExpanded) { $0 }]
 	        return cuckoo_manager.verify("expandNetworkInfoView(_: Bool)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func didReceiveStatics<M1: Cuckoo.Matchable>(viewModel: M1) -> Cuckoo.__DoNotUse<(StakingMainStaticViewModelProtocol), Void> where M1.MatchedType == StakingMainStaticViewModelProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(StakingMainStaticViewModelProtocol)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -40417,6 +40443,12 @@ import SoraFoundation
     
     
      func expandNetworkInfoView(_ isExpanded: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
