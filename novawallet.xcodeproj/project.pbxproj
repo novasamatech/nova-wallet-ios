@@ -960,6 +960,9 @@
 		848CCB482832EF4400A1FD00 /* GeneralLocalStorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB472832EF4400A1FD00 /* GeneralLocalStorageHandler.swift */; };
 		848CCB4A283373D700A1FD00 /* SelectedRoundCollators+DelegatorState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB49283373D700A1FD00 /* SelectedRoundCollators+DelegatorState.swift */; };
 		848CCB4C2833979700A1FD00 /* ParaStkStateViewModelFactory+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB4B2833979700A1FD00 /* ParaStkStateViewModelFactory+Alert.swift */; };
+		848CCB4E2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB4D2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift */; };
+		848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB4F2833D1D900A1FD00 /* StakingRelaychainStatics.swift */; };
+		848CCB522833D29F00A1FD00 /* StakingParachainStatics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB512833D29F00A1FD00 /* StakingParachainStatics.swift */; };
 		848DAEF7282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */; };
 		848DAEF92822754D00D56F55 /* StorageCodingPath+ParachainStaking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DAEF82822754D00D56F55 /* StorageCodingPath+ParachainStaking.swift */; };
 		848DAEFB28227D4A00D56F55 /* ParachainStakingLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848DAEFA28227D4A00D56F55 /* ParachainStakingLocalSubscriptionFactory.swift */; };
@@ -3084,6 +3087,9 @@
 		848CCB472832EF4400A1FD00 /* GeneralLocalStorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralLocalStorageHandler.swift; sourceTree = "<group>"; };
 		848CCB49283373D700A1FD00 /* SelectedRoundCollators+DelegatorState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SelectedRoundCollators+DelegatorState.swift"; sourceTree = "<group>"; };
 		848CCB4B2833979700A1FD00 /* ParaStkStateViewModelFactory+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkStateViewModelFactory+Alert.swift"; sourceTree = "<group>"; };
+		848CCB4D2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingMainStaticViewModel.swift; sourceTree = "<group>"; };
+		848CCB4F2833D1D900A1FD00 /* StakingRelaychainStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRelaychainStatics.swift; sourceTree = "<group>"; };
+		848CCB512833D29F00A1FD00 /* StakingParachainStatics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingParachainStatics.swift; sourceTree = "<group>"; };
 		848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingRemoteSubscriptionService.swift; sourceTree = "<group>"; };
 		848DAEF82822754D00D56F55 /* StorageCodingPath+ParachainStaking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageCodingPath+ParachainStaking.swift"; sourceTree = "<group>"; };
 		848DAEFA28227D4A00D56F55 /* ParachainStakingLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -5841,6 +5847,7 @@
 				AEFC6D6E2600D7CD000BD310 /* NetworkInfoViewModelFactory.swift */,
 				84873B0826029CBD000A83EE /* StakingStateViewModelFactory.swift */,
 				F4A6C9E3265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift */,
+				848CCB4F2833D1D900A1FD00 /* StakingRelaychainStatics.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -5851,6 +5858,7 @@
 				844138EB2830106B00AFEF6D /* ParaStkNetworkInfoViewModelFactory.swift */,
 				844138ED28303A2E00AFEF6D /* ParaStkStateViewModelFactory.swift */,
 				848CCB4B2833979700A1FD00 /* ParaStkStateViewModelFactory+Alert.swift */,
+				848CCB512833D29F00A1FD00 /* StakingParachainStatics.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -8974,6 +8982,7 @@
 				8489A6DB27FE9F570040C066 /* StakingUnbondingItemViewModel.swift */,
 				841E5537282CF3F400C8438F /* StakingMainViewModelFactory.swift */,
 				84C342082831645800156569 /* EraCountdownDisplay.swift */,
+				848CCB4D2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -11088,6 +11097,7 @@
 				847119EB262EFF3800716580 /* ValidatorPayoutInfoFactory.swift in Sources */,
 				84CFF1F126526FBC00DB7CF7 /* StakingBondMoreConfirmationInteractor.swift in Sources */,
 				AEF7404E25E6DC9400407D41 /* RewardCalculatorEngine.swift in Sources */,
+				848CCB522833D29F00A1FD00 /* StakingParachainStatics.swift in Sources */,
 				84CA68D926BE9E7F003B9453 /* SpecVersionSubscription.swift in Sources */,
 				84C74363251E4C2F009576C6 /* DummySigner.swift in Sources */,
 				84BEE22D2564765F00D05EB3 /* UIAlertViewController+Account.swift in Sources */,
@@ -11597,6 +11607,7 @@
 				84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */,
 				847119CD262EF61F00716580 /* PayoutValidatorForValidatorFactory.swift in Sources */,
 				F40966E426B29919008CD244 /* Stacks.swift in Sources */,
+				848CCB502833D1D900A1FD00 /* StakingRelaychainStatics.swift in Sources */,
 				F40966CB26B297D6008CD244 /* AnalyticsStakeViewController.swift in Sources */,
 				8494D860252470F400614D8F /* WalletFearlessFormDefining.swift in Sources */,
 				AEA0C8AE267B818900F9666F /* SelectedValidatorListViewLayout.swift in Sources */,
@@ -12415,6 +12426,7 @@
 				849E17DC27909179002D1744 /* DAppSearchQueryTableViewCell.swift in Sources */,
 				76F74188F16A370D79033A12 /* AnalyticsRewardDetailsWireframe.swift in Sources */,
 				2AC7BC842731A214001D99B0 /* BalanceLocks+Sort.swift in Sources */,
+				848CCB4E2833CC4D00A1FD00 /* StakingMainStaticViewModel.swift in Sources */,
 				AE398390272AFB1D00BC8A85 /* WalletManagementViewController.swift in Sources */,
 				F17C7FA0DB540A803558D1BB /* AnalyticsRewardDetailsPresenter.swift in Sources */,
 				EB544E8D26ABEE4ADE2F939F /* AnalyticsRewardDetailsInteractor.swift in Sources */,

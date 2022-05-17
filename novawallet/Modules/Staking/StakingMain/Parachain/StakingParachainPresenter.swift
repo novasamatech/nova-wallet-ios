@@ -57,6 +57,8 @@ final class StakingParachainPresenter {
 
 extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func setup() {
+        view?.didReceiveStatics(viewModel: StakingParachainStatics())
+
         provideNetworkInfo()
         provideStateViewModel()
 

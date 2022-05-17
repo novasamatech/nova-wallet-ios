@@ -78,7 +78,13 @@ extension ParaStkStateViewModelFactory {
         for response: ParachainStaking.DelegatorCollatorsResponse?
     ) -> StakingAlert? {
         if let notElectedCollators = response?.notElected, !notElectedCollators.isEmpty {
-            return .nominatorChangeValidators
+            let description = LocalizableResource { locale in
+                R.string.localizable.parachainStakingAlertCollatorsChange(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+
+            return .nominatorChangeValidators(description)
         } else {
             return nil
         }
