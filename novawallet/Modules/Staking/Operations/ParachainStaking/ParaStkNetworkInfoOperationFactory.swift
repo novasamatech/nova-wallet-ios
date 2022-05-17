@@ -76,7 +76,7 @@ extension ParaStkNetworkInfoOperationFactory: ParaStkNetworkInfoOperationFactory
                 totalStake: rewardEngine.totalStaked,
                 minStakeForRewards: minDelegatorStake,
                 minTechStake: minStake,
-                maximumDelegatorsPerCollator: maxDelegators,
+                maxRewardableDelegators: maxDelegators,
                 activeDelegatorsCount: activeDelegatorsCount
             )
         }
