@@ -133,27 +133,18 @@ extension NominatorStateView: CountdownTimerDelegate {
     func didStart(with interval: TimeInterval) {
         let time = (try? timeFormatter.string(from: interval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 
     func didCountdown(remainedInterval: TimeInterval) {
         let time = (try? timeFormatter.string(from: remainedInterval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 
     func didStop(with interval: TimeInterval) {
         let time = (try? timeFormatter.string(from: interval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 }
