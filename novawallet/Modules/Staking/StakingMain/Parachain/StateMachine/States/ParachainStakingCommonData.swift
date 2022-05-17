@@ -13,6 +13,22 @@ extension ParachainStaking {
         let collatorsInfo: SelectedRoundCollators?
         let blockNumber: BlockNumber?
         let roundInfo: ParachainStaking.RoundInfo?
+
+        var roundCountdown: RoundCountdown? {
+            if
+                let blockNumber = blockNumber,
+                let roundInfo = roundInfo,
+                let stakingDuration = stakingDuration {
+                return RoundCountdown(
+                    roundInfo: roundInfo,
+                    blockTime: stakingDuration.block,
+                    currentBlock: blockNumber,
+                    createdAtDate: Date()
+                )
+            } else {
+                return nil
+            }
+        }
     }
 }
 

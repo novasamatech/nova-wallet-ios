@@ -755,3 +755,4 @@
 "staking.your.nominated.prefix" = "Nominated: ";
 "staking.loading.validators" = "Loading validators...";
 "common.input.amount.hint" = "Input the amount...";
+"parachain.staking.alert.collators.with.no.rewards" = "You have collators to stake more to start getting rewards";
