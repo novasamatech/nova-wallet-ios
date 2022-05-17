@@ -8,6 +8,35 @@ protocol ParaStkStateViewModelFactoryProtocol {
 final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
 
+    private func createDelegationStatus(
+        for response: ParachainStaking.DelegatorCollatorsResponse?,
+        delegator: ParachainStaking.Delegator,
+        commonData: ParachainStaking.CommonData
+    ) -> NominationViewStatus {
+        guard
+            let response = response,
+            let roundInfo = commonData.roundInfo else {
+            return .undefined
+        }
+
+        let state = ParachainStaking.DelegatorRoundState(
+            response: response,
+            delegator: delegator
+        )
+
+        switch state {
+        case .inactive:
+            return .inactive
+        case .active:
+            return .active
+        case .waiting:
+            return .waiting(
+                eraCountdown: commonData.roundCountdown,
+                nominationEra: roundInfo.current + 1
+            )
+        }
+    }
+
     private func createEstimationViewModel(
         chainAsset: ChainAsset,
         commonData: ParachainStaking.CommonData
@@ -113,41 +142,54 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
     }
 
     func visit(state: ParachainStaking.DelegatorState) {
-        guard let chainAsset = state.commonData.chainAsset else {
+        guard
+            let chainAsset = state.commonData.chainAsset,
+            let accountId = state.commonData.account?.chainAccount.accountId else {
             lastViewModel = .undefined
             return
         }
+
+        let collatorsResponse: ParachainStaking.DelegatorCollatorsResponse?
+        collatorsResponse = state.commonData.collatorsInfo.flatMap { info in
+            guard let maxRewardableCollators = state.commonData.networkInfo?.maxRewardableDelegators else {
+                return nil
+            }
+
+            return info.fetchRoundState(
+                for: state.delegatorState,
+                accountId: accountId,
+                maxRewardableDelegators: maxRewardableCollators
+            )
+        }
+
+        let delegationStatus = createDelegationStatus(
+            for: collatorsResponse,
+            delegator: state.delegatorState,
+            commonData: state.commonData
+        )
 
         let delegationViewModel = createDelegationViewModel(
             for: chainAsset,
             commonData: state.commonData,
             delegator: state.delegatorState,
-            viewStatus: .active
+            viewStatus: delegationStatus
         )
 
+        let roundCountdown = state.commonData.roundCountdown
         let unbondings: StakingUnbondingViewModel? = state.scheduledRequests.map {
-            let roundCountdown: RoundCountdown?
-
-            if
-                let blockNumber = state.commonData.blockNumber,
-                let roundInfo = state.commonData.roundInfo,
-                let blockTime = state.commonData.stakingDuration?.block {
-                roundCountdown = RoundCountdown(
-                    roundInfo: roundInfo,
-                    blockTime: blockTime,
-                    currentBlock: blockNumber,
-                    createdAtDate: Date()
-                )
-            } else {
-                roundCountdown = nil
-            }
-
-            return createUnstakingViewModel(from: $0, chainAsset: chainAsset, roundCountdown: roundCountdown)
+            createUnstakingViewModel(from: $0, chainAsset: chainAsset, roundCountdown: roundCountdown)
         }
+
+        let alerts = createAlerts(
+            for: collatorsResponse,
+            delegator: state.delegatorState,
+            scheduledRequests: state.scheduledRequests,
+            commonData: state.commonData
+        )
 
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
-            alerts: [],
+            alerts: alerts,
             reward: nil,
             analyticsViewModel: nil,
             unbondings: unbondings,
