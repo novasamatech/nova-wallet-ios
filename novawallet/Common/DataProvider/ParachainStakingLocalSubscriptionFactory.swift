@@ -7,6 +7,10 @@ extension ParachainStaking {
     typealias DecodedParachainBondConfig = ChainStorageDecodedItem<
         ParachainStaking.ParachainBondConfig
     >
+    typealias DecodedDelegator = ChainStorageDecodedItem<ParachainStaking.Delegator>
+    typealias DecodedScheduledRequests = ChainStorageDecodedItem<
+        [ParachainStaking.ScheduledRequest]
+    >
 }
 
 protocol ParachainStakingLocalSubscriptionFactoryProtocol {
@@ -29,6 +33,16 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
     func getParachainBondProvider(
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedParachainBondConfig>
+
+    func getDelegatorStateProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedDelegator>
+
+    func getScheduledRequestsProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>
 }
 
 final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -39,6 +53,25 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
     ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(
             storagePath,
+            chainId: chainId
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storagePath,
+            shouldUseFallback: false
+        )
+    }
+
+    private func getAccountProvider<T: Equatable & Decodable>(
+        for chainId: ChainModel.Id,
+        accountId: AccountId,
+        storagePath: StorageCodingPath
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> {
+        let localKey = try LocalStorageKeyFactory().createFromStoragePath(
+            storagePath,
+            accountId: accountId,
             chainId: chainId
         )
 
@@ -78,5 +111,27 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
         for chainId: ChainModel.Id
     ) throws -> AnyDataProvider<ParachainStaking.DecodedParachainBondConfig> {
         try getPlainProvider(for: chainId, storagePath: ParachainStaking.parachainBondInfoPath)
+    }
+
+    func getDelegatorStateProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedDelegator> {
+        try getAccountProvider(
+            for: chainId,
+            accountId: accountId,
+            storagePath: ParachainStaking.delegatorStatePath
+        )
+    }
+
+    func getScheduledRequestsProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests> {
+        try getAccountProvider(
+            for: chainId,
+            accountId: accountId,
+            storagePath: ParachainStaking.delegationRequestsPath
+        )
     }
 }

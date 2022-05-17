@@ -48,6 +48,8 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
     private var balanceViewModel: LocalizableResource<String>?
     private var assetIconViewModel: ImageViewModelProtocol?
 
+    private var stateRawType: Int?
+
     var iconGenerator: IconGenerating?
     var uiFactory: UIFactoryProtocol?
 
@@ -465,7 +467,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
         let sideSize = iconButtonWidth.constant - iconButton.contentInsets.left
             - iconButton.contentInsets.right
         let size = CGSize(width: sideSize, height: sideSize)
-        let icon = try? iconGenerator?.generateFromAddress(viewModel.address)
+        let icon = try? iconGenerator?.generateFromAccountId(viewModel.accountId)
             .imageWithFillColor(R.color.colorWhite()!, size: size, contentScale: UIScreen.main.scale)
         iconButton.imageWithTitleView?.iconImage = icon
         iconButton.invalidateLayout()
@@ -484,6 +486,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
     }
 
     func didReceiveStakingState(viewModel: StakingViewState) {
+        let hasSameTypes = viewModel.rawType == stateRawType
+        stateRawType = viewModel.rawType
+
         switch viewModel {
         case .undefined:
             clearStateView()
@@ -493,24 +498,48 @@ extension StakingMainViewController: StakingMainViewProtocol {
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
-            expandNetworkInfoView(true)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(true)
+            }
+
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .nominator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .validator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
         }

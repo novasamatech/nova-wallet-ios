@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct StakingUnbondingViewModel {
-    let eraCountdown: EraCountdown?
+    let eraCountdown: EraCountdownDisplayProtocol?
     let items: [StakingUnbondingItemViewModel]
 }
 

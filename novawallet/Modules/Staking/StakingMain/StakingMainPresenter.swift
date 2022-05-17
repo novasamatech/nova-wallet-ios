@@ -29,15 +29,13 @@ final class StakingMainPresenter {
     private func provideMainViewModel() {
         guard
             let chainAsset = chainAsset,
-            let address = try? selectedAccount?.substrateAccountId.toAddress(
-                using: chainAsset.chain.chainFormat
-            )
+            let accountId = selectedAccount?.substrateAccountId
         else {
             return
         }
 
         let viewModel = viewModelFactory.createMainViewModel(
-            from: address,
+            from: accountId,
             chainAsset: chainAsset,
             balance: accountInfo?.data.available
         )
@@ -50,6 +48,9 @@ final class StakingMainPresenter {
 
 extension StakingMainPresenter: StakingMainPresenterProtocol {
     func setup() {
+        // setup default view state
+        view?.didReceiveStakingState(viewModel: .undefined)
+
         provideMainViewModel()
 
         interactor.setup()
