@@ -47,6 +47,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private var balanceViewModel: LocalizableResource<String>?
     private var assetIconViewModel: ImageViewModelProtocol?
+    private var staticsViewModel: StakingMainStaticViewModelProtocol?
 
     private var stateRawType: Int?
 
@@ -157,6 +158,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         self.networkInfoView = networkInfoView
 
         networkInfoView.delegate = self
+        networkInfoView.statics = staticsViewModel
 
         networkInfoContainerView = UIView()
         networkInfoContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -229,6 +231,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
             let newActionsView = StakingActionsView()
             newActionsView.locale = selectedLocale
             newActionsView.delegate = self
+            newActionsView.statics = staticsViewModel
             stackView.addArrangedSubview(newActionsView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
@@ -357,6 +360,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
         let stateView = setupView { NominatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
+        stateView?.statics = staticsViewModel
 
         return stateView
     }
@@ -369,6 +373,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
         let stateView = setupView { ValidatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
+        stateView?.statics = staticsViewModel
 
         return stateView
     }
@@ -547,6 +552,17 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
     func expandNetworkInfoView(_ isExpanded: Bool) {
         networkInfoView.setExpanded(isExpanded, animated: false)
+    }
+
+    func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol) {
+        staticsViewModel = viewModel
+
+        networkInfoView.statics = viewModel
+        actionsView?.statics = viewModel
+
+        if let stateView = stateView as? StakingStateView {
+            stateView.statics = viewModel
+        }
     }
 }
 

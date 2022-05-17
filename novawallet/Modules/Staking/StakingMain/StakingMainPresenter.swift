@@ -48,6 +48,8 @@ final class StakingMainPresenter {
 
 extension StakingMainPresenter: StakingMainPresenterProtocol {
     func setup() {
+        view?.didReceiveStatics(viewModel: StakingRelaychainStatics())
+
         // setup default view state
         view?.didReceiveStakingState(viewModel: .undefined)
 
