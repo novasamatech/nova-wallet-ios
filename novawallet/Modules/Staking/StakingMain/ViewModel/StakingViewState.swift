@@ -6,7 +6,7 @@ enum StakingViewState {
     case nominator(
         viewModel: LocalizableResource<NominationViewModel>,
         alerts: [StakingAlert],
-        reward: LocalizableResource<StakingRewardViewModel>,
+        reward: LocalizableResource<StakingRewardViewModel>?,
         analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
         unbondings: StakingUnbondingViewModel?,
         actions: [StakingManageOption]
@@ -14,7 +14,7 @@ enum StakingViewState {
     case validator(
         viewModel: LocalizableResource<ValidationViewModel>,
         alerts: [StakingAlert],
-        reward: LocalizableResource<StakingRewardViewModel>,
+        reward: LocalizableResource<StakingRewardViewModel>?,
         analyticsViewModel: LocalizableResource<RewardAnalyticsWidgetViewModel>?,
         unbondings: StakingUnbondingViewModel?,
         actions: [StakingManageOption]
@@ -23,4 +23,17 @@ enum StakingViewState {
         viewModel: StakingEstimationViewModel,
         alerts: [StakingAlert]
     )
+
+    var rawType: Int {
+        switch self {
+        case .undefined:
+            return 0
+        case .nominator:
+            return 1
+        case .validator:
+            return 2
+        case .noStash:
+            return 3
+        }
+    }
 }

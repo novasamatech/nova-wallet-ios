@@ -2,6 +2,9 @@ import Foundation
 import BigInt
 
 protocol ParaStakingRewardCalculatorEngineProtocol {
+    var totalIssuance: BigUInt { get }
+    var totalStaked: BigUInt { get }
+
     func calculateEarnings(
         amount: Decimal,
         collatorAccountId: AccountId,
@@ -17,6 +20,16 @@ protocol ParaStakingRewardCalculatorEngineProtocol {
         amount: Decimal,
         period: CalculationPeriod
     ) -> Decimal
+}
+
+extension ParaStakingRewardCalculatorEngineProtocol {
+    func calculateMaxReturn(for period: CalculationPeriod) -> Decimal {
+        calculateMaxEarnings(amount: 1.0, period: period)
+    }
+
+    func calculateAvgReturn(for period: CalculationPeriod) -> Decimal {
+        calculateAvgEarnings(amount: 1.0, period: period)
+    }
 }
 
 enum ParaStakingRewardCalculatorEngineError: Error {

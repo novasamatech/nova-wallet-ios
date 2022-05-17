@@ -122,35 +122,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         selectedChainAsset = chainAsset
     }
 
-    func updateSharedState() {
-        guard let chainAsset = selectedChainAsset else {
-            return
-        }
-
-        do {
-            let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
-                for: chainAsset.chain.chainId
-            )
-
-            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-                for: chainAsset.chain.chainId,
-                assetPrecision: Int16(chainAsset.asset.precision),
-                validatorService: eraValidatorService
-            )
-
-            sharedState.eraValidatorService?.throttle()
-            sharedState.rewardCalculationService?.throttle()
-
-            sharedState.replaceEraValidatorService(eraValidatorService)
-            sharedState.replaceRewardCalculatorService(rewardCalculatorService)
-
-            eraValidatorService.setup()
-            rewardCalculatorService.setup()
-        } catch {
-            logger?.error("Couldn't create shared state")
-        }
-    }
-
     func clearChainRemoteSubscription(for chainId: ChainModel.Id) {
         if let chainSubscriptionId = chainSubscriptionId {
             stakingRemoteSubscriptionService.detachFromGlobalData(
