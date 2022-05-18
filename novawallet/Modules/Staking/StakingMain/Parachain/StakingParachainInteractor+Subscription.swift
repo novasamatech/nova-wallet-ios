@@ -126,9 +126,13 @@ extension StakingParachainInteractor {
     }
 
     func performTotalRewardSubscription() {
+        guard let chainAsset = selectedChainAsset else {
+            presenter?.didReceiveError(PersistentValueSettingsError.missingValue)
+            return
+        }
+
         if
             let address = selectedAccount?.chainAccount.toChecksumedAddress(),
-            let chainAsset = selectedChainAsset,
             let rewardApi = chainAsset.chain.externalApi?.staking {
             totalRewardProvider = subscribeTotalReward(
                 for: address,

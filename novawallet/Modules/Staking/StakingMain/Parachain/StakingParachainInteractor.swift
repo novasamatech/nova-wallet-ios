@@ -103,16 +103,14 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     func setupSelectedAccountAndChainAsset() {
-        guard
-            let wallet = selectedWalletSettings.value,
-            let chainAsset = sharedState.settings.value,
-            let response = wallet.fetchMetaChainAccount(
-                for: chainAsset.chain.accountRequest()
-            ) else {
+        guard let chainAsset = sharedState.settings.value else {
             return
         }
 
-        selectedAccount = response
+        selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
+            for: chainAsset.chain.accountRequest()
+        )
+
         selectedChainAsset = chainAsset
     }
 
@@ -188,16 +186,15 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(dataProvider: &delegatorProvider)
         clear(singleValueProvider: &totalRewardProvider)
 
-        guard let selectedChain = selectedChainAsset?.chain,
-              let selectedMetaAccount = selectedWalletSettings.value else {
+        guard let selectedChain = selectedChainAsset?.chain else {
             return
         }
 
-        selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
+        selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
             for: selectedChain.accountRequest()
         )
 
-        presenter?.didReceiveAccount(selectedAccount)
+        provideSelectedAccount()
 
         setupAccountRemoteSubscription()
 
