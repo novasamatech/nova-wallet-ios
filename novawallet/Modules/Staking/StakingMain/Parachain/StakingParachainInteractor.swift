@@ -9,6 +9,10 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         sharedState.stakingLocalSubscriptionFactory
     }
 
+    var generalLocalSubscriptionFactory: GeneralStorageSubscriptionFactoryProtocol {
+        sharedState.generalLocalSubscriptionFactory
+    }
+
     let selectedWalletSettings: SelectedWalletSettings
     let sharedState: ParachainStakingSharedState
     let chainRegistry: ChainRegistryProtocol
@@ -36,7 +40,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var priceProvider: AnySingleValueProvider<PriceData>?
     var balanceProvider: StreamableProvider<AssetBalance>?
     var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
-    var scheduledRequestsProvider: AnyDataProvider<ParachainStaking.DecodedScheduledRequests>?
+    var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
+    var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
@@ -159,6 +164,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
             return
         }
 
+        performBlockNumberSubscription()
+        performRoundInfoSubscription()
         performPriceSubscription()
         performAssetBalanceSubscription()
         performDelegatorSubscription()
@@ -177,7 +184,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clearAccountRemoteSubscription()
         clear(streamableProvider: &balanceProvider)
         clear(dataProvider: &delegatorProvider)
-        clear(dataProvider: &scheduledRequestsProvider)
 
         guard let selectedChain = selectedChainAsset?.chain,
               let selectedMetaAccount = selectedWalletSettings.value else {

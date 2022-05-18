@@ -6,7 +6,7 @@ extension ParachainStaking {
         let totalStake: BigUInt
         let minStakeForRewards: BigUInt
         let minTechStake: BigUInt
-        let maximumDelegatorsPerCollator: UInt32
+        let maxRewardableDelegators: UInt32
         let activeDelegatorsCount: Int
     }
 }

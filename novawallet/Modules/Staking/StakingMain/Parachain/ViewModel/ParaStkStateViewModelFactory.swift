@@ -8,6 +8,35 @@ protocol ParaStkStateViewModelFactoryProtocol {
 final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
 
+    private func createDelegationStatus(
+        for response: ParachainStaking.DelegatorCollatorsResponse?,
+        delegator: ParachainStaking.Delegator,
+        commonData: ParachainStaking.CommonData
+    ) -> NominationViewStatus {
+        guard
+            let response = response,
+            let roundInfo = commonData.roundInfo else {
+            return .undefined
+        }
+
+        let state = ParachainStaking.DelegatorRoundState(
+            response: response,
+            delegator: delegator
+        )
+
+        switch state {
+        case .inactive:
+            return .inactive
+        case .active:
+            return .active
+        case .waiting:
+            return .waiting(
+                eraCountdown: commonData.roundCountdown,
+                nominationEra: roundInfo.current + 1
+            )
+        }
+    }
+
     private func createEstimationViewModel(
         chainAsset: ChainAsset,
         commonData: ParachainStaking.CommonData
@@ -64,7 +93,8 @@ final class ParaStkStateViewModelFactory {
 
     private func createUnstakingViewModel(
         from requests: [ParachainStaking.DelegatorScheduledRequest],
-        chainAsset: ChainAsset
+        chainAsset: ChainAsset,
+        roundCountdown: RoundCountdown?
     ) -> StakingUnbondingViewModel {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
@@ -85,7 +115,7 @@ final class ParaStkStateViewModelFactory {
                 )
             }
 
-        return StakingUnbondingViewModel(eraCountdown: nil, items: viewModels)
+        return StakingUnbondingViewModel(eraCountdown: roundCountdown, items: viewModels)
     }
 }
 
@@ -112,25 +142,54 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
     }
 
     func visit(state: ParachainStaking.DelegatorState) {
-        guard let chainAsset = state.commonData.chainAsset else {
+        guard
+            let chainAsset = state.commonData.chainAsset,
+            let accountId = state.commonData.account?.chainAccount.accountId else {
             lastViewModel = .undefined
             return
         }
+
+        let collatorsResponse: ParachainStaking.DelegatorCollatorsResponse?
+        collatorsResponse = state.commonData.collatorsInfo.flatMap { info in
+            guard let maxRewardableCollators = state.commonData.networkInfo?.maxRewardableDelegators else {
+                return nil
+            }
+
+            return info.fetchRoundState(
+                for: state.delegatorState,
+                accountId: accountId,
+                maxRewardableDelegators: maxRewardableCollators
+            )
+        }
+
+        let delegationStatus = createDelegationStatus(
+            for: collatorsResponse,
+            delegator: state.delegatorState,
+            commonData: state.commonData
+        )
 
         let delegationViewModel = createDelegationViewModel(
             for: chainAsset,
             commonData: state.commonData,
             delegator: state.delegatorState,
-            viewStatus: .active
+            viewStatus: delegationStatus
         )
 
-        let unbondings = state.scheduledRequests.map {
-            createUnstakingViewModel(from: $0, chainAsset: chainAsset)
+        let roundCountdown = state.commonData.roundCountdown
+        let unbondings: StakingUnbondingViewModel? = state.scheduledRequests.map {
+            createUnstakingViewModel(from: $0, chainAsset: chainAsset, roundCountdown: roundCountdown)
         }
+
+        let alerts = createAlerts(
+            for: collatorsResponse,
+            delegator: state.delegatorState,
+            scheduledRequests: state.scheduledRequests,
+            commonData: state.commonData
+        )
 
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
-            alerts: [],
+            alerts: alerts,
             reward: nil,
             analyticsViewModel: nil,
             unbondings: unbondings,

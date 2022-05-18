@@ -76,7 +76,6 @@ extension ParachainStaking {
         }
 
         private func createUnstakingPeriodViewModel(
-            with _: ParachainStaking.NetworkInfo,
             duration: ParachainStakingDuration?
         ) -> LocalizableResource<String> {
             if let unstaking = duration?.unstaking {
@@ -117,7 +116,6 @@ extension ParachainStaking {
             let nominatorsCount = createActiveNominatorsViewModel(with: model)
 
             let localizedUnstakingPeriod = createUnstakingPeriodViewModel(
-                with: model,
                 duration: duration
             )
 

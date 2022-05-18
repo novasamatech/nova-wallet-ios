@@ -114,7 +114,13 @@ extension StakingStateViewModelFactory {
         } else if state.allValidatorsWithoutReward {
             return .nominatorAllOversubscribed
         } else {
-            return .nominatorChangeValidators
+            let description = LocalizableResource { locale in
+                R.string.localizable.stakingNominatorStatusAlertNoValidators(
+                    preferredLanguages: locale.rLanguages
+                )
+            }
+
+            return .nominatorChangeValidators(description)
         }
     }
 

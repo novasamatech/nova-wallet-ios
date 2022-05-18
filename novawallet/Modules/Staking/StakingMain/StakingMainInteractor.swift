@@ -128,6 +128,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
 extension StakingMainInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         updateAccountSubscription()
+        provideSelectedAccount()
     }
 }
 
