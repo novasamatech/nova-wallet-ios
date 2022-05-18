@@ -91,6 +91,12 @@ extension ParachainStaking {
             stateMachine?.transit(to: self)
         }
 
+        func process(totalReward: TotalRewardItem?) {
+            commonData = commonData.byReplacing(totalReward: totalReward)
+
+            stateMachine?.transit(to: self)
+        }
+
         func process(delegatorState _: ParachainStaking.Delegator?) {}
 
         func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}

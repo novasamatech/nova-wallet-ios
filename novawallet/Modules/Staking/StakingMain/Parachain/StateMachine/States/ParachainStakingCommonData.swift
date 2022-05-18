@@ -13,6 +13,7 @@ extension ParachainStaking {
         let collatorsInfo: SelectedRoundCollators?
         let blockNumber: BlockNumber?
         let roundInfo: ParachainStaking.RoundInfo?
+        let totalReward: TotalRewardItem?
 
         var roundCountdown: RoundCountdown? {
             if
@@ -44,7 +45,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: nil,
             collatorsInfo: nil,
             blockNumber: nil,
-            roundInfo: nil
+            roundInfo: nil,
+            totalReward: nil
         )
     }
 
@@ -59,7 +61,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -74,7 +77,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -89,7 +93,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -104,7 +109,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -119,7 +125,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -136,7 +143,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -153,7 +161,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -170,7 +179,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -187,7 +197,8 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 
@@ -204,7 +215,26 @@ extension ParachainStaking.CommonData {
             calculatorEngine: calculatorEngine,
             collatorsInfo: collatorsInfo,
             blockNumber: blockNumber,
-            roundInfo: roundInfo
+            roundInfo: roundInfo,
+            totalReward: totalReward
+        )
+    }
+
+    func byReplacing(
+        totalReward: TotalRewardItem?
+    ) -> ParachainStaking.CommonData {
+        ParachainStaking.CommonData(
+            account: account,
+            chainAsset: chainAsset,
+            balance: balance,
+            price: price,
+            networkInfo: networkInfo,
+            stakingDuration: stakingDuration,
+            calculatorEngine: calculatorEngine,
+            collatorsInfo: collatorsInfo,
+            blockNumber: blockNumber,
+            roundInfo: roundInfo,
+            totalReward: totalReward
         )
     }
 }

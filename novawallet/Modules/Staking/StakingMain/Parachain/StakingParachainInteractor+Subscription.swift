@@ -124,6 +124,21 @@ extension StakingParachainInteractor {
 
         roundInfoProvider = subscribeToRound(for: chainId)
     }
+
+    func performTotalRewardSubscription() {
+        if
+            let address = selectedAccount?.chainAccount.toChecksumedAddress(),
+            let chainAsset = selectedChainAsset,
+            let rewardApi = chainAsset.chain.externalApi?.staking {
+            totalRewardProvider = subscribeTotalReward(
+                for: address,
+                api: rewardApi,
+                assetPrecision: Int16(chainAsset.asset.precision)
+            )
+        } else {
+            presenter?.didReceiveTotalReward(nil)
+        }
+    }
 }
 
 extension StakingParachainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
@@ -192,6 +207,23 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         switch result {
         case let .success(delegator):
             presenter?.didReceiveDelegator(delegator)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
+    func handleTotalReward(
+        result: Result<TotalRewardItem, Error>,
+        for address: AccountAddress,
+        api _: ChainModel.ExternalApi
+    ) {
+        guard selectedAccount?.chainAccount.toChecksumedAddress() == address else {
+            return
+        }
+
+        switch result {
+        case let .success(reward):
+            presenter?.didReceiveTotalReward(reward)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

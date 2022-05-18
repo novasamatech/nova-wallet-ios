@@ -162,6 +162,10 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         stateMachine.state.process(roundInfo: roundInfo)
     }
 
+    func didReceiveTotalReward(_ totalReward: TotalRewardItem?) {
+        stateMachine.state.process(totalReward: totalReward)
+    }
+
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
     }

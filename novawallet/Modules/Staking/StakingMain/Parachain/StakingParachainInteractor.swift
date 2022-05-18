@@ -42,6 +42,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
+    var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
@@ -169,6 +170,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performPriceSubscription()
         performAssetBalanceSubscription()
         performDelegatorSubscription()
+        performTotalRewardSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
@@ -184,6 +186,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clearAccountRemoteSubscription()
         clear(streamableProvider: &balanceProvider)
         clear(dataProvider: &delegatorProvider)
+        clear(singleValueProvider: &totalRewardProvider)
 
         guard let selectedChain = selectedChainAsset?.chain,
               let selectedMetaAccount = selectedWalletSettings.value else {
@@ -200,6 +203,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         performAssetBalanceSubscription()
         performDelegatorSubscription()
+        performTotalRewardSubscription()
     }
 
     func provideSelectedChainAsset() {
