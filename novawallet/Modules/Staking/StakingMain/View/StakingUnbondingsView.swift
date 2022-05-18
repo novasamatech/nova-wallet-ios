@@ -220,7 +220,10 @@ final class StakingUnbondingsView: UIView {
         if
             let viewModel = viewModel,
             let eraCountdown = viewModel.eraCountdown,
-            viewModel.items.contains(where: { $0.isNext(from: eraCountdown.activeEra) }) {
+            viewModel.items.contains(where: {
+                let days = eraCountdown.timeIntervalTillStart(targetEra: $0.unbondingEra).daysFromSeconds
+                return days < 1
+            }) {
             setupTimer(for: eraCountdown)
         } else {
             clearTimer()

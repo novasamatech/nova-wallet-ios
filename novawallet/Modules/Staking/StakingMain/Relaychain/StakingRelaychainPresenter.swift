@@ -214,6 +214,8 @@ extension StakingRelaychainPresenter: StakingStateMachineDelegate {
 
 extension StakingRelaychainPresenter: StakingMainChildPresenterProtocol {
     func setup() {
+        view?.didReceiveStatics(viewModel: StakingRelaychainStatics())
+
         provideState()
         provideStakingInfo()
 
