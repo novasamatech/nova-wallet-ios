@@ -117,6 +117,40 @@ final class ParaStkStateViewModelFactory {
 
         return StakingUnbondingViewModel(eraCountdown: roundCountdown, items: viewModels)
     }
+
+    private func createStakingRewardViewModel(
+        for chainAsset: ChainAsset,
+        commonData: ParachainStaking.CommonData
+    ) -> LocalizableResource<StakingRewardViewModel> {
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
+
+        if let totalReward = commonData.totalReward {
+            let localizableReward = balanceViewModelFactory.balanceFromPrice(
+                totalReward.amount.decimalValue,
+                priceData: commonData.price
+            )
+
+            return LocalizableResource { locale in
+                let reward = localizableReward.value(for: locale)
+
+                if let price = reward.price {
+                    return StakingRewardViewModel(
+                        amount: .loaded(reward.amount),
+                        price: .loaded(price)
+                    )
+                } else {
+                    return StakingRewardViewModel(
+                        amount: .loaded(reward.amount),
+                        price: nil
+                    )
+                }
+            }
+        } else {
+            return LocalizableResource { _ in
+                StakingRewardViewModel(amount: .loading, price: .loading)
+            }
+        }
+    }
 }
 
 extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
@@ -187,10 +221,12 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             commonData: state.commonData
         )
 
+        let reward = createStakingRewardViewModel(for: chainAsset, commonData: state.commonData)
+
         lastViewModel = .nominator(
             viewModel: delegationViewModel,
             alerts: alerts,
-            reward: nil,
+            reward: reward,
             analyticsViewModel: nil,
             unbondings: unbondings,
             actions: [

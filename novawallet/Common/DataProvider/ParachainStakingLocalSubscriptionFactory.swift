@@ -43,6 +43,12 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) throws -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>
+
+    func getTotalReward(
+        for address: AccountAddress,
+        api: ChainModel.ExternalApi,
+        assetPrecision: Int16
+    ) throws -> AnySingleValueProvider<TotalRewardItem>
 }
 
 final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -133,5 +139,43 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
             accountId: accountId,
             storagePath: ParachainStaking.delegationRequestsPath
         )
+    }
+
+    func getTotalReward(
+        for address: AccountAddress,
+        api: ChainModel.ExternalApi,
+        assetPrecision: Int16
+    ) throws -> AnySingleValueProvider<TotalRewardItem> {
+        clearIfNeeded()
+
+        let identifier = ("reward" + api.url.absoluteString) + address
+
+        if let provider = getProvider(for: identifier) as? SingleValueProvider<TotalRewardItem> {
+            return AnySingleValueProvider(provider)
+        }
+
+        let repository = SubstrateRepositoryFactory(
+            storageFacade: storageFacade
+        ).createSingleValueRepository()
+
+        let operationFactory = SubqueryRewardOperationFactory(url: api.url)
+
+        let source = SubqueryTotalRewardSource(
+            address: address,
+            assetPrecision: assetPrecision,
+            operationFactory: operationFactory
+        )
+
+        let anySource = AnySingleValueProviderSource<TotalRewardItem>(source)
+
+        let provider = SingleValueProvider(
+            targetIdentifier: identifier,
+            source: anySource,
+            repository: AnyDataProviderRepository(repository)
+        )
+
+        saveProvider(provider, for: identifier)
+
+        return AnySingleValueProvider(provider)
     }
 }
