@@ -4,7 +4,7 @@ import RobinHood
 protocol ParastakingLocalStorageSubscriber: AnyObject {
     var stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol { get }
 
-    var parastakingLocalSubscriptionHandler: ParastakingLocalStorageHandler { get }
+    var stakingLocalSubscriptionHandler: ParastakingLocalStorageHandler { get }
 
     func subscribeToRound(
         for chainId: ChainModel.Id
@@ -19,6 +19,12 @@ protocol ParastakingLocalStorageSubscriber: AnyObject {
         for chainId: ChainModel.Id,
         accountId: AccountId
     ) -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>?
+
+    func subscribeTotalReward(
+        for address: AccountAddress,
+        api: ChainModel.ExternalApi,
+        assetPrecision: Int16
+    ) -> AnySingleValueProvider<TotalRewardItem>?
 }
 
 extension ParastakingLocalStorageSubscriber {
@@ -35,14 +41,14 @@ extension ParastakingLocalStorageSubscriber {
 
         updateClosure = { [weak self] changes in
             let round = changes.reduceToLastChange()?.item
-            self?.parastakingLocalSubscriptionHandler.handleParastakingRound(
+            self?.stakingLocalSubscriptionHandler.handleParastakingRound(
                 result: .success(round),
                 for: chainId
             )
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.parastakingLocalSubscriptionHandler.handleParastakingRound(
+            self?.stakingLocalSubscriptionHandler.handleParastakingRound(
                 result: .failure(error),
                 for: chainId
             )
@@ -82,7 +88,7 @@ extension ParastakingLocalStorageSubscriber {
 
         updateClosure = { [weak self] changes in
             let delegator = changes.reduceToLastChange()?.item
-            self?.parastakingLocalSubscriptionHandler.handleParastakingDelegatorState(
+            self?.stakingLocalSubscriptionHandler.handleParastakingDelegatorState(
                 result: .success(delegator),
                 for: chainId,
                 accountId: accountId
@@ -90,7 +96,7 @@ extension ParastakingLocalStorageSubscriber {
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.parastakingLocalSubscriptionHandler.handleParastakingDelegatorState(
+            self?.stakingLocalSubscriptionHandler.handleParastakingDelegatorState(
                 result: .failure(error),
                 for: chainId,
                 accountId: accountId
@@ -132,7 +138,7 @@ extension ParastakingLocalStorageSubscriber {
 
         updateBlock = { [weak self] changes in
             let requests = changes.reduceToLastChange()?.item
-            self?.parastakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
+            self?.stakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
                 result: .success(requests),
                 for: chainId,
                 accountId: accountId
@@ -140,7 +146,7 @@ extension ParastakingLocalStorageSubscriber {
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.parastakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
+            self?.stakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
                 result: .failure(error),
                 for: chainId,
                 accountId: accountId
@@ -163,8 +169,57 @@ extension ParastakingLocalStorageSubscriber {
 
         return requestsProvider
     }
+
+    func subscribeTotalReward(
+        for address: AccountAddress,
+        api: ChainModel.ExternalApi,
+        assetPrecision: Int16
+    ) -> AnySingleValueProvider<TotalRewardItem>? {
+        guard let totalRewardProvider = try? stakingLocalSubscriptionFactory.getTotalReward(
+            for: address,
+            api: api,
+            assetPrecision: assetPrecision
+        ) else {
+            return nil
+        }
+
+        let updateClosure = { [weak self] (changes: [DataProviderChange<TotalRewardItem>]) in
+            if let finalValue = changes.reduceToLastChange() {
+                self?.stakingLocalSubscriptionHandler.handleTotalReward(
+                    result: .success(finalValue),
+                    for: address,
+                    api: api
+                )
+            }
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.stakingLocalSubscriptionHandler.handleTotalReward(
+                result: .failure(error),
+                for: address,
+                api: api
+            )
+
+            return
+        }
+
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: true,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        totalRewardProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return totalRewardProvider
+    }
 }
 
 extension ParastakingLocalStorageSubscriber where Self: ParastakingLocalStorageHandler {
-    var parastakingLocalSubscriptionHandler: ParastakingLocalStorageHandler { self }
+    var stakingLocalSubscriptionHandler: ParastakingLocalStorageHandler { self }
 }
