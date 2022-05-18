@@ -57,6 +57,8 @@ final class StakingParachainPresenter {
 
 extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func setup() {
+        view?.didReceiveStatics(viewModel: StakingParachainStatics())
+
         provideNetworkInfo()
         provideStateViewModel()
 
@@ -150,6 +152,14 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
         stateMachine.state.process(stakingDuration: stakingDuration)
 
         provideNetworkInfo()
+    }
+
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
+        stateMachine.state.process(blockNumber: blockNumber)
+    }
+
+    func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?) {
+        stateMachine.state.process(roundInfo: roundInfo)
     }
 
     func didReceiveError(_ error: Error) {

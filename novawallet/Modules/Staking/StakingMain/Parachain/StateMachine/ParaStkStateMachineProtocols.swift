@@ -19,6 +19,8 @@ protocol ParaStkStateProtocol {
     func process(calculatorEngine: ParaStakingRewardCalculatorEngineProtocol?)
     func process(delegatorState: ParachainStaking.Delegator?)
     func process(scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
+    func process(blockNumber: BlockNumber?)
+    func process(roundInfo: ParachainStaking.RoundInfo?)
 }
 
 protocol ParaStkStateMachineProtocol: AnyObject {

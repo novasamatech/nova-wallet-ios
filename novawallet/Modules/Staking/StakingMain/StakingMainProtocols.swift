@@ -8,6 +8,7 @@ protocol StakingMainViewProtocol: ControllerBackedProtocol, Localizable {
     func didRecieveNetworkStakingInfo(viewModel: LocalizableResource<NetworkStakingInfoViewModel>?)
     func didReceiveStakingState(viewModel: StakingViewState)
     func expandNetworkInfoView(_ isExpanded: Bool)
+    func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol)
 }
 
 protocol StakingMainPresenterProtocol: AnyObject {
