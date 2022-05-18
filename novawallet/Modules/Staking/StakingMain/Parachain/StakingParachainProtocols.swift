@@ -18,6 +18,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration)
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveRoundInfo(_ roundInfo: ParachainStaking.RoundInfo?)
+    func didReceiveTotalReward(_ totalReward: TotalRewardItem?)
     func didReceiveError(_ error: Error)
 }
 

@@ -42,6 +42,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
+    var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
@@ -102,16 +103,14 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     }
 
     func setupSelectedAccountAndChainAsset() {
-        guard
-            let wallet = selectedWalletSettings.value,
-            let chainAsset = sharedState.settings.value,
-            let response = wallet.fetchMetaChainAccount(
-                for: chainAsset.chain.accountRequest()
-            ) else {
+        guard let chainAsset = sharedState.settings.value else {
             return
         }
 
-        selectedAccount = response
+        selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
+            for: chainAsset.chain.accountRequest()
+        )
+
         selectedChainAsset = chainAsset
     }
 
@@ -169,6 +168,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         performPriceSubscription()
         performAssetBalanceSubscription()
         performDelegatorSubscription()
+        performTotalRewardSubscription()
 
         provideRewardCalculator(from: rewardCalculationService)
         provideSelectedCollatorsInfo(from: collatorService)
@@ -184,22 +184,23 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clearAccountRemoteSubscription()
         clear(streamableProvider: &balanceProvider)
         clear(dataProvider: &delegatorProvider)
+        clear(singleValueProvider: &totalRewardProvider)
 
-        guard let selectedChain = selectedChainAsset?.chain,
-              let selectedMetaAccount = selectedWalletSettings.value else {
+        guard let selectedChain = selectedChainAsset?.chain else {
             return
         }
 
-        selectedAccount = selectedMetaAccount.fetchMetaChainAccount(
+        selectedAccount = selectedWalletSettings.value?.fetchMetaChainAccount(
             for: selectedChain.accountRequest()
         )
 
-        presenter?.didReceiveAccount(selectedAccount)
+        provideSelectedAccount()
 
         setupAccountRemoteSubscription()
 
         performAssetBalanceSubscription()
         performDelegatorSubscription()
+        performTotalRewardSubscription()
     }
 
     func provideSelectedChainAsset() {
