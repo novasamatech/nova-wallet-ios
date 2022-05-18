@@ -2,7 +2,6 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-@available(*, deprecated, message: "Use LocalStorageProviderSource instead")
 final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceProtocol {
     enum LastSeen: Equatable {
         case waiting

@@ -755,3 +755,8 @@
 "staking.your.nominated.prefix" = "Номинировано: ";
 "staking.loading.validators" = "Загрузка валидаторов...";
 "common.input.amount.hint" = "Введите сумму...";
+"parachain.staking.alert.collators.with.no.rewards" = "У вас есть коллаторы которые не приносят наград";
+"parachain.staking.alert.collators.change" = "Некоторые ваши коллаторы не были избраны сетью";
+"parachain.staking.active.delegators" = "Активные делегаторы";
+"parachain.staking.your.collator" = "Ваши коллаторы";
+"parachain.staking.waiting.next.round.format" = "ожидание следующего раунда (%@)";
