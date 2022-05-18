@@ -4,7 +4,7 @@ enum NominationViewStatus {
     case undefined
     case active
     case inactive
-    case waiting(eraCountdown: EraCountdown?, nominationEra: EraIndex)
+    case waiting(eraCountdown: EraCountdownDisplayProtocol?, nominationEra: EraIndex)
 }
 
 struct NominationViewModel {
