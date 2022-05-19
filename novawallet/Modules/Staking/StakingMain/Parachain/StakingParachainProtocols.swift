@@ -22,6 +22,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol StakingParachainWireframeProtocol: AnyObject {
+protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable {
     func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
+    func showStartStaking(from view: ControllerBackedProtocol?)
 }

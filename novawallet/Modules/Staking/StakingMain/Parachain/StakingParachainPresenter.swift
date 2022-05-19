@@ -65,7 +65,9 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         interactor.setup()
     }
 
-    func performMainAction() {}
+    func performMainAction() {
+        wireframe.showStartStaking(from: view)
+    }
 
     func performRewardInfoAction() {
         guard let rewardCalculator = stateMachine.viewState(

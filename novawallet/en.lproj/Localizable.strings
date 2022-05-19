@@ -760,3 +760,9 @@
 "parachain.staking.active.delegators" = "Active delegators";
 "parachain.staking.your.collator" = "Your collators";
 "parachain.staking.waiting.next.round.format" = "waiting for the next round (%@)";
+"parachain.staking.select.collator" = "Select collator";
+"parachain.staking.hint.select.collator" = "Select collator...";
+"parachain.staking.collator" = "Collator";
+"parachain.staking.transferrable.rewards" = "Transferrable rewards";
+"parachain.staking.rewards.format" = "%@/year";
+"parachain.staking.minimum.stake" = "Minimum stake";
