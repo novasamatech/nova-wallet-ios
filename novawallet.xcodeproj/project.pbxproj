@@ -1208,6 +1208,10 @@
 		84A3034926A834F900E64382 /* ValidatorInfoViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3034826A834F900E64382 /* ValidatorInfoViewLayout.swift */; };
 		84A3772E27B502F20026D6D1 /* MetamaskTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3772D27B502F20026D6D1 /* MetamaskTransaction.swift */; };
 		84A3773027B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */; };
+		84A3B8A02836D74B00DE2669 /* StorageKeyDecodingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B89F2836D74B00DE2669 /* StorageKeyDecodingProtocol.swift */; };
+		84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */; };
+		84A3B8A62836E08600DE2669 /* ElectedCollatorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A52836E08600DE2669 /* ElectedCollatorInfo.swift */; };
+		84A3B8A82836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */; };
 		84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */; };
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
@@ -3350,6 +3354,10 @@
 		84A3034826A834F900E64382 /* ValidatorInfoViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorInfoViewLayout.swift; sourceTree = "<group>"; };
 		84A3772D27B502F20026D6D1 /* MetamaskTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetamaskTransaction.swift; sourceTree = "<group>"; };
 		84A3772F27B52E020026D6D1 /* DAppEthereumConfirmInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppEthereumConfirmInteractor.swift; sourceTree = "<group>"; };
+		84A3B89F2836D74B00DE2669 /* StorageKeyDecodingProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageKeyDecodingProtocol.swift; sourceTree = "<group>"; };
+		84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastAccountIdKeyWrapper.swift; sourceTree = "<group>"; };
+		84A3B8A52836E08600DE2669 /* ElectedCollatorInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElectedCollatorInfo.swift; sourceTree = "<group>"; };
+		84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParachainStakingCandidateMetadata.swift; sourceTree = "<group>"; };
 		84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCodingPath.swift; sourceTree = "<group>"; };
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
@@ -5703,6 +5711,7 @@
 				8499FEC527BEC68000712589 /* UniquesInstanceMetadata.swift */,
 				84F1CB3F27CF6BEF0095D523 /* UniquesClassDetails.swift */,
 				8430D6C42800040A00FFB6AE /* EthereumExecuted.swift */,
+				84A3B8A12836DA2600DE2669 /* LastAccountIdKeyWrapper.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -5850,25 +5859,11 @@
 		84403D8625E92A6300494FD4 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8489A6E127FEFC730040C066 /* StakingRebondOption.swift */,
-				8425EA9425EA82CE00C307C9 /* AccountIdentity.swift */,
-				8425EA8F25EA7E5800C307C9 /* ElectedValidatorInfo.swift */,
-				8472975C260B1B71009B86D0 /* ExistingBonding.swift */,
-				84403D8725E92A9C00494FD4 /* InitiatedBonding.swift */,
-				AE7129C02608CAE7000AA3F5 /* NetworkStakingInfo.swift */,
-				841E6AF525EC12100007DDFE /* PreparedNomination.swift */,
-				845BB8D525E461FC00E5FCDC /* RewardDestination.swift */,
-				841E6AFD25EC12DE0007DDFE /* SelectedValidatorInfo.swift */,
+				84A3B8A42836E05600DE2669 /* ParachainStaking */,
+				84A3B8A32836E00500DE2669 /* Relaychain */,
 				8425EB1A25EADD8600C307C9 /* StakingConstants.swift */,
 				AEBE16E5262EA7C100DF257C /* StakingErrors.swift */,
-				84BAB60F2642C286007782D0 /* SelectedRebondVariant.swift */,
-				F418E886264D308700699085 /* StakingAlert.swift */,
-				849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */,
-				8493D3E52705994200157009 /* StakingSharedState.swift */,
-				841E5544282D793900C8438F /* ParachainStakingSharedState.swift */,
 				841E5533282CD9A900C8438F /* StakingType.swift */,
-				841E555C282E72F500C8438F /* ParachainStakingNetworkInfo.swift */,
-				848CCB49283373D700A1FD00 /* SelectedRoundCollators+DelegatorState.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -6732,6 +6727,7 @@
 				841816702824F4F30007684A /* ParachainStakingCollatorSnapshot.swift */,
 				841E553D282D469F00C8438F /* ParachainStakingDelegator.swift */,
 				841E5554282E504800C8438F /* ConstantCodingPath+ParachainStaking.swift */,
+				84A3B8A72836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift */,
 			);
 			path = ParachainStaking;
 			sourceTree = "<group>";
@@ -7499,6 +7495,7 @@
 		8490154E24ACD521008F705E /* Substrate */ = {
 			isa = PBXGroup;
 			children = (
+				84A3B89C2836CF8F00DE2669 /* Coders */,
 				84DEE7002797F09300B9A39E /* Extension */,
 				84AF3788272349AB007408D6 /* SiMappers */,
 				845BB8C725E45D0600E5FCDC /* Calls */,
@@ -7908,6 +7905,45 @@
 				849C0670276516F900394C82 /* BaseOperation+Cancellable.swift */,
 			);
 			path = Operation;
+			sourceTree = "<group>";
+		};
+		84A3B89C2836CF8F00DE2669 /* Coders */ = {
+			isa = PBXGroup;
+			children = (
+				84A3B89F2836D74B00DE2669 /* StorageKeyDecodingProtocol.swift */,
+			);
+			path = Coders;
+			sourceTree = "<group>";
+		};
+		84A3B8A32836E00500DE2669 /* Relaychain */ = {
+			isa = PBXGroup;
+			children = (
+				8425EA9425EA82CE00C307C9 /* AccountIdentity.swift */,
+				8489A6E127FEFC730040C066 /* StakingRebondOption.swift */,
+				8425EA8F25EA7E5800C307C9 /* ElectedValidatorInfo.swift */,
+				8472975C260B1B71009B86D0 /* ExistingBonding.swift */,
+				84403D8725E92A9C00494FD4 /* InitiatedBonding.swift */,
+				AE7129C02608CAE7000AA3F5 /* NetworkStakingInfo.swift */,
+				841E6AF525EC12100007DDFE /* PreparedNomination.swift */,
+				845BB8D525E461FC00E5FCDC /* RewardDestination.swift */,
+				841E6AFD25EC12DE0007DDFE /* SelectedValidatorInfo.swift */,
+				84BAB60F2642C286007782D0 /* SelectedRebondVariant.swift */,
+				F418E886264D308700699085 /* StakingAlert.swift */,
+				849E689426AF388500E0E7BE /* ElectedValidatorInfo+Selected.swift */,
+				8493D3E52705994200157009 /* StakingSharedState.swift */,
+			);
+			path = Relaychain;
+			sourceTree = "<group>";
+		};
+		84A3B8A42836E05600DE2669 /* ParachainStaking */ = {
+			isa = PBXGroup;
+			children = (
+				841E5544282D793900C8438F /* ParachainStakingSharedState.swift */,
+				841E555C282E72F500C8438F /* ParachainStakingNetworkInfo.swift */,
+				848CCB49283373D700A1FD00 /* SelectedRoundCollators+DelegatorState.swift */,
+				84A3B8A52836E08600DE2669 /* ElectedCollatorInfo.swift */,
+			);
+			path = ParachainStaking;
 			sourceTree = "<group>";
 		};
 		84A8FD8C265FDA42002ADB58 /* Model */ = {
@@ -11119,6 +11155,7 @@
 				84F6B6432619A8480038F10D /* SubscanConcreteExtrinsicsData.swift in Sources */,
 				844EFB65265FD61D0090ACB1 /* CrowdloanContributeConfirmViewModel.swift in Sources */,
 				AEE5FAFF26415E0C002B8FDC /* StakingRebondSetupPresenter.swift in Sources */,
+				84A3B8A02836D74B00DE2669 /* StorageKeyDecodingProtocol.swift in Sources */,
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
 				8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */,
 				F4E339632614A03F0028B6B1 /* ExtrinsicsInfo.swift in Sources */,
@@ -11129,6 +11166,7 @@
 				84D1F31E260F585E0077DDFE /* AddAccount.swift in Sources */,
 				846CA77C27099DD90011124C /* WeaklyAnalyticsRewardSource.swift in Sources */,
 				84452F9D25D6768000F47EC5 /* RuntimeMetadataItem.swift in Sources */,
+				84A3B8A82836E4A100DE2669 /* ParachainStakingCandidateMetadata.swift in Sources */,
 				849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */,
 				F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */,
 				8461CC7F26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift in Sources */,
@@ -11211,6 +11249,7 @@
 				84490E7427F2CE2C00941837 /* TransferMetadataContext.swift in Sources */,
 				8490151324AB8A3A008F705E /* WalletEmptyStateDataSource.swift in Sources */,
 				84DF21AB25363C9F005454AE /* Chain+Info.swift in Sources */,
+				84A3B8A22836DA2600DE2669 /* LastAccountIdKeyWrapper.swift in Sources */,
 				84243095265B1888003E07EC /* CrowdloanMetadata.swift in Sources */,
 				84CFF1ED26526FBC00DB7CF7 /* StakingBondMoreConfirmationWireframe.swift in Sources */,
 				847119D5262EF95A00716580 /* PayoutInfoFactoryProtocol.swift in Sources */,
@@ -12229,6 +12268,7 @@
 				61B9688494251703A6373A1B /* StakingAmountWireframe.swift in Sources */,
 				BEE36A5554B026BD7BCD3199 /* StakingAmountPresenter.swift in Sources */,
 				8423ADD226B2C9D000057EDD /* ImportantViewProtocol.swift in Sources */,
+				84A3B8A62836E08600DE2669 /* ElectedCollatorInfo.swift in Sources */,
 				841E5569282EAC2600C8438F /* ParachainStakingNoStakingState.swift in Sources */,
 				84CFF1E926526FBC00DB7CF7 /* StakingBondMoreWireframe.swift in Sources */,
 				84D17ECE2804290700F7BAFF /* RadioSelectorView.swift in Sources */,

@@ -1,0 +1,38 @@
+import Foundation
+import SubstrateSdk
+import BigInt
+
+extension ParachainStaking {
+    enum CapacityStatus: Decodable {
+        case full
+        case empty
+        case partial
+
+        public init(from decoder: Decoder) throws {
+            var container = try decoder.unkeyedContainer()
+            let type = try container.decode(String.self)
+
+            switch type {
+            case "Full":
+                self = .full
+            case "Empty":
+                self = .empty
+            case "Partial":
+                self = .partial
+            default:
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unexpected type"
+                )
+            }
+        }
+    }
+
+    struct CandidateMetadata: Decodable {
+        @StringCodable var delegationCount: UInt32
+        @StringCodable var lowestTopDelegationAmount: BigUInt
+        @StringCodable var lowestBottomDelegationAmount: BigUInt
+        let topCapacity: CapacityStatus
+        let bottomCapacity: CapacityStatus
+    }
+}

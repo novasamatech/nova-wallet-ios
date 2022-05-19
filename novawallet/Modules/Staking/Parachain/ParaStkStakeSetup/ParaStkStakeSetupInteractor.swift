@@ -1,6 +1,7 @@
 import UIKit
 import RobinHood
 import BigInt
+import SubstrateSdk
 
 final class ParaStkStakeSetupInteractor {
     weak var presenter: ParaStkStakeSetupInteractorOutputProtocol?
@@ -13,10 +14,17 @@ final class ParaStkStakeSetupInteractor {
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
     let extrinsicService: ExtrinsicServiceProtocol
     let feeProxy: ExtrinsicFeeProxyProtocol
+    let repositoryFactory: SubstrateRepositoryFactoryProtocol
+    let connection: JSONRPCEngine
+    let runtimeProvider: RuntimeCodingServiceProtocol
+    let identityOperationFactory: IdentityOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
+
+    private lazy var localKeyFactory = LocalStorageKeyFactory()
 
     init(
         chainAsset: ChainAsset,
@@ -27,6 +35,10 @@ final class ParaStkStakeSetupInteractor {
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
         extrinsicService: ExtrinsicServiceProtocol,
         feeProxy: ExtrinsicFeeProxyProtocol,
+        connection: JSONRPCEngine,
+        runtimeProvider: RuntimeCodingServiceProtocol,
+        repositoryFactory: SubstrateRepositoryFactoryProtocol,
+        identityOperationFactory: IdentityOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -37,6 +49,10 @@ final class ParaStkStakeSetupInteractor {
         self.rewardService = rewardService
         self.extrinsicService = extrinsicService
         self.feeProxy = feeProxy
+        self.connection = connection
+        self.runtimeProvider = runtimeProvider
+        self.repositoryFactory = substrateRepositoryFactory
+        self.identityOperationFactory = identityOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -66,6 +82,46 @@ final class ParaStkStakeSetupInteractor {
 
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId)
+        }
+    }
+
+    private func subscribeRemoteCollator(for accountId: AccountId) {
+        self.collatorSubscription = nil
+
+        do {
+            let storagePath = ParachainStaking.candidateMetadataPath
+            let localKey = try localKeyFactory.createFromStoragePath(
+                storagePath,
+                accountId: accountId,
+                chainId: chainAsset.chain.chainId
+            )
+
+            let repository = repositoryFactory.createChainStorageItemRepository()
+
+            let request = MapSubscriptionRequest(
+                storagePath: ParachainStaking.candidateMetadataPath,
+                localKey: localKey,
+                keyParamClosure: { BytesCodable(wrappedValue: accountId) }
+            )
+
+            collatorSubscription = CallbackStorageSubscription(
+                request: request,
+                storagePath: ParachainStaking.candidateMetadataPath,
+                connection: connection,
+                runtimeService: runtimeProvider,
+                repository: repository,
+                operationQueue: operationQueue,
+                callbackQueue: .main
+            ) { [weak self] result in
+                switch result {
+                case let .success(collator):
+                    self?.presenter?.didReceiveCollator(collator)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        } catch {
+            presenter?.didReceiveError(error)
         }
     }
 }
