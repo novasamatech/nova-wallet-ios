@@ -34,6 +34,7 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didReceiveCollator(_ collator: ParachainStaking.CandidateMetadata?)
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }

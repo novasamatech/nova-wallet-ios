@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
 
 struct ParaStkStakeSetupViewFactory {
     static func createView(with state: ParachainStakingSharedState) -> ParaStkStakeSetupViewProtocol? {
@@ -71,6 +72,15 @@ struct ParaStkStakeSetupViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+
         return ParaStkStakeSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
@@ -80,6 +90,10 @@ struct ParaStkStakeSetupViewFactory {
             rewardService: rewardService,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            repositoryFactory: repositoryFactory,
+            identityOperationFactory: identityOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
