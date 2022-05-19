@@ -184,6 +184,10 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         refreshFee()
     }
 
+    func didReceiveCollator(_ collator: ParachainStaking.CandidateMetadata?) {
+        
+    }
+
     func didReceiveError(_ error: Error) {
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
