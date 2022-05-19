@@ -105,6 +105,22 @@ final class ParaStkStakeSetupPresenter {
     private func provideCollatorViewModel() {
         view?.didReceiveCollator(viewModel: nil)
     }
+
+    private func refreshFee() {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let precicion = chainAsset.assetDisplayInfo.assetPrecision
+
+        guard let amount = inputAmount.toSubstrateAmount(precision: precicion) else {
+            return
+        }
+
+        interactor.estimateFee(
+            amount,
+            collator: nil,
+            collatorDelegationsCount: 0,
+            delegationsCount: 0
+        )
+    }
 }
 
 extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
@@ -155,10 +171,17 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
             fee = BigUInt(dispatchInfo.fee)
 
             provideFeeViewModel()
-        case .failure:
-            // TODO: retry fee
-            break
+        case let .failure(error):
+            logger.error("Did receive error: \(error)")
+
+            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.refreshFee()
+            }
         }
+    }
+
+    func didCompleteSetup() {
+        refreshFee()
     }
 
     func didReceiveError(_ error: Error) {

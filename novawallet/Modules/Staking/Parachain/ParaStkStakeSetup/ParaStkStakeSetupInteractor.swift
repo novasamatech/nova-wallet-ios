@@ -1,5 +1,6 @@
 import UIKit
 import RobinHood
+import BigInt
 
 final class ParaStkStakeSetupInteractor {
     weak var presenter: ParaStkStakeSetupInteractorOutputProtocol?
@@ -10,6 +11,8 @@ final class ParaStkStakeSetupInteractor {
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let collatorService: ParachainStakingCollatorServiceProtocol
     let rewardService: ParaStakingRewardCalculatorServiceProtocol
+    let extrinsicService: ExtrinsicServiceProtocol
+    let feeProxy: ExtrinsicFeeProxyProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -22,6 +25,8 @@ final class ParaStkStakeSetupInteractor {
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
         rewardService: ParaStakingRewardCalculatorServiceProtocol,
+        extrinsicService: ExtrinsicServiceProtocol,
+        feeProxy: ExtrinsicFeeProxyProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -30,6 +35,8 @@ final class ParaStkStakeSetupInteractor {
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.collatorService = collatorService
         self.rewardService = rewardService
+        self.extrinsicService = extrinsicService
+        self.feeProxy = feeProxy
         self.operationQueue = operationQueue
     }
 
@@ -68,6 +75,32 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         subscribeAssetBalanceAndPrice()
 
         provideRewardCalculator()
+
+        feeProxy.delegate = self
+
+        presenter?.didCompleteSetup()
+    }
+
+    func estimateFee(
+        _ amount: BigUInt,
+        collator: AccountId?,
+        collatorDelegationsCount: UInt32,
+        delegationsCount: UInt32
+    ) {
+        let candidate = collator ?? selectedAccount.chainAccount.accountId
+        let call = ParachainStaking.DelegateCall(
+            candidate: candidate,
+            amount: amount,
+            candidateDelegationCount: collatorDelegationsCount,
+            delegationCount: delegationsCount
+        )
+
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: call.extrinsicIdentifier
+        ) { builder in
+            try builder.adding(call: call.runtimeCall)
+        }
     }
 }
 
@@ -95,5 +128,11 @@ extension ParaStkStakeSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSu
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
+    }
+}
+
+extension ParaStkStakeSetupInteractor: ExtrinsicFeeProxyDelegate {
+    func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
+        presenter?.didReceiveFee(result)
     }
 }

@@ -1,5 +1,6 @@
 import BigInt
 import CommonWallet
+import Foundation
 
 protocol ParaStkStakeSetupViewProtocol: ControllerBackedProtocol {
     func didReceiveCollator(viewModel: DisplayAddressViewModel?)
@@ -20,6 +21,12 @@ protocol ParaStkStakeSetupPresenterProtocol: AnyObject {
 
 protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
     func setup()
+    func estimateFee(
+        _ amount: BigUInt,
+        collator: AccountId?,
+        collatorDelegationsCount: UInt32,
+        delegationsCount: UInt32
+    )
 }
 
 protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
@@ -27,7 +34,8 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
+    func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
 
-protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable {}

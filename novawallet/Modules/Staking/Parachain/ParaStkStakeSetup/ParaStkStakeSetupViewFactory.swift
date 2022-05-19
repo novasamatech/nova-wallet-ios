@@ -50,6 +50,27 @@ struct ParaStkStakeSetupViewFactory {
             return nil
         }
 
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let runtimeProvider = chainRegistry.getRuntimeProvider(
+                for: chainAsset.chain.chainId
+            ),
+            let connection = chainRegistry.getConnection(
+                for: chainAsset.chain.chainId
+            ) else {
+            return nil
+        }
+
+        let extrinsicService = ExtrinsicService(
+            accountId: selectedAccount.chainAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
+            cryptoType: selectedAccount.chainAccount.cryptoType,
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
         return ParaStkStakeSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
@@ -57,6 +78,8 @@ struct ParaStkStakeSetupViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             collatorService: collatorService,
             rewardService: rewardService,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy(),
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }
