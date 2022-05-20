@@ -23,7 +23,11 @@ final class ParaStkStakeSetupViewLayout: UIView {
 
     let amountInputView = NewAmountInputView()
 
-    let rewardsView = RewardSelectionView()
+    let rewardsView: RewardSelectionView = {
+        let view = RewardSelectionView()
+        view.contentInsets = UIEdgeInsets(top: 10.0, left: 16.0, bottom: 10.0, right: 16.0)
+        return view
+    }()
 
     let minStakeView = TitleAmountView.dark()
 
