@@ -50,4 +50,11 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable {}
+protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable,
+    ParachainStakingErrorPresentable {
+    func showConfirmation(
+        from view: ParaStkStakeSetupViewProtocol?,
+        collator: DisplayAddress,
+        amount: Decimal
+    )
+}

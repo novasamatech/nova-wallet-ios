@@ -9,6 +9,7 @@ final class ParaStkStakeSetupPresenter {
 
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
+    let dataValidatingFactory: ParaStkValidatorFactoryProtocol
 
     private var inputResult: AmountInputResult?
     private var fee: BigUInt?
@@ -29,6 +30,7 @@ final class ParaStkStakeSetupPresenter {
     init(
         interactor: ParaStkStakeSetupInteractorInputProtocol,
         wireframe: ParaStkStakeSetupWireframeProtocol,
+        dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -36,6 +38,7 @@ final class ParaStkStakeSetupPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
         self.logger = logger
@@ -231,7 +234,57 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
         provideRewardsViewModel()
     }
 
-    func proceed() {}
+    func proceed() {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: precision,
+                onError: { [weak self] in self?.refreshFee() }
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: balance?.transferable,
+                fee: fee,
+                spendingAmount: inputAmount,
+                precision: precision,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.delegatorNotExist(
+                delegator: delegator,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canStakeBottomDelegations(
+                amount: inputAmount,
+                collator: collatorMetadata,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.hasMinStake(
+                amount: inputAmount,
+                minTechStake: minTechStake,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canStakeTopDelegations(
+                amount: inputAmount,
+                collator: collatorMetadata,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            guard
+                let collator = self?.collatorDisplayAddress,
+                let amount = inputAmount else {
+                return
+            }
+
+            self?.wireframe.showConfirmation(
+                from: self?.view,
+                collator: collator,
+                amount: amount
+            )
+        }
+    }
 }
 
 extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol {

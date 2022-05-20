@@ -120,4 +120,44 @@ extension BaseDataValidatingFactoryProtocol {
             }
         })
     }
+
+    func canPayFeeAndAmountInPlank(
+        balance: BigUInt?,
+        fee: BigUInt?,
+        spendingAmount: Decimal?,
+        precision: Int16,
+        locale: Locale
+    ) -> DataValidating {
+        let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+
+        return canPayFeeAndAmount(
+            balance: balanceDecimal,
+            fee: feeDecimal,
+            spendingAmount: spendingAmount,
+            locale: locale
+        )
+    }
+
+    func canPayFeeInPlank(
+        balance: BigUInt?,
+        fee: BigUInt?,
+        precision: Int16,
+        locale: Locale
+    ) -> DataValidating {
+        let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+
+        return canPayFee(
+            balance: balanceDecimal,
+            fee: feeDecimal,
+            locale: locale
+        )
+    }
+
+    func hasInPlank(fee: BigUInt?, locale: Locale, precision: Int16, onError: (() -> Void)?) -> DataValidating {
+        let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
+
+        return has(fee: feeDecimal, locale: locale, onError: onError)
+    }
 }
