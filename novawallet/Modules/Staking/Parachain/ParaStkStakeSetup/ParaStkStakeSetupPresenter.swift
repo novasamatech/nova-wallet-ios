@@ -78,8 +78,9 @@ final class ParaStkStakeSetupPresenter {
             )
         }
 
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
-            balanceMinusFee(),
+            inputAmount,
             balance: balanceDecimal ?? 0.0,
             priceData: price
         ).value(for: selectedLocale)
