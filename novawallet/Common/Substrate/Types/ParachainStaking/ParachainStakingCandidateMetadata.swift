@@ -26,6 +26,15 @@ extension ParachainStaking {
                 )
             }
         }
+
+        var isFull: Bool {
+            switch self {
+            case .full:
+                return true
+            case .partial, .empty:
+                return false
+            }
+        }
     }
 
     struct CandidateMetadata: Decodable {
