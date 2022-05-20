@@ -83,5 +83,7 @@ final class StackActionView: UIView {
             make.centerY.equalToSuperview()
             make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8)
         }
+
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
 }
