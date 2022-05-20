@@ -19,6 +19,7 @@ final class ParaStkStakeSetupPresenter {
 
     private var collatorDisplayAddress: DisplayAddress?
     private var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private var delegator: ParachainStaking.Delegator?
 
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
@@ -292,6 +293,10 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideCollatorViewModel()
         provideMinStakeViewModel()
         provideRewardsViewModel()
+    }
+
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+        self.delegator = delegator
     }
 
     func didReceiveError(_ error: Error) {

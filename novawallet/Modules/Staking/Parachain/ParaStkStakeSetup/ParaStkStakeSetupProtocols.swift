@@ -44,6 +44,8 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
 
     func didReceiveMinTechStake(_ minStake: BigUInt)
 
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
+
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
