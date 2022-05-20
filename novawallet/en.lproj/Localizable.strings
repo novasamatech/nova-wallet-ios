@@ -766,3 +766,10 @@
 "parachain.staking.transferrable.rewards" = "Transferrable rewards";
 "parachain.staking.rewards.format" = "%@/year";
 "parachain.staking.minimum.stake" = "Minimum stake";
+"staking.already.title" = "Already delegating";
+"parachain.staking.delegator.exists.message" = "Your staking has been already setup. Use stake more action to add more tokens";
+"parachain.staking.cant.stake.collator.message" = "Can't stake less than minimal value (%@).";
+"common.no.rewards.title" = "You will not receive rewards";
+"parachain.staking.collator.less.minstk.message" = "Your stake will be less than the minimum stake (%@) for this collator.";
+"parachain.staking.full.title" = "Your staking is full";
+"parachain.staking.full.message" = "You have reached maximum number of collators (%@)";
