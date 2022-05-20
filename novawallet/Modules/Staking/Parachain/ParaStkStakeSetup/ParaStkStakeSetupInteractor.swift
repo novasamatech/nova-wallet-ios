@@ -302,8 +302,8 @@ extension ParaStkStakeSetupInteractor: ExtrinsicFeeProxyDelegate {
 extension ParaStkStakeSetupInteractor: ParastakingLocalStorageSubscriber, ParastakingLocalStorageHandler {
     func handleParastakingDelegatorState(
         result: Result<ParachainStaking.Delegator?, Error>,
-        for chainId: ChainModel.Id,
-        accountId: AccountId
+        for _: ChainModel.Id,
+        accountId _: AccountId
     ) {
         switch result {
         case let .success(delegator):
