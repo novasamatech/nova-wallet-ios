@@ -152,6 +152,8 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
             viewModel.amountViewModel.amount,
             preferredLanguages: selectedLocale.rLanguages
         )
+
+        rootView.rewardsView.setNeedsLayout()
     }
 
     private func setupAmountInputAccessoryView() {
