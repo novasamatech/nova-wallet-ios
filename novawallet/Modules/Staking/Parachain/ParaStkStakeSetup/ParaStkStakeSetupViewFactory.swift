@@ -10,16 +10,23 @@ struct ParaStkStakeSetupViewFactory {
             return nil
         }
 
-        let wireframe = ParaStkStakeSetupWireframe()
+        let wireframe = ParaStkStakeSetupWireframe(state: state)
 
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: assetDisplayInfo
+        )
+
+        let dataValidationFactory = ParachainStaking.ValidatorFactory(
+            presentable: wireframe,
+            assetDisplayInfo: assetDisplayInfo
         )
 
         let localizationManager = LocalizationManager.shared
         let presenter = ParaStkStakeSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            dataValidatingFactory: dataValidationFactory,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
@@ -32,6 +39,7 @@ struct ParaStkStakeSetupViewFactory {
         )
 
         presenter.view = view
+        dataValidationFactory.view = view
         interactor.presenter = presenter
 
         return view
