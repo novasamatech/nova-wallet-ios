@@ -48,26 +48,17 @@ struct ParaStkStakeSetupViewFactory {
     private static func createInteractor(
         from state: ParachainStakingSharedState
     ) -> ParaStkStakeSetupInteractor? {
-        guard
-            let chainAsset = state.settings.value,
-            let selectedAccount = SelectedWalletSettings.shared.value?.fetchMetaChainAccount(
-                for: chainAsset.chain.accountRequest()
-            ),
-            let collatorService = state.collatorService,
-            let rewardService = state.rewardCalculationService
-        else {
-            return nil
-        }
-
+        let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
-            let runtimeProvider = chainRegistry.getRuntimeProvider(
-                for: chainAsset.chain.chainId
-            ),
-            let connection = chainRegistry.getConnection(
-                for: chainAsset.chain.chainId
-            ) else {
+            let chainAsset = state.settings.value,
+            let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
+            let collatorService = state.collatorService,
+            let rewardService = state.rewardCalculationService,
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
+        else {
             return nil
         }
 
@@ -80,11 +71,13 @@ struct ParaStkStakeSetupViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
+        let operationManager = OperationManagerFacade.sharedManager
+
         let storageFacade = SubstrateDataStorageFacade.shared
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
         let requestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: operationManager
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
