@@ -84,6 +84,7 @@ struct ParaStkStakeSetupViewFactory {
         return ParaStkStakeSetupInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             collatorService: collatorService,
