@@ -9,6 +9,10 @@ struct LastAccountIdKey: StorageKeyDecodingProtocol {
             throw CommonError.dataCorruption
         }
 
-        value = try lastJson.map(to: AccountId.self, with: context)
+        if let rawValue = try? lastJson.map(to: AccountId.self, with: context) {
+            value = rawValue
+        } else {
+            value = try lastJson.map(to: BytesCodable.self, with: context).wrappedValue
+        }
     }
 }

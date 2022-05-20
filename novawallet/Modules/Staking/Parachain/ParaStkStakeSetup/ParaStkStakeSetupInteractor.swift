@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-final class ParaStkStakeSetupInteractor {
+final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     weak var presenter: ParaStkStakeSetupInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -23,6 +23,9 @@ final class ParaStkStakeSetupInteractor {
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
+
+    private var collatorsInfo: SelectedRoundCollators?
+    private var identities: [AccountAddress: AccountIdentity]?
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -51,9 +54,13 @@ final class ParaStkStakeSetupInteractor {
         self.feeProxy = feeProxy
         self.connection = connection
         self.runtimeProvider = runtimeProvider
-        self.repositoryFactory = substrateRepositoryFactory
+        self.repositoryFactory = repositoryFactory
         self.identityOperationFactory = identityOperationFactory
         self.operationQueue = operationQueue
+    }
+
+    deinit {
+        self.collatorSubscription = nil
     }
 
     private func provideRewardCalculator() {
@@ -85,8 +92,68 @@ final class ParaStkStakeSetupInteractor {
         }
     }
 
+    private func fetchRoundCollatorsAndCompleteSetup() {
+        let collatorsOperation = collatorService.fetchInfoOperation()
+        let identitiesWrapper = identityOperationFactory.createIdentityWrapper(
+            for: {
+                let collatorInfo = try collatorsOperation.extractNoCancellableResultData()
+                return collatorInfo.collators.map(\.accountId)
+            },
+            engine: connection,
+            runtimeService: runtimeProvider,
+            chainFormat: chainAsset.chain.chainFormat
+        )
+
+        identitiesWrapper.addDependency(operations: [collatorsOperation])
+
+        identitiesWrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    self?.collatorsInfo = try collatorsOperation.extractNoCancellableResultData()
+                    self?.identities = try identitiesWrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didCompleteSetup()
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        let operations = [collatorsOperation] + identitiesWrapper.allOperations
+
+        operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
+    private func provideCollator(
+        for accountId: AccountId,
+        collatorMetadata: ParachainStaking.CandidateMetadata?
+    ) {
+        do {
+            let chainFormat = chainAsset.chain.chainFormat
+            let address = try accountId.toAddress(using: chainFormat)
+            if let identity = identities?[address] {
+                let displayAddress = DisplayAddress(
+                    address: address,
+                    username: identity.displayName
+                )
+
+                presenter?.didReceiveCollator(
+                    metadata: collatorMetadata,
+                    address: displayAddress
+                )
+            } else {
+                let displayAddress = DisplayAddress(address: address, username: "")
+                presenter?.didReceiveCollator(
+                    metadata: collatorMetadata,
+                    address: displayAddress
+                )
+            }
+        } catch {
+            presenter?.didReceiveError(error)
+        }
+    }
+
     private func subscribeRemoteCollator(for accountId: AccountId) {
-        self.collatorSubscription = nil
+        collatorSubscription = nil
 
         do {
             let storagePath = ParachainStaking.candidateMetadataPath
@@ -115,13 +182,28 @@ final class ParaStkStakeSetupInteractor {
             ) { [weak self] result in
                 switch result {
                 case let .success(collator):
-                    self?.presenter?.didReceiveCollator(collator)
+                    self?.provideCollator(for: accountId, collatorMetadata: collator)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
             }
         } catch {
             presenter?.didReceiveError(error)
+        }
+    }
+
+    private func provideMinTechStake() {
+        fetchConstant(
+            for: ParachainStaking.minDelegatorStk,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minStake):
+                self?.presenter?.didReceiveMinTechStake(minStake)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
         }
     }
 }
@@ -134,7 +216,19 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
 
         feeProxy.delegate = self
 
-        presenter?.didCompleteSetup()
+        fetchRoundCollatorsAndCompleteSetup()
+
+        provideMinTechStake()
+    }
+
+    func rotateSelectedCollator() {
+        guard
+            let collatorsInfo = collatorsInfo,
+            let collatorId = collatorsInfo.collators.randomElement()?.accountId else {
+            return
+        }
+
+        subscribeRemoteCollator(for: collatorId)
     }
 
     func estimateFee(

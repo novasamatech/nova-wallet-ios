@@ -21,6 +21,9 @@ protocol ParaStkStakeSetupPresenterProtocol: AnyObject {
 
 protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
     func setup()
+
+    // TODO: Replace with manual collator selection
+    func rotateSelectedCollator()
     func estimateFee(
         _ amount: BigUInt,
         collator: AccountId?,
@@ -34,7 +37,13 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveCollator(_ collator: ParachainStaking.CandidateMetadata?)
+    func didReceiveCollator(
+        metadata: ParachainStaking.CandidateMetadata?,
+        address: DisplayAddress
+    )
+
+    func didReceiveMinTechStake(_ minStake: BigUInt)
+
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
