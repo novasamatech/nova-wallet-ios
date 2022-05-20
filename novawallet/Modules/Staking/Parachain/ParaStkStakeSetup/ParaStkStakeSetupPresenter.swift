@@ -21,6 +21,7 @@ final class ParaStkStakeSetupPresenter {
     private var collatorMetadata: ParachainStaking.CandidateMetadata?
 
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
+    private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
 
     let logger: LoggerProtocol
 
@@ -129,7 +130,42 @@ final class ParaStkStakeSetupPresenter {
         }
     }
 
-    private func provideRewardsViewModel() {}
+    private func provideRewardsViewModel() {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+
+        let amountReturn: Decimal
+
+        if
+            let rewardCalculator = rewardCalculator,
+            let collatorId = try? collatorDisplayAddress?.address.toAccountId() {
+            let calculatedReturn = try? rewardCalculator.calculateEarnings(
+                amount: 1.0,
+                collatorAccountId: collatorId,
+                period: .year
+            )
+
+            amountReturn = calculatedReturn ?? 0
+        } else {
+            let calculatedReturn = rewardCalculator?.calculateMaxReturn(for: .year)
+            amountReturn = calculatedReturn ?? 0
+        }
+
+        let rewardAmount = inputAmount * amountReturn
+
+        let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
+            rewardAmount,
+            priceData: price
+        ).value(for: selectedLocale)
+
+        let aprString = aprFormatter.value(for: selectedLocale).stringFromDecimal(amountReturn)
+
+        let viewModel = StakingRewardInfoViewModel(
+            amountViewModel: balanceViewModel,
+            returnPercentage: aprString ?? ""
+        )
+
+        view?.didReceiveReward(viewModel: viewModel)
+    }
 
     private func provideCollatorViewModel() {
         if let collatorDisplayAddress = collatorDisplayAddress {
@@ -147,6 +183,9 @@ final class ParaStkStakeSetupPresenter {
         guard let amount = inputAmount.toSubstrateAmount(precision: precicion) else {
             return
         }
+
+        fee = nil
+        provideFeeViewModel()
 
         interactor.estimateFee(
             amount,
@@ -173,9 +212,23 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
         interactor.rotateSelectedCollator()
     }
 
-    func updateAmount(_: Decimal?) {}
+    func updateAmount(_ newValue: Decimal?) {
+        inputResult = newValue.map { .absolute($0) }
 
-    func selectAmountPercentage(_: Float) {}
+        refreshFee()
+        provideAssetViewModel()
+        provideRewardsViewModel()
+    }
+
+    func selectAmountPercentage(_ percentage: Float) {
+        inputResult = .rate(Decimal(Double(percentage)))
+
+        provideAmountInputViewModel()
+
+        refreshFee()
+        provideAssetViewModel()
+        provideRewardsViewModel()
+    }
 
     func proceed() {}
 }
@@ -199,6 +252,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideAssetViewModel()
         provideMinStakeViewModel()
         provideFeeViewModel()
+        provideRewardsViewModel()
     }
 
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
@@ -237,6 +291,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 
         provideCollatorViewModel()
         provideMinStakeViewModel()
+        provideRewardsViewModel()
     }
 
     func didReceiveError(_ error: Error) {
