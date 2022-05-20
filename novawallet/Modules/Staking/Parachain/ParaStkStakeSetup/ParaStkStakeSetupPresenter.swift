@@ -13,8 +13,14 @@ final class ParaStkStakeSetupPresenter {
     private var inputResult: AmountInputResult?
     private var fee: BigUInt?
     private var balance: AssetBalance?
+    private var minTechStake: BigUInt?
     private var price: PriceData?
     private var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+
+    private var collatorDisplayAddress: DisplayAddress?
+    private var collatorMetadata: ParachainStaking.CandidateMetadata?
+
+    private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
 
     let logger: LoggerProtocol
 
@@ -77,7 +83,30 @@ final class ParaStkStakeSetupPresenter {
     }
 
     private func provideMinStakeViewModel() {
-        view?.didReceiveMinStake(viewModel: nil)
+        let minStake: BigUInt?
+        if
+            let minTechStake = minTechStake,
+            let minRewardableStake = collatorMetadata?.minRewardableStake(for: minTechStake) {
+            minStake = minRewardableStake
+        } else {
+            minStake = minTechStake
+        }
+
+        let viewModel: BalanceViewModelProtocol? = minStake.flatMap { amount in
+            guard let decimaAmount = Decimal.fromSubstrateAmount(
+                amount,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) else {
+                return nil
+            }
+
+            return balanceViewModelFactory.balanceFromPrice(
+                decimaAmount,
+                priceData: price
+            ).value(for: selectedLocale)
+        }
+
+        view?.didReceiveMinStake(viewModel: viewModel)
     }
 
     private func provideFeeViewModel() {
@@ -103,7 +132,12 @@ final class ParaStkStakeSetupPresenter {
     private func provideRewardsViewModel() {}
 
     private func provideCollatorViewModel() {
-        view?.didReceiveCollator(viewModel: nil)
+        if let collatorDisplayAddress = collatorDisplayAddress {
+            let displayViewModel = displayAddressFactory.createViewModel(from: collatorDisplayAddress)
+            view?.didReceiveCollator(viewModel: displayViewModel)
+        } else {
+            view?.didReceiveCollator(viewModel: nil)
+        }
     }
 
     private func refreshFee() {
@@ -135,7 +169,9 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
         interactor.setup()
     }
 
-    func selectCollator() {}
+    func selectCollator() {
+        interactor.rotateSelectedCollator()
+    }
 
     func updateAmount(_: Decimal?) {}
 
@@ -180,12 +216,27 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         }
     }
 
-    func didCompleteSetup() {
-        refreshFee()
+    func didReceiveMinTechStake(_ minStake: BigUInt) {
+        minTechStake = minStake
+
+        provideMinStakeViewModel()
     }
 
-    func didReceiveCollator(_ collator: ParachainStaking.CandidateMetadata?) {
-        
+    func didCompleteSetup() {
+        refreshFee()
+
+        interactor.rotateSelectedCollator()
+    }
+
+    func didReceiveCollator(
+        metadata: ParachainStaking.CandidateMetadata?,
+        address: DisplayAddress
+    ) {
+        collatorMetadata = metadata
+        collatorDisplayAddress = address
+
+        provideCollatorViewModel()
+        provideMinStakeViewModel()
     }
 
     func didReceiveError(_ error: Error) {
