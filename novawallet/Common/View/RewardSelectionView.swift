@@ -31,7 +31,23 @@ class RewardSelectionView: BackgroundedContentControl {
         return label
     }()
 
-    let selectorView = RadioSelectorView()
+    var selectorView: RadioSelectorView {
+        if let internalSelectorView = internalSelectorView {
+            return internalSelectorView
+        } else {
+            return setupSelectorView()
+        }
+    }
+
+    private var internalSelectorView: RadioSelectorView?
+
+    private var selectorLayoutOffset: CGFloat {
+        if let internalSelectorView = internalSelectorView {
+            return 2 * internalSelectorView.outerRadius + horizontalSpacing
+        } else {
+            return 0
+        }
+    }
 
     let triangularedBackgroundView: TriangularedView = {
         let triangularedView = TriangularedView()
@@ -57,7 +73,7 @@ class RewardSelectionView: BackgroundedContentControl {
         }
     }
 
-    override var isSelected: Bool {
+    var isChoosen: Bool {
         get {
             selectorView.selected
         }
@@ -65,6 +81,17 @@ class RewardSelectionView: BackgroundedContentControl {
         set {
             triangularedBackgroundView.isHighlighted = newValue
             selectorView.selected = newValue
+        }
+    }
+
+    override var isSelected: Bool {
+        get {
+            triangularedBackgroundView.isHighlighted
+        }
+
+        set {
+            triangularedBackgroundView.isHighlighted = newValue
+            internalSelectorView?.selected = newValue
         }
     }
 
@@ -107,16 +134,19 @@ class RewardSelectionView: BackgroundedContentControl {
     }
 
     private func layoutMiddleContent() {
-        selectorView.frame = CGRect(
-            x: contentInsets.left,
-            y: bounds.midY - selectorView.outerRadius,
-            width: 2 * selectorView.outerRadius,
-            height: 2 * selectorView.outerRadius
-        )
+        if let internalSelectorView = internalSelectorView {
+            let radius = internalSelectorView.outerRadius
+            internalSelectorView.frame = CGRect(
+                x: contentInsets.left,
+                y: bounds.midY - radius,
+                width: 2 * radius,
+                height: 2 * radius
+            )
+        }
     }
 
     private func layoutTopContent() {
-        let availableWidth = bounds.width - 2 * selectorView.outerRadius - 2 * horizontalSpacing - contentInsets.right
+        let availableWidth = bounds.width - selectorLayoutOffset - horizontalSpacing - contentInsets.right
 
         let amountSize = amountLabel.intrinsicContentSize
 
@@ -134,7 +164,7 @@ class RewardSelectionView: BackgroundedContentControl {
         let titleClippedWidth = max(min(availableWidth - amountClippedWidth, titleSize.width), 0)
 
         titleLabel.frame = CGRect(
-            x: bounds.minX + contentInsets.left + 2 * selectorView.outerRadius + horizontalSpacing,
+            x: bounds.minX + contentInsets.left + selectorLayoutOffset,
             y: bounds.minY + contentInsets.top,
             width: titleClippedWidth,
             height: titleSize.height
@@ -142,14 +172,14 @@ class RewardSelectionView: BackgroundedContentControl {
     }
 
     private func layoutBottomContent() {
-        let availableWidth = bounds.width - 2 * selectorView.outerRadius - 2 * horizontalSpacing - contentInsets.right
+        let availableWidth = bounds.width - selectorLayoutOffset - horizontalSpacing - contentInsets.right
 
         let incomeSize = incomeLabel.intrinsicContentSize
 
         let incomeClippedWidth = max(min(availableWidth, incomeSize.width), 0.0)
 
         incomeLabel.frame = CGRect(
-            x: bounds.minX + contentInsets.left + 2 * selectorView.outerRadius + horizontalSpacing,
+            x: bounds.minX + contentInsets.left + selectorLayoutOffset,
             y: bounds.maxY - contentInsets.bottom - incomeSize.height,
             width: incomeClippedWidth,
             height: incomeSize.height
@@ -182,6 +212,16 @@ class RewardSelectionView: BackgroundedContentControl {
         }
     }
 
+    private func setupSelectorView() -> RadioSelectorView {
+        let view = RadioSelectorView()
+        contentView?.addSubview(view)
+        internalSelectorView = view
+
+        setNeedsLayout()
+
+        return view
+    }
+
     private func configureContentViewIfNeeded() {
         if contentView == nil {
             let contentView = UIView()
@@ -204,10 +244,6 @@ class RewardSelectionView: BackgroundedContentControl {
 
         if incomeLabel.superview == nil {
             contentView?.addSubview(incomeLabel)
-        }
-
-        if selectorView.superview == nil {
-            contentView?.addSubview(selectorView)
         }
 
         contentInsets = UIEdgeInsets(top: 10.0, left: 18.0, bottom: 10.0, right: 16.0)
