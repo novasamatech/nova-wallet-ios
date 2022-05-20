@@ -18,11 +18,13 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let identityOperationFactory: IdentityOperationFactoryProtocol
+    let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
+    private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
     private var collatorsInfo: SelectedRoundCollators?
     private var identities: [AccountAddress: AccountIdentity]?
@@ -32,6 +34,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     init(
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
+        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         collatorService: ParachainStakingCollatorServiceProtocol,
@@ -46,6 +49,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     ) {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.collatorService = collatorService
@@ -90,6 +94,13 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId)
         }
+    }
+
+    private func subscribeDelegator() {
+        delegatorProvider = subscribeToDelegatorState(
+            for: chainAsset.chain.chainId,
+            accountId: selectedAccount.chainAccount.accountId
+        )
     }
 
     private func fetchRoundCollatorsAndCompleteSetup() {
@@ -211,6 +222,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
 extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol {
     func setup() {
         subscribeAssetBalanceAndPrice()
+        subscribeDelegator()
 
         provideRewardCalculator()
 
@@ -284,5 +296,20 @@ extension ParaStkStakeSetupInteractor: PriceLocalStorageSubscriber, PriceLocalSu
 extension ParaStkStakeSetupInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>, for _: ExtrinsicFeeId) {
         presenter?.didReceiveFee(result)
+    }
+}
+
+extension ParaStkStakeSetupInteractor: ParastakingLocalStorageSubscriber, ParastakingLocalStorageHandler {
+    func handleParastakingDelegatorState(
+        result: Result<ParachainStaking.Delegator?, Error>,
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) {
+        switch result {
+        case let .success(delegator):
+            presenter?.didReceiveDelegator(delegator)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
     }
 }
