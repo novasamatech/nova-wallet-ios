@@ -34,5 +34,14 @@ extension ParachainStaking {
         @StringCodable var lowestBottomDelegationAmount: BigUInt
         let topCapacity: CapacityStatus
         let bottomCapacity: CapacityStatus
+
+        func minRewardableStake(for minTechStake: BigUInt) -> BigUInt {
+            switch topCapacity {
+            case .full:
+                return lowestTopDelegationAmount
+            case .empty, .partial:
+                return minTechStake
+            }
+        }
     }
 }
