@@ -8,8 +8,21 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     }
 
     func showConfirmation(
-        from _: ParaStkStakeSetupViewProtocol?,
-        collator _: DisplayAddress,
-        amount _: Decimal
-    ) {}
+        from view: ParaStkStakeSetupViewProtocol?,
+        collator: DisplayAddress,
+        amount: Decimal
+    ) {
+        guard let confirmView = ParaStkStakeConfirmViewFactory.createView(
+            for: state,
+            collator: collator,
+            amount: amount
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(
+            confirmView.controller,
+            animated: true
+        )
+    }
 }
