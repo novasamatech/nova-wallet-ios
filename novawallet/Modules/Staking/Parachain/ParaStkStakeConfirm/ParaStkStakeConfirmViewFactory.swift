@@ -23,11 +23,17 @@ struct ParaStkStakeConfirmViewFactory {
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
 
+        let dataValidatingFactory = ParachainStaking.ValidatorFactory(
+            presentable: wireframe,
+            assetDisplayInfo: assetDisplayInfo
+        )
+
         let presenter = ParaStkStakeConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
+            dataValidatingFactory: dataValidatingFactory,
             balanceViewModelFactory: balanceViewModelFactory,
             collator: collator,
             amount: amount,
@@ -41,6 +47,7 @@ struct ParaStkStakeConfirmViewFactory {
         )
 
         presenter.view = view
+        dataValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view
