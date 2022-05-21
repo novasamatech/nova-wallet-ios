@@ -9,13 +9,19 @@ final class ParaStkStakeConfirmPresenter {
 
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
+    let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let collator: DisplayAddress
     let amount: Decimal
     let logger: LoggerProtocol
 
+    private var balance: AssetBalance?
     private var fee: BigUInt?
     private var price: PriceData?
+    private var stakingDuration: ParachainStakingDuration?
+    private var delegator: ParachainStaking.Delegator?
+    private var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private var minTechStake: BigUInt?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -25,6 +31,7 @@ final class ParaStkStakeConfirmPresenter {
         wireframe: ParaStkStakeConfirmWireframeProtocol,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
+        dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         collator: DisplayAddress,
         amount: Decimal,
@@ -34,6 +41,7 @@ final class ParaStkStakeConfirmPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAsset = chainAsset
+        self.dataValidatingFactory = dataValidatingFactory
         self.selectedAccount = selectedAccount
         self.balanceViewModelFactory = balanceViewModelFactory
         self.collator = collator
@@ -113,6 +121,8 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
         provideAccountViewModel()
         provideFeeViewModel()
         provideCollatorViewModel()
+
+        interactor.setup()
     }
 
     func selectAccount() {
@@ -129,10 +139,92 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
         presentOptions(for: collator.address)
     }
 
-    func confirm() {}
+    func confirm() {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: precision,
+                onError: { [weak self] in self?.interactor.estimateFee() }
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: balance?.transferable,
+                fee: fee,
+                spendingAmount: amount,
+                precision: precision,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.delegatorNotExist(
+                delegator: delegator,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canStakeBottomDelegations(
+                amount: amount,
+                collator: collatorMetadata,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.hasMinStake(
+                amount: amount,
+                minTechStake: minTechStake,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            self?.interactor.confirm()
+        }
+    }
 }
 
-extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProtocol {}
+extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProtocol {
+    func didReceiveAssetBalance(_ balance: AssetBalance?) {
+        self.balance = balance
+    }
+
+    func didReceivePrice(_ priceData: PriceData?) {
+        price = priceData
+
+        provideAmountViewModel()
+        provideFeeViewModel()
+    }
+
+    func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
+        switch result {
+        case let .success(dispatchInfo):
+            fee = BigUInt(dispatchInfo.fee)
+
+            provideFeeViewModel()
+        case let .failure(error):
+            logger.error("Did receive error: \(error)")
+
+            wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.estimateFee()
+            }
+        }
+    }
+
+    func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?) {
+        collatorMetadata = metadata
+    }
+
+    func didReceiveMinTechStake(_ minStake: BigUInt) {
+        minTechStake = minStake
+    }
+
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+        self.delegator = delegator
+    }
+
+    func didReceiveStakingDuration(_ duration: ParachainStakingDuration) {
+        stakingDuration = duration
+    }
+
+    func didReceiveError(_ error: Error) {
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+
+        logger.error("Did receive error: \(error)")
+    }
+}
 
 extension ParaStkStakeConfirmPresenter: Localizable {
     func applyLocalization() {
