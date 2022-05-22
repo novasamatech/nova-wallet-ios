@@ -1,5 +1,7 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import SoraKeystore
 
 struct ParaStkStakeConfirmViewFactory {
     static func createView(
@@ -15,7 +17,10 @@ struct ParaStkStakeConfirmViewFactory {
             return nil
         }
 
-        let interactor = ParaStkStakeConfirmInteractor()
+        guard let interactor = createInteractor(from: state, collator: collator) else {
+            return nil
+        }
+
         let wireframe = ParaStkStakeConfirmWireframe()
 
         let localizationManager = LocalizationManager.shared
@@ -51,5 +56,59 @@ struct ParaStkStakeConfirmViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        from state: ParachainStakingSharedState,
+        collator: DisplayAddress
+    ) -> ParaStkStakeConfirmInteractor? {
+        let optMetaAccount = SelectedWalletSettings.shared.value
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let chainAsset = state.settings.value,
+            let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
+            let blockEstimationService = state.blockTimeService
+        else {
+            return nil
+        }
+
+        let extrinsicService = ExtrinsicService(
+            accountId: selectedAccount.chainAccount.accountId,
+            chainFormat: chainAsset.chain.chainFormat,
+            cryptoType: selectedAccount.chainAccount.cryptoType,
+            runtimeRegistry: runtimeProvider,
+            engine: connection,
+            operationManager: OperationManagerFacade.sharedManager
+        )
+
+        let stakingDurationFactory = ParaStkDurationOperationFactory(
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
+        )
+
+        let signer = SigningWrapper(
+            keystore: Keychain(),
+            metaId: selectedAccount.metaId,
+            accountResponse: selectedAccount.chainAccount
+        )
+
+        return ParaStkStakeConfirmInteractor(
+            chainAsset: chainAsset,
+            selectedAccount: selectedAccount,
+            selectedCollator: collator,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
+            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            extrinsicService: extrinsicService,
+            feeProxy: ExtrinsicFeeProxy(),
+            signer: signer,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            stakingDurationFactory: stakingDurationFactory,
+            blockEstimationService: blockEstimationService,
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
     }
 }

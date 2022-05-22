@@ -1416,6 +1416,7 @@
 		84D6D7FA27A7EC810094FC33 /* WalletListAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D6D7F927A7EC810094FC33 /* WalletListAssetCell.swift */; };
 		84D6D7FC27A7F4B40094FC33 /* WalletListNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D6D7FB27A7F4B40094FC33 /* WalletListNetworkView.swift */; };
 		84D6D7FE27A7F4CD0094FC33 /* WalletChainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D6D7FD27A7F4CD0094FC33 /* WalletChainView.swift */; };
+		84D6E2FA283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */; };
 		84D8F15524D80CA100AF43E9 /* ModalPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8F15424D80CA100AF43E9 /* ModalPickerViewController.swift */; };
 		84D8F15724D80D5500AF43E9 /* ModalPickerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84D8F15624D80D5500AF43E9 /* ModalPickerViewController.xib */; };
 		84D8F15B24D8136700AF43E9 /* ModalPickerCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D8F15A24D8136700AF43E9 /* ModalPickerCellProtocol.swift */; };
@@ -3575,6 +3576,7 @@
 		84D6D7F927A7EC810094FC33 /* WalletListAssetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListAssetCell.swift; sourceTree = "<group>"; };
 		84D6D7FB27A7F4B40094FC33 /* WalletListNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListNetworkView.swift; sourceTree = "<group>"; };
 		84D6D7FD27A7F4CD0094FC33 /* WalletChainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletChainView.swift; sourceTree = "<group>"; };
+		84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtrinsicSubmissionPresenting.swift; sourceTree = "<group>"; };
 		84D8F15424D80CA100AF43E9 /* ModalPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerViewController.swift; sourceTree = "<group>"; };
 		84D8F15624D80D5500AF43E9 /* ModalPickerViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ModalPickerViewController.xib; sourceTree = "<group>"; };
 		84D8F15A24D8136700AF43E9 /* ModalPickerCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalPickerCellProtocol.swift; sourceTree = "<group>"; };
@@ -7092,6 +7094,7 @@
 				842A738327DDF55A006EE1EA /* OperationIdOptionsPresentable.swift */,
 				8487583D27F070B300495306 /* ApplicationSettingsPresentable.swift */,
 				8487584A27F1834E00495306 /* ImageGalleryPresentable.swift */,
+				84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -12611,6 +12614,7 @@
 				487A912B697604FE3367FAEC /* CrowdloanYourContributionsViewLayout.swift in Sources */,
 				3F7F10D0E1BDE09CBE64BD2D /* CrowdloanYourContributionsViewFactory.swift in Sources */,
 				E37BB7A393FFEFC350B4EA3D /* AdvancedWalletProtocols.swift in Sources */,
+				84D6E2FA283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift in Sources */,
 				842A737927DC7CEF006EE1EA /* DisplayAddressViewModelFactory.swift in Sources */,
 				22403E58019260719055E122 /* AdvancedWalletWireframe.swift in Sources */,
 				EC328560F66AA0F5CFB3FE58 /* AdvancedWalletPresenter.swift in Sources */,

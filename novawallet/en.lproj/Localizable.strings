@@ -773,3 +773,4 @@
 "parachain.staking.collator.less.minstk.message" = "Your stake will be less than the minimum stake (%@) for this collator.";
 "parachain.staking.full.title" = "Your staking is full";
 "parachain.staking.full.message" = "You have reached maximum number of collators (%@)";
+"parachain.staking.hint.rewards.format" = "Tokens in stake produce rewards each round (%@)";
