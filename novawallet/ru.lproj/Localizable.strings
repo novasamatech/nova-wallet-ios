@@ -773,3 +773,4 @@
 "parachain.staking.collator.less.minstk.message" = "Ваш стейк будет меньше чем минимальный стейк (%@) для этого коллатора.";
 "parachain.staking.full.title" = "Стекинг переполнен";
 "parachain.staking.full.message" = "Вы достигли максимального количества коллаторов (%@)";
+"parachain.staking.hint.rewards.format" = "Застейканые токены приносят награду каждый раунд (%@)";

@@ -108,6 +108,10 @@ extension ParaStkStakeConfirmViewController: ParaStkStakeConfirmViewProtocol {
     func didReceiveCollator(viewModel: DisplayAddressViewModel) {
         rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
     }
+
+    func didReceiveHints(viewModel: [String]) {
+        rootView.hintListView.bind(texts: viewModel)
+    }
 }
 
 extension ParaStkStakeConfirmViewController: Localizable {
