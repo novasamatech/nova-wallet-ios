@@ -3,7 +3,7 @@ import SubstrateSdk
 import BigInt
 
 extension ParachainStaking {
-    enum CapacityStatus: Decodable {
+    enum CapacityStatus: Decodable, Equatable {
         case full
         case empty
         case partial
@@ -37,7 +37,7 @@ extension ParachainStaking {
         }
     }
 
-    struct CandidateMetadata: Decodable {
+    struct CandidateMetadata: Decodable, Equatable {
         @StringCodable var delegationCount: UInt32
         @StringCodable var lowestTopDelegationAmount: BigUInt
         @StringCodable var lowestBottomDelegationAmount: BigUInt

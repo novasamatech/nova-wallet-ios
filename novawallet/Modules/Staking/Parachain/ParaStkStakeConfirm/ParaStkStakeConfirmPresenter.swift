@@ -100,6 +100,34 @@ final class ParaStkStakeConfirmPresenter {
         view?.didReceiveCollator(viewModel: viewModel)
     }
 
+    private func provideHintsViewModel() {
+        var hints: [String] = []
+        let languages = selectedLocale.rLanguages
+
+        if let stakingDuration = stakingDuration {
+            let roundDuration = stakingDuration.round.localizedDaysHours(for: selectedLocale)
+            let unstakingPeriod = stakingDuration.unstaking.localizedDaysHours(for: selectedLocale)
+
+            hints.append(contentsOf: [
+                R.string.localizable.parachainStakingHintRewardsFormat(
+                    "~\(roundDuration)",
+                    preferredLanguages: languages
+                ),
+                R.string.localizable.stakingHintUnstakeFormat(
+                    "~\(unstakingPeriod)",
+                    preferredLanguages: languages
+                )
+            ])
+        }
+
+        hints.append(contentsOf: [
+            R.string.localizable.stakingHintNoRewards(preferredLanguages: languages),
+            R.string.localizable.stakingHintRedeem(preferredLanguages: languages)
+        ])
+
+        view?.didReceiveHints(viewModel: hints)
+    }
+
     private func presentOptions(for address: AccountAddress) {
         guard let view = view else {
             return
@@ -112,6 +140,45 @@ final class ParaStkStakeConfirmPresenter {
             locale: selectedLocale
         )
     }
+
+    private func refreshFee() {
+        guard
+            let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
+            let collatorId = try? collator.address.toAccountId() else {
+            return
+        }
+
+        let collatorDelegationsCount = collatorMetadata?.delegationCount ?? 0
+
+        fee = nil
+
+        interactor.estimateFee(
+            amountInPlank,
+            collator: collatorId,
+            collatorDelegationsCount: collatorDelegationsCount,
+            delegationsCount: 0
+        )
+
+        provideFeeViewModel()
+    }
+
+    private func submitExtrinsic() {
+        guard
+            let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
+            let collatorId = try? collator.address.toAccountId(),
+            let collatorDelegationsCount = collatorMetadata?.delegationCount else {
+            return
+        }
+
+        view?.didStartLoading()
+
+        interactor.confirm(
+            amountInPlank,
+            collator: collatorId,
+            collatorDelegationsCount: collatorDelegationsCount,
+            delegationsCount: 0
+        )
+    }
 }
 
 extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
@@ -121,6 +188,7 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
         provideAccountViewModel()
         provideFeeViewModel()
         provideCollatorViewModel()
+        provideHintsViewModel()
 
         interactor.setup()
     }
@@ -147,7 +215,7 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
                 fee: fee,
                 locale: selectedLocale,
                 precision: precision,
-                onError: { [weak self] in self?.interactor.estimateFee() }
+                onError: { [weak self] in self?.refreshFee() }
             ),
             dataValidatingFactory.canPayFeeAndAmountInPlank(
                 balance: balance?.transferable,
@@ -171,7 +239,7 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
                 locale: selectedLocale
             )
         ]).runValidation { [weak self] in
-            self?.interactor.confirm()
+            self?.submitExtrinsic()
         }
     }
 }
@@ -198,13 +266,15 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
             logger.error("Did receive error: \(error)")
 
             wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-                self?.interactor.estimateFee()
+                self?.refreshFee()
             }
         }
     }
 
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?) {
         collatorMetadata = metadata
+
+        refreshFee()
     }
 
     func didReceiveMinTechStake(_ minStake: BigUInt) {
@@ -213,10 +283,27 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
         self.delegator = delegator
+
+        refreshFee()
     }
 
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration) {
         stakingDuration = duration
+
+        provideHintsViewModel()
+    }
+
+    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+        view?.didStopLoading()
+
+        switch result {
+        case .success:
+            wireframe.complete(on: view, locale: selectedLocale)
+        case let .failure(error):
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+
+            logger.error("Extrinsic submission failed: \(error)")
+        }
     }
 
     func didReceiveError(_ error: Error) {
@@ -231,6 +318,7 @@ extension ParaStkStakeConfirmPresenter: Localizable {
         if let view = view, view.isSetup {
             provideAmountViewModel()
             provideFeeViewModel()
+            provideHintsViewModel()
         }
     }
 }

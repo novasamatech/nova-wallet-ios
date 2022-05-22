@@ -28,7 +28,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         }
     }
 
-    func submitAndWatch(
+    func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
