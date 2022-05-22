@@ -113,7 +113,7 @@ final class ParaStkStakeConfirmPresenter {
                     "~\(roundDuration)",
                     preferredLanguages: languages
                 ),
-                R.string.localizable.stakingHintUnstakeFormat(
+                R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
                     "~\(unstakingPeriod)",
                     preferredLanguages: languages
                 )
@@ -121,8 +121,8 @@ final class ParaStkStakeConfirmPresenter {
         }
 
         hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards(preferredLanguages: languages),
-            R.string.localizable.stakingHintRedeem(preferredLanguages: languages)
+            R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: languages),
+            R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: languages)
         ])
 
         view?.didReceiveHints(viewModel: hints)
