@@ -764,7 +764,7 @@
 "parachain.staking.hint.select.collator" = "Select collator...";
 "parachain.staking.collator" = "Collator";
 "parachain.staking.transferrable.rewards" = "Transferrable rewards";
-"parachain.staking.rewards.format" = "%@/year";
+"parachain.staking.rewards.format" = "%@ / year";
 "parachain.staking.minimum.stake" = "Minimum stake";
 "staking.already.title" = "Already delegating";
 "parachain.staking.delegator.exists.message" = "Your staking has been already setup. Use stake more action to add more tokens";
