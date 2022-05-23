@@ -764,7 +764,7 @@
 "parachain.staking.hint.select.collator" = "Выберите коллатора...";
 "parachain.staking.collator" = "Коллатор";
 "parachain.staking.transferrable.rewards" = "Выплачиваемые награды";
-"parachain.staking.rewards.format" = "%@/в год";
+"parachain.staking.rewards.format" = "%@ / в год";
 "parachain.staking.delegator.exists.title" = "Стекинг активирован ранее";
 "parachain.staking.delegator.exists.message" = "Стекинг был активирован ранее. Для того чтобы застейкать еще токенов использовать соответствующее действие.";
 "parachain.staking.cant.stake.collator.message" = "Нельзя застейкать меньше чем минимальное значение (%@).";
