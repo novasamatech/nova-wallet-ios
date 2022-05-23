@@ -51,7 +51,10 @@ struct DAppBrowserViewFactory {
             logger: logger
         )
 
-        let view = DAppBrowserViewController(presenter: presenter)
+        let view = DAppBrowserViewController(
+            presenter: presenter,
+            localizationManager: localizationManager
+        )
 
         presenter.view = view
         interactor.presenter = presenter
