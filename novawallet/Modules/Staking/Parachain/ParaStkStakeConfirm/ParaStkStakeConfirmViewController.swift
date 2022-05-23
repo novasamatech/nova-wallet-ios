@@ -112,6 +112,14 @@ extension ParaStkStakeConfirmViewController: ParaStkStakeConfirmViewProtocol {
     func didReceiveHints(viewModel: [String]) {
         rootView.hintListView.bind(texts: viewModel)
     }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
+    }
 }
 
 extension ParaStkStakeConfirmViewController: Localizable {

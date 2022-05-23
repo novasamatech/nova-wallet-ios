@@ -877,6 +877,8 @@
 		84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786E1925FA6A470089DFF7 /* StashItem.swift */; };
 		84786E1F25FA6C390089DFF7 /* CDStashItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786E1E25FA6C390089DFF7 /* CDStashItem+CoreDataCodable.swift */; };
 		84786E2425FBA2A50089DFF7 /* StakingAccountSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84786E2325FBA2A50089DFF7 /* StakingAccountSubscription.swift */; };
+		8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8479607D283B60AA0084E779 /* ActionLoadingView.swift */; };
+		84796080283B63240084E779 /* LoadableActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8479607F283B63240084E779 /* LoadableActionView.swift */; };
 		8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */; };
 		847C9620255340F2002D288F /* ExportGenericViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C961F255340F2002D288F /* ExportGenericViewController.swift */; };
 		847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847C962725534134002D288F /* ExportGenericProtocols.swift */; };
@@ -3029,6 +3031,8 @@
 		84786E1925FA6A470089DFF7 /* StashItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StashItem.swift; sourceTree = "<group>"; };
 		84786E1E25FA6C390089DFF7 /* CDStashItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDStashItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		84786E2325FBA2A50089DFF7 /* StakingAccountSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAccountSubscription.swift; sourceTree = "<group>"; };
+		8479607D283B60AA0084E779 /* ActionLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionLoadingView.swift; sourceTree = "<group>"; };
+		8479607F283B63240084E779 /* LoadableActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadableActionView.swift; sourceTree = "<group>"; };
 		8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryIntegrationTests.swift; sourceTree = "<group>"; };
 		847C961F255340F2002D288F /* ExportGenericViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericViewController.swift; sourceTree = "<group>"; };
 		847C962725534134002D288F /* ExportGenericProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportGenericProtocols.swift; sourceTree = "<group>"; };
@@ -7366,6 +7370,8 @@
 				844D2A3F281B0ED70049CF5E /* StackTableHeaderCell.swift */,
 				844D2A41281B24510049CF5E /* StackUrlCell.swift */,
 				844D2A43281B28FB0049CF5E /* StackTitleMultiValueCell.swift */,
+				8479607D283B60AA0084E779 /* ActionLoadingView.swift */,
+				8479607F283B63240084E779 /* LoadableActionView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11259,6 +11265,7 @@
 				84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */,
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
+				84796080283B63240084E779 /* LoadableActionView.swift in Sources */,
 				84FD3DBB254104B600A234E3 /* WalletNewTransactionInserted.swift in Sources */,
 				8428765C24ADDE0200D91AD8 /* SettingsViewController.swift in Sources */,
 				84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */,
@@ -11568,6 +11575,7 @@
 				8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */,
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
+				8479607E283B60AA0084E779 /* ActionLoadingView.swift in Sources */,
 				8430AB1726023D2D005B1066 /* BaseStashNextState.swift in Sources */,
 				841AAC2126F6860B00F0A25E /* AssetBalanceFormatterFactory.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
