@@ -11,6 +11,7 @@ extension ParachainStaking {
     typealias DecodedScheduledRequests = ChainStorageDecodedItem<
         [ParachainStaking.ScheduledRequest]
     >
+    typealias DecodedCandidateMetadata = ChainStorageDecodedItem<ParachainStaking.CandidateMetadata>
 }
 
 protocol ParachainStakingLocalSubscriptionFactoryProtocol {
@@ -49,6 +50,11 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
         api: ChainModel.ExternalApi,
         assetPrecision: Int16
     ) throws -> AnySingleValueProvider<TotalRewardItem>
+
+    func getCandidateMetadataProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>
 }
 
 final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
@@ -138,6 +144,17 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
             for: chainId,
             accountId: accountId,
             storagePath: ParachainStaking.delegationRequestsPath
+        )
+    }
+
+    func getCandidateMetadataProvider(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) throws -> AnyDataProvider<ParachainStaking.DecodedCandidateMetadata> {
+        try getAccountProvider(
+            for: chainId,
+            accountId: accountId,
+            storagePath: ParachainStaking.candidateMetadataPath
         )
     }
 
