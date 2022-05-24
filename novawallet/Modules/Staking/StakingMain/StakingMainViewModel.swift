@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct StakingMainViewModel {
-    let address: String
+    let accountId: AccountId
     let chainName: String
     let assetName: String
     let assetIcon: ImageViewModelProtocol?

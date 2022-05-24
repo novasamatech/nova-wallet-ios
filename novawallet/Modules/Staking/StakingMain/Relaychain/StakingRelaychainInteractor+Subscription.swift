@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import CommonWallet
 
-extension StakingMainInteractor {
+extension StakingRelaychainInteractor {
     func handle(stashItem: StashItem?) {
         clear(dataProvider: &ledgerProvider)
         clear(dataProvider: &nominatorProvider)
@@ -32,8 +32,11 @@ extension StakingMainInteractor {
                     assetPrecision: Int16(chainAsset.asset.precision)
                 )
             } else {
-                let zeroReward = TotalRewardItem(address: stashItem.stash, amount: AmountDecimal(value: 0))
-                presenter.didReceive(totalReward: zeroReward)
+                let zeroReward = TotalRewardItem(
+                    address: stashItem.stash,
+                    amount: AmountDecimal(value: 0)
+                )
+                presenter?.didReceive(totalReward: zeroReward)
             }
 
             subscribeToControllerAccount(address: stashItem.controller, chain: chainAsset.chain)
@@ -51,12 +54,12 @@ extension StakingMainInteractor {
 
     func performPriceSubscription() {
         guard let chainAsset = stakingSettings.value else {
-            presenter.didReceive(priceError: PersistentValueSettingsError.missingValue)
+            presenter?.didReceive(priceError: PersistentValueSettingsError.missingValue)
             return
         }
 
         guard let priceId = chainAsset.asset.priceId else {
-            presenter.didReceive(price: nil)
+            presenter?.didReceive(price: nil)
             return
         }
 
@@ -67,14 +70,14 @@ extension StakingMainInteractor {
         guard
             let selectedAccount = selectedWalletSettings.value,
             let chainAsset = stakingSettings.value else {
-            presenter.didReceive(balanceError: PersistentValueSettingsError.missingValue)
+            presenter?.didReceive(balanceError: PersistentValueSettingsError.missingValue)
             return
         }
 
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter.didReceive(balanceError: ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceive(balanceError: ChainAccountFetchingError.accountNotExists)
             return
         }
 
@@ -96,7 +99,7 @@ extension StakingMainInteractor {
 
     func performStashControllerSubscription() {
         guard let address = selectedAccount?.toAddress() else {
-            presenter.didReceive(stashItemError: ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceive(stashItemError: ChainAccountFetchingError.accountNotExists)
             return
         }
 
@@ -139,7 +142,7 @@ extension StakingMainInteractor {
         if let analyticsURL = selectedChainAsset?.chain.externalApi?.staking?.url {
             rewardAnalyticsProvider = subscribeWeaklyRewardAnalytics(for: stash, url: analyticsURL)
         } else {
-            presenter.didReceieve(
+            presenter?.didReceieve(
                 subqueryRewards: .success(nil),
                 period: .week
             )
@@ -147,15 +150,15 @@ extension StakingMainInteractor {
     }
 }
 
-extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
+extension StakingRelaychainInteractor: StakingLocalStorageSubscriber, StakingLocalSubscriptionHandler,
     AnyProviderAutoCleaning {
     func handleStashItem(result: Result<StashItem?, Error>, for _: AccountAddress) {
         switch result {
         case let .success(stashItem):
             handle(stashItem: stashItem)
-            presenter.didReceive(stashItem: stashItem)
+            presenter?.didReceive(stashItem: stashItem)
         case let .failure(error):
-            presenter.didReceive(stashItemError: error)
+            presenter?.didReceive(stashItemError: error)
         }
     }
 
@@ -166,9 +169,9 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
     ) {
         switch result {
         case let .success(ledgerInfo):
-            presenter.didReceive(ledgerInfo: ledgerInfo)
+            presenter?.didReceive(ledgerInfo: ledgerInfo)
         case let .failure(error):
-            presenter.didReceive(ledgerInfoError: error)
+            presenter?.didReceive(ledgerInfoError: error)
         }
     }
 
@@ -179,9 +182,9 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
     ) {
         switch result {
         case let .success(nomination):
-            presenter.didReceive(nomination: nomination)
+            presenter?.didReceive(nomination: nomination)
         case let .failure(error):
-            presenter.didReceive(nominationError: error)
+            presenter?.didReceive(nominationError: error)
         }
     }
 
@@ -192,9 +195,9 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
     ) {
         switch result {
         case let .success(validatorPrefs):
-            presenter.didReceive(validatorPrefs: validatorPrefs)
+            presenter?.didReceive(validatorPrefs: validatorPrefs)
         case let .failure(error):
-            presenter.didReceive(validatorError: error)
+            presenter?.didReceive(validatorError: error)
         }
     }
 
@@ -205,9 +208,9 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
     ) {
         switch result {
         case let .success(payee):
-            presenter.didReceive(payee: payee)
+            presenter?.didReceive(payee: payee)
         case let .failure(error):
-            presenter.didReceive(payeeError: error)
+            presenter?.didReceive(payeeError: error)
         }
     }
 
@@ -218,39 +221,39 @@ extension StakingMainInteractor: StakingLocalStorageSubscriber, StakingLocalSubs
     ) {
         switch result {
         case let .success(totalReward):
-            presenter.didReceive(totalReward: totalReward)
+            presenter?.didReceive(totalReward: totalReward)
         case let .failure(error):
-            presenter.didReceive(totalRewardError: error)
+            presenter?.didReceive(totalRewardError: error)
         }
     }
 
     func handleMinNominatorBond(result: Result<BigUInt?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveMinNominatorBond(result: result)
+        presenter?.didReceiveMinNominatorBond(result: result)
     }
 
     func handleCounterForNominators(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveCounterForNominators(result: result)
+        presenter?.didReceiveCounterForNominators(result: result)
     }
 
     func handleMaxNominatorsCount(result: Result<UInt32?, Error>, chainId _: ChainModel.Id) {
-        presenter.didReceiveMaxNominatorsCount(result: result)
+        presenter?.didReceiveMaxNominatorsCount(result: result)
     }
 }
 
-extension StakingMainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension StakingRelaychainInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         if let chainAsset = stakingSettings.value, chainAsset.asset.priceId == priceId {
             switch result {
             case let .success(priceData):
-                presenter.didReceive(price: priceData)
+                presenter?.didReceive(price: priceData)
             case let .failure(error):
-                presenter.didReceive(priceError: error)
+                presenter?.didReceive(priceError: error)
             }
         }
     }
 }
 
-extension StakingMainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension StakingRelaychainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAccountInfo(
         result: Result<AccountInfo?, Error>,
         accountId _: AccountId,
@@ -258,25 +261,25 @@ extension StakingMainInteractor: WalletLocalStorageSubscriber, WalletLocalSubscr
     ) {
         switch result {
         case let .success(accountInfo):
-            presenter.didReceive(accountInfo: accountInfo)
+            presenter?.didReceive(accountInfo: accountInfo)
         case let .failure(error):
-            presenter.didReceive(balanceError: error)
+            presenter?.didReceive(balanceError: error)
         }
     }
 }
 
-extension StakingMainInteractor: StakingAnalyticsLocalStorageSubscriber,
+extension StakingRelaychainInteractor: StakingAnalyticsLocalStorageSubscriber,
     StakingAnalyticsLocalSubscriptionHandler {
     func handleWeaklyRewardAnalytics(
         result: Result<[SubqueryRewardItemData]?, Error>,
         address _: AccountAddress,
         url _: URL
     ) {
-        presenter.didReceieve(subqueryRewards: result, period: .week)
+        presenter?.didReceieve(subqueryRewards: result, period: .week)
     }
 }
 
-extension StakingMainInteractor: AccountLocalSubscriptionHandler, AccountLocalStorageSubscriber {
+extension StakingRelaychainInteractor: AccountLocalSubscriptionHandler, AccountLocalStorageSubscriber {
     func handleAccountResponse(
         result: Result<MetaChainAccountResponse?, Error>,
         accountId: AccountId,
@@ -284,9 +287,9 @@ extension StakingMainInteractor: AccountLocalSubscriptionHandler, AccountLocalSt
     ) {
         switch result {
         case let .success(account):
-            presenter.didReceiveAccount(account, for: accountId)
+            presenter?.didReceiveAccount(account, for: accountId)
         case .failure:
-            presenter.didReceiveAccount(nil, for: accountId)
+            presenter?.didReceiveAccount(nil, for: accountId)
         }
     }
 }
