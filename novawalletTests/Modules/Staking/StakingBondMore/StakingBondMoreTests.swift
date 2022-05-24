@@ -64,7 +64,7 @@ class StakingBondMoreTests: XCTestCase {
         let stashItem = StashItem(stash: WestendStub.address, controller: WestendStub.address)
         presenter.didReceiveStashItem(result: .success(stashItem))
 
-        let publicKeyData = try SS58AddressFactory().accountId(from: stashItem.stash)
+        let publicKeyData = try stashItem.stash.toAccountId()
         let stashAccountId = try stashItem.stash.toAccountId()
         let stashAccount = ChainAccountResponse(
             chainId: chain.chainId,
