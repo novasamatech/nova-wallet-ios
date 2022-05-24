@@ -54,8 +54,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             operationManager: operationManager
         )
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardUrl,
-            addressFactory: SS58AddressFactory()
+            url: rewardUrl
         )
 
         let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
