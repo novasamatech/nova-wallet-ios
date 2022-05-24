@@ -43,20 +43,31 @@ final class IdentityOperationFactory {
     private func createIdentityMergeOperation(
         dependingOn superOperation: SuperIdentityOperation,
         identityOperation: IdentityOperation,
+        runtimeOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
         chainFormat: ChainFormat
     ) -> BaseOperation<[AccountAddress: AccountIdentity]> {
         ClosureOperation<[AccountAddress: AccountIdentity]> {
             let superIdentities = try superOperation.extractNoCancellableResultData()
+            let coderFactory = try runtimeOperation.extractNoCancellableResultData()
             let identities = try identityOperation.extractNoCancellableResultData()
                 .reduce(into: [AccountAddress: Identity]()) { result, item in
                     if let value = item.value {
-                        let address = try item.key.getAccountIdFromKey().toAddress(using: chainFormat)
+                        let address = try LastAccountIdKey.decodeStorageKey(
+                            from: item.key,
+                            path: .identity,
+                            coderFactory: coderFactory
+                        ).value.toAddress(using: chainFormat)
+
                         result[address] = value
                     }
                 }
 
             return try superIdentities.reduce(into: [String: AccountIdentity]()) { result, item in
-                let address = try item.key.getAccountIdFromKey().toAddress(using: chainFormat)
+                let address = try LastAccountIdKey.decodeStorageKey(
+                    from: item.key,
+                    path: .superIdentity,
+                    coderFactory: coderFactory
+                ).value.toAddress(using: chainFormat)
 
                 if let value = item.value {
                     let parentAddress = try value.parentAccountId.toAddress(using: chainFormat)
@@ -94,11 +105,16 @@ final class IdentityOperationFactory {
 
         let keyParams: () throws -> [Data] = {
             let responses = try superIdentityOperation.extractNoCancellableResultData()
-            return responses.map { response in
+            let coderFactory = try runtimeOperation.extractNoCancellableResultData()
+            return try responses.map { response in
                 if let value = response.value {
                     return value.parentAccountId
                 } else {
-                    return response.key.getAccountIdFromKey()
+                    return try LastAccountIdKey.decodeStorageKey(
+                        from: response.key,
+                        path: .superIdentity,
+                        coderFactory: coderFactory
+                    ).value
                 }
             }
         }
@@ -117,6 +133,7 @@ final class IdentityOperationFactory {
         let mergeOperation = createIdentityMergeOperation(
             dependingOn: superIdentityOperation,
             identityOperation: identityWrapper.targetOperation,
+            runtimeOperation: runtimeOperation,
             chainFormat: chainFormat
         )
 

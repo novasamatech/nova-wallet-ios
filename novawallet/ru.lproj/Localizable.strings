@@ -760,3 +760,16 @@
 "parachain.staking.active.delegators" = "Активные делегаторы";
 "parachain.staking.your.collator" = "Ваши коллаторы";
 "parachain.staking.waiting.next.round.format" = "ожидание следующего раунда (%@)";
+"parachain.staking.select.collator" = "Выберите коллатора";
+"parachain.staking.hint.select.collator" = "Выберите коллатора...";
+"parachain.staking.collator" = "Коллатор";
+"parachain.staking.transferrable.rewards" = "Выплачиваемые награды";
+"parachain.staking.rewards.format" = "%@/в год";
+"parachain.staking.delegator.exists.title" = "Стекинг активирован ранее";
+"parachain.staking.delegator.exists.message" = "Стекинг был активирован ранее. Для того чтобы застейкать еще токенов использовать соответствующее действие.";
+"parachain.staking.cant.stake.collator.message" = "Нельзя застейкать меньше чем минимальное значение (%@).";
+"parachain.staking.minimum.stake" = "Минимальный стейк";
+"common.no.rewards.title" = "Вы не будете награждены";
+"parachain.staking.collator.less.minstk.message" = "Ваш стейк будет меньше чем минимальный стейк (%@) для этого коллатора.";
+"parachain.staking.full.title" = "Стекинг переполнен";
+"parachain.staking.full.message" = "Вы достигли максимального количества коллаторов (%@)";
