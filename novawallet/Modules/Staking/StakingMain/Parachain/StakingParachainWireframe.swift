@@ -14,4 +14,14 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         view?.controller.present(infoVew, animated: true, completion: nil)
     }
+
+    func showStartStaking(from view: ControllerBackedProtocol?) {
+        guard let startStakingView = ParaStkStakeSetupViewFactory.createView(with: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }

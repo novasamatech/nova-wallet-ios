@@ -51,13 +51,13 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionRestake() {
-        if !rootView.restakeOptionView.isSelected {
+        if !rootView.restakeOptionView.isChoosen {
             presenter.selectRestakeDestination()
         }
     }
 
     @objc private func actionPayout() {
-        if !rootView.payoutOptionView.isSelected {
+        if !rootView.payoutOptionView.isChoosen {
             presenter.selectPayoutDestination()
         }
     }
@@ -75,15 +75,15 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
     private func applyRewardDestinationType(from viewModel: RewardDestinationViewModelProtocol) {
         switch viewModel.type {
         case .restake:
-            rootView.restakeOptionView.isSelected = true
-            rootView.payoutOptionView.isSelected = false
+            rootView.restakeOptionView.isChoosen = true
+            rootView.payoutOptionView.isChoosen = false
 
             rootView.setupPayoutAccountShown(false)
 
         case let .payout(details):
 
-            rootView.restakeOptionView.isSelected = false
-            rootView.payoutOptionView.isSelected = true
+            rootView.restakeOptionView.isChoosen = false
+            rootView.payoutOptionView.isChoosen = true
 
             rootView.setupPayoutAccountShown(true)
 
@@ -149,8 +149,8 @@ final class StakingRewardDestSetupViewController: UIViewController, ViewHolder {
             for: .touchUpInside
         )
 
-        rootView.restakeOptionView.isSelected = true
-        rootView.payoutOptionView.isSelected = false
+        rootView.restakeOptionView.isChoosen = true
+        rootView.payoutOptionView.isChoosen = false
     }
 }
 
