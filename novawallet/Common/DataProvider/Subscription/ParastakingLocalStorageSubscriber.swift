@@ -15,6 +15,11 @@ protocol ParastakingLocalStorageSubscriber: AnyObject {
         accountId: AccountId
     ) -> AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
+    func subscribeToCandidateMetadata(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>?
+
     func subscribeToScheduledRequests(
         for chainId: ChainModel.Id,
         accountId: AccountId
@@ -118,6 +123,55 @@ extension ParastakingLocalStorageSubscriber {
         )
 
         return delegatorProvider
+    }
+
+    func subscribeToCandidateMetadata(
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    ) -> AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>? {
+        guard
+            let metadataProvider =
+            try? stakingLocalSubscriptionFactory.getCandidateMetadataProvider(
+                for: chainId,
+                accountId: accountId
+            ) else {
+            return nil
+        }
+
+        let updateClosure: ([DataProviderChange<ParachainStaking.DecodedCandidateMetadata>]) -> Void
+
+        updateClosure = { [weak self] changes in
+            let metadata = changes.reduceToLastChange()?.item
+            self?.stakingLocalSubscriptionHandler.handleParastakingCandidateMetadata(
+                result: .success(metadata),
+                for: chainId,
+                accountId: accountId
+            )
+        }
+
+        let failureClosure = { [weak self] (error: Error) in
+            self?.stakingLocalSubscriptionHandler.handleParastakingCandidateMetadata(
+                result: .failure(error),
+                for: chainId,
+                accountId: accountId
+            )
+            return
+        }
+
+        let options = DataProviderObserverOptions(
+            alwaysNotifyOnRefresh: false,
+            waitsInProgressSyncOnAdd: false
+        )
+
+        metadataProvider.addObserver(
+            self,
+            deliverOn: .main,
+            executing: updateClosure,
+            failing: failureClosure,
+            options: options
+        )
+
+        return metadataProvider
     }
 
     func subscribeToScheduledRequests(

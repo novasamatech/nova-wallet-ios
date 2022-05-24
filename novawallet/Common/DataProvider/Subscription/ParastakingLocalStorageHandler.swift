@@ -13,6 +13,12 @@ protocol ParastakingLocalStorageHandler: AnyObject {
         accountId: AccountId
     )
 
+    func handleParastakingCandidateMetadata(
+        result: Result<ParachainStaking.CandidateMetadata?, Error>,
+        for chainId: ChainModel.Id,
+        accountId: AccountId
+    )
+
     func handleParastakingScheduledRequests(
         result: Result<[ParachainStaking.ScheduledRequest]?, Error>,
         for chainId: ChainModel.Id,
@@ -48,5 +54,11 @@ extension ParastakingLocalStorageHandler {
         result _: Result<TotalRewardItem, Error>,
         for _: AccountAddress,
         api _: ChainModel.ExternalApi
+    ) {}
+
+    func handleParastakingCandidateMetadata(
+        result _: Result<ParachainStaking.CandidateMetadata?, Error>,
+        for _: ChainModel.Id,
+        accountId _: AccountId
     ) {}
 }
