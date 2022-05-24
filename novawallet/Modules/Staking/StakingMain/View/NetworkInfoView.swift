@@ -106,6 +106,12 @@ final class NetworkInfoView: UIView {
         }
     }
 
+    var statics: StakingMainStaticViewModelProtocol? {
+        didSet {
+            applyLocalization()
+        }
+    }
+
     private var localizableViewModel: LocalizableResource<NetworkStakingInfoViewModel>?
 
     override init(frame: CGRect) {
@@ -246,8 +252,14 @@ final class NetworkInfoView: UIView {
             .stakingMainTotalStakedTitle(preferredLanguages: languages)
         minimumStakedView.titleLabel.text = R.string.localizable
             .stakingMainMinimumStakeTitle(preferredLanguages: languages)
-        activeNominatorsView.titleLabel.text = R.string.localizable
-            .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
+
+        if let statics = statics {
+            activeNominatorsView.titleLabel.text = statics.networkInfoActiveNominators(for: locale)
+        } else {
+            activeNominatorsView.titleLabel.text = R.string.localizable
+                .stakingMainActiveNominatorsTitle(preferredLanguages: languages)
+        }
+
         stakingPeriodView.titleLabel.text = R.string.localizable.stakingNetworkInfoStakingPeriodTitle(
             preferredLanguages: languages
         )

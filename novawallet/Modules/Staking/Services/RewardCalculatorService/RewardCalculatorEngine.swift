@@ -4,6 +4,8 @@ import BigInt
 import IrohaCrypto
 
 enum CalculationPeriod {
+    static let daysInYear: Decimal = 365.0
+
     case day
     case month
     case year
@@ -233,7 +235,7 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
     ) -> Decimal {
         let annualReturn = calculateReturnForStake(stake, commission: commission)
 
-        let dailyReturn = annualReturn / 365.0
+        let dailyReturn = annualReturn / CalculationPeriod.daysInYear
 
         if isCompound {
             return calculateCompoundReward(
