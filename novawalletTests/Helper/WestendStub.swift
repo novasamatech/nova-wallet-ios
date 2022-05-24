@@ -73,7 +73,7 @@ struct WestendStub {
 
     static let ledgerInfo: DecodedLedgerInfo = {
         let address = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
-        let accountId = try! SS58AddressFactory().accountId(from: address)
+        let accountId = try! address.toAccountId()
         let info = StakingLedger(stash: accountId,
                                    total: BigUInt(1e+12),
                                    active: BigUInt(1e+12),

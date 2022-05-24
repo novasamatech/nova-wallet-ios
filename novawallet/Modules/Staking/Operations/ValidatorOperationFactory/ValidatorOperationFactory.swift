@@ -130,7 +130,7 @@ final class ValidatorOperationFactory {
 
         let statusesOperation = ClosureOperation<[ValidatorMyNominationStatus]> {
             let allElectedValidators = try electedValidatorsOperation.extractNoCancellableResultData()
-            let nominatorId = try SS58AddressFactory().accountId(from: nominatorAddress)
+            let nominatorId = try nominatorAddress.toAccountId()
             let maxNominators = try maxNominatorsOperation.extractNoCancellableResultData()
 
             return validatorIds.enumerated().map { _, accountId in

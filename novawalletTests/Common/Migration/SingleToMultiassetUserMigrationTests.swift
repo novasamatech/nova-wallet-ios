@@ -136,8 +136,6 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
 
         let newEntities = try fetchNewEntities()
 
-        let addressFactory = SS58AddressFactory()
-
         for account in accounts {
             guard let newEntity = newEntities.first(where: { $0.substratePublicKey == account.publicKey }) else {
                 XCTFail("Missing account after migration")
@@ -149,7 +147,7 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
             XCTAssertEqual(account.publicKey, newEntity.substratePublicKey)
             XCTAssertEqual(account.cryptoType, newEntity.substrateCryptoType)
 
-            let oldAccountId = try addressFactory.accountId(from: account.address)
+            let oldAccountId = try account.address.toAccountId()
             XCTAssertEqual(oldAccountId.toHex(), newEntity.substrateAccountId)
 
             let entropyExistence = try keystore.checkKey(for: KeystoreTagV2.entropyTagForMetaId(newEntity.metaId))
@@ -379,7 +377,7 @@ class SingleToMultiassetUserMigrationTests: XCTestCase {
             chaincodeList: chaincodes
         )
 
-        let address = try SS58AddressFactory().address(fromAccountId: keypair.publicKey().rawData(), type: 0)
+        let address = try keypair.publicKey().rawData().toAddress(using: .substrate(0))
 
         return OldAccount(
             address: address,

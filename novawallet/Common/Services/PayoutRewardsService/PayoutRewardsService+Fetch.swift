@@ -329,8 +329,7 @@ extension PayoutRewardsService {
         historyRangeOperation: BaseOperation<ChainHistoryRange>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>
     ) throws -> BaseOperation<PayoutsInfo> {
-        let addressFactory = SS58AddressFactory()
-        let targetAccountId = try addressFactory.accountId(from: selectedAccountAddress)
+        let targetAccountId = try selectedAccountAddress.toAccountId()
 
         return ClosureOperation<PayoutsInfo> {
             let validatorsByEra = try eraValidatorsOperation.extractNoCancellableResultData()
