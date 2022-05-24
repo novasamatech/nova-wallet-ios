@@ -177,51 +177,6 @@ enum ModalPickerFactory {
     }
 
     static func createPickerForList(
-        _ items: [StakingManageOption],
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
-        guard !items.isEmpty else {
-            return nil
-        }
-
-        let viewController: ModalPickerViewController<StakingManageCell, StakingManageViewModel>
-            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
-
-        viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.stakingManageTitle(preferredLanguages: locale.rLanguages)
-        }
-
-        viewController.delegate = delegate
-        viewController.modalPresentationStyle = .custom
-        viewController.context = context
-        viewController.selectedIndex = NSNotFound
-        viewController.separatorStyle = .singleLine
-        viewController.cellHeight = StakingManageCell.cellHeight
-
-        viewController.viewModels = items.map { type in
-            LocalizableResource { locale in
-                StakingManageViewModel(
-                    icon: type.icon,
-                    title: type.titleForLocale(locale),
-                    details: type.detailsForLocale(locale)
-                )
-            }
-        }
-
-        let factory = ModalSheetPresentationFactory(configuration: .fearless)
-        viewController.modalTransitioningFactory = factory
-
-        let height = viewController.headerHeight
-            + CGFloat(items.count) * viewController.cellHeight
-        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
-
-        viewController.localizationManager = LocalizationManager.shared
-
-        return viewController
-    }
-
-    static func createPickerForList(
         _ items: [PurchaseAction],
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?

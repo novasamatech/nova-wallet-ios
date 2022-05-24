@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 struct SuperIdentity: Codable {
-    let parentAccountId: Data
+    let parentAccountId: AccountId
     let data: ChainData
 
     var name: String? {
@@ -16,7 +16,12 @@ struct SuperIdentity: Codable {
     init(from decoder: Decoder) throws {
         var container = try decoder.unkeyedContainer()
 
-        parentAccountId = try container.decode(Data.self)
+        if let accountId = try? container.decode(Data.self) {
+            parentAccountId = accountId
+        } else {
+            parentAccountId = try container.decode(BytesCodable.self).wrappedValue
+        }
+
         data = try container.decode(ChainData.self)
     }
 

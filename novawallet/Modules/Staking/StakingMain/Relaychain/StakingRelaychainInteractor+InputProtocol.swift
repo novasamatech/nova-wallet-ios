@@ -1,12 +1,7 @@
 import Foundation
 import SoraFoundation
-import RobinHood
 
-extension StakingMainInteractor: StakingMainInteractorInputProtocol {
-    func saveNetworkInfoViewExpansion(isExpanded: Bool) {
-        commonSettings.stakingNetworkExpansion = isExpanded
-    }
-
+extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol {
     private func continueSetup() {
         setupSelectedAccountAndChainAsset()
         setupChainRemoteSubscription()
@@ -41,8 +36,6 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
         eventCenter.add(observer: self, dispatchIn: .main)
 
         applicationHandler.delegate = self
-
-        presenter.networkInfoViewExpansion(isExpanded: commonSettings.stakingNetworkExpansion)
     }
 
     private func createInitialServices() {
@@ -69,65 +62,8 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 
     func setup() {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            self?.stakingSettings.setup(runningCompletionIn: .main) { result in
-                switch result {
-                case .success:
-                    self?.createInitialServices()
-                    self?.continueSetup()
-                case let .failure(error):
-                    self?.logger?.error("Staking settings setup error: \(error)")
-                }
-            }
-        }
-    }
-
-    func save(chainAsset: ChainAsset) {
-        guard selectedChainAsset?.chainAssetId != chainAsset.chainAssetId else {
-            return
-        }
-
-        stakingSettings.save(value: chainAsset, runningCompletionIn: .main) { [weak self] _ in
-            self?.updateAfterChainAssetSave()
-            self?.updateAfterSelectedAccountChange()
-        }
-    }
-
-    private func updateAfterChainAssetSave() {
-        clearCancellable()
-        clear(singleValueProvider: &priceProvider)
-        clearNominatorsLimitProviders()
-
-        guard let newSelectedChainAsset = stakingSettings.value else {
-            return
-        }
-
-        selectedChainAsset.map { clearChainRemoteSubscription(for: $0.chain.chainId) }
-
-        selectedChainAsset = newSelectedChainAsset
-
-        setupChainRemoteSubscription()
-
-        updateSharedState()
-
-        provideNewChain()
-
-        performPriceSubscription()
-
-        performNominatorLimitsSubscripion()
-
-        guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-            let eraValidatorService = sharedState.eraValidatorService,
-            let rewardCalculationService = sharedState.rewardCalculationService else {
-            return
-        }
-
-        provideEraStakersInfo(from: eraValidatorService)
-        provideNetworkStakingInfo()
-        provideRewardCalculator(from: rewardCalculationService)
-        provideMaxNominatorsPerValidator(from: runtimeService)
+        createInitialServices()
+        continueSetup()
     }
 
     private func updateAfterSelectedAccountChange() {
@@ -153,7 +89,7 @@ extension StakingMainInteractor: StakingMainInteractorInputProtocol {
     }
 }
 
-extension StakingMainInteractor: EventVisitorProtocol {
+extension StakingRelaychainInteractor: EventVisitorProtocol {
     func processSelectedAccountChanged(event _: SelectedAccountChanged) {
         updateAfterSelectedAccountChange()
     }
@@ -171,7 +107,7 @@ extension StakingMainInteractor: EventVisitorProtocol {
     }
 }
 
-extension StakingMainInteractor: ApplicationHandlerDelegate {
+extension StakingRelaychainInteractor: ApplicationHandlerDelegate {
     func didReceiveDidBecomeActive(notification _: Notification) {
         priceProvider?.refresh()
         totalRewardProvider?.refresh()

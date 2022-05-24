@@ -9,7 +9,7 @@ enum EraValidatorServiceError: Error {
 }
 
 final class EraValidatorService {
-    static let queueLabelPrefix = "jp.co.fearless.recvalidators"
+    static let queueLabelPrefix = "com.novawallet.recvalidators"
 
     private struct PendingRequest {
         let resultClosure: (EraStakersInfo) -> Void
@@ -157,7 +157,7 @@ extension EraValidatorService: EraValidatorServiceProtocol {
 
     func throttle() {
         syncQueue.async {
-            guard !self.isActive else {
+            guard self.isActive else {
                 return
             }
 

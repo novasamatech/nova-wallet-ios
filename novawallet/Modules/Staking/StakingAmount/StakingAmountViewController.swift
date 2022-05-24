@@ -204,13 +204,13 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
 
         switch viewModel.type {
         case .restake:
-            restakeView.isSelected = true
-            payoutView.isSelected = false
+            restakeView.isChoosen = true
+            payoutView.isChoosen = false
 
             rootView.setAccountShown(false)
         case let .payout(details):
-            restakeView.isSelected = false
-            payoutView.isSelected = true
+            restakeView.isChoosen = false
+            payoutView.isChoosen = true
 
             rootView.setAccountShown(true)
             accountView.bind(viewModel: details)
@@ -218,13 +218,13 @@ final class StakingAmountViewController: UIViewController, ViewHolder {
     }
 
     @objc private func actionRestake() {
-        if !rootView.restakeOptionView.isSelected {
+        if !rootView.restakeOptionView.isChoosen {
             presenter.selectRestakeDestination()
         }
     }
 
     @objc private func actionPayout() {
-        if !rootView.payoutOptionView.isSelected {
+        if !rootView.payoutOptionView.isChoosen {
             presenter.selectPayoutDestination()
         }
     }
