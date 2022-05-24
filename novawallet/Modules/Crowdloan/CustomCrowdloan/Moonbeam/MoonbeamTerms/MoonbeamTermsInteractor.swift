@@ -75,7 +75,7 @@ final class MoonbeamTermsInteractor: RuntimeConstantFetching {
             try builder.adding(call: call)
         }
 
-        extrinsicService.submitAndWatch(
+        extrinsicService.buildExtrinsic(
             builderClosure,
             signer: signingWrapper,
             runningIn: .main,

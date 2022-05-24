@@ -28,7 +28,7 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
         }
     }
 
-    func submitAndWatch(
+    func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol,
         runningIn queue: DispatchQueue,
@@ -57,6 +57,26 @@ final class ExtrinsicServiceStub: ExtrinsicServiceProtocol {
     ) {
         completionClosure([self.txHash])
     }
+
+    func submitAndWatch(
+        _ closure: @escaping ExtrinsicBuilderClosure,
+        signer: SigningWrapperProtocol,
+        runningIn queue: DispatchQueue,
+        subscriptionIdClosure: @escaping ExtrinsicSubscriptionIdClosure,
+        notificationClosure: @escaping ExtrinsicSubscriptionStatusClosure
+    ) {
+        _ = subscriptionIdClosure(0)
+
+        switch txHash {
+        case let .success(value):
+            notificationClosure(.success(.inBlock(value)))
+        case let .failure(error):
+            notificationClosure(.failure(error))
+        }
+
+    }
+
+    func cancelExtrinsicWatch(for identifier: UInt16) {}
 }
 
 extension ExtrinsicServiceStub {

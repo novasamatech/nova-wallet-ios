@@ -93,12 +93,12 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         rootView.recepientInputView.locale = selectedLocale
         rootView.networkFeeView.locale = selectedLocale
 
-        setupAmountInpuAccessoryView(for: selectedLocale)
+        setupAmountInputAccessoryView(for: selectedLocale)
 
         updateActionButtonState()
     }
 
-    private func setupAmountInpuAccessoryView(for locale: Locale) {
+    private func setupAmountInputAccessoryView(for locale: Locale) {
         let accessoryView = UIFactory.default.createAmountAccessoryView(
             for: self,
             locale: locale
