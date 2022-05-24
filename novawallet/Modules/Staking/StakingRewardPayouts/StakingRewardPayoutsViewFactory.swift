@@ -15,11 +15,8 @@ final class StakingRewardPayoutsViewFactory {
             return nil
         }
 
-        let addressFactory = SS58AddressFactory()
-
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardsUrl,
-            addressFactory: addressFactory
+            url: rewardsUrl
         )
 
         let payoutInfoFactory = NominatorPayoutInfoFactory(chainAssetInfo: chainAsset.chainAssetInfo)

@@ -29,7 +29,6 @@ final class StakingRewardDestSetupInteractor: AccountFetching {
     private var extrinsicService: ExtrinsicServiceProtocol?
 
     private lazy var callFactory = SubstrateCallFactory()
-    private lazy var addressFactory = SS58AddressFactory()
 
     init(
         selectedAccount: ChainAccountResponse,
