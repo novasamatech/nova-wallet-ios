@@ -13,6 +13,7 @@ struct UIConstants {
     static let mainAccessoryActionsSpacing: CGFloat = 16.0
     static let networkFeeViewDefaultHeight = 132.0
     static let normalAddressIconSize = CGSize(width: 32.0, height: 32.0)
+    static let address24IconSize = CGSize(width: 24.0, height: 24.0)
     static let separatorHeight: CGFloat = 1 / UIScreen.main.scale
     static let skeletonBigRowSize = CGSize(width: 72.0, height: 12.0)
     static let skeletonSmallRowSize = CGSize(width: 57.0, height: 6.0)

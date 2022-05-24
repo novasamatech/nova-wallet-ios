@@ -33,6 +33,10 @@ extension ParachainStaking {
         StorageCodingPath(moduleName: "ParachainStaking", itemName: "DelegatorState")
     }
 
+    static var candidateMetadataPath: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainStaking", itemName: "CandidateInfo")
+    }
+
     static var delegationRequestsPath: StorageCodingPath {
         StorageCodingPath(moduleName: "ParachainStaking", itemName: "DelegationScheduledRequests")
     }
