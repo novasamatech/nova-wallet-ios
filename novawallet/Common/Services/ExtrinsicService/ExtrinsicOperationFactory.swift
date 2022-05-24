@@ -7,6 +7,8 @@ typealias ExtrinsicBuilderClosure = (ExtrinsicBuilderProtocol) throws -> (Extrin
 typealias ExtrinsicBuilderIndexedClosure = (ExtrinsicBuilderProtocol, Int) throws -> (ExtrinsicBuilderProtocol)
 
 protocol ExtrinsicOperationFactoryProtocol {
+    var connection: JSONRPCEngine { get }
+
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         numberOfExtrinsics: Int
@@ -19,7 +21,7 @@ protocol ExtrinsicOperationFactoryProtocol {
         numberOfExtrinsics: Int
     ) -> CompoundOperationWrapper<[SubmitExtrinsicResult]>
 
-    func submitAndWatch(
+    func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<String>
@@ -236,6 +238,8 @@ final class ExtrinsicOperationFactory {
 }
 
 extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
+    var connection: JSONRPCEngine { engine }
+
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         numberOfExtrinsics: Int
@@ -353,7 +357,7 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
         )
     }
 
-    func submitAndWatch(
+    func buildExtrinsic(
         _ closure: @escaping ExtrinsicBuilderClosure,
         signer: SigningWrapperProtocol
     ) -> CompoundOperationWrapper<String> {

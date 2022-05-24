@@ -49,6 +49,8 @@ class StakingStateView: UIView {
     private var skeletonView: SkrullableView?
     private var skeletonOptions: StakingStateSkeletonOptions?
 
+    var statics: StakingMainStaticViewModelProtocol?
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
