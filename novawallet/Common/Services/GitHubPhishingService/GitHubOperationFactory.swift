@@ -49,12 +49,10 @@ class GitHubOperationFactory: GitHubOperationFactoryProtocol {
                 return []
             }
 
-            let addressFactory = SS58AddressFactory()
-
             let phishingItems = json.flatMap { (key, value) -> [PhishingItem] in
                 if let publicKeys = value as? [String] {
                     let items = publicKeys.compactMap {
-                        self.getPublicKey(from: $0, using: addressFactory)
+                        self.getPublicKey(from: $0)
                     }.map {
                         PhishingItem(source: key, publicKey: $0)
                     }
@@ -71,22 +69,7 @@ class GitHubOperationFactory: GitHubOperationFactoryProtocol {
         return operation
     }
 
-    private func getPublicKey(from address: String, using addressFactory: SS58AddressFactoryProtocol) -> String? {
-        do {
-            let typeRawValue = try addressFactory.type(fromAddress: address)
-
-            guard let addressType = SNAddressType(rawValue: typeRawValue.uint8Value) else {
-                return nil
-            }
-
-            let publicKey = try addressFactory.accountId(
-                fromAddress: address,
-                type: addressType
-            )
-
-            return publicKey.toHex()
-        } catch {
-            return nil
-        }
+    private func getPublicKey(from address: String) -> String? {
+        try? address.toAccountId().toHex()
     }
 }

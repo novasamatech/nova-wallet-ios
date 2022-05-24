@@ -15,9 +15,8 @@ class ExtrinsicProcessingTests: XCTestCase {
     func testTransferSuccessfullProcessing() {
         do {
             let chain = ChainModelGenerator.generateChain(generatingAssets: 1, addressPrefix: 42)
-            let addressFactory = SS58AddressFactory()
-            let senderAccountId = try addressFactory.accountId(from: transferSender)
-            let receiverAccountId = try addressFactory.accountId(from: transferReceiver)
+            let senderAccountId = try transferSender.toAccountId()
+            let receiverAccountId = try transferReceiver.toAccountId()
 
             let coderFactory = try RuntimeCodingServiceStub.createWestendCodingFactory()
             let processor = ExtrinsicProcessor(accountId: senderAccountId, chain: chain)

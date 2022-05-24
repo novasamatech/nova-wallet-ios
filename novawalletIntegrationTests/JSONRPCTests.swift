@@ -372,7 +372,7 @@ class JSONRPCTests: XCTestCase {
             operationManager: operationManager
         )
 
-        let accountId = try SS58AddressFactory().accountId(from: address)
+        let accountId = try address.toAccountId()
 
         let keyParams1: () throws -> [StringScaleMapper<EraIndex>] = {
             (0..<EraIndex(keysCount)).map { StringScaleMapper(value: $0) }
