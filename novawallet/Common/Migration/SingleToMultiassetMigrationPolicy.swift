@@ -8,8 +8,6 @@ class SingleToMultiassetMigrationPolicy: NSEntityMigrationPolicy {
     var isSelected: Bool = false
     var order: Int32 = 0
 
-    private lazy var addressFactory = SS58AddressFactory()
-
     override func createDestinationInstances(
         forSource accountItem: NSManagedObject,
         in mapping: NSEntityMapping,
@@ -36,7 +34,7 @@ class SingleToMultiassetMigrationPolicy: NSEntityMigrationPolicy {
         let metaId = UUID().uuidString
         metaAccount.setValue(metaId, forKey: "metaId")
 
-        let accountId = try addressFactory.accountId(from: sourceAddress)
+        let accountId = try sourceAddress.toAccountId()
 
         metaAccount.setValue(accountId.toHex(), forKey: "substrateAccountId")
 

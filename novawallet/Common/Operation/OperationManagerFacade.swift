@@ -28,5 +28,11 @@ final class OperationManagerFacade {
         return operationQueue
     }()
 
+    static let assetsQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.maxConcurrentOperationCount = 20
+        return operationQueue
+    }()
+
     static let sharedManager = OperationManager(operationQueue: sharedDefaultQueue)
 }

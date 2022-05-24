@@ -9,7 +9,7 @@ extension NominatorState {
         }
 
         do {
-            let accountId = try SS58AddressFactory().accountId(from: stashItem.stash)
+            let accountId = try stashItem.stash.toAccountId()
 
             let allNominators = eraStakers.validators.map(\.exposure.others)
                 .flatMap { (nominators) -> [IndividualExposure] in
@@ -44,7 +44,7 @@ extension NominatorState {
         }
 
         do {
-            let accountId = try SS58AddressFactory().accountId(from: stashItem.stash)
+            let accountId = try stashItem.stash.toAccountId()
             let nominatorPositions = eraStakers.validators.compactMap { validator in
                 validator.exposure.others.firstIndex(where: { $0.who == accountId })
             }
