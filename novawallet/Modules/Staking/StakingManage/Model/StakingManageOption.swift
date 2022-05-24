@@ -10,7 +10,7 @@ enum StakingManageOption {
     case controllerAccount
     case yourValidator
 
-    func titleForLocale(_ locale: Locale) -> String {
+    func titleForLocale(_ locale: Locale, statics: StakingMainStaticViewModelProtocol?) -> String {
         switch self {
         case .stakeMore:
             return R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
@@ -23,7 +23,11 @@ enum StakingManageOption {
                 preferredLanguages: locale.rLanguages
             )
         case .changeValidators, .setupValidators:
-            return R.string.localizable.stakingYourValidatorsTitle(preferredLanguages: locale.rLanguages)
+            if let statics = statics {
+                return statics.actionsYourValidators(for: locale)
+            } else {
+                return R.string.localizable.stakingYourValidatorsTitle(preferredLanguages: locale.rLanguages)
+            }
         case .controllerAccount:
             return R.string.localizable.stakingControllerAccountTitle(preferredLanguages: locale.rLanguages)
         case .yourValidator:

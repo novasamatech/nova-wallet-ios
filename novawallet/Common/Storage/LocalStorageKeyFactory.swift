@@ -7,6 +7,8 @@ enum LocalStorageKeyFactoryError: Error {
 
 protocol LocalStorageKeyFactoryProtocol {
     func createKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String
+    func createRestorableKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String
+    func restoreRemoteKey(from localKey: String, chainId: ChainModel.Id) throws -> Data
 }
 
 extension LocalStorageKeyFactoryProtocol {
@@ -64,6 +66,18 @@ extension LocalStorageKeyFactoryProtocol {
 
         return try createKey(from: storagePathData + data, chainId: chainId)
     }
+
+    func createRestorableKey(
+        from storagePath: StorageCodingPath,
+        chainId: ChainModel.Id
+    ) throws -> String {
+        let data = try StorageKeyFactory().createStorageKey(
+            moduleName: storagePath.moduleName,
+            storageName: storagePath.itemName
+        )
+
+        return try createRestorableKey(from: data, chainId: chainId)
+    }
 }
 
 final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
@@ -71,5 +85,18 @@ final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {
         let concatData = (try Data(hexString: chainId)) + remoteKey
         let localKey = try StorageHasher.twox256.hash(data: concatData)
         return localKey.toHex()
+    }
+
+    func createRestorableKey(from remoteKey: Data, chainId: ChainModel.Id) throws -> String {
+        let chainIdData = try Data(hexString: chainId)
+
+        return (chainIdData + remoteKey).toHex()
+    }
+
+    func restoreRemoteKey(from localKey: String, chainId: ChainModel.Id) throws -> Data {
+        let chainIdData = try Data(hexString: chainId)
+        let fullKey = try Data(hexString: localKey)
+
+        return Data(fullKey.suffix(fullKey.count - chainIdData.count))
     }
 }
