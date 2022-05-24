@@ -8,7 +8,7 @@ final class PayoutValidatorsForValidatorFactory: PayoutValidatorsFactoryProtocol
         eraRangeClosure _: @escaping () throws -> EraRange?
     ) -> CompoundOperationWrapper<[AccountId]> {
         let operation = ClosureOperation<[AccountId]> {
-            let accountId = try SS58AddressFactory().accountId(from: address)
+            let accountId = try address.toAccountId()
             return [accountId]
         }
 

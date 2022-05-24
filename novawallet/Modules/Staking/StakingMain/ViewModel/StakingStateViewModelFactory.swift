@@ -22,8 +22,6 @@ final class StakingStateViewModelFactory {
     var balanceViewModelFactory: BalanceViewModelFactoryProtocol?
     private var cachedChainAsset: ChainAsset?
 
-    private lazy var addressFactory = SS58AddressFactory()
-
     init(
         analyticsRewardsViewModelFactoryBuilder: @escaping AnalyticsRewardsViewModelFactoryBuilder,
         logger: LoggerProtocol? = nil

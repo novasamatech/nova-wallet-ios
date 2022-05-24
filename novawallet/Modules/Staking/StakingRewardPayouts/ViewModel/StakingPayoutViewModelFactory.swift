@@ -4,7 +4,6 @@ import IrohaCrypto
 import UIKit
 
 final class StakingPayoutViewModelFactory: StakingPayoutViewModelFactoryProtocol {
-    private let addressFactory = SS58AddressFactory()
     private let chainFormat: ChainFormat
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     private let timeViewModelFactory: PayoutTimeViewModelFactoryProtocol
