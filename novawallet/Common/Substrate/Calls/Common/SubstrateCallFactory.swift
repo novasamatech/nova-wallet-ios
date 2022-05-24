@@ -57,14 +57,12 @@ protocol SubstrateCallFactoryProtocol {
 }
 
 final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
-    private let addressFactory = SS58AddressFactory()
-
     func bond(
         amount: BigUInt,
         controller: String,
         rewardDestination: RewardDestination<String>
     ) throws -> RuntimeCall<BondCall> {
-        let controllerId = try addressFactory.accountId(from: controller)
+        let controllerId = try controller.toAccountId()
 
         let destArg: RewardDestinationArg
 
@@ -72,7 +70,7 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
         case .restake:
             destArg = .staked
         case let .payout(address):
-            let accountId = try addressFactory.accountId(from: address)
+            let accountId = try address.toAccountId()
             destArg = .account(accountId)
         }
 
@@ -102,7 +100,7 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
 
     func nominate(targets: [SelectedValidatorInfo]) throws -> RuntimeCall<NominateCall> {
         let addresses: [MultiAddress] = try targets.map { info in
-            let accountId = try addressFactory.accountId(from: info.address)
+            let accountId = try info.address.toAccountId()
             return MultiAddress.accoundId(accountId)
         }
 
@@ -163,7 +161,7 @@ final class SubstrateCallFactory: SubstrateCallFactoryProtocol {
     }
 
     func setController(_ controller: AccountAddress) throws -> RuntimeCall<SetControllerCall> {
-        let controllerId = try addressFactory.accountId(from: controller)
+        let controllerId = try controller.toAccountId()
         let args = SetControllerCall(controller: .accoundId(controllerId))
         return RuntimeCall(moduleName: "Staking", callName: "set_controller", args: args)
     }
@@ -215,7 +213,7 @@ extension SubstrateCallFactory {
                     return .controller
                 }
 
-                let accountId = try SS58AddressFactory().accountId(from: accountAddress)
+                let accountId = try accountAddress.toAccountId()
 
                 return .account(accountId)
             }
