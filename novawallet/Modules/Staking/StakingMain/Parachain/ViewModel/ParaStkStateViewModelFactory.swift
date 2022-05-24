@@ -32,7 +32,7 @@ final class ParaStkStateViewModelFactory {
         case .waiting:
             return .waiting(
                 eraCountdown: commonData.roundCountdown,
-                nominationEra: roundInfo.current + 1
+                nominationEra: roundInfo.current
             )
         }
     }

@@ -1,8 +1,11 @@
 @testable import novawallet
 import RobinHood
+import SubstrateSdk
 
 final class ExtrinsicOperationFactoryStub: ExtrinsicOperationFactoryProtocol {
-    func submitAndWatch(_ closure: @escaping ExtrinsicBuilderClosure, signer: SigningWrapperProtocol) -> CompoundOperationWrapper<String> {
+    var connection: JSONRPCEngine { MockJSONRPCEngine() }
+
+    func buildExtrinsic(_ closure: @escaping ExtrinsicBuilderClosure, signer: SigningWrapperProtocol) -> CompoundOperationWrapper<String> {
         let txHash = Data(repeating: 7, count: 32).toHex(includePrefix: true)
 
         return CompoundOperationWrapper.createWithResult(txHash)

@@ -192,10 +192,12 @@ final class ParaStkStakeSetupPresenter {
         fee = nil
         provideFeeViewModel()
 
+        let collatorsDelegationsCount = collatorMetadata?.delegationCount ?? 0
+
         interactor.estimateFee(
             amount,
             collator: nil,
-            collatorDelegationsCount: 0,
+            collatorDelegationsCount: collatorsDelegationsCount,
             delegationsCount: 0
         )
     }
@@ -347,6 +349,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideCollatorViewModel()
         provideMinStakeViewModel()
         provideRewardsViewModel()
+        refreshFee()
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
