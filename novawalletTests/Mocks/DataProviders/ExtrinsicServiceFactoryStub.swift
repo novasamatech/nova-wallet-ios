@@ -16,7 +16,7 @@ final class ExtrinsicServiceFactoryStub: ExtrinsicServiceFactoryProtocol {
 
     func createService(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol {
         extrinsicService

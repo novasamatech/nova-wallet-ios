@@ -95,7 +95,7 @@ struct AcalaContributionConfirmViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: accountResponse.accountId,
-            chainFormat: chain.chainFormat,
+            chain: chain,
             cryptoType: accountResponse.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
