@@ -107,15 +107,18 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
                 DispatchQueue.main.async {
                     do {
                         let accountInfo = try accountInfoOperation.targetOperation.extractNoCancellableResultData()
-                        presenter?.didReceiveAccountInfo(result: .success(accountInfo), address: controllerAddress)
+                        presenter?.didReceiveControllerAccountInfo(
+                            result: .success(accountInfo),
+                            address: controllerAddress
+                        )
                     } catch {
-                        presenter?.didReceiveAccountInfo(result: .failure(error), address: controllerAddress)
+                        presenter?.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
                     }
                 }
             }
             operationManager.enqueue(operations: accountInfoOperation.allOperations, in: .transient)
         } catch {
-            presenter.didReceiveAccountInfo(result: .failure(error), address: controllerAddress)
+            presenter.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
         }
     }
 
