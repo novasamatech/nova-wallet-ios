@@ -77,7 +77,7 @@ struct ParaStkStakeConfirmViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedAccount.chainAccount.accountId,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: selectedAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeProvider,
             engine: connection,
