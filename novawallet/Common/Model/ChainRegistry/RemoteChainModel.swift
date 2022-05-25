@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 struct RemoteChainModel: Equatable, Codable, Hashable {
     let chainId: ChainModel.Id
@@ -14,4 +15,5 @@ struct RemoteChainModel: Equatable, Codable, Hashable {
     let options: [ChainOptions]?
     let externalApi: ChainModel.ExternalApiSet?
     let explorers: [ChainModel.Explorer]?
+    let additional: JSON?
 }

@@ -146,7 +146,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedMetaAccount.chainAccount.accountId,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: selectedMetaAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
@@ -194,7 +194,7 @@ final class SelectValidatorsConfirmViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: extrinsicSender.chainAccount.accountId,
-            chainFormat: extrinsicSender.chainAccount.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: extrinsicSender.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
