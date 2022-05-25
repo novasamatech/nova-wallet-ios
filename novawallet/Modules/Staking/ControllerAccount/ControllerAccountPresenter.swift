@@ -219,25 +219,33 @@ extension ControllerAccountPresenter: ControllerAccountInteractorOutputProtocol 
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress) {
+    func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
         switch result {
         case let .success(accountInfo):
-            if let accountInfo = accountInfo {
-                let amount = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
+            let amount = accountInfo.flatMap {
+                Decimal.fromSubstrateAmount(
+                    $0.data.available,
                     precision: assetInfo.assetPrecision
                 )
-                switch address {
-                case chosenAccountItem?.chainAccount.toAddress():
-                    controllerBalance = amount
-                case stashItem?.stash:
-                    balance = amount
-                default:
-                    logger?.warning("Recieved \(String(describing: amount)) for unknown address \(address)")
-                }
-            } else if chosenAccountItem?.chainAccount.toAddress() == address {
-                controllerBalance = nil
             }
+
+            controllerBalance = amount
+        case let .failure(error):
+            logger?.error("Controller balance fetch error: \(error)")
+        }
+    }
+
+    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address _: AccountAddress) {
+        switch result {
+        case let .success(accountInfo):
+            let amount = accountInfo.flatMap {
+                Decimal.fromSubstrateAmount(
+                    $0.data.available,
+                    precision: assetInfo.assetPrecision
+                )
+            }
+
+            balance = amount
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
         }

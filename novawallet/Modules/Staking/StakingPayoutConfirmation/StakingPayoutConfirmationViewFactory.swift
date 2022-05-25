@@ -79,7 +79,7 @@ final class StakingPayoutConfirmationViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedAccount.chainAccount.accountId,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: selectedAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,
@@ -88,7 +88,7 @@ final class StakingPayoutConfirmationViewFactory {
 
         let extrinsicOperationFactory = ExtrinsicOperationFactory(
             accountId: selectedAccount.chainAccount.accountId,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: selectedAccount.chainAccount.cryptoType,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,

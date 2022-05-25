@@ -53,27 +53,9 @@ final class ExtrinsicService {
     let operationFactory: ExtrinsicOperationFactoryProtocol
     let operationManager: OperationManagerProtocol
 
-    @available(*, deprecated, message: "Use init(accountId:cryptoType:) instead")
-    init(
-        address: String,
-        cryptoType: CryptoType,
-        runtimeRegistry: RuntimeCodingServiceProtocol,
-        engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
-    ) {
-        operationFactory = ExtrinsicOperationFactory(
-            address: address,
-            cryptoType: cryptoType,
-            runtimeRegistry: runtimeRegistry,
-            engine: engine
-        )
-
-        self.operationManager = operationManager
-    }
-
     init(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
@@ -81,7 +63,7 @@ final class ExtrinsicService {
     ) {
         operationFactory = ExtrinsicOperationFactory(
             accountId: accountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: cryptoType,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,
