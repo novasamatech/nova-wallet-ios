@@ -89,32 +89,15 @@ extension ExtrinsicOperationFactoryProtocol {
 final class ExtrinsicOperationFactory {
     let accountId: AccountId
     let cryptoType: MultiassetCryptoType
-    let chainFormat: ChainFormat
+    let chain: ChainModel
     let runtimeRegistry: RuntimeCodingServiceProtocol
     let customExtensions: [ExtrinsicExtension]
     let engine: JSONRPCEngine
     let eraOperationFactory: ExtrinsicEraOperationFactoryProtocol
 
-    @available(*, deprecated, message: "Use init(accountId:cryptoType:) instead")
-    init(
-        address: String,
-        cryptoType _: CryptoType,
-        runtimeRegistry: RuntimeCodingServiceProtocol,
-        engine: JSONRPCEngine,
-        eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory()
-    ) {
-        accountId = (try? address.toAccountId()) ?? Data(repeating: 0, count: 32)
-        chainFormat = .ethereum
-        cryptoType = .substrateEcdsa
-        self.runtimeRegistry = runtimeRegistry
-        customExtensions = []
-        self.engine = engine
-        self.eraOperationFactory = eraOperationFactory
-    }
-
     init(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         customExtensions: [ExtrinsicExtension],
@@ -122,7 +105,7 @@ final class ExtrinsicOperationFactory {
         eraOperationFactory: ExtrinsicEraOperationFactoryProtocol = MortalEraOperationFactory()
     ) {
         self.accountId = accountId
-        self.chainFormat = chainFormat
+        self.chain = chain
         self.cryptoType = cryptoType
         self.runtimeRegistry = runtimeRegistry
         self.customExtensions = customExtensions
@@ -132,7 +115,7 @@ final class ExtrinsicOperationFactory {
 
     private func createNonceOperation() -> BaseOperation<UInt32> {
         do {
-            let address = try accountId.toAddress(using: chainFormat)
+            let address = try accountId.toAddress(using: chain.chainFormat)
             return JSONRPCListOperation<UInt32>(
                 engine: engine,
                 method: RPCMethod.getExtrinsicNonce,
@@ -171,8 +154,9 @@ final class ExtrinsicOperationFactory {
     ) -> CompoundOperationWrapper<[Data]> {
         let currentCryptoType = cryptoType
         let currentAccountId = accountId
-        let currentChainFormat = chainFormat
+        let currentChainFormat = chain.chainFormat
         let currentExtensions = customExtensions
+        let optTip = chain.defaultTip
 
         let nonceOperation = createNonceOperation()
         let codingFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
@@ -205,6 +189,10 @@ final class ExtrinsicOperationFactory {
                 .with(runtimeJsonContext: runtimeJsonContext)
                 .with(era: era, blockHash: eraBlockHash)
                 .with(nonce: nonce + UInt32(index))
+
+                if let defaultTip = optTip {
+                    builder = builder.with(tip: defaultTip)
+                }
 
                 for customExtension in currentExtensions {
                     builder = builder.adding(extrinsicExtension: customExtension)

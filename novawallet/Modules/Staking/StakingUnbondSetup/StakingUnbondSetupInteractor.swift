@@ -55,9 +55,11 @@ final class StakingUnbondSetupInteractor: RuntimeConstantFetching, AccountFetchi
     }
 
     func handleControllerMetaAccount(response: MetaChainAccountResponse) {
+        let chain = chainAsset.chain
+
         extrinisicService = extrinsicServiceFactory.createService(
             accountId: response.chainAccount.accountId,
-            chainFormat: response.chainAccount.chainFormat,
+            chain: chain,
             cryptoType: response.chainAccount.cryptoType
         )
 
