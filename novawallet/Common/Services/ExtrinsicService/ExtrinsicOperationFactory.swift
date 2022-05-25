@@ -2,6 +2,7 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 import IrohaCrypto
+import BigInt
 
 typealias ExtrinsicBuilderClosure = (ExtrinsicBuilderProtocol) throws -> (ExtrinsicBuilderProtocol)
 typealias ExtrinsicBuilderIndexedClosure = (ExtrinsicBuilderProtocol, Int) throws -> (ExtrinsicBuilderProtocol)
@@ -223,6 +224,44 @@ final class ExtrinsicOperationFactory {
 
         return CompoundOperationWrapper(targetOperation: extrinsicsOperation, dependencies: dependencies)
     }
+
+    private func createTipInclusionOperation(
+        dependingOn infoOperation: JSONRPCListOperation<RuntimeDispatchInfo>,
+        coderFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+    ) -> BaseOperation<RuntimeDispatchInfo> {
+        ClosureOperation<RuntimeDispatchInfo> {
+            let info = try infoOperation.extractNoCancellableResultData()
+
+            guard let baseFee = BigUInt(info.fee) else {
+                return info
+            }
+
+            guard let hexExtrinsic = infoOperation.parameters?.first else {
+                return info
+            }
+
+            let codingFactory = try coderFactoryOperation.extractNoCancellableResultData()
+            let extrinsicData = try Data(hexString: hexExtrinsic)
+
+            let decoder = try codingFactory.createDecoder(from: extrinsicData)
+            let context = codingFactory.createRuntimeJsonContext()
+            let decodedExtrinsic: Extrinsic = try decoder.read(
+                of: GenericType.extrinsic.name,
+                with: context.toRawContext()
+            )
+
+            if let tip = decodedExtrinsic.signature?.extra.getTip() {
+                let newFee = baseFee + tip
+                return RuntimeDispatchInfo(
+                    dispatchClass: info.dispatchClass,
+                    fee: String(newFee),
+                    weight: info.weight
+                )
+            } else {
+                return info
+            }
+        }
+    }
 }
 
 extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
@@ -231,8 +270,7 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
     func estimateFeeOperation(
         _ closure: @escaping ExtrinsicBuilderIndexedClosure,
         numberOfExtrinsics: Int
-    )
-        -> CompoundOperationWrapper<[FeeExtrinsicResult]> {
+    ) -> CompoundOperationWrapper<[FeeExtrinsicResult]> {
         let currentCryptoType = cryptoType
 
         let signingClosure: (Data) throws -> Data = { data in
@@ -245,7 +283,9 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             signingClosure: signingClosure
         )
 
-        let feeOperationList: [JSONRPCListOperation<RuntimeDispatchInfo>] =
+        let coderFactoryOperation = runtimeRegistry.fetchCoderFactoryOperation()
+
+        let feeOperationWrappers: [CompoundOperationWrapper<RuntimeDispatchInfo>] =
             (0 ..< numberOfExtrinsics).map { index in
                 let infoOperation = JSONRPCListOperation<RuntimeDispatchInfo>(
                     engine: engine,
@@ -264,12 +304,19 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
 
                 infoOperation.addDependency(builderWrapper.targetOperation)
 
-                return infoOperation
+                let tipInclusionOperation = createTipInclusionOperation(
+                    dependingOn: infoOperation,
+                    coderFactoryOperation: coderFactoryOperation
+                )
+
+                tipInclusionOperation.addDependency(infoOperation)
+
+                return CompoundOperationWrapper(targetOperation: tipInclusionOperation, dependencies: [infoOperation])
             }
 
         let wrapperOperation = ClosureOperation<[FeeExtrinsicResult]> {
-            feeOperationList.map { feeOperation in
-                if let result = feeOperation.result {
+            feeOperationWrappers.map { feeWrapper in
+                if let result = feeWrapper.targetOperation.result {
                     return result
                 } else {
                     return .failure(BaseOperationError.parentOperationCancelled)
@@ -277,13 +324,16 @@ extension ExtrinsicOperationFactory: ExtrinsicOperationFactoryProtocol {
             }
         }
 
-        feeOperationList.forEach { feeOperation in
-            wrapperOperation.addDependency(feeOperation)
+        feeOperationWrappers.forEach { feeWrapper in
+            feeWrapper.addDependency(operations: [coderFactoryOperation])
+            wrapperOperation.addDependency(feeWrapper.targetOperation)
         }
+
+        let rawFeeOperations = feeOperationWrappers.flatMap(\.allOperations)
 
         return CompoundOperationWrapper(
             targetOperation: wrapperOperation,
-            dependencies: builderWrapper.allOperations + feeOperationList
+            dependencies: builderWrapper.allOperations + [coderFactoryOperation] + rawFeeOperations
         )
     }
 
