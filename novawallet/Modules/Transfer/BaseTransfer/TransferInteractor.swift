@@ -286,12 +286,6 @@ class TransferInteractor: RuntimeConstantFetching {
             return (builder, nil)
         }
 
-        var newBuilder = builder
-
-        if let tip = chain.defaultTip {
-            newBuilder = newBuilder.with(tip: tip)
-        }
-
         switch sendingAssetInfo {
         case let .orml(currencyId, _, module, _):
             let call = callFactory.ormlTransfer(
@@ -301,7 +295,7 @@ class TransferInteractor: RuntimeConstantFetching {
                 amount: amount
             )
 
-            newBuilder = try newBuilder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
             return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case let .statemine(extras):
             let call = callFactory.assetsTransfer(
@@ -310,11 +304,11 @@ class TransferInteractor: RuntimeConstantFetching {
                 amount: amount
             )
 
-            newBuilder = try newBuilder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
             return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         case .native:
             let call = callFactory.nativeTransfer(to: recepient, amount: amount)
-            newBuilder = try newBuilder.adding(call: call)
+            let newBuilder = try builder.adding(call: call)
             return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
         }
     }
