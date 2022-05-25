@@ -117,7 +117,7 @@ struct TransferSetupViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: account.accountId,
-            chainFormat: chain.chainFormat,
+            chain: chain,
             cryptoType: account.cryptoType,
             runtimeRegistry: runtimeProvider,
             engine: connection,
