@@ -5,7 +5,7 @@ import SubstrateSdk
 protocol ExtrinsicServiceFactoryProtocol {
     func createService(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol
 
@@ -34,12 +34,12 @@ final class ExtrinsicServiceFactory {
 extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol {
         ExtrinsicService(
             accountId: accountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: cryptoType,
             runtimeRegistry: runtimeRegistry,
             engine: engine,

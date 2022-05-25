@@ -183,6 +183,8 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                     chainId: chainAsset.chain.chainId
                 )
 
+                let chain = chainAsset.chain
+
                 fetchFirstMetaAccountResponse(
                     for: stashId,
                     accountRequest: chainAsset.chain.accountRequest(),
@@ -194,7 +196,7 @@ extension ControllerAccountConfirmationInteractor: StakingLocalStorageSubscriber
                         if let accountResponse = maybeAccountResponse {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
                                 accountId: accountResponse.chainAccount.accountId,
-                                chainFormat: accountResponse.chainAccount.chainFormat,
+                                chain: chain,
                                 cryptoType: accountResponse.chainAccount.cryptoType
                             )
 

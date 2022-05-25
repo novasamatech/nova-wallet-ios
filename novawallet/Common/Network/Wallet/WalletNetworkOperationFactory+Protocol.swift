@@ -119,7 +119,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let extrinsicFactory = ExtrinsicOperationFactory(
             accountId: selectedAccount.accountId,
-            chainFormat: chain.chainFormat,
+            chain: chain,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,
@@ -279,7 +279,7 @@ extension WalletNetworkOperationFactory: WalletNetworkOperationFactoryProtocol {
 
         let extrinsicFactory = ExtrinsicOperationFactory(
             accountId: selectedAccount.accountId,
-            chainFormat: chain.chainFormat,
+            chain: chain,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             customExtensions: DefaultExtrinsicExtension.extensions,

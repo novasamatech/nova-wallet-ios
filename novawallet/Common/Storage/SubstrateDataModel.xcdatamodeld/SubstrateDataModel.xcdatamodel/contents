@@ -23,6 +23,7 @@
         <attribute name="reservedInPlank" optional="YES" attributeType="String"/>
     </entity>
     <entity name="CDChain" representedClassName="CDChain" syncable="YES" codeGenerationType="class">
+        <attribute name="additional" optional="YES" attributeType="Binary"/>
         <attribute name="addressPrefix" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="chainId" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
@@ -130,7 +131,7 @@
     <elements>
         <element name="CDAsset" positionX="-36" positionY="90" width="128" height="194"/>
         <element name="CDAssetBalance" positionX="-36" positionY="153" width="128" height="134"/>
-        <element name="CDChain" positionX="-45" positionY="81" width="128" height="344"/>
+        <element name="CDChain" positionX="-45" positionY="81" width="128" height="359"/>
         <element name="CDChainNode" positionX="-27" positionY="99" width="128" height="119"/>
         <element name="CDChainStorageItem" positionX="-54" positionY="-9" width="128" height="73"/>
         <element name="CDContactItem" positionX="-45" positionY="81" width="128" height="118"/>
