@@ -71,7 +71,8 @@ enum ChainModelGenerator {
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
                 explorers: explorers,
-                order: Int64(index)
+                order: Int64(index),
+                additional: nil
             )
         }
     }
@@ -142,7 +143,8 @@ enum ChainModelGenerator {
                 color: generateChainColor(),
                 options: options.isEmpty ? nil : options,
                 externalApi: externalApi,
-                explorers: explorers
+                explorers: explorers,
+                additional: nil
             )
         }
     }
@@ -226,7 +228,8 @@ enum ChainModelGenerator {
             options: options.isEmpty ? nil : options,
             externalApi: externalApi,
             explorers: explorers,
-            order: 0
+            order: 0,
+            additional: nil
         )
     }
 
