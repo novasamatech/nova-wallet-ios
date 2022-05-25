@@ -55,7 +55,7 @@ final class ExtrinsicService {
 
     init(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType,
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
@@ -63,7 +63,7 @@ final class ExtrinsicService {
     ) {
         operationFactory = ExtrinsicOperationFactory(
             accountId: accountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: cryptoType,
             runtimeRegistry: runtimeRegistry,
             customExtensions: DefaultExtrinsicExtension.extensions,

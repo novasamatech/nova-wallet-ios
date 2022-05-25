@@ -39,7 +39,6 @@ class ExtrinsicServiceTests: XCTestCase {
 
     func testEstimateFeeForBondExtraCall() throws {
         let chainId = Chain.kusama.genesisHash
-        let chainFormat = ChainFormat.substrate(2)
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
@@ -50,10 +49,11 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let connection = chainRegistry.getConnection(for: chainId)!
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
+        let chain = chainRegistry.getChain(for: chainId)!
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedAccountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: .sr25519,
             runtimeRegistry: runtimeService,
             engine: connection,
@@ -83,7 +83,6 @@ class ExtrinsicServiceTests: XCTestCase {
 
     func testEstimateFeeForPayoutRewardsCall() throws {
         let chainId = Chain.kusama.genesisHash
-        let chainFormat = ChainFormat.substrate(2)
         let selectedAddress = "FiLhWLARS32oxm4s64gmEMSppAdugsvaAx1pCjweTLGn5Rf"
         let selectedAccountId = try selectedAddress.toAccountId()
         let assetPrecision: Int16 = 12
@@ -94,10 +93,11 @@ class ExtrinsicServiceTests: XCTestCase {
 
         let connection = chainRegistry.getConnection(for: chainId)!
         let runtimeService = chainRegistry.getRuntimeProvider(for: chainId)!
+        let chain = chainRegistry.getChain(for: chainId)!
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedAccountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: .sr25519,
             runtimeRegistry: runtimeService,
             engine: connection,
