@@ -257,6 +257,10 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         let externalApiSet = createExternalApi(from: entity)
         let explorers = createExplorers(from: entity)
 
+        let additional: JSON? = try entity.additional.map {
+            try jsonDecoder.decode(JSON.self, from: $0)
+        }
+
         return ChainModel(
             chainId: entity.chainId!,
             parentId: entity.parentId,
@@ -270,7 +274,8 @@ extension ChainModelMapper: CoreDataMapperProtocol {
             options: options.isEmpty ? nil : options,
             externalApi: externalApiSet,
             explorers: explorers,
-            order: entity.order
+            order: entity.order,
+            additional: additional
         )
     }
 
@@ -292,6 +297,9 @@ extension ChainModelMapper: CoreDataMapperProtocol {
         entity.isTestnet = model.isTestnet
         entity.hasCrowdloans = model.hasCrowdloans
         entity.order = model.order
+        entity.additional = try model.additional.map {
+            try jsonEncoder.encode($0)
+        }
 
         try updateEntityAssets(for: entity, from: model, context: context)
 
