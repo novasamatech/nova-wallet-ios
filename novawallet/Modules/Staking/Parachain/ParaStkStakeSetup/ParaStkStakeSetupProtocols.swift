@@ -57,4 +57,6 @@ protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
         collator: DisplayAddress,
         amount: Decimal
     )
+
+    func showCollatorSelection(from view: ParaStkStakeSetupViewProtocol?)
 }

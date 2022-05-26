@@ -1,4 +1,4 @@
-protocol ParaStkSelectCollatorsViewProtocol: AnyObject {}
+protocol ParaStkSelectCollatorsViewProtocol: ControllerBackedProtocol {}
 
 protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
     func setup()
