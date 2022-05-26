@@ -1,0 +1,13 @@
+Nova - Polkadot, Kusama wallet
+
+Copyright 2022 Novasama Technologies PTE. LTD.
+This product includes software developed at Novasama Technologies PTE. LTD.
+Some parts of this product are derived from https://github.com/soramitsu/fearless-iOS, which belongs to Soramitsu K.K. and was mostly developed by our team of developers from May 1, 2020, to October 5, 2021. 
+Copyright 2021, Soramitsu Helvetia AG, all rights reserved.
+Notwithstanding the above, some works related to this product are licensed under the GPL 3.0 License which can be found in the respective folders available via the following links:
+
+1) SoraKeystore: https://github.com/soramitsu/keystore-iOS;
+2) SoraUI: https://github.com/ERussel/UIkit-iOS.git;
+3) RobinHood: https://github.com/soramitsu/robinhood-ios;
+4) CommonWallet: https://github.com/ERussel/Capital-iOS.git;
+5) SoraFoundation: https://github.com/soramitsu/Foundation-iOS.
