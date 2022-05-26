@@ -17,7 +17,7 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
 
     let searchButton: UIBarButtonItem = {
         let item = UIBarButtonItem(
-            image: R.image.iconSearch(),
+            image: R.image.iconSearchWhite(),
             style: .plain,
             target: nil,
             action: nil

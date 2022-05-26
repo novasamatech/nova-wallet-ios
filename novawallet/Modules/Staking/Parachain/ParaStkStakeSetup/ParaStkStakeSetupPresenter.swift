@@ -216,7 +216,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
     }
 
     func selectCollator() {
-        interactor.rotateSelectedCollator()
+        wireframe.showCollatorSelection(from: view)
     }
 
     func updateAmount(_ newValue: Decimal?) {

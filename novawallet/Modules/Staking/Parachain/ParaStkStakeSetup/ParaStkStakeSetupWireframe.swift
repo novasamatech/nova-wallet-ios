@@ -25,4 +25,12 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
             animated: true
         )
     }
+
+    func showCollatorSelection(from view: ParaStkStakeSetupViewProtocol?) {
+        guard let collatorsView = ParaStkSelectCollatorsViewFactory.createView(with: state) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(collatorsView.controller, animated: true)
+    }
 }
