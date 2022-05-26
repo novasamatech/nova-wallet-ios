@@ -11,26 +11,28 @@ final class OperationManagerFacade {
     static let runtimeBuildingQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 10
+        operationQueue.maxConcurrentOperationCount = 50
         return operationQueue
     }()
 
     static let runtimeSyncQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.qualityOfService = .userInitiated
-        operationQueue.maxConcurrentOperationCount = 8
+        operationQueue.maxConcurrentOperationCount = 50
         return operationQueue
     }()
 
     static let fileDownloadQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 10
+        operationQueue.qualityOfService = .userInitiated
+        operationQueue.maxConcurrentOperationCount = 50
         return operationQueue
     }()
 
     static let assetsQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.maxConcurrentOperationCount = 20
+        operationQueue.maxConcurrentOperationCount = 50
+        operationQueue.qualityOfService = .userInitiated
         return operationQueue
     }()
 
