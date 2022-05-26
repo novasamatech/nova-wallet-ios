@@ -774,3 +774,5 @@
 "parachain.staking.full.title" = "Your staking is full";
 "parachain.staking.full.message" = "You have reached maximum number of collators (%@)";
 "parachain.staking.hint.rewards.format" = "Tokens in stake produce rewards each round (%@)";
+"common.rewards.column" = "Rewards:";
+"common.min.stake.column" = "Min. stake:";

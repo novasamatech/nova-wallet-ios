@@ -2,7 +2,7 @@ import Foundation
 import SoraFoundation
 
 struct ParaStkSelectCollatorsViewFactory {
-    static func createView() -> ParaStkSelectCollatorsViewProtocol? {
+    static func createView(with _: ParachainStakingSharedState) -> ParaStkSelectCollatorsViewProtocol? {
         let interactor = ParaStkSelectCollatorsInteractor()
         let wireframe = ParaStkSelectCollatorsWireframe()
 
