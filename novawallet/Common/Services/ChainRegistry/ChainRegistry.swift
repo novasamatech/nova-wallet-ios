@@ -105,6 +105,8 @@ final class ChainRegistry {
 
                     setupRuntimeVersionSubscription(for: newChain, connection: connection)
                     availableChains.insert(newChain)
+
+                    logger?.debug("Subscribed runtime for: \(newChain.name)")
                 case let .update(updatedChain):
                     let connection = try connectionPool.setupConnection(for: updatedChain)
                     _ = runtimeProviderPool.setupRuntimeProvider(for: updatedChain)
