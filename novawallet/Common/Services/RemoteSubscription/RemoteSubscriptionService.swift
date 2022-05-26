@@ -121,6 +121,8 @@ class RemoteSubscriptionService {
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
 
+        logger.debug("Operations enqued for subscription: \(chainId)")
+
         return subscriptionId
     }
 
@@ -256,6 +258,8 @@ class RemoteSubscriptionService {
         guard let pending = pendingSubscriptions[cacheKey] else {
             return
         }
+
+        logger.debug("Complete subscription with key: \(cacheKey)")
 
         switch result {
         case let .success(container):
