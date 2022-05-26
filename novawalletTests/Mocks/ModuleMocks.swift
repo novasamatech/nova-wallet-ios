@@ -26030,6 +26030,21 @@ import SoraFoundation
     
     
     
+     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)  {
+        
+    return cuckoo_manager.call("didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)",
+            parameters: (result, address),
+            escapingParameters: (result, address),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveControllerAccountInfo(result: result, address: address))
+        
+    }
+    
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)  {
         
     return cuckoo_manager.call("didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)",
@@ -26092,6 +26107,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveControllerAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>, AccountAddress)> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>, AccountAddress)> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", parameterMatchers: matchers))
@@ -26149,6 +26169,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveControllerAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.__DoNotUse<(Result<AccountInfo?, Error>, AccountAddress), Void> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.__DoNotUse<(Result<AccountInfo?, Error>, AccountAddress), Void> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
 	        return cuckoo_manager.verify("didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -26196,6 +26222,12 @@ import SoraFoundation
     
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -1,5 +1,7 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
+import BigInt
 
 struct ChainModel: Equatable, Codable, Hashable {
     // swiftlint:disable:next type_name
@@ -47,6 +49,7 @@ struct ChainModel: Equatable, Codable, Hashable {
     let externalApi: ExternalApiSet?
     let explorers: [Explorer]?
     let order: Int64
+    let additional: JSON?
 
     init(
         chainId: Id,
@@ -61,7 +64,8 @@ struct ChainModel: Equatable, Codable, Hashable {
         options: [ChainOptions]?,
         externalApi: ExternalApiSet?,
         explorers: [Explorer]?,
-        order: Int64
+        order: Int64,
+        additional: JSON?
     ) {
         self.chainId = chainId
         self.parentId = parentId
@@ -76,6 +80,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.explorers = explorers
         self.order = order
         self.color = color
+        self.additional = additional
     }
 
     init(remoteModel: RemoteChainModel, order: Int64) {
@@ -97,6 +102,7 @@ struct ChainModel: Equatable, Codable, Hashable {
         externalApi = remoteModel.externalApi
         explorers = remoteModel.explorers
         color = remoteModel.color
+        additional = remoteModel.additional
 
         self.order = order
     }
@@ -124,6 +130,14 @@ struct ChainModel: Equatable, Codable, Hashable {
             return types.overridesCommon ? .onlyOwn : .both
         } else {
             return .onlyCommon
+        }
+    }
+
+    var defaultTip: BigUInt? {
+        if let tipString = additional?.defaultTip?.stringValue {
+            return BigUInt(tipString)
+        } else {
+            return nil
         }
     }
 }
