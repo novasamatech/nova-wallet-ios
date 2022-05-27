@@ -11,7 +11,7 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
 
     let clearButton: RoundedButton = {
         let button = RoundedButton()
-        button.applyEnabledStyle()
+        button.applySecondaryStyle()
         return button
     }()
 
@@ -59,7 +59,7 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
-            make.top.equalTo(clearButton.snp.bottom).offset(24.0)
+            make.top.equalTo(clearButton.snp.bottom).offset(16.0)
             make.bottom.equalToSuperview()
         }
     }

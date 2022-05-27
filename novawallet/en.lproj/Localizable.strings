@@ -776,3 +776,5 @@
 "parachain.staking.hint.rewards.format" = "Tokens in stake produce rewards each round (%@)";
 "common.rewards.column" = "Rewards:";
 "common.min.stake.column" = "Min. stake:";
+"common.parastk.collators.count" = "Collators: %@";
+"common.staking.own.stake" = "Own stake";
