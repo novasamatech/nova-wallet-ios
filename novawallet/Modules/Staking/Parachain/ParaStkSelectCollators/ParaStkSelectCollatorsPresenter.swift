@@ -209,6 +209,8 @@ final class ParaStkSelectCollatorsPresenter {
 
 extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtocol {
     func setup() {
+        provideState()
+
         interactor.setup()
     }
 
