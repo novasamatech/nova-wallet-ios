@@ -45,11 +45,13 @@ struct ParaStkSelectCollatorsViewFactory {
         for state: ParachainStakingSharedState
     ) -> ParaStkSelectCollatorsInteractor? {
         guard
-            let chain = state.settings.value?.chain,
+            let chainAsset = state.settings.value,
             let collatorService = state.collatorService,
             let rewardEngineService = state.rewardCalculationService else {
             return nil
         }
+
+        let chain = chainAsset.chain
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
@@ -75,12 +77,13 @@ struct ParaStkSelectCollatorsViewFactory {
         )
 
         return ParaStkSelectCollatorsInteractor(
-            chain: chain,
+            chainAsset: chainAsset,
             collatorService: collatorService,
             rewardService: rewardEngineService,
             connection: connection,
             runtimeProvider: runtimeProvider,
             collatorOperationFactory: collatorOperationFactory,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             operationQueue: operationQueue
         )
     }

@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     typealias RootViewType = ParaStkSelectCollatorsViewLayout
@@ -7,18 +8,18 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     let presenter: ParaStkSelectCollatorsPresenterProtocol
 
     private var collatorViewModels: [CollatorSelectionViewModel] {
-        viewModel?.collators ?? []
+        state?.viewModel?.collators ?? []
     }
 
     private var sorting: CollatorsSortType {
-        viewModel?.sorting ?? .rewards
+        state?.viewModel?.sorting ?? .rewards
     }
 
     private var headerViewModel: TitleWithSubtitleViewModel? {
-        viewModel?.header
+        state?.viewModel?.header
     }
 
-    private var viewModel: CollatorSelectionScreenViewModel?
+    private var state: CollatorSelectionState?
 
     init(
         presenter: ParaStkSelectCollatorsPresenterProtocol,
@@ -52,13 +53,22 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     }
 
     private func setupBarItems() {
-        navigationItem.rightBarButtonItems = [rootView.searchButton, rootView.filterButton]
+        let filterBarItem = UIBarButtonItem(customView: rootView.filterButton)
+        let searchBarItem = UIBarButtonItem(customView: rootView.searchButton)
 
-        rootView.searchButton.target = self
-        rootView.searchButton.action = #selector(actionSearch)
+        navigationItem.rightBarButtonItems = [filterBarItem, searchBarItem]
 
-        rootView.filterButton.target = self
-        rootView.filterButton.action = #selector(actionFilter)
+        rootView.filterButton.addTarget(
+            self,
+            action: #selector(actionFilter),
+            for: .touchUpInside
+        )
+
+        rootView.searchButton.addTarget(
+            self,
+            action: #selector(actionSearch),
+            for: .touchUpInside
+        )
     }
 
     private func setupHandlers() {
@@ -95,6 +105,19 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         } else {
             rootView.clearButton.applyDisabledSecondaryStyle()
         }
+    }
+
+    private func applyState() {
+        switch state {
+        case .error, .loading, .none:
+            navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = false }
+            rootView.tableView.isHidden = true
+        case .loaded:
+            navigationItem.rightBarButtonItems?.forEach { $0.isEnabled = true }
+            rootView.tableView.isHidden = false
+        }
+
+        updateClearButton()
     }
 
     @objc private func actionSearch() {
@@ -158,7 +181,52 @@ extension ParaStkSelectCollatorsViewController: UITableViewDelegate {
     }
 }
 
-// MARK: - CustomValidatorCellDelegate
+extension ParaStkSelectCollatorsViewController: ErrorStateViewDelegate {
+    func didRetry(errorView _: ErrorStateView) {
+        presenter.refresh()
+    }
+}
+
+extension ParaStkSelectCollatorsViewController: EmptyStateViewOwnerProtocol {
+    var emptyStateDelegate: EmptyStateDelegate { self }
+    var emptyStateDataSource: EmptyStateDataSource { self }
+}
+
+extension ParaStkSelectCollatorsViewController: EmptyStateDataSource {
+    var viewForEmptyState: UIView? {
+        guard let state = state else { return nil }
+
+        switch state {
+        case let .error(error):
+            let errorView = ErrorStateView()
+            errorView.errorDescriptionLabel.text = error
+            errorView.delegate = self
+            errorView.locale = selectedLocale
+            return errorView
+        case .loading:
+            let loadingView = ListLoadingView()
+            loadingView.titleLabel.text = R.string.localizable.commonLoadingCollators(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            loadingView.start()
+            return loadingView
+        case .loaded:
+            return nil
+        }
+    }
+}
+
+extension ParaStkSelectCollatorsViewController: EmptyStateDelegate {
+    var shouldDisplayEmptyState: Bool {
+        guard let state = state else { return false }
+        switch state {
+        case .error, .loading:
+            return true
+        case .loaded:
+            return false
+        }
+    }
+}
 
 extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
     func didTapInfoButton(in cell: CollatorSelectionCell) {
@@ -169,12 +237,14 @@ extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
 }
 
 extension ParaStkSelectCollatorsViewController: ParaStkSelectCollatorsViewProtocol {
-    func didReceive(viewModel: CollatorSelectionScreenViewModel) {
-        self.viewModel = viewModel
+    func didReceive(state: CollatorSelectionState) {
+        self.state = state
 
         rootView.tableView.reloadData()
 
-        updateClearButton()
+        applyState()
+
+        reloadEmptyState(animated: false)
     }
 }
 

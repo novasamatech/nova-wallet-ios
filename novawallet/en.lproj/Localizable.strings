@@ -778,3 +778,4 @@
 "common.min.stake.column" = "Min. stake:";
 "common.parastk.collators.count" = "Collators: %@";
 "common.staking.own.stake" = "Own stake";
+"common.loading.collators" = "Loading collators...";
