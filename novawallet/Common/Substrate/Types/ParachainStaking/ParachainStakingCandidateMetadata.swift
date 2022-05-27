@@ -41,6 +41,9 @@ extension ParachainStaking {
         @StringCodable var delegationCount: UInt32
         @StringCodable var lowestTopDelegationAmount: BigUInt
         @StringCodable var lowestBottomDelegationAmount: BigUInt
+        @StringCodable var totalCounted: BigUInt
+        @StringCodable var bond: BigUInt
+
         let topCapacity: CapacityStatus
         let bottomCapacity: CapacityStatus
 

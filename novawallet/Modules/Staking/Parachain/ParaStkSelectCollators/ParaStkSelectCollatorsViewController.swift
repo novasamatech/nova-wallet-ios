@@ -6,9 +6,19 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
 
     let presenter: ParaStkSelectCollatorsPresenterProtocol
 
-    private var viewModel: [CollatorSelectionViewModel] = []
-    private var sorting = CollatorsSortType.rewards
-    private var headerViewModel: TitleWithSubtitleViewModel?
+    private var collatorViewModels: [CollatorSelectionViewModel] {
+        viewModel?.collators ?? []
+    }
+
+    private var sorting: CollatorsSortType {
+        viewModel?.sorting ?? .rewards
+    }
+
+    private var headerViewModel: TitleWithSubtitleViewModel? {
+        viewModel?.header
+    }
+
+    private var viewModel: CollatorSelectionScreenViewModel?
 
     init(
         presenter: ParaStkSelectCollatorsPresenterProtocol,
@@ -32,8 +42,11 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setupTableView()
         setupBarItems()
         setupLocalization()
+        setupHandlers()
+        updateClearButton()
 
         presenter.setup()
     }
@@ -48,9 +61,17 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         rootView.filterButton.action = #selector(actionFilter)
     }
 
+    private func setupHandlers() {
+        rootView.clearButton.addTarget(self, action: #selector(actionClear), for: .touchUpInside)
+    }
+
     private func setupTableView() {
         rootView.tableView.registerClassForCell(CollatorSelectionCell.self)
         rootView.tableView.registerHeaderFooterView(withClass: CustomValidatorListHeaderView.self)
+
+        rootView.tableView.delegate = self
+        rootView.tableView.dataSource = self
+        rootView.tableView.rowHeight = 44.0
     }
 
     private func setupLocalization() {
@@ -61,12 +82,60 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         rootView.clearButton.imageWithTitleView?.title = R.string.localizable.stakingCustomClearButtonTitle(
             preferredLanguages: selectedLocale.rLanguages
         )
+
         rootView.clearButton.invalidateLayout()
     }
 
-    @objc private func actionSearch() {}
+    private func updateClearButton() {
+        let isEnabled = sorting != CollatorsSortType.defaultType
+        rootView.clearButton.isUserInteractionEnabled = isEnabled
 
-    @objc private func actionFilter() {}
+        if isEnabled {
+            rootView.clearButton.applyEnabledSecondaryStyle()
+        } else {
+            rootView.clearButton.applyDisabledSecondaryStyle()
+        }
+    }
+
+    @objc private func actionSearch() {
+        presenter.presentSearch()
+    }
+
+    @objc private func actionFilter() {
+        presenter.presenterFilters()
+    }
+
+    @objc private func actionClear() {
+        presenter.clearFilters()
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension ParaStkSelectCollatorsViewController: UITableViewDataSource {
+    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
+        collatorViewModels.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithType(CollatorSelectionCell.self)!
+        cell.delegate = self
+
+        let viewModel = collatorViewModels[indexPath.row]
+
+        let displayType: CollatorSelectionCell.DisplayType
+
+        switch sorting {
+        case .rewards:
+            displayType = .accentOnSorting
+        case .minStake, .totalStake, .ownStake:
+            displayType = .accentOnDetails
+        }
+
+        cell.bind(viewModel: viewModel, type: displayType)
+
+        return cell
+    }
 }
 
 // MARK: - UITableViewDelegate
@@ -91,15 +160,23 @@ extension ParaStkSelectCollatorsViewController: UITableViewDelegate {
 
 // MARK: - CustomValidatorCellDelegate
 
-extension ParaStkSelectCollatorsViewController: CustomValidatorCellDelegate {
-    func didTapInfoButton(in cell: CustomValidatorCell) {
+extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
+    func didTapInfoButton(in cell: CollatorSelectionCell) {
         if let indexPath = rootView.tableView.indexPath(for: cell) {
-            presentValidatorInfo(at: indexPath.row)
+            presenter.presentCollatorInfo(at: indexPath.row)
         }
     }
 }
 
-extension ParaStkSelectCollatorsViewController: ParaStkSelectCollatorsViewProtocol {}
+extension ParaStkSelectCollatorsViewController: ParaStkSelectCollatorsViewProtocol {
+    func didReceive(viewModel: CollatorSelectionScreenViewModel) {
+        self.viewModel = viewModel
+
+        rootView.tableView.reloadData()
+
+        updateClearButton()
+    }
+}
 
 extension ParaStkSelectCollatorsViewController: Localizable {
     func applyLocalization() {

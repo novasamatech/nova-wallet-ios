@@ -776,3 +776,5 @@
 "parachain.staking.hint.rewards.format" = "Застейканые токены приносят награду каждый раунд (%@)";
 "common.rewards.column" = "Награды:";
 "common.min.stake.column" = "Мин. стейк:";
+"common.collators.count" = "Коллаторы: %@";
+"common.staking.own.stake" = "Собственный стейк";

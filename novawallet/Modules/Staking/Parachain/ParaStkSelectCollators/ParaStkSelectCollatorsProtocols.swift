@@ -1,11 +1,21 @@
-protocol ParaStkSelectCollatorsViewProtocol: ControllerBackedProtocol {}
+protocol ParaStkSelectCollatorsViewProtocol: ControllerBackedProtocol {
+    func didReceive(viewModel: CollatorSelectionScreenViewModel)
+}
 
 protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
     func setup()
+    func presentCollatorInfo(at index: Int)
+    func presentSearch()
+    func presenterFilters()
+    func clearFilters()
 }
 
-protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {}
+protocol ParaStkSelectCollatorsInteractorInputProtocol: AnyObject {
+    func setup()
+}
 
-protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {}
+protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
+    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>)
+}
 
-protocol ParaStkSelectCollatorsWireframeProtocol: AnyObject {}
+protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable {}
