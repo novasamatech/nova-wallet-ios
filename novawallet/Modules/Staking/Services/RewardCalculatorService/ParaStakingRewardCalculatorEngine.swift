@@ -30,6 +30,10 @@ extension ParaStakingRewardCalculatorEngineProtocol {
     func calculateAvgReturn(for period: CalculationPeriod) -> Decimal {
         calculateAvgEarnings(amount: 1.0, period: period)
     }
+
+    func calculateARP(for collatorId: AccountId) throws -> Decimal {
+        try calculateEarnings(amount: 1.0, collatorAccountId: collatorId, period: .year)
+    }
 }
 
 enum ParaStakingRewardCalculatorEngineError: Error {

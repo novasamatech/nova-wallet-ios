@@ -1,14 +1,34 @@
 import Foundation
 import SoraFoundation
+import SubstrateSdk
+import RobinHood
 
 struct ParaStkSelectCollatorsViewFactory {
-    static func createView(with _: ParachainStakingSharedState) -> ParaStkSelectCollatorsViewProtocol? {
-        let interactor = ParaStkSelectCollatorsInteractor()
+    static func createView(
+        with state: ParachainStakingSharedState
+    ) -> ParaStkSelectCollatorsViewProtocol? {
+        guard
+            let interactor = createInteractor(for: state),
+            let chainAsset = state.settings.value else {
+            return nil
+        }
+
         let wireframe = ParaStkSelectCollatorsWireframe()
 
-        let presenter = ParaStkSelectCollatorsPresenter(interactor: interactor, wireframe: wireframe)
+        let balanceViewModelFactory = BalanceViewModelFactory(
+            targetAssetInfo: chainAsset.assetDisplayInfo
+        )
 
         let localizationManager = LocalizationManager.shared
+
+        let presenter = ParaStkSelectCollatorsPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chainAsset: chainAsset,
+            balanceViewModelFactory: balanceViewModelFactory,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
 
         let view = ParaStkSelectCollatorsViewController(
             presenter: presenter,
@@ -19,5 +39,49 @@ struct ParaStkSelectCollatorsViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor(
+        for state: ParachainStakingSharedState
+    ) -> ParaStkSelectCollatorsInteractor? {
+        guard
+            let chain = state.settings.value?.chain,
+            let collatorService = state.collatorService,
+            let rewardEngineService = state.rewardCalculationService else {
+            return nil
+        }
+
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+
+        guard
+            let connection = chainRegistry.getConnection(for: chain.chainId),
+            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return nil
+        }
+
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let operationManager = OperationManager(operationQueue: operationQueue)
+
+        let requestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+
+        let collatorOperationFactory = ParaStkCollatorsOperationFactory(
+            requestFactory: requestFactory,
+            identityOperationFactory: identityOperationFactory
+        )
+
+        return ParaStkSelectCollatorsInteractor(
+            chain: chain,
+            collatorService: collatorService,
+            rewardService: rewardEngineService,
+            connection: connection,
+            runtimeProvider: runtimeProvider,
+            collatorOperationFactory: collatorOperationFactory,
+            operationQueue: operationQueue
+        )
     }
 }

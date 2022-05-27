@@ -7,8 +7,8 @@ protocol CollatorSelectionCellDelegate: AnyObject {
 
 class CollatorSelectionCell: UITableViewCell {
     enum DisplayType {
-        case accentOnRewards
-        case accentOnMinStake
+        case accentOnSorting
+        case accentOnDetails
     }
 
     weak var delegate: CollatorSelectionCellDelegate?
@@ -29,13 +29,11 @@ class CollatorSelectionCell: UITableViewCell {
         return label
     }()
 
-    let detailsView: TitleHorizontalMultiValueView = {
-        let view = TitleHorizontalMultiValueView()
-        view.detailsTitleLabel.textColor = R.color.colorTransparentText()
-        view.detailsTitleLabel.font = .caption1
-        view.detailsValueLabel.font = .regularFootnote
-        view.spacing = 2.0
-        return view
+    let detailsView: UILabel = {
+        let label = UILabel()
+        label.font = .caption1
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return label
     }()
 
     let sortingByView: MultiValueView = {
@@ -64,9 +62,34 @@ class CollatorSelectionCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func bind(viewModel: CollatorSelectionViewModel, type: DisplayType, locale: Locale) {
-        apply(type: type, locale: locale)
-        apply(viewModel: viewModel)
+    func bind(viewModel: CollatorSelectionViewModel, type: DisplayType) {
+        iconView.bind(icon: viewModel.iconViewModel)
+
+        if let name = viewModel.collator.name {
+            titleLabel.lineBreakMode = .byTruncatingTail
+            titleLabel.text = name
+        } else {
+            titleLabel.lineBreakMode = .byTruncatingMiddle
+            titleLabel.text = viewModel.collator.address
+        }
+
+        applyDetails(
+            title: viewModel.detailsName,
+            subtitle: viewModel.details,
+            displayType: type
+        )
+
+        switch type {
+        case .accentOnSorting:
+            sortingByView.valueTop.textColor = R.color.colorGreen()
+        case .accentOnDetails:
+            sortingByView.valueTop.textColor = R.color.colorWhite()
+        }
+
+        sortingByView.valueTop.text = viewModel.sortedByTitle
+        sortingByView.valueBottom.text = viewModel.sortedByDetails
+
+        setNeedsLayout()
     }
 
     private func configure() {
@@ -113,39 +136,40 @@ class CollatorSelectionCell: UITableViewCell {
 
         contentView.addSubview(sortingByView)
         sortingByView.snp.makeConstraints { make in
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4.0)
-            make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(4.0)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(40.0)
+            make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(40.0)
             make.trailing.equalTo(infoButton.snp.leading).offset(-4)
             make.centerY.equalToSuperview()
         }
     }
 
-    private func apply(type: DisplayType, locale: Locale) {
-        switch type {
-        case .accentOnRewards:
-            detailsView.detailsValueLabel.textColor = R.color.colorGreen()
-            sortingByView.valueTop.textColor = R.color.colorWhite()
-            detailsView.detailsTitleLabel.text = R.string.localizable.commonRewardsColumn(
-                preferredLanguages: locale.rLanguages
-            )
-        case .accentOnMinStake:
-            detailsView.detailsValueLabel.textColor = R.color.colorWhite()
-            sortingByView.valueTop.textColor = R.color.colorGreen()
-            detailsView.detailsTitleLabel.text = R.string.localizable.commonMinStakeColumn(
-                preferredLanguages: locale.rLanguages
-            )
+    private func applyDetails(title: String, subtitle: String, displayType: DisplayType) {
+        let subtitleColor: UIColor
+
+        let attributedString = NSMutableAttributedString(
+            string: title,
+            attributes: [
+                .foregroundColor: R.color.colorTransparentText()!
+            ]
+        )
+
+        switch displayType {
+        case .accentOnDetails:
+            subtitleColor = R.color.colorGreen()!
+        case .accentOnSorting:
+            subtitleColor = R.color.colorWhite()!
         }
-    }
 
-    private func apply(viewModel: CollatorSelectionViewModel) {
-        iconView.bind(icon: viewModel.iconViewModel)
+        let subtitleAttributedString = NSAttributedString(
+            string: " " + subtitle,
+            attributes: [
+                .foregroundColor: subtitleColor
+            ]
+        )
 
-        titleLabel.text = viewModel.title
-        detailsView.detailsValueLabel.text = viewModel.details
-        sortingByView.valueTop.text = viewModel.sortedByTitle
-        sortingByView.valueBottom.text = viewModel.sortedByDetails
+        attributedString.append(subtitleAttributedString)
 
-        setNeedsLayout()
+        detailsView.attributedText = attributedString
     }
 
     @objc
