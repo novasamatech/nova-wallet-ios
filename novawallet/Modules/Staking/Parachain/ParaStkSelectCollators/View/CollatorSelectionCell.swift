@@ -102,7 +102,7 @@ class CollatorSelectionCell: UITableViewCell {
         )
 
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = .clear
+        selectedBackgroundView?.backgroundColor = R.color.colorHighlightedAccent()!
 
         infoButton.addTarget(self, action: #selector(tapInfoButton), for: .touchUpInside)
     }

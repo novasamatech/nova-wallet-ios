@@ -166,6 +166,8 @@ extension ParaStkSelectCollatorsViewController: UITableViewDataSource {
 extension ParaStkSelectCollatorsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
+        presenter.selectCollator(at: indexPath.row)
     }
 
     func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
@@ -231,7 +233,7 @@ extension ParaStkSelectCollatorsViewController: EmptyStateDelegate {
 extension ParaStkSelectCollatorsViewController: CollatorSelectionCellDelegate {
     func didTapInfoButton(in cell: CollatorSelectionCell) {
         if let indexPath = rootView.tableView.indexPath(for: cell) {
-            presenter.presentCollatorInfo(at: indexPath.row)
+            presenter.presentCollator(at: indexPath.row)
         }
     }
 }
