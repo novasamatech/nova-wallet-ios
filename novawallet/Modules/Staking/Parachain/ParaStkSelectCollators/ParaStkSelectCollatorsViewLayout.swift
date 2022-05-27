@@ -15,24 +15,16 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
         return button
     }()
 
-    let searchButton: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: R.image.iconSearchWhite(),
-            style: .plain,
-            target: nil,
-            action: nil
-        )
-        return item
+    let searchButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(R.image.iconSearchWhite(), for: .normal)
+        return button
     }()
 
-    let filterButton: UIBarButtonItem = {
-        let item = UIBarButtonItem(
-            image: R.image.iconFilter(),
-            style: .plain,
-            target: nil,
-            action: nil
-        )
-        return item
+    let filterButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(R.image.iconFilterActive(), for: .normal)
+        return button
     }()
 
     override init(frame: CGRect) {
@@ -52,7 +44,7 @@ final class ParaStkSelectCollatorsViewLayout: UIView {
         addSubview(clearButton)
         clearButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.top.equalTo(safeAreaLayoutGuide).offset(12.0)
+            make.top.equalTo(safeAreaLayoutGuide).offset(8.0)
             make.height.equalTo(32.0)
         }
 
