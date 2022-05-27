@@ -5,7 +5,8 @@ protocol ParaStkSelectCollatorsViewProtocol: ControllerBackedProtocol {
 protocol ParaStkSelectCollatorsPresenterProtocol: AnyObject {
     func setup()
     func refresh()
-    func presentCollatorInfo(at index: Int)
+    func presentCollator(at index: Int)
+    func selectCollator(at index: Int)
     func presentSearch()
     func presenterFilters()
     func clearFilters()
@@ -21,4 +22,10 @@ protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
     func didReceivePrice(result: Result<PriceData?, Error>)
 }
 
-protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func close(view: ParaStkSelectCollatorsViewProtocol?)
+}
+
+protocol ParaStkSelectCollatorsDelegate: AnyObject {
+    func didSelect(collator: CollatorSelectionInfo)
+}

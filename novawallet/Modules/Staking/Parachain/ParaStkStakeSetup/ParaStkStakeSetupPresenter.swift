@@ -193,10 +193,11 @@ final class ParaStkStakeSetupPresenter {
         provideFeeViewModel()
 
         let collatorsDelegationsCount = collatorMetadata?.delegationCount ?? 0
+        let collator = try? collatorDisplayAddress?.address.toAccountId()
 
         interactor.estimateFee(
             amount,
-            collator: nil,
+            collator: collator,
             collatorDelegationsCount: collatorsDelegationsCount,
             delegationsCount: 0
         )
@@ -216,7 +217,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
     }
 
     func selectCollator() {
-        wireframe.showCollatorSelection(from: view)
+        wireframe.showCollatorSelection(from: view, delegate: self)
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -335,18 +336,11 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 
     func didCompleteSetup() {
         refreshFee()
-
-        interactor.rotateSelectedCollator()
     }
 
-    func didReceiveCollator(
-        metadata: ParachainStaking.CandidateMetadata?,
-        address: DisplayAddress
-    ) {
+    func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?) {
         collatorMetadata = metadata
-        collatorDisplayAddress = address
 
-        provideCollatorViewModel()
         provideMinStakeViewModel()
         provideRewardsViewModel()
         refreshFee()
@@ -360,6 +354,29 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
         logger.error("Did receive error: \(error)")
+    }
+}
+
+extension ParaStkStakeSetupPresenter: ParaStkSelectCollatorsDelegate {
+    func didSelect(collator: CollatorSelectionInfo) {
+        guard
+            let newAddress = try? collator.accountId.toAddress(using: chainAsset.chain.chainFormat),
+            collatorDisplayAddress?.address != newAddress else {
+            return
+        }
+
+        collatorDisplayAddress = DisplayAddress(
+            address: newAddress,
+            username: collator.identity?.displayName ?? ""
+        )
+
+        collatorMetadata = nil
+
+        provideCollatorViewModel()
+        provideMinStakeViewModel()
+        provideRewardsViewModel()
+
+        interactor.applyCollator(with: collator.accountId)
     }
 }
 

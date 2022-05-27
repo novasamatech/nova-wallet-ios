@@ -5,7 +5,8 @@ import RobinHood
 
 struct ParaStkSelectCollatorsViewFactory {
     static func createView(
-        with state: ParachainStakingSharedState
+        with state: ParachainStakingSharedState,
+        delegate: ParaStkSelectCollatorsDelegate
     ) -> ParaStkSelectCollatorsViewProtocol? {
         guard
             let interactor = createInteractor(for: state),
@@ -24,6 +25,7 @@ struct ParaStkSelectCollatorsViewFactory {
         let presenter = ParaStkSelectCollatorsPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            delegate: delegate,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             localizationManager: localizationManager,
