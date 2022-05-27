@@ -8,7 +8,7 @@ final class ParaStkSelectCollatorsPresenter {
     let wireframe: ParaStkSelectCollatorsWireframeProtocol
     let interactor: ParaStkSelectCollatorsInteractorInputProtocol
 
-    private var collatorsInfo: [CollatorSelectionInfo]?
+    private var collatorsInfoResult: Result<[CollatorSelectionInfo], Error>?
     private var price: PriceData?
 
     private var sorting: CollatorsSortType = .rewards
@@ -166,9 +166,10 @@ final class ParaStkSelectCollatorsPresenter {
         )
     }
 
-    private func provideViewModel() {
+    private func provideState() {
         do {
-            guard let collatorsInfo = collatorsInfo else {
+            guard let collatorsInfo = try collatorsInfoResult?.get() else {
+                view?.didReceive(state: .loading)
                 return
             }
 
@@ -184,9 +185,14 @@ final class ParaStkSelectCollatorsPresenter {
                 header: headerViewModel
             )
 
-            view?.didReceive(viewModel: viewModel)
+            view?.didReceive(state: .loaded(viewModel: viewModel))
         } catch {
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+            let errorDescription = R.string.localizable.commonErrorNoDataRetrieved(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            view?.didReceive(state: .error(errorDescription))
+
             logger.error("Unexpected error: \(error)")
         }
     }
@@ -197,6 +203,10 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
         interactor.setup()
     }
 
+    func refresh() {
+        interactor.refresh()
+    }
+
     func presentCollatorInfo(at _: Int) {}
 
     func presentSearch() {}
@@ -205,20 +215,23 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 
     func clearFilters() {
         sorting = CollatorsSortType.defaultType
-        provideViewModel()
+        provideState()
     }
 }
 
 extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutputProtocol {
     func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>) {
+        collatorsInfoResult = result
+        provideState()
+    }
+
+    func didReceivePrice(result: Result<PriceData?, Error>) {
         switch result {
-        case let .success(info):
-            collatorsInfo = info
+        case let .success(price):
+            self.price = price
 
-            provideViewModel()
+            provideState()
         case let .failure(error):
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-
             logger.error("Did receive error: \(error)")
         }
     }
@@ -227,7 +240,7 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsInteractorOutpu
 extension ParaStkSelectCollatorsPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            provideViewModel()
+            provideState()
         }
     }
 }
