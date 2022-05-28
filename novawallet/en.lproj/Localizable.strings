@@ -779,3 +779,7 @@
 "common.parastk.collators.count" = "Collators: %@";
 "common.staking.own.stake" = "Own stake";
 "common.loading.collators" = "Loading collators...";
+"parastk.collators.filter.rewards" = "Estimated rewards (% APR)";
+"parastk.collators.filter.min.stake" = "Minimum stake";
+"parastk.collators.filter.total.stake" = "Total stake";
+"parastk.collators.filter.own.stake" = "Collator's own stake";
