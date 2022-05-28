@@ -234,7 +234,13 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 
     func presentSearch() {}
 
-    func presenterFilters() {}
+    func presenterFilters() {
+        wireframe.showFilters(
+            from: view,
+            for: sorting,
+            delegate: self
+        )
+    }
 
     func clearFilters() {
         sorting = CollatorsSortType.defaultType
@@ -270,5 +276,17 @@ extension ParaStkSelectCollatorsPresenter: Localizable {
         if let view = view, view.isSetup {
             provideState()
         }
+    }
+}
+
+extension ParaStkSelectCollatorsPresenter: ParaStkCollatorFiltersDelegate {
+    func didReceiveCollator(sorting: CollatorsSortType) {
+        self.sorting = sorting
+
+        if let collatorsInfoResult = collatorsInfoResult {
+            applySortingAndSaveResult(collatorsInfoResult)
+        }
+
+        provideState()
     }
 }
