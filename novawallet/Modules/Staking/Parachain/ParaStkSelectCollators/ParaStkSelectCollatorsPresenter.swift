@@ -109,7 +109,7 @@ final class ParaStkSelectCollatorsPresenter {
         switch sorting {
         case .rewards:
             let title = R.string.localizable.commonMinStakeColumn(preferredLanguages: languages)
-            let amount = createBalanceViewModel(for: collatorInfo.minStake).amount
+            let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
 
             return TitleWithSubtitleViewModel(
                 title: title,
@@ -137,7 +137,7 @@ final class ParaStkSelectCollatorsPresenter {
 
             return TitleWithSubtitleViewModel(title: rewardsString ?? "")
         case .minStake:
-            return createDetailsViewModel(for: collatorInfo.minStake)
+            return createDetailsViewModel(for: collatorInfo.minRewardableStake)
         case .totalStake:
             return createDetailsViewModel(for: collatorInfo.totalStake)
         case .ownStake:
