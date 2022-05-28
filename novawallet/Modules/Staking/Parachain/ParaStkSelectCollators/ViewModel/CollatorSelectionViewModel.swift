@@ -14,6 +14,7 @@ struct CollatorSelectionScreenViewModel {
     let collators: [CollatorSelectionViewModel]
     let sorting: CollatorsSortType
     let header: TitleWithSubtitleViewModel
+    let filtersApplied: Bool
 }
 
 typealias CollatorSelectionState = GenericViewState<CollatorSelectionScreenViewModel>
