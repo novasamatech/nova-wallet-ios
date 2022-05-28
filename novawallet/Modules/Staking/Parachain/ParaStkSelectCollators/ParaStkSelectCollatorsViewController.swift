@@ -19,6 +19,10 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         state?.viewModel?.header
     }
 
+    private var filtersApplied: Bool {
+        state?.viewModel?.filtersApplied ?? false
+    }
+
     private var state: CollatorSelectionState?
 
     init(
@@ -96,11 +100,15 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         rootView.clearButton.invalidateLayout()
     }
 
-    private func updateClearButton() {
-        let isEnabled = sorting != CollatorsSortType.defaultType
-        rootView.clearButton.isUserInteractionEnabled = isEnabled
+    private func updateSetFiltersButton() {
+        let image = filtersApplied ? R.image.iconFilterActive() : R.image.iconFilter()
+        rootView.filterButton.setImage(image, for: .normal)
+    }
 
-        if isEnabled {
+    private func updateClearButton() {
+        rootView.clearButton.isUserInteractionEnabled = filtersApplied
+
+        if filtersApplied {
             rootView.clearButton.applyEnabledSecondaryStyle()
         } else {
             rootView.clearButton.applyDisabledSecondaryStyle()
@@ -118,6 +126,7 @@ final class ParaStkSelectCollatorsViewController: UIViewController, ViewHolder {
         }
 
         updateClearButton()
+        updateSetFiltersButton()
     }
 
     @objc private func actionSearch() {

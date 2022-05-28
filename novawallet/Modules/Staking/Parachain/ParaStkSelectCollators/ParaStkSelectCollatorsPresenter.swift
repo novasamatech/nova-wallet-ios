@@ -182,10 +182,13 @@ final class ParaStkSelectCollatorsPresenter {
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
+            let filtersApplied = sorting != CollatorsSortType.defaultType
+
             let viewModel = CollatorSelectionScreenViewModel(
                 collators: collatorsViewModels,
                 sorting: sorting,
-                header: headerViewModel
+                header: headerViewModel,
+                filtersApplied: filtersApplied
             )
 
             view?.didReceive(state: .loaded(viewModel: viewModel))
