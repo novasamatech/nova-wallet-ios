@@ -218,6 +218,9 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
     }
 
     func refresh() {
+        collatorsInfoResult = nil
+        provideState()
+
         interactor.refresh()
     }
 
