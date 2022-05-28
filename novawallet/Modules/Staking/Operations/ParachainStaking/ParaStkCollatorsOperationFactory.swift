@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SubstrateSdk
+import BigInt
 
 protocol ParaStkCollatorsOperationFactoryProtocol {
     func electedCollatorsInfoOperation(
@@ -24,11 +25,13 @@ final class ParaStkCollatorsOperationFactory {
         self.identityOperationFactory = identityOperationFactory
     }
 
+    // swiftlint:disable:next function_parameter_count
     private func createMappingOperation(
         dependingOn selectedCollatorsOperation: BaseOperation<SelectedRoundCollators>,
         rewardEngineOperation: BaseOperation<ParaStakingRewardCalculatorEngineProtocol>,
         metadataOperation: BaseOperation<[StorageResponse<ParachainStaking.CandidateMetadata>]>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>,
+        minTechStakeOperation: BaseOperation<BigUInt>,
         chainFormat: ChainFormat
     ) -> BaseOperation<[CollatorSelectionInfo]> {
         ClosureOperation<[CollatorSelectionInfo]> {
@@ -36,6 +39,7 @@ final class ParaStkCollatorsOperationFactory {
             let metadataList = try metadataOperation.extractNoCancellableResultData()
             let identities = try identityOperation.extractNoCancellableResultData()
             let rewardEngine = try rewardEngineOperation.extractNoCancellableResultData()
+            let minTechStake = try minTechStakeOperation.extractNoCancellableResultData()
 
             let commission = selectedCollators.commission
 
@@ -56,7 +60,8 @@ final class ParaStkCollatorsOperationFactory {
                         snapshot: collator.snapshot,
                         identity: identity,
                         apr: apr,
-                        commission: commission
+                        commission: commission,
+                        minTechStake: minTechStake
                     )
                 }
         }
@@ -102,18 +107,27 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
 
         identityWrapper.addDependency(operations: [selectedCollatorsOperation])
 
+        let minTechStakeOperation: BaseOperation<BigUInt> = PrimitiveConstantOperation.operation(
+            for: ParachainStaking.minDelegatorStk,
+            dependingOn: codingFactoryOperation
+        )
+
+        minTechStakeOperation.addDependency(codingFactoryOperation)
+
         let mappingOperation = createMappingOperation(
             dependingOn: selectedCollatorsOperation,
             rewardEngineOperation: rewardEngineOperation,
             metadataOperation: metadataWrapper.targetOperation,
             identityOperation: identityWrapper.targetOperation,
+            minTechStakeOperation: minTechStakeOperation,
             chainFormat: chainFormat
         )
 
         mappingOperation.addDependency(metadataWrapper.targetOperation)
         mappingOperation.addDependency(identityWrapper.targetOperation)
 
-        let baseOperations = [codingFactoryOperation, selectedCollatorsOperation, rewardEngineOperation]
+        let baseOperations = [codingFactoryOperation, selectedCollatorsOperation, rewardEngineOperation,
+                              minTechStakeOperation]
         let dependencies = baseOperations + metadataWrapper.allOperations + identityWrapper.allOperations
 
         return CompoundOperationWrapper(
