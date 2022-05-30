@@ -1,4 +1,4 @@
-protocol ParaStkCollatorInfoViewProtocol: AnyObject {}
+protocol ParaStkCollatorInfoViewProtocol: ValidatorInfoViewProtocol {}
 
 protocol ParaStkCollatorInfoPresenterProtocol: AnyObject {
     func setup()
@@ -6,10 +6,14 @@ protocol ParaStkCollatorInfoPresenterProtocol: AnyObject {
 
 protocol ParaStkCollatorInfoInteractorInputProtocol: AnyObject {
     func setup()
+    func reload()
 }
 
 protocol ParaStkCollatorInfoInteractorOutputProtocol: AnyObject {
     func didReceivePrice(result: Result<PriceData?, Error>)
 }
 
-protocol ParaStkCollatorInfoWireframeProtocol: AnyObject {}
+protocol ParaStkCollatorInfoWireframeProtocol: IdentityPresentable,
+    AddressOptionsPresentable,
+    ErrorPresentable,
+    StakingTotalStakePresentable {}

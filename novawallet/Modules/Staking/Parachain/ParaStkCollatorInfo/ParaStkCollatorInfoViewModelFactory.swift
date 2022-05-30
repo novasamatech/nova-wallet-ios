@@ -17,10 +17,10 @@ protocol ParaStkCollatorInfoViewModelFactoryProtocol {
     ) throws -> ValidatorInfoViewModel
 }
 
-final class ParaStkCollatorInfoViewModelFactory {
+final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
-    private lazy var accountViewModelFactory = WalletAccountViewModelFactory()
+    private lazy var iconGenerator = PolkadotIconGenerator()
 
     let precision: Int16
     let chainFormat: ChainFormat
@@ -35,32 +35,14 @@ final class ParaStkCollatorInfoViewModelFactory {
         self.chainFormat = chainFormat
     }
 
-    // MARK: - Private functions
+    private func createMinimumStakeViewModel(
+        from collatorInfo: CollatorSelectionInfo,
+        price: PriceData?,
+        locale: Locale
+    ) -> BalanceViewModelProtocol {
+        let amount = Decimal.fromSubstrateAmount(collatorInfo.minRewardableStake, precision: precision) ?? 0
 
-    // MARK: Identity Rows
-
-    private func createLegalRow(with legal: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityLegalNameTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .text(legal))
-    }
-
-    private func createEmailRow(with email: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityEmailTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(email, tag: .email))
-    }
-
-    private func createWebRow(with web: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityWebTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(web, tag: .web))
-    }
-
-    private func createTwitterRow(with twitter: String) -> ValidatorInfoViewModel.IdentityItem {
-        .init(title: "Twitter", value: .link(twitter, tag: .twitter))
-    }
-
-    private func createRiotRow(with riot: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityRiotNameTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(riot, tag: .riot))
+        return balanceViewModelFactory.balanceFromPrice(amount, priceData: price).value(for: locale)
     }
 
     private func createExposure(
@@ -96,46 +78,20 @@ final class ParaStkCollatorInfoViewModelFactory {
             priceData: priceData
         ).value(for: locale)
 
-        let estimatedReward = NumberFormatter.percentAPY.localizableResource()
+        let estimatedReward = NumberFormatter.percentAPR.localizableResource()
             .value(for: locale).stringFromDecimal(collatorInfo.apr) ?? ""
+
+        let minStake = createMinimumStakeViewModel(from: collatorInfo, price: priceData, locale: locale)
 
         return ValidatorInfoViewModel.Exposure(
             nominators: nominators,
             maxNominators: maxNominatorsRewardedString,
             myNomination: myNomination,
             totalStake: totalStake,
+            minRewardableStake: minStake,
             estimatedReward: estimatedReward,
             oversubscribed: false
         )
-    }
-
-    private func createIdentityViewModel(
-        from identity: AccountIdentity,
-        locale: Locale
-    ) -> [ValidatorInfoViewModel.IdentityItem] {
-        var identityItems: [ValidatorInfoViewModel.IdentityItem] = []
-
-        if let legal = identity.legal {
-            identityItems.append(createLegalRow(with: legal, locale: locale))
-        }
-
-        if let email = identity.email {
-            identityItems.append(createEmailRow(with: email, locale: locale))
-        }
-
-        if let web = identity.web {
-            identityItems.append(createWebRow(with: web, locale: locale))
-        }
-
-        if let twitter = identity.twitter {
-            identityItems.append(createTwitterRow(with: twitter))
-        }
-
-        if let riot = identity.riot {
-            identityItems.append(createRiotRow(with: riot, locale: locale))
-        }
-
-        return identityItems
     }
 
     private func createOwnStakeTitle() -> LocalizableResource<String> {
@@ -144,9 +100,9 @@ final class ParaStkCollatorInfoViewModelFactory {
         }
     }
 
-    private func createNominatorsStakeTitle() -> LocalizableResource<String> {
+    private func createDelegatorsStakeTitle() -> LocalizableResource<String> {
         LocalizableResource { locale in
-            R.string.localizable.stakingValidatorNominators(preferredLanguages: locale.rLanguages)
+            R.string.localizable.commonParastkDelegators(preferredLanguages: locale.rLanguages)
         }
     }
 
@@ -183,9 +139,12 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
         locale: Locale
     ) throws -> ValidatorInfoViewModel {
         let address = try collatorInfo.accountId.toAddress(using: chainFormat)
-        let accountViewModel = accountViewModelFactory.createViewModel(
-            from: address,
-            identity: collatorInfo.identity
+        let iconViewModel = try iconGenerator.generateFromAccountId(collatorInfo.accountId)
+        let accountViewModel = WalletAccountViewModel(
+            walletName: collatorInfo.identity?.displayName,
+            walletIcon: nil,
+            address: address,
+            addressIcon: DrawableIconViewModel(icon: iconViewModel)
         )
 
         let status: ValidatorInfoViewModel.StakingStatus
@@ -234,7 +193,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
                 priceData: priceData
             ),
             createStakingAmountRow(
-                title: createNominatorsStakeTitle(),
+                title: createDelegatorsStakeTitle(),
                 amount: delegatorsStake,
                 priceData: priceData
             ),

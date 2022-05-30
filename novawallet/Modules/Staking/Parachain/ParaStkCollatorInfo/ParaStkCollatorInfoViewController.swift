@@ -1,28 +1,40 @@
-import UIKit
+import Foundation
 
-final class ParaStkCollatorInfoViewController: UIViewController {
-    typealias RootViewType = ParaStkCollatorInfoViewLayout
-
-    let presenter: ParaStkCollatorInfoPresenterProtocol
-
-    init(presenter: ParaStkCollatorInfoPresenterProtocol) {
-        self.presenter = presenter
-        super.init(nibName: nil, bundle: nil)
+final class ParaStkCollatorInfoViewController: ValidatorInfoViewController {
+    override func applyTitle() {
+        title = R.string.localizable.parastkCollatorInfo(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func applyAccountView(from viewModel: ValidatorInfoViewModel) {
+        let accountView = rootView.addIdentityAccountView(for: viewModel.account.displayAddress())
+
+        accountView.addTarget(self, action: #selector(actionAccountOptions), for: .touchUpInside)
     }
 
-    override func loadView() {
-        view = ParaStkCollatorInfoViewLayout()
+    override func applyNominatorsView(from exposure: ValidatorInfoViewModel.Exposure) {
+        let delegatorsTitle = R.string.localizable.commonParastkDelegators(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.addNominatorsView(exposure, title: delegatorsTitle)
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func applyEstimatedReward(_ estimatedReward: String) {
+        if let stakingTableView = rootView.stakingTableView {
+            rootView.addTitleValueView(
+                for: R.string.localizable.stakingValidatorEstimatedReward(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                value: estimatedReward,
+                to: stakingTableView
+            )
+        }
+    }
 
-        presenter.setup()
+    @objc private func actionAccountOptions() {
+        presenter.presentAccountOptions()
     }
 }
 

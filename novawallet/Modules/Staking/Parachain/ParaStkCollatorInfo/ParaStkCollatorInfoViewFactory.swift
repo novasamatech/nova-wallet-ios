@@ -1,11 +1,15 @@
 import Foundation
+import SoraFoundation
 
 struct ParaStkCollatorInfoViewFactory {
     static func createView(
         for state: ParachainStakingSharedState,
         collatorInfo: CollatorSelectionInfo
     ) -> ParaStkCollatorInfoViewProtocol? {
-        guard let chainAsset = state.settings.value else {
+        guard
+            let chainAsset = state.settings.value,
+            let metaAccount = SelectedWalletSettings.shared.value,
+            let selectedAccount = metaAccount.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()) else {
             return nil
         }
 
@@ -16,9 +20,27 @@ struct ParaStkCollatorInfoViewFactory {
 
         let wireframe = ParaStkCollatorInfoWireframe()
 
-        let presenter = ParaStkCollatorInfoPresenter(interactor: interactor, wireframe: wireframe)
+        let localizationManager = LocalizationManager.shared
 
-        let view = ParaStkCollatorInfoViewController(presenter: presenter)
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+        let viewModelFactory = ParaStkCollatorInfoViewModelFactory(
+            balanceViewModelFactory: BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo),
+            precision: assetDisplayInfo.assetPrecision,
+            chainFormat: chainAsset.chain.chainFormat
+        )
+
+        let presenter = ParaStkCollatorInfoPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            chain: chainAsset.chain,
+            selectedAccount: selectedAccount,
+            collatorInfo: collatorInfo,
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager,
+            logger: Logger.shared
+        )
+
+        let view = ParaStkCollatorInfoViewController(presenter: presenter, localizationManager: localizationManager)
 
         presenter.view = view
         interactor.presenter = presenter

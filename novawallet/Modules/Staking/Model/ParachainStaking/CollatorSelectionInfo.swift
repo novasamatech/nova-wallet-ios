@@ -24,6 +24,6 @@ struct CollatorSelectionInfo {
     }
 
     var delegatorsStake: BigUInt {
-        totalStake > ownStake ? totalStake - ownStake ? 0
+        totalStake > ownStake ? totalStake - ownStake : 0
     }
 }

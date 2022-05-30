@@ -25,12 +25,16 @@ extension ParaStkCollatorInfoInteractor: ParaStkCollatorInfoInteractorInputProto
             presenter?.didReceivePrice(result: .success(nil))
         }
     }
+
+    func reload() {
+        priceProvider?.refresh()
+    }
 }
 
 extension ParaStkCollatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(
         result: Result<PriceData?, Error>,
-        priceId: AssetModel.PriceId
+        priceId _: AssetModel.PriceId
     ) {
         presenter?.didReceivePrice(result: result)
     }
