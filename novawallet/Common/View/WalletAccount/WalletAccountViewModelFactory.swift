@@ -89,4 +89,37 @@ final class WalletAccountViewModelFactory {
             )
         }
     }
+
+    func createViewModel(from address: AccountAddress, identity: AccountIdentity?) -> WalletAccountViewModel {
+        do {
+            let walletIconViewModel: ImageViewModelProtocol?
+            let walletName: String?
+
+            if let validatorName = identity?.displayName {
+                let walletIcon = try walletIconGenerator.generateFromAddress(address)
+                walletIconViewModel = DrawableIconViewModel(icon: walletIcon)
+                walletName = validatorName
+            } else {
+                walletIconViewModel = nil
+                walletName = nil
+            }
+
+            let addressIcon = try addressIconGenerator.generateFromAddress(address)
+            let addressIconViewModel = DrawableIconViewModel(icon: addressIcon)
+
+            return WalletAccountViewModel(
+                walletName: walletName,
+                walletIcon: walletIconViewModel,
+                address: address,
+                addressIcon: addressIconViewModel
+            )
+        } catch {
+            return WalletAccountViewModel(
+                walletName: identity?.displayName,
+                walletIcon: nil,
+                address: address,
+                addressIcon: nil
+            )
+        }
+    }
 }
