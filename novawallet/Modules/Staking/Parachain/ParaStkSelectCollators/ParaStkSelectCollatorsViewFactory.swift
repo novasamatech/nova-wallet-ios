@@ -14,7 +14,7 @@ struct ParaStkSelectCollatorsViewFactory {
             return nil
         }
 
-        let wireframe = ParaStkSelectCollatorsWireframe()
+        let wireframe = ParaStkSelectCollatorsWireframe(sharedState: state)
 
         let balanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: chainAsset.assetDisplayInfo

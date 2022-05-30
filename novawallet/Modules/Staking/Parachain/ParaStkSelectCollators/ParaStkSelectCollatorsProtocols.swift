@@ -24,10 +24,17 @@ protocol ParaStkSelectCollatorsInteractorOutputProtocol: AnyObject {
 
 protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable {
     func close(view: ParaStkSelectCollatorsViewProtocol?)
+
     func showFilters(
         from view: ParaStkSelectCollatorsViewProtocol?,
         for sorting: CollatorsSortType,
         delegate: ParaStkCollatorFiltersDelegate
+    )
+
+    func showSearch(
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        for collatorsInfo: [CollatorSelectionInfo],
+        delegate: ParaStkSelectCollatorsDelegate
     )
 }
 
