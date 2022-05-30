@@ -36,6 +36,11 @@ protocol ParaStkSelectCollatorsWireframeProtocol: AlertPresentable, ErrorPresent
         for collatorsInfo: [CollatorSelectionInfo],
         delegate: ParaStkSelectCollatorsDelegate
     )
+
+    func showCollatorInfo(
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        collatorInfo: CollatorSelectionInfo
+    )
 }
 
 protocol ParaStkSelectCollatorsDelegate: AnyObject {

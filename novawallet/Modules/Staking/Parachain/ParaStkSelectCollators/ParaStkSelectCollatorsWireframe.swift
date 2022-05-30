@@ -48,4 +48,15 @@ final class ParaStkSelectCollatorsWireframe: ParaStkSelectCollatorsWireframeProt
             animated: true
         )
     }
+
+    func showCollatorInfo(
+        from view: ParaStkSelectCollatorsViewProtocol?,
+        collatorInfo: CollatorSelectionInfo
+    ) {
+        guard let infoView = ParaStkCollatorInfoViewFactory.createView(for: sharedState, collatorInfo: collatorInfo) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(infoView.controller, animated: true)
+    }
 }
