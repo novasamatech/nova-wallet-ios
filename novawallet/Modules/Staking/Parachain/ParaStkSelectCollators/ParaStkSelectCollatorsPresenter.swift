@@ -238,7 +238,19 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 
     func presentCollator(at _: Int) {}
 
-    func presentSearch() {}
+    func presentSearch() {
+        guard
+            let collatorsInfo = try? collatorsInfoResult?.get(),
+            let delegate = delegate else {
+            return
+        }
+
+        wireframe.showSearch(
+            from: view,
+            for: collatorsInfo,
+            delegate: delegate
+        )
+    }
 
     func presenterFilters() {
         wireframe.showFilters(
