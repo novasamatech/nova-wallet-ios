@@ -8,9 +8,10 @@ struct CollatorSelectionInfo {
     let identity: AccountIdentity?
     let apr: Decimal
     let commission: BigUInt
+    let minTechStake: BigUInt
 
-    var minStake: BigUInt {
-        metadata.lowestTopDelegationAmount
+    var minRewardableStake: BigUInt {
+        metadata.minRewardableStake(for: minTechStake)
     }
 
     var totalStake: BigUInt {
