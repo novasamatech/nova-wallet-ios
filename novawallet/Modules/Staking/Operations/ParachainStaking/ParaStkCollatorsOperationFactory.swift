@@ -32,6 +32,7 @@ final class ParaStkCollatorsOperationFactory {
         metadataOperation: BaseOperation<[StorageResponse<ParachainStaking.CandidateMetadata>]>,
         identityOperation: BaseOperation<[AccountAddress: AccountIdentity]>,
         minTechStakeOperation: BaseOperation<BigUInt>,
+        maxRewardedDelegationsOperation: BaseOperation<UInt32>,
         chainFormat: ChainFormat
     ) -> BaseOperation<[CollatorSelectionInfo]> {
         ClosureOperation<[CollatorSelectionInfo]> {
@@ -40,6 +41,7 @@ final class ParaStkCollatorsOperationFactory {
             let identities = try identityOperation.extractNoCancellableResultData()
             let rewardEngine = try rewardEngineOperation.extractNoCancellableResultData()
             let minTechStake = try minTechStakeOperation.extractNoCancellableResultData()
+            let maxRewardedDelegations = try maxRewardedDelegationsOperation.extractNoCancellableResultData()
 
             let commission = selectedCollators.commission
 
@@ -61,7 +63,8 @@ final class ParaStkCollatorsOperationFactory {
                         identity: identity,
                         apr: apr,
                         commission: commission,
-                        minTechStake: minTechStake
+                        minTechStake: minTechStake,
+                        maxRewardedDelegations: maxRewardedDelegations
                     )
                 }
         }
@@ -112,7 +115,13 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
             dependingOn: codingFactoryOperation
         )
 
+        let maxRewardedDelegationsOperation: BaseOperation<UInt32> = PrimitiveConstantOperation.operation(
+            for: ParachainStaking.maxTopDelegationsPerCandidate,
+            dependingOn: codingFactoryOperation
+        )
+
         minTechStakeOperation.addDependency(codingFactoryOperation)
+        maxRewardedDelegationsOperation.addDependency(codingFactoryOperation)
 
         let mappingOperation = createMappingOperation(
             dependingOn: selectedCollatorsOperation,
@@ -120,19 +129,19 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
             metadataOperation: metadataWrapper.targetOperation,
             identityOperation: identityWrapper.targetOperation,
             minTechStakeOperation: minTechStakeOperation,
+            maxRewardedDelegationsOperation: maxRewardedDelegationsOperation,
             chainFormat: chainFormat
         )
 
         mappingOperation.addDependency(metadataWrapper.targetOperation)
         mappingOperation.addDependency(identityWrapper.targetOperation)
+        mappingOperation.addDependency(minTechStakeOperation)
+        mappingOperation.addDependency(maxRewardedDelegationsOperation)
 
         let baseOperations = [codingFactoryOperation, selectedCollatorsOperation, rewardEngineOperation,
-                              minTechStakeOperation]
+                              minTechStakeOperation, maxRewardedDelegationsOperation]
         let dependencies = baseOperations + metadataWrapper.allOperations + identityWrapper.allOperations
 
-        return CompoundOperationWrapper(
-            targetOperation: mappingOperation,
-            dependencies: dependencies
-        )
+        return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 }
