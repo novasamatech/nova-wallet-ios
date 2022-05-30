@@ -16,41 +16,13 @@ protocol ValidatorInfoViewModelFactoryProtocol {
     ) -> ValidatorInfoViewModel
 }
 
-final class ValidatorInfoViewModelFactory {
+final class ValidatorInfoViewModelFactory: BaseValidatorInfoViewModelFactory {
     private let balanceViewModelFactory: BalanceViewModelFactoryProtocol
 
     private lazy var accountViewModelFactory = WalletAccountViewModelFactory()
 
     init(balanceViewModelFactory: BalanceViewModelFactoryProtocol) {
         self.balanceViewModelFactory = balanceViewModelFactory
-    }
-
-    // MARK: - Private functions
-
-    // MARK: Identity Rows
-
-    private func createLegalRow(with legal: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityLegalNameTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .text(legal))
-    }
-
-    private func createEmailRow(with email: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityEmailTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(email, tag: .email))
-    }
-
-    private func createWebRow(with web: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityWebTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(web, tag: .web))
-    }
-
-    private func createTwitterRow(with twitter: String) -> ValidatorInfoViewModel.IdentityItem {
-        .init(title: "Twitter", value: .link(twitter, tag: .twitter))
-    }
-
-    private func createRiotRow(with riot: String, locale: Locale) -> ValidatorInfoViewModel.IdentityItem {
-        let title = R.string.localizable.identityRiotNameTitle(preferredLanguages: locale.rLanguages)
-        return .init(title: title, value: .link(riot, tag: .riot))
     }
 
     private func createExposure(
@@ -93,38 +65,10 @@ final class ValidatorInfoViewModelFactory {
             maxNominators: maxNominatorsRewardedString,
             myNomination: myNomination,
             totalStake: totalStake,
+            minRewardableStake: nil,
             estimatedReward: estimatedReward,
             oversubscribed: validatorInfo.stakeInfo?.oversubscribed ?? false
         )
-    }
-
-    private func createIdentityViewModel(
-        from identity: AccountIdentity,
-        locale: Locale
-    ) -> [ValidatorInfoViewModel.IdentityItem] {
-        var identityItems: [ValidatorInfoViewModel.IdentityItem] = []
-
-        if let legal = identity.legal {
-            identityItems.append(createLegalRow(with: legal, locale: locale))
-        }
-
-        if let email = identity.email {
-            identityItems.append(createEmailRow(with: email, locale: locale))
-        }
-
-        if let web = identity.web {
-            identityItems.append(createWebRow(with: web, locale: locale))
-        }
-
-        if let twitter = identity.twitter {
-            identityItems.append(createTwitterRow(with: twitter))
-        }
-
-        if let riot = identity.riot {
-            identityItems.append(createRiotRow(with: riot, locale: locale))
-        }
-
-        return identityItems
     }
 
     private func createOwnStakeTitle() -> LocalizableResource<String> {

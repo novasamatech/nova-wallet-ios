@@ -776,10 +776,12 @@
 "parachain.staking.hint.rewards.format" = "Застейканые токены приносят награду каждый раунд (%@)";
 "common.rewards.column" = "Награды:";
 "common.min.stake.column" = "Мин. стейк:";
-"common.collators.count" = "Коллаторы: %@";
+"common.parastk.collators.count" = "Коллаторы: %@";
 "common.staking.own.stake" = "Собственный стейк";
 "common.loading.collators" = "Загрузка коллаторов...";
 "parastk.collators.filter.rewards" = "Вознаграждение (% APR)";
 "parastk.collators.filter.min.stake" = "Минимальный стейк";
 "parastk.collators.filter.total.stake" = "Общий стейк";
 "parastk.collators.filter.own.stake" = "Собственный стейк коллатора";
+"common.parastk.delegators" = "Делегаторы";
+"parastk.collator.info" = "Информация о коллаторе";

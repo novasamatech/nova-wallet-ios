@@ -236,7 +236,15 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
         wireframe.close(view: view)
     }
 
-    func presentCollator(at _: Int) {}
+    func presentCollator(at index: Int) {
+        guard let collators = try? collatorsInfoResult?.get() else {
+            return
+        }
+
+        let collator = collators[index]
+
+        wireframe.showCollatorInfo(from: view, collatorInfo: collator)
+    }
 
     func presentSearch() {
         guard
