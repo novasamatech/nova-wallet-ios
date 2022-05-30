@@ -109,7 +109,7 @@ final class ParaStkSelectCollatorsPresenter {
         switch sorting {
         case .rewards:
             let title = R.string.localizable.commonMinStakeColumn(preferredLanguages: languages)
-            let amount = createBalanceViewModel(for: collatorInfo.minStake).amount
+            let amount = createBalanceViewModel(for: collatorInfo.minRewardableStake).amount
 
             return TitleWithSubtitleViewModel(
                 title: title,
@@ -137,7 +137,7 @@ final class ParaStkSelectCollatorsPresenter {
 
             return TitleWithSubtitleViewModel(title: rewardsString ?? "")
         case .minStake:
-            return createDetailsViewModel(for: collatorInfo.minStake)
+            return createDetailsViewModel(for: collatorInfo.minRewardableStake)
         case .totalStake:
             return createDetailsViewModel(for: collatorInfo.totalStake)
         case .ownStake:
@@ -182,10 +182,13 @@ final class ParaStkSelectCollatorsPresenter {
 
             let headerViewModel = createHeaderViewModel(for: collatorsViewModels.count)
 
+            let filtersApplied = sorting != CollatorsSortType.defaultType
+
             let viewModel = CollatorSelectionScreenViewModel(
                 collators: collatorsViewModels,
                 sorting: sorting,
-                header: headerViewModel
+                header: headerViewModel,
+                filtersApplied: filtersApplied
             )
 
             view?.didReceive(state: .loaded(viewModel: viewModel))
@@ -215,6 +218,9 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
     }
 
     func refresh() {
+        collatorsInfoResult = nil
+        provideState()
+
         interactor.refresh()
     }
 
@@ -234,7 +240,13 @@ extension ParaStkSelectCollatorsPresenter: ParaStkSelectCollatorsPresenterProtoc
 
     func presentSearch() {}
 
-    func presenterFilters() {}
+    func presenterFilters() {
+        wireframe.showFilters(
+            from: view,
+            for: sorting,
+            delegate: self
+        )
+    }
 
     func clearFilters() {
         sorting = CollatorsSortType.defaultType
@@ -270,5 +282,17 @@ extension ParaStkSelectCollatorsPresenter: Localizable {
         if let view = view, view.isSetup {
             provideState()
         }
+    }
+}
+
+extension ParaStkSelectCollatorsPresenter: ParaStkCollatorFiltersDelegate {
+    func didReceiveCollator(sorting: CollatorsSortType) {
+        self.sorting = sorting
+
+        if let collatorsInfoResult = collatorsInfoResult {
+            applySortingAndSaveResult(collatorsInfoResult)
+        }
+
+        provideState()
     }
 }
