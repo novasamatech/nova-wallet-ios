@@ -31,7 +31,7 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     func presentCantStakeCollator(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?) {
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
 
-        let message = R.string.localizable.parachainStakingCantStakeCollatorMessage(
+        let message = R.string.localizable.parachainStakingCollatorGreaterMinstkMessage(
             minStake,
             preferredLanguages: locale?.rLanguages
         )
@@ -42,7 +42,16 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     }
 
     func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?) {
-        presentCantStakeCollator(view, minStake: minStake, locale: locale)
+        let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
+
+        let message = R.string.localizable.parachainStakingCantStakeMessage(
+            minStake,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
     }
 
     func presentWontReceiveRewards(
@@ -52,7 +61,7 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         locale: Locale?
     ) {
         let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
-        let message = R.string.localizable.parachainStakingCollatorLessMinstkMessage(
+        let message = R.string.localizable.parachainStakingCollatorGreaterMinstkMessage(
             minStake,
             preferredLanguages: locale?.rLanguages
         )
