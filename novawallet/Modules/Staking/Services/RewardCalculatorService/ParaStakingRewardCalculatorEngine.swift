@@ -11,6 +11,12 @@ protocol ParaStakingRewardCalculatorEngineProtocol {
         period: CalculationPeriod
     ) throws -> Decimal
 
+    func calculateEarnings(
+        amount: Decimal,
+        collatorStake: BigUInt,
+        period: CalculationPeriod
+    ) throws -> Decimal
+
     func calculateMaxEarnings(
         amount: Decimal,
         period: CalculationPeriod
@@ -31,8 +37,12 @@ extension ParaStakingRewardCalculatorEngineProtocol {
         calculateAvgEarnings(amount: 1.0, period: period)
     }
 
-    func calculateARP(for collatorId: AccountId) throws -> Decimal {
+    func calculateAPR(for collatorId: AccountId) throws -> Decimal {
         try calculateEarnings(amount: 1.0, collatorAccountId: collatorId, period: .year)
+    }
+
+    func calculateAPR(for collatorStake: BigUInt) throws -> Decimal {
+        try calculateEarnings(amount: 1.0, collatorStake: collatorStake, period: .year)
     }
 }
 
@@ -161,6 +171,24 @@ extension ParaStakingRewardCalculatorEngine: ParaStakingRewardCalculatorEnginePr
             let decimalStake = Decimal.fromSubstrateAmount(stake, precision: assetPrecision),
             decimalStake > 0.0 else {
             throw ParaStakingRewardCalculatorEngineError.missingCollator(collatorAccountId)
+        }
+
+        let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
+
+        let dailyReturn = annualReturn / CalculationPeriod.daysInYear
+
+        return amount * dailyReturn * Decimal(period.inDays)
+    }
+
+    func calculateEarnings(
+        amount: Decimal,
+        collatorStake: BigUInt,
+        period: CalculationPeriod
+    ) throws -> Decimal {
+        guard
+            let decimalStake = Decimal.fromSubstrateAmount(collatorStake, precision: assetPrecision),
+            decimalStake > 0 else {
+            return 0
         }
 
         let annualReturn = try calculateAnnualReturn(for: averageStake / decimalStake)
