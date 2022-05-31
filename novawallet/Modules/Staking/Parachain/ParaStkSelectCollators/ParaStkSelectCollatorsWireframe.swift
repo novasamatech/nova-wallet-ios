@@ -53,7 +53,10 @@ final class ParaStkSelectCollatorsWireframe: ParaStkSelectCollatorsWireframeProt
         from view: ParaStkSelectCollatorsViewProtocol?,
         collatorInfo: CollatorSelectionInfo
     ) {
-        guard let infoView = ParaStkCollatorInfoViewFactory.createView(for: sharedState, collatorInfo: collatorInfo) else {
+        guard let infoView = ParaStkCollatorInfoViewFactory.createView(
+            for: sharedState,
+            collatorInfo: collatorInfo
+        ) else {
             return
         }
 
