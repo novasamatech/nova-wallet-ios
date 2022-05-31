@@ -82,7 +82,9 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
     }
 
-    func performChangeValidatorsAction() {}
+    func performChangeValidatorsAction() {
+        wireframe.showYourCollators(from: view)
+    }
 
     func performSetupValidatorsForBondedAction() {}
 
@@ -94,7 +96,18 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
 
     func performAnalyticsAction() {}
 
-    func performManageAction(_: StakingManageOption) {}
+    func performManageAction(_ action: StakingManageOption) {
+        switch action {
+        case .stakeMore:
+            break
+        case .unstake:
+            break
+        case .setupValidators, .changeValidators, .yourValidator:
+            wireframe.showYourCollators(from: view)
+        default:
+            break
+        }
+    }
 }
 
 extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {

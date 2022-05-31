@@ -9,8 +9,14 @@ protocol ParaStkYourCollatorsPresenterProtocol: AnyObject {
     func selectCollator(viewModel: CollatorSelectionViewModel)
 }
 
-protocol ParaStkYourCollatorsInteractorInputProtocol: AnyObject {}
+protocol ParaStkYourCollatorsInteractorInputProtocol: AnyObject {
+    func setup()
+    func retry()
+}
 
-protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {}
+protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
+    func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>)
+    func didReceiveDelegator(result: Result<ParachainStaking.Delegator?, Error>)
+}
 
 protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {}

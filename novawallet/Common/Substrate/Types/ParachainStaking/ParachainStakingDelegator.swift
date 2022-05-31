@@ -15,6 +15,12 @@ extension ParachainStaking {
         func collators() -> [AccountId] {
             delegations.map(\.owner)
         }
+
+        func delegationsDic() -> [AccountId: ParachainStaking.Bond] {
+            delegations.reduce(into: [AccountId: ParachainStaking.Bond]()) {
+                $0[$1.owner] = $1
+            }
+        }
     }
 
     struct ScheduledRequest: Decodable, Equatable {
