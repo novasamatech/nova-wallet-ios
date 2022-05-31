@@ -783,3 +783,5 @@
 "parastk.collators.filter.min.stake" = "Minimum stake";
 "parastk.collators.filter.total.stake" = "Total stake";
 "parastk.collators.filter.own.stake" = "Collator's own stake";
+"common.parastk.delegators" = "Delegators";
+"parastk.collator.info" = "Collator info";

@@ -9,6 +9,7 @@ struct CollatorSelectionInfo {
     let apr: Decimal
     let commission: BigUInt
     let minTechStake: BigUInt
+    let maxRewardedDelegations: UInt32
 
     var minRewardableStake: BigUInt {
         metadata.minRewardableStake(for: minTechStake)
@@ -20,5 +21,9 @@ struct CollatorSelectionInfo {
 
     var ownStake: BigUInt {
         metadata.bond
+    }
+
+    var delegatorsStake: BigUInt {
+        totalStake > ownStake ? totalStake - ownStake : 0
     }
 }

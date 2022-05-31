@@ -33108,66 +33108,6 @@ import SoraFoundation
     
 
     
-    
-    
-     func showStakingAmounts(from view: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])  {
-        
-    return cuckoo_manager.call("showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])",
-            parameters: (view, items),
-            escapingParameters: (view, items),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showStakingAmounts(from: view, items: items))
-        
-    }
-    
-    
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
-        
-    return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
-            parameters: (url, view, style),
-            escapingParameters: (url, view, style),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showWeb(url: url, from: view, style: style))
-        
-    }
-    
-    
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
-            parameters: (message, title, closeAction, view),
-            escapingParameters: (message, title, closeAction, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
-        
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
-            parameters: (viewModel, style, view),
-            escapingParameters: (viewModel, style, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
-        
-    }
-    
 
 	 struct __StubbingProxy_ValidatorInfoWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -33176,26 +33116,6 @@ import SoraFoundation
 	        self.cuckoo_manager = manager
 	    }
 	    
-	    
-	    func showStakingAmounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, items: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])> where M1.OptionalMatchedType == ValidatorInfoViewProtocol, M2.MatchedType == [LocalizableResource<StakingAmountViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: items) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])", parameterMatchers: matchers))
-	    }
-	    
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
 	    
 	}
 
@@ -33213,30 +33133,6 @@ import SoraFoundation
 	    
 	
 	    
-	    @discardableResult
-	    func showStakingAmounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, items: M2) -> Cuckoo.__DoNotUse<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>]), Void> where M1.OptionalMatchedType == ValidatorInfoViewProtocol, M2.MatchedType == [LocalizableResource<StakingAmountViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: items) { $0.1 }]
-	        return cuckoo_manager.verify("showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	}
 }
 
@@ -33245,30 +33141,6 @@ import SoraFoundation
 
     
 
-    
-    
-    
-     func showStakingAmounts(from view: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
     
 }
 
