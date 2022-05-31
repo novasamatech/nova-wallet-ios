@@ -6,11 +6,11 @@ struct ParaStkYourCollatorsListViewModel {
 }
 
 struct ParaStkYourCollatorListSection {
-    let status: ParaStkYourCollatorListSectionStatus
+    let status: ParaStkDelegationStatus
     let collators: [CollatorSelectionViewModel]
 }
 
-enum ParaStkYourCollatorListSectionStatus {
+enum ParaStkDelegationStatus {
     case rewarded
     case notRewarded
     case notElected
