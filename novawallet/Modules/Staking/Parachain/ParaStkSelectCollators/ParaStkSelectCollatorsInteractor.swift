@@ -11,7 +11,7 @@ final class ParaStkSelectCollatorsInteractor {
     let connection: ChainConnection
     let runtimeProvider: RuntimeProviderProtocol
     let collatorOperationFactory: ParaStkCollatorsOperationFactoryProtocol
-    var priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     let operationQueue: OperationQueue
 
     private var priceProvider: AnySingleValueProvider<PriceData>?

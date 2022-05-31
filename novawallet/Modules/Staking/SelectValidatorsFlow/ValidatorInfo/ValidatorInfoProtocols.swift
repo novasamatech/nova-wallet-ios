@@ -55,13 +55,7 @@ protocol ValidatorInfoPresenterProtocol: AnyObject {
 
 // MARK: - Router
 
-protocol ValidatorInfoWireframeProtocol: WebPresentable,
-    EmailPresentable,
-    AlertPresentable,
+protocol ValidatorInfoWireframeProtocol: IdentityPresentable,
     AddressOptionsPresentable,
-    ErrorPresentable {
-    func showStakingAmounts(
-        from view: ValidatorInfoViewProtocol?,
-        items: [LocalizableResource<StakingAmountViewModel>]
-    )
-}
+    ErrorPresentable,
+    StakingTotalStakePresentable {}
