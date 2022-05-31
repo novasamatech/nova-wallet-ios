@@ -12,7 +12,7 @@ struct ParaStkCollatorsSearchViewFactory {
         }
 
         let interactor = ParaStkCollatorsSearchInteractor()
-        let wireframe = ParaStkCollatorsSearchWireframe()
+        let wireframe = ParaStkCollatorsSearchWireframe(sharedState: state)
 
         let localizationManager = LocalizationManager.shared
 

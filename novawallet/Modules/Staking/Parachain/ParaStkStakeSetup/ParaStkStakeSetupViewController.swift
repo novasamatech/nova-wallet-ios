@@ -2,7 +2,7 @@ import UIKit
 import CommonWallet
 import SoraFoundation
 
-final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
+final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParaStkStakeSetupViewLayout
 
     let presenter: ParaStkStakeSetupPresenterProtocol
