@@ -28,12 +28,11 @@ extension ParachainStaking {
         }
 
         var isFull: Bool {
-            switch self {
-            case .full:
-                return true
-            case .partial, .empty:
-                return false
-            }
+            self == .full
+        }
+
+        var isEmpty: Bool {
+            self == .empty
         }
     }
 
