@@ -41040,16 +41040,16 @@ import SoraFoundation
     
     
     
-     func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse)  {
+     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)  {
         
-    return cuckoo_manager.call("didReceiveSelectedAccount(_: MetaChainAccountResponse)",
-            parameters: (selectedAccount),
-            escapingParameters: (selectedAccount),
+    return cuckoo_manager.call("didReceiveSelectedAccount(_: MetaAccountModel)",
+            parameters: (metaAccount),
+            escapingParameters: (metaAccount),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveSelectedAccount(selectedAccount))
+            defaultCall: __defaultImplStub!.didReceiveSelectedAccount(metaAccount))
         
     }
     
@@ -41112,9 +41112,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveAccountInfo(_: AccountInfo?)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ selectedAccount: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaChainAccountResponse)> where M1.MatchedType == MetaChainAccountResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse)>] = [wrap(matchable: selectedAccount) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveSelectedAccount(_: MetaChainAccountResponse)", parameterMatchers: matchers))
+	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ metaAccount: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountModel)> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: metaAccount) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveSelectedAccount(_: MetaAccountModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStakingSettings<M1: Cuckoo.Matchable>(_ stakingSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingAssetSettings)> where M1.MatchedType == StakingAssetSettings {
@@ -41155,9 +41155,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ selectedAccount: M1) -> Cuckoo.__DoNotUse<(MetaChainAccountResponse), Void> where M1.MatchedType == MetaChainAccountResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse)>] = [wrap(matchable: selectedAccount) { $0 }]
-	        return cuckoo_manager.verify("didReceiveSelectedAccount(_: MetaChainAccountResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ metaAccount: M1) -> Cuckoo.__DoNotUse<(MetaAccountModel), Void> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: metaAccount) { $0 }]
+	        return cuckoo_manager.verify("didReceiveSelectedAccount(_: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -41195,7 +41195,7 @@ import SoraFoundation
     
     
     
-     func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse)   {
+     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41276,6 +41276,36 @@ import SoraFoundation
     
     
     
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)",
+            parameters: (view, wallet, chain),
+            escapingParameters: (view, wallet, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showCreateAccount(from: view, wallet: wallet, chain: chain))
+        
+    }
+    
+    
+    
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)",
+            parameters: (view, wallet, chain),
+            escapingParameters: (view, wallet, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showImportAccount(from: view, wallet: wallet, chain: chain))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -41323,6 +41353,16 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showChainAssetSelection(from: StakingMainViewProtocol?, selectedChainAssetId: ChainAssetId?, delegate: AssetSelectionDelegate)", parameterMatchers: matchers))
 	    }
 	    
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -41362,6 +41402,18 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return cuckoo_manager.verify("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return cuckoo_manager.verify("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -41391,6 +41443,18 @@ import SoraFoundation
     
     
      func showChainAssetSelection(from view: StakingMainViewProtocol?, selectedChainAssetId: ChainAssetId?, delegate: AssetSelectionDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
