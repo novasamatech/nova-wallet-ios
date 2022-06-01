@@ -60,6 +60,13 @@ class CollatorSelectionCell: UITableViewCell {
         return button
     }()
 
+    let warningView: UIImageView = {
+        let view = UIImageView()
+        view.image = R.image.iconWarning()
+        view.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        return view
+    }()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
@@ -98,6 +105,8 @@ class CollatorSelectionCell: UITableViewCell {
 
         sortingByView.valueTop.text = viewModel.sortedByTitle
         sortingByView.valueBottom.text = viewModel.sortedByDetails
+
+        warningView.isHidden = !viewModel.hasWarning
 
         setNeedsLayout()
     }
@@ -144,9 +153,15 @@ class CollatorSelectionCell: UITableViewCell {
             make.bottom.equalToSuperview().inset(5.0)
         }
 
+        contentView.addSubview(warningView)
+        warningView.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel.snp.trailing).offset(4.0)
+            make.bottom.equalTo(titleLabel)
+        }
+
         contentView.addSubview(sortingByView)
         sortingByView.snp.makeConstraints { make in
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(40.0)
+            make.leading.greaterThanOrEqualTo(warningView.snp.trailing).offset(40.0)
             make.leading.greaterThanOrEqualTo(detailsView.snp.trailing).offset(40.0)
             make.trailing.equalTo(infoButton.snp.leading).offset(-4)
             make.centerY.equalToSuperview()

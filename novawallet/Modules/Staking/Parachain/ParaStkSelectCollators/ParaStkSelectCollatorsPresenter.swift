@@ -165,7 +165,8 @@ final class ParaStkSelectCollatorsPresenter {
             detailsName: detailsViewModel.title,
             details: detailsViewModel.subtitle,
             sortedByTitle: sortedByViewModel.title,
-            sortedByDetails: sortedByViewModel.subtitle
+            sortedByDetails: sortedByViewModel.subtitle,
+            hasWarning: false
         )
     }
 
