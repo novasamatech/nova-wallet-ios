@@ -36,7 +36,8 @@ struct ParaStkYourCollatorsViewFactory {
             interactor: interactor,
             wireframe: wireframe,
             selectedAccount: selectedAccount,
-            viewModelFactory: viewModelFactory
+            viewModelFactory: viewModelFactory,
+            localizationManager: localizationManager
         )
 
         let view = ParaStkYourCollatorsViewController(

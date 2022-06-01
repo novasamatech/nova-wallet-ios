@@ -19,4 +19,16 @@ protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveDelegator(result: Result<ParachainStaking.Delegator?, Error>)
 }
 
-protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {}
+protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {
+    func showCollatorInfo(
+        from view: ParaStkYourCollatorsViewProtocol?,
+        collatorInfo: CollatorSelectionInfo
+    )
+
+    func showManageCollators(
+        from view: ParaStkYourCollatorsViewProtocol?,
+        options: [StakingManageOption],
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    )
+}

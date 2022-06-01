@@ -785,3 +785,10 @@
 "parastk.collators.filter.own.stake" = "Collator's own stake";
 "common.parastk.delegators" = "Delegators";
 "parastk.collator.info" = "Collator info";
+"parastk.manage.collators" = "Manage collators";
+"parastk.your.rewarded.description" = "Your stake is assigned to next collators";
+"parastk.your.not.rewarded.description" = "Active collators without your stake assignment";
+"parastk.your.not.elected.description" = "Collators without enough stake to be elected";
+"parastk.your.pending.description" = "Выбранные коллаторы активируются в следующем раунде";
+"parastk.your.pending.description" = "Collators that will enact in the next round";
+"parastk.your.pending.format" = "Pending (%@)";
