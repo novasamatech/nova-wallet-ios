@@ -794,3 +794,5 @@
 "parastk.your.pending.format" = "Pending (%@)";
 "parastk.your.collators.warning" = "Some of your collators are either not elected or have higher minimum stake than your staked amount. You will not receive reward in this round staking with them.";
 "parastk.collator.info.not.rewarded" = "Collator’s minimum stake is higher than your delegation. You will not receive rewards from the collator.";
+"parastk.reward.info.max" = "Maximum APR";
+"parastk.reward.info.avg" = "Average APR";

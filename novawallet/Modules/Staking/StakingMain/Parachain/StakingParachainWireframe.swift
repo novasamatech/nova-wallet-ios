@@ -9,8 +9,17 @@ final class StakingParachainWireframe {
 }
 
 extension StakingParachainWireframe: StakingParachainWireframeProtocol {
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal) {
-        let infoVew = ModalInfoFactory.createRewardDetails(for: maxReward, avgReward: avgReward)
+    func showRewardDetails(
+        from view: ControllerBackedProtocol?,
+        maxReward: Decimal,
+        avgReward: Decimal,
+        symbol: String
+    ) {
+        let infoVew = ModalInfoFactory.createParaStkRewardDetails(
+            for: maxReward,
+            avgReward: avgReward,
+            symbol: symbol
+        )
 
         view?.controller.present(infoVew, animated: true, completion: nil)
     }

@@ -25,7 +25,13 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
+    func showRewardDetails(
+        from view: ControllerBackedProtocol?,
+        maxReward: Decimal,
+        avgReward: Decimal,
+        symbol: String
+    )
+
     func showStartStaking(from view: ControllerBackedProtocol?)
     func showYourCollators(from view: ControllerBackedProtocol?)
 }

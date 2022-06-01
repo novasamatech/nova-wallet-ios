@@ -70,16 +70,17 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRewardInfoAction() {
-        guard let rewardCalculator = stateMachine.viewState(
-            using: { (state: ParachainStaking.BaseState) in state }
-        )?.commonData.calculatorEngine else {
+        guard
+            let state = stateMachine.viewState(using: { (state: ParachainStaking.BaseState) in state }),
+            let rewardCalculator = state.commonData.calculatorEngine,
+            let asset = state.commonData.chainAsset?.asset else {
             return
         }
 
         let maxReward = rewardCalculator.calculateMaxReturn(for: .year)
         let avgReward = rewardCalculator.calculateAvgReturn(for: .year)
 
-        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
+        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward, symbol: asset.symbol)
     }
 
     func performChangeValidatorsAction() {
