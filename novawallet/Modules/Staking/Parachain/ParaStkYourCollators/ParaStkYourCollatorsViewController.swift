@@ -32,6 +32,25 @@ final class ParaStkYourCollatorsViewController: UIViewController, ViewHolder {
 
     private var viewState: ParaStkYourCollatorsState?
 
+    private var electedSize: Int {
+        guard let viewModel = viewState?.viewModel else {
+            return 0
+        }
+
+        let rewarded = viewModel.sections.first(where: { $0.status == .rewarded })?.collators.count ?? 0
+        let notRewarded = viewModel.sections.first(where: { $0.status == .notRewarded })?.collators.count ?? 0
+
+        return rewarded + notRewarded
+    }
+
+    private var rewardedSize: Int {
+        guard let viewModel = viewState?.viewModel else {
+            return 0
+        }
+
+        return viewModel.sections.first(where: { $0.status == .rewarded })?.collators.count ?? 0
+    }
+
     let counterFormater: LocalizableResource<NumberFormatter>
 
     init(
@@ -156,51 +175,113 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
 
         let sectionViewModel = viewModel.sections[section]
 
+        var headerView: UIView?
+
+        if section == 0, viewModel.hasCollatorWithoutRewards {
+            let warningView: YourValidatorListWarningSectionView = tableView.dequeueReusableHeaderFooterView()
+            headerView = warningView
+        }
+
         switch sectionViewModel.status {
         case .rewarded:
-            let count = viewModel.sections.first(where: { $0.status == .notRewarded }).map {
-                $0.collators.count + sectionViewModel.collators.count
-            } ?? sectionViewModel.collators.count
-
-            if viewModel.hasCollatorWithoutRewards {
-                let headerView: YourValidatorListWarningSectionView = tableView.dequeueReusableHeaderFooterView()
-                configureWarning(headerView: headerView, validatorsCount: count)
-                return headerView
-            } else {
-                let headerView: YourValidatorListStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-                configureRewarded(headerView: headerView, validatorsCount: count)
-                return headerView
-            }
+            headerView = configureRewardedSection(for: headerView, tableView: tableView)
         case .notRewarded:
-            let headerView: YourValidatorListDescSectionView = tableView.dequeueReusableHeaderFooterView()
-            configureNotRewarded(headerView: headerView, section: section)
+            headerView = configureNotRewardedSection(
+                for: headerView,
+                tableView: tableView,
+                section: section
+            )
 
-            return headerView
         case .notElected:
-            let headerView: YourValidatorListStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            configureNotElected(
-                headerView: headerView,
-                validatorsCount: sectionViewModel.collators.count,
+            headerView = configureNotElectedSection(
+                for: headerView,
+                tableView: tableView,
+                viewModel: sectionViewModel,
                 section: section
             )
-
-            return headerView
         case .pending:
-            let headerView: YourValidatorListStatusSectionView = tableView.dequeueReusableHeaderFooterView()
-            configurePending(
-                headerView: headerView,
-                collatorsCount: sectionViewModel.collators.count,
+            headerView = configurePendingSection(
+                for: headerView,
+                tableView: tableView,
+                viewModel: sectionViewModel,
                 section: section
             )
+        }
 
-            return headerView
+        if let warningView = headerView as? YourValidatorListWarningSectionView {
+            configureNoRewardsWarning(for: warningView)
+        }
+
+        return headerView
+    }
+
+    private func configureRewardedSection(for headerView: UIView?, tableView: UITableView) -> UIView? {
+        let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
+            ?? tableView.dequeueReusableHeaderFooterView()
+        configureElected(headerView: sectionView, collatorsCount: electedSize)
+        configureRewarded(headerView: sectionView)
+
+        return sectionView
+    }
+
+    private func configureNotRewardedSection(
+        for headerView: UIView?,
+        tableView: UITableView,
+        section: Int
+    ) -> UIView? {
+        if section == 0 {
+            let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
+                ?? tableView.dequeueReusableHeaderFooterView()
+            configureElected(headerView: sectionView, collatorsCount: electedSize)
+            configureNotRewarded(headerView: sectionView, section: section)
+
+            return sectionView
+        } else {
+            let sectionView: YourValidatorListDescSectionView = tableView.dequeueReusableHeaderFooterView()
+            configureNotRewarded(headerView: sectionView, section: section)
+
+            return sectionView
         }
     }
 
-    private func configureWarning(headerView: YourValidatorListWarningSectionView, validatorsCount: Int) {
-        configureRewarded(headerView: headerView, validatorsCount: validatorsCount)
+    private func configureNotElectedSection(
+        for headerView: UIView?,
+        tableView: UITableView,
+        viewModel: ParaStkYourCollatorListSection,
+        section: Int
+    ) -> UIView? {
+        let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
+            ?? tableView.dequeueReusableHeaderFooterView()
 
-        let text = R.string.localizable.stakingYourOversubscribedMessage(
+        configureNotElected(
+            headerView: sectionView,
+            collatorsCount: viewModel.collators.count,
+            section: section
+        )
+
+        return sectionView
+    }
+
+    private func configurePendingSection(
+        for headerView: UIView?,
+        tableView: UITableView,
+        viewModel: ParaStkYourCollatorListSection,
+        section: Int
+    ) -> UIView? {
+        let sectionView: YourValidatorListStatusSectionView = (headerView as? YourValidatorListStatusSectionView)
+            ?? tableView.dequeueReusableHeaderFooterView()
+
+        configurePending(
+            headerView: sectionView,
+            collatorsCount: viewModel.collators.count,
+            section: section
+        )
+
+        return sectionView
+    }
+
+    private func configureNoRewardsWarning(for headerView: YourValidatorListWarningSectionView) {
+        let text = R.string.localizable.parastkYourCollatorsWarning(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -209,25 +290,28 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
         headerView.mainStackView.layoutMargins = Constants.warningHeaderMargins
     }
 
-    private func configureRewarded(headerView: YourValidatorListStatusSectionView, validatorsCount: Int) {
+    private func configureElected(headerView: YourValidatorListStatusSectionView, collatorsCount: Int) {
         let icon = R.image.iconAlgoItem()!
-        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
+        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
             R.string.localizable.stakingYourElectedFormat(
                 $0,
                 preferredLanguages: selectedLocale.rLanguages
             )
         } ?? ""
 
+        headerView.statusView.detailsLabel.textColor = R.color.colorWhite()
+
+        headerView.bind(icon: icon, title: title)
+
+        headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
+    }
+
+    private func configureRewarded(headerView: YourValidatorListStatusSectionView) {
         let description = R.string.localizable.parastkYourRewardedDescription(
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        headerView.statusView.detailsLabel.textColor = R.color.colorWhite()
-
-        headerView.bind(icon: icon, title: title)
         headerView.bind(description: description)
-
-        headerView.mainStackView.layoutMargins = Constants.regularHeaderMargins
     }
 
     private func configureNotRewarded(headerView: YourValidatorListDescSectionView, section: Int) {
@@ -246,11 +330,11 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
 
     private func configureNotElected(
         headerView: YourValidatorListStatusSectionView,
-        validatorsCount: Int,
+        collatorsCount: Int,
         section: Int
     ) {
         let icon = R.image.iconPending()!
-        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
+        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
             R.string.localizable.stakingYourNotElectedFormat(
                 $0,
                 preferredLanguages: selectedLocale.rLanguages
