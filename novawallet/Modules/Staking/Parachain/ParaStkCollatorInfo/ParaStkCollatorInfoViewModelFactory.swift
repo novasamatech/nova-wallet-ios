@@ -78,8 +78,9 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
             priceData: priceData
         ).value(for: locale)
 
-        let estimatedReward = NumberFormatter.percentAPR.localizableResource()
-            .value(for: locale).stringFromDecimal(collatorInfo.apr) ?? ""
+        let estimatedReward = collatorInfo.apr.flatMap {
+            NumberFormatter.percentAPR.localizableResource().value(for: locale).stringFromDecimal($0)
+        } ?? ""
 
         let minStake = createMinimumStakeViewModel(from: collatorInfo, price: priceData, locale: locale)
 

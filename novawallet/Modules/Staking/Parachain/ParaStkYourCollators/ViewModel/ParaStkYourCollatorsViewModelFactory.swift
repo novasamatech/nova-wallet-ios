@@ -48,14 +48,14 @@ final class ParaStkYourCollatorsViewModelFactory {
         let stakedDecimal = Decimal.fromSubstrateAmount(staked, precision: assetPrecision) ?? 0
         let details = balanceViewModeFactory.amountFromValue(stakedDecimal).value(for: locale)
 
-        let rewardsString = aprFormatter.stringFromDecimal(model.apr) ?? ""
+        let rewards = model.apr.flatMap { aprFormatter.stringFromDecimal($0) } ?? ""
 
         return CollatorSelectionViewModel(
             iconViewModel: iconViewModel,
             collator: titleViewModel,
             detailsName: detailsName,
             details: details,
-            sortedByTitle: rewardsString,
+            sortedByTitle: rewards,
             sortedByDetails: ""
         )
     }
