@@ -6,7 +6,7 @@ struct CollatorSelectionInfo {
     let metadata: ParachainStaking.CandidateMetadata
     let snapshot: ParachainStaking.CollatorSnapshot?
     let identity: AccountIdentity?
-    let apr: Decimal
+    let apr: Decimal?
     let commission: BigUInt
     let minTechStake: BigUInt
     let maxRewardedDelegations: UInt32

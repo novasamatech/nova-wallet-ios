@@ -75,11 +75,11 @@ final class ParaStkCollatorsSearchPresenter {
     private func createSortedByViewModel(
         for collatorInfo: CollatorSelectionInfo
     ) -> TitleWithSubtitleViewModel {
-        let rewardsString = percentFormatter.value(
-            for: selectedLocale
-        ).stringFromDecimal(collatorInfo.apr)
+        let rewards = collatorInfo.apr.flatMap {
+            percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
+        } ?? ""
 
-        return TitleWithSubtitleViewModel(title: rewardsString ?? "")
+        return TitleWithSubtitleViewModel(title: rewards)
     }
 
     private func createCollatorViewModel(
@@ -165,7 +165,7 @@ extension ParaStkCollatorsSearchPresenter: ParaStkCollatorsSearchPresenterProtoc
                     return false
                 }
             }
-            .sorted { $0.apr > $1.apr }
+            .sorted { ($0.apr ?? 0) > ($1.apr ?? 0) }
 
             filteredCollatorsInfo = Array(filteredInfoList)
         } else {
