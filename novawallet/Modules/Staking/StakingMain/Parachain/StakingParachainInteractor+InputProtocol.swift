@@ -7,6 +7,59 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
         continueSetup()
     }
 
+    func fetchDelegations(for collators: [AccountId]) {
+        clear(cancellable: &delegationsCancellable)
+
+        guard
+            let chain = selectedChainAsset?.chain,
+            let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
+            return
+        }
+
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
+            return
+        }
+
+        guard
+            let collatorService = sharedState.collatorService,
+            let rewardService = sharedState.rewardCalculationService else {
+            presenter?.didReceiveError(CommonError.dataCorruption)
+            return
+        }
+
+        let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
+            for: collators,
+            collatorService: collatorService,
+            rewardService: rewardService,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            chainFormat: chain.chainFormat
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard wrapper === self?.delegationsCancellable else {
+                    return
+                }
+
+                self?.delegationsCancellable = nil
+
+                do {
+                    let delegations = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveDelegations(delegations)
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        delegationsCancellable = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
     func fetchScheduledRequests(for collators: [AccountId]) {
         clear(cancellable: &scheduledRequestsCancellable)
 
