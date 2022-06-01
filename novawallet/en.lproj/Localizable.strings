@@ -796,3 +796,5 @@
 "parastk.collator.info.not.rewarded" = "Collator’s minimum stake is higher than your delegation. You will not receive rewards from the collator.";
 "parastk.reward.info.max" = "Maximum APR";
 "parastk.reward.info.avg" = "Average APR";
+"common.chain.account.missing.title.format" = "%@ account is missing";
+"common.chain.account.missing.message.format" = "You should add %@ account to the wallet in order to start staking";

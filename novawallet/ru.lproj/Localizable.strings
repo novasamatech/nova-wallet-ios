@@ -795,3 +795,5 @@
 "parastk.collator.info.not.rewarded" = "Минимальный стейк коллатора больше чем вы застейкали. Вы не получить наград от этого коллатора.";
 "parastk.reward.info.max" = "Максимальный APR";
 "parastk.reward.info.avg" = "Средний APR";
+"common.chain.account.missing.title.format" = "%@ аккаунт отсутствует";
+"common.chain.account.missing.message.format" = "Вам необходимо добавить %@ аккаунт в кошелек для начала стекинга";

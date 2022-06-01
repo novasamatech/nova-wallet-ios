@@ -35,7 +35,7 @@ protocol StakingMainInteractorInputProtocol: AnyObject {
 
 protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveAccountInfo(_ accountInfo: AccountInfo?)
-    func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse)
+    func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)
     func didReceiveStakingSettings(_ stakingSettings: StakingAssetSettings)
     func didReceiveExpansion(_ isExpanded: Bool)
     func didReceiveError(_ error: Error)
@@ -48,6 +48,18 @@ protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, Staki
         from view: StakingMainViewProtocol?,
         selectedChainAssetId: ChainAssetId?,
         delegate: AssetSelectionDelegate
+    )
+
+    func showCreateAccount(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
+    )
+
+    func showImportAccount(
+        from view: ControllerBackedProtocol?,
+        wallet: MetaAccountModel,
+        chain: ChainModel
     )
 }
 
