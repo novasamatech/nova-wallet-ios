@@ -1,6 +1,7 @@
 import Foundation
 import RobinHood
 import SoraFoundation
+import SubstrateSdk
 
 extension StakingMainPresenterFactory {
     func createParachainPresenter(
@@ -74,6 +75,16 @@ extension StakingMainPresenterFactory {
         let blockTimeFactory = BlockTimeOperationFactory(chain: state.settings.value.chain)
         let durationFactory = ParaStkDurationOperationFactory(blockTimeOperationFactory: blockTimeFactory)
 
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        let collatorsOperationFactory = ParaStkCollatorsOperationFactory(
+            requestFactory: storageRequestFactory,
+            identityOperationFactory: IdentityOperationFactory(requestFactory: storageRequestFactory)
+        )
+
         return StakingParachainInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             sharedState: state,
@@ -86,6 +97,7 @@ extension StakingMainPresenterFactory {
             networkInfoFactory: networkInfoFactory,
             durationOperationFactory: durationFactory,
             scheduledRequestsFactory: ParachainStaking.ScheduledRequestsQueryFactory(operationQueue: operationQueue),
+            collatorsOperationFactory: collatorsOperationFactory,
             eventCenter: eventCenter,
             applicationHandler: ApplicationHandler(),
             operationQueue: operationQueue,

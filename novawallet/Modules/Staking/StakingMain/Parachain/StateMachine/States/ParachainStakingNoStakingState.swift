@@ -12,7 +12,8 @@ extension ParachainStaking {
                     stateMachine: stateMachine,
                     commonData: commonData,
                     delegatorState: delegatorState,
-                    scheduledRequests: nil
+                    scheduledRequests: nil,
+                    delegations: nil
                 )
 
                 stateMachine?.transit(to: delegatorState)
