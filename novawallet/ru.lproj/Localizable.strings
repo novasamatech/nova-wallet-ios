@@ -790,4 +790,5 @@
 "parastk.your.not.rewarded.description" = "Активные коллаторы без вашего стейка";
 "parastk.your.not.elected.description" = "Коллаторы с недостаточным стейком, чтобы быть избранными";
 "parastk.your.pending.description" = "Выбранные коллаторы активируются в следующем раунде";
-"parastk.your.pending.format" = "Ожидающие (%@)";
+"parastk.your.pending.format" = "Ожидающие коллаторы (%@)";
+"parastk.your.collators.warning" = "Некоторые из ваших коллаторов либо не избраны, либо требуют более высокий минимальный стейк. Вы не получите награды за этот раунд от них.";
