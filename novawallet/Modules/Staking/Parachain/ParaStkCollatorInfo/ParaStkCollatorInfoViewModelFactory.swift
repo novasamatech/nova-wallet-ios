@@ -12,6 +12,7 @@ protocol ParaStkCollatorInfoViewModelFactoryProtocol {
     func createViewModel(
         for selectedAccountId: AccountId,
         collatorInfo: CollatorSelectionInfo,
+        delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
     ) throws -> ValidatorInfoViewModel
@@ -45,9 +46,26 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
         return balanceViewModelFactory.balanceFromPrice(amount, priceData: price).value(for: locale)
     }
 
+    private func detectNotRewarded(
+        for _: AccountId,
+        collatorInfo: CollatorSelectionInfo,
+        delegator: ParachainStaking.Delegator?
+    ) -> Bool {
+        guard
+            let delegator = delegator,
+            let delegation = delegator.delegations.first(where: { $0.owner == collatorInfo.accountId }) else {
+            return false
+        }
+
+        let status = collatorInfo.status(for: delegation.owner, stake: delegation.amount)
+
+        return status == .notRewarded
+    }
+
     private func createExposure(
         for selectedAccountId: AccountId,
         collatorInfo: CollatorSelectionInfo,
+        delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
     ) -> ValidatorInfoViewModel.Exposure {
@@ -84,6 +102,12 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
 
         let minStake = createMinimumStakeViewModel(from: collatorInfo, price: priceData, locale: locale)
 
+        let isNotRewarded = detectNotRewarded(
+            for: selectedAccountId,
+            collatorInfo: collatorInfo,
+            delegator: delegator
+        )
+
         return ValidatorInfoViewModel.Exposure(
             nominators: nominators,
             maxNominators: maxNominatorsRewardedString,
@@ -91,7 +115,7 @@ final class ParaStkCollatorInfoViewModelFactory: BaseValidatorInfoViewModelFacto
             totalStake: totalStake,
             minRewardableStake: minStake,
             estimatedReward: estimatedReward,
-            oversubscribed: false
+            oversubscribed: isNotRewarded
         )
     }
 
@@ -136,6 +160,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
     func createViewModel(
         for selectedAccountId: AccountId,
         collatorInfo: CollatorSelectionInfo,
+        delegator: ParachainStaking.Delegator?,
         priceData: PriceData?,
         locale: Locale
     ) throws -> ValidatorInfoViewModel {
@@ -154,6 +179,7 @@ extension ParaStkCollatorInfoViewModelFactory: ParaStkCollatorInfoViewModelFacto
             let exposure = createExposure(
                 for: selectedAccountId,
                 collatorInfo: collatorInfo,
+                delegator: delegator,
                 priceData: priceData,
                 locale: locale
             )

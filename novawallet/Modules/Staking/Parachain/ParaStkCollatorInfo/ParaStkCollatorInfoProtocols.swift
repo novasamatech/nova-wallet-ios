@@ -10,7 +10,9 @@ protocol ParaStkCollatorInfoInteractorInputProtocol: AnyObject {
 }
 
 protocol ParaStkCollatorInfoInteractorOutputProtocol: AnyObject {
-    func didReceivePrice(result: Result<PriceData?, Error>)
+    func didReceivePrice(_ price: PriceData?)
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
+    func didReceiveError(_ error: Error)
 }
 
 protocol ParaStkCollatorInfoWireframeProtocol: IdentityPresentable,
