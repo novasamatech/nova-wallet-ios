@@ -32,6 +32,7 @@ final class ParaStkYourCollatorsViewModelFactory {
     private func createCollatorViewModel(
         for model: CollatorSelectionInfo,
         staked: BigUInt,
+        status: ParaStkDelegationStatus,
         aprFormatter: NumberFormatter,
         locale: Locale
     ) throws -> CollatorSelectionViewModel {
@@ -56,7 +57,8 @@ final class ParaStkYourCollatorsViewModelFactory {
             detailsName: detailsName,
             details: details,
             sortedByTitle: rewards,
-            sortedByDetails: ""
+            sortedByDetails: "",
+            hasWarning: status == .notRewarded
         )
     }
 
@@ -100,6 +102,7 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
                 let viewModel = try createCollatorViewModel(
                     for: item,
                     staked: delegatorStake,
+                    status: status,
                     aprFormatter: aprFormatter,
                     locale: locale
                 )
