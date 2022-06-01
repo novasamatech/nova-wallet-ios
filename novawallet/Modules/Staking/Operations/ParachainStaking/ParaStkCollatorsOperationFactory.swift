@@ -68,8 +68,7 @@ final class ParaStkCollatorsOperationFactory {
                 let address = try collatorId.toAddress(using: chainFormat)
                 let collatorSnapshot = selectedCollatorsDict[collatorId]?.snapshot
 
-                let collatorStake = collatorSnapshot?.total ?? metadata.totalCounted
-                let apr: Decimal = try rewardEngine.calculateAPR(for: collatorStake)
+                let apr = try? rewardEngine.calculateAPR(for: collatorId)
 
                 let identity = identities[address]
 
@@ -172,9 +171,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         metadataWrapper.addDependency(operations: [codingFactoryOperation, selectedCollatorsOperation])
 
         let identityWrapper = identityOperationFactory.createIdentityWrapper(
-            for: {
-                try selectedCollatorsOperation.extractNoCancellableResultData().collators.map(\.accountId)
-            },
+            for: { try selectedCollatorsOperation.extractNoCancellableResultData().collators.map(\.accountId) },
             engine: connection,
             runtimeService: runtimeProvider,
             chainFormat: chainFormat
@@ -218,6 +215,7 @@ extension ParaStkCollatorsOperationFactory: ParaStkCollatorsOperationFactoryProt
         return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
     }
 
+    // swiftlint:disable:next function_parameter_count
     func selectedCollatorsInfoOperation(
         for accountIds: [AccountId],
         collatorService: ParachainStakingCollatorServiceProtocol,
