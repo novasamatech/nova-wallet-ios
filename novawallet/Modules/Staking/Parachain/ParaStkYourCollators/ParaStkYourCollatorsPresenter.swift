@@ -16,12 +16,14 @@ final class ParaStkYourCollatorsPresenter {
         interactor: ParaStkYourCollatorsInteractorInputProtocol,
         wireframe: ParaStkYourCollatorsWireframeProtocol,
         selectedAccount: MetaChainAccountResponse,
-        viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol
+        viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.selectedAccount = selectedAccount
         self.viewModelFactory = viewModelFactory
+        self.localizationManager = localizationManager
     }
 
     private func provideViewModel() {
@@ -61,9 +63,27 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsPresenterProtocol {
         interactor.retry()
     }
 
-    func manageCollators() {}
+    func manageCollators() {
+        let options: [StakingManageOption] = [.stakeMore, .unstake]
 
-    func selectCollator(viewModel _: CollatorSelectionViewModel) {}
+        wireframe.showManageCollators(
+            from: view,
+            options: [.stakeMore, .unstake],
+            delegate: self,
+            context: options as NSArray
+        )
+    }
+
+    func selectCollator(viewModel: CollatorSelectionViewModel) {
+        guard
+            let accountId = try? viewModel.collator.address.toAccountId(),
+            let collators = try? collators?.get(),
+            let collatorInfo = collators.first(where: { $0.accountId == accountId }) else {
+            return
+        }
+
+        wireframe.showCollatorInfo(from: view, collatorInfo: collatorInfo)
+    }
 }
 
 extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputProtocol {
@@ -77,6 +97,23 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputPro
         delegator = result
 
         provideViewModel()
+    }
+}
+
+extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let options = context as? [StakingManageOption] else {
+            return
+        }
+
+        switch options[index] {
+        case .stakeMore:
+            break
+        case .unstake:
+            break
+        default:
+            break
+        }
     }
 }
 
