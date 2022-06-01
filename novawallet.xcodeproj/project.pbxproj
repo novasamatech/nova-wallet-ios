@@ -849,6 +849,7 @@
 		847119D5262EF95A00716580 /* PayoutInfoFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847119D4262EF95A00716580 /* PayoutInfoFactoryProtocol.swift */; };
 		847119EB262EFF3800716580 /* ValidatorPayoutInfoFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */; };
 		8471538D2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */; };
+		8471825F2846A8E2002C5720 /* StakingManageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8471825E2846A8E2002C5720 /* StakingManageTableViewCell.swift */; };
 		8472072C277B262B00F593DD /* DAppListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072B277B262B00F593DD /* DAppListTests.swift */; };
 		8472072E277C203A00F593DD /* UICollectionView+Reuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */; };
 		84720730277C335000F593DD /* DAppListFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472072F277C335000F593DD /* DAppListFlowLayout.swift */; };
@@ -3050,6 +3051,7 @@
 		847119D4262EF95A00716580 /* PayoutInfoFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutInfoFactoryProtocol.swift; sourceTree = "<group>"; };
 		847119EA262EFF3800716580 /* ValidatorPayoutInfoFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorPayoutInfoFactory.swift; sourceTree = "<group>"; };
 		8471538C2653B29100CB91D8 /* ChangeRewardDestinationViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeRewardDestinationViewModelFactory.swift; sourceTree = "<group>"; };
+		8471825E2846A8E2002C5720 /* StakingManageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingManageTableViewCell.swift; sourceTree = "<group>"; };
 		8472072B277B262B00F593DD /* DAppListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListTests.swift; sourceTree = "<group>"; };
 		8472072D277C203A00F593DD /* UICollectionView+Reuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Reuse.swift"; sourceTree = "<group>"; };
 		8472072F277C335000F593DD /* DAppListFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListFlowLayout.swift; sourceTree = "<group>"; };
@@ -8548,6 +8550,7 @@
 				AEF50585261EE6230098574D /* PurchaseProviderPickerTableViewCell.swift */,
 				AEF5058A261EF27B0098574D /* PurchaseProviderPickerTableViewCell.xib */,
 				844DBC61274D1E29009F8351 /* SecretTypeTableViewCell.swift */,
+				8471825E2846A8E2002C5720 /* StakingManageTableViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -11314,6 +11317,7 @@
 				84786E1A25FA6A470089DFF7 /* StashItem.swift in Sources */,
 				848FFE9025E6CF4300652AA5 /* StorageKeyEncodingOperation.swift in Sources */,
 				8443FDB6255540570092893D /* ExportMnemonicData.swift in Sources */,
+				8471825F2846A8E2002C5720 /* StakingManageTableViewCell.swift in Sources */,
 				84893C0724DA890F008F6A3F /* CommonError.swift in Sources */,
 				84F1CB3E27CF4F5A0095D523 /* BorderedLabelView.swift in Sources */,
 				849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */,

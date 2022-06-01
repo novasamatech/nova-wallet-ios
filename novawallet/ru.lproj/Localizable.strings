@@ -785,3 +785,9 @@
 "parastk.collators.filter.own.stake" = "Собственный стейк коллатора";
 "common.parastk.delegators" = "Делегаторы";
 "parastk.collator.info" = "Информация о коллаторе";
+"parastk.manage.collators" = "Управление коллаторами";
+"parastk.your.rewarded.description" = "Ваш стейк распределен между следующими коллаторами";
+"parastk.your.not.rewarded.description" = "Активные коллаторы без вашего стейка";
+"parastk.your.not.elected.description" = "Коллаторы с недостаточным стейком, чтобы быть избранными";
+"parastk.your.pending.description" = "Выбранные коллаторы активируются в следующем раунде";
+"parastk.your.pending.format" = "Ожидающие (%@)";

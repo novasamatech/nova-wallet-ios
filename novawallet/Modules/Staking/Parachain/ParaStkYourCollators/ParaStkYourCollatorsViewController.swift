@@ -132,6 +132,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDataSource {
         }
 
         cell.bind(viewModel: viewModel, type: .accentOnSorting)
+        cell.isInfoEnabled = false
 
         return cell
     }
@@ -188,7 +189,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
             let headerView: YourValidatorListStatusSectionView = tableView.dequeueReusableHeaderFooterView()
             configurePending(
                 headerView: headerView,
-                validatorsCount: sectionViewModel.collators.count,
+                collatorsCount: sectionViewModel.collators.count,
                 section: section
             )
 
@@ -217,7 +218,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourAllocatedDescription_2_2_0(
+        let description = R.string.localizable.parastkYourRewardedDescription(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -230,7 +231,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
     }
 
     private func configureNotRewarded(headerView: YourValidatorListDescSectionView, section: Int) {
-        let description = R.string.localizable.stakingYourNotAllocatedDescription_v2_2_0(
+        let description = R.string.localizable.parastkYourNotRewardedDescription(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -256,7 +257,7 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourInactiveDescription_v2_2_0(
+        let description = R.string.localizable.parastkYourNotElectedDescription(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -274,18 +275,18 @@ extension ParaStkYourCollatorsViewController: UITableViewDelegate {
 
     private func configurePending(
         headerView: YourValidatorListStatusSectionView,
-        validatorsCount: Int,
+        collatorsCount: Int,
         section: Int
     ) {
         let icon = R.image.iconPending()!
-        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: validatorsCount)).map {
-            R.string.localizable.stakingYourSelectedFormat(
+        let title = counterFormater.value(for: selectedLocale).string(from: NSNumber(value: collatorsCount)).map {
+            R.string.localizable.parastkYourPendingFormat(
                 $0,
                 preferredLanguages: selectedLocale.rLanguages
             )
         } ?? ""
 
-        let description = R.string.localizable.stakingYourValidatorsChangingTitle(
+        let description = R.string.localizable.parastkYourPendingDescription(
             preferredLanguages: selectedLocale.rLanguages
         )
 

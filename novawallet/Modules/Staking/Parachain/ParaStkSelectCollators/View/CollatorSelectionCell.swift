@@ -13,6 +13,16 @@ class CollatorSelectionCell: UITableViewCell {
 
     weak var delegate: CollatorSelectionCellDelegate?
 
+    var isInfoEnabled: Bool {
+        get {
+            infoButton.isUserInteractionEnabled
+        }
+
+        set {
+            infoButton.isUserInteractionEnabled = newValue
+        }
+    }
+
     let iconView: PolkadotIconView = {
         let view = PolkadotIconView()
         view.backgroundColor = .clear
