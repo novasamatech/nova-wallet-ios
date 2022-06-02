@@ -39,4 +39,23 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
 
         view?.controller.navigationController?.pushViewController(collatorsView.controller, animated: true)
     }
+
+    func showDelegationSelection(
+        from view: ParaStkStakeSetupViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    ) {
+        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
+            viewModels,
+            selectedIndex: selectedIndex,
+            delegate: delegate,
+            context: context
+        ) else {
+            return
+        }
+
+        view?.controller.present(infoVew, animated: true, completion: nil)
+    }
 }

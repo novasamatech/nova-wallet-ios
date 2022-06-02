@@ -24,12 +24,20 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
         view?.controller.present(infoVew, animated: true, completion: nil)
     }
 
-    func showStartStaking(from view: ControllerBackedProtocol?) {
-        guard let startStakingView = ParaStkStakeSetupViewFactory.createView(with: state) else {
+    func showStakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    ) {
+        guard let stakeView = ParaStkStakeSetupViewFactory.createView(
+            with: state,
+            initialDelegator: initialDelegator,
+            delegationIdentities: delegationIdentities
+        ) else {
             return
         }
 
-        let navigationController = ImportantFlowViewFactory.createNavigation(from: startStakingView.controller)
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: stakeView.controller)
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }

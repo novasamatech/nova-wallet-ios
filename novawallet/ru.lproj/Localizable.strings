@@ -797,3 +797,4 @@
 "parastk.reward.info.avg" = "Средний APR";
 "common.chain.account.missing.title.format" = "%@ аккаунт отсутствует";
 "common.chain.account.missing.message.format" = "Вам необходимо добавить %@ аккаунт в кошелек для начала стекинга";
+"common.new.collator" = "Новый коллатор";
