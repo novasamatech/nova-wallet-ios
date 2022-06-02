@@ -10,12 +10,14 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     func showConfirmation(
         from view: ParaStkStakeSetupViewProtocol?,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
     ) {
         guard let confirmView = ParaStkStakeConfirmViewFactory.createView(
             for: state,
             collator: collator,
-            amount: amount
+            amount: amount,
+            initialDelegator: initialDelegator
         ) else {
             return
         }

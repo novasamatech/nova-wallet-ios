@@ -7,7 +7,8 @@ struct ParaStkStakeConfirmViewFactory {
     static func createView(
         for state: ParachainStakingSharedState,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
     ) -> ParaStkStakeConfirmViewProtocol? {
         guard
             let chainAsset = state.settings.value,
@@ -42,6 +43,7 @@ struct ParaStkStakeConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             collator: collator,
             amount: amount,
+            initialDelegator: initialDelegator,
             localizationManager: localizationManager,
             logger: Logger.shared
         )

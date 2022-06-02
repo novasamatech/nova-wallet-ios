@@ -16,6 +16,16 @@ extension ParachainStaking {
         @StringCodable var candidateDelegationCount: UInt32
         @StringCodable var delegationCount: UInt32
     }
+
+    struct DelegatorBondMoreCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case candidate
+            case more
+        }
+
+        @BytesCodable var candidate: AccountId
+        @StringCodable var more: BigUInt
+    }
 }
 
 extension ParachainStaking.DelegateCall {
@@ -28,5 +38,15 @@ extension ParachainStaking.DelegateCall {
 
     var runtimeCall: RuntimeCall<ParachainStaking.DelegateCall> {
         RuntimeCall(moduleName: "ParachainStaking", callName: "delegate", args: self)
+    }
+}
+
+extension ParachainStaking.DelegatorBondMoreCall {
+    var extrinsicIdentifier: String {
+        candidate.toHex() + "-" + String(more)
+    }
+
+    var runtimeCall: RuntimeCall<ParachainStaking.DelegatorBondMoreCall> {
+        RuntimeCall(moduleName: "ParachainStaking", callName: "delegator_bond_more", args: self)
     }
 }
