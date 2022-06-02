@@ -108,7 +108,15 @@ extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
 
         switch options[index] {
         case .stakeMore:
-            break
+            let optCollators = try? collators?.get()
+            let delegationIdentities = optCollators?.identitiesDict()
+            let optDelegator = try? delegator?.get()
+
+            wireframe.showStakeMore(
+                from: view,
+                initialDelegator: optDelegator,
+                delegationIdentities: delegationIdentities
+            )
         case .unstake:
             break
         default:

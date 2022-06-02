@@ -106,11 +106,7 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
                 return
             }
 
-            let identities = delegator.delegations?.reduce(into: [AccountId: AccountIdentity]()) { result, item in
-                if let identity = item.identity {
-                    result[item.accountId] = identity
-                }
-            }
+            let identities = delegator.delegations?.identitiesDict()
 
             wireframe.showStakeTokens(
                 from: view,
