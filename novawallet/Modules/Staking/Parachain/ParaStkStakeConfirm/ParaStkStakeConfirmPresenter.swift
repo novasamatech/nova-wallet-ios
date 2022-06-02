@@ -110,7 +110,7 @@ final class ParaStkStakeConfirmPresenter {
         view?.didReceiveCollator(viewModel: viewModel)
     }
 
-    private func provideHintsViewModel() {
+    private func provideStartStakingHintsViewModel() {
         var hints: [String] = []
         let languages = selectedLocale.rLanguages
 
@@ -136,6 +136,22 @@ final class ParaStkStakeConfirmPresenter {
         ])
 
         view?.didReceiveHints(viewModel: hints)
+    }
+
+    private func provideStakeMoreHintsViewModel() {
+        let hints: [String] = [
+            R.string.localizable.parastkHintRewardBondMore(preferredLanguages: selectedLocale.rLanguages)
+        ]
+
+        view?.didReceiveHints(viewModel: hints)
+    }
+
+    private func provideHintsViewModel() {
+        if delegator != nil {
+            provideStakeMoreHintsViewModel()
+        } else {
+            provideStartStakingHintsViewModel()
+        }
     }
 
     private func presentOptions(for address: AccountAddress) {
@@ -326,6 +342,7 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
         self.delegator = delegator
 
         refreshFee()
+        provideHintsViewModel()
     }
 
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration) {
