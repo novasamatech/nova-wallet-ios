@@ -158,7 +158,7 @@ class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewPro
         }
     }
 
-    private func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
+    func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
         if case let .elected(exposure) = model.status, exposure.oversubscribed {
             let message: String = {
                 if let myNomination = exposure.myNomination, !myNomination.isRewarded {

@@ -9,31 +9,22 @@ final class ParaStkStateViewModelFactory {
     private var lastViewModel: StakingViewState = .undefined
 
     private func createDelegationStatus(
-        for response: ParachainStaking.DelegatorCollatorsResponse?,
-        delegator: ParachainStaking.Delegator,
+        for collatorStatuses: [ParaStkDelegationStatus]?,
         commonData: ParachainStaking.CommonData
     ) -> NominationViewStatus {
-        guard
-            let response = response,
-            let roundInfo = commonData.roundInfo else {
+        guard let statuses = collatorStatuses, let roundInfo = commonData.roundInfo else {
             return .undefined
         }
 
-        let state = ParachainStaking.DelegatorRoundState(
-            response: response,
-            delegator: delegator
-        )
-
-        switch state {
-        case .inactive:
-            return .inactive
-        case .active:
+        if statuses.contains(where: { $0 == .rewarded }) {
             return .active
-        case .waiting:
+        } else if statuses.contains(where: { $0 == .pending }) {
             return .waiting(
                 eraCountdown: commonData.roundCountdown,
                 nominationEra: roundInfo.current
             )
+        } else {
+            return .inactive
         }
     }
 
@@ -183,22 +174,17 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             return
         }
 
-        let collatorsResponse: ParachainStaking.DelegatorCollatorsResponse?
-        collatorsResponse = state.commonData.collatorsInfo.flatMap { info in
-            guard let maxRewardableCollators = state.commonData.networkInfo?.maxRewardableDelegators else {
+        let delegationsDict = state.delegatorState.delegationsDic()
+        let collatorsStatuses: [ParaStkDelegationStatus]? = state.delegations?.compactMap { delegation in
+            guard let stake = delegationsDict[delegation.accountId]?.amount else {
                 return nil
             }
 
-            return info.fetchRoundState(
-                for: state.delegatorState,
-                accountId: accountId,
-                maxRewardableDelegators: maxRewardableCollators
-            )
+            return delegation.status(for: accountId, stake: stake)
         }
 
         let delegationStatus = createDelegationStatus(
-            for: collatorsResponse,
-            delegator: state.delegatorState,
+            for: collatorsStatuses,
             commonData: state.commonData
         )
 
@@ -215,8 +201,7 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
         }
 
         let alerts = createAlerts(
-            for: collatorsResponse,
-            delegator: state.delegatorState,
+            for: collatorsStatuses,
             scheduledRequests: state.scheduledRequests,
             commonData: state.commonData
         )

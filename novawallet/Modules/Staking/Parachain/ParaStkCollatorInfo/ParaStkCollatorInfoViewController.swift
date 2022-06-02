@@ -7,6 +7,16 @@ final class ParaStkCollatorInfoViewController: ValidatorInfoViewController {
         )
     }
 
+    override func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
+        if case let .elected(exposure) = model.status, exposure.oversubscribed {
+            let message: String = R.string.localizable.parastkCollatorInfoNotRewarded(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            rootView.addWarningView(message: message)
+        }
+    }
+
     override func applyAccountView(from viewModel: ValidatorInfoViewModel) {
         let accountView = rootView.addIdentityAccountView(for: viewModel.account.displayAddress())
 
