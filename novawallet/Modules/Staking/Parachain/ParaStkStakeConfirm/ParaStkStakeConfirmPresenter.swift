@@ -145,13 +145,15 @@ final class ParaStkStakeConfirmPresenter {
 
         fee = nil
 
-        interactor.estimateFee(
-            amountInPlank,
+        let callWrapper = DelegationCallWrapper(
+            amount: amountInPlank,
             collator: collatorId,
             collatorDelegationsCount: collatorDelegationsCount,
             delegationsCount: UInt32(delegationsCount),
             existingBond: existingStakeInPlank()
         )
+
+        interactor.estimateFee(with: callWrapper)
 
         provideFeeViewModel()
     }
@@ -168,13 +170,15 @@ final class ParaStkStakeConfirmPresenter {
 
         view?.didStartLoading()
 
-        interactor.confirm(
-            amountInPlank,
+        let callWrapper = DelegationCallWrapper(
+            amount: amountInPlank,
             collator: collatorId,
             collatorDelegationsCount: collatorDelegationsCount,
             delegationsCount: UInt32(delegationsCount),
             existingBond: existingStakeInPlank()
         )
+
+        interactor.confirm(with: callWrapper)
     }
 }
 

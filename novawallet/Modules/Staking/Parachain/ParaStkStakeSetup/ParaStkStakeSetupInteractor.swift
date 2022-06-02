@@ -233,38 +233,11 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         subscribeRemoteCollator(for: accountId)
     }
 
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId?,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32,
-        existingBond: BigUInt?
-    ) {
-        let candidate = collator ?? selectedAccount.chainAccount.accountId
-
-        let identifier = candidate.toHex() + "-"
-            + String(amount) + "-"
-            + String(collatorDelegationsCount) + "-"
-            + String(delegationsCount)
+    func estimateFee(with callWrapper: DelegationCallWrapper) {
+        let identifier = callWrapper.extrinsicId()
 
         feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
-            if existingBond != nil {
-                let call = ParachainStaking.DelegatorBondMoreCall(
-                    candidate: candidate,
-                    more: amount
-                )
-
-                return try builder.adding(call: call.runtimeCall)
-            } else {
-                let call = ParachainStaking.DelegateCall(
-                    candidate: candidate,
-                    amount: amount,
-                    candidateDelegationCount: collatorDelegationsCount,
-                    delegationCount: delegationsCount
-                )
-
-                return try builder.adding(call: call.runtimeCall)
-            }
+            try callWrapper.accept(builder: builder)
         }
     }
 }
