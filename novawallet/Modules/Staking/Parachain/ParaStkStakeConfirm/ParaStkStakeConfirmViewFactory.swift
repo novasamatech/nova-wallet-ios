@@ -48,8 +48,21 @@ struct ParaStkStakeConfirmViewFactory {
             logger: Logger.shared
         )
 
+        let localizableTitle: LocalizableResource<String>
+
+        if initialDelegator != nil {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
+            }
+        }
+
         let view = ParaStkStakeConfirmViewController(
             presenter: presenter,
+            localizableTitle: localizableTitle,
             localizationManager: localizationManager
         )
 

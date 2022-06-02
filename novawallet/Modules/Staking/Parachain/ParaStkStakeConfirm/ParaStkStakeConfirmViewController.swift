@@ -6,11 +6,16 @@ final class ParaStkStakeConfirmViewController: UIViewController, ViewHolder {
 
     let presenter: ParaStkStakeConfirmPresenterProtocol
 
+    let localizableTitle: LocalizableResource<String>
+
     init(
         presenter: ParaStkStakeConfirmPresenterProtocol,
+        localizableTitle: LocalizableResource<String>,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.presenter = presenter
+        self.localizableTitle = localizableTitle
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -35,7 +40,7 @@ final class ParaStkStakeConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupLocalization() {
-        title = R.string.localizable.stakingStartTitle(preferredLanguages: selectedLocale.rLanguages)
+        title = localizableTitle.value(for: selectedLocale)
 
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
@@ -106,6 +111,7 @@ extension ParaStkStakeConfirmViewController: ParaStkStakeConfirmViewProtocol {
     }
 
     func didReceiveCollator(viewModel: DisplayAddressViewModel) {
+        rootView.collatorCell.titleLabel.lineBreakMode = viewModel.lineBreakMode
         rootView.collatorCell.bind(viewModel: viewModel.cellViewModel)
     }
 
