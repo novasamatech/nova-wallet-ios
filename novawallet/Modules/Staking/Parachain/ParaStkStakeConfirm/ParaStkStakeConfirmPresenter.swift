@@ -15,13 +15,15 @@ final class ParaStkStakeConfirmPresenter {
     let amount: Decimal
     let logger: LoggerProtocol
 
-    private var balance: AssetBalance?
-    private var fee: BigUInt?
-    private var price: PriceData?
-    private var stakingDuration: ParachainStakingDuration?
-    private var delegator: ParachainStaking.Delegator?
-    private var collatorMetadata: ParachainStaking.CandidateMetadata?
-    private var minTechStake: BigUInt?
+    private(set) var balance: AssetBalance?
+    private(set) var fee: BigUInt?
+    private(set) var price: PriceData?
+    private(set) var stakingDuration: ParachainStakingDuration?
+    private(set) var delegator: ParachainStaking.Delegator?
+    private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private(set) var minTechStake: BigUInt?
+    private(set) var minDelegationAmount: BigUInt?
+    private(set) var maxDelegations: UInt32?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
@@ -110,42 +112,6 @@ final class ParaStkStakeConfirmPresenter {
         view?.didReceiveCollator(viewModel: viewModel)
     }
 
-    private func provideStartStakingHintsViewModel() {
-        var hints: [String] = []
-        let languages = selectedLocale.rLanguages
-
-        if let stakingDuration = stakingDuration {
-            let roundDuration = stakingDuration.round.localizedDaysHours(for: selectedLocale)
-            let unstakingPeriod = stakingDuration.unstaking.localizedDaysHours(for: selectedLocale)
-
-            hints.append(contentsOf: [
-                R.string.localizable.parachainStakingHintRewardsFormat(
-                    "~\(roundDuration)",
-                    preferredLanguages: languages
-                ),
-                R.string.localizable.stakingHintUnstakeFormat_v2_2_0(
-                    "~\(unstakingPeriod)",
-                    preferredLanguages: languages
-                )
-            ])
-        }
-
-        hints.append(contentsOf: [
-            R.string.localizable.stakingHintNoRewards_V2_2_0(preferredLanguages: languages),
-            R.string.localizable.stakingHintRedeem_v2_2_0(preferredLanguages: languages)
-        ])
-
-        view?.didReceiveHints(viewModel: hints)
-    }
-
-    private func provideStakeMoreHintsViewModel() {
-        let hints: [String] = [
-            R.string.localizable.parastkHintRewardBondMore(preferredLanguages: selectedLocale.rLanguages)
-        ]
-
-        view?.didReceiveHints(viewModel: hints)
-    }
-
     private func provideHintsViewModel() {
         if delegator != nil {
             provideStakeMoreHintsViewModel()
@@ -167,7 +133,7 @@ final class ParaStkStakeConfirmPresenter {
         )
     }
 
-    private func refreshFee() {
+    func refreshFee() {
         guard
             let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
             let collatorId = try? collator.address.toAccountId() else {
@@ -190,7 +156,7 @@ final class ParaStkStakeConfirmPresenter {
         provideFeeViewModel()
     }
 
-    private func submitExtrinsic() {
+    func submitExtrinsic() {
         guard
             let amountInPlank = amount.toSubstrateAmount(precision: chainAsset.assetDisplayInfo.assetPrecision),
             let collatorId = try? collator.address.toAccountId(),
@@ -209,60 +175,6 @@ final class ParaStkStakeConfirmPresenter {
             delegationsCount: UInt32(delegationsCount),
             existingBond: existingStakeInPlank()
         )
-    }
-
-    private func startStaking() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: amount,
-                precision: precision,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeBottomDelegations(
-                amount: amount,
-                collator: collatorMetadata,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: amount,
-                minTechStake: minTechStake,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            self?.submitExtrinsic()
-        }
-    }
-
-    private func stakeMore(above _: BigUInt) {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: amount,
-                precision: precision,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            self?.submitExtrinsic()
-        }
     }
 }
 
@@ -336,6 +248,14 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
 
     func didReceiveMinTechStake(_ minStake: BigUInt) {
         minTechStake = minStake
+    }
+
+    func didReceiveMinDelegationAmount(_ amount: BigUInt) {
+        minDelegationAmount = amount
+    }
+
+    func didReceiveMaxDelegations(_ maxDelegations: UInt32) {
+        self.maxDelegations = maxDelegations
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {

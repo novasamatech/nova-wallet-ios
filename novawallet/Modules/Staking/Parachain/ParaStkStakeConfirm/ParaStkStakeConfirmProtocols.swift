@@ -43,6 +43,8 @@ protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveMinTechStake(_ minStake: BigUInt)
+    func didReceiveMinDelegationAmount(_ amount: BigUInt)
+    func didReceiveMaxDelegations(_ maxDelegations: UInt32)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration)
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>)

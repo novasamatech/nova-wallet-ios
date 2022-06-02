@@ -223,7 +223,7 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         feeProxy.delegate = self
 
         provideMinTechStake()
-        provideBondMoreMinStake()
+        provideMinDelegationAmount()
         provideMaxDelegationsPerDelegator()
 
         presenter?.didCompleteSetup()
