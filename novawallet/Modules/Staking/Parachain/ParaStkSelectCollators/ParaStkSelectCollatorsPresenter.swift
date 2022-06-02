@@ -118,11 +118,11 @@ final class ParaStkSelectCollatorsPresenter {
         case .minStake, .ownStake, .totalStake:
             let title = R.string.localizable.commonRewardsColumn(preferredLanguages: languages)
 
-            let rewards = percentFormatter.value(
-                for: selectedLocale
-            ).stringFromDecimal(collatorInfo.apr)
+            let rewards = collatorInfo.apr.flatMap {
+                percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
+            } ?? ""
 
-            return TitleWithSubtitleViewModel(title: title, subtitle: rewards ?? "")
+            return TitleWithSubtitleViewModel(title: title, subtitle: rewards)
         }
     }
 
@@ -131,11 +131,11 @@ final class ParaStkSelectCollatorsPresenter {
     ) -> TitleWithSubtitleViewModel {
         switch sorting {
         case .rewards:
-            let rewardsString = percentFormatter.value(
-                for: selectedLocale
-            ).stringFromDecimal(collatorInfo.apr)
+            let rewards = collatorInfo.apr.flatMap {
+                percentFormatter.value(for: selectedLocale).stringFromDecimal($0)
+            } ?? ""
 
-            return TitleWithSubtitleViewModel(title: rewardsString ?? "")
+            return TitleWithSubtitleViewModel(title: rewards)
         case .minStake:
             return createDetailsViewModel(for: collatorInfo.minRewardableStake)
         case .totalStake:
@@ -165,7 +165,8 @@ final class ParaStkSelectCollatorsPresenter {
             detailsName: detailsViewModel.title,
             details: detailsViewModel.subtitle,
             sortedByTitle: sortedByViewModel.title,
-            sortedByDetails: sortedByViewModel.subtitle
+            sortedByDetails: sortedByViewModel.subtitle,
+            hasWarning: false
         )
     }
 

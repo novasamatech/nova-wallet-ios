@@ -8,6 +8,7 @@ struct CollatorSelectionViewModel {
     let details: String
     let sortedByTitle: String
     let sortedByDetails: String
+    let hasWarning: Bool
 }
 
 struct CollatorSelectionScreenViewModel {

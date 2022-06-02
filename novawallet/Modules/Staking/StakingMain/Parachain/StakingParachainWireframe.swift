@@ -24,4 +24,14 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showYourCollators(from view: ControllerBackedProtocol?) {
+        guard let collatorsView = ParaStkYourCollatorsViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: collatorsView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
