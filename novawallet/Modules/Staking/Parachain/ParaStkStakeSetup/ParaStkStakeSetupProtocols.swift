@@ -23,13 +23,7 @@ protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
     func setup()
 
     func applyCollator(with accountId: AccountId)
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId?,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32,
-        existingBond: BigUInt?
-    )
+    func estimateFee(with callWrapper: DelegationCallWrapper)
 }
 
 protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
