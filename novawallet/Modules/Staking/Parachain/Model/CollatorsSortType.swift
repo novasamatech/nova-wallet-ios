@@ -13,7 +13,7 @@ extension Array where Element == CollatorSelectionInfo {
     func sortedByType(_ type: CollatorsSortType) -> [CollatorSelectionInfo] {
         switch type {
         case .rewards:
-            return sorted { $0.apr > $1.apr }
+            return sorted { ($0.apr ?? 0) > ($1.apr ?? 0) }
         case .minStake:
             return sorted { $0.minRewardableStake > $1.minRewardableStake }
         case .totalStake:
