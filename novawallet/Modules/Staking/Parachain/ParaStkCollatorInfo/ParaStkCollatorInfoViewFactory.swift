@@ -15,6 +15,8 @@ struct ParaStkCollatorInfoViewFactory {
 
         let interactor = ParaStkCollatorInfoInteractor(
             chainAsset: chainAsset,
+            selectedAccount: selectedAccount,
+            stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared
         )
 

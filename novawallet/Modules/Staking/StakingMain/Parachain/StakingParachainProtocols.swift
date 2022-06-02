@@ -3,6 +3,7 @@ import Foundation
 protocol StakingParachainInteractorInputProtocol: AnyObject {
     func setup()
     func fetchScheduledRequests(for collators: [AccountId])
+    func fetchDelegations(for collators: [AccountId])
 }
 
 protocol StakingParachainInteractorOutputProtocol: AnyObject {
@@ -12,6 +13,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?)
+    func didReceiveDelegations(_ delegations: [CollatorSelectionInfo])
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo)
@@ -23,7 +25,13 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
 }
 
 protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
+    func showRewardDetails(
+        from view: ControllerBackedProtocol?,
+        maxReward: Decimal,
+        avgReward: Decimal,
+        symbol: String
+    )
+
     func showStartStaking(from view: ControllerBackedProtocol?)
     func showYourCollators(from view: ControllerBackedProtocol?)
 }
