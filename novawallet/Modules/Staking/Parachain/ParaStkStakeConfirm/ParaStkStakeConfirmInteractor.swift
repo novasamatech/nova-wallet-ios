@@ -113,6 +113,36 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         }
     }
 
+    private func provideMinDelegationAmount() {
+        fetchConstant(
+            for: ParachainStaking.minDelegation,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minDelegation):
+                self?.presenter?.didReceiveMinDelegationAmount(minDelegation)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideMaxDelegationsPerDelegator() {
+        fetchConstant(
+            for: ParachainStaking.maxDelegations,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            switch result {
+            case let .success(maxDelegations):
+                self?.presenter?.didReceiveMaxDelegations(maxDelegations)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
     private func provideStakingDuration() {
         let wrapper = stakingDurationFactory.createDurationOperation(
             from: runtimeProvider,
@@ -151,6 +181,8 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         subscribeCollatorMetadata()
 
         provideMinTechStake()
+        provideMinDelegationAmount()
+        provideMaxDelegationsPerDelegator()
         provideStakingDuration()
     }
 

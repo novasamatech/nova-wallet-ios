@@ -12,19 +12,19 @@ final class ParaStkStakeSetupPresenter {
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
 
-    private var inputResult: AmountInputResult?
-    private var fee: BigUInt?
-    private var balance: AssetBalance?
-    private var minTechStake: BigUInt?
-    private var minDelegationAmount: BigUInt?
-    private var maxDelegations: UInt32?
-    private var price: PriceData?
-    private var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+    private(set) var inputResult: AmountInputResult?
+    private(set) var fee: BigUInt?
+    private(set) var balance: AssetBalance?
+    private(set) var minTechStake: BigUInt?
+    private(set) var minDelegationAmount: BigUInt?
+    private(set) var maxDelegations: UInt32?
+    private(set) var price: PriceData?
+    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
 
-    private var collatorDisplayAddress: DisplayAddress?
-    private var collatorMetadata: ParachainStaking.CandidateMetadata?
-    private var delegator: ParachainStaking.Delegator?
-    private var delegationIdentities: [AccountId: AccountIdentity]?
+    private(set) var collatorDisplayAddress: DisplayAddress?
+    private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private(set) var delegator: ParachainStaking.Delegator?
+    private(set) var delegationIdentities: [AccountId: AccountIdentity]?
 
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
@@ -63,7 +63,7 @@ final class ParaStkStakeSetupPresenter {
         }
     }
 
-    private func balanceMinusFee() -> Decimal {
+    func balanceMinusFee() -> Decimal {
         let balanceValue = balance?.transferable ?? 0
         let feeValue = fee ?? 0
 
@@ -231,7 +231,7 @@ final class ParaStkStakeSetupPresenter {
         }
     }
 
-    private func refreshFee() {
+    func refreshFee() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let precicion = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -281,119 +281,6 @@ final class ParaStkStakeSetupPresenter {
         provideRewardsViewModel()
 
         interactor.applyCollator(with: collatorId)
-    }
-
-    private func startStaking() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
-        let minStake: BigUInt?
-
-        if delegator != nil {
-            minStake = minDelegationAmount
-        } else {
-            minStake = minTechStake
-        }
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: inputAmount,
-                precision: precision,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.notExceedsMaxCollators(
-                delegator: delegator,
-                maxCollatorsAllowed: maxDelegations,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeBottomDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                existingBond: nil,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: inputAmount,
-                minTechStake: minStake,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeTopDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                existingBond: nil,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            guard let collator = self?.collatorDisplayAddress, let amount = inputAmount else {
-                return
-            }
-
-            self?.wireframe.showConfirmation(
-                from: self?.view,
-                collator: collator,
-                amount: amount,
-                initialDelegator: self?.delegator
-            )
-        }
-    }
-
-    private func stakeMore(above existingBond: BigUInt) {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: inputAmount,
-                precision: precision,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeBottomDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                existingBond: existingBond,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: inputAmount,
-                minTechStake: minDelegationAmount,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeTopDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                existingBond: existingBond,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            guard
-                let collator = self?.collatorDisplayAddress,
-                let amount = inputAmount else {
-                return
-            }
-
-            self?.wireframe.showConfirmation(
-                from: self?.view,
-                collator: collator,
-                amount: amount,
-                initialDelegator: self?.delegator
-            )
-        }
     }
 }
 
@@ -545,7 +432,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
     }
 
     func didReceiveMinDelegationAmount(_ amount: BigUInt) {
-        self.minDelegationAmount = amount
+        minDelegationAmount = amount
     }
 
     func didReceiveMaxDelegations(_ maxDelegations: UInt32) {
