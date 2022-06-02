@@ -247,13 +247,15 @@ final class ParaStkStakeSetupPresenter {
 
         let delegationsCount = delegator?.delegations.count ?? 0
 
-        interactor.estimateFee(
-            amount,
-            collator: collator,
+        let callWrapper = DelegationCallWrapper(
+            amount: amount,
+            collator: collator ?? AccountId.dummyAccountId(of: chainAsset.chain.accountIdSize),
             collatorDelegationsCount: collatorsDelegationsCount,
             delegationsCount: UInt32(delegationsCount),
             existingBond: existingStakeInPlank()
         )
+
+        interactor.estimateFee(with: callWrapper)
     }
 
     private func setupInitialCollator() {

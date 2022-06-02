@@ -186,4 +186,13 @@ extension ChainModel {
             isEthereumBased: isEthereumBased
         )
     }
+
+    var accountIdSize: Int {
+        switch chainFormat {
+        case .substrate:
+            return 32
+        case .ethereum:
+            return 20
+        }
+    }
 }
