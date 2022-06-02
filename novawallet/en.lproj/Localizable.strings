@@ -798,3 +798,4 @@
 "parastk.reward.info.avg" = "Average APR";
 "common.chain.account.missing.title.format" = "%@ account is missing";
 "common.chain.account.missing.message.format" = "You should add %@ account to the wallet in order to start staking";
+"common.new.collator" = "New collator";

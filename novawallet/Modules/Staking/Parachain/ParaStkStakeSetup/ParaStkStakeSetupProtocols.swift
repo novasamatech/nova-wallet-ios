@@ -3,7 +3,7 @@ import CommonWallet
 import Foundation
 
 protocol ParaStkStakeSetupViewProtocol: ControllerBackedProtocol {
-    func didReceiveCollator(viewModel: DisplayAddressViewModel?)
+    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
@@ -54,5 +54,13 @@ protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showCollatorSelection(
         from view: ParaStkStakeSetupViewProtocol?,
         delegate: ParaStkSelectCollatorsDelegate
+    )
+
+    func showDelegationSelection(
+        from view: ParaStkStakeSetupViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
     )
 }
