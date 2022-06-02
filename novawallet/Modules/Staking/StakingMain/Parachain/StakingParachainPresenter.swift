@@ -70,16 +70,17 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performRewardInfoAction() {
-        guard let rewardCalculator = stateMachine.viewState(
-            using: { (state: ParachainStaking.BaseState) in state }
-        )?.commonData.calculatorEngine else {
+        guard
+            let state = stateMachine.viewState(using: { (state: ParachainStaking.BaseState) in state }),
+            let rewardCalculator = state.commonData.calculatorEngine,
+            let asset = state.commonData.chainAsset?.asset else {
             return
         }
 
         let maxReward = rewardCalculator.calculateMaxReturn(for: .year)
         let avgReward = rewardCalculator.calculateAvgReturn(for: .year)
 
-        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward)
+        wireframe.showRewardDetails(from: view, maxReward: maxReward, avgReward: avgReward, symbol: asset.symbol)
     }
 
     func performChangeValidatorsAction() {
@@ -130,23 +131,28 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
     }
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
-        let oldLessTotal = stateMachine.viewState { (state: ParachainStaking.DelegatorState) in
-            state.delegatorState.lessTotal
-        } ?? 0
-
         stateMachine.state.process(delegatorState: delegator)
 
         let optNewState = stateMachine.viewState { (state: ParachainStaking.DelegatorState) in
             state.delegatorState
         }
 
-        if let newState = optNewState, newState.lessTotal > 0, newState.lessTotal != oldLessTotal {
-            interactor.fetchScheduledRequests(for: newState.collators())
+        guard let newState = optNewState else {
+            stateMachine.state.process(scheduledRequests: nil)
+            stateMachine.state.process(delegations: nil)
+            return
         }
+
+        interactor.fetchScheduledRequests(for: newState.collators())
+        interactor.fetchDelegations(for: newState.collators())
     }
 
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?) {
         stateMachine.state.process(scheduledRequests: requests)
+    }
+
+    func didReceiveDelegations(_ delegations: [CollatorSelectionInfo]) {
+        stateMachine.state.process(delegations: delegations)
     }
 
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators) {

@@ -1,19 +1,36 @@
 import UIKit
+import RobinHood
 
-final class ParaStkCollatorInfoInteractor {
+final class ParaStkCollatorInfoInteractor: AnyProviderAutoCleaning {
     weak var presenter: ParaStkCollatorInfoInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
+    let selectedAccount: MetaChainAccountResponse
+    let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
     private var priceProvider: AnySingleValueProvider<PriceData>?
+    private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
 
     init(
         chainAsset: ChainAsset,
+        selectedAccount: MetaChainAccountResponse,
+        stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     ) {
         self.chainAsset = chainAsset
+        self.selectedAccount = selectedAccount
+        self.stakingLocalSubscriptionFactory = stakingLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
+    }
+
+    private func subscribeDelegator() {
+        clear(dataProvider: &delegatorProvider)
+
+        delegatorProvider = subscribeToDelegatorState(
+            for: chainAsset.chain.chainId,
+            accountId: selectedAccount.chainAccount.accountId
+        )
     }
 }
 
@@ -22,12 +39,16 @@ extension ParaStkCollatorInfoInteractor: ParaStkCollatorInfoInteractorInputProto
         if let priceId = chainAsset.asset.priceId {
             priceProvider = subscribeToPrice(for: priceId)
         } else {
-            presenter?.didReceivePrice(result: .success(nil))
+            presenter?.didReceivePrice(nil)
         }
+
+        subscribeDelegator()
     }
 
     func reload() {
         priceProvider?.refresh()
+
+        subscribeDelegator()
     }
 }
 
@@ -36,6 +57,26 @@ extension ParaStkCollatorInfoInteractor: PriceLocalStorageSubscriber, PriceLocal
         result: Result<PriceData?, Error>,
         priceId _: AssetModel.PriceId
     ) {
-        presenter?.didReceivePrice(result: result)
+        switch result {
+        case let .success(price):
+            presenter?.didReceivePrice(price)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension ParaStkCollatorInfoInteractor: ParastakingLocalStorageSubscriber, ParastakingLocalStorageHandler {
+    func handleParastakingDelegatorState(
+        result: Result<ParachainStaking.Delegator?, Error>,
+        for _: ChainModel.Id,
+        accountId _: AccountId
+    ) {
+        switch result {
+        case let .success(delegator):
+            presenter?.didReceiveDelegator(delegator)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
     }
 }

@@ -4,8 +4,7 @@ import SoraFoundation
 
 extension ParaStkStateViewModelFactory {
     func createAlerts(
-        for response: ParachainStaking.DelegatorCollatorsResponse?,
-        delegator _: ParachainStaking.Delegator,
+        for collatorStatuses: [ParaStkDelegationStatus]?,
         scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         commonData: ParachainStaking.CommonData
     ) -> [StakingAlert] {
@@ -15,11 +14,11 @@ extension ParaStkStateViewModelFactory {
             alerts.append(redeem)
         }
 
-        if let stakeMore = findStakeMoreAlert(for: response) {
+        if let stakeMore = findStakeMoreAlert(for: collatorStatuses) {
             alerts.append(stakeMore)
         }
 
-        if let changeCollator = findChangeCollatorAlert(for: response) {
+        if let changeCollator = findChangeCollatorAlert(for: collatorStatuses) {
             alerts.append(changeCollator)
         }
 
@@ -59,9 +58,9 @@ extension ParaStkStateViewModelFactory {
     }
 
     private func findStakeMoreAlert(
-        for response: ParachainStaking.DelegatorCollatorsResponse?
+        for collatorStatuses: [ParaStkDelegationStatus]?
     ) -> StakingAlert? {
-        if let pendingCollators = response?.pending, pendingCollators.contains(where: { !$0.hasEnoughBond }) {
+        if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notRewarded }) {
             let description = LocalizableResource { locale in
                 R.string.localizable.parachainStakingAlertCollatorsWithNoRewards(
                     preferredLanguages: locale.rLanguages
@@ -75,9 +74,9 @@ extension ParaStkStateViewModelFactory {
     }
 
     private func findChangeCollatorAlert(
-        for response: ParachainStaking.DelegatorCollatorsResponse?
+        for collatorStatuses: [ParaStkDelegationStatus]?
     ) -> StakingAlert? {
-        if let notElectedCollators = response?.notElected, !notElectedCollators.isEmpty {
+        if let statuses = collatorStatuses, statuses.contains(where: { $0 == .notElected }) {
             let description = LocalizableResource { locale in
                 R.string.localizable.parachainStakingAlertCollatorsChange(
                     preferredLanguages: locale.rLanguages

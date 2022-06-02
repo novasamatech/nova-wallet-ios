@@ -8,21 +8,75 @@ struct ModalInfoFactory {
     static let headerHeight: CGFloat = 40.0
     static let footerHeight: CGFloat = 0.0
 
+    static func createParaStkRewardDetails(
+        for maxReward: Decimal,
+        avgReward: Decimal,
+        symbol: String
+    ) -> UIViewController {
+        let title = LocalizableResource { locale in
+            R.string.localizable.stakingEstimateEarningTitle_v190(symbol, preferredLanguages: locale.rLanguages)
+        }
+
+        let maxRewardTitle = LocalizableResource { locale in
+            R.string.localizable.parastkRewardInfoMax(preferredLanguages: locale.rLanguages)
+        }
+
+        let avgRewardTitle = LocalizableResource { locale in
+            R.string.localizable.parastkRewardInfoAvg(preferredLanguages: locale.rLanguages)
+        }
+
+        return createRewardDetails(
+            for: maxReward,
+            avgReward: avgReward,
+            title: title,
+            maxRewardTitle: maxRewardTitle,
+            avgRewardTitle: avgRewardTitle
+        )
+    }
+
     static func createRewardDetails(
         for maxReward: Decimal,
         avgReward: Decimal
+    ) -> UIViewController {
+        let title = LocalizableResource { locale in
+            R.string.localizable.stakingRewardInfoTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        let maxRewardTitle = LocalizableResource { locale in
+            R.string.localizable.stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+        }
+
+        let avgRewardTitle = LocalizableResource { locale in
+            R.string.localizable.stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+        }
+
+        return createRewardDetails(
+            for: maxReward,
+            avgReward: avgReward,
+            title: title,
+            maxRewardTitle: maxRewardTitle,
+            avgRewardTitle: avgRewardTitle
+        )
+    }
+
+    private static func createRewardDetails(
+        for maxReward: Decimal,
+        avgReward: Decimal,
+        title: LocalizableResource<String>,
+        maxRewardTitle: LocalizableResource<String>,
+        avgRewardTitle: LocalizableResource<String>
     ) -> UIViewController {
         let viewController: ModalPickerViewController<DetailsDisplayTableViewCell, TitleWithSubtitleViewModel>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
         viewController.cellHeight = Self.rowHeight
         viewController.headerHeight = Self.headerHeight
         viewController.footerHeight = Self.footerHeight
+        viewController.headerBorderType = []
+        viewController.separatorStyle = .singleLine
         viewController.allowsSelection = false
         viewController.hasCloseItem = false
 
-        viewController.localizedTitle = LocalizableResource { locale in
-            R.string.localizable.stakingRewardInfoTitle(preferredLanguages: locale.rLanguages)
-        }
+        viewController.localizedTitle = title
 
         viewController.cellNib = UINib(resource: R.nib.detailsDisplayTableViewCell)
         viewController.modalPresentationStyle = .custom
@@ -30,14 +84,14 @@ struct ModalInfoFactory {
         let formatter = NumberFormatter.percent.localizableResource()
 
         let maxViewModel: LocalizableResource<TitleWithSubtitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.stakingRewardInfoMax(preferredLanguages: locale.rLanguages)
+            let title = maxRewardTitle.value(for: locale)
             let details = formatter.value(for: locale).stringFromDecimal(maxReward) ?? ""
 
             return TitleWithSubtitleViewModel(title: title, subtitle: details)
         }
 
         let avgViewModel: LocalizableResource<TitleWithSubtitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.stakingRewardInfoAvg(preferredLanguages: locale.rLanguages)
+            let title = avgRewardTitle.value(for: locale)
             let details = formatter.value(for: locale).stringFromDecimal(avgReward) ?? ""
 
             return TitleWithSubtitleViewModel(title: title, subtitle: details)

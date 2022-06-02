@@ -13,6 +13,7 @@ final class ParaStkCollatorInfoPresenter {
     let logger: LoggerProtocol
 
     private var price: PriceData?
+    private var delegator: ParachainStaking.Delegator?
 
     init(
         interactor: ParaStkCollatorInfoInteractorInputProtocol,
@@ -39,6 +40,7 @@ final class ParaStkCollatorInfoPresenter {
             let viewModel = try viewModelFactory.createViewModel(
                 for: selectedAccount.chainAccount.accountId,
                 collatorInfo: collatorInfo,
+                delegator: delegator,
                 priceData: price,
                 locale: selectedLocale
             )
@@ -102,16 +104,21 @@ extension ParaStkCollatorInfoPresenter: ValidatorInfoPresenterProtocol {
 }
 
 extension ParaStkCollatorInfoPresenter: ParaStkCollatorInfoInteractorOutputProtocol {
-    func didReceivePrice(result: Result<PriceData?, Error>) {
-        switch result {
-        case let .success(price):
-            self.price = price
+    func didReceivePrice(_ price: PriceData?) {
+        self.price = price
 
-            provideViewModel()
-        case let .failure(error):
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-            logger.error("Unexpected error: \(error)")
-        }
+        provideViewModel()
+    }
+
+    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
+        self.delegator = delegator
+
+        provideViewModel()
+    }
+
+    func didReceiveError(_ error: Error) {
+        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        logger.error("Unexpected error: \(error)")
     }
 }
 
