@@ -158,20 +158,35 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         _ amount: BigUInt,
         collator: AccountId,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     ) {
-        let call = ParachainStaking.DelegateCall(
-            candidate: collator,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
+        let identifier = collator.toHex() + "-"
+            + String(amount) + "-"
+            + String(collatorDelegationsCount) + "-"
+            + String(delegationsCount)
 
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: call.extrinsicIdentifier
+            reuseIdentifier: identifier
         ) { builder in
-            try builder.adding(call: call.runtimeCall)
+            if existingBond != nil {
+                let call = ParachainStaking.DelegatorBondMoreCall(
+                    candidate: collator,
+                    more: amount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            } else {
+                let call = ParachainStaking.DelegateCall(
+                    candidate: collator,
+                    amount: amount,
+                    candidateDelegationCount: collatorDelegationsCount,
+                    delegationCount: delegationsCount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            }
         }
     }
 
@@ -179,17 +194,27 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         _ amount: BigUInt,
         collator: AccountId,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     ) {
-        let call = ParachainStaking.DelegateCall(
-            candidate: collator,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
-
         let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            try builder.adding(call: call.runtimeCall)
+            if existingBond != nil {
+                let call = ParachainStaking.DelegatorBondMoreCall(
+                    candidate: collator,
+                    more: amount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            } else {
+                let call = ParachainStaking.DelegateCall(
+                    candidate: collator,
+                    amount: amount,
+                    candidateDelegationCount: collatorDelegationsCount,
+                    delegationCount: delegationsCount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            }
         }
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in

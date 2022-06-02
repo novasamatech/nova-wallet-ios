@@ -27,7 +27,8 @@ protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
         _ amount: BigUInt,
         collator: AccountId?,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     )
 }
 
@@ -48,7 +49,8 @@ protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showConfirmation(
         from view: ParaStkStakeSetupViewProtocol?,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
     )
 
     func showCollatorSelection(

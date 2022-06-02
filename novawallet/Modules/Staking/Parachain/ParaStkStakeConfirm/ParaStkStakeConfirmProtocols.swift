@@ -24,14 +24,16 @@ protocol ParaStkStakeConfirmInteractorInputProtocol: AnyObject {
         _ amount: BigUInt,
         collator: AccountId,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     )
 
     func confirm(
         _ amount: BigUInt,
         collator: AccountId,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     )
 }
 

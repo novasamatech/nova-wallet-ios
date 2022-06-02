@@ -176,21 +176,34 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         _ amount: BigUInt,
         collator: AccountId?,
         collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
+        delegationsCount: UInt32,
+        existingBond: BigUInt?
     ) {
         let candidate = collator ?? selectedAccount.chainAccount.accountId
-        let call = ParachainStaking.DelegateCall(
-            candidate: candidate,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
 
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: call.extrinsicIdentifier
-        ) { builder in
-            try builder.adding(call: call.runtimeCall)
+        let identifier = candidate.toHex() + "-"
+            + String(amount) + "-"
+            + String(collatorDelegationsCount) + "-"
+            + String(delegationsCount)
+
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            if existingBond != nil {
+                let call = ParachainStaking.DelegatorBondMoreCall(
+                    candidate: candidate,
+                    more: amount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            } else {
+                let call = ParachainStaking.DelegateCall(
+                    candidate: candidate,
+                    amount: amount,
+                    candidateDelegationCount: collatorDelegationsCount,
+                    delegationCount: delegationsCount
+                )
+
+                return try builder.adding(call: call.runtimeCall)
+            }
         }
     }
 }

@@ -35,6 +35,7 @@ final class ParaStkStakeConfirmPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         collator: DisplayAddress,
         amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -44,10 +45,19 @@ final class ParaStkStakeConfirmPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.selectedAccount = selectedAccount
         self.balanceViewModelFactory = balanceViewModelFactory
+        delegator = initialDelegator
         self.collator = collator
         self.amount = amount
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    private func existingStakeInPlank() -> BigUInt? {
+        if let collatorId = try? collator.address.toAccountId() {
+            return delegator?.delegations.first(where: { $0.owner == collatorId })?.amount
+        } else {
+            return nil
+        }
     }
 
     private func provideAmountViewModel() {
@@ -149,6 +159,7 @@ final class ParaStkStakeConfirmPresenter {
         }
 
         let collatorDelegationsCount = collatorMetadata?.delegationCount ?? 0
+        let delegationsCount = delegator?.delegations.count ?? 0
 
         fee = nil
 
@@ -156,7 +167,8 @@ final class ParaStkStakeConfirmPresenter {
             amountInPlank,
             collator: collatorId,
             collatorDelegationsCount: collatorDelegationsCount,
-            delegationsCount: 0
+            delegationsCount: UInt32(delegationsCount),
+            existingBond: existingStakeInPlank()
         )
 
         provideFeeViewModel()
@@ -170,14 +182,71 @@ final class ParaStkStakeConfirmPresenter {
             return
         }
 
+        let delegationsCount = delegator?.delegations.count ?? 0
+
         view?.didStartLoading()
 
         interactor.confirm(
             amountInPlank,
             collator: collatorId,
             collatorDelegationsCount: collatorDelegationsCount,
-            delegationsCount: 0
+            delegationsCount: UInt32(delegationsCount),
+            existingBond: existingStakeInPlank()
         )
+    }
+
+    private func startStaking() {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: precision,
+                onError: { [weak self] in self?.refreshFee() }
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: balance?.transferable,
+                fee: fee,
+                spendingAmount: amount,
+                precision: precision,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.canStakeBottomDelegations(
+                amount: amount,
+                collator: collatorMetadata,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.hasMinStake(
+                amount: amount,
+                minTechStake: minTechStake,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            self?.submitExtrinsic()
+        }
+    }
+
+    private func stakeMore(above _: BigUInt) {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        DataValidationRunner(validators: [
+            dataValidatingFactory.hasInPlank(
+                fee: fee,
+                locale: selectedLocale,
+                precision: precision,
+                onError: { [weak self] in self?.refreshFee() }
+            ),
+            dataValidatingFactory.canPayFeeAndAmountInPlank(
+                balance: balance?.transferable,
+                fee: fee,
+                spendingAmount: amount,
+                precision: precision,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            self?.submitExtrinsic()
+        }
     }
 }
 
@@ -208,38 +277,10 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
     }
 
     func confirm() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: amount,
-                precision: precision,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.delegatorNotExist(
-                delegator: delegator,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeBottomDelegations(
-                amount: amount,
-                collator: collatorMetadata,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: amount,
-                minTechStake: minTechStake,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            self?.submitExtrinsic()
+        if let existingAmount = existingStakeInPlank() {
+            stakeMore(above: existingAmount)
+        } else {
+            startStaking()
         }
     }
 }
