@@ -60,53 +60,16 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func fetchScheduledRequests(for collators: [AccountId]) {
-        clear(cancellable: &scheduledRequestsCancellable)
+    func fetchScheduledRequests() {
+        clear(streamableProvider: &scheduledRequestsProvider)
 
         guard
             let chainId = selectedChainAsset?.chain.chainId,
-            let connection = chainRegistry.getConnection(for: chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
+            let delegatorId = selectedAccount?.chainAccount.accountId else {
             return
         }
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
-            presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
-
-        guard let delegator = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveScheduledRequests(nil)
-            return
-        }
-
-        let wrapper = scheduledRequestsFactory.createOperation(
-            for: delegator,
-            collators: collators,
-            runtimeService: runtimeService,
-            connection: connection
-        )
-
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard wrapper === self?.scheduledRequestsCancellable else {
-                    return
-                }
-
-                self?.scheduledRequestsCancellable = nil
-
-                do {
-                    let requests = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveScheduledRequests(requests)
-                } catch {
-                    self?.presenter?.didReceiveError(error)
-                }
-            }
-        }
-
-        scheduledRequestsCancellable = wrapper
-
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        scheduledRequestsProvider = subscribeToScheduledRequests(for: chainId, delegatorId: delegatorId)
     }
 }
 

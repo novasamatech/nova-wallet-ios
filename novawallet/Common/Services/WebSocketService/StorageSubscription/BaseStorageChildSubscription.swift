@@ -33,10 +33,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
     func processUpdate(_ data: Data?, blockHash: Data?) {
         let identifier = localStorageKey
 
-        let fetchOperation = storage.fetchOperation(
-            by: identifier,
-            options: RepositoryFetchOptions()
-        )
+        let fetchOperation = storage.fetchOperation(by: identifier, options: RepositoryFetchOptions())
 
         let processingOperation: BaseOperation<DataProviderChange<ChainStorageItem>?> =
             ClosureOperation {
@@ -48,8 +45,7 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
                     newItem = nil
                 }
 
-                let currentItem = try fetchOperation
-                    .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
+                let currentItem = try fetchOperation.extractNoCancellableResultData()
 
                 return DataProviderChange<ChainStorageItem>.change(value1: currentItem, value2: newItem)
             }
@@ -99,9 +95,6 @@ class BaseStorageChildSubscription: StorageChildSubscribing {
             self?.handle(result: changeResult, remoteItem: remoteItem, blockHash: blockHash)
         }
 
-        operationManager.enqueue(
-            operations: [fetchOperation, processingOperation, saveOperation],
-            in: .transient
-        )
+        operationManager.enqueue(operations: [fetchOperation, processingOperation, saveOperation], in: .transient)
     }
 }
