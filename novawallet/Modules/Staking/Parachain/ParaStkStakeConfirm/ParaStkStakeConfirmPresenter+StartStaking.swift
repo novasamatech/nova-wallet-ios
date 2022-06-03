@@ -71,7 +71,7 @@ extension ParaStkStakeConfirmPresenter {
                 amount: inputAmount,
                 minTechStake: minStake,
                 locale: selectedLocale
-            ),
+            )
         ])
     }
 

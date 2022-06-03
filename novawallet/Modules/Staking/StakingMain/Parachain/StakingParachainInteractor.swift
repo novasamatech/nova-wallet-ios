@@ -35,7 +35,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var collatorsInfoCancellable: CancellableCall?
     var rewardCalculatorCancellable: CancellableCall?
     var networkInfoCancellable: CancellableCall?
-    var scheduledRequestsCancellable: CancellableCall?
     var delegationsCancellable: CancellableCall?
     var durationCancellable: CancellableCall?
 
@@ -45,6 +44,7 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
     var blockNumberProvider: AnyDataProvider<DecodedBlockNumber>?
     var roundInfoProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
     var totalRewardProvider: AnySingleValueProvider<TotalRewardItem>?
+    var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
 
     var selectedAccount: MetaChainAccountResponse?
     var selectedChainAsset: ChainAsset?
@@ -102,7 +102,6 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
         clear(cancellable: &collatorsInfoCancellable)
         clear(cancellable: &rewardCalculatorCancellable)
         clear(cancellable: &networkInfoCancellable)
-        clear(cancellable: &scheduledRequestsCancellable)
         clear(cancellable: &delegationsCancellable)
         clear(cancellable: &durationCancellable)
     }

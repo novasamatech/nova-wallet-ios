@@ -45,7 +45,8 @@ extension StakingMainPresenterFactory {
         let eventCenter = EventCenter.shared
         let logger = Logger.shared
 
-        let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
+        let repositoryFactory = SubstrateRepositoryFactory()
+        let repository = repositoryFactory.createChainStorageItemRepository()
 
         let stakingAccountService = ParachainStaking.AccountSubscriptionService(
             chainRegistry: chainRegistry,
