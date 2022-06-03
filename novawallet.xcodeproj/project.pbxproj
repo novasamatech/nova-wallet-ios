@@ -1221,6 +1221,9 @@
 		849DEC6125EE13CE00C64C19 /* AddressOptionsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849DEC6025EE13CE00C64C19 /* AddressOptionsPresentable.swift */; };
 		849DF02D26C40B7900B702F4 /* RuntimeFilesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849DF02C26C40B7900B702F4 /* RuntimeFilesOperationFactory.swift */; };
 		849DF02F26C53DB900B702F4 /* RuntimeSyncEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849DF02E26C53DB900B702F4 /* RuntimeSyncEvents.swift */; };
+		849E07F22849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E07F12849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift */; };
+		849E07F4284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E07F3284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift */; };
+		849E07F6284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E07F5284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift */; };
 		849E0CD025CFDDB700B33506 /* StorageUpdateData+Decoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E0CCF25CFDDB700B33506 /* StorageUpdateData+Decoding.swift */; };
 		849E16E42714D1BD0065B305 /* EthereumBaseIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E16E32714D1BD0065B305 /* EthereumBaseIntegrationTests.swift */; };
 		849E17DC27909179002D1744 /* DAppSearchQueryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849E17DB27909179002D1744 /* DAppSearchQueryTableViewCell.swift */; };
@@ -3438,6 +3441,9 @@
 		849DEC6025EE13CE00C64C19 /* AddressOptionsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressOptionsPresentable.swift; sourceTree = "<group>"; };
 		849DF02C26C40B7900B702F4 /* RuntimeFilesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeFilesOperationFactory.swift; sourceTree = "<group>"; };
 		849DF02E26C53DB900B702F4 /* RuntimeSyncEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeSyncEvents.swift; sourceTree = "<group>"; };
+		849E07F12849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkScheduledRequestsUpdater.swift; sourceTree = "<group>"; };
+		849E07F3284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkAccountSubscribeHandlingFactory.swift; sourceTree = "<group>"; };
+		849E07F5284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkScheduledRequestsMapper.swift; sourceTree = "<group>"; };
 		849E0CCF25CFDDB700B33506 /* StorageUpdateData+Decoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StorageUpdateData+Decoding.swift"; sourceTree = "<group>"; };
 		849E16E32714D1BD0065B305 /* EthereumBaseIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumBaseIntegrationTests.swift; sourceTree = "<group>"; };
 		849E17DB27909179002D1744 /* DAppSearchQueryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppSearchQueryTableViewCell.swift; sourceTree = "<group>"; };
@@ -5390,6 +5396,8 @@
 				84D1ABD927E0ACFA0073C631 /* WalletRemoteSubscriptionWrapper.swift */,
 				848DAEF6282274E700D56F55 /* ParachainStakingRemoteSubscriptionService.swift */,
 				841E553B282D44BA00C8438F /* ParachainStakingAccountSubscriptionService.swift */,
+				849E07F12849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift */,
+				849E07F3284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift */,
 			);
 			path = RemoteSubscription;
 			sourceTree = "<group>";
@@ -6276,6 +6284,7 @@
 				849A4EF9279ABC8800AB6709 /* AssetBalanceMapper.swift */,
 				8499FECB27BF8F4A00712589 /* NftModelMapper.swift */,
 				84F3B27727F4179A00D64CF5 /* PhishingSiteMapper.swift */,
+				849E07F5284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift */,
 			);
 			path = EntityToModel;
 			sourceTree = "<group>";
@@ -11271,6 +11280,7 @@
 				AE2C84DA25EF98A900986716 /* ValidatorInfoPresenter.swift in Sources */,
 				84B018AE26E03FB500C75E28 /* NominatorStateView.swift in Sources */,
 				845BB8D625E461FC00E5FCDC /* RewardDestination.swift in Sources */,
+				849E07F6284A114B00DE0440 /* ParaStkScheduledRequestsMapper.swift in Sources */,
 				84CFF1EB26526FBC00DB7CF7 /* StakingBondMoreConfirmViewModel.swift in Sources */,
 				8490142D24A935FE008F705E /* WebPresentable.swift in Sources */,
 				849D755D27577602007726C3 /* AccountExportPasswordViewLayout.swift in Sources */,
@@ -11850,6 +11860,7 @@
 				841AAC2126F6860B00F0A25E /* AssetBalanceFormatterFactory.swift in Sources */,
 				8418167528251BBC0007684A /* StorageListSyncResult.swift in Sources */,
 				849ABE5B2627739400011A2A /* ListReducing.swift in Sources */,
+				849E07F4284A04F400DE0440 /* ParaStkAccountSubscribeHandlingFactory.swift in Sources */,
 				843910CC253F7E6500E3C217 /* SubstrateDataModel.xcdatamodeld in Sources */,
 				84BB3CF3267D24B000676FFE /* UIStackView+Manage.swift in Sources */,
 				8419C39626EA8F7300A3179C /* PriceData.swift in Sources */,
@@ -12883,6 +12894,7 @@
 				844D2A42281B24510049CF5E /* StackUrlCell.swift in Sources */,
 				98DADEB52480817D191188C1 /* WalletListInteractor.swift in Sources */,
 				8448D5B6277D717400FAEEBC /* DAppListDecorationView.swift in Sources */,
+				849E07F22849E70C00DE0440 /* ParaStkScheduledRequestsUpdater.swift in Sources */,
 				84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */,
 				8487583C27F06AF300495306 /* QRCaptureService.swift in Sources */,
 				7D707DDD180999C63FD0C4ED /* WalletListViewController.swift in Sources */,

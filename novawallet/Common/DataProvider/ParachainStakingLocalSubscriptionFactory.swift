@@ -8,6 +8,7 @@ extension ParachainStaking {
         ParachainStaking.ParachainBondConfig
     >
     typealias DecodedDelegator = ChainStorageDecodedItem<ParachainStaking.Delegator>
+    typealias MappedScheduledRequest = ChainStorageDecodedItem<[ParachainStaking.DelegatorScheduledRequest]>
     typealias DecodedScheduledRequests = ChainStorageDecodedItem<
         [ParachainStaking.ScheduledRequest]
     >
@@ -42,8 +43,8 @@ protocol ParachainStakingLocalSubscriptionFactoryProtocol {
 
     func getScheduledRequestsProvider(
         for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) throws -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>
+        delegatorId: AccountId
+    ) throws -> StreamableProvider<ParachainStaking.MappedScheduledRequest>
 
     func getTotalReward(
         for address: AccountAddress,
@@ -138,13 +139,50 @@ final class ParachainStakingLocalSubscriptionFactory: SubstrateLocalSubscription
 
     func getScheduledRequestsProvider(
         for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) throws -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests> {
-        try getAccountProvider(
-            for: chainId,
-            accountId: accountId,
-            storagePath: ParachainStaking.delegationRequestsPath
+        delegatorId: AccountId
+    ) throws -> StreamableProvider<ParachainStaking.MappedScheduledRequest> {
+        let localKey = try LocalStorageKeyFactory().createRestorableRecurrentKey(
+            from: ParachainStaking.delegationRequestsPath,
+            chainId: chainId,
+            items: [delegatorId]
         )
+
+        if let provider = getProvider(for: localKey) as? StreamableProvider<ParachainStaking.MappedScheduledRequest> {
+            return provider
+        }
+
+        let source = EmptyStreamableSource<ParachainStaking.MappedScheduledRequest>()
+        let mapper = ParaStkScheduledRequestsMapper()
+        let filter = NSPredicate.filterStorageItemsBy(identifier: localKey)
+        let repository = storageFacade.createRepository(
+            filter: filter,
+            sortDescriptors: [],
+            mapper: AnyCoreDataMapper(mapper)
+        )
+
+        let observable = CoreDataContextObservable(
+            service: storageFacade.databaseService,
+            mapper: AnyCoreDataMapper(mapper),
+            predicate: { $0.identifier == localKey },
+            processingQueue: nil
+        )
+
+        observable.start { [weak self] error in
+            if let error = error {
+                self?.logger.error("Unexpected error \(error)")
+            }
+        }
+
+        let streamableProvider = StreamableProvider(
+            source: AnyStreamableSource(source),
+            repository: AnyDataProviderRepository(repository),
+            observable: AnyDataProviderRepositoryObservable(observable),
+            operationManager: operationManager
+        )
+
+        saveProvider(streamableProvider, for: localKey)
+
+        return streamableProvider
     }
 
     func getCandidateMetadataProvider(

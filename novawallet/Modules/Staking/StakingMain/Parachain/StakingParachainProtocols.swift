@@ -2,7 +2,7 @@ import Foundation
 
 protocol StakingParachainInteractorInputProtocol: AnyObject {
     func setup()
-    func fetchScheduledRequests(for collators: [AccountId])
+    func fetchScheduledRequests()
     func fetchDelegations(for collators: [AccountId])
 }
 

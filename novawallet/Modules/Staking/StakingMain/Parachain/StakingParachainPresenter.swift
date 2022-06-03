@@ -155,7 +155,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
             return
         }
 
-        interactor.fetchScheduledRequests(for: newState.collators())
+        interactor.fetchScheduledRequests()
         interactor.fetchDelegations(for: newState.collators())
     }
 
