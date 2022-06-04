@@ -2,19 +2,20 @@ import Foundation
 import SoraFoundation
 import SubstrateSdk
 
-struct ParaStkStakeSetupViewFactory {
+struct ParaStkUnstakeViewFactory {
     static func createView(
         with state: ParachainStakingSharedState,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
-    ) -> ParaStkStakeSetupViewProtocol? {
+    ) -> ParaStkUnstakeViewProtocol? {
         guard
             let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state) else {
             return nil
         }
 
-        let wireframe = ParaStkStakeSetupWireframe(state: state)
+        let wireframe = ParaStkUnstakeWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
@@ -31,60 +32,43 @@ struct ParaStkStakeSetupViewFactory {
         )
 
         let localizationManager = LocalizationManager.shared
-        let presenter = ParaStkStakeSetupPresenter(
+
+        let presenter = ParaStkUnstakePresenter(
             interactor: interactor,
             wireframe: wireframe,
             dataValidatingFactory: dataValidationFactory,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
+            hintViewModelFactory: ParaStkHintsViewModelFactory(),
             initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let localizableTitle = createTitle(for: initialDelegator, chainAsset: chainAsset)
-
-        let view = ParaStkStakeSetupViewController(
+        let view = ParaStkUnstakeViewController(
             presenter: presenter,
-            localizableTitle: localizableTitle,
             localizationManager: localizationManager
         )
 
         presenter.view = view
-        dataValidationFactory.view = view
-        interactor.presenter = presenter
+        interactor.basePresenter = presenter
 
         return view
     }
 
-    private static func createTitle(
-        for delegator: ParachainStaking.Delegator?,
-        chainAsset: ChainAsset
-    ) -> LocalizableResource<String> {
-        if delegator != nil {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
-            }
-        } else {
-            return LocalizableResource { locale in
-                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
-            }
-        }
-    }
-
     private static func createInteractor(
         from state: ParachainStakingSharedState
-    ) -> ParaStkStakeSetupInteractor? {
+    ) -> ParaStkUnstakeInteractor? {
         let optMetaAccount = SelectedWalletSettings.shared.value
         let chainRegistry = ChainRegistryFacade.sharedRegistry
 
         guard
             let chainAsset = state.settings.value,
             let selectedAccount = optMetaAccount?.fetchMetaChainAccount(for: chainAsset.chain.accountRequest()),
-            let collatorService = state.collatorService,
-            let rewardService = state.rewardCalculationService,
+            let blocktimeService = state.blockTimeService,
             let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId)
         else {
@@ -110,21 +94,24 @@ struct ParaStkStakeSetupViewFactory {
         )
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
+        let stakingDurationFactory = ParaStkDurationOperationFactory(
+            blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
+        )
 
-        return ParaStkStakeSetupInteractor(
+        return ParaStkUnstakeInteractor(
             chainAsset: chainAsset,
             selectedAccount: selectedAccount,
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            collatorService: collatorService,
-            rewardService: rewardService,
+            identityOperationFactory: identityOperationFactory,
             extrinsicService: extrinsicService,
             feeProxy: ExtrinsicFeeProxy(),
             connection: connection,
             runtimeProvider: runtimeProvider,
+            stakingDurationFactory: stakingDurationFactory,
+            blocktimeEstimationService: blocktimeService,
             repositoryFactory: repositoryFactory,
-            identityOperationFactory: identityOperationFactory,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
     }

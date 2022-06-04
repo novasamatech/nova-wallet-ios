@@ -12,6 +12,38 @@ protocol IdentityOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]>
 }
 
+extension IdentityOperationFactoryProtocol {
+    func createIdentityWrapperByAccountId(
+        for accountIdClosure: @escaping () throws -> [AccountId],
+        engine: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        chainFormat: ChainFormat
+    ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
+        let wrapper = createIdentityWrapper(
+            for: accountIdClosure,
+            engine: engine,
+            runtimeService: runtimeService,
+            chainFormat: chainFormat
+        )
+
+        let mapOperation = ClosureOperation<[AccountId: AccountIdentity]> {
+            let identities = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return identities.reduce(into: [AccountId: AccountIdentity]()) { result, keyValue in
+                guard let accountId = try? keyValue.key.toAccountId() else {
+                    return
+                }
+
+                return result[accountId] = keyValue.value
+            }
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
+}
+
 final class IdentityOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
 

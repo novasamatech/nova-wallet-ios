@@ -42,6 +42,26 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
+    func showUnstakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    ) {
+        guard let unstakeView = ParaStkUnstakeViewFactory.createView(
+            with: state,
+            initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
+            delegationIdentities: delegationIdentities
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: unstakeView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showYourCollators(from view: ControllerBackedProtocol?) {
         guard let collatorsView = ParaStkYourCollatorsViewFactory.createView(for: state) else {
             return
