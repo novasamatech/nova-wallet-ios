@@ -225,8 +225,6 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         provideMinTechStake()
         provideMinDelegationAmount()
         provideMaxDelegationsPerDelegator()
-
-        presenter?.didCompleteSetup()
     }
 
     func applyCollator(with accountId: AccountId) {
