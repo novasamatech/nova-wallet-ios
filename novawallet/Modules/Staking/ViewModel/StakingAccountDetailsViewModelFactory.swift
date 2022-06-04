@@ -2,6 +2,12 @@ import Foundation
 import SoraFoundation
 
 protocol ParaStkAccountDetailsViewModelFactoryProtocol {
+    func createCollator(
+        from collatorAddress: DisplayAddress,
+        delegator: ParachainStaking.Delegator?,
+        locale: Locale
+    ) -> AccountDetailsSelectionViewModel
+
     func createViewModels(
         from bonds: [ParachainStaking.Bond],
         identities: [AccountId: AccountIdentity]?,
@@ -28,6 +34,36 @@ final class ParaStkAccountDetailsViewModelFactory {
 }
 
 extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol {
+    func createCollator(
+        from collatorAddress: DisplayAddress,
+        delegator: ParachainStaking.Delegator?,
+        locale: Locale
+    ) -> AccountDetailsSelectionViewModel {
+        let collatorId = try? collatorAddress.address.toAccountId()
+        let addressModel = displayAddressFactory.createViewModel(from: collatorAddress)
+
+        let details: TitleWithSubtitleViewModel?
+
+        if let delegation = delegator?.delegations.first(where: { $0.owner == collatorId }) {
+            let detailsName = R.string.localizable.commonStakedPrefix(
+                preferredLanguages: locale.rLanguages
+            )
+
+            let stakedDecimal = Decimal.fromSubstrateAmount(
+                delegation.amount,
+                precision: assetPrecision
+            ) ?? 0
+
+            let stakedAmount = balanceViewModelFactory.amountFromValue(stakedDecimal).value(for: locale)
+
+            details = TitleWithSubtitleViewModel(title: detailsName, subtitle: stakedAmount)
+        } else {
+            details = nil
+        }
+
+        return AccountDetailsSelectionViewModel(displayAddress: addressModel, details: details)
+    }
+
     func createViewModels(
         from bonds: [ParachainStaking.Bond],
         identities: [AccountId: AccountIdentity]?,

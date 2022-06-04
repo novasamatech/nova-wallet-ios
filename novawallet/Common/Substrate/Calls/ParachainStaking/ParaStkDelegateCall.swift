@@ -2,6 +2,7 @@ import Foundation
 import SubstrateSdk
 import BigInt
 
+// swiftlint:disable nesting
 extension ParachainStaking {
     struct DelegateCall: Codable {
         enum CodingKeys: String, CodingKey {
@@ -26,7 +27,35 @@ extension ParachainStaking {
         @BytesCodable var candidate: AccountId
         @StringCodable var more: BigUInt
     }
+
+    struct ScheduleBondLessCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case candidate
+            case less
+        }
+
+        @BytesCodable var candidate: AccountId
+        @StringCodable var less: BigUInt
+
+        var runtimeCall: RuntimeCall<ScheduleBondLessCall> {
+            RuntimeCall(moduleName: "ParachainStaking", callName: "schedule_delegator_bond_less", args: self)
+        }
+    }
+
+    struct ScheduleRevokeCall: Codable {
+        enum CodingKeys: String, CodingKey {
+            case collator
+        }
+
+        @BytesCodable var collator: AccountId
+
+        var runtimeCall: RuntimeCall<ScheduleRevokeCall> {
+            RuntimeCall(moduleName: "ParachainStaking", callName: "schedule_revoke_delegation", args: self)
+        }
+    }
 }
+
+// swiftlint:enable nesting
 
 extension ParachainStaking.DelegateCall {
     var extrinsicIdentifier: String {

@@ -114,7 +114,19 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
                 delegationIdentities: identities
             )
         case .unstake:
-            break
+            guard let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ) else {
+                return
+            }
+
+            wireframe.showUnstakeTokens(
+                from: view,
+                initialDelegator: delegator.delegatorState,
+                initialScheduledRequests: delegator.scheduledRequests,
+                delegationIdentities: delegator.delegations?.identitiesDict()
+            )
+
         case .setupValidators, .changeValidators, .yourValidator:
             wireframe.showYourCollators(from: view)
         default:
