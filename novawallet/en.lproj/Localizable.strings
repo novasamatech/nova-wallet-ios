@@ -800,3 +800,7 @@
 "common.chain.account.missing.message.format" = "You should add %@ account to the wallet in order to start staking";
 "common.new.collator" = "New collator";
 "parastk.hint.reward.bond.more" = "You will get increased rewards starting from next round";
+"parastk.cant.unstake.title" = "You cannot unstake from this collator";
+"parastk.cant.unstake.message" = "You are already unstaking tokens from this collator. You can only have one pending unstake per collator";
+"parastk.unstake.no.collators.title" = "No collators available for unstake";
+"parastk.unstake.no.collators.message" = "You have pending unstake requests for all of your collators.";
