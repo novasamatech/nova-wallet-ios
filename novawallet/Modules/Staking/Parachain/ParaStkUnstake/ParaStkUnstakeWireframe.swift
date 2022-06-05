@@ -28,10 +28,18 @@ final class ParaStkUnstakeWireframe: ParaStkUnstakeWireframeProtocol {
     }
 
     func showUnstakingConfirm(
-        from _: ParaStkUnstakeViewProtocol?,
-        collator _: DisplayAddress,
-        callWrapper _: UnstakeCallWrapper
+        from view: ParaStkUnstakeViewProtocol?,
+        collator: DisplayAddress,
+        callWrapper: UnstakeCallWrapper
     ) {
-        // TODO: Add confirmation screen logic when implemented
+        guard let confirmView = ParaStkUnstakeConfirmViewFactory.createView(
+            for: state,
+            callWrapper: callWrapper,
+            collator: collator
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(confirmView.controller, animated: true)
     }
 }
