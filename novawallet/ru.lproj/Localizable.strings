@@ -799,3 +799,7 @@
 "common.chain.account.missing.message.format" = "Вам необходимо добавить %@ аккаунт в кошелек для начала стекинга";
 "common.new.collator" = "Новый коллатор";
 "parastk.hint.reward.bond.more" = "Вознаграждения увеличатся начиная со следующего раунда";
+"parastk.cant.unstake.title" = "Вы не можете вывести токены от этого коллатора";
+"parastk.cant.unstake.message" = "Вы уже выводите токены от этого коллатора. Вы можете иметь только один процесс вывода токенов для коллатора";
+"parastk.unstake.no.collators.title" = "Нет доступных коллаторов для вывода";
+"parastk.unstake.no.collators.message" = "У вас есть ожидающие запросы на вывод токенов для всех коллаторов.";

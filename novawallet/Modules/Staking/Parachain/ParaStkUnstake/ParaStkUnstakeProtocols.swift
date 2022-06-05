@@ -47,4 +47,12 @@ protocol ParaStkUnstakeInteractorOutputProtocol: ParaStkBaseUnstakeInteractorOut
 }
 
 protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable,
-    FeeRetryable {}
+    FeeRetryable {
+    func showUnstakingCollatorSelection(
+        from view: ParaStkUnstakeViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    )
+}

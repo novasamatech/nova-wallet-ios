@@ -53,6 +53,57 @@ final class StakingParachainPresenter {
         let stateViewModel = stateViewModelFactory.createViewModel(from: stateMachine.state)
         view?.didReceiveStakingState(viewModel: stateViewModel)
     }
+
+    private func handleStakeMoreAction() {
+        guard let delegator = stateMachine.viewState(
+            using: { (state: ParachainStaking.DelegatorState) in state }
+        ) else {
+            return
+        }
+
+        let identities = delegator.delegations?.identitiesDict()
+
+        wireframe.showStakeTokens(
+            from: view,
+            initialDelegator: delegator.delegatorState,
+            delegationIdentities: identities
+        )
+    }
+
+    private func handleUnstakeAction() {
+        guard
+            let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ) else {
+            return
+        }
+
+        let disabledCollators = delegator.scheduledRequests?.map(\.collatorId) ?? []
+        let disabledSet = Set(disabledCollators)
+
+        if delegator.delegatorState.delegations.contains(where: { !disabledSet.contains($0.owner) }) {
+            wireframe.showUnstakeTokens(
+                from: view,
+                initialDelegator: delegator.delegatorState,
+                initialScheduledRequests: delegator.scheduledRequests,
+                delegationIdentities: delegator.delegations?.identitiesDict()
+            )
+        } else {
+            let languages = view?.selectedLocale.rLanguages
+
+            let title = R.string.localizable.parastkUnstakeNoCollatorsTitle(
+                preferredLanguages: languages
+            )
+
+            let message = R.string.localizable.parastkUnstakeNoCollatorsMessage(
+                preferredLanguages: languages
+            )
+
+            let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+            wireframe.present(message: message, title: title, closeAction: close, from: view)
+        }
+    }
 }
 
 extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
@@ -89,7 +140,9 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
 
     func performSetupValidatorsForBondedAction() {}
 
-    func performStakeMoreAction() {}
+    func performStakeMoreAction() {
+        handleStakeMoreAction()
+    }
 
     func performRedeemAction() {}
 
@@ -100,33 +153,9 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:
-            guard let delegator = stateMachine.viewState(
-                using: { (state: ParachainStaking.DelegatorState) in state }
-            ) else {
-                return
-            }
-
-            let identities = delegator.delegations?.identitiesDict()
-
-            wireframe.showStakeTokens(
-                from: view,
-                initialDelegator: delegator.delegatorState,
-                delegationIdentities: identities
-            )
+            handleStakeMoreAction()
         case .unstake:
-            guard let delegator = stateMachine.viewState(
-                using: { (state: ParachainStaking.DelegatorState) in state }
-            ) else {
-                return
-            }
-
-            wireframe.showUnstakeTokens(
-                from: view,
-                initialDelegator: delegator.delegatorState,
-                initialScheduledRequests: delegator.scheduledRequests,
-                delegationIdentities: delegator.delegations?.identitiesDict()
-            )
-
+            handleUnstakeAction()
         case .setupValidators, .changeValidators, .yourValidator:
             wireframe.showYourCollators(from: view)
         default:
@@ -172,7 +201,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
     }
 
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?) {
-        stateMachine.state.process(scheduledRequests: requests)
+        stateMachine.state.process(scheduledRequests: requests ?? [])
     }
 
     func didReceiveDelegations(_ delegations: [CollatorSelectionInfo]) {
