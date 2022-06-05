@@ -2,7 +2,7 @@ import UIKit
 import SubstrateSdk
 import RobinHood
 
-final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor {
+final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellableCleaning {
     var presenter: ParaStkUnstakeInteractorOutputProtocol? {
         basePresenter as? ParaStkUnstakeInteractorOutputProtocol
     }
@@ -52,7 +52,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor {
     deinit {
         self.collatorSubscription = nil
 
-        cancelIdentities()
+        clear(cancellable: &identitiesCancellable)
     }
 
     override func subscribeCollator(for accountId: AccountId) {
@@ -94,12 +94,6 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor {
             basePresenter?.didReceiveError(error)
         }
     }
-
-    private func cancelIdentities() {
-        let cancellable = identitiesCancellable
-        identitiesCancellable = nil
-        cancellable?.cancel()
-    }
 }
 
 extension ParaStkUnstakeInteractor: ParaStkUnstakeInteractorInputProtocol {
@@ -108,7 +102,7 @@ extension ParaStkUnstakeInteractor: ParaStkUnstakeInteractorInputProtocol {
     }
 
     func fetchIdentities(for collatorIds: [AccountId]) {
-        cancelIdentities()
+        clear(cancellable: &identitiesCancellable)
 
         let wrapper = identityOperationFactory.createIdentityWrapperByAccountId(
             for: { collatorIds },
