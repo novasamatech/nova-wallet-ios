@@ -5,7 +5,24 @@ protocol ParachainStakingErrorPresentable: BaseErrorPresentable {
     func presentDelegatorFull(_ view: ControllerBackedProtocol, maxAllowed: String, locale: Locale?)
     func presentCantStakeCollator(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?)
     func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?)
+
+    func presentUnstakingAmountTooHigh(_ view: ControllerBackedProtocol, locale: Locale?)
+
     func presentWontReceiveRewards(
+        _ view: ControllerBackedProtocol,
+        minStake: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    )
+
+    func presentWontReceiveRewardsAfterUnstaking(
+        _ view: ControllerBackedProtocol,
+        minStake: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    )
+
+    func presentUnstakeAll(
         _ view: ControllerBackedProtocol,
         minStake: String,
         action: @escaping () -> Void,
@@ -88,5 +105,56 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentUnstakingAmountTooHigh(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let title = R.string.localizable.parastkCantUnstakeTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.parastkCantUnstakeAmountMessage(preferredLanguages: locale?.rLanguages)
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentWontReceiveRewardsAfterUnstaking(
+        _ view: ControllerBackedProtocol,
+        minStake: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.commonNoRewardsTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.parachainStakingCollatorLessMinstkMessage(
+            minStake,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        presentWarning(
+            for: title,
+            message: message,
+            action: action,
+            view: view,
+            locale: locale
+        )
+    }
+
+    func presentUnstakeAll(
+        _ view: ControllerBackedProtocol,
+        minStake: String,
+        action: @escaping () -> Void,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.parastkUnstakeAllTitle(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.parastkUnstakeAllMessageFormat(
+            minStake,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        presentWarning(
+            for: title,
+            message: message,
+            action: action,
+            view: view,
+            locale: locale
+        )
     }
 }

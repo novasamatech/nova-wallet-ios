@@ -55,4 +55,10 @@ protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, Pa
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     )
+
+    func showUnstakingConfirm(
+        from view: ParaStkUnstakeViewProtocol?,
+        collator: DisplayAddress,
+        callWrapper: UnstakeCallWrapper
+    )
 }
