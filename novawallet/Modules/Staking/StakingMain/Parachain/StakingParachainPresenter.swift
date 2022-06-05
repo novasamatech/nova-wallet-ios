@@ -89,19 +89,11 @@ final class StakingParachainPresenter {
                 delegationIdentities: delegator.delegations?.identitiesDict()
             )
         } else {
-            let languages = view?.selectedLocale.rLanguages
+            guard let view = view else {
+                return
+            }
 
-            let title = R.string.localizable.parastkUnstakeNoCollatorsTitle(
-                preferredLanguages: languages
-            )
-
-            let message = R.string.localizable.parastkUnstakeNoCollatorsMessage(
-                preferredLanguages: languages
-            )
-
-            let close = R.string.localizable.commonClose(preferredLanguages: languages)
-
-            wireframe.present(message: message, title: title, closeAction: close, from: view)
+            wireframe.presentNoUnstakingOptions(view, locale: view.selectedLocale)
         }
     }
 }

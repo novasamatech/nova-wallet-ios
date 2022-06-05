@@ -28,6 +28,8 @@ protocol ParachainStakingErrorPresentable: BaseErrorPresentable {
         action: @escaping () -> Void,
         locale: Locale?
     )
+
+    func presentNoUnstakingOptions(_ view: ControllerBackedProtocol, locale: Locale?)
 }
 
 extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -156,5 +158,21 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
             view: view,
             locale: locale
         )
+    }
+
+    func presentNoUnstakingOptions(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.parastkUnstakeNoCollatorsTitle(
+            preferredLanguages: languages
+        )
+
+        let message = R.string.localizable.parastkUnstakeNoCollatorsMessage(
+            preferredLanguages: languages
+        )
+
+        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+        present(message: message, title: title, closeAction: close, from: view)
     }
 }
