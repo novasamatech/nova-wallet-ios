@@ -2,7 +2,7 @@ import UIKit
 import RobinHood
 import SubstrateSdk
 
-final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning {
+final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning, AnyCancellableCleaning {
     weak var presenter: ParaStkYourCollatorsInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -16,6 +16,7 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning {
     let operationQueue: OperationQueue
 
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
+    private var schduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var collatorsCall: CancellableCall?
 
     init(
@@ -41,7 +42,7 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning {
     }
 
     deinit {
-        cancelCollatorsRequest()
+        clear(cancellable: &collatorsCall)
     }
 
     private func subscribeDelegator() {
@@ -53,14 +54,17 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning {
         )
     }
 
-    private func cancelCollatorsRequest() {
-        let call = collatorsCall
-        collatorsCall = nil
-        call?.cancel()
+    private func subscribeScheduledRequests() {
+        clear(streamableProvider: &schduledRequestsProvider)
+
+        schduledRequestsProvider = subscribeToScheduledRequests(
+            for: chainAsset.chain.chainId,
+            delegatorId: selectedAccount.chainAccount.accountId
+        )
     }
 
     private func provideCollators(for collatorIds: [AccountId]) {
-        cancelCollatorsRequest()
+        clear(cancellable: &collatorsCall)
 
         let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
             for: collatorIds,
@@ -97,10 +101,12 @@ final class ParaStkYourCollatorsInteractor: AnyProviderAutoCleaning {
 extension ParaStkYourCollatorsInteractor: ParaStkYourCollatorsInteractorInputProtocol {
     func setup() {
         subscribeDelegator()
+        subscribeScheduledRequests()
     }
 
     func retry() {
         subscribeDelegator()
+        subscribeScheduledRequests()
     }
 }
 
@@ -116,5 +122,13 @@ extension ParaStkYourCollatorsInteractor: ParastakingLocalStorageSubscriber, Par
             let collatorIds = delegator.collators()
             provideCollators(for: collatorIds)
         }
+    }
+
+    func handleParastakingScheduledRequests(
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
+        for _: ChainModel.Id,
+        delegatorId _: AccountId
+    ) {
+        presenter?.didScheduledRequests(result: result)
     }
 }
