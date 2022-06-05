@@ -20,11 +20,11 @@ final class ParaStkUnstakePresenter {
     private(set) var minDelegationAmount: BigUInt?
     private(set) var maxDelegations: UInt32?
     private(set) var price: PriceData?
-    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
 
     private(set) var collatorDisplayAddress: DisplayAddress?
     private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
     private(set) var delegator: ParachainStaking.Delegator?
+    private(set) var delegationsDict: [AccountId: ParachainStaking.Bond]?
     private(set) var delegationIdentities: [AccountId: AccountIdentity]?
     private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
     private(set) var stakingDuration: ParachainStakingDuration?
@@ -53,29 +53,34 @@ final class ParaStkUnstakePresenter {
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         self.hintViewModelFactory = hintViewModelFactory
         delegator = initialDelegator
+        delegationsDict = initialDelegator?.delegationsDict()
         scheduledRequests = initialScheduledRequests
         self.delegationIdentities = delegationIdentities
         self.logger = logger
         self.localizationManager = localizationManager
     }
 
-    func balanceMinusFee() -> Decimal {
-        let balanceValue = balance?.transferable ?? 0
-        let feeValue = fee ?? 0
+    func updateInputResult(_ newValue: AmountInputResult?) {
+        inputResult = newValue
+    }
 
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        guard
-            let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
-            let fee = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
+    func stakingAmountInPlank() -> BigUInt {
+        guard let collatorId = try? collatorDisplayAddress?.address.toAccountId() else {
             return 0
         }
 
-        return balance - fee
+        return delegationsDict?[collatorId]?.amount ?? 0
     }
 
-    private func provideAmountInputViewModel() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+    func decimalStakingAmount() -> Decimal {
+        let amountInPlank = stakingAmountInPlank()
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        return Decimal.fromSubstrateAmount(amountInPlank, precision: precision) ?? 0
+    }
+
+    func provideAmountInputViewModel() {
+        let inputAmount = inputResult?.absoluteValue(from: decimalStakingAmount())
 
         let viewModel = balanceViewModelFactory.createBalanceInputViewModel(
             inputAmount
@@ -84,25 +89,19 @@ final class ParaStkUnstakePresenter {
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    private func provideAssetViewModel() {
-        let balanceDecimal = delegator.flatMap { value in
-            Decimal.fromSubstrateAmount(
-                value.staked,
-                precision: chainAsset.assetDisplayInfo.assetPrecision
-            )
-        }
-
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+    func provideAssetViewModel() {
+        let stakedAmount = decimalStakingAmount()
+        let inputAmount = inputResult?.absoluteValue(from: stakedAmount) ?? 0
         let viewModel = balanceViewModelFactory.createAssetBalanceViewModel(
             inputAmount,
-            balance: balanceDecimal ?? 0.0,
+            balance: stakedAmount,
             priceData: price
         ).value(for: selectedLocale)
 
         view?.didReceiveAssetBalance(viewModel: viewModel)
     }
 
-    private func provideMinStakeViewModel() {
+    func provideMinStakeViewModel() {
         let minStake: BigUInt?
         if
             let minTechStake = minTechStake,
@@ -129,7 +128,7 @@ final class ParaStkUnstakePresenter {
         view?.didReceiveMinStake(viewModel: viewModel)
     }
 
-    private func provideTransferableViewModel() {
+    func provideTransferableViewModel() {
         let viewModel: BalanceViewModelProtocol? = balance.flatMap { balance in
             guard let decimaAmount = Decimal.fromSubstrateAmount(
                 balance.transferable,
@@ -147,7 +146,7 @@ final class ParaStkUnstakePresenter {
         view?.didReceiveTransferable(viewModel: viewModel)
     }
 
-    private func provideFeeViewModel() {
+    func provideFeeViewModel() {
         let optFeeDecimal = fee.flatMap { value in
             Decimal.fromSubstrateAmount(
                 value,
@@ -167,7 +166,7 @@ final class ParaStkUnstakePresenter {
         }
     }
 
-    private func provideCollatorViewModel() {
+    func provideCollatorViewModel() {
         if let collatorDisplayAddress = collatorDisplayAddress {
             let collatorViewModel = accountDetailsViewModelFactory.createCollator(
                 from: collatorDisplayAddress,
@@ -181,7 +180,7 @@ final class ParaStkUnstakePresenter {
         }
     }
 
-    private func provideHints() {
+    func provideHints() {
         var hints: [String] = []
 
         if let stakingDuration = stakingDuration {
@@ -194,32 +193,26 @@ final class ParaStkUnstakePresenter {
         view?.didReceiveHints(viewModel: hints)
     }
 
-    private func createCallWrapper() -> UnstakeCallWrapper? {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+    func createCallWrapper() -> UnstakeCallWrapper? {
+        let inputAmount = inputResult?.absoluteValue(from: decimalStakingAmount()) ?? 0
         let precicion = chainAsset.assetDisplayInfo.assetPrecision
 
         guard
-            let delegator = delegator,
+            let delegationsDict = delegationsDict,
             let minDelegationAmount = minDelegationAmount,
-            let amount = inputAmount.toSubstrateAmount(precision: precicion) else {
+            let amount = inputAmount.toSubstrateAmount(precision: precicion),
+            let collator = try? collatorDisplayAddress?.address.toAccountId(),
+            let stakedAmount = delegationsDict[collator]?.amount else {
             return nil
         }
 
-        let optCollator = try? collatorDisplayAddress?.address.toAccountId()
-        let collator = optCollator ?? AccountId.dummyAccountId(of: chainAsset.chain.accountIdSize)
+        let action: UnstakeCallWrapper.Action = stakedAmount >= minDelegationAmount + amount ?
+            .bondLess(amount: amount) : .revoke
 
-        let callAmount: BigUInt?
-
-        if let stakedAmount = delegator.delegations.first(where: { $0.owner == collator })?.amount {
-            callAmount = stakedAmount >= minDelegationAmount + amount ? amount : nil
-        } else {
-            callAmount = 0
-        }
-
-        return UnstakeCallWrapper(collator: collator, amount: callAmount)
+        return UnstakeCallWrapper(collator: collator, action: action)
     }
 
-    private func refreshFee() {
+    func refreshFee() {
         if let callWrapper = createCallWrapper() {
             fee = nil
             provideFeeViewModel()
@@ -228,7 +221,7 @@ final class ParaStkUnstakePresenter {
         }
     }
 
-    private func selectInitialCollator() -> AccountId? {
+    func selectInitialCollator() -> AccountId? {
         let unstakingCollators = scheduledRequests?.map(\.collatorId) ?? []
         let unstakingCollatorsSet = Set(unstakingCollators)
 
@@ -245,14 +238,14 @@ final class ParaStkUnstakePresenter {
         }
     }
 
-    private func setupInitialCollator() {
+    func setupInitialCollator() {
         if let collatorId = selectInitialCollator() {
             interactor.applyCollator(with: collatorId)
             refreshFee()
         }
     }
 
-    private func changeCollator(with collatorId: AccountId, name: String?) {
+    func changeCollator(with collatorId: AccountId, name: String?) {
         guard
             let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat),
             newAddress != collatorDisplayAddress?.address else {
@@ -265,78 +258,10 @@ final class ParaStkUnstakePresenter {
 
         provideCollatorViewModel()
         provideMinStakeViewModel()
+        provideAssetViewModel()
 
         interactor.applyCollator(with: collatorId)
     }
-}
-
-extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
-    func setup() {
-        let optCollatorId = selectInitialCollator()
-
-        provideAmountInputViewModel()
-
-        provideCollatorViewModel()
-        provideAssetViewModel()
-        provideMinStakeViewModel()
-        provideTransferableViewModel()
-        provideHints()
-        provideFeeViewModel()
-
-        interactor.setup()
-
-        if let collatorId = optCollatorId {
-            interactor.applyCollator(with: collatorId)
-        }
-
-        refreshFee()
-    }
-
-    func selectCollator() {
-        guard
-            let delegator = delegator,
-            let disabledCollators = scheduledRequests?.map(\.collatorId) else {
-            return
-        }
-
-        let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
-
-        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
-            from: delegations,
-            identities: delegationIdentities,
-            disabled: Set(disabledCollators)
-        )
-
-        let collatorId = try? collatorDisplayAddress?.address.toAccountId()
-
-        let selectedIndex = delegations.firstIndex { $0.owner == collatorId } ?? NSNotFound
-
-        wireframe.showUnstakingCollatorSelection(
-            from: view,
-            viewModels: accountDetailsViewModels,
-            selectedIndex: selectedIndex,
-            delegate: self,
-            context: delegations as NSArray
-        )
-    }
-
-    func updateAmount(_ newValue: Decimal?) {
-        inputResult = newValue.map { .absolute($0) }
-
-        refreshFee()
-        provideAssetViewModel()
-    }
-
-    func selectAmountPercentage(_ percentage: Float) {
-        inputResult = .rate(Decimal(Double(percentage)))
-
-        provideAmountInputViewModel()
-
-        refreshFee()
-        provideAssetViewModel()
-    }
-
-    func proceed() {}
 }
 
 extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
@@ -385,6 +310,7 @@ extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
         self.delegator = delegator
+        delegationsDict = delegator?.delegationsDict()
 
         provideCollatorViewModel()
         provideAssetViewModel()
@@ -442,35 +368,6 @@ extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
         logger.error("Did receive error: \(error)")
-    }
-}
-
-extension ParaStkUnstakePresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
-        guard
-            let delegations = context as? [ParachainStaking.Bond],
-            let disabledCollators = scheduledRequests?.map(\.collatorId) else {
-            return
-        }
-
-        let collatorId = delegations[index].owner
-
-        if !disabledCollators.contains(collatorId) {
-            let displayName = delegationIdentities?[collatorId]?.displayName
-            changeCollator(with: collatorId, name: displayName)
-        } else {
-            let title = R.string.localizable.parastkCantUnstakeTitle(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            let message = R.string.localizable.parastkCantUnstakeMessage(
-                preferredLanguages: selectedLocale.rLanguages
-            )
-
-            let close = R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
-
-            wireframe.present(message: message, title: title, closeAction: close, from: view)
-        }
     }
 }
 

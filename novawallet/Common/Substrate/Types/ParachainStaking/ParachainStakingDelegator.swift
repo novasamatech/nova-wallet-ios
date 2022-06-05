@@ -16,7 +16,7 @@ extension ParachainStaking {
             delegations.map(\.owner)
         }
 
-        func delegationsDic() -> [AccountId: ParachainStaking.Bond] {
+        func delegationsDict() -> [AccountId: ParachainStaking.Bond] {
             delegations.reduce(into: [AccountId: ParachainStaking.Bond]()) {
                 $0[$1.owner] = $1
             }
