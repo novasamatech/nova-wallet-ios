@@ -98,6 +98,8 @@ final class ParaStkUnstakeViewLayout: UIView {
 
         containerView.stackView.addArrangedSubview(networkFeeView)
 
+        containerView.stackView.setCustomSpacing(24.0, after: networkFeeView)
+
         containerView.stackView.addArrangedSubview(hintListView)
     }
 }

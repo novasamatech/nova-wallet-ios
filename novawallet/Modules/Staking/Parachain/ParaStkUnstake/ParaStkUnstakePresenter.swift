@@ -42,7 +42,7 @@ final class ParaStkUnstakePresenter {
         initialDelegator: ParachainStaking.Delegator?,
         initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
-        localizationManager _: LocalizationManagerProtocol,
+        localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
@@ -56,6 +56,7 @@ final class ParaStkUnstakePresenter {
         scheduledRequests = initialScheduledRequests
         self.delegationIdentities = delegationIdentities
         self.logger = logger
+        self.localizationManager = localizationManager
     }
 
     func balanceMinusFee() -> Decimal {
@@ -250,6 +251,23 @@ final class ParaStkUnstakePresenter {
             refreshFee()
         }
     }
+
+    private func changeCollator(with collatorId: AccountId, name: String?) {
+        guard
+            let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat),
+            newAddress != collatorDisplayAddress?.address else {
+            return
+        }
+
+        collatorDisplayAddress = DisplayAddress(address: newAddress, username: name ?? "")
+
+        collatorMetadata = nil
+
+        provideCollatorViewModel()
+        provideMinStakeViewModel()
+
+        interactor.applyCollator(with: collatorId)
+    }
 }
 
 extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
@@ -274,7 +292,33 @@ extension ParaStkUnstakePresenter: ParaStkUnstakePresenterProtocol {
         refreshFee()
     }
 
-    func selectCollator() {}
+    func selectCollator() {
+        guard
+            let delegator = delegator,
+            let disabledCollators = scheduledRequests?.map(\.collatorId) else {
+            return
+        }
+
+        let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
+
+        let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
+            from: delegations,
+            identities: delegationIdentities,
+            disabled: Set(disabledCollators)
+        )
+
+        let collatorId = try? collatorDisplayAddress?.address.toAccountId()
+
+        let selectedIndex = delegations.firstIndex { $0.owner == collatorId } ?? NSNotFound
+
+        wireframe.showUnstakingCollatorSelection(
+            from: view,
+            viewModels: accountDetailsViewModels,
+            selectedIndex: selectedIndex,
+            delegate: self,
+            context: delegations as NSArray
+        )
+    }
 
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
@@ -398,6 +442,35 @@ extension ParaStkUnstakePresenter: ParaStkUnstakeInteractorOutputProtocol {
         _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
         logger.error("Did receive error: \(error)")
+    }
+}
+
+extension ParaStkUnstakePresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard
+            let delegations = context as? [ParachainStaking.Bond],
+            let disabledCollators = scheduledRequests?.map(\.collatorId) else {
+            return
+        }
+
+        let collatorId = delegations[index].owner
+
+        if !disabledCollators.contains(collatorId) {
+            let displayName = delegationIdentities?[collatorId]?.displayName
+            changeCollator(with: collatorId, name: displayName)
+        } else {
+            let title = R.string.localizable.parastkCantUnstakeTitle(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let message = R.string.localizable.parastkCantUnstakeMessage(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+
+            let close = R.string.localizable.commonClose(preferredLanguages: selectedLocale.rLanguages)
+
+            wireframe.present(message: message, title: title, closeAction: close, from: view)
+        }
     }
 }
 

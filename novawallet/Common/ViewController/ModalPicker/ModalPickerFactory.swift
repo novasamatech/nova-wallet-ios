@@ -282,6 +282,7 @@ enum ModalPickerFactory {
 
     static func createCollatorsPickingList(
         _ items: [AccountDetailsPickerViewModel],
+        actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -310,21 +311,19 @@ enum ModalPickerFactory {
         viewController.footerHeight = 0.0
         viewController.headerBorderType = []
 
-        let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
-            let icon = R.image.iconBlueAdd()
-
-            return IconWithTitleViewModel(icon: icon, title: title)
+        if let actionViewModel = actionViewModel {
+            viewController.actionType = .iconTitle(viewModel: actionViewModel)
+        } else {
+            viewController.actionType = .none
         }
-
-        viewController.actionType = .iconTitle(viewModel: actionViewModel)
 
         viewController.viewModels = items
 
         let factory = ModalSheetPresentationFactory(configuration: .fearless)
         viewController.modalTransitioningFactory = factory
 
-        let height = viewController.headerHeight + CGFloat(items.count + 1) * viewController.cellHeight +
+        let itemsCount = actionViewModel != nil ? items.count + 1 : items.count
+        let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
             viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 
