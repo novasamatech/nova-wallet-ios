@@ -210,6 +210,13 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators) {
         stateMachine.state.process(collatorsInfo: collatorsInfo)
+
+        if let delegator = stateMachine.viewState(
+            using: { (state: ParachainStaking.DelegatorState) in state }
+        ) {
+            let collatorIds = delegator.delegatorState.collators()
+            interactor.fetchDelegations(for: collatorIds)
+        }
     }
 
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
