@@ -33,9 +33,6 @@ protocol ParaStkBaseUnstakeInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ balance: AssetBalance?)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
-    func didReceiveMinTechStake(_ minStake: BigUInt)
-    func didReceiveMinDelegationAmount(_ amount: BigUInt)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration)
@@ -43,7 +40,10 @@ protocol ParaStkBaseUnstakeInteractorOutputProtocol: AnyObject {
 }
 
 protocol ParaStkUnstakeInteractorOutputProtocol: ParaStkBaseUnstakeInteractorOutputProtocol {
+    func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)
+    func didReceiveMinTechStake(_ minStake: BigUInt)
+    func didReceiveMinDelegationAmount(_ amount: BigUInt)
 }
 
 protocol ParaStkUnstakeWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable,

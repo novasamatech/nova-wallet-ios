@@ -18,7 +18,6 @@ final class ParaStkUnstakePresenter {
     private(set) var balance: AssetBalance?
     private(set) var minTechStake: BigUInt?
     private(set) var minDelegationAmount: BigUInt?
-    private(set) var maxDelegations: UInt32?
     private(set) var price: PriceData?
 
     private(set) var collatorDisplayAddress: DisplayAddress?
@@ -207,7 +206,7 @@ final class ParaStkUnstakePresenter {
         }
 
         let action: UnstakeCallWrapper.Action = stakedAmount >= minDelegationAmount + amount ?
-            .bondLess(amount: amount) : .revoke
+            .bondLess(amount: amount) : .revoke(amount: stakedAmount)
 
         return UnstakeCallWrapper(collator: collator, action: action)
     }

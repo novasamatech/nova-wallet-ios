@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class ParaStkBaseUnstakeInteractor: RuntimeConstantFetching {
+class ParaStkBaseUnstakeInteractor {
     weak var basePresenter: ParaStkBaseUnstakeInteractorOutputProtocol?
 
     let chainAsset: ChainAsset
@@ -81,40 +81,6 @@ class ParaStkBaseUnstakeInteractor: RuntimeConstantFetching {
         )
     }
 
-    func subscribeCollator(for _: AccountId) {
-        fatalError("Must be overriden by subsclass")
-    }
-
-    private func provideMinTechStake() {
-        fetchConstant(
-            for: ParachainStaking.minDelegatorStk,
-            runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] (result: Result<BigUInt, Error>) in
-            switch result {
-            case let .success(minStake):
-                self?.basePresenter?.didReceiveMinTechStake(minStake)
-            case let .failure(error):
-                self?.basePresenter?.didReceiveError(error)
-            }
-        }
-    }
-
-    private func provideMinDelegationAmount() {
-        fetchConstant(
-            for: ParachainStaking.minDelegation,
-            runtimeCodingService: runtimeProvider,
-            operationManager: OperationManager(operationQueue: operationQueue)
-        ) { [weak self] (result: Result<BigUInt, Error>) in
-            switch result {
-            case let .success(minDelegation):
-                self?.basePresenter?.didReceiveMinDelegationAmount(minDelegation)
-            case let .failure(error):
-                self?.basePresenter?.didReceiveError(error)
-            }
-        }
-    }
-
     private func provideStakingDuration() {
         let wrapper = stakingDurationFactory.createDurationOperation(
             from: runtimeProvider,
@@ -135,9 +101,7 @@ class ParaStkBaseUnstakeInteractor: RuntimeConstantFetching {
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
-}
 
-extension ParaStkBaseUnstakeInteractor: ParaStkBaseUnstakeInteractorInputProtocol {
     func setup() {
         subscribeAssetBalanceAndPrice()
         subscribeDelegator()
@@ -145,11 +109,11 @@ extension ParaStkBaseUnstakeInteractor: ParaStkBaseUnstakeInteractorInputProtoco
 
         feeProxy.delegate = self
 
-        provideMinTechStake()
-        provideMinDelegationAmount()
         provideStakingDuration()
     }
+}
 
+extension ParaStkBaseUnstakeInteractor: ParaStkBaseUnstakeInteractorInputProtocol {
     func estimateFee(for callWrapper: UnstakeCallWrapper) {
         feeProxy.estimateFee(
             using: extrinsicService,
