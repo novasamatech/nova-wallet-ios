@@ -55,6 +55,7 @@ struct ParaStkUnstakeViewFactory {
 
         presenter.view = view
         interactor.basePresenter = presenter
+        dataValidationFactory.view = view
 
         return view
     }
@@ -88,10 +89,8 @@ struct ParaStkUnstakeViewFactory {
 
         let storageFacade = SubstrateDataStorageFacade.shared
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-        let requestFactory = StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
+        let keyFactory = StorageKeyFactory()
+        let requestFactory = StorageRequestFactory(remoteFactory: keyFactory, operationManager: operationManager)
 
         let identityOperationFactory = IdentityOperationFactory(requestFactory: requestFactory)
         let stakingDurationFactory = ParaStkDurationOperationFactory(

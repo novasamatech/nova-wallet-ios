@@ -85,7 +85,7 @@ extension ParaStkYourCollatorsViewModelFactory: ParaStkYourCollatorsViewModelFac
     ) throws -> ParaStkYourCollatorsListViewModel {
         let aprFormatter = NumberFormatter.percent
 
-        let stakes = delegator.delegationsDic()
+        let stakes = delegator.delegationsDict()
 
         let collatorsMapping = try collators
             .sorted(by: {

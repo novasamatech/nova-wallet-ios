@@ -804,3 +804,7 @@
 "parastk.cant.unstake.message" = "You are already unstaking tokens from this collator. You can only have one pending unstake per collator";
 "parastk.unstake.no.collators.title" = "No collators available for unstake";
 "parastk.unstake.no.collators.message" = "You have pending unstake requests for all of your collators.";
+"parastk.unstake.all.title" = "Unstake all?";
+"parastk.unstake.all.message.format" = "Remaining staking balance will drop under minimum network value (%@) and will also be added to the unstaking amount";
+"parachain.staking.collator.less.minstk.message" = "Your stake will be less than the minimum stake (%@) for this collator.";
+"parastk.cant.unstake.amount.message" = "Either specified amount is higher than your stake or you already have unstaking tokens for this collator.";
