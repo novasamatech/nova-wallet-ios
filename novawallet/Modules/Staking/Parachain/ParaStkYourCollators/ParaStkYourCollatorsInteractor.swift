@@ -129,6 +129,6 @@ extension ParaStkYourCollatorsInteractor: ParastakingLocalStorageSubscriber, Par
         for _: ChainModel.Id,
         delegatorId _: AccountId
     ) {
-        presenter?.didScheduledRequests(result: result)
+        presenter?.didReceiveScheduledRequests(result: result)
     }
 }
