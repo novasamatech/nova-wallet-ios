@@ -36,6 +36,10 @@ extension ParachainStaking {
             self.whenExecutable = whenExecutable
             self.action = action
         }
+
+        func isRedeemable(at round: RoundIndex) -> Bool {
+            round >= whenExecutable
+        }
     }
 
     final class ScheduledRequestsQueryFactory: ParaStkScheduledRequestsQueryFactoryProtocol {
