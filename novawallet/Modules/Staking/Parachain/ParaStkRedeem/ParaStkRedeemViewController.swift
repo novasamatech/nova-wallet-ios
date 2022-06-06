@@ -89,6 +89,14 @@ extension ParaStkRedeemViewController: ParaStkRedeemViewProtocol {
     func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
         rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
     }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
+    }
 }
 
 extension ParaStkRedeemViewController: Localizable {

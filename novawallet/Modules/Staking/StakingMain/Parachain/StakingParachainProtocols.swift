@@ -46,4 +46,6 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
     )
 
     func showYourCollators(from view: ControllerBackedProtocol?)
+
+    func showRedeemTokens(from view: ControllerBackedProtocol?)
 }

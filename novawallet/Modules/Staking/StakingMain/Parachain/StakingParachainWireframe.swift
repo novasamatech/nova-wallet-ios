@@ -71,4 +71,14 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showRedeemTokens(from view: ControllerBackedProtocol?) {
+        guard let redeemView = ParaStkRedeemViewFactory.createView(for: state) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: redeemView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
