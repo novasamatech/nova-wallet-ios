@@ -358,6 +358,7 @@ enum ModalPickerFactory {
         viewController.headerHeight = 40.0
         viewController.footerHeight = 0.0
         viewController.headerBorderType = []
+        viewController.selectedIndex = NSNotFound
 
         viewController.actionType = .none
 
