@@ -354,4 +354,25 @@ extension ParachainStaking.ValidatorFactory {
             return amount > 0 && !collators.isEmpty
         })
     }
+
+    func canRebond(
+        collator: AccountId,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantRebond(view, locale: locale)
+
+        }, preservesCondition: {
+            if scheduledRequests?.contains(where: { $0.collatorId == collator }) != nil {
+                return true
+            } else {
+                return false
+            }
+        })
+    }
 }

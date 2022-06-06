@@ -61,4 +61,10 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         collators: Set<AccountId>?,
         locale: Locale
     ) -> DataValidating
+
+    func canRebond(
+        collator: AccountId,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating
 }
