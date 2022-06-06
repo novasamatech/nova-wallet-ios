@@ -55,4 +55,10 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         minDelegationParams: ParaStkMinDelegationParams,
         locale: Locale
     ) -> DataValidating
+
+    func canRedeem(
+        amount: Decimal?,
+        collators: Set<AccountId>?,
+        locale: Locale
+    ) -> DataValidating
 }

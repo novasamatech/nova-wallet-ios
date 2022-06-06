@@ -333,4 +333,25 @@ extension ParachainStaking.ValidatorFactory {
             return amountAfterUnstaking == 0 || amountAfterUnstaking >= atLeastAtStake
         })
     }
+
+    func canRedeem(
+        amount: Decimal?,
+        collators: Set<AccountId>?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantRedeem(view, locale: locale)
+
+        }, preservesCondition: {
+            guard let collators = collators, let amount = amount else {
+                return false
+            }
+
+            return amount > 0 && !collators.isEmpty
+        })
+    }
 }

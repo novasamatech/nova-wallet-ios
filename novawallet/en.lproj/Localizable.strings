@@ -808,3 +808,5 @@
 "parastk.unstake.all.message.format" = "Remaining staking balance will drop under minimum network value (%@) and will also be added to the unstaking amount";
 "parachain.staking.collator.less.minstk.message" = "Your stake will be less than the minimum stake (%@) for this collator.";
 "parastk.cant.unstake.amount.message" = "Either specified amount is higher than your stake or you already have unstaking tokens for this collator.";
+"parastk.cant.redeem.title" = "You cannot redeem";
+"parastk.cant.redeem.message" = "You don't have tokens to redeem";
