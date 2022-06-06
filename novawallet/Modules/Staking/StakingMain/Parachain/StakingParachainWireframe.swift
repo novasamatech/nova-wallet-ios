@@ -106,8 +106,20 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
     }
 
     func showRebondTokens(
-        from _: ControllerBackedProtocol?,
-        collatorId _: AccountId,
-        collatorIdentity _: AccountIdentity?
-    ) {}
+        from view: ControllerBackedProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
+    ) {
+        guard let rebondView = ParaStkRebondViewFactory.createView(
+            for: state,
+            selectedCollator: collatorId,
+            collatorIdentity: collatorIdentity
+        ) else {
+            return
+        }
+
+        let navigationController = ImportantFlowViewFactory.createNavigation(from: rebondView.controller)
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
 }
