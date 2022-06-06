@@ -331,4 +331,47 @@ enum ModalPickerFactory {
 
         return viewController
     }
+
+    static func createCollatorsSelectionList(
+        _ items: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        delegate: ModalPickerViewControllerDelegate?,
+        title: LocalizableResource<String>,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<
+            AccountDetailsNavigationCell,
+            AccountDetailsSelectionViewModel
+        >
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 56.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+
+        viewController.actionType = .none
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
 }

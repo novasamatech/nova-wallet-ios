@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class StakingParachainWireframe {
     let state: ParachainStakingSharedState
@@ -81,4 +82,32 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func showUnstakingCollatorSelection(
+        from view: ControllerBackedProtocol?,
+        delegate: ModalPickerViewControllerDelegate,
+        viewModels: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        context: AnyObject?
+    ) {
+        let title = LocalizableResource { locale in
+            R.string.localizable.stakingRebond(preferredLanguages: locale.rLanguages)
+        }
+
+        guard let infoView = ModalPickerFactory.createCollatorsSelectionList(
+            viewModels,
+            delegate: delegate,
+            title: title,
+            context: context
+        ) else {
+            return
+        }
+
+        view?.controller.present(infoView, animated: true, completion: nil)
+    }
+
+    func showRebondTokens(
+        from _: ControllerBackedProtocol?,
+        collatorId _: AccountId,
+        collatorIdentity _: AccountIdentity?
+    ) {}
 }
