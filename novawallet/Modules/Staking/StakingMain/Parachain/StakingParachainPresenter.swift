@@ -136,7 +136,9 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
         handleStakeMoreAction()
     }
 
-    func performRedeemAction() {}
+    func performRedeemAction() {
+        wireframe.showRedeemTokens(from: view)
+    }
 
     func performRebondAction() {}
 
