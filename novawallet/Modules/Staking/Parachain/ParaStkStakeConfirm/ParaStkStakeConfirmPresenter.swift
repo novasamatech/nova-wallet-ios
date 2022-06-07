@@ -21,6 +21,7 @@ final class ParaStkStakeConfirmPresenter {
     private(set) var stakingDuration: ParachainStakingDuration?
     private(set) var delegator: ParachainStaking.Delegator?
     private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
     private(set) var minTechStake: BigUInt?
     private(set) var minDelegationAmount: BigUInt?
     private(set) var maxDelegations: UInt32?
@@ -286,6 +287,10 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
 
             logger.error("Extrinsic submission failed: \(error)")
         }
+    }
+
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
+        self.scheduledRequests = scheduledRequests
     }
 
     func didReceiveError(_ error: Error) {
