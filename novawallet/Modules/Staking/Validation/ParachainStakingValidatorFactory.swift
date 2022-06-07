@@ -280,7 +280,7 @@ extension ParachainStaking.ValidatorFactory {
                 amountAfterUnstaking < lowestAmount &&
                 amountAfterUnstaking >= atLeastAtStake
 
-            return !(collator.topCapacity.isFull && becomeOutTopStakers)
+            return !(collator.topCapacity.isFull && becomeOutTopStakers && !collator.bottomCapacity.isEmpty)
         })
     }
 
@@ -368,7 +368,7 @@ extension ParachainStaking.ValidatorFactory {
             self?.presentable.presentCantRebond(view, locale: locale)
 
         }, preservesCondition: {
-            if scheduledRequests?.contains(where: { $0.collatorId == collator }) != nil {
+            if scheduledRequests?.first(where: { $0.collatorId == collator }) != nil {
                 return true
             } else {
                 return false
