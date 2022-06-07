@@ -38,11 +38,6 @@ extension ParaStkStakeConfirmPresenter {
                 collator: collatorMetadata,
                 existingBond: existingBond,
                 locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: amount,
-                minTechStake: minDelegationAmount,
-                locale: selectedLocale
             )
         ]).runValidation { [weak self] in
             self?.submitExtrinsic()
