@@ -36,6 +36,7 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     )
 

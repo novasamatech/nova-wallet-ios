@@ -195,6 +195,27 @@ extension ParachainStaking.ValidatorFactory {
         })
     }
 
+    func notRevokingWhileStakingMore(
+        collator: AccountId?,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantStakeMoreWhileRevoking(view, locale: locale)
+
+        }, preservesCondition: {
+            guard let collator = collator, let scheduledRequests = scheduledRequests else {
+                return false
+            }
+
+            return !scheduledRequests.contains { $0.collatorId == collator && $0.isRevoke }
+        })
+    }
+
     func canUnstake(
         amount: Decimal?,
         staked: BigUInt?,

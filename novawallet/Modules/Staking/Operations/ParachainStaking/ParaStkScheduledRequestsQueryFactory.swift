@@ -27,6 +27,15 @@ extension ParachainStaking {
             }
         }
 
+        var isRevoke: Bool {
+            switch action {
+            case .decrease:
+                return false
+            case .revoke:
+                return true
+            }
+        }
+
         init(
             collatorId: AccountId,
             whenExecutable: RoundIndex,
