@@ -5,14 +5,14 @@ protocol BlockTimeOperationFactoryProtocol {
     func createBlockTimeOperation(
         from runtimeService: RuntimeCodingServiceProtocol,
         blockTimeEstimationService: BlockTimeEstimationServiceProtocol
-    ) -> CompoundOperationWrapper<Moment>
+    ) -> CompoundOperationWrapper<BlockTime>
 }
 
 final class BlockTimeOperationFactory {
-    static let callibrationSeqSize: Moment = 10
-    static let fallbackBlockRelaychainTime: Moment = 6000
-    static let fallbackBlockParachainTime: Moment = 2 * 6000
-    static let fallbackThreshold: Moment = 500
+    static let callibrationSeqSize: BlockTime = 10
+    static let fallbackBlockRelaychainTime: BlockTime = 6000
+    static let fallbackBlockParachainTime: BlockTime = 2 * 6000
+    static let fallbackThreshold: BlockTime = 500
 
     let chain: ChainModel
 
@@ -20,26 +20,26 @@ final class BlockTimeOperationFactory {
         self.chain = chain
     }
 
-    private var fallbackBlockTime: Moment {
+    private var fallbackBlockTime: BlockTime {
         chain.isRelaychain ? Self.fallbackBlockRelaychainTime : Self.fallbackBlockParachainTime
     }
 
     private func createExpectedBlockTimeWrapper(
         dependingOn codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        fallbackTime: Moment,
-        fallbackThreshold: Moment
-    ) -> CompoundOperationWrapper<Moment> {
-        let babeTimeOperation: BaseOperation<Moment> = PrimitiveConstantOperation.operation(
+        fallbackTime: BlockTime,
+        fallbackThreshold: BlockTime
+    ) -> CompoundOperationWrapper<BlockTime> {
+        let babeTimeOperation: BaseOperation<BlockTime> = PrimitiveConstantOperation.operation(
             for: .babeBlockTime,
             dependingOn: codingFactoryOperation
         )
 
-        let minBlockTimeOperation: BaseOperation<Moment> = PrimitiveConstantOperation.operation(
+        let minBlockTimeOperation: BaseOperation<BlockTime> = PrimitiveConstantOperation.operation(
             for: .minimumPeriodBetweenBlocks,
             dependingOn: codingFactoryOperation
         )
 
-        let mapOperation = ClosureOperation<Moment> {
+        let mapOperation = ClosureOperation<BlockTime> {
             let optBabeTime = try? babeTimeOperation.extractNoCancellableResultData()
             let optMinBlockTime = try? minBlockTimeOperation.extractNoCancellableResultData()
 
@@ -62,7 +62,7 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
     func createBlockTimeOperation(
         from runtimeService: RuntimeCodingServiceProtocol,
         blockTimeEstimationService: BlockTimeEstimationServiceProtocol
-    ) -> CompoundOperationWrapper<Moment> {
+    ) -> CompoundOperationWrapper<BlockTime> {
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
         let estimatedOperation = blockTimeEstimationService.createEstimatedBlockTimeOperation()
         let expectedWrapper = createExpectedBlockTimeWrapper(
@@ -73,11 +73,11 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
 
         expectedWrapper.addDependency(operations: [codingFactoryOperation])
 
-        let mapOperation = ClosureOperation<Moment> {
+        let mapOperation = ClosureOperation<BlockTime> {
             let estimatedBlockTimeValue = try estimatedOperation.extractNoCancellableResultData()
             let expectedBlockTime = try expectedWrapper.targetOperation.extractNoCancellableResultData()
 
-            let boundedSeqSize = min(Moment(estimatedBlockTimeValue.seqSize), Self.callibrationSeqSize)
+            let boundedSeqSize = min(BlockTime(estimatedBlockTimeValue.seqSize), Self.callibrationSeqSize)
             let estimatedPart = boundedSeqSize * estimatedBlockTimeValue.blockTime
             let constantsPart = (Self.callibrationSeqSize - boundedSeqSize) * expectedBlockTime
 
