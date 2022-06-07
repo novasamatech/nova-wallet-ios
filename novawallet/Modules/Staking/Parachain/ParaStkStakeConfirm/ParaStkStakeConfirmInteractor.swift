@@ -26,7 +26,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
     private var collatorProvider: AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
     private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
-    private var extrinsicSubscriptionId: UInt16?
+    private(set) var extrinsicSubscriptionId: UInt16?
 
     init(
         chainAsset: ChainAsset,

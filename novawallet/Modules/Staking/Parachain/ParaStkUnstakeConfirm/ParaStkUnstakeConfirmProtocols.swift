@@ -16,7 +16,8 @@ protocol ParaStkUnstakeConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol ParaStkUnstakeConfirmInteractorInputProtocol: ParaStkBaseUnstakeInteractorInputProtocol {
+protocol ParaStkUnstakeConfirmInteractorInputProtocol: ParaStkBaseUnstakeInteractorInputProtocol,
+    PendingExtrinsicInteracting {
     func confirm(for callWrapper: UnstakeCallWrapper)
 }
 

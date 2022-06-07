@@ -181,16 +181,20 @@ final class ParaStkStakeConfirmPresenter {
 
         interactor.confirm(with: callWrapper)
     }
-}
 
-extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
-    func setup() {
+    private func applyCurrentState() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFeeViewModel()
         provideCollatorViewModel()
         provideHintsViewModel()
+    }
+}
+
+extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmPresenterProtocol {
+    func setup() {
+        applyCurrentState()
 
         interactor.setup()
     }
@@ -248,7 +252,9 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?) {
         collatorMetadata = metadata
 
-        refreshFee()
+        if !interactor.hasPendingExtrinsic {
+            refreshFee()
+        }
     }
 
     func didReceiveMinTechStake(_ minStake: BigUInt) {
@@ -266,14 +272,18 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
         self.delegator = delegator
 
-        refreshFee()
-        provideHintsViewModel()
+        if !interactor.hasPendingExtrinsic {
+            refreshFee()
+            provideHintsViewModel()
+        }
     }
 
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration) {
         stakingDuration = duration
 
-        provideHintsViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideHintsViewModel()
+        }
     }
 
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
@@ -283,6 +293,9 @@ extension ParaStkStakeConfirmPresenter: ParaStkStakeConfirmInteractorOutputProto
         case .success:
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
+            applyCurrentState()
+            refreshFee()
+
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
             logger.error("Extrinsic submission failed: \(error)")

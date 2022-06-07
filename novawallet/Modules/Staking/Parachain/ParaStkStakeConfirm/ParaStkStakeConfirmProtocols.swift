@@ -17,7 +17,7 @@ protocol ParaStkStakeConfirmPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol ParaStkStakeConfirmInteractorInputProtocol: AnyObject {
+protocol ParaStkStakeConfirmInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
 
     func estimateFee(with callWrapper: DelegationCallWrapper)
