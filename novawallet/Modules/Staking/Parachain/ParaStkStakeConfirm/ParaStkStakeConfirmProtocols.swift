@@ -35,6 +35,7 @@ protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveMaxDelegations(_ maxDelegations: UInt32)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration)
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
     func didReceiveError(_ error: Error)
 }

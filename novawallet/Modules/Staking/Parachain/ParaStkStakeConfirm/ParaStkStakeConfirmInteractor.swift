@@ -25,6 +25,7 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var collatorProvider: AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
+    private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
     private var extrinsicSubscriptionId: UInt16?
 
     init(
@@ -83,6 +84,13 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         delegatorProvider = subscribeToDelegatorState(
             for: chainAsset.chain.chainId,
             accountId: selectedAccount.chainAccount.accountId
+        )
+    }
+
+    private func subscribeScheduledRequests() {
+        scheduledRequestsProvider = subscribeToScheduledRequests(
+            for: chainAsset.chain.chainId,
+            delegatorId: selectedAccount.chainAccount.accountId
         )
     }
 
@@ -179,6 +187,7 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         subscribePriceIfNeeded()
         subscribeDelegator()
         subscribeCollatorMetadata()
+        subscribeScheduledRequests()
 
         provideMinTechStake()
         provideMinDelegationAmount()
@@ -283,6 +292,19 @@ extension ParaStkStakeConfirmInteractor: ParastakingLocalStorageSubscriber, Para
         switch result {
         case let .success(metadata):
             presenter?.didReceiveCollator(metadata: metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
+    func handleParastakingScheduledRequests(
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
+        for _: ChainModel.Id,
+        delegatorId _: AccountId
+    ) {
+        switch result {
+        case let .success(scheduledRequests):
+            presenter?.didReceiveScheduledRequests(scheduledRequests)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }
