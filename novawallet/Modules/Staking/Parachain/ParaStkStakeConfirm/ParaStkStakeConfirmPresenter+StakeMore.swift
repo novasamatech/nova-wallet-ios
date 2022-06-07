@@ -12,6 +12,7 @@ extension ParaStkStakeConfirmPresenter {
 
     func stakeMore(above existingBond: BigUInt) {
         let precision = chainAsset.assetDisplayInfo.assetPrecision
+        let collatorId = try? collator.address.toAccountId()
 
         DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
@@ -25,6 +26,11 @@ extension ParaStkStakeConfirmPresenter {
                 fee: fee,
                 spendingAmount: amount,
                 precision: precision,
+                locale: selectedLocale
+            ),
+            dataValidatingFactory.notRevokingWhileStakingMore(
+                collator: collatorId,
+                scheduledRequests: scheduledRequests,
                 locale: selectedLocale
             ),
             dataValidatingFactory.canStakeBottomDelegations(
