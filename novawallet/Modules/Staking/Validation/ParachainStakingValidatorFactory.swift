@@ -396,4 +396,24 @@ extension ParachainStaking.ValidatorFactory {
             }
         })
     }
+
+    func isActiveCollator(
+        for metadata: ParachainStaking.CandidateMetadata?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantStakeInactiveCollator(view, locale: locale)
+
+        }, preservesCondition: {
+            if let metadata = metadata, metadata.isActive {
+                return true
+            } else {
+                return false
+            }
+        })
+    }
 }
