@@ -83,7 +83,11 @@ extension ParaStkStateViewModelFactory {
                 )
             }
 
-            return .nominatorChangeValidators(description)
+            let title = LocalizableResource { locale in
+                R.string.localizable.parachainStakingChangeCollator(preferredLanguages: locale.rLanguages)
+            }
+
+            return .nominatorChangeValidators(title: title, details: description)
         } else {
             return nil
         }
