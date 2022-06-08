@@ -13,7 +13,7 @@ protocol ParaStkRedeemPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol ParaStkRedeemInteractorInputProtocol: AnyObject {
+protocol ParaStkRedeemInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
     func estimateFee(for collatorIds: Set<AccountId>)
     func submit(for collatorIds: Set<AccountId>)

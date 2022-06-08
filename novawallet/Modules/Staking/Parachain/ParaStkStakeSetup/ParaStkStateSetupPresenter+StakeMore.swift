@@ -33,11 +33,6 @@ extension ParaStkStakeSetupPresenter {
                 existingBond: existingBond,
                 locale: selectedLocale
             ),
-            dataValidatingFactory.hasMinStake(
-                amount: inputAmount,
-                minTechStake: minDelegationAmount,
-                locale: selectedLocale
-            ),
             dataValidatingFactory.canStakeTopDelegations(
                 amount: inputAmount,
                 collator: collatorMetadata,

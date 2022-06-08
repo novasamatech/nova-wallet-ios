@@ -157,15 +157,19 @@ final class ParaStkUnstakeConfirmPresenter {
 
         interactor.confirm(for: callWrapper)
     }
-}
 
-extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol {
-    func setup() {
+    func applyCurrentState() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideCollatorViewModel()
         provideHintsViewModel()
+    }
+}
+
+extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol {
+    func setup() {
+        applyCurrentState()
 
         interactor.setup()
 
@@ -225,6 +229,9 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
         case .success:
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
+            applyCurrentState()
+            refreshFee()
+
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
             logger.error("Extrinsic submission failed: \(error)")
@@ -238,8 +245,10 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
     func didReceivePrice(_ priceData: PriceData?) {
         price = priceData
 
-        provideAmountViewModel()
-        provideFeeViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideAmountViewModel()
+            provideFeeViewModel()
+        }
     }
 
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
@@ -261,7 +270,9 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
         self.delegator = delegator
         delegationsDict = delegator?.delegationsDict()
 
-        provideAmountViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideAmountViewModel()
+        }
     }
 
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
