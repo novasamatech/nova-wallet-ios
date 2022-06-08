@@ -27,6 +27,15 @@ extension ParachainStaking {
             }
         }
 
+        var isRevoke: Bool {
+            switch action {
+            case .decrease:
+                return false
+            case .revoke:
+                return true
+            }
+        }
+
         init(
             collatorId: AccountId,
             whenExecutable: RoundIndex,
@@ -35,6 +44,10 @@ extension ParachainStaking {
             self.collatorId = collatorId
             self.whenExecutable = whenExecutable
             self.action = action
+        }
+
+        func isRedeemable(at round: RoundIndex) -> Bool {
+            round >= whenExecutable
         }
     }
 

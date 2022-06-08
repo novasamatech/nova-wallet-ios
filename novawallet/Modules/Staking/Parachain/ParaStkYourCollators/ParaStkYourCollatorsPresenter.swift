@@ -100,7 +100,7 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputPro
         provideViewModel()
     }
 
-    func didScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>) {
+    func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>) {
         scheduledRequests = result
     }
 }
@@ -117,15 +117,17 @@ extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
 
         switch options[index] {
         case .stakeMore:
+            let scheduledRequests = try? scheduledRequests?.get()
             wireframe.showStakeMore(
                 from: view,
                 initialDelegator: optDelegator,
+                delegationRequests: scheduledRequests,
                 delegationIdentities: delegationIdentities
             )
         case .unstake:
-            let optScheduledRequests = try? scheduledRequests?.get()
             if
-                let disabledCollators = optScheduledRequests.map({ Set($0.map(\.collatorId)) }),
+                case let .success(optScheduledRequests) = scheduledRequests,
+                let disabledCollators = (optScheduledRequests ?? []).map({ Set($0.map(\.collatorId)) }),
                 let delegator = optDelegator,
                 delegator.delegations.contains(where: { !disabledCollators.contains($0.owner) }) {
                 wireframe.showUnstake(
