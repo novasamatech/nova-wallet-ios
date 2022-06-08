@@ -15,7 +15,7 @@ protocol ParachainStakingErrorPresentable: BaseErrorPresentable {
 
 extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
     func presentDelegatorExists(_ view: ControllerBackedProtocol, locale: Locale?) {
-        let title = R.string.localizable.stakingAlreadyTitle(
+        let title = R.string.localizable.parachainStakingDelegatorExistsTitle(
             preferredLanguages: locale?.rLanguages
         )
 

@@ -22,8 +22,8 @@ protocol ParastakingLocalStorageSubscriber: AnyObject {
 
     func subscribeToScheduledRequests(
         for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>?
+        delegatorId: AccountId
+    ) -> StreamableProvider<ParachainStaking.MappedScheduledRequest>?
 
     func subscribeTotalReward(
         for address: AccountAddress,
@@ -176,26 +176,26 @@ extension ParastakingLocalStorageSubscriber {
 
     func subscribeToScheduledRequests(
         for chainId: ChainModel.Id,
-        accountId: AccountId
-    ) -> AnyDataProvider<ParachainStaking.DecodedScheduledRequests>? {
+        delegatorId: AccountId
+    ) -> StreamableProvider<ParachainStaking.MappedScheduledRequest>? {
         guard
             let requestsProvider =
             try? stakingLocalSubscriptionFactory.getScheduledRequestsProvider(
                 for: chainId,
-                accountId: accountId
+                delegatorId: delegatorId
             )
         else {
             return nil
         }
 
-        let updateBlock: ([DataProviderChange<ParachainStaking.DecodedScheduledRequests>]) -> Void
+        let updateBlock: ([DataProviderChange<ParachainStaking.MappedScheduledRequest>]) -> Void
 
         updateBlock = { [weak self] changes in
             let requests = changes.reduceToLastChange()?.item
             self?.stakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
                 result: .success(requests),
                 for: chainId,
-                accountId: accountId
+                delegatorId: delegatorId
             )
         }
 
@@ -203,14 +203,16 @@ extension ParastakingLocalStorageSubscriber {
             self?.stakingLocalSubscriptionHandler.handleParastakingScheduledRequests(
                 result: .failure(error),
                 for: chainId,
-                accountId: accountId
+                delegatorId: delegatorId
             )
             return
         }
 
-        let options = DataProviderObserverOptions(
+        let options = StreamableProviderObserverOptions(
             alwaysNotifyOnRefresh: false,
-            waitsInProgressSyncOnAdd: false
+            waitsInProgressSyncOnAdd: false,
+            initialSize: 0,
+            refreshWhenEmpty: false
         )
 
         requestsProvider.addObserver(
