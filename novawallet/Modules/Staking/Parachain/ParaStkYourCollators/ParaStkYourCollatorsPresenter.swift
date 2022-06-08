@@ -8,6 +8,7 @@ final class ParaStkYourCollatorsPresenter {
 
     private var collators: Result<[CollatorSelectionInfo], Error>?
     private var delegator: Result<ParachainStaking.Delegator?, Error>?
+    private var scheduledRequests: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>?
 
     let selectedAccount: MetaChainAccountResponse
     let viewModelFactory: ParaStkYourCollatorsViewModelFactoryProtocol
@@ -98,6 +99,10 @@ extension ParaStkYourCollatorsPresenter: ParaStkYourCollatorsInteractorOutputPro
 
         provideViewModel()
     }
+
+    func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>) {
+        scheduledRequests = result
+    }
 }
 
 extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
@@ -106,19 +111,38 @@ extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
             return
         }
 
+        let optCollators = try? collators?.get()
+        let delegationIdentities = optCollators?.identitiesDict()
+        let optDelegator = try? delegator?.get()
+
         switch options[index] {
         case .stakeMore:
-            let optCollators = try? collators?.get()
-            let delegationIdentities = optCollators?.identitiesDict()
-            let optDelegator = try? delegator?.get()
-
+            let scheduledRequests = try? scheduledRequests?.get()
             wireframe.showStakeMore(
                 from: view,
                 initialDelegator: optDelegator,
+                delegationRequests: scheduledRequests,
                 delegationIdentities: delegationIdentities
             )
         case .unstake:
-            break
+            if
+                case let .success(optScheduledRequests) = scheduledRequests,
+                let disabledCollators = (optScheduledRequests ?? []).map({ Set($0.map(\.collatorId)) }),
+                let delegator = optDelegator,
+                delegator.delegations.contains(where: { !disabledCollators.contains($0.owner) }) {
+                wireframe.showUnstake(
+                    from: view,
+                    initialDelegator: delegator,
+                    delegationRequests: optScheduledRequests,
+                    delegationIdentities: delegationIdentities
+                )
+            } else {
+                guard let view = view else {
+                    return
+                }
+
+                wireframe.presentNoUnstakingOptions(view, locale: selectedLocale)
+            }
         default:
             break
         }

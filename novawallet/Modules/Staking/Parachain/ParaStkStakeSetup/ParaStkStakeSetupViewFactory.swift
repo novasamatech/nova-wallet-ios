@@ -6,6 +6,7 @@ struct ParaStkStakeSetupViewFactory {
     static func createView(
         with state: ParachainStakingSharedState,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     ) -> ParaStkStakeSetupViewProtocol? {
         guard
@@ -17,9 +18,7 @@ struct ParaStkStakeSetupViewFactory {
         let wireframe = ParaStkStakeSetupWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
@@ -41,22 +40,13 @@ struct ParaStkStakeSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
             initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
-        let localizableTitle: LocalizableResource<String>
-
-        if initialDelegator != nil {
-            localizableTitle = LocalizableResource { locale in
-                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
-            }
-        } else {
-            localizableTitle = LocalizableResource { locale in
-                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
-            }
-        }
+        let localizableTitle = createTitle(for: initialDelegator, chainAsset: chainAsset)
 
         let view = ParaStkStakeSetupViewController(
             presenter: presenter,
@@ -69,6 +59,21 @@ struct ParaStkStakeSetupViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createTitle(
+        for delegator: ParachainStaking.Delegator?,
+        chainAsset: ChainAsset
+    ) -> LocalizableResource<String> {
+        if delegator != nil {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
+            }
+        }
     }
 
     private static func createInteractor(
