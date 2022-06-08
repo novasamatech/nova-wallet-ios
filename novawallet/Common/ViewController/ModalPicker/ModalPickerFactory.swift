@@ -4,6 +4,8 @@ import SoraFoundation
 import IrohaCrypto
 import SubstrateSdk
 
+typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>
+
 enum ModalPickerFactory {
     static func createStakingManageSource(
         options: [StakingManageOption],
@@ -270,6 +272,59 @@ enum ModalPickerFactory {
         viewController.modalTransitioningFactory = factory
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    static func createCollatorsPickingList(
+        _ items: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<
+            AccountDetailsSelectionCell,
+            SelectableViewModel<AccountDetailsSelectionViewModel>
+        >
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.parachainStakingCollator(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.selectedIndex = selectedIndex
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 56.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+
+        let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
+            let icon = R.image.iconBlueAdd()
+
+            return IconWithTitleViewModel(icon: icon, title: title)
+        }
+
+        viewController.actionType = .iconTitle(viewModel: actionViewModel)
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count + 1) * viewController.cellHeight +
             viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 

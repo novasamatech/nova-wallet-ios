@@ -11,12 +11,14 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func canStakeTopDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
+        existingBond: BigUInt?,
         locale: Locale
     ) -> DataValidating
 
     func canStakeBottomDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
+        existingBond: BigUInt?,
         locale: Locale
     ) -> DataValidating
 
@@ -74,6 +76,7 @@ extension ParachainStaking.ValidatorFactory {
     func canStakeTopDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
+        existingBond: BigUInt?,
         locale: Locale
     ) -> DataValidating {
         let precision = assetDisplayInfo.assetPrecision
@@ -104,18 +107,21 @@ extension ParachainStaking.ValidatorFactory {
                 locale: locale
             )
         }, preservesCondition: {
-            guard let collator = collator, let amountInPlank = optAmountInPlank else {
+            guard let collator = collator, let newDelegationAmount = optAmountInPlank else {
                 return false
             }
 
+            let totalAmountAfterStake = newDelegationAmount + (existingBond ?? 0)
+
             return !collator.topCapacity.isFull ||
-                amountInPlank > collator.lowestTopDelegationAmount
+                totalAmountAfterStake > collator.lowestTopDelegationAmount
         })
     }
 
     func canStakeBottomDelegations(
         amount: Decimal?,
         collator: ParachainStaking.CandidateMetadata?,
+        existingBond: BigUInt?,
         locale: Locale
     ) -> DataValidating {
         let precision = assetDisplayInfo.assetPrecision
@@ -143,12 +149,14 @@ extension ParachainStaking.ValidatorFactory {
                 locale: locale
             )
         }, preservesCondition: {
-            guard let collator = collator, let amountInPlank = optAmountInPlank else {
+            guard let collator = collator, let newDelegationAmount = optAmountInPlank else {
                 return false
             }
 
+            let totalAmountAfterStake = newDelegationAmount + (existingBond ?? 0)
+
             return !collator.bottomCapacity.isFull ||
-                amountInPlank > collator.lowestBottomDelegationAmount
+                totalAmountAfterStake > collator.lowestBottomDelegationAmount
         })
     }
 
@@ -207,7 +215,12 @@ extension ParachainStaking.ValidatorFactory {
             )
 
         }, preservesCondition: {
-            guard let delegator = delegator, let maxCollatorsAllowed = maxCollatorsAllowed else {
+            guard let delegator = delegator else {
+                // there were no delegations previously
+                return true
+            }
+
+            guard let maxCollatorsAllowed = maxCollatorsAllowed else {
                 return false
             }
 

@@ -32,6 +32,11 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable {
         symbol: String
     )
 
-    func showStartStaking(from view: ControllerBackedProtocol?)
+    func showStakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    )
+
     func showYourCollators(from view: ControllerBackedProtocol?)
 }

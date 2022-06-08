@@ -66,7 +66,7 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performMainAction() {
-        wireframe.showStartStaking(from: view)
+        wireframe.showStakeTokens(from: view, initialDelegator: nil, delegationIdentities: nil)
     }
 
     func performRewardInfoAction() {
@@ -100,7 +100,19 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:
-            break
+            guard let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ) else {
+                return
+            }
+
+            let identities = delegator.delegations?.identitiesDict()
+
+            wireframe.showStakeTokens(
+                from: view,
+                initialDelegator: delegator.delegatorState,
+                delegationIdentities: identities
+            )
         case .unstake:
             break
         case .setupValidators, .changeValidators, .yourValidator:

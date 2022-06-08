@@ -10,17 +10,21 @@ final class ParaStkStakeSetupPresenter {
     let chainAsset: ChainAsset
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
+    let accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol
 
-    private var inputResult: AmountInputResult?
-    private var fee: BigUInt?
-    private var balance: AssetBalance?
-    private var minTechStake: BigUInt?
-    private var price: PriceData?
-    private var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
+    private(set) var inputResult: AmountInputResult?
+    private(set) var fee: BigUInt?
+    private(set) var balance: AssetBalance?
+    private(set) var minTechStake: BigUInt?
+    private(set) var minDelegationAmount: BigUInt?
+    private(set) var maxDelegations: UInt32?
+    private(set) var price: PriceData?
+    private(set) var rewardCalculator: ParaStakingRewardCalculatorEngineProtocol?
 
-    private var collatorDisplayAddress: DisplayAddress?
-    private var collatorMetadata: ParachainStaking.CandidateMetadata?
-    private var delegator: ParachainStaking.Delegator?
+    private(set) var collatorDisplayAddress: DisplayAddress?
+    private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
+    private(set) var delegator: ParachainStaking.Delegator?
+    private(set) var delegationIdentities: [AccountId: AccountIdentity]?
 
     private lazy var displayAddressFactory = DisplayAddressViewModelFactory()
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
@@ -33,6 +37,9 @@ final class ParaStkStakeSetupPresenter {
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         chainAsset: ChainAsset,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
+        accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
     ) {
@@ -41,11 +48,22 @@ final class ParaStkStakeSetupPresenter {
         self.dataValidatingFactory = dataValidatingFactory
         self.chainAsset = chainAsset
         self.balanceViewModelFactory = balanceViewModelFactory
+        self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
+        delegator = initialDelegator
+        self.delegationIdentities = delegationIdentities
         self.logger = logger
         self.localizationManager = localizationManager
     }
 
-    private func balanceMinusFee() -> Decimal {
+    private func existingStakeInPlank() -> BigUInt? {
+        if let collatorId = try? collatorDisplayAddress?.address.toAccountId() {
+            return delegator?.delegations.first(where: { $0.owner == collatorId })?.amount
+        } else {
+            return nil
+        }
+    }
+
+    func balanceMinusFee() -> Decimal {
         let balanceValue = balance?.transferable ?? 0
         let feeValue = fee ?? 0
 
@@ -139,6 +157,7 @@ final class ParaStkStakeSetupPresenter {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
 
         let amountReturn: Decimal
+        let exitingStake: Decimal
 
         if
             let rewardCalculator = rewardCalculator,
@@ -150,12 +169,17 @@ final class ParaStkStakeSetupPresenter {
             )
 
             amountReturn = calculatedReturn ?? 0
+
+            let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
+            let stakeInPlank = existingStakeInPlank() ?? 0
+            exitingStake = Decimal.fromSubstrateAmount(stakeInPlank, precision: assetPrecision) ?? 0
         } else {
             let calculatedReturn = rewardCalculator?.calculateMaxReturn(for: .year)
             amountReturn = calculatedReturn ?? 0
+            exitingStake = 0
         }
 
-        let rewardAmount = inputAmount * amountReturn
+        let rewardAmount = (inputAmount + exitingStake) * amountReturn
 
         let balanceViewModel = balanceViewModelFactory.balanceFromPrice(
             rewardAmount,
@@ -174,14 +198,40 @@ final class ParaStkStakeSetupPresenter {
 
     private func provideCollatorViewModel() {
         if let collatorDisplayAddress = collatorDisplayAddress {
-            let displayViewModel = displayAddressFactory.createViewModel(from: collatorDisplayAddress)
-            view?.didReceiveCollator(viewModel: displayViewModel)
+            let collatorId = try? collatorDisplayAddress.address.toAccountId()
+            let addressModel = displayAddressFactory.createViewModel(from: collatorDisplayAddress)
+
+            let details: TitleWithSubtitleViewModel?
+
+            if let delegation = delegator?.delegations.first(where: { $0.owner == collatorId }) {
+                let detailsName = R.string.localizable.commonStakedPrefix(
+                    preferredLanguages: selectedLocale.rLanguages
+                )
+
+                let stakedDecimal = Decimal.fromSubstrateAmount(
+                    delegation.amount,
+                    precision: chainAsset.assetDisplayInfo.assetPrecision
+                ) ?? 0
+
+                let stakedAmount = balanceViewModelFactory.amountFromValue(stakedDecimal).value(for: selectedLocale)
+
+                details = TitleWithSubtitleViewModel(title: detailsName, subtitle: stakedAmount)
+            } else {
+                details = nil
+            }
+
+            let collatorViewModel = AccountDetailsSelectionViewModel(
+                displayAddress: addressModel,
+                details: details
+            )
+
+            view?.didReceiveCollator(viewModel: collatorViewModel)
         } else {
             view?.didReceiveCollator(viewModel: nil)
         }
     }
 
-    private func refreshFee() {
+    func refreshFee() {
         let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
         let precicion = chainAsset.assetDisplayInfo.assetPrecision
 
@@ -195,17 +245,51 @@ final class ParaStkStakeSetupPresenter {
         let collatorsDelegationsCount = collatorMetadata?.delegationCount ?? 0
         let collator = try? collatorDisplayAddress?.address.toAccountId()
 
-        interactor.estimateFee(
-            amount,
-            collator: collator,
+        let delegationsCount = delegator?.delegations.count ?? 0
+
+        let callWrapper = DelegationCallWrapper(
+            amount: amount,
+            collator: collator ?? AccountId.dummyAccountId(of: chainAsset.chain.accountIdSize),
             collatorDelegationsCount: collatorsDelegationsCount,
-            delegationsCount: 0
+            delegationsCount: UInt32(delegationsCount),
+            existingBond: existingStakeInPlank()
         )
+
+        interactor.estimateFee(with: callWrapper)
+    }
+
+    private func setupInitialCollator() {
+        if
+            let lastCollator = delegator?.delegations.last?.owner,
+            let address = try? lastCollator.toAddress(using: chainAsset.chain.chainFormat) {
+            let name = delegationIdentities?[lastCollator]?.displayName
+            collatorDisplayAddress = DisplayAddress(address: address, username: name ?? "")
+        }
+    }
+
+    private func changeCollator(with collatorId: AccountId, name: String?) {
+        guard
+            let newAddress = try? collatorId.toAddress(using: chainAsset.chain.chainFormat),
+            newAddress != collatorDisplayAddress?.address else {
+            return
+        }
+
+        collatorDisplayAddress = DisplayAddress(address: newAddress, username: name ?? "")
+
+        collatorMetadata = nil
+
+        provideCollatorViewModel()
+        provideMinStakeViewModel()
+        provideRewardsViewModel()
+
+        interactor.applyCollator(with: collatorId)
     }
 }
 
 extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
     func setup() {
+        setupInitialCollator()
+
         provideAmountInputViewModel()
 
         provideCollatorViewModel()
@@ -214,10 +298,37 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
         provideFeeViewModel()
 
         interactor.setup()
+
+        if let collatorId = try? collatorDisplayAddress?.address.toAccountId() {
+            interactor.applyCollator(with: collatorId)
+        }
     }
 
     func selectCollator() {
-        wireframe.showCollatorSelection(from: view, delegate: self)
+        if let delegator = delegator, !delegator.delegations.isEmpty {
+            let delegations = Array(delegator.delegations.reversed())
+
+            let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
+                from: delegations,
+                identities: delegationIdentities,
+                disabled: Set()
+            )
+
+            let collatorId = try? collatorDisplayAddress?.address.toAccountId()
+
+            let selectedIndex = delegations.firstIndex { $0.owner == collatorId } ?? NSNotFound
+
+            wireframe.showDelegationSelection(
+                from: view,
+                viewModels: accountDetailsViewModels,
+                selectedIndex: selectedIndex,
+                delegate: self,
+                context: delegations as NSArray
+            )
+
+        } else {
+            wireframe.showCollatorSelection(from: view, delegate: self)
+        }
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -239,54 +350,10 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
     }
 
     func proceed() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
-        DataValidationRunner(validators: [
-            dataValidatingFactory.hasInPlank(
-                fee: fee,
-                locale: selectedLocale,
-                precision: precision,
-                onError: { [weak self] in self?.refreshFee() }
-            ),
-            dataValidatingFactory.canPayFeeAndAmountInPlank(
-                balance: balance?.transferable,
-                fee: fee,
-                spendingAmount: inputAmount,
-                precision: precision,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.delegatorNotExist(
-                delegator: delegator,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeBottomDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: inputAmount,
-                minTechStake: minTechStake,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.canStakeTopDelegations(
-                amount: inputAmount,
-                collator: collatorMetadata,
-                locale: selectedLocale
-            )
-        ]).runValidation { [weak self] in
-            guard
-                let collator = self?.collatorDisplayAddress,
-                let amount = inputAmount else {
-                return
-            }
-
-            self?.wireframe.showConfirmation(
-                from: self?.view,
-                collator: collator,
-                amount: amount
-            )
+        if let stakingAmount = existingStakeInPlank() {
+            stakeMore(above: stakingAmount)
+        } else {
+            startStaking()
         }
     }
 }
@@ -348,6 +415,30 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
         self.delegator = delegator
+
+        provideCollatorViewModel()
+    }
+
+    func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?) {
+        delegationIdentities = identities
+
+        if
+            let collatorAddress = collatorDisplayAddress?.address,
+            let collatorId = try? collatorAddress.toAccountId() {
+            let displayName = identities?[collatorId]?.displayName ?? collatorDisplayAddress?.username
+
+            collatorDisplayAddress = DisplayAddress(address: collatorAddress, username: displayName ?? "")
+        }
+
+        provideCollatorViewModel()
+    }
+
+    func didReceiveMinDelegationAmount(_ amount: BigUInt) {
+        minDelegationAmount = amount
+    }
+
+    func didReceiveMaxDelegations(_ maxDelegations: UInt32) {
+        self.maxDelegations = maxDelegations
     }
 
     func didReceiveError(_ error: Error) {
@@ -359,24 +450,24 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
 
 extension ParaStkStakeSetupPresenter: ParaStkSelectCollatorsDelegate {
     func didSelect(collator: CollatorSelectionInfo) {
-        guard
-            let newAddress = try? collator.accountId.toAddress(using: chainAsset.chain.chainFormat),
-            collatorDisplayAddress?.address != newAddress else {
+        changeCollator(with: collator.accountId, name: collator.identity?.displayName)
+    }
+}
+
+extension ParaStkStakeSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard let delegations = context as? [ParachainStaking.Bond] else {
             return
         }
 
-        collatorDisplayAddress = DisplayAddress(
-            address: newAddress,
-            username: collator.identity?.displayName ?? ""
-        )
+        let collatorId = delegations[index].owner
+        let displayName = delegationIdentities?[collatorId]?.displayName
 
-        collatorMetadata = nil
+        changeCollator(with: collatorId, name: displayName)
+    }
 
-        provideCollatorViewModel()
-        provideMinStakeViewModel()
-        provideRewardsViewModel()
-
-        interactor.applyCollator(with: collator.accountId)
+    func modalPickerDidSelectAction(context _: AnyObject?) {
+        wireframe.showCollatorSelection(from: view, delegate: self)
     }
 }
 

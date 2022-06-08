@@ -37,4 +37,20 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
 
         view?.controller.present(picker, animated: true, completion: nil)
     }
+
+    func showStakeMore(
+        from view: ParaStkYourCollatorsViewProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    ) {
+        guard let stakeView = ParaStkStakeSetupViewFactory.createView(
+            with: state,
+            initialDelegator: initialDelegator,
+            delegationIdentities: delegationIdentities
+        ) else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(stakeView.controller, animated: true)
+    }
 }

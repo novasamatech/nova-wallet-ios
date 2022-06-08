@@ -27,3 +27,13 @@ struct CollatorSelectionInfo {
         totalStake > ownStake ? totalStake - ownStake : 0
     }
 }
+
+extension Array where Self.Element == CollatorSelectionInfo {
+    func identitiesDict() -> [AccountId: AccountIdentity] {
+        reduce(into: [AccountId: AccountIdentity]()) { result, item in
+            if let identity = item.identity {
+                result[item.accountId] = identity
+            }
+        }
+    }
+}

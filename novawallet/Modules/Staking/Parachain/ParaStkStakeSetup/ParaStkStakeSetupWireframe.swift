@@ -10,12 +10,14 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     func showConfirmation(
         from view: ParaStkStakeSetupViewProtocol?,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
     ) {
         guard let confirmView = ParaStkStakeConfirmViewFactory.createView(
             for: state,
             collator: collator,
-            amount: amount
+            amount: amount,
+            initialDelegator: initialDelegator
         ) else {
             return
         }
@@ -38,5 +40,24 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
         }
 
         view?.controller.navigationController?.pushViewController(collatorsView.controller, animated: true)
+    }
+
+    func showDelegationSelection(
+        from view: ParaStkStakeSetupViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
+    ) {
+        guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
+            viewModels,
+            selectedIndex: selectedIndex,
+            delegate: delegate,
+            context: context
+        ) else {
+            return
+        }
+
+        view?.controller.present(infoVew, animated: true, completion: nil)
     }
 }

@@ -18,6 +18,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     let connection: JSONRPCEngine
     let runtimeProvider: RuntimeCodingServiceProtocol
     let stakingLocalSubscriptionFactory: ParachainStakingLocalSubscriptionFactoryProtocol
+    let identityOperationFactory: IdentityOperationFactoryProtocol
     let operationQueue: OperationQueue
 
     private var balanceProvider: StreamableProvider<AssetBalance>?
@@ -40,7 +41,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         connection: JSONRPCEngine,
         runtimeProvider: RuntimeCodingServiceProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
-        identityOperationFactory _: IdentityOperationFactoryProtocol,
+        identityOperationFactory: IdentityOperationFactoryProtocol,
         operationQueue: OperationQueue
     ) {
         self.chainAsset = chainAsset
@@ -55,6 +56,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         self.connection = connection
         self.runtimeProvider = runtimeProvider
         self.repositoryFactory = repositoryFactory
+        self.identityOperationFactory = identityOperationFactory
         self.operationQueue = operationQueue
     }
 
@@ -152,6 +154,63 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
             }
         }
     }
+
+    private func provideMinDelegationAmount() {
+        fetchConstant(
+            for: ParachainStaking.minDelegation,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minDelegation):
+                self?.presenter?.didReceiveMinDelegationAmount(minDelegation)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideMaxDelegationsPerDelegator() {
+        fetchConstant(
+            for: ParachainStaking.maxDelegations,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            switch result {
+            case let .success(maxDelegations):
+                self?.presenter?.didReceiveMaxDelegations(maxDelegations)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideIdentities(for delegations: [AccountId]) {
+        let wrapper = identityOperationFactory.createIdentityWrapper(
+            for: { delegations },
+            engine: connection,
+            runtimeService: runtimeProvider,
+            chainFormat: chainAsset.chain.chainFormat
+        )
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                do {
+                    let identities = try wrapper.targetOperation.extractNoCancellableResultData()
+                    let identitiesByAccountId = try identities.reduce(
+                        into: [AccountId: AccountIdentity]()
+                    ) { result, keyValue in
+                        let accountId = try keyValue.key.toAccountId()
+                        result[accountId] = keyValue.value
+                    }
+
+                    self?.presenter?.didReceiveDelegationIdentities(identitiesByAccountId)
+                } catch {}
+            }
+        }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
 }
 
 extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol {
@@ -164,6 +223,8 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         feeProxy.delegate = self
 
         provideMinTechStake()
+        provideMinDelegationAmount()
+        provideMaxDelegationsPerDelegator()
 
         presenter?.didCompleteSetup()
     }
@@ -172,25 +233,11 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         subscribeRemoteCollator(for: accountId)
     }
 
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId?,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    ) {
-        let candidate = collator ?? selectedAccount.chainAccount.accountId
-        let call = ParachainStaking.DelegateCall(
-            candidate: candidate,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
+    func estimateFee(with callWrapper: DelegationCallWrapper) {
+        let identifier = callWrapper.extrinsicId()
 
-        feeProxy.estimateFee(
-            using: extrinsicService,
-            reuseIdentifier: call.extrinsicIdentifier
-        ) { builder in
-            try builder.adding(call: call.runtimeCall)
+        feeProxy.estimateFee(using: extrinsicService, reuseIdentifier: identifier) { builder in
+            try callWrapper.accept(builder: builder)
         }
     }
 }
@@ -237,6 +284,10 @@ extension ParaStkStakeSetupInteractor: ParastakingLocalStorageSubscriber, Parast
         switch result {
         case let .success(delegator):
             presenter?.didReceiveDelegator(delegator)
+
+            if let collators = delegator?.collators() {
+                provideIdentities(for: collators)
+            }
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

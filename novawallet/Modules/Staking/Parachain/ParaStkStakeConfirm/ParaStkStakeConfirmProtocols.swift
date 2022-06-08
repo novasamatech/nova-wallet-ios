@@ -20,19 +20,9 @@ protocol ParaStkStakeConfirmPresenterProtocol: AnyObject {
 protocol ParaStkStakeConfirmInteractorInputProtocol: AnyObject {
     func setup()
 
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    )
+    func estimateFee(with callWrapper: DelegationCallWrapper)
 
-    func confirm(
-        _ amount: BigUInt,
-        collator: AccountId,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    )
+    func confirm(with callWrapper: DelegationCallWrapper)
 }
 
 protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
@@ -41,6 +31,8 @@ protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
     func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveMinTechStake(_ minStake: BigUInt)
+    func didReceiveMinDelegationAmount(_ amount: BigUInt)
+    func didReceiveMaxDelegations(_ maxDelegations: UInt32)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveStakingDuration(_ duration: ParachainStakingDuration)
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>)
