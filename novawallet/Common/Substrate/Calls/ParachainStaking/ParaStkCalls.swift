@@ -53,6 +53,32 @@ extension ParachainStaking {
             RuntimeCall(moduleName: "ParachainStaking", callName: "schedule_revoke_delegation", args: self)
         }
     }
+
+    struct ExecuteDelegatorRequest: Codable {
+        enum CodingKeys: String, CodingKey {
+            case delegator
+            case candidate
+        }
+
+        @BytesCodable var delegator: AccountId
+        @BytesCodable var candidate: AccountId
+
+        var runtimeCall: RuntimeCall<ExecuteDelegatorRequest> {
+            RuntimeCall(moduleName: "ParachainStaking", callName: "execute_delegation_request", args: self)
+        }
+    }
+
+    struct CancelDelegatorRequest: Codable {
+        enum CodingKeys: String, CodingKey {
+            case candidate
+        }
+
+        @BytesCodable var candidate: AccountId
+
+        var runtimeCall: RuntimeCall<CancelDelegatorRequest> {
+            RuntimeCall(moduleName: "ParachainStaking", callName: "cancel_delegation_request", args: self)
+        }
+    }
 }
 
 // swiftlint:enable nesting

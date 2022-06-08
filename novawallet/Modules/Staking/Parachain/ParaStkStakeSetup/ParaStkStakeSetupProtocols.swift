@@ -37,6 +37,7 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveMaxDelegations(_ maxDelegations: UInt32)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveError(_ error: Error)
 }
 
