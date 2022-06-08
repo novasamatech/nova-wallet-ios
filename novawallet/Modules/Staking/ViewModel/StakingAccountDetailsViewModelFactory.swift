@@ -13,6 +13,11 @@ protocol ParaStkAccountDetailsViewModelFactoryProtocol {
         identities: [AccountId: AccountIdentity]?,
         disabled: Set<AccountId>
     ) -> [LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>]
+
+    func createUnstakingViewModels(
+        from scheduledRequests: [ParachainStaking.DelegatorScheduledRequest],
+        identities: [AccountId: AccountIdentity]?
+    ) -> [LocalizableResource<AccountDetailsSelectionViewModel>]
 }
 
 final class ParaStkAccountDetailsViewModelFactory {
@@ -30,6 +35,14 @@ final class ParaStkAccountDetailsViewModelFactory {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.chainFormat = chainFormat
         self.assetPrecision = assetPrecision
+    }
+
+    init(chainAsset: ChainAsset) {
+        let assetDisplayInfo = chainAsset.assetDisplayInfo
+
+        balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
+        chainFormat = chainAsset.chain.chainFormat
+        assetPrecision = assetDisplayInfo.assetPrecision
     }
 }
 
@@ -96,6 +109,45 @@ extension ParaStkAccountDetailsViewModelFactory: ParaStkAccountDetailsViewModelF
                 )
 
                 return SelectableViewModel(underlyingViewModel: accountDetails, selectable: selectable)
+            }
+        }
+    }
+
+    func createUnstakingViewModels(
+        from scheduledRequests: [ParachainStaking.DelegatorScheduledRequest],
+        identities: [AccountId: AccountIdentity]?
+    ) -> [LocalizableResource<AccountDetailsSelectionViewModel>] {
+        scheduledRequests.map { scheduledRequest in
+            let addressViewModel: DisplayAddressViewModel
+            let collatorId = scheduledRequest.collatorId
+            let address = try? collatorId.toAddress(using: chainFormat)
+
+            if let name = identities?[collatorId]?.displayName {
+                let displayAddress = DisplayAddress(address: address ?? "", username: name)
+                addressViewModel = displayAddressFactory.createViewModel(from: displayAddress)
+            } else {
+                addressViewModel = displayAddressFactory.createViewModel(from: address ?? "")
+            }
+
+            let amountDecimal = Decimal.fromSubstrateAmount(
+                scheduledRequest.unstakingAmount,
+                precision: assetPrecision
+            ) ?? 0
+
+            let localizedAmountString = balanceViewModelFactory.amountFromValue(amountDecimal)
+
+            return LocalizableResource { locale in
+                let detailsTitle = R.string.localizable.commonUnstakingPrefix(preferredLanguages: locale.rLanguages)
+                let detailsSubtitle = localizedAmountString.value(for: locale)
+
+                let details = TitleWithSubtitleViewModel(title: detailsTitle, subtitle: detailsSubtitle)
+
+                let accountDetails = AccountDetailsSelectionViewModel(
+                    displayAddress: addressViewModel,
+                    details: details
+                )
+
+                return accountDetails
             }
         }
     }

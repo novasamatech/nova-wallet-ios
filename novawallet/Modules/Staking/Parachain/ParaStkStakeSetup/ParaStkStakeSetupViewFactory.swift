@@ -6,6 +6,7 @@ struct ParaStkStakeSetupViewFactory {
     static func createView(
         with state: ParachainStakingSharedState,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     ) -> ParaStkStakeSetupViewProtocol? {
         guard
@@ -39,6 +40,7 @@ struct ParaStkStakeSetupViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             accountDetailsViewModelFactory: accountDetailsFactory,
             initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities,
             localizationManager: localizationManager,
             logger: Logger.shared

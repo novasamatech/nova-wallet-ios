@@ -195,6 +195,31 @@ extension ParachainStaking.ValidatorFactory {
         })
     }
 
+    func notRevokingWhileStakingMore(
+        collator: AccountId?,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantStakeMoreWhileRevoking(view, locale: locale)
+
+        }, preservesCondition: {
+            guard let scheduledRequests = scheduledRequests else {
+                return true
+            }
+
+            guard let collator = collator else {
+                return false
+            }
+
+            return !scheduledRequests.contains { $0.collatorId == collator && $0.isRevoke }
+        })
+    }
+
     func canUnstake(
         amount: Decimal?,
         staked: BigUInt?,
@@ -217,10 +242,11 @@ extension ParachainStaking.ValidatorFactory {
             self?.presentable.presentUnstakingAmountTooHigh(view, locale: locale)
 
         }, preservesCondition: {
-            guard
-                let collator = collator,
-                let scheduledRequests = scheduledRequests,
-                let staked = staked else {
+            guard let scheduledRequests = scheduledRequests else {
+                return true
+            }
+
+            guard let collator = collator, let staked = staked else {
                 return false
             }
 
@@ -280,7 +306,7 @@ extension ParachainStaking.ValidatorFactory {
                 amountAfterUnstaking < lowestAmount &&
                 amountAfterUnstaking >= atLeastAtStake
 
-            return !(collator.topCapacity.isFull && becomeOutTopStakers)
+            return !(collator.topCapacity.isFull && becomeOutTopStakers && !collator.bottomCapacity.isEmpty)
         })
     }
 
@@ -352,6 +378,47 @@ extension ParachainStaking.ValidatorFactory {
             }
 
             return amount > 0 && !collators.isEmpty
+        })
+    }
+
+    func canRebond(
+        collator: AccountId,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantRebond(view, locale: locale)
+
+        }, preservesCondition: {
+            if scheduledRequests?.first(where: { $0.collatorId == collator }) != nil {
+                return true
+            } else {
+                return false
+            }
+        })
+    }
+
+    func isActiveCollator(
+        for metadata: ParachainStaking.CandidateMetadata?,
+        locale: Locale
+    ) -> DataValidating {
+        ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view else {
+                return
+            }
+
+            self?.presentable.presentCantStakeInactiveCollator(view, locale: locale)
+
+        }, preservesCondition: {
+            if let metadata = metadata, metadata.isActive {
+                return true
+            } else {
+                return false
+            }
         })
     }
 }

@@ -36,6 +36,7 @@ protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentab
     func showStakeMore(
         from view: ParaStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     )
 
