@@ -7,7 +7,8 @@ struct ParaStkStakeConfirmViewFactory {
     static func createView(
         for state: ParachainStakingSharedState,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
     ) -> ParaStkStakeConfirmViewProtocol? {
         guard
             let chainAsset = state.settings.value,
@@ -42,12 +43,26 @@ struct ParaStkStakeConfirmViewFactory {
             balanceViewModelFactory: balanceViewModelFactory,
             collator: collator,
             amount: amount,
+            initialDelegator: initialDelegator,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
+        let localizableTitle: LocalizableResource<String>
+
+        if initialDelegator != nil {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingStartTitle(preferredLanguages: locale.rLanguages)
+            }
+        }
+
         let view = ParaStkStakeConfirmViewController(
             presenter: presenter,
+            localizableTitle: localizableTitle,
             localizationManager: localizationManager
         )
 

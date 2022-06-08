@@ -771,7 +771,7 @@
 "parachain.staking.cant.stake.message" = "Your stake less than minimal value (%@).";
 "common.no.rewards.title" = "You will not receive rewards";
 "parachain.staking.collator.greater.minstk.message" = "Your stake must be greater than the minimum stake (%@) for this collator.";
-"parachain.staking.full.title" = "Your staking is full";
+"parachain.staking.full.title" = "Your can't select a new collator";
 "parachain.staking.full.message" = "You have reached maximum number of collators (%@)";
 "parachain.staking.hint.rewards.format" = "Tokens in stake produce rewards each round (%@)";
 "common.rewards.column" = "Rewards:";
@@ -798,3 +798,5 @@
 "parastk.reward.info.avg" = "Average APR";
 "common.chain.account.missing.title.format" = "%@ account is missing";
 "common.chain.account.missing.message.format" = "You should add %@ account to the wallet in order to start staking";
+"common.new.collator" = "New collator";
+"parastk.hint.reward.bond.more" = "You will get increased rewards starting from next round";

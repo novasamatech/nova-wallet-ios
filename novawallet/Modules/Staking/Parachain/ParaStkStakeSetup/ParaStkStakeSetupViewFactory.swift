@@ -3,7 +3,11 @@ import SoraFoundation
 import SubstrateSdk
 
 struct ParaStkStakeSetupViewFactory {
-    static func createView(with state: ParachainStakingSharedState) -> ParaStkStakeSetupViewProtocol? {
+    static func createView(
+        with state: ParachainStakingSharedState,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    ) -> ParaStkStakeSetupViewProtocol? {
         guard
             let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state) else {
@@ -22,6 +26,12 @@ struct ParaStkStakeSetupViewFactory {
             assetDisplayInfo: assetDisplayInfo
         )
 
+        let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory,
+            chainFormat: chainAsset.chain.chainFormat,
+            assetPrecision: assetDisplayInfo.assetPrecision
+        )
+
         let localizationManager = LocalizationManager.shared
         let presenter = ParaStkStakeSetupPresenter(
             interactor: interactor,
@@ -29,12 +39,28 @@ struct ParaStkStakeSetupViewFactory {
             dataValidatingFactory: dataValidationFactory,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
+            accountDetailsViewModelFactory: accountDetailsFactory,
+            initialDelegator: initialDelegator,
+            delegationIdentities: delegationIdentities,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
+        let localizableTitle: LocalizableResource<String>
+
+        if initialDelegator != nil {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            localizableTitle = LocalizableResource { locale in
+                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
+            }
+        }
+
         let view = ParaStkStakeSetupViewController(
             presenter: presenter,
+            localizableTitle: localizableTitle,
             localizationManager: localizationManager
         )
 

@@ -16,6 +16,10 @@ extension ParachainStaking {
         ConstantCodingPath(moduleName: "ParachainStaking", constantName: "MinDelegation")
     }
 
+    static var maxDelegations: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "ParachainStaking", constantName: "MaxDelegationsPerDelegator")
+    }
+
     static var delegationBondLessDelay: ConstantCodingPath {
         ConstantCodingPath(
             moduleName: "ParachainStaking",
