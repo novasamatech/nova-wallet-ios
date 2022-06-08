@@ -25,6 +25,7 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var collatorSubscription: CallbackStorageSubscription<ParachainStaking.CandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
+    private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
 
     private lazy var localKeyFactory = LocalStorageKeyFactory()
 
@@ -97,6 +98,13 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
         delegatorProvider = subscribeToDelegatorState(
             for: chainAsset.chain.chainId,
             accountId: selectedAccount.chainAccount.accountId
+        )
+    }
+
+    private func subscribeScheduledRequests() {
+        scheduledRequestsProvider = subscribeToScheduledRequests(
+            for: chainAsset.chain.chainId,
+            delegatorId: selectedAccount.chainAccount.accountId
         )
     }
 
@@ -217,6 +225,7 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
     func setup() {
         subscribeAssetBalanceAndPrice()
         subscribeDelegator()
+        subscribeScheduledRequests()
 
         provideRewardCalculator()
 
@@ -225,8 +234,6 @@ extension ParaStkStakeSetupInteractor: ParaStkStakeSetupInteractorInputProtocol 
         provideMinTechStake()
         provideMinDelegationAmount()
         provideMaxDelegationsPerDelegator()
-
-        presenter?.didCompleteSetup()
     }
 
     func applyCollator(with accountId: AccountId) {
@@ -288,6 +295,19 @@ extension ParaStkStakeSetupInteractor: ParastakingLocalStorageSubscriber, Parast
             if let collators = delegator?.collators() {
                 provideIdentities(for: collators)
             }
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
+    func handleParastakingScheduledRequests(
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
+        for _: ChainModel.Id,
+        delegatorId _: AccountId
+    ) {
+        switch result {
+        case let .success(scheduledRequests):
+            presenter?.didReceiveScheduledRequests(scheduledRequests)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

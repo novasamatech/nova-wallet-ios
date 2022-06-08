@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
     let state: ParachainStakingSharedState
@@ -49,8 +50,16 @@ final class ParaStkStakeSetupWireframe: ParaStkStakeSetupWireframeProtocol {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     ) {
+        let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
+            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
+            let icon = R.image.iconBlueAdd()
+
+            return IconWithTitleViewModel(icon: icon, title: title)
+        }
+
         guard let infoVew = ModalPickerFactory.createCollatorsPickingList(
             viewModels,
+            actionViewModel: actionViewModel,
             selectedIndex: selectedIndex,
             delegate: delegate,
             context: context
