@@ -1660,6 +1660,7 @@
 		84F98D9625E3E2B10040418E /* InMemoryDataProviderRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */; };
 		84F9D4CF2664CCA500F7AAD2 /* CommonInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F9D4CE2664CCA500F7AAD2 /* CommonInputView.swift */; };
 		84FA7C1C284F8EB400B648E1 /* PendingExtrinsicInteracting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA7C1B284F8EB400B648E1 /* PendingExtrinsicInteracting.swift */; };
+		84FA7C1E284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA7C1D284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift */; };
 		84FA835A265CE5BE00FDF727 /* TitleMultiValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FA8359265CE5BE00FDF727 /* TitleMultiValueView.swift */; };
 		84FAB0632542C8D600319F74 /* ContactItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0622542C8D600319F74 /* ContactItem.swift */; };
 		84FAB0652542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */; };
@@ -3927,6 +3928,7 @@
 		84F98D9525E3E2B10040418E /* InMemoryDataProviderRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDataProviderRepository.swift; sourceTree = "<group>"; };
 		84F9D4CE2664CCA500F7AAD2 /* CommonInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonInputView.swift; sourceTree = "<group>"; };
 		84FA7C1B284F8EB400B648E1 /* PendingExtrinsicInteracting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingExtrinsicInteracting.swift; sourceTree = "<group>"; };
+		84FA7C1D284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallbackBatchStorageSubscription.swift; sourceTree = "<group>"; };
 		84FA8359265CE5BE00FDF727 /* TitleMultiValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleMultiValueView.swift; sourceTree = "<group>"; };
 		84FAB0622542C8D600319F74 /* ContactItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactItem.swift; sourceTree = "<group>"; };
 		84FAB0642542CA4200319F74 /* CDContactItem+CoreDataDecodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDContactItem+CoreDataDecodable.swift"; sourceTree = "<group>"; };
@@ -6828,6 +6830,7 @@
 				84B73AD7279C2EDA0071AE16 /* AssetAccountSubscription.swift */,
 				84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */,
 				84C3420C283192D000156569 /* CallbackStorageSubscription.swift */,
+				84FA7C1D284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift */,
 			);
 			path = StorageSubscription;
 			sourceTree = "<group>";
@@ -11607,6 +11610,7 @@
 				844CB56E26F9CB1500396E13 /* CrowdloanLocalStorageSubscriber.swift in Sources */,
 				8401AEC32642A71D000B03E3 /* StakingRebondConfirmationViewController.swift in Sources */,
 				841AAC2D26F7315300F0A25E /* CrowdloanRemoteSubscriptionService.swift in Sources */,
+				84FA7C1E284FED0A00B648E1 /* CallbackBatchStorageSubscription.swift in Sources */,
 				8406B5AF26FBE7EF00635B61 /* SelectionIconDetailsTableViewCell.swift in Sources */,
 				849014BE24AA87E4008F705E /* PinSetupPresenter.swift in Sources */,
 				849ABE63262785F200011A2A /* ControllerMapper.swift in Sources */,

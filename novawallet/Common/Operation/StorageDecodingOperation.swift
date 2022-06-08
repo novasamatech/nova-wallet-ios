@@ -48,6 +48,43 @@ extension StorageModifierHandling {
     }
 }
 
+class StorageJSONDecodingOperation: BaseOperation<JSON>, StorageDecodable {
+    var data: Data?
+    var codingFactory: RuntimeCoderFactoryProtocol?
+
+    let path: StorageCodingPath
+
+    init(path: StorageCodingPath, data: Data? = nil) {
+        self.path = path
+        self.data = data
+
+        super.init()
+    }
+
+    override func main() {
+        super.main()
+
+        if isCancelled {
+            return
+        }
+
+        if result != nil {
+            return
+        }
+
+        do {
+            guard let data = data, let factory = codingFactory else {
+                throw StorageDecodingOperationError.missingRequiredParams
+            }
+
+            let item = try decode(data: data, path: path, codingFactory: factory)
+            result = .success(item)
+        } catch {
+            result = .failure(error)
+        }
+    }
+}
+
 final class StorageDecodingOperation<T: Decodable>: BaseOperation<T>, StorageDecodable {
     var data: Data?
     var codingFactory: RuntimeCoderFactoryProtocol?

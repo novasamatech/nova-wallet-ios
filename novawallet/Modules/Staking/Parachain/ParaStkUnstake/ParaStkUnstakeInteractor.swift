@@ -77,7 +77,6 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
 
             collatorSubscription = CallbackStorageSubscription(
                 request: request,
-                storagePath: ParachainStaking.candidateMetadataPath,
                 connection: connection,
                 runtimeService: runtimeProvider,
                 repository: repository,

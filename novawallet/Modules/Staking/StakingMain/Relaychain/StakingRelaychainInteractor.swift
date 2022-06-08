@@ -206,8 +206,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
         let operation = calculatorService.fetchCalculatorOperation()
 
-        operation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.rewardCalculatorCancellable === operation else {
                     return
                 }
@@ -233,8 +233,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
         let operation = eraValidatorService.fetchInfoOperation()
 
-        operation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.eraStakersInfoCancellable === operation else {
                     return
                 }
@@ -275,8 +275,8 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
             runtimeService: runtimeService
         )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.networkInfoCancellable === wrapper else {
                     return
                 }
