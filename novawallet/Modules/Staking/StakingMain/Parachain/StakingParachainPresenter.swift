@@ -53,6 +53,57 @@ final class StakingParachainPresenter {
         let stateViewModel = stateViewModelFactory.createViewModel(from: stateMachine.state)
         view?.didReceiveStakingState(viewModel: stateViewModel)
     }
+
+    private func handleStakeMoreAction() {
+        guard let delegator = stateMachine.viewState(
+            using: { (state: ParachainStaking.DelegatorState) in state }
+        ) else {
+            return
+        }
+
+        let identities = delegator.delegations?.identitiesDict()
+
+        wireframe.showStakeTokens(
+            from: view,
+            initialDelegator: delegator.delegatorState,
+            initialScheduledRequests: delegator.scheduledRequests,
+            delegationIdentities: identities
+        )
+    }
+
+    private func handleUnstakeAction() {
+        guard
+            let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ) else {
+            return
+        }
+
+        let disabledCollators = delegator.scheduledRequests?.map(\.collatorId) ?? []
+        let disabledSet = Set(disabledCollators)
+
+        if delegator.delegatorState.delegations.contains(where: { !disabledSet.contains($0.owner) }) {
+            wireframe.showUnstakeTokens(
+                from: view,
+                initialDelegator: delegator.delegatorState,
+                initialScheduledRequests: delegator.scheduledRequests,
+                delegationIdentities: delegator.delegations?.identitiesDict()
+            )
+        } else {
+            guard let view = view else {
+                return
+            }
+
+            wireframe.presentNoUnstakingOptions(view, locale: view.selectedLocale)
+        }
+    }
+
+    private func presentRebond(for collatorId: AccountId, state: ParachainStaking.DelegatorState) {
+        let identities = state.delegations?.identitiesDict()
+        let identity = identities?[collatorId]
+
+        wireframe.showRebondTokens(from: view, collatorId: collatorId, collatorIdentity: identity)
+    }
 }
 
 extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
@@ -66,7 +117,12 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performMainAction() {
-        wireframe.showStakeTokens(from: view, initialDelegator: nil, delegationIdentities: nil)
+        wireframe.showStakeTokens(
+            from: view,
+            initialDelegator: nil,
+            initialScheduledRequests: nil,
+            delegationIdentities: nil
+        )
     }
 
     func performRewardInfoAction() {
@@ -89,32 +145,58 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
 
     func performSetupValidatorsForBondedAction() {}
 
-    func performStakeMoreAction() {}
+    func performStakeMoreAction() {
+        handleStakeMoreAction()
+    }
 
-    func performRedeemAction() {}
+    func performRedeemAction() {
+        wireframe.showRedeemTokens(from: view)
+    }
 
-    func performRebondAction() {}
+    func performRebondAction() {
+        guard
+            let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ),
+            let chainAsset = delegator.commonData.chainAsset else {
+            return
+        }
+
+        let delegationRequests = delegator.scheduledRequests ?? []
+
+        guard let firstCollator = delegationRequests.first?.collatorId else {
+            return
+        }
+
+        if delegationRequests.count > 1 {
+            let identities = delegator.delegations?.identitiesDict()
+
+            let accountDetailsViewModelFactory = ParaStkAccountDetailsViewModelFactory(chainAsset: chainAsset)
+
+            let viewModels = accountDetailsViewModelFactory.createUnstakingViewModels(
+                from: delegationRequests,
+                identities: identities
+            )
+
+            wireframe.showUnstakingCollatorSelection(
+                from: view,
+                delegate: self,
+                viewModels: viewModels,
+                context: delegationRequests as NSArray
+            )
+        } else {
+            presentRebond(for: firstCollator, state: delegator)
+        }
+    }
 
     func performAnalyticsAction() {}
 
     func performManageAction(_ action: StakingManageOption) {
         switch action {
         case .stakeMore:
-            guard let delegator = stateMachine.viewState(
-                using: { (state: ParachainStaking.DelegatorState) in state }
-            ) else {
-                return
-            }
-
-            let identities = delegator.delegations?.identitiesDict()
-
-            wireframe.showStakeTokens(
-                from: view,
-                initialDelegator: delegator.delegatorState,
-                delegationIdentities: identities
-            )
+            handleStakeMoreAction()
         case .unstake:
-            break
+            handleUnstakeAction()
         case .setupValidators, .changeValidators, .yourValidator:
             wireframe.showYourCollators(from: view)
         default:
@@ -160,7 +242,7 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
     }
 
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?) {
-        stateMachine.state.process(scheduledRequests: requests)
+        stateMachine.state.process(scheduledRequests: requests ?? [])
     }
 
     func didReceiveDelegations(_ delegations: [CollatorSelectionInfo]) {
@@ -169,6 +251,13 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators) {
         stateMachine.state.process(collatorsInfo: collatorsInfo)
+
+        if let delegator = stateMachine.viewState(
+            using: { (state: ParachainStaking.DelegatorState) in state }
+        ) {
+            let collatorIds = delegator.delegatorState.collators()
+            interactor.fetchDelegations(for: collatorIds)
+        }
     }
 
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol) {
@@ -207,5 +296,26 @@ extension StakingParachainPresenter: StakingParachainInteractorOutputProtocol {
 extension StakingParachainPresenter: ParaStkStateMachineDelegate {
     func stateMachineDidChangeState(_: ParaStkStateMachineProtocol) {
         provideStateViewModel()
+    }
+}
+
+extension StakingParachainPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        guard
+            let delegations = context as? [ParachainStaking.DelegatorScheduledRequest],
+            let delegator = stateMachine.viewState(
+                using: { (state: ParachainStaking.DelegatorState) in state }
+            ) else {
+            return
+        }
+
+        let collatorId = delegations[index].collatorId
+
+        // make sure the tokes still can be rebonded after selection
+        guard delegator.scheduledRequests?.first(where: { $0.collatorId == collatorId }) != nil else {
+            return
+        }
+
+        presentRebond(for: collatorId, state: delegator)
     }
 }

@@ -15,17 +15,15 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
         for stakingAssetSettings: StakingAssetSettings,
         view: StakingMainViewProtocol
     ) -> StakingMainChildPresenterProtocol? {
-        guard
-            let stakingTypeString = stakingAssetSettings.value?.asset.staking,
-            let stakingType = StakingType(rawValue: stakingTypeString) else {
-            return nil
-        }
+        let stakingType = StakingType(rawType: stakingAssetSettings.value?.asset.staking)
 
         switch stakingType {
         case .relaychain:
             return createRelaychainPresenter(for: stakingAssetSettings, view: view)
         case .parachain:
             return createParachainPresenter(for: stakingAssetSettings, view: view)
+        case .unsupported:
+            return nil
         }
     }
 }

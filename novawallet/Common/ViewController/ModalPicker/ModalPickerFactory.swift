@@ -282,6 +282,7 @@ enum ModalPickerFactory {
 
     static func createCollatorsPickingList(
         _ items: [AccountDetailsPickerViewModel],
+        actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
         selectedIndex: Int,
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
@@ -310,21 +311,63 @@ enum ModalPickerFactory {
         viewController.footerHeight = 0.0
         viewController.headerBorderType = []
 
-        let actionViewModel: LocalizableResource<IconWithTitleViewModel> = LocalizableResource { locale in
-            let title = R.string.localizable.commonNewCollator(preferredLanguages: locale.rLanguages)
-            let icon = R.image.iconBlueAdd()
-
-            return IconWithTitleViewModel(icon: icon, title: title)
+        if let actionViewModel = actionViewModel {
+            viewController.actionType = .iconTitle(viewModel: actionViewModel)
+        } else {
+            viewController.actionType = .none
         }
-
-        viewController.actionType = .iconTitle(viewModel: actionViewModel)
 
         viewController.viewModels = items
 
         let factory = ModalSheetPresentationFactory(configuration: .fearless)
         viewController.modalTransitioningFactory = factory
 
-        let height = viewController.headerHeight + CGFloat(items.count + 1) * viewController.cellHeight +
+        let itemsCount = actionViewModel != nil ? items.count + 1 : items.count
+        let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    static func createCollatorsSelectionList(
+        _ items: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        delegate: ModalPickerViewControllerDelegate?,
+        title: LocalizableResource<String>,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<
+            AccountDetailsNavigationCell,
+            AccountDetailsSelectionViewModel
+        >
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 56.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+        viewController.selectedIndex = NSNotFound
+
+        viewController.actionType = .none
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
             viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 

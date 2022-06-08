@@ -174,7 +174,7 @@ extension ParaStkStateViewModelFactory: ParaStkStateVisitorProtocol {
             return
         }
 
-        let delegationsDict = state.delegatorState.delegationsDic()
+        let delegationsDict = state.delegatorState.delegationsDict()
         let collatorsStatuses: [ParaStkDelegationStatus]? = state.delegations?.compactMap { delegation in
             guard let stake = delegationsDict[delegation.accountId]?.amount else {
                 return nil

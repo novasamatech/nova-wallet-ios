@@ -17,9 +17,10 @@ protocol ParaStkYourCollatorsInteractorInputProtocol: AnyObject {
 protocol ParaStkYourCollatorsInteractorOutputProtocol: AnyObject {
     func didReceiveCollators(result: Result<[CollatorSelectionInfo], Error>)
     func didReceiveDelegator(result: Result<ParachainStaking.Delegator?, Error>)
+    func didReceiveScheduledRequests(result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>)
 }
 
-protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {
+protocol ParaStkYourCollatorsWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable {
     func showCollatorInfo(
         from view: ParaStkYourCollatorsViewProtocol?,
         collatorInfo: CollatorSelectionInfo
@@ -35,6 +36,14 @@ protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {
     func showStakeMore(
         from view: ParaStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    )
+
+    func showUnstake(
+        from view: ParaStkYourCollatorsViewProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     )
 }
