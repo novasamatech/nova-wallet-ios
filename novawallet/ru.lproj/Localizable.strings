@@ -792,6 +792,7 @@
 "parastk.rebond.hint" = "Возвращенные токены будут учитываться со следующего раунда";
 "parachain.staking.alert.collators.with.no.rewards" = "Один из ваших коллаторов не генерирует награды";
 "parachain.staking.alert.collators.change" = "Один из ваших коллаторов не выбран в текущем раунде";
+"parachain.staking.change.collator" = "Смена коллатора";
 "parastk.manage.collators" = "Управление коллаторами";
 "parastk.pending.revoke.message" = "Вы не можете добавить стейк в коллатора, для которого вы разблокируете все токены.";
 "parastk.cant.bond.more.title" = "Невозможно добавить стейк в выбранного коллатора";
