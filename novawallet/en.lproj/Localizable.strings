@@ -766,7 +766,7 @@
 "parachain.staking.transferrable.rewards" = "Transferrable rewards";
 "parachain.staking.rewards.format" = "%@ / year";
 "parachain.staking.minimum.stake" = "Minimum stake";
-"staking.already.title" = "Already delegating";
+"parachain.staking.delegator.exists.title" = "Already delegating";
 "parachain.staking.delegator.exists.message" = "Your staking has been already setup. Use stake more action to add more tokens";
 "parachain.staking.cant.stake.message" = "Your stake less than minimal value (%@).";
 "common.no.rewards.title" = "You will not receive rewards";
