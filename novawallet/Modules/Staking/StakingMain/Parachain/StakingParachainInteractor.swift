@@ -226,8 +226,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         let operation = calculatorService.fetchCalculatorOperation()
 
-        operation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.rewardCalculatorCancellable === operation else {
                     return
                 }
@@ -255,8 +255,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
 
         let operation = collatorsService.fetchInfoOperation()
 
-        operation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        operation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.collatorsInfoCancellable === operation else {
                     return
                 }
@@ -300,8 +300,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
             runtimeService: runtimeService
         )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.networkInfoCancellable === wrapper else {
                     return
                 }
@@ -341,8 +341,8 @@ final class StakingParachainInteractor: AnyProviderAutoCleaning, AnyCancellableC
             blockTimeEstimationService: blockTimeService
         )
 
-        wrapper.targetOperation.completionBlock = {
-            DispatchQueue.main.async { [weak self] in
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
                 guard self?.durationCancellable === wrapper else {
                     return
                 }
