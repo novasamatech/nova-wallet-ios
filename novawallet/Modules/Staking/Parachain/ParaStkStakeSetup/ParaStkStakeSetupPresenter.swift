@@ -478,7 +478,9 @@ extension ParaStkStakeSetupPresenter: ModalPickerViewControllerDelegate {
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {
-        wireframe.showCollatorSelection(from: view, delegate: self)
+        DispatchQueue.main.async {
+            self.wireframe.showCollatorSelection(from: self.view, delegate: self)
+        }
     }
 }
 
