@@ -792,6 +792,7 @@
 "parastk.rebond.hint" = "Returned tokens will be counted from the next round";
 "parachain.staking.alert.collators.with.no.rewards" = "One of your collators is not generating rewards";
 "parachain.staking.alert.collators.change" = "One of your collators is not selected in the current round";
+"parachain.staking.change.collator" = "Change collator";
 "parastk.manage.collators" = "Manage collators";
 "parastk.pending.revoke.message" = "You cannot add stake to collator for which you are unstaking all tokens.";
 "parastk.cant.bond.more.title" = "Cannot add stake to this collator";
