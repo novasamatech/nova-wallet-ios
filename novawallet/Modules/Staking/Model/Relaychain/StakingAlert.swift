@@ -4,7 +4,7 @@ import SoraFoundation
 
 enum StakingAlert {
     case bondedSetValidators
-    case nominatorChangeValidators(LocalizableResource<String>)
+    case nominatorChangeValidators(title: LocalizableResource<String>, details: LocalizableResource<String>)
     case nominatorLowStake(LocalizableResource<String>)
     case nominatorAllOversubscribed
     case redeemUnbonded(LocalizableResource<String>)
@@ -34,7 +34,9 @@ extension StakingAlert {
 
     func title(for locale: Locale) -> String {
         switch self {
-        case .nominatorChangeValidators, .nominatorAllOversubscribed:
+        case let .nominatorChangeValidators(localizedTitle, _):
+            return localizedTitle.value(for: locale)
+        case .nominatorAllOversubscribed:
             return R.string.localizable.stakingChangeYourValidators(preferredLanguages: locale.rLanguages)
         case .nominatorLowStake:
             return R.string.localizable.stakingBondMoreTokens(preferredLanguages: locale.rLanguages)
@@ -49,7 +51,7 @@ extension StakingAlert {
 
     func description(for locale: Locale) -> String {
         switch self {
-        case let .nominatorChangeValidators(localizedString):
+        case let .nominatorChangeValidators(_, localizedString):
             return localizedString.value(for: locale)
         case .nominatorAllOversubscribed:
             return R.string.localizable
