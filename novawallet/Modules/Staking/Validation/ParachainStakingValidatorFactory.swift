@@ -208,7 +208,11 @@ extension ParachainStaking.ValidatorFactory {
             self?.presentable.presentCantStakeMoreWhileRevoking(view, locale: locale)
 
         }, preservesCondition: {
-            guard let collator = collator, let scheduledRequests = scheduledRequests else {
+            guard let scheduledRequests = scheduledRequests else {
+                return true
+            }
+
+            guard let collator = collator else {
                 return false
             }
 
@@ -238,10 +242,11 @@ extension ParachainStaking.ValidatorFactory {
             self?.presentable.presentUnstakingAmountTooHigh(view, locale: locale)
 
         }, preservesCondition: {
-            guard
-                let collator = collator,
-                let scheduledRequests = scheduledRequests,
-                let staked = staked else {
+            guard let scheduledRequests = scheduledRequests else {
+                return true
+            }
+
+            guard let collator = collator, let staked = staked else {
                 return false
             }
 
