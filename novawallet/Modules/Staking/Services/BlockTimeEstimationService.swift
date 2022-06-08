@@ -121,7 +121,7 @@ final class BlockTimeEstimationService {
         }
     }
 
-    private func readStartBlock() {
+    private func readStartBlock(for chainId: ChainModel.Id) {
         let modelId = EstimatedBlockTime.storageKey(for: chainId)
         let localQueryOperation = repository.fetchOperation(by: modelId, options: RepositoryFetchOptions())
 
@@ -140,7 +140,7 @@ final class BlockTimeEstimationService {
                 let blockTime = try mapOperation.extractNoCancellableResultData()
                 self?.setupInitialSnapshot(for: blockTime)
             } catch {
-                self?.logger.error("Unexpected error: \(error)")
+                self?.logger.error("\(chainId) Unexpected error: \(error)")
             }
         }
 
@@ -197,7 +197,7 @@ final class BlockTimeEstimationService {
         case let .success(model):
             processBlockNumber(model)
         case let .failure(error):
-            logger.error("Unexpected error: \(error)")
+            logger.error("\(chainId) Unexpected error: \(error)")
         }
     }
 
@@ -250,13 +250,13 @@ final class BlockTimeEstimationService {
             currentTime > prevTime {
             let newBlockTimeElement = currentTime - prevTime
 
-            logger.debug("Block time: \(newBlockTimeElement)")
+            logger.debug("(\(chainId) Block time: \(newBlockTimeElement)")
 
             let blockTime = prevSnapshot.blockTime
             let seqSize = prevSnapshot.seqSize
             let newBlockTime = (blockTime * BlockTime(seqSize) + newBlockTimeElement) / BlockTime(seqSize + 1)
 
-            logger.debug("Cumulative block time: \(newBlockTime)")
+            logger.debug("\(chainId) Cumulative block time: \(newBlockTime)")
 
             snapshot = Snapshot(
                 blockTime: newBlockTime,
@@ -289,7 +289,7 @@ extension BlockTimeEstimationService: BlockTimeEstimationServiceProtocol {
 
             self.isActive = true
 
-            self.readStartBlock()
+            self.readStartBlock(for: self.chainId)
         }
     }
 
