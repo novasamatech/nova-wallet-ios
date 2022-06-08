@@ -64,11 +64,11 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, Impor
             preferredLanguages: languages
         )
 
-        rootView.rewardsView.titleLabel.text = R.string.localizable.parachainStakingTransferrableRewards(
+        rootView.rewardsView.titleLabel.text = R.string.localizable.stakingSetupPayoutTitle(
             preferredLanguages: languages
         )
 
-        rootView.minStakeView.titleLabel.text = R.string.localizable.parachainStakingMinimumStake(
+        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
             preferredLanguages: languages
         )
 

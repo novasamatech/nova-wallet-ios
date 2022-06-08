@@ -71,7 +71,7 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
     func presentStakeAmountTooLow(_ view: ControllerBackedProtocol, minStake: String, locale: Locale?) {
         let title = R.string.localizable.amountTooLow(preferredLanguages: locale?.rLanguages)
 
-        let message = R.string.localizable.parachainStakingCantStakeMessage(
+        let message = R.string.localizable.stakingSetupAmountTooLow(
             minStake,
             preferredLanguages: locale?.rLanguages
         )
