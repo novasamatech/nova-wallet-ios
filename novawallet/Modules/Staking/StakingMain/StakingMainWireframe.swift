@@ -19,7 +19,7 @@ final class StakingMainWireframe: StakingMainWireframeProtocol {
         selectedChainAssetId: ChainAssetId?,
         delegate: AssetSelectionDelegate
     ) {
-        let stakingFilter: AssetSelectionFilter = { _, asset in asset.staking != nil }
+        let stakingFilter: AssetSelectionFilter = { _, asset in StakingType(rawType: asset.staking) != .unsupported }
 
         guard let selectionView = AssetSelectionViewFactory.createView(
             delegate: delegate,

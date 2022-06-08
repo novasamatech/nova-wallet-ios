@@ -5,7 +5,7 @@ import SubstrateSdk
 struct UnstakeCallWrapper {
     enum Action {
         case bondLess(amount: BigUInt)
-        case revoke
+        case revoke(amount: BigUInt)
     }
 
     let collator: AccountId

@@ -1,8 +1,9 @@
 import UIKit
 import SubstrateSdk
 import RobinHood
+import BigInt
 
-final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellableCleaning {
+final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellableCleaning, RuntimeConstantFetching {
     var presenter: ParaStkUnstakeInteractorOutputProtocol? {
         basePresenter as? ParaStkUnstakeInteractorOutputProtocol
     }
@@ -55,7 +56,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         clear(cancellable: &identitiesCancellable)
     }
 
-    override func subscribeCollator(for accountId: AccountId) {
+    private func subscribeCollator(for accountId: AccountId) {
         collatorSubscription = nil
 
         do {
@@ -85,7 +86,7 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
             ) { [weak self] result in
                 switch result {
                 case let .success(collator):
-                    self?.basePresenter?.didReceiveCollator(metadata: collator)
+                    self?.presenter?.didReceiveCollator(metadata: collator)
                 case let .failure(error):
                     self?.basePresenter?.didReceiveError(error)
                 }
@@ -93,6 +94,43 @@ final class ParaStkUnstakeInteractor: ParaStkBaseUnstakeInteractor, AnyCancellab
         } catch {
             basePresenter?.didReceiveError(error)
         }
+    }
+
+    private func provideMinTechStake() {
+        fetchConstant(
+            for: ParachainStaking.minDelegatorStk,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minStake):
+                self?.presenter?.didReceiveMinTechStake(minStake)
+            case let .failure(error):
+                self?.basePresenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideMinDelegationAmount() {
+        fetchConstant(
+            for: ParachainStaking.minDelegation,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minDelegation):
+                self?.presenter?.didReceiveMinDelegationAmount(minDelegation)
+            case let .failure(error):
+                self?.basePresenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    override func setup() {
+        super.setup()
+
+        provideMinTechStake()
+        provideMinDelegationAmount()
     }
 }
 
