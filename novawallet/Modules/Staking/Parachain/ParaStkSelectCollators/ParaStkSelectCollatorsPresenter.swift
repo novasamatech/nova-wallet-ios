@@ -58,7 +58,7 @@ final class ParaStkSelectCollatorsPresenter {
         case .rewards:
             subtitle = R.string.localizable.stakingRewardsTitle(preferredLanguages: languages)
         case .minStake:
-            subtitle = R.string.localizable.parachainStakingMinimumStake(preferredLanguages: languages)
+            subtitle = R.string.localizable.stakingMainMinimumStakeTitle(preferredLanguages: languages)
         case .totalStake:
             subtitle = R.string.localizable.stakingValidatorTotalStake(preferredLanguages: languages)
         case .ownStake:
