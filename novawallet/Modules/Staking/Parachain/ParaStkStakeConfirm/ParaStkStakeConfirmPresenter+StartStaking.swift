@@ -61,6 +61,7 @@ extension ParaStkStakeConfirmPresenter {
                 maxCollatorsAllowed: maxDelegations,
                 locale: selectedLocale
             ),
+            dataValidatingFactory.isActiveCollator(for: collatorMetadata, locale: selectedLocale),
             dataValidatingFactory.canStakeBottomDelegations(
                 amount: inputAmount,
                 collator: collatorMetadata,

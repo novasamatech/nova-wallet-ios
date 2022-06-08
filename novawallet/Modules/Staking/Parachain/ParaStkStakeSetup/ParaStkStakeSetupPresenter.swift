@@ -25,6 +25,7 @@ final class ParaStkStakeSetupPresenter {
     private(set) var collatorMetadata: ParachainStaking.CandidateMetadata?
     private(set) var delegator: ParachainStaking.Delegator?
     private(set) var delegationIdentities: [AccountId: AccountIdentity]?
+    private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
 
     private lazy var aprFormatter = NumberFormatter.positivePercentAPR.localizableResource()
 
@@ -38,6 +39,7 @@ final class ParaStkStakeSetupPresenter {
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         accountDetailsViewModelFactory: ParaStkAccountDetailsViewModelFactoryProtocol,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol
@@ -49,9 +51,18 @@ final class ParaStkStakeSetupPresenter {
         self.balanceViewModelFactory = balanceViewModelFactory
         self.accountDetailsViewModelFactory = accountDetailsViewModelFactory
         delegator = initialDelegator
+        scheduledRequests = initialScheduledRequests
         self.delegationIdentities = delegationIdentities
         self.logger = logger
         self.localizationManager = localizationManager
+    }
+
+    private func createDisabledCollators() -> Set<AccountId> {
+        let disabled = scheduledRequests?
+            .filter { $0.isRevoke }
+            .map(\.collatorId)
+
+        return Set(disabled ?? [])
     }
 
     private func existingStakeInPlank() -> BigUInt? {
@@ -237,8 +248,12 @@ final class ParaStkStakeSetupPresenter {
     }
 
     private func setupInitialCollator() {
+        let disabled = createDisabledCollators()
+
+        let optLastCollator = delegator?.delegations.filter { !disabled.contains($0.owner) }.last?.owner
+
         if
-            let lastCollator = delegator?.delegations.last?.owner,
+            let lastCollator = optLastCollator,
             let address = try? lastCollator.toAddress(using: chainAsset.chain.chainFormat) {
             let name = delegationIdentities?[lastCollator]?.displayName
             collatorDisplayAddress = DisplayAddress(address: address, username: name ?? "")
@@ -287,11 +302,18 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
     func selectCollator() {
         if let delegator = delegator, !delegator.delegations.isEmpty {
             let delegations = Array(delegator.delegations.reversed())
+            let disabledCollators = createDisabledCollators()
+
+            guard delegations.count > disabledCollators.count else {
+                // all collators are disable - start staking
+                wireframe.showCollatorSelection(from: view, delegate: self)
+                return
+            }
 
             let accountDetailsViewModels = accountDetailsViewModelFactory.createViewModels(
                 from: delegations,
                 identities: delegationIdentities,
-                disabled: Set()
+                disabled: createDisabledCollators()
             )
 
             let collatorId = try? collatorDisplayAddress?.address.toAccountId()
@@ -409,6 +431,10 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupInteractorOutputProtocol 
         provideCollatorViewModel()
     }
 
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
+        self.scheduledRequests = scheduledRequests
+    }
+
     func didReceiveMinDelegationAmount(_ amount: BigUInt) {
         minDelegationAmount = amount
     }
@@ -437,9 +463,18 @@ extension ParaStkStakeSetupPresenter: ModalPickerViewControllerDelegate {
         }
 
         let collatorId = delegations[index].owner
-        let displayName = delegationIdentities?[collatorId]?.displayName
 
-        changeCollator(with: collatorId, name: displayName)
+        DataValidationRunner(validators: [
+            dataValidatingFactory.notRevokingWhileStakingMore(
+                collator: collatorId,
+                scheduledRequests: scheduledRequests,
+                locale: selectedLocale
+            )
+        ]).runValidation { [weak self] in
+            let displayName = self?.delegationIdentities?[collatorId]?.displayName
+
+            self?.changeCollator(with: collatorId, name: displayName)
+        }
     }
 
     func modalPickerDidSelectAction(context _: AnyObject?) {

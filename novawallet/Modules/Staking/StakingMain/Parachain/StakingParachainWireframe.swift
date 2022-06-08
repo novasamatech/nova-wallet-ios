@@ -28,11 +28,13 @@ extension StakingParachainWireframe: StakingParachainWireframeProtocol {
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     ) {
         guard let stakeView = ParaStkStakeSetupViewFactory.createView(
             with: state,
             initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
             delegationIdentities: delegationIdentities
         ) else {
             return
