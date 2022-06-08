@@ -190,6 +190,8 @@ final class BlockTimeEstimationService {
         ) { [weak self] (result: Result<BlockTimeSubscriptionModel, Error>) in
             self?.processResult(result)
         }
+
+        subscription?.subscribe()
     }
 
     private func processResult(_ result: Result<BlockTimeSubscriptionModel, Error>) {
@@ -290,6 +292,8 @@ extension BlockTimeEstimationService: BlockTimeEstimationServiceProtocol {
             self.isActive = true
 
             self.readStartBlock(for: self.chainId)
+
+            self.logger.debug("(\(self.chainId) block time service setup")
         }
     }
 
@@ -301,7 +305,10 @@ extension BlockTimeEstimationService: BlockTimeEstimationServiceProtocol {
 
             self.isActive = false
 
+            self.subscription?.unsubscribe()
             self.subscription = nil
+
+            self.logger.debug("(\(self.chainId) block time service throttled")
         }
     }
 
