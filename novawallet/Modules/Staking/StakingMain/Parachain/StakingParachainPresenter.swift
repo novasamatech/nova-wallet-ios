@@ -66,6 +66,7 @@ final class StakingParachainPresenter {
         wireframe.showStakeTokens(
             from: view,
             initialDelegator: delegator.delegatorState,
+            initialScheduledRequests: delegator.scheduledRequests,
             delegationIdentities: identities
         )
     }
@@ -116,7 +117,12 @@ extension StakingParachainPresenter: StakingMainChildPresenterProtocol {
     }
 
     func performMainAction() {
-        wireframe.showStakeTokens(from: view, initialDelegator: nil, delegationIdentities: nil)
+        wireframe.showStakeTokens(
+            from: view,
+            initialDelegator: nil,
+            initialScheduledRequests: nil,
+            delegationIdentities: nil
+        )
     }
 
     func performRewardInfoAction() {

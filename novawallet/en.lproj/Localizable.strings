@@ -813,3 +813,7 @@
 "parastk.rebond.hint" = "Returned tokens will be counted from the next round";
 "parastk.cant.rebond.title" = "You cannot return to stake";
 "parastk.cant.rebond.message" = "You don't have unstaking tokens for this collator";
+"parastk.cant.bond.more.title" = "Cannot add stake to this collator";
+"parastk.pending.revoke.message" = "You cannot add stake to collator for which you are unstaking all tokens.";
+"parastk.not.active.collator.title" = "Cannot stake with this collator";
+"parastk.not.active.collator.message" = "Selected collator showed intention to stop participating in the staking.";

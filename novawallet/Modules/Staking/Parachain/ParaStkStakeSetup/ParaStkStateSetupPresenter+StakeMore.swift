@@ -2,10 +2,12 @@ import Foundation
 import BigInt
 
 extension ParaStkStakeSetupPresenter {
-    func stakeMore(above existingBond: BigUInt) {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
+    private func createStakeMoreValidationRunner(
+        for inputAmount: Decimal?,
+        existingBond: BigUInt,
+        collatorId: AccountId?,
+        precision: Int16
+    ) -> DataValidationRunner {
         DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
                 fee: fee,
@@ -20,15 +22,15 @@ extension ParaStkStakeSetupPresenter {
                 precision: precision,
                 locale: selectedLocale
             ),
+            dataValidatingFactory.notRevokingWhileStakingMore(
+                collator: collatorId,
+                scheduledRequests: scheduledRequests,
+                locale: selectedLocale
+            ),
             dataValidatingFactory.canStakeBottomDelegations(
                 amount: inputAmount,
                 collator: collatorMetadata,
                 existingBond: existingBond,
-                locale: selectedLocale
-            ),
-            dataValidatingFactory.hasMinStake(
-                amount: inputAmount,
-                minTechStake: minDelegationAmount,
                 locale: selectedLocale
             ),
             dataValidatingFactory.canStakeTopDelegations(
@@ -37,7 +39,23 @@ extension ParaStkStakeSetupPresenter {
                 existingBond: existingBond,
                 locale: selectedLocale
             )
-        ]).runValidation { [weak self] in
+        ])
+    }
+
+    func stakeMore(above existingBond: BigUInt) {
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
+
+        let collatorId = try? collatorDisplayAddress?.address.toAccountId()
+
+        let runner = createStakeMoreValidationRunner(
+            for: inputAmount,
+            existingBond: existingBond,
+            collatorId: collatorId,
+            precision: precision
+        )
+
+        runner.runValidation { [weak self] in
             guard
                 let collator = self?.collatorDisplayAddress,
                 let amount = inputAmount else {

@@ -33,6 +33,17 @@ protocol ParaStkValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
         locale: Locale
     ) -> DataValidating
 
+    func notRevokingWhileStakingMore(
+        collator: AccountId?,
+        scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        locale: Locale
+    ) -> DataValidating
+
+    func isActiveCollator(
+        for metadata: ParachainStaking.CandidateMetadata?,
+        locale: Locale
+    ) -> DataValidating
+
     func canUnstake(
         amount: Decimal?,
         staked: BigUInt?,

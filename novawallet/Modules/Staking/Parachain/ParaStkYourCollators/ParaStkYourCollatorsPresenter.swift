@@ -117,9 +117,11 @@ extension ParaStkYourCollatorsPresenter: ModalPickerViewControllerDelegate {
 
         switch options[index] {
         case .stakeMore:
+            let scheduledRequests = try? scheduledRequests?.get()
             wireframe.showStakeMore(
                 from: view,
                 initialDelegator: optDelegator,
+                delegationRequests: scheduledRequests,
                 delegationIdentities: delegationIdentities
             )
         case .unstake:
