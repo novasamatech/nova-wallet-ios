@@ -809,3 +809,10 @@
 "parastk.cant.unstake.amount.message" = "Либо указанное значение больше чем Ваш стейк или вы уже инициировали вывод токенов для этого коллатора.";
 "parastk.cant.redeem.title" = "Нельзя забрать";
 "parastk.cant.redeem.message" = "Нет доступных токенов, чтобы забрать";
+"parastk.rebond.hint" = "Возвращенные токены будут учитываться со следующего раунда";
+"parastk.cant.rebond.title" = "Нельзя вернуть в стейк";
+"parastk.cant.rebond.message" = "Вы не выводили токены для этого коллатора";
+"parastk.cant.bond.more.title" = "Нельзя застейка больше токенов для этого коллатора";
+"parastk.pending.revoke.message" = "Вы не можете застейкать больше токенов так как для этого коллатора инициирован процесс вывода всех токенов.";
+"parastk.not.active.collator.title" = "Нельзя застейкать в коллатора";
+"parastk.not.active.collator.message" = "Выбранный коллатор не будет участвовать в стейкинге в будущем.";

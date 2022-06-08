@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 protocol StakingParachainInteractorInputProtocol: AnyObject {
     func setup()
@@ -35,6 +36,7 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
     func showStakeTokens(
         from view: ControllerBackedProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     )
 
@@ -48,4 +50,17 @@ protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, 
     func showYourCollators(from view: ControllerBackedProtocol?)
 
     func showRedeemTokens(from view: ControllerBackedProtocol?)
+
+    func showUnstakingCollatorSelection(
+        from view: ControllerBackedProtocol?,
+        delegate: ModalPickerViewControllerDelegate,
+        viewModels: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        context: AnyObject?
+    )
+
+    func showRebondTokens(
+        from view: ControllerBackedProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
+    )
 }

@@ -1,16 +1,15 @@
 import Foundation
-import SoraFoundation
 import BigInt
+import SoraFoundation
 
-final class ParaStkUnstakeConfirmPresenter {
-    weak var view: ParaStkUnstakeConfirmViewProtocol?
-    let wireframe: ParaStkUnstakeConfirmWireframeProtocol
-    let interactor: ParaStkUnstakeConfirmInteractorInputProtocol
+final class ParaStkRebondPresenter {
+    weak var view: ParaStkRebondViewProtocol?
+    let wireframe: ParaStkRebondWireframeProtocol
+    let interactor: ParaStkRebondInteractorInputProtocol
 
     let chainAsset: ChainAsset
     let selectedAccount: MetaChainAccountResponse
-    let selectedCollator: DisplayAddress
-    let callWrapper: UnstakeCallWrapper
+    let selectedCollator: AccountId
     let dataValidatingFactory: ParaStkValidatorFactoryProtocol
     let balanceViewModelFactory: BalanceViewModelFactoryProtocol
     let hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol
@@ -19,21 +18,19 @@ final class ParaStkUnstakeConfirmPresenter {
     private(set) var fee: BigUInt?
     private(set) var balance: AssetBalance?
     private(set) var price: PriceData?
-    private(set) var delegator: ParachainStaking.Delegator?
-    private(set) var delegationsDict: [AccountId: ParachainStaking.Bond]?
     private(set) var scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?
-    private(set) var stakingDuration: ParachainStakingDuration?
+    private(set) var collatorIdentity: AccountIdentity?
 
     private lazy var walletViewModelFactory = WalletAccountViewModelFactory()
     private lazy var displayAddressViewModelFactory = DisplayAddressViewModelFactory()
 
     init(
-        interactor: ParaStkUnstakeConfirmInteractorInputProtocol,
-        wireframe: ParaStkUnstakeConfirmWireframeProtocol,
+        interactor: ParaStkRebondInteractorInputProtocol,
+        wireframe: ParaStkRebondWireframeProtocol,
         chainAsset: ChainAsset,
         selectedAccount: MetaChainAccountResponse,
-        selectedCollator: DisplayAddress,
-        callWrapper: UnstakeCallWrapper,
+        selectedCollator: AccountId,
+        collatorIdentity: AccountIdentity?,
         dataValidatingFactory: ParaStkValidatorFactoryProtocol,
         balanceViewModelFactory: BalanceViewModelFactoryProtocol,
         hintViewModelFactory: ParaStkHintsViewModelFactoryProtocol,
@@ -45,7 +42,7 @@ final class ParaStkUnstakeConfirmPresenter {
         self.chainAsset = chainAsset
         self.selectedAccount = selectedAccount
         self.selectedCollator = selectedCollator
-        self.callWrapper = callWrapper
+        self.collatorIdentity = collatorIdentity
         self.dataValidatingFactory = dataValidatingFactory
         self.balanceViewModelFactory = balanceViewModelFactory
         self.hintViewModelFactory = hintViewModelFactory
@@ -53,24 +50,19 @@ final class ParaStkUnstakeConfirmPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func unstakingAmount() -> Decimal {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
-        let unstakingAmountInPlank: BigUInt
-
-        switch callWrapper.action {
-        case let .bondLess(amount):
-            unstakingAmountInPlank = amount
-        case let .revoke(amount):
-            unstakingAmountInPlank = delegationsDict?[callWrapper.collator]?.amount ?? amount
+    private func rebondingAmount() -> Decimal {
+        guard let request = scheduledRequests?.first(where: { $0.collatorId == selectedCollator }) else {
+            return 0
         }
 
-        return Decimal.fromSubstrateAmount(unstakingAmountInPlank, precision: precision) ?? 0
+        let precision = chainAsset.assetDisplayInfo.assetPrecision
+
+        return Decimal.fromSubstrateAmount(request.unstakingAmount, precision: precision) ?? 0
     }
 
     private func provideAmountViewModel() {
         let viewModel = balanceViewModelFactory.balanceFromPrice(
-            unstakingAmount(),
+            rebondingAmount(),
             priceData: price
         ).value(for: selectedLocale)
 
@@ -114,25 +106,23 @@ final class ParaStkUnstakeConfirmPresenter {
     }
 
     private func provideCollatorViewModel() {
-        let viewModel = displayAddressViewModelFactory.createViewModel(from: selectedCollator)
+        guard let selectedAddress = try? selectedCollator.toAddress(using: chainAsset.chain.chainFormat) else {
+            return
+        }
+
+        let displayAddress = DisplayAddress(address: selectedAddress, username: collatorIdentity?.displayName ?? "")
+        let viewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         view?.didReceiveCollator(viewModel: viewModel)
     }
 
     private func provideHintsViewModel() {
-        var hints: [String] = []
+        let hint = hintViewModelFactory.unstakingRebond(for: selectedLocale)
 
-        if let stakingDuration = stakingDuration {
-            hints.append(hintViewModelFactory.unstakeHint(for: stakingDuration, locale: selectedLocale))
-        }
-
-        hints.append(hintViewModelFactory.unstakingRewards(for: selectedLocale))
-        hints.append(hintViewModelFactory.unstakingRedeem(for: selectedLocale))
-
-        view?.didReceiveHints(viewModel: hints)
+        view?.didReceiveHints(viewModel: [hint])
     }
 
-    private func presentOptions(for address: AccountAddress) {
-        guard let view = view else {
+    private func presentOptions(for accountId: AccountId) {
+        guard let view = view, let address = try? accountId.toAddress(using: chainAsset.chain.chainFormat) else {
             return
         }
 
@@ -147,7 +137,7 @@ final class ParaStkUnstakeConfirmPresenter {
     func refreshFee() {
         fee = nil
 
-        interactor.estimateFee(for: callWrapper)
+        interactor.estimateFee(for: selectedCollator)
 
         provideFeeViewModel()
     }
@@ -155,45 +145,40 @@ final class ParaStkUnstakeConfirmPresenter {
     func submitExtrinsic() {
         view?.didStartLoading()
 
-        interactor.confirm(for: callWrapper)
+        interactor.submit(for: selectedCollator)
     }
 
     func applyCurrentState() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
+        provideFeeViewModel()
         provideCollatorViewModel()
         provideHintsViewModel()
     }
 }
 
-extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol {
+extension ParaStkRebondPresenter: ParaStkRebondPresenterProtocol {
     func setup() {
         applyCurrentState()
 
         interactor.setup()
 
         refreshFee()
+
+        interactor.fetchIdentity(for: selectedCollator)
     }
 
     func selectAccount() {
-        let chainFormat = chainAsset.chain.chainFormat
-
-        guard let address = try? selectedAccount.chainAccount.accountId.toAddress(using: chainFormat) else {
-            return
-        }
-
-        presentOptions(for: address)
+        presentOptions(for: selectedAccount.chainAccount.accountId)
     }
 
     func selectCollator() {
-        presentOptions(for: selectedCollator.address)
+        presentOptions(for: selectedCollator)
     }
 
     func confirm() {
         let precision = chainAsset.assetDisplayInfo.assetPrecision
-        let collatorId = callWrapper.collator
-        let stakedAmount = delegationsDict?[collatorId]?.amount
 
         DataValidationRunner(validators: [
             dataValidatingFactory.hasInPlank(
@@ -208,10 +193,8 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol
                 precision: precision,
                 locale: selectedLocale
             ),
-            dataValidatingFactory.canUnstake(
-                amount: unstakingAmount(),
-                staked: stakedAmount,
-                from: collatorId,
+            dataValidatingFactory.canRebond(
+                collator: selectedCollator,
                 scheduledRequests: scheduledRequests,
                 locale: selectedLocale
             )
@@ -221,23 +204,7 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol
     }
 }
 
-extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputProtocol {
-    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
-        view?.didStopLoading()
-
-        switch result {
-        case .success:
-            wireframe.complete(on: view, locale: selectedLocale)
-        case let .failure(error):
-            applyCurrentState()
-            refreshFee()
-
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
-
-            logger.error("Extrinsic submission failed: \(error)")
-        }
-    }
-
+extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
     func didReceiveAssetBalance(_ balance: AssetBalance?) {
         self.balance = balance
     }
@@ -266,23 +233,36 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
         }
     }
 
-    func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?) {
-        self.delegator = delegator
-        delegationsDict = delegator?.delegationsDict()
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
+        self.scheduledRequests = scheduledRequests
 
         if !interactor.hasPendingExtrinsic {
             provideAmountViewModel()
         }
     }
 
-    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
-        self.scheduledRequests = scheduledRequests ?? []
+    func didReceiveCollatorIdentity(_ identity: AccountIdentity?) {
+        collatorIdentity = identity
+
+        if !interactor.hasPendingExtrinsic {
+            provideCollatorViewModel()
+        }
     }
 
-    func didReceiveStakingDuration(_ stakingDuration: ParachainStakingDuration) {
-        self.stakingDuration = stakingDuration
+    func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
+        view?.didStopLoading()
 
-        provideHintsViewModel()
+        switch result {
+        case .success:
+            wireframe.complete(on: view, locale: selectedLocale)
+        case let .failure(error):
+            applyCurrentState()
+            refreshFee()
+
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+
+            logger.error("Extrinsic submission failed: \(error)")
+        }
     }
 
     func didReceiveError(_ error: Error) {
@@ -292,7 +272,7 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
     }
 }
 
-extension ParaStkUnstakeConfirmPresenter: Localizable {
+extension ParaStkRebondPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideAmountViewModel()
