@@ -35,15 +35,9 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         self.operationQueue = operationQueue
         self.callbackQueue = callbackQueue
         self.callbackClosure = callbackClosure
-
-        encodeKeyAndSubscribe()
     }
 
-    deinit {
-        unsubscribe()
-    }
-
-    private func encodeKeyAndSubscribe() {
+    func subscribe() {
         mutex.lock()
 
         defer {
@@ -67,7 +61,7 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         mergeOperation.completionBlock = { [weak self] in
             do {
                 let keys = try mergeOperation.extractNoCancellableResultData()
-                self?.subscribe(with: keys)
+                self?.subscribeForEncoded(keys: keys)
             } catch {
                 self?.notify(result: .failure(error))
             }
@@ -85,7 +79,7 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         )
     }
 
-    private func subscribe(with keys: [Data]) {
+    private func subscribeForEncoded(keys: [Data]) {
         mutex.lock()
 
         defer {
@@ -121,7 +115,7 @@ final class CallbackBatchStorageSubscription<T: JSONListConvertible> {
         }
     }
 
-    private func unsubscribe() {
+    func unsubscribe() {
         mutex.lock()
 
         defer {
