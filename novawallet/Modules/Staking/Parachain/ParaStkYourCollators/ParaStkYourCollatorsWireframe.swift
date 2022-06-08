@@ -41,11 +41,13 @@ final class ParaStkYourCollatorsWireframe: ParaStkYourCollatorsWireframeProtocol
     func showStakeMore(
         from view: ParaStkYourCollatorsViewProtocol?,
         initialDelegator: ParachainStaking.Delegator?,
+        delegationRequests: [ParachainStaking.DelegatorScheduledRequest]?,
         delegationIdentities: [AccountId: AccountIdentity]?
     ) {
         guard let stakeView = ParaStkStakeSetupViewFactory.createView(
             with: state,
             initialDelegator: initialDelegator,
+            initialScheduledRequests: delegationRequests,
             delegationIdentities: delegationIdentities
         ) else {
             return
