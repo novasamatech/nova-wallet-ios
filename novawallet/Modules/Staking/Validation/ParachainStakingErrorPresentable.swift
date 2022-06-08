@@ -30,6 +30,14 @@ protocol ParachainStakingErrorPresentable: BaseErrorPresentable {
     )
 
     func presentNoUnstakingOptions(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentCantRedeem(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentCantRebond(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentCantStakeMoreWhileRevoking(_ view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentCantStakeInactiveCollator(_ view: ControllerBackedProtocol, locale: Locale?)
 }
 
 extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -170,6 +178,54 @@ extension ParachainStakingErrorPresentable where Self: AlertPresentable & ErrorP
         let message = R.string.localizable.parastkUnstakeNoCollatorsMessage(
             preferredLanguages: languages
         )
+
+        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+        present(message: message, title: title, closeAction: close, from: view)
+    }
+
+    func presentCantRedeem(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.parastkCantRedeemTitle(preferredLanguages: languages)
+
+        let message = R.string.localizable.parastkCantRedeemMessage(preferredLanguages: languages)
+
+        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+        present(message: message, title: title, closeAction: close, from: view)
+    }
+
+    func presentCantRebond(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.parastkCantRebondTitle(preferredLanguages: languages)
+
+        let message = R.string.localizable.parastkCantRebondMessage(preferredLanguages: languages)
+
+        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+        present(message: message, title: title, closeAction: close, from: view)
+    }
+
+    func presentCantStakeMoreWhileRevoking(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.parastkCantBondMoreTitle(preferredLanguages: languages)
+
+        let message = R.string.localizable.parastkPendingRevokeMessage(preferredLanguages: languages)
+
+        let close = R.string.localizable.commonClose(preferredLanguages: languages)
+
+        present(message: message, title: title, closeAction: close, from: view)
+    }
+
+    func presentCantStakeInactiveCollator(_ view: ControllerBackedProtocol, locale: Locale?) {
+        let languages = locale?.rLanguages
+
+        let title = R.string.localizable.parastkNotActiveCollatorTitle(preferredLanguages: languages)
+
+        let message = R.string.localizable.parastkNotActiveCollatorMessage(preferredLanguages: languages)
 
         let close = R.string.localizable.commonClose(preferredLanguages: languages)
 
