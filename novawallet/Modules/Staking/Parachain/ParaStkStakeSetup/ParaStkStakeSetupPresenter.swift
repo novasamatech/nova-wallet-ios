@@ -250,12 +250,15 @@ final class ParaStkStakeSetupPresenter {
     private func setupInitialCollator() {
         let disabled = createDisabledCollators()
 
-        let optLastCollator = delegator?.delegations.filter { !disabled.contains($0.owner) }.last?.owner
+        let optMaxCollator = delegator?.delegations
+            .filter { !disabled.contains($0.owner) }
+            .max { $0.amount < $1.amount }?
+            .owner
 
         if
-            let lastCollator = optLastCollator,
-            let address = try? lastCollator.toAddress(using: chainAsset.chain.chainFormat) {
-            let name = delegationIdentities?[lastCollator]?.displayName
+            let maxCollator = optMaxCollator,
+            let address = try? maxCollator.toAddress(using: chainAsset.chain.chainFormat) {
+            let name = delegationIdentities?[maxCollator]?.displayName
             collatorDisplayAddress = DisplayAddress(address: address, username: name ?? "")
         }
     }
@@ -301,7 +304,7 @@ extension ParaStkStakeSetupPresenter: ParaStkStakeSetupPresenterProtocol {
 
     func selectCollator() {
         if let delegator = delegator, !delegator.delegations.isEmpty {
-            let delegations = Array(delegator.delegations.reversed())
+            let delegations = delegator.delegations.sorted { $0.amount > $1.amount }
             let disabledCollators = createDisabledCollators()
 
             guard delegations.count > disabledCollators.count else {
