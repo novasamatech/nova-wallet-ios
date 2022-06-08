@@ -37,6 +37,7 @@ extension RoundedButton {
         contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
 
         changesContentOpacityWhenHighlighted = true
+        opacityAnimationDuration = 0
     }
 
     func applyEnabledSecondaryStyle() {
