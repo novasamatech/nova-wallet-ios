@@ -4,7 +4,6 @@ import RobinHood
 
 final class CallbackStorageSubscription<T: Decodable> {
     let request: SubscriptionRequestProtocol
-    let storagePath: StorageCodingPath
     let runtimeService: RuntimeCodingServiceProtocol
     let connection: JSONRPCEngine
     let operationQueue: OperationQueue
@@ -22,7 +21,6 @@ final class CallbackStorageSubscription<T: Decodable> {
 
     init(
         request: SubscriptionRequestProtocol,
-        storagePath: StorageCodingPath,
         connection: JSONRPCEngine,
         runtimeService: RuntimeCodingServiceProtocol,
         repository: AnyDataProviderRepository<ChainStorageItem>?,
@@ -31,7 +29,6 @@ final class CallbackStorageSubscription<T: Decodable> {
         callbackClosure: @escaping (Result<T?, Error>) -> Void
     ) {
         self.request = request
-        self.storagePath = storagePath
         self.connection = connection
         self.runtimeService = runtimeService
         self.repository = repository
@@ -149,7 +146,7 @@ final class CallbackStorageSubscription<T: Decodable> {
         }
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-        let decodingOperation = StorageDecodingOperation<T>(path: storagePath, data: data)
+        let decodingOperation = StorageDecodingOperation<T>(path: request.storagePath, data: data)
         decodingOperation.configurationBlock = {
             do {
                 decodingOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()

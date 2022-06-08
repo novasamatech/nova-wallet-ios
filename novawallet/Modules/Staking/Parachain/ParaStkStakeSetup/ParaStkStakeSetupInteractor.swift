@@ -129,7 +129,6 @@ final class ParaStkStakeSetupInteractor: RuntimeConstantFetching {
 
             collatorSubscription = CallbackStorageSubscription(
                 request: request,
-                storagePath: ParachainStaking.candidateMetadataPath,
                 connection: connection,
                 runtimeService: runtimeProvider,
                 repository: repository,
