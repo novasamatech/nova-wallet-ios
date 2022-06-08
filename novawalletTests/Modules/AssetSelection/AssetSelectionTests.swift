@@ -53,7 +53,7 @@ class AssetSelectionTests: XCTestCase {
         let presenter = AssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetFilter: { (_, asset) in asset.staking != nil },
+            assetFilter: { (_, asset) in StakingType(rawType: asset.staking) != .unsupported },
             selectedChainAssetId: selectedChainAssetId,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             localizationManager: LocalizationManager.shared
