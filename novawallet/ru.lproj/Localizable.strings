@@ -771,7 +771,7 @@
 "parachain.staking.minimum.stake" = "Минимальный стейк";
 "common.no.rewards.title" = "Вы не будете награждены";
 "parachain.staking.collator.greater.minstk.message" = "Ваш стейк должен быть больше чем минимальный стейк (%@) для этого коллатора.";
-"parachain.staking.full.title" = "Стекинг переполнен";
+"parachain.staking.full.title" = "Вы не можете выбрать коллатора";
 "parachain.staking.full.message" = "Вы достигли максимального количества коллаторов (%@)";
 "parachain.staking.hint.rewards.format" = "Застейканые токены приносят награду каждый раунд (%@)";
 "common.rewards.column" = "Награды:";
@@ -797,3 +797,5 @@
 "parastk.reward.info.avg" = "Средний APR";
 "common.chain.account.missing.title.format" = "%@ аккаунт отсутствует";
 "common.chain.account.missing.message.format" = "Вам необходимо добавить %@ аккаунт в кошелек для начала стекинга";
+"common.new.collator" = "Новый коллатор";
+"parastk.hint.reward.bond.more" = "Вознаграждения увеличатся начиная со следующего раунда";

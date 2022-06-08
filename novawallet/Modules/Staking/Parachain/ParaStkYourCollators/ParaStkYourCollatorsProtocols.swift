@@ -31,4 +31,10 @@ protocol ParaStkYourCollatorsWireframeProtocol: AnyObject {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     )
+
+    func showStakeMore(
+        from view: ParaStkYourCollatorsViewProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    )
 }
