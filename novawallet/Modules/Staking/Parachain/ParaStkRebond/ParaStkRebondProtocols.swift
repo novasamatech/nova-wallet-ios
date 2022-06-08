@@ -16,7 +16,7 @@ protocol ParaStkRebondPresenterProtocol: AnyObject {
     func confirm()
 }
 
-protocol ParaStkRebondInteractorInputProtocol: AnyObject {
+protocol ParaStkRebondInteractorInputProtocol: PendingExtrinsicInteracting {
     func setup()
     func estimateFee(for collator: AccountId)
     func submit(for collator: AccountId)

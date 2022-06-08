@@ -147,16 +147,20 @@ final class ParaStkRebondPresenter {
 
         interactor.submit(for: selectedCollator)
     }
-}
 
-extension ParaStkRebondPresenter: ParaStkRebondPresenterProtocol {
-    func setup() {
+    func applyCurrentState() {
         provideAmountViewModel()
         provideWalletViewModel()
         provideAccountViewModel()
         provideFeeViewModel()
         provideCollatorViewModel()
         provideHintsViewModel()
+    }
+}
+
+extension ParaStkRebondPresenter: ParaStkRebondPresenterProtocol {
+    func setup() {
+        applyCurrentState()
 
         interactor.setup()
 
@@ -208,8 +212,10 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
     func didReceivePrice(_ priceData: PriceData?) {
         price = priceData
 
-        provideAmountViewModel()
-        provideFeeViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideAmountViewModel()
+            provideFeeViewModel()
+        }
     }
 
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>) {
@@ -230,13 +236,17 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
     func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?) {
         self.scheduledRequests = scheduledRequests
 
-        provideAmountViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideAmountViewModel()
+        }
     }
 
     func didReceiveCollatorIdentity(_ identity: AccountIdentity?) {
         collatorIdentity = identity
 
-        provideCollatorViewModel()
+        if !interactor.hasPendingExtrinsic {
+            provideCollatorViewModel()
+        }
     }
 
     func didCompleteExtrinsicSubmission(for result: Result<String, Error>) {
@@ -246,6 +256,9 @@ extension ParaStkRebondPresenter: ParaStkRebondInteractorOutputProtocol {
         case .success:
             wireframe.complete(on: view, locale: selectedLocale)
         case let .failure(error):
+            applyCurrentState()
+            refreshFee()
+
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
             logger.error("Extrinsic submission failed: \(error)")
