@@ -64,7 +64,7 @@ final class ParaStkUnstakeViewController: UIViewController, ViewHolder, Importan
             preferredLanguages: languages
         )
 
-        rootView.minStakeView.titleLabel.text = R.string.localizable.parachainStakingMinimumStake(
+        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
             preferredLanguages: languages
         )
 

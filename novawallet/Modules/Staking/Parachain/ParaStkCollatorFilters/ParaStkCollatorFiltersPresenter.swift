@@ -31,11 +31,11 @@ final class ParaStkCollatorFiltersPresenter {
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .minStake:
-            return R.string.localizable.parastkCollatorsFilterMinStake(
+            return R.string.localizable.stakingMainMinimumStakeTitle(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .totalStake:
-            return R.string.localizable.parastkCollatorsFilterTotalStake(
+            return R.string.localizable.stakingValidatorTotalStake(
                 preferredLanguages: selectedLocale.rLanguages
             )
         case .ownStake:

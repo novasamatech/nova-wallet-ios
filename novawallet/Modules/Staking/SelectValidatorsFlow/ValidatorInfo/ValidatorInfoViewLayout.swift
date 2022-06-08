@@ -196,7 +196,7 @@ final class ValidatorInfoViewLayout: UIView {
         let cell = StackTitleMultiValueCell()
         cell.canSelect = false
 
-        cell.titleLabel.text = R.string.localizable.parachainStakingMinimumStake(
+        cell.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
             preferredLanguages: locale.rLanguages
         )
 
