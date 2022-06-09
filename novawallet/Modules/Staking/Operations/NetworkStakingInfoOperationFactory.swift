@@ -13,7 +13,7 @@ final class NetworkStakingInfoOperationFactory {
     // MARK: - Private functions
 
     let durationOperationFactory: StakingDurationOperationFactoryProtocol
-    init(durationFactory: StakingDurationOperationFactoryProtocol = StakingDurationOperationFactory()) {
+    init(durationFactory: StakingDurationOperationFactoryProtocol = BabeStakingDurationFactory()) {
         durationOperationFactory = durationFactory
     }
 

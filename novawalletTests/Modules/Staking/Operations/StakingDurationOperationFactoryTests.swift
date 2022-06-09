@@ -7,7 +7,7 @@ class StakingDurationOperationFactoryTests: XCTestCase {
             // given
 
             let runtimeService = try RuntimeCodingServiceStub.createWestendService()
-            let operationFactory = StakingDurationOperationFactory()
+            let operationFactory = BabeStakingDurationFactory()
 
             // when
 
