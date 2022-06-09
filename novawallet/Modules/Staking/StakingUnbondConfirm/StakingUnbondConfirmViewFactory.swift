@@ -92,7 +92,7 @@ struct StakingUnbondConfirmViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            stakingDurationOperationFactory: StakingDurationOperationFactory(),
+            stakingDurationOperationFactory: BabeStakingDurationFactory(),
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),
