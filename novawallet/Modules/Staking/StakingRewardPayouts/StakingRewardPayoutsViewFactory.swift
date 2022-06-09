@@ -125,7 +125,7 @@ final class StakingRewardPayoutsViewFactory {
             operationManager: operationManager
         )
 
-        let eraCountdownOperationFactory = EraCountdownOperationFactory(
+        let eraCountdownOperationFactory = BabeEraOperationFactory(
             storageRequestFactory: storageRequestFactory
         )
 

@@ -75,7 +75,7 @@ extension StakingMainPresenterFactory {
             operationManager: operationManager
         )
 
-        let eraCountdownOperationFactory = EraCountdownOperationFactory(
+        let eraCountdownOperationFactory = BabeEraOperationFactory(
             storageRequestFactory: storageRequestFactory
         )
 
