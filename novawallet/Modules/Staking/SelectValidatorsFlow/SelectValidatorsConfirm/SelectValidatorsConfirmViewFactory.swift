@@ -167,7 +167,7 @@ final class SelectValidatorsConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            durationOperationFactory: StakingDurationOperationFactory(),
+            durationOperationFactory: BabeStakingDurationFactory(),
             operationManager: operationManager,
             signer: signer,
             nomination: nomination
@@ -216,7 +216,7 @@ final class SelectValidatorsConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            durationOperationFactory: StakingDurationOperationFactory(),
+            durationOperationFactory: BabeStakingDurationFactory(),
             operationManager: operationManager,
             signer: signer,
             accountRepositoryFactory: accountRepository,
