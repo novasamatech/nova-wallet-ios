@@ -2,18 +2,7 @@ import RobinHood
 import SubstrateSdk
 import SoraKeystore
 
-protocol EraCountdownOperationFactoryProtocol {
-    func fetchCountdownOperationWrapper(
-        for connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<EraCountdown>
-}
-
-enum EraCountdownOperationFactoryError: Error {
-    case noData
-}
-
-final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
+final class BabeEraOperationFactory: EraCountdownOperationFactoryProtocol {
     let storageRequestFactory: StorageRequestFactoryProtocol
 
     init(storageRequestFactory: StorageRequestFactoryProtocol) {

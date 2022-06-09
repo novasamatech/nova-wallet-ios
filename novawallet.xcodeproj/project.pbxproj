@@ -815,6 +815,7 @@
 		8468B87624F63D5900B76BC6 /* AddAccount+AccountImportWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8468B87524F63D5900B76BC6 /* AddAccount+AccountImportWireframe.swift */; };
 		84690783264132AB0030E693 /* WithdrawUnbondedCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84690782264132AB0030E693 /* WithdrawUnbondedCall.swift */; };
 		84690797264154E80030E693 /* SlashesOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84690796264154E80030E693 /* SlashesOperationFactory.swift */; };
+		8469529C28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8469529B28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift */; };
 		8469936B26CD1BBE002CC786 /* RuntimePoolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8469936A26CD1BBE002CC786 /* RuntimePoolTests.swift */; };
 		846A2601267C768500429A7F /* CrowdloanContributionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A2600267C768500429A7F /* CrowdloanContributionMapper.swift */; };
 		846A2606267C792000429A7F /* CrowdloanContributionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846A2605267C792000429A7F /* CrowdloanContributionResponse.swift */; };
@@ -2157,7 +2158,7 @@
 		F4897BB126AED13D0075F291 /* EraCountdownOperationFactoryStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4897BB026AED13D0075F291 /* EraCountdownOperationFactoryStub.swift */; };
 		F48EB5462722BB7000AE15ED /* AcalaBonusService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48EB5452722BB7000AE15ED /* AcalaBonusService.swift */; };
 		F48EB5512722C9D600AE15ED /* AcalaKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48EB5502722C9D600AE15ED /* AcalaKeys.swift */; };
-		F49F49A326A5C45600A25931 /* EraCountdownOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49F49A226A5C45600A25931 /* EraCountdownOperationFactoryTests.swift */; };
+		F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49F49A226A5C45600A25931 /* BabeEraOperationFactoryTests.swift */; };
 		F4A11B5A272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A11B59272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift */; };
 		F4A12BF7260B61E900392C33 /* StakingManageOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A12BF6260B61E900392C33 /* StakingManageOption.swift */; };
 		F4A6C9E4265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A6C9E3265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift */; };
@@ -2215,7 +2216,7 @@
 		F4F65C3826D8B86F002EE838 /* FWXAxisEmptyValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F65C3726D8B86F002EE838 /* FWXAxisEmptyValueFormatter.swift */; };
 		F4F65C3D26D8B9DD002EE838 /* FWYAxisChartFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F65C3C26D8B9DD002EE838 /* FWYAxisChartFormatter.swift */; };
 		F4F69E282731B0B200214542 /* CrowdloanTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F69E272731B0B200214542 /* CrowdloanTableHeaderView.swift */; };
-		F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FDA0F726A57626003D753B /* EraCountdownOperationFactory.swift */; };
+		F4FDA0F826A57626003D753B /* BabeEraOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FDA0F726A57626003D753B /* BabeEraOperationFactory.swift */; };
 		F4FDA0FD26A57860003D753B /* EraCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FDA0FC26A57860003D753B /* EraCountdown.swift */; };
 		F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F599B3A847492204853ADB /* DAppAddFavoritePresenter.swift */; };
 		F5F74CD4110DB94902AA836A /* ParaStkRebondViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F21FBC9BE578A300A77E9C5 /* ParaStkRebondViewLayout.swift */; };
@@ -3075,6 +3076,7 @@
 		8468B87524F63D5900B76BC6 /* AddAccount+AccountImportWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddAccount+AccountImportWireframe.swift"; sourceTree = "<group>"; };
 		84690782264132AB0030E693 /* WithdrawUnbondedCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawUnbondedCall.swift; sourceTree = "<group>"; };
 		84690796264154E80030E693 /* SlashesOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlashesOperationFactory.swift; sourceTree = "<group>"; };
+		8469529B28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdownOperationFactoryProtocol.swift; sourceTree = "<group>"; };
 		8469936A26CD1BBE002CC786 /* RuntimePoolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimePoolTests.swift; sourceTree = "<group>"; };
 		846A2600267C768500429A7F /* CrowdloanContributionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionMapper.swift; sourceTree = "<group>"; };
 		846A2605267C792000429A7F /* CrowdloanContributionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionResponse.swift; sourceTree = "<group>"; };
@@ -4421,7 +4423,7 @@
 		F4897BB026AED13D0075F291 /* EraCountdownOperationFactoryStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdownOperationFactoryStub.swift; sourceTree = "<group>"; };
 		F48EB5452722BB7000AE15ED /* AcalaBonusService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaBonusService.swift; sourceTree = "<group>"; };
 		F48EB5502722C9D600AE15ED /* AcalaKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcalaKeys.swift; sourceTree = "<group>"; };
-		F49F49A226A5C45600A25931 /* EraCountdownOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdownOperationFactoryTests.swift; sourceTree = "<group>"; };
+		F49F49A226A5C45600A25931 /* BabeEraOperationFactoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabeEraOperationFactoryTests.swift; sourceTree = "<group>"; };
 		F4A11B59272FEB0B0030E85B /* CrowdloanYourContributionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanYourContributionsCell.swift; sourceTree = "<group>"; };
 		F4A12BF6260B61E900392C33 /* StakingManageOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingManageOption.swift; sourceTree = "<group>"; };
 		F4A6C9E3265283EB00FABF98 /* StakingStateViewModelFactory+Alerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingStateViewModelFactory+Alerts.swift"; sourceTree = "<group>"; };
@@ -4479,7 +4481,7 @@
 		F4F65C3726D8B86F002EE838 /* FWXAxisEmptyValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FWXAxisEmptyValueFormatter.swift; sourceTree = "<group>"; };
 		F4F65C3C26D8B9DD002EE838 /* FWYAxisChartFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FWYAxisChartFormatter.swift; sourceTree = "<group>"; };
 		F4F69E272731B0B200214542 /* CrowdloanTableHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrowdloanTableHeaderView.swift; sourceTree = "<group>"; };
-		F4FDA0F726A57626003D753B /* EraCountdownOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdownOperationFactory.swift; sourceTree = "<group>"; };
+		F4FDA0F726A57626003D753B /* BabeEraOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BabeEraOperationFactory.swift; sourceTree = "<group>"; };
 		F4FDA0FC26A57860003D753B /* EraCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraCountdown.swift; sourceTree = "<group>"; };
 		F52B8815D6AF5E69B145D245 /* CustomValidatorListViewFactory.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CustomValidatorListViewFactory.swift; sourceTree = "<group>"; };
 		F61D8973ADEB461DE2AD3E13 /* RecommendedValidatorListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecommendedValidatorListViewController.swift; sourceTree = "<group>"; };
@@ -5975,7 +5977,7 @@
 				84FACB6525F56D5000F32ED4 /* CalculatorServiceTests.swift */,
 				F44CD8F826244EC3005DDF23 /* PayoutRewardsServiceTests.swift */,
 				84BB3CE8267C9ADE00676FFE /* CrowdloanTests.swift */,
-				F49F49A226A5C45600A25931 /* EraCountdownOperationFactoryTests.swift */,
+				F49F49A226A5C45600A25931 /* BabeEraOperationFactoryTests.swift */,
 				8461CC8426BC1306007460E4 /* MortalEraFactoryTests.swift */,
 				8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */,
 				846CA7832709C2BE0011124C /* ChainRegistry+Setup.swift */,
@@ -10811,8 +10813,9 @@
 		F4FDA0F626A57613003D753B /* EraCountdownOperationFactory */ = {
 			isa = PBXGroup;
 			children = (
-				F4FDA0F726A57626003D753B /* EraCountdownOperationFactory.swift */,
+				F4FDA0F726A57626003D753B /* BabeEraOperationFactory.swift */,
 				F4FDA0FC26A57860003D753B /* EraCountdown.swift */,
+				8469529B28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift */,
 			);
 			path = EraCountdownOperationFactory;
 			sourceTree = "<group>";
@@ -11272,7 +11275,7 @@
 				8418167728253B120007684A /* ParachainStakingCollatorsTests.swift in Sources */,
 				84F3B27E27F4206B00D64CF5 /* PhishingSitesSyncIntegrationTests.swift in Sources */,
 				846CA7842709C2BE0011124C /* ChainRegistry+Setup.swift in Sources */,
-				F49F49A326A5C45600A25931 /* EraCountdownOperationFactoryTests.swift in Sources */,
+				F49F49A326A5C45600A25931 /* BabeEraOperationFactoryTests.swift in Sources */,
 				84C3420F2831A67200156569 /* BlockTimeEstimationServiceTests.swift in Sources */,
 				84FACB6A25F5759C00F32ED4 /* AccountCreationHelper.swift in Sources */,
 				843E9B3827C8CAC1009C143A /* NftDownloadIntegrationTests.swift in Sources */,
@@ -11410,7 +11413,7 @@
 				846AF8462525C93A00868F37 /* BalanceContext.swift in Sources */,
 				F41CEBE42731617A00C06154 /* CrowdloanRewardDestinationVM.swift in Sources */,
 				842D1E8624D1A90400C30A7A /* NSPredicate+Validation.swift in Sources */,
-				F4FDA0F826A57626003D753B /* EraCountdownOperationFactory.swift in Sources */,
+				F4FDA0F826A57626003D753B /* BabeEraOperationFactory.swift in Sources */,
 				84AE7AB927D3F96300495267 /* RMRKV1Collection.swift in Sources */,
 				84AE7AAF27D38B1800495267 /* DrawableIconViewModel.swift in Sources */,
 				849976D027B3AC0100B14A6C /* MetamaskEvent.swift in Sources */,
@@ -12008,6 +12011,7 @@
 				F466AA90273D188600D14021 /* SettingsRow.swift in Sources */,
 				8430AAE926022F69005B1066 /* StashState.swift in Sources */,
 				84644B3325685915004EAA4B /* WalletHistoryBackgroundView.swift in Sources */,
+				8469529C28528C9C0083E0B4 /* EraCountdownOperationFactoryProtocol.swift in Sources */,
 				8428768424AE046300D91AD8 /* LanguageSelectionInteractor.swift in Sources */,
 				84364D60252FD6B100281F9A /* AssetDetailsViewModelFactory.swift in Sources */,
 				F4D6FF4126B3E4C2002313AF /* AnalyticsRewardsWireframe.swift in Sources */,
