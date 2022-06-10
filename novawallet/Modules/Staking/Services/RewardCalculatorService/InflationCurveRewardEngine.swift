@@ -22,4 +22,22 @@ final class InflationCurveRewardEngine: RewardCalculatorEngine {
             return minimalInflation + (idealInterest * idealStakePortion - minimalInflation) * decayCoefficient
         }
     }
+
+    // We are solving equation to find era interest - x: yr * T = T * (1 + x)^t - T
+    override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {
+         guard eraDurationInSeconds > 0 else {
+             return 0
+         }
+
+         let daysInYear = TimeInterval(CalculationPeriod.year.inDays)
+         let erasInYear = daysInYear * TimeInterval.secondsInDay / eraDurationInSeconds
+
+         guard erasInYear > 0 else {
+             return 0
+         }
+
+         let rawAnnualReturn = (annualReturn as NSDecimalNumber).doubleValue
+         let result = pow(rawAnnualReturn + 1.0, 1.0 / Double(erasInYear)) - 1.0
+         return Decimal(result)
+    }
 }
