@@ -6,6 +6,7 @@ protocol StakingServiceFactoryProtocol {
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
         stakingType: StakingType,
+        stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
@@ -66,6 +67,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
         stakingType: StakingType,
+        stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol {
@@ -83,7 +85,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
                 operationManager: OperationManager(operationQueue: operationQueue),
                 providerFactory: substrateDataProviderFactory,
                 runtimeCodingService: runtimeService,
-                stakingDurationFactory: BabeStakingDurationFactory(),
+                stakingDurationFactory: stakingDurationFactory,
                 storageFacade: storageFacade,
                 logger: logger
             )
