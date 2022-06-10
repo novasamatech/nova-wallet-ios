@@ -45,25 +45,29 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         }
 
         do {
-            let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
-                for: chainAsset.chain.chainId
-            )
-
-            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
-                for: chainAsset.chain.chainId,
-                stakingType: StakingType(rawType: chainAsset.asset.staking),
-                assetPrecision: Int16(chainAsset.asset.precision),
-                validatorService: eraValidatorService
-            )
-
             let blockTimeService = try stakingServiceFactory.createBlockTimeService(
                 for: chainAsset.chain.chainId,
                 consensus: sharedState.consensus
             )
 
+            sharedState.replaceBlockTimeService(blockTimeService)
+
+            let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
+                for: chainAsset.chain.chainId
+            )
+
+            let stakingDurationFactory = try sharedState.createStakingDurationOperationFactory(for: chainAsset.chain)
+
+            let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
+                for: chainAsset.chain.chainId,
+                stakingType: StakingType(rawType: chainAsset.asset.staking),
+                stakingDurationFactory: stakingDurationFactory,
+                assetPrecision: Int16(chainAsset.asset.precision),
+                validatorService: eraValidatorService
+            )
+
             sharedState.replaceEraValidatorService(eraValidatorService)
             sharedState.replaceRewardCalculatorService(rewardCalculatorService)
-            sharedState.replaceBlockTimeService(blockTimeService)
         } catch {
             logger?.error("Couldn't create shared state")
         }
