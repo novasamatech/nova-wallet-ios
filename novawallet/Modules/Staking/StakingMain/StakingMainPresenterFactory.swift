@@ -19,9 +19,11 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
 
         switch stakingType {
         case .relaychain:
-            return createRelaychainPresenter(for: stakingAssetSettings, view: view)
+            return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .babe)
         case .parachain:
             return createParachainPresenter(for: stakingAssetSettings, view: view)
+        case .azero:
+            return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
         case .unsupported:
             return nil
         }

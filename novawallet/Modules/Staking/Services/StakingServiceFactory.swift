@@ -5,34 +5,41 @@ protocol StakingServiceFactoryProtocol {
     func createEraValidatorService(for chainId: ChainModel.Id) throws -> EraValidatorServiceProtocol
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
+        stakingType: StakingType,
+        stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol
+
+    func createBlockTimeService(
+        for chainId: ChainModel.Id,
+        consensus: ConsensusType
+    ) throws -> BlockTimeEstimationServiceProtocol?
 }
 
 final class StakingServiceFactory: StakingServiceFactoryProtocol {
     let chainRegisty: ChainRegistryProtocol
     let storageFacade: StorageFacadeProtocol
     let eventCenter: EventCenterProtocol
-    let operationManager: OperationManagerProtocol
-    let logger: LoggerProtocol?
+    let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     private lazy var substrateDataProviderFactory = SubstrateDataProviderFactory(
         facade: storageFacade,
-        operationManager: operationManager
+        operationManager: OperationManager(operationQueue: operationQueue)
     )
 
     init(
         chainRegisty: ChainRegistryProtocol,
         storageFacade: StorageFacadeProtocol,
         eventCenter: EventCenterProtocol,
-        operationManager: OperationManagerProtocol,
-        logger: LoggerProtocol? = nil
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainRegisty = chainRegisty
         self.storageFacade = storageFacade
         self.eventCenter = eventCenter
-        self.operationManager = operationManager
+        self.operationQueue = operationQueue
         self.logger = logger
     }
 
@@ -51,7 +58,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             runtimeCodingService: runtimeService,
             connection: connection,
             providerFactory: substrateDataProviderFactory,
-            operationManager: operationManager,
+            operationManager: OperationManager(operationQueue: operationQueue),
             eventCenter: eventCenter,
             logger: logger
         )
@@ -59,6 +66,8 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
 
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
+        stakingType: StakingType,
+        stakingDurationFactory: StakingDurationOperationFactoryProtocol,
         assetPrecision: Int16,
         validatorService: EraValidatorServiceProtocol
     ) throws -> RewardCalculatorServiceProtocol {
@@ -66,16 +75,64 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        return RewardCalculatorService(
-            chainId: chainId,
-            assetPrecision: assetPrecision,
-            eraValidatorsService: validatorService,
-            operationManager: operationManager,
-            providerFactory: substrateDataProviderFactory,
-            runtimeCodingService: runtimeService,
-            stakingDurationFactory: StakingDurationOperationFactory(),
-            storageFacade: storageFacade,
-            logger: logger
-        )
+        switch stakingType {
+        case .azero:
+            // TODO: Replace with own implementation
+            return RewardCalculatorService(
+                chainId: chainId,
+                assetPrecision: assetPrecision,
+                eraValidatorsService: validatorService,
+                operationManager: OperationManager(operationQueue: operationQueue),
+                providerFactory: substrateDataProviderFactory,
+                runtimeCodingService: runtimeService,
+                stakingDurationFactory: stakingDurationFactory,
+                storageFacade: storageFacade,
+                logger: logger
+            )
+        default:
+            return RewardCalculatorService(
+                chainId: chainId,
+                assetPrecision: assetPrecision,
+                eraValidatorsService: validatorService,
+                operationManager: OperationManager(operationQueue: operationQueue),
+                providerFactory: substrateDataProviderFactory,
+                runtimeCodingService: runtimeService,
+                stakingDurationFactory: BabeStakingDurationFactory(),
+                storageFacade: storageFacade,
+                logger: logger
+            )
+        }
+    }
+
+    func createBlockTimeService(
+        for chainId: ChainModel.Id,
+        consensus: ConsensusType
+    ) throws -> BlockTimeEstimationServiceProtocol? {
+        switch consensus {
+        case .babe:
+            return nil
+        case .aura:
+            guard let runtimeService = chainRegisty.getRuntimeProvider(for: chainId) else {
+                throw ChainRegistryError.runtimeMetadaUnavailable
+            }
+
+            guard let connection = chainRegisty.getConnection(for: chainId) else {
+                throw ChainRegistryError.connectionUnavailable
+            }
+
+            let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
+
+            let repository = repositoryFactory.createChainStorageItemRepository()
+
+            return BlockTimeEstimationService(
+                chainId: chainId,
+                connection: connection,
+                runtimeService: runtimeService,
+                repository: repository,
+                eventCenter: eventCenter,
+                operationQueue: operationQueue,
+                logger: logger
+            )
+        }
     }
 }
