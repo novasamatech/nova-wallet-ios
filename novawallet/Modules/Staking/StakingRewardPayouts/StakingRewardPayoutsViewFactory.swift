@@ -100,6 +100,20 @@ final class StakingRewardPayoutsViewFactory {
             return nil
         }
 
+        let operationManager = OperationManagerFacade.sharedManager
+
+        let storageRequestFactory = StorageRequestFactory(
+            remoteFactory: StorageKeyFactory(),
+            operationManager: operationManager
+        )
+
+        guard let eraCountdownOperationFactory = try? state.createEraCountdownOperationFactory(
+            for: chainAsset.chain,
+            storageRequestFactory: storageRequestFactory
+        ) else {
+            return nil
+        }
+
         let assetInfo = chainAsset.assetDisplayInfo
         let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetInfo)
 
@@ -115,18 +129,6 @@ final class StakingRewardPayoutsViewFactory {
             presenter: presenter,
             localizationManager: LocalizationManager.shared,
             countdownTimer: CountdownTimer()
-        )
-
-        let operationManager = OperationManagerFacade.sharedManager
-
-        let keyFactory = StorageKeyFactory()
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: keyFactory,
-            operationManager: operationManager
-        )
-
-        let eraCountdownOperationFactory = BabeEraOperationFactory(
-            storageRequestFactory: storageRequestFactory
         )
 
         let interactor = StakingRewardPayoutsInteractor(

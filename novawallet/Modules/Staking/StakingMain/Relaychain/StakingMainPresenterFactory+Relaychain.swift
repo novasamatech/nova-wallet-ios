@@ -78,10 +78,6 @@ extension StakingMainPresenterFactory {
             operationManager: operationManager
         )
 
-        let eraCountdownOperationFactory = BabeEraOperationFactory(
-            storageRequestFactory: storageRequestFactory
-        )
-
         let substrateRepositoryFactory = SubstrateRepositoryFactory(
             storageFacade: SubstrateDataStorageFacade.shared
         )
@@ -136,7 +132,6 @@ extension StakingMainPresenterFactory {
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
             applicationHandler: ApplicationHandler(),
-            eraCountdownOperationFactory: eraCountdownOperationFactory,
             logger: logger
         )
     }
