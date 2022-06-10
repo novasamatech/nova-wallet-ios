@@ -47,6 +47,9 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     private var balanceViewModel: LocalizableResource<String>?
     private var assetIconViewModel: ImageViewModelProtocol?
+    private var staticsViewModel: StakingMainStaticViewModelProtocol?
+
+    private var stateRawType: Int?
 
     var iconGenerator: IconGenerating?
     var uiFactory: UIFactoryProtocol?
@@ -155,6 +158,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         self.networkInfoView = networkInfoView
 
         networkInfoView.delegate = self
+        networkInfoView.statics = staticsViewModel
 
         networkInfoContainerView = UIView()
         networkInfoContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -227,6 +231,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
             let newActionsView = StakingActionsView()
             newActionsView.locale = selectedLocale
             newActionsView.delegate = self
+            newActionsView.statics = staticsViewModel
             stackView.addArrangedSubview(newActionsView)
             newActionsView.snp.makeConstraints { make in
                 make.width.equalToSuperview()
@@ -355,6 +360,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
         let stateView = setupView { NominatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
+        stateView?.statics = staticsViewModel
 
         return stateView
     }
@@ -367,6 +373,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 343, height: 160.0))
         let stateView = setupView { ValidatorStateView(frame: defaultFrame) }
         stateView?.locale = localizationManager?.selectedLocale ?? Locale.current
+        stateView?.statics = staticsViewModel
 
         return stateView
     }
@@ -465,7 +472,7 @@ extension StakingMainViewController: StakingMainViewProtocol {
         let sideSize = iconButtonWidth.constant - iconButton.contentInsets.left
             - iconButton.contentInsets.right
         let size = CGSize(width: sideSize, height: sideSize)
-        let icon = try? iconGenerator?.generateFromAddress(viewModel.address)
+        let icon = try? iconGenerator?.generateFromAccountId(viewModel.accountId)
             .imageWithFillColor(R.color.colorWhite()!, size: size, contentScale: UIScreen.main.scale)
         iconButton.imageWithTitleView?.iconImage = icon
         iconButton.invalidateLayout()
@@ -484,6 +491,9 @@ extension StakingMainViewController: StakingMainViewProtocol {
     }
 
     func didReceiveStakingState(viewModel: StakingViewState) {
+        let hasSameTypes = viewModel.rawType == stateRawType
+        stateRawType = viewModel.rawType
+
         switch viewModel {
         case .undefined:
             clearStateView()
@@ -493,24 +503,48 @@ extension StakingMainViewController: StakingMainViewProtocol {
         case let .noStash(viewModel, alerts):
             applyNoStash(viewModel: viewModel)
             applyAlerts(alerts)
-            expandNetworkInfoView(true)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(true)
+            }
+
             clearStakingRewardViewIfNeeded()
             updateActionsView(for: nil)
             updateUnbondingsView(for: nil)
-        case let .nominator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .nominator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyNominator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
-        case let .validator(viewModel, alerts, reward, analyticsViewModel, unbondings, actions):
+        case let .validator(viewModel, alerts, optReward, analyticsViewModel, unbondings, actions):
             applyValidator(viewModel: viewModel)
             applyAlerts(alerts)
-            applyStakingReward(viewModel: reward)
+
+            if let reward = optReward {
+                applyStakingReward(viewModel: reward)
+            } else {
+                clearStakingRewardViewIfNeeded()
+            }
+
             applyAnalyticsRewards(viewModel: analyticsViewModel)
-            expandNetworkInfoView(false)
+
+            if !hasSameTypes {
+                expandNetworkInfoView(false)
+            }
+
             updateActionsView(for: actions)
             updateUnbondingsView(for: unbondings)
         }
@@ -518,6 +552,17 @@ extension StakingMainViewController: StakingMainViewProtocol {
 
     func expandNetworkInfoView(_ isExpanded: Bool) {
         networkInfoView.setExpanded(isExpanded, animated: false)
+    }
+
+    func didReceiveStatics(viewModel: StakingMainStaticViewModelProtocol) {
+        staticsViewModel = viewModel
+
+        networkInfoView.statics = viewModel
+        actionsView?.statics = viewModel
+
+        if let stateView = stateView as? StakingStateView {
+            stateView.statics = viewModel
+        }
     }
 }
 

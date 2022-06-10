@@ -110,14 +110,19 @@ class NominatorStateView: StakingStateView, LocalizableViewProtocol {
 
         if let remainingTime = remainingTime {
             let time = (try? timeFormatter.string(from: remainingTime)) ?? ""
-            statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-                time,
-                preferredLanguages: locale.rLanguages
-            ).uppercased()
+            statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
             timer.start(with: remainingTime, runLoop: .main, mode: .common)
         } else {
-            statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-                "-:-:-",
+            statusView.detailsLabel.text = constructWaitingStatusDetails(for: "-:-:-")
+        }
+    }
+
+    private func constructWaitingStatusDetails(for timeString: String) -> String {
+        if let statics = statics {
+            return statics.waitingNextEra(for: timeString, locale: locale).uppercased()
+        } else {
+            return R.string.localizable.stakingWaitingNextEraFormat(
+                timeString,
                 preferredLanguages: locale.rLanguages
             ).uppercased()
         }
@@ -128,27 +133,18 @@ extension NominatorStateView: CountdownTimerDelegate {
     func didStart(with interval: TimeInterval) {
         let time = (try? timeFormatter.string(from: interval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 
     func didCountdown(remainedInterval: TimeInterval) {
         let time = (try? timeFormatter.string(from: remainedInterval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 
     func didStop(with interval: TimeInterval) {
         let time = (try? timeFormatter.string(from: interval)) ?? ""
 
-        statusView.detailsLabel.text = R.string.localizable.stakingWaitingNextEraFormat(
-            time,
-            preferredLanguages: locale.rLanguages
-        ).uppercased()
+        statusView.detailsLabel.text = constructWaitingStatusDetails(for: time)
     }
 }
