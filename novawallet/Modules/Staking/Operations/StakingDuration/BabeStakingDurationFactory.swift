@@ -1,19 +1,7 @@
 import Foundation
 import RobinHood
 
-struct StakingDuration {
-    let session: TimeInterval
-    let era: TimeInterval
-    let unlocking: TimeInterval
-}
-
-protocol StakingDurationOperationFactoryProtocol {
-    func createDurationOperation(
-        from runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<StakingDuration>
-}
-
-final class StakingDurationOperationFactory: StakingDurationOperationFactoryProtocol {
+final class BabeStakingDurationFactory: StakingDurationOperationFactoryProtocol {
     func createDurationOperation(
         from runtimeService: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<StakingDuration> {

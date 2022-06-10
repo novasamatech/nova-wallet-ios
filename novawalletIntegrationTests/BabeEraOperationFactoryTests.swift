@@ -19,7 +19,7 @@ class EraCountdownOperationFactoryTests: XCTestCase {
             operationManager: operationManager
         )
 
-        let factory = EraCountdownOperationFactory(storageRequestFactory: storageRequestFactory)
+        let factory = BabeEraOperationFactory(storageRequestFactory: storageRequestFactory)
 
         let timeExpectation = XCTestExpectation()
         let operationWrapper = factory.fetchCountdownOperationWrapper(
