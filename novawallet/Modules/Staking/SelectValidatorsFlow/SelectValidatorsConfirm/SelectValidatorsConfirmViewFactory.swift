@@ -140,7 +140,10 @@ final class SelectValidatorsConfirmViewFactory {
             let chainAsset = stakingState.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
-            let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress() else {
+            let selectedAccount = try? selectedMetaAccount.toWalletDisplayAddress(),
+            let stakingDurationFactory = try? stakingState.createStakingDurationOperationFactory(
+                for: chainAsset.chain
+            ) else {
             return nil
         }
 
@@ -167,7 +170,7 @@ final class SelectValidatorsConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            durationOperationFactory: BabeStakingDurationFactory(),
+            durationOperationFactory: stakingDurationFactory,
             operationManager: operationManager,
             signer: signer,
             nomination: nomination
@@ -186,7 +189,10 @@ final class SelectValidatorsConfirmViewFactory {
         guard
             let chainAsset = state.settings.value,
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId) else {
+            let runtimeService = chainRegistry.getRuntimeProvider(for: chainAsset.chain.chainId),
+            let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
+                for: chainAsset.chain
+            ) else {
             return nil
         }
 
@@ -216,7 +222,7 @@ final class SelectValidatorsConfirmViewFactory {
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             extrinsicService: extrinsicService,
             runtimeService: runtimeService,
-            durationOperationFactory: BabeStakingDurationFactory(),
+            durationOperationFactory: stakingDurationFactory,
             operationManager: operationManager,
             signer: signer,
             accountRepositoryFactory: accountRepository,

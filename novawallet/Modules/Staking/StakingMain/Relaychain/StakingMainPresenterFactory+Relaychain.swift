@@ -7,9 +7,10 @@ import SoraKeystore
 extension StakingMainPresenterFactory {
     func createRelaychainPresenter(
         for stakingAssetSettings: StakingAssetSettings,
-        view: StakingMainViewProtocol
+        view: StakingMainViewProtocol,
+        consensus: ConsensusType
     ) -> StakingRelaychainPresenter {
-        let sharedState = createRelaychainSharedState(for: stakingAssetSettings)
+        let sharedState = createRelaychainSharedState(for: stakingAssetSettings, consensus: consensus)
 
         // MARK: - Interactor
 
@@ -59,7 +60,9 @@ extension StakingMainPresenterFactory {
         return presenter
     }
 
-    func createRelaychainInteractor(state: StakingSharedState) -> StakingRelaychainInteractor {
+    func createRelaychainInteractor(
+        state: StakingSharedState
+    ) -> StakingRelaychainInteractor {
         let operationManager = OperationManagerFacade.sharedManager
         let logger = Logger.shared
 
@@ -96,7 +99,8 @@ extension StakingMainPresenterFactory {
             chainRegisty: ChainRegistryFacade.sharedRegistry,
             storageFacade: SubstrateDataStorageFacade.shared,
             eventCenter: EventCenter.shared,
-            operationManager: OperationManagerFacade.sharedManager
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: logger
         )
 
         let substrateDataProviderFactory = SubstrateDataProviderFactory(
@@ -131,7 +135,6 @@ extension StakingMainPresenterFactory {
             accountProviderFactory: accountProviderFactory,
             eventCenter: EventCenter.shared,
             operationManager: operationManager,
-            eraInfoOperationFactory: NetworkStakingInfoOperationFactory(),
             applicationHandler: ApplicationHandler(),
             eraCountdownOperationFactory: eraCountdownOperationFactory,
             logger: logger
@@ -139,7 +142,8 @@ extension StakingMainPresenterFactory {
     }
 
     func createRelaychainSharedState(
-        for stakingAssetSettings: StakingAssetSettings
+        for stakingAssetSettings: StakingAssetSettings,
+        consensus: ConsensusType
     ) -> StakingSharedState {
         let storageFacade = SubstrateDataStorageFacade.shared
 
@@ -155,9 +159,11 @@ extension StakingMainPresenterFactory {
         )
 
         return StakingSharedState(
+            consensus: consensus,
             settings: stakingAssetSettings,
             eraValidatorService: nil,
             rewardCalculationService: nil,
+            blockTimeService: nil,
             stakingLocalSubscriptionFactory: stakingLocalSubscriptionFactory,
             stakingAnalyticsLocalSubscriptionFactory: stakingAnalyticsLocalSubscriptionFactory
         )

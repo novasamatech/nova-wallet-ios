@@ -26,7 +26,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     let accountProviderFactory: AccountProviderFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationManager: OperationManagerProtocol
-    let eraInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol
     let applicationHandler: ApplicationHandlerProtocol
     let eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol
     let logger: LoggerProtocol?
@@ -68,7 +67,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         accountProviderFactory: AccountProviderFactoryProtocol,
         eventCenter: EventCenterProtocol,
         operationManager: OperationManagerProtocol,
-        eraInfoOperationFactory: NetworkStakingInfoOperationFactoryProtocol,
         applicationHandler: ApplicationHandlerProtocol,
         eraCountdownOperationFactory: EraCountdownOperationFactoryProtocol,
         logger: LoggerProtocol? = nil
@@ -84,7 +82,6 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
         self.accountProviderFactory = accountProviderFactory
         self.eventCenter = eventCenter
         self.operationManager = operationManager
-        self.eraInfoOperationFactory = eraInfoOperationFactory
         self.applicationHandler = applicationHandler
         self.eraCountdownOperationFactory = eraCountdownOperationFactory
         self.logger = logger
@@ -100,6 +97,7 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
 
         sharedState.eraValidatorService?.throttle()
         sharedState.rewardCalculationService?.throttle()
+        sharedState.blockTimeService?.throttle()
     }
 
     func clearCancellable() {
@@ -257,44 +255,52 @@ final class StakingRelaychainInteractor: RuntimeConstantFetching, AnyCancellable
     }
 
     func provideNetworkStakingInfo() {
-        clear(cancellable: &networkInfoCancellable)
+        do {
+            clear(cancellable: &networkInfoCancellable)
 
-        guard let chainId = selectedChainAsset?.chain.chainId else {
-            return
-        }
+            guard let chain = selectedChainAsset?.chain else {
+                return
+            }
 
-        guard
-            let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
-            let eraValidatorService = sharedState.eraValidatorService else {
-            presenter?.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
-            return
-        }
+            let networkInfoFactory = try sharedState.createNetworkInfoOperationFactory(for: chain)
 
-        let wrapper = eraInfoOperationFactory.networkStakingOperation(
-            for: eraValidatorService,
-            runtimeService: runtimeService
-        )
+            let chainId = chain.chainId
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                guard self?.networkInfoCancellable === wrapper else {
-                    return
-                }
+            guard
+                let runtimeService = chainRegistry.getRuntimeProvider(for: chainId),
+                let eraValidatorService = sharedState.eraValidatorService else {
+                presenter?.didReceive(networkStakingInfoError: ChainRegistryError.runtimeMetadaUnavailable)
+                return
+            }
 
-                self?.networkInfoCancellable = nil
+            let wrapper = networkInfoFactory.networkStakingOperation(
+                for: eraValidatorService,
+                runtimeService: runtimeService
+            )
 
-                do {
-                    let info = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceive(networkStakingInfo: info)
-                } catch {
-                    self?.presenter?.didReceive(networkStakingInfoError: error)
+            wrapper.targetOperation.completionBlock = { [weak self] in
+                DispatchQueue.main.async {
+                    guard self?.networkInfoCancellable === wrapper else {
+                        return
+                    }
+
+                    self?.networkInfoCancellable = nil
+
+                    do {
+                        let info = try wrapper.targetOperation.extractNoCancellableResultData()
+                        self?.presenter?.didReceive(networkStakingInfo: info)
+                    } catch {
+                        self?.presenter?.didReceive(networkStakingInfoError: error)
+                    }
                 }
             }
+
+            networkInfoCancellable = wrapper
+
+            operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+        } catch {
+            presenter?.didReceive(networkStakingInfoError: error)
         }
-
-        networkInfoCancellable = wrapper
-
-        operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
     }
 
     func fetchEraCompletionTime() {
