@@ -65,29 +65,21 @@ enum RewardCalculatorEngineError: Error {
     case unexpectedValidator(accountId: Data)
 }
 
-// For all the cases we suggest that parachains are disabled
-// Thus, i_ideal = 0.1 and x_ideal = 0.75
-final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
-    private var totalIssuance: Decimal
-    private var validators: [EraValidatorInfo] = []
+class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
+    let totalIssuance: Decimal
+    let validators: [EraValidatorInfo]
+    let chainId: ChainModel.Id
+    let assetPrecision: Int16
+    let eraDurationInSeconds: TimeInterval
 
-    private let chainId: ChainModel.Id
-    private let assetPrecision: Int16
-    private let eraDurationInSeconds: TimeInterval
-
-    private let decayRate: Decimal = 0.05
-    private let idealStakePortion: Decimal = 0.75
-    private let idealInflation: Decimal = 0.1
-    private let minimalInflation: Decimal = 0.025
-
-    private lazy var totalStake: Decimal = {
+    private(set) lazy var totalStake: Decimal = {
         Decimal.fromSubstrateAmount(
             validators.map(\.exposure.total).reduce(0, +),
             precision: assetPrecision
         ) ?? 0.0
     }()
 
-    private var averageStake: Decimal {
+    var averageStake: Decimal {
         if !validators.isEmpty {
             return totalStake / Decimal(validators.count)
         } else {
@@ -95,7 +87,7 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         }
     }
 
-    private var stakedPortion: Decimal {
+    var stakedPortion: Decimal {
         if totalIssuance > 0.0 {
             return totalStake / totalIssuance
         } else {
@@ -103,22 +95,7 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         }
     }
 
-    private lazy var annualInflation: Decimal = {
-        let idealInterest = idealInflation / idealStakePortion
-
-        if stakedPortion <= idealStakePortion {
-            return minimalInflation + stakedPortion *
-                (idealInterest - minimalInflation / idealStakePortion)
-        } else {
-            let powerValue = (idealStakePortion - stakedPortion) / decayRate
-            let doublePowerValue = Double(truncating: powerValue as NSNumber)
-            let decayCoefficient = Decimal(pow(2, doublePowerValue))
-            return minimalInflation + (idealInterest * idealStakePortion - minimalInflation)
-                * decayCoefficient
-        }
-    }()
-
-    private lazy var medianCommission: Decimal = {
+    private(set) lazy var medianCommission: Decimal = {
         let profitable = validators
             .compactMap { Decimal.fromSubstratePerbill(value: $0.prefs.commission) }
             .sorted()
@@ -141,7 +118,7 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         return commission
     }()
 
-    private lazy var maxValidator: EraValidatorInfo? = {
+    private(set) lazy var maxValidator: EraValidatorInfo? = {
         validators.max {
             calculateEarningsForValidator($0, amount: 1.0, isCompound: false, period: .year) <
                 calculateEarningsForValidator($1, amount: 1.0, isCompound: false, period: .year)
@@ -163,6 +140,10 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         ) ?? 0.0
         self.validators = validators
         self.eraDurationInSeconds = eraDurationInSeconds
+    }
+
+    func calculateAnnualInflation() -> Decimal {
+        fatalError("Child class must override this method")
     }
 
     func calculateEarnings(
@@ -202,7 +183,8 @@ final class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
     }
 
     private func calculateReturnForStake(_ stake: Decimal, commission: Decimal) -> Decimal {
-        (annualInflation * averageStake / (stakedPortion * stake)) * (1.0 - commission)
+        let annualInflation = calculateAnnualInflation()
+        return (annualInflation * averageStake / (stakedPortion * stake)) * (1.0 - commission)
     }
 
     private func calculateEarningsForValidator(

@@ -28,7 +28,6 @@ final class RewardCalculatorService {
     private var pendingRequests: [PendingRequest] = []
 
     let chainId: ChainModel.Id
-    let assetPrecision: Int16
     let eraValidatorsService: EraValidatorServiceProtocol
     let logger: LoggerProtocol?
     let operationManager: OperationManagerProtocol
@@ -36,10 +35,11 @@ final class RewardCalculatorService {
     let storageFacade: StorageFacadeProtocol
     let runtimeCodingService: RuntimeCodingServiceProtocol
     let stakingDurationFactory: StakingDurationOperationFactoryProtocol
+    let rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
 
     init(
         chainId: ChainModel.Id,
-        assetPrecision: Int16,
+        rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol,
         eraValidatorsService: EraValidatorServiceProtocol,
         operationManager: OperationManagerProtocol,
         providerFactory: SubstrateDataProviderFactoryProtocol,
@@ -49,7 +49,7 @@ final class RewardCalculatorService {
         logger: LoggerProtocol? = nil
     ) {
         self.chainId = chainId
-        self.assetPrecision = assetPrecision
+        self.rewardCalculatorFactory = rewardCalculatorFactory
         self.storageFacade = storageFacade
         self.providerFactory = providerFactory
         self.operationManager = operationManager
@@ -68,7 +68,12 @@ final class RewardCalculatorService {
         let request = PendingRequest(resultClosure: closure, queue: queue)
 
         if let snapshot = snapshot {
-            deliver(snapshot: snapshot, to: request, chainId: chainId, assetPrecision: assetPrecision)
+            deliver(
+                snapshot: snapshot,
+                to: request,
+                chainId: chainId,
+                rewardCalculatorFactory: rewardCalculatorFactory
+            )
         } else {
             pendingRequests.append(request)
         }
@@ -77,8 +82,8 @@ final class RewardCalculatorService {
     private func deliver(
         snapshot: BigUInt,
         to request: PendingRequest,
-        chainId: ChainModel.Id,
-        assetPrecision: Int16
+        chainId _: ChainModel.Id,
+        rewardCalculatorFactory: RewardCalculatorEngineFactoryProtocol
     ) {
         let durationWrapper = stakingDurationFactory.createDurationOperation(
             from: runtimeCodingService
@@ -86,14 +91,12 @@ final class RewardCalculatorService {
 
         let eraOperation = eraValidatorsService.fetchInfoOperation()
 
-        let mapOperation = ClosureOperation<RewardCalculatorEngine> {
+        let mapOperation = ClosureOperation<RewardCalculatorEngineProtocol> {
             let eraStakersInfo = try eraOperation.extractNoCancellableResultData()
             let stakingDuration = try durationWrapper.targetOperation.extractNoCancellableResultData()
 
-            return RewardCalculatorEngine(
-                chainId: chainId,
-                assetPrecision: assetPrecision,
-                totalIssuance: snapshot,
+            return rewardCalculatorFactory.createRewardCalculator(
+                for: snapshot,
                 validators: eraStakersInfo.validators,
                 eraDurationInSeconds: stakingDuration.era
             )
@@ -136,7 +139,7 @@ final class RewardCalculatorService {
                 snapshot: totalIssuance,
                 to: $0,
                 chainId: chainId,
-                assetPrecision: assetPrecision
+                rewardCalculatorFactory: rewardCalculatorFactory
             )
         }
 
