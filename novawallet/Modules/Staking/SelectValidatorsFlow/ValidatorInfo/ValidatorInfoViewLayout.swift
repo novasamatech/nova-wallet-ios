@@ -46,8 +46,22 @@ final class ValidatorInfoViewLayout: UIView {
     }
 
     @discardableResult
-    func addAccountView(for viewModel: WalletAccountViewModel) -> WalletAccountInfoView {
+    func addWalletAccountView(for viewModel: WalletAccountViewModel) -> WalletAccountInfoView {
         let accountView = WalletAccountInfoView()
+
+        stackView.addArrangedSubview(accountView)
+        accountView.snp.makeConstraints { make in
+            make.height.equalTo(56)
+        }
+
+        accountView.bind(viewModel: viewModel)
+
+        return accountView
+    }
+
+    @discardableResult
+    func addIdentityAccountView(for viewModel: DisplayAddressViewModel) -> IdentityAccountInfoView {
+        let accountView = IdentityAccountInfoView()
 
         stackView.addArrangedSubview(accountView)
         accountView.snp.makeConstraints { make in
@@ -138,13 +152,11 @@ final class ValidatorInfoViewLayout: UIView {
     }
 
     @discardableResult
-    func addNominatorsView(_ exposure: ValidatorInfoViewModel.Exposure, locale: Locale) -> UIView {
+    func addNominatorsView(_ exposure: ValidatorInfoViewModel.Exposure, title: String) -> UIView {
         let cell = StackTitleMultiValueCell()
         cell.canSelect = false
 
-        cell.titleLabel.text = R.string.localizable.stakingValidatorNominators(
-            preferredLanguages: locale.rLanguages
-        )
+        cell.titleLabel.text = title
 
         cell.rowContentView.valueView.bind(
             topValue: exposure.nominators,
@@ -170,6 +182,25 @@ final class ValidatorInfoViewLayout: UIView {
             topValue: exposure.totalStake.amount,
             bottomValue: exposure.totalStake.price
         )
+
+        stakingTableView?.addArrangedSubview(cell)
+
+        return cell
+    }
+
+    @discardableResult
+    func addMinimumStakeView(
+        _ minimumStake: BalanceViewModelProtocol,
+        locale: Locale
+    ) -> UIControl {
+        let cell = StackTitleMultiValueCell()
+        cell.canSelect = false
+
+        cell.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
+            preferredLanguages: locale.rLanguages
+        )
+
+        cell.rowContentView.valueView.bind(topValue: minimumStake.amount, bottomValue: minimumStake.price)
 
         stakingTableView?.addArrangedSubview(cell)
 

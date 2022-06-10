@@ -198,7 +198,7 @@ final class StakingUnbondingsView: UIView {
         }
     }
 
-    private func createTimeLeft(unbondingEra: EraIndex, eraCountdown: EraCountdown?) -> String? {
+    private func createTimeLeft(unbondingEra: EraIndex, eraCountdown: EraCountdownDisplayProtocol?) -> String? {
         guard let eraCountdown = eraCountdown else { return "" }
 
         guard unbondingEra > eraCountdown.activeEra else {
@@ -220,14 +220,17 @@ final class StakingUnbondingsView: UIView {
         if
             let viewModel = viewModel,
             let eraCountdown = viewModel.eraCountdown,
-            viewModel.items.contains(where: { $0.isNext(from: eraCountdown.activeEra) }) {
+            viewModel.items.contains(where: {
+                let days = eraCountdown.timeIntervalTillStart(targetEra: $0.unbondingEra).daysFromSeconds
+                return days < 1
+            }) {
             setupTimer(for: eraCountdown)
         } else {
             clearTimer()
         }
     }
 
-    private func setupTimer(for eraCountdown: EraCountdown) {
+    private func setupTimer(for eraCountdown: EraCountdownDisplayProtocol) {
         if countdownTimer == nil {
             countdownTimer = CountdownTimer()
             countdownTimer?.delegate = self

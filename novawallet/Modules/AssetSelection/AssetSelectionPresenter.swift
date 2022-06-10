@@ -1,5 +1,6 @@
 import Foundation
 import SoraFoundation
+import BigInt
 
 final class AssetSelectionPresenter {
     weak var view: ChainSelectionViewProtocol?
@@ -32,20 +33,24 @@ final class AssetSelectionPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func extractBalance(for chain: ChainModel, asset: AssetModel) -> String? {
+    private func extractAvailableBalanceInPlank(for chain: ChainModel) -> BigUInt? {
         guard
             let accountInfoResult = accountInfoResults[chain.chainId],
             case let .success(accountInfo) = accountInfoResult else {
             return nil
         }
 
+        return accountInfo?.data.available ?? 0
+    }
+
+    private func extractBalance(for chain: ChainModel, asset: AssetModel) -> String? {
         let assetInfo = asset.displayInfo
 
         let maybeBalance: Decimal?
 
-        if let accountInfo = accountInfo {
+        if let balanceInPlank = extractAvailableBalanceInPlank(for: chain) {
             maybeBalance = Decimal.fromSubstrateAmount(
-                accountInfo.data.available,
+                balanceInPlank,
                 precision: assetInfo.assetPrecision
             )
         } else {

@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewProtocol {
+class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableViewProtocol {
     typealias RootViewType = ValidatorInfoViewLayout
 
     let presenter: ValidatorInfoPresenterProtocol
@@ -43,8 +43,13 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
     }
 
     private func setupLocalization() {
-        title = R.string.localizable
-            .stakingValidatorInfoTitle(preferredLanguages: selectedLocale.rLanguages)
+        applyTitle()
+    }
+
+    func applyTitle() {
+        title = R.string.localizable.stakingValidatorInfoTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
     }
 
     func applyState() {
@@ -70,13 +75,37 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
         reloadEmptyState(animated: true)
     }
 
+    func applyAccountView(from viewModel: ValidatorInfoViewModel) {
+        let accountView = rootView.addWalletAccountView(for: viewModel.account)
+
+        accountView.addTarget(self, action: #selector(actionOnAccount), for: .touchUpInside)
+    }
+
+    func applyNominatorsView(from exposure: ValidatorInfoViewModel.Exposure) {
+        let nominatorsTitle = R.string.localizable.stakingValidatorNominators(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.addNominatorsView(exposure, title: nominatorsTitle)
+    }
+
+    func applyEstimatedReward(_ estimatedReward: String) {
+        if let stakingTableView = rootView.stakingTableView {
+            rootView.addTitleValueView(
+                for: R.string.localizable.stakingValidatorEstimatedReward(
+                    preferredLanguages: selectedLocale.rLanguages
+                ),
+                value: estimatedReward,
+                to: stakingTableView
+            )
+        }
+    }
+
     func apply(viewModel: ValidatorInfoViewModel) {
         rootView.clearStackView()
         linkPairs = []
 
-        let accountView = rootView.addAccountView(for: viewModel.account)
-
-        accountView.addTarget(self, action: #selector(actionOnAccount), for: .touchUpInside)
+        applyAccountView(from: viewModel)
 
         addSlashedAlertIfNeeded(for: viewModel)
 
@@ -89,20 +118,16 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
         rootView.addStakingStatusView(viewModel.staking, locale: selectedLocale)
 
         if case let .elected(exposure) = viewModel.staking.status {
-            rootView.addNominatorsView(exposure, locale: selectedLocale)
+            applyNominatorsView(from: exposure)
 
             let totalStakeView = rootView.addTotalStakeView(exposure, locale: selectedLocale)
             totalStakeView.addTarget(self, action: #selector(actionOnTotalStake), for: .touchUpInside)
 
-            if let stakingTableView = rootView.stakingTableView {
-                rootView.addTitleValueView(
-                    for: R.string.localizable.stakingValidatorEstimatedReward(
-                        preferredLanguages: selectedLocale.rLanguages
-                    ),
-                    value: exposure.estimatedReward,
-                    to: stakingTableView
-                )
+            if let minStake = exposure.minRewardableStake {
+                rootView.addMinimumStakeView(minStake, locale: selectedLocale)
             }
+
+            applyEstimatedReward(exposure.estimatedReward)
         }
 
         if let identityItems = viewModel.identity, !identityItems.isEmpty {
@@ -133,7 +158,7 @@ final class ValidatorInfoViewController: UIViewController, ViewHolder, LoadableV
         }
     }
 
-    private func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
+    func addOversubscriptionAlertIfNeeded(for model: ValidatorInfoViewModel.Staking) {
         if case let .elected(exposure) = model.status, exposure.oversubscribed {
             let message: String = {
                 if let myNomination = exposure.myNomination, !myNomination.isRewarded {

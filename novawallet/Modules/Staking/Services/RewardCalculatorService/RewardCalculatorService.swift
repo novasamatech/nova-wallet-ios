@@ -9,7 +9,7 @@ enum RewardCalculatorServiceError: Error {
 }
 
 final class RewardCalculatorService {
-    static let queueLabelPrefix = "jp.co.fearless.rewcalculator"
+    static let queueLabelPrefix = "com.novawallet.rewcalculator"
 
     private struct PendingRequest {
         let resultClosure: (RewardCalculatorEngineProtocol) -> Void
@@ -252,7 +252,7 @@ extension RewardCalculatorService: RewardCalculatorServiceProtocol {
 
     func throttle() {
         syncQueue.async {
-            guard !self.isActive else {
+            guard self.isActive else {
                 return
             }
 
