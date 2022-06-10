@@ -575,7 +575,7 @@ class CalculatorServiceTests: XCTestCase {
         // given
 
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
-        let operationManager = OperationManagerFacade.sharedManager
+        let operationQueue = OperationQueue()
 
         let chainItemRepository = SubstrateRepositoryFactory(
             storageFacade: storageFacade
@@ -598,7 +598,8 @@ class CalculatorServiceTests: XCTestCase {
             chainRegisty: chainRegistry,
             storageFacade: storageFacade,
             eventCenter: EventCenter.shared,
-            operationManager: operationManager
+            operationQueue: operationQueue,
+            logger: Logger.shared
         )
 
         let validatorService = try serviceFactory.createEraValidatorService(for: chainId)
@@ -606,6 +607,8 @@ class CalculatorServiceTests: XCTestCase {
 
         let calculatorService = try serviceFactory.createRewardCalculatorService(
             for: chainId,
+            stakingType: .relaychain,
+            stakingDurationFactory: BabeStakingDurationFactory(),
             assetPrecision: assetPrecision,
             validatorService: validatorService
         )
@@ -628,7 +631,7 @@ class CalculatorServiceTests: XCTestCase {
             }
         }
 
-        operationManager.enqueue(operations: [operation], in: .transient)
+        operationQueue.addOperations([operation], waitUntilFinished: false)
 
         wait(for: [expectation], timeout: 60.0)
 
