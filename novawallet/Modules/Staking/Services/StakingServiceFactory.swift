@@ -75,12 +75,17 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
+        let rewardCalculatorFactory = RewardCalculatorEngineFactory(
+            chainId: chainId,
+            stakingType: stakingType,
+            assetPrecision: assetPrecision
+        )
+
         switch stakingType {
         case .azero:
-            // TODO: Replace with own implementation
             return RewardCalculatorService(
                 chainId: chainId,
-                assetPrecision: assetPrecision,
+                rewardCalculatorFactory: rewardCalculatorFactory,
                 eraValidatorsService: validatorService,
                 operationManager: OperationManager(operationQueue: operationQueue),
                 providerFactory: substrateDataProviderFactory,
@@ -92,7 +97,7 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
         default:
             return RewardCalculatorService(
                 chainId: chainId,
-                assetPrecision: assetPrecision,
+                rewardCalculatorFactory: rewardCalculatorFactory,
                 eraValidatorsService: validatorService,
                 operationManager: OperationManager(operationQueue: operationQueue),
                 providerFactory: substrateDataProviderFactory,
