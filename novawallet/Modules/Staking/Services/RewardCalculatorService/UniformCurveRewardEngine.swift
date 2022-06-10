@@ -33,4 +33,15 @@ final class UniformCurveRewardEngine: RewardCalculatorEngine {
 
         return (1 - treasuryPercentage) * issuancePerYear / totalIssuance
     }
+
+    override func calculateEraReturn(from annualReturn: Decimal) -> Decimal {
+        let daysInYear = TimeInterval(CalculationPeriod.year.inDays)
+        let erasInYear = daysInYear * TimeInterval.secondsInDay / eraDurationInSeconds
+
+        guard erasInYear > 0 else {
+            return 0
+        }
+
+        return annualReturn / Decimal(erasInYear)
+    }
 }

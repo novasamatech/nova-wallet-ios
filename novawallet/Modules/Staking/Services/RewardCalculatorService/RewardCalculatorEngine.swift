@@ -146,6 +146,10 @@ class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
         fatalError("Child class must override this method")
     }
 
+    func calculateEraReturn(from _: Decimal) -> Decimal {
+        fatalError("Child class must override this method")
+    }
+
     func calculateEarnings(
         amount: Decimal,
         validatorAccountId: Data,
@@ -217,16 +221,16 @@ class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
     ) -> Decimal {
         let annualReturn = calculateReturnForStake(stake, commission: commission)
 
-        let dailyReturn = annualReturn / CalculationPeriod.daysInYear
+        let eraInterestRate = calculateEraReturn(from: annualReturn)
 
         if isCompound {
             return calculateCompoundReward(
                 initialAmount: amount,
                 period: period,
-                dailyInterestRate: dailyReturn
+                eraInterestRate: eraInterestRate
             )
         } else {
-            return amount * dailyReturn * Decimal(period.inDays)
+            return calculateSimpleReward(amount: amount, period: period, eraInterestRate: eraInterestRate)
         }
     }
 
@@ -240,18 +244,37 @@ class RewardCalculatorEngine: RewardCalculatorEngineProtocol {
     private func calculateCompoundReward(
         initialAmount: Decimal,
         period: CalculationPeriod,
-        dailyInterestRate: Decimal
+        eraInterestRate: Decimal
     ) -> Decimal {
         let numberOfDays = period.inDays
-        let erasPerDay = eraDurationInSeconds.intervalsInDay
+
+        guard eraDurationInSeconds > 0 else {
+            return 0
+        }
+
+        let erasPerDay = TimeInterval.secondsInDay / eraDurationInSeconds
 
         guard erasPerDay > 0 else {
             return 0.0
         }
 
-        let compoundedInterest = pow(1.0 + dailyInterestRate / Decimal(erasPerDay), erasPerDay * numberOfDays)
-        let finalAmount = initialAmount * compoundedInterest
+        let rawEraInterestRate = (eraInterestRate as NSDecimalNumber).doubleValue
+        let compoundedInterest = pow(1.0 + rawEraInterestRate, erasPerDay * Double(numberOfDays))
+        let finalAmount = initialAmount * Decimal(compoundedInterest)
 
         return finalAmount - initialAmount
+    }
+
+    private func calculateSimpleReward(
+        amount: Decimal,
+        period: CalculationPeriod,
+        eraInterestRate: Decimal
+    ) -> Decimal {
+        guard eraDurationInSeconds > 0 else {
+            return 0
+        }
+
+        let erasPerDay = TimeInterval.secondsInDay / eraDurationInSeconds
+        return amount * eraInterestRate * Decimal(period.inDays) * Decimal(erasPerDay)
     }
 }
