@@ -126,11 +126,9 @@ final class CustomValidatorListViewController: UIViewController, ViewHolder, Imp
 
     private func applyDarkButtonStyle(_ button: RoundedButton, isEnabled: Bool) {
         if isEnabled {
-            button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
-            button.imageWithTitleView?.titleColor = R.color.colorWhite()!
+            button.applyEnabledSecondaryStyle()
         } else {
-            button.roundedBackgroundView?.fillColor = R.color.color0x1D1D20()!
-            button.imageWithTitleView?.titleColor = R.color.colorWhite48()!
+            button.applyDisabledSecondaryStyle()
         }
     }
 

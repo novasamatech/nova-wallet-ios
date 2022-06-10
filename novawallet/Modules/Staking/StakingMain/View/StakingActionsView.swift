@@ -23,6 +23,12 @@ final class StakingActionsView: UIView {
         return view
     }()
 
+    var statics: StakingMainStaticViewModelProtocol? {
+        didSet {
+            applyActions()
+        }
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -90,7 +96,7 @@ final class StakingActionsView: UIView {
 
     private func applyActions() {
         for (action, cell) in zip(actions, cells) {
-            let title = action.titleForLocale(locale)
+            let title = action.titleForLocale(locale, statics: statics)
             let icon = action.icon?.tinted(with: R.color.colorWhite48()!)
             let details = action.detailsForLocale(locale)
 

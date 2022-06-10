@@ -30,7 +30,6 @@ final class ChainRegistry {
     let commonTypesSyncService: CommonTypesSyncServiceProtocol
     let chainProvider: StreamableProvider<ChainModel>
     let specVersionSubscriptionFactory: SpecVersionSubscriptionFactoryProtocol
-    let processingQueue = DispatchQueue(label: "io.novafoundation.novawallet.chain.registry")
     let logger: LoggerProtocol?
 
     private(set) var runtimeVersionSubscriptions: [ChainModel.Id: SpecVersionSubscriptionProtocol] = [:]
@@ -222,7 +221,7 @@ extension ChainRegistry: ChainRegistryProtocol {
 
         chainProvider.addObserver(
             target,
-            deliverOn: processingQueue,
+            deliverOn: DispatchQueue.global(qos: .userInitiated),
             executing: updateClosure,
             failing: failureClosure,
             options: options

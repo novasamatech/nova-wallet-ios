@@ -64,6 +64,17 @@ extension ChainAccountResponse {
         let chainFormat: ChainFormat = isEthereumBased ? .ethereum : .substrate(addressPrefix)
         return try? accountId.toAddress(using: chainFormat)
     }
+
+    // TODO: Remove when fully migrate to Ethereum checksumed addresses
+    func toChecksumedAddress() -> AccountAddress? {
+        let optAddress = toAddress()
+
+        if isEthereumBased {
+            return optAddress?.toEthereumAddressWithChecksum()
+        } else {
+            return optAddress
+        }
+    }
 }
 
 extension MetaAccountModel {
@@ -174,5 +185,14 @@ extension ChainModel {
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased
         )
+    }
+
+    var accountIdSize: Int {
+        switch chainFormat {
+        case .substrate:
+            return 32
+        case .ethereum:
+            return 20
+        }
     }
 }
