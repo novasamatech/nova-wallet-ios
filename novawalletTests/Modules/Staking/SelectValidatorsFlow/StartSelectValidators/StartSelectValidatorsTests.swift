@@ -93,15 +93,14 @@ class SelectValidatorsStartTests: XCTestCase {
         stub(wireframe) { stub in
             when(stub).proceedToCustomList(
                 from: any(),
-                validatorList: any(),
-                recommendedValidatorList: any(),
+                selectionValidatorGroups: any(),
                 selectedValidatorList: any(),
-                maxTargets: any()).then { (_, validators, _, _ , _) in
+                validatorsSelectionParams: any()).then { (_, selectionValidatorGroups, _ , _) in
                     XCTAssertEqual(
                         expectedCustomValidators.sorted {
                             $0.address.lexicographicallyPrecedes($1.address)
                         },
-                        validators.sorted {
+                        selectionValidatorGroups.fullValidatorList.sorted {
                             $0.address.lexicographicallyPrecedes($1.address)
                         })
             }
@@ -121,7 +120,7 @@ class SelectValidatorsStartTests: XCTestCase {
         presenter.selectRecommendedValidators()
         presenter.selectCustomValidators()
 
-        verify(wireframe, times(1)).proceedToCustomList(from: any(), validatorList: any(), recommendedValidatorList: any(), selectedValidatorList: any(), maxTargets: any())
+        verify(wireframe, times(1)).proceedToCustomList(from: any(), selectionValidatorGroups: any(),  selectedValidatorList: any(), validatorsSelectionParams: any())
         verify(wireframe, times(1)).proceedToRecommendedList(from: any(), validatorList: any(), maxTargets: any())
     }
 }

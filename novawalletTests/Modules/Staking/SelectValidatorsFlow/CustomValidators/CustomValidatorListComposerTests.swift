@@ -40,7 +40,7 @@ class CustomValidatorListComposerTests: XCTestCase {
             $0.stakeReturn >= $1.stakeReturn
         }
 
-        let filter = CustomValidatorListFilter.recommendedFilter()
+        let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: true)
         let composer = CustomValidatorListComposer(filter: filter)
 
         // when
