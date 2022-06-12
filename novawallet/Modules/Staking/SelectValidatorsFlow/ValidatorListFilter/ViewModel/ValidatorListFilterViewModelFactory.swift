@@ -4,6 +4,7 @@ protocol ValidatorListFilterViewModelFactoryProtocol {
     func createViewModel(
         from filter: CustomValidatorListFilter,
         initialFilter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         token: String,
         locale: Locale
     ) -> ValidatorListFilterViewModel
@@ -12,37 +13,49 @@ protocol ValidatorListFilterViewModelFactoryProtocol {
 struct ValidatorListFilterViewModelFactory {
     private func createFilterViewModelSection(
         from filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         locale: Locale
-    ) -> ValidatorListFilterViewModelSection {
-        let cellViewModels: [SelectableViewModel<TitleWithSubtitleViewModel>] =
-            ValidatorListFilterRow.allCases.map { row in
-                switch row {
-                case .withoutIdentity:
-                    return SelectableViewModel(
-                        underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
-                        selectable: !filter.allowsNoIdentity
-                    )
+    ) -> ValidatorListFilterViewModelSection<ValidatorListFilterRow> {
+        let filters: [ValidatorListFilterRow]
 
-                case .slashed:
-                    return SelectableViewModel(
-                        underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
-                        selectable: !filter.allowsSlashed
-                    )
+        if hasIdentity {
+            filters = [.withoutIdentity, .slashed, .oversubscribed, .clusterLimit]
+        } else {
+            filters = [.slashed, .oversubscribed]
+        }
 
-                case .oversubscribed:
-                    return SelectableViewModel(
-                        underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
-                        selectable: !filter.allowsOversubscribed
-                    )
+        let cellViewModels: [ValidatorListFilterCellViewModel<ValidatorListFilterRow>] = filters.map { row in
+            let internalViewModel: SelectableViewModel<TitleWithSubtitleViewModel>
 
-                case .clusterLimit:
-                    let allowsUnlimitedClusters = filter.allowsClusters == .unlimited
-                    return SelectableViewModel(
-                        underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
-                        selectable: !allowsUnlimitedClusters
-                    )
-                }
+            switch row {
+            case .withoutIdentity:
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
+                    selectable: !filter.allowsNoIdentity
+                )
+
+            case .slashed:
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
+                    selectable: !filter.allowsSlashed
+                )
+
+            case .oversubscribed:
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
+                    selectable: !filter.allowsOversubscribed
+                )
+
+            case .clusterLimit:
+                let allowsUnlimitedClusters = filter.allowsClusters == .unlimited
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: row.titleSubtitleViewModel.value(for: locale),
+                    selectable: !allowsUnlimitedClusters
+                )
             }
+
+            return ValidatorListFilterCellViewModel(type: row, viewModel: internalViewModel)
+        }
 
         let title = R.string.localizable.walletFiltersHeader(
             preferredLanguages: locale.rLanguages
@@ -58,50 +71,56 @@ struct ValidatorListFilterViewModelFactory {
         from filter: CustomValidatorListFilter,
         token: String,
         locale: Locale
-    ) -> ValidatorListFilterViewModelSection {
-        let cellViewModels: [SelectableViewModel<TitleWithSubtitleViewModel>] =
-            ValidatorListSortRow.allCases.map { row in
-                switch row {
-                case .estimatedReward:
-                    let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                        title: R.string.localizable
-                            .stakingValidatorApyPercent(preferredLanguages: locale.rLanguages)
-                    )
+    ) -> ValidatorListFilterViewModelSection<ValidatorListSortRow> {
+        let sortings = ValidatorListSortRow.allCases
 
-                    return SelectableViewModel(
-                        underlyingViewModel: titleSubtitleViewModel,
-                        selectable: filter.sortedBy == .estimatedReward
-                    )
+        let cellViewModels: [ValidatorListFilterCellViewModel<ValidatorListSortRow>] = sortings.map { row in
+            let internalViewModel: SelectableViewModel<TitleWithSubtitleViewModel>
 
-                case .ownStake:
-                    let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                        title: R.string.localizable
-                            .stakingFilterTitleOwnStakeToken(
-                                token,
-                                preferredLanguages: locale.rLanguages
-                            )
+            switch row {
+            case .estimatedReward:
+                let titleSubtitleViewModel = TitleWithSubtitleViewModel(
+                    title: R.string.localizable.stakingValidatorApyPercent(
+                        preferredLanguages: locale.rLanguages
                     )
+                )
 
-                    return SelectableViewModel(
-                        underlyingViewModel: titleSubtitleViewModel,
-                        selectable: filter.sortedBy == .ownStake
-                    )
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: titleSubtitleViewModel,
+                    selectable: filter.sortedBy == .estimatedReward
+                )
 
-                case .totalStake:
-                    let titleSubtitleViewModel = TitleWithSubtitleViewModel(
-                        title: R.string.localizable
-                            .stakingValidatorTotalStakeToken(
-                                token,
-                                preferredLanguages: locale.rLanguages
-                            )
-                    )
+            case .ownStake:
+                let titleSubtitleViewModel = TitleWithSubtitleViewModel(
+                    title: R.string.localizable
+                        .stakingFilterTitleOwnStakeToken(
+                            token,
+                            preferredLanguages: locale.rLanguages
+                        )
+                )
 
-                    return SelectableViewModel(
-                        underlyingViewModel: titleSubtitleViewModel,
-                        selectable: filter.sortedBy == .totalStake
-                    )
-                }
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: titleSubtitleViewModel,
+                    selectable: filter.sortedBy == .ownStake
+                )
+
+            case .totalStake:
+                let titleSubtitleViewModel = TitleWithSubtitleViewModel(
+                    title: R.string.localizable
+                        .stakingValidatorTotalStakeToken(
+                            token,
+                            preferredLanguages: locale.rLanguages
+                        )
+                )
+
+                internalViewModel = SelectableViewModel(
+                    underlyingViewModel: titleSubtitleViewModel,
+                    selectable: filter.sortedBy == .totalStake
+                )
             }
+
+            return ValidatorListFilterCellViewModel(type: row, viewModel: internalViewModel)
+        }
 
         let sectionTitle = R.string.localizable.commonFilterSortHeader(
             preferredLanguages: locale.rLanguages
@@ -118,14 +137,15 @@ extension ValidatorListFilterViewModelFactory: ValidatorListFilterViewModelFacto
     func createViewModel(
         from filter: CustomValidatorListFilter,
         initialFilter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         token: String,
         locale: Locale
     ) -> ValidatorListFilterViewModel {
         ValidatorListFilterViewModel(
-            filterModel: createFilterViewModelSection(from: filter, locale: locale),
+            filterModel: createFilterViewModelSection(from: filter, hasIdentity: hasIdentity, locale: locale),
             sortModel: createSortViewModelSection(from: filter, token: token, locale: locale),
             canApply: filter != initialFilter,
-            canReset: filter != CustomValidatorListFilter.recommendedFilter()
+            canReset: filter != CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
         )
     }
 }
