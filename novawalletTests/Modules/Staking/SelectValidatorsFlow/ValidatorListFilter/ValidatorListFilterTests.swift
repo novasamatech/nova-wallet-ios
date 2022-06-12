@@ -17,10 +17,13 @@ class ValidatorListFilterTests: XCTestCase {
             addressPrefix: 42
         ).assets.first!.displayInfo
 
+        let hasIdentity = true
+        let filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
         let presenter = ValidatorListFilterPresenter(wireframe: wireframe,
                                                      viewModelFactory: viewModelFactory,
                                                      assetInfo: assetInfo,
-                                                     filter: CustomValidatorListFilter.recommendedFilter(),
+                                                     filter: filter,
+                                                     hasIdentity: hasIdentity,
                                                      localizationManager: LocalizationManager.shared)
 
         presenter.view = view
@@ -30,8 +33,12 @@ class ValidatorListFilterTests: XCTestCase {
         let reloadExpectation = XCTestExpectation()
         let filterChangeExpectation = XCTestExpectation()
 
+        var optFilterViewModel: ValidatorListFilterViewModel?
+
         stub(view) { stub in
             when(stub).didUpdateViewModel(any()).then { viewModel in
+                optFilterViewModel = viewModel
+
                 XCTAssertFalse(viewModel.canApply)
                 XCTAssertFalse(viewModel.canReset)
                 reloadExpectation.fulfill()
@@ -39,6 +46,13 @@ class ValidatorListFilterTests: XCTestCase {
         }
 
         presenter.setup()
+
+        wait(for: [reloadExpectation], timeout: Constants.defaultExpectationDuration)
+
+        guard let filterViewModel = optFilterViewModel else {
+            XCTFail("Expectedn not null view model")
+            return
+        }
 
         stub(view) { stub in
             when(stub).didUpdateViewModel(any()).then { viewModel in
@@ -48,12 +62,9 @@ class ValidatorListFilterTests: XCTestCase {
             }
         }
 
-        presenter.toggleFilterItem(at: 1)
+        presenter.toggleFilter(for: filterViewModel.filterModel.cellViewModels[1])
 
         // then
 
-        wait(
-            for: [reloadExpectation, filterChangeExpectation],
-            timeout: Constants.defaultExpectationDuration
-        )
+        wait(for: [filterChangeExpectation], timeout: Constants.defaultExpectationDuration)
     }}
