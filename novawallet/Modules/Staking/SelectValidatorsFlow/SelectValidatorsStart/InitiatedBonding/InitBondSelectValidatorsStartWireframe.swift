@@ -1,6 +1,6 @@
 import Foundation
 
-final class InitBondingSelectValidatorsStartWireframe: SelectValidatorsStartWireframe {
+final class InitBondSelectValidatorsStartWireframe: SelectValidatorsStartWireframe {
     let state: InitiatedBonding
     let stakingState: StakingSharedState
 
@@ -11,17 +11,15 @@ final class InitBondingSelectValidatorsStartWireframe: SelectValidatorsStartWire
 
     override func proceedToCustomList(
         from view: ControllerBackedProtocol?,
-        validatorList: [SelectedValidatorInfo],
-        recommendedValidatorList: [SelectedValidatorInfo],
+        selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
-        maxTargets: Int
+        validatorsSelectionParams: ValidatorsSelectionParams
     ) {
         guard let nextView = CustomValidatorListViewFactory.createInitiatedBondingView(
             for: stakingState,
-            validatorList: validatorList,
-            recommendedValidatorList: recommendedValidatorList,
+            selectionValidatorGroups: selectionValidatorGroups,
             selectedValidatorList: selectedValidatorList,
-            maxTargets: maxTargets,
+            validatorsSelectionParams: validatorsSelectionParams,
             state: state
         ) else { return }
 
