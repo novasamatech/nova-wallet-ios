@@ -9,6 +9,7 @@ final class CustomValidatorListPresenter {
     let viewModelFactory: CustomValidatorListViewModelFactory
     let selectedValidatorList: SharedList<SelectedValidatorInfo>
     let maxTargets: Int
+    let hasIdentity: Bool
     let logger: LoggerProtocol?
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
@@ -16,7 +17,7 @@ final class CustomValidatorListPresenter {
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
-    private var filter = CustomValidatorListFilter.recommendedFilter()
+    private var filter: CustomValidatorListFilter
     private var priceData: PriceData?
 
     init(
@@ -28,6 +29,7 @@ final class CustomValidatorListPresenter {
         recommendedValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
         maxTargets: Int,
+        hasIdentity: Bool,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -37,7 +39,9 @@ final class CustomValidatorListPresenter {
         self.recommendedValidatorList = recommendedValidatorList
         self.selectedValidatorList = selectedValidatorList
         self.maxTargets = maxTargets
+        self.hasIdentity = hasIdentity
         self.logger = logger
+        filter = CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
         self.localizationManager = localizationManager
     }
 
@@ -189,6 +193,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
         wireframe.presentFilters(
             from: view,
             filter: filter,
+            hasIdentity: hasIdentity,
             delegate: self
         )
     }

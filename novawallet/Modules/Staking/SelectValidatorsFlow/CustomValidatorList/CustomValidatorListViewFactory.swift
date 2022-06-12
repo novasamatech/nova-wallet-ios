@@ -26,6 +26,8 @@ enum CustomValidatorListViewFactory {
             balanceViewModelFactory: balanceViewModelFactory
         )
 
+        let hasIdentity = validatorList.contains { $0.hasIdentity }
+
         let presenter = CustomValidatorListPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -35,6 +37,7 @@ enum CustomValidatorListViewFactory {
             recommendedValidatorList: recommendedValidatorList,
             selectedValidatorList: selectedValidatorList,
             maxTargets: maxTargets,
+            hasIdentity: hasIdentity,
             logger: Logger.shared
         )
 

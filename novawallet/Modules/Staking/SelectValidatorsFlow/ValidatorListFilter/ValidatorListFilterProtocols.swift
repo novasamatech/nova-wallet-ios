@@ -13,8 +13,8 @@ protocol ValidatorListFilterPresenterProtocol: Localizable {
 
     func setup()
 
-    func toggleFilterItem(at index: Int)
-    func selectFilterItem(at index: Int)
+    func toggleFilter(for viewModel: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)
+    func selectSorting(for viewModel: ValidatorListFilterCellViewModel<ValidatorListSortRow>)
     func applyFilter()
     func resetFilter()
 }

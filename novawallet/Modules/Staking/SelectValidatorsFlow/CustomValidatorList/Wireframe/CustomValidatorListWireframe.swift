@@ -27,11 +27,13 @@ class CustomValidatorListWireframe: CustomValidatorListWireframeProtocol {
     func presentFilters(
         from view: ControllerBackedProtocol?,
         filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         delegate: ValidatorListFilterDelegate?
     ) {
         guard let filterView = ValidatorListFilterViewFactory.createView(
             for: stakingState,
             filter: filter,
+            hasIdentity: hasIdentity,
             delegate: delegate
         ) else { return }
 
