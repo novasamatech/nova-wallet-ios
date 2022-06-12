@@ -153,7 +153,7 @@ struct WestendStub {
     static let rewardCalculator: RewardCalculatorEngineProtocol = {
         let total = eraValidators.reduce(BigUInt(0)) { $0 + $1.exposure.total }
 
-        return RewardCalculatorEngine(
+        return InflationCurveRewardEngine(
             chainId: Chain.westend.genesisHash,
             assetPrecision: Chain.westend.addressType.precision,
             totalIssuance: total,
