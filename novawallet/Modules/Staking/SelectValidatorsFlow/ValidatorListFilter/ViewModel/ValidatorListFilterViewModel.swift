@@ -1,21 +1,20 @@
 import SoraFoundation
 
 struct ValidatorListFilterViewModel {
-    let filterModel: ValidatorListFilterViewModelSection
-    let sortModel: ValidatorListFilterViewModelSection
+    let filterModel: ValidatorListFilterViewModelSection<ValidatorListFilterRow>
+    let sortModel: ValidatorListFilterViewModelSection<ValidatorListSortRow>
     let canApply: Bool
     let canReset: Bool
 }
 
-struct ValidatorListFilterViewModelSection {
-    let title: String
-    let cellViewModels: [SelectableViewModel<TitleWithSubtitleViewModel>]
+struct ValidatorListFilterCellViewModel<RowType> {
+    let type: RowType
+    let viewModel: SelectableViewModel<TitleWithSubtitleViewModel>
 }
 
-struct ValidatorListFilterCellViewModel {
+struct ValidatorListFilterViewModelSection<RowType> {
     let title: String
-    let subtitle: String?
-    let isSelected: Bool
+    let cellViewModels: [ValidatorListFilterCellViewModel<RowType>]
 }
 
 enum ValidatorListFilterRow: Int, CaseIterable {
