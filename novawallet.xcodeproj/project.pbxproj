@@ -523,6 +523,7 @@
 		8432E55124EFDF6100B05B58 /* AccountItemMapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */; };
 		84333BD7285682EC00C76A4F /* ValidatorsSelectionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84333BD6285682EC00C76A4F /* ValidatorsSelectionParams.swift */; };
 		84333BD92856840E00C76A4F /* SelectionValidatorGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84333BD82856840E00C76A4F /* SelectionValidatorGroups.swift */; };
+		84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84333BDA285772F300C76A4F /* UInt64+TimeInterval.swift */; };
 		843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */; };
 		843461CD26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */; };
 		843461CF26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 843461CE26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift */; };
@@ -2789,6 +2790,7 @@
 		8432E55024EFDF6100B05B58 /* AccountItemMapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountItemMapperTests.swift; sourceTree = "<group>"; };
 		84333BD6285682EC00C76A4F /* ValidatorsSelectionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatorsSelectionParams.swift; sourceTree = "<group>"; };
 		84333BD82856840E00C76A4F /* SelectionValidatorGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionValidatorGroups.swift; sourceTree = "<group>"; };
+		84333BDA285772F300C76A4F /* UInt64+TimeInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt64+TimeInterval.swift"; sourceTree = "<group>"; };
 		843461CA26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscanHistoryOperationFactory.swift; sourceTree = "<group>"; };
 		843461CC26E2596E00DCE0CD /* WalletRemoteHistoryFiltering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletRemoteHistoryFiltering.swift; sourceTree = "<group>"; };
 		843461CE26E25AD400DCE0CD /* SubscanHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscanHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -7571,6 +7573,7 @@
 				84E25BE727E751B400290BF1 /* Charset+Encoding.swift */,
 				84216FDD282B979900479375 /* Decimal+Conversion.swift */,
 				84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */,
+				84333BDA285772F300C76A4F /* UInt64+TimeInterval.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -11878,6 +11881,7 @@
 				8494D85E25246E9A00614D8F /* WalletTokenViewModel.swift in Sources */,
 				AEAC68FE26EA3C2A00346599 /* CoingeckoPriceSource.swift in Sources */,
 				848E6BDB2761E0E100C91022 /* StakingRewardViewModel.swift in Sources */,
+				84333BDB285772F300C76A4F /* UInt64+TimeInterval.swift in Sources */,
 				8472C5B4265CF9C500E2481B /* StakingRewardDestConfirmPresenter.swift in Sources */,
 				8402CC9C275B92AC00E5BF30 /* ControlView.swift in Sources */,
 				2AB7A7FF25CD0E8000767D87 /* GitHubPhishingAPIService.swift in Sources */,
