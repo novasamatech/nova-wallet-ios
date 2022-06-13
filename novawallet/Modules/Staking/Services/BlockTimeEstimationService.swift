@@ -17,25 +17,25 @@ struct EstimatedBlockTime: Codable {
 
 struct BlockTimeSubscriptionModel: JSONListConvertible {
     let blockNumber: BlockNumber
-    let blockTime: BlockTime
+    let timestamp: BlockTime
     let blockHash: Data?
 
     init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
         blockNumber = try jsonList[0].map(to: StringScaleMapper<BlockNumber>.self, with: context).value
-        blockTime = try jsonList[1].map(to: StringScaleMapper<BlockTime>.self, with: context).value
+        timestamp = try jsonList[1].map(to: StringScaleMapper<BlockTime>.self, with: context).value
         blockHash = try jsonList[2].map(to: Data?.self, with: context)
     }
 }
 
 final class BlockTimeEstimationService {
     private struct Snapshot {
-        let blockTime: BlockTime
+        let blockTime: TimeInterval
         let lastBlock: BlockNumber?
         let seqSize: Int
         let lastTime: BlockTime?
 
         var estimatedBlockTime: EstimatedBlockTime {
-            EstimatedBlockTime(blockTime: blockTime, seqSize: seqSize)
+            EstimatedBlockTime(blockTime: BlockTime(blockTime.milliseconds), seqSize: seqSize)
         }
 
         static var empty: Snapshot {
@@ -152,7 +152,7 @@ final class BlockTimeEstimationService {
     private func setupInitialSnapshot(for estimatedBlockTime: EstimatedBlockTime) {
         syncQueue.async { [weak self] in
             let snapshot = Snapshot(
-                blockTime: estimatedBlockTime.blockTime,
+                blockTime: estimatedBlockTime.blockTime.timeInterval,
                 lastBlock: nil,
                 seqSize: estimatedBlockTime.seqSize,
                 lastTime: nil
@@ -244,30 +244,32 @@ final class BlockTimeEstimationService {
             return
         }
 
-        let currentTime = model.blockTime
+        let currentTime = model.timestamp
 
         // then sync time diff
         if
             let prevTime = prevSnapshot.lastTime,
             currentTime > prevTime {
-            let newBlockTimeElement = currentTime - prevTime
+            let newBlockTimeElement = (currentTime - prevTime).timeInterval
 
             logger.debug("(\(chainId) Block time: \(newBlockTimeElement)")
 
             let blockTime = prevSnapshot.blockTime
             let seqSize = prevSnapshot.seqSize
-            let newBlockTime = (blockTime * BlockTime(seqSize) + newBlockTimeElement) / BlockTime(seqSize + 1)
+            let newBlockTime = (blockTime * TimeInterval(seqSize) + newBlockTimeElement) / TimeInterval(seqSize + 1)
 
             logger.debug("\(chainId) Cumulative block time: \(newBlockTime)")
 
-            snapshot = Snapshot(
+            let newSnapshot = Snapshot(
                 blockTime: newBlockTime,
                 lastBlock: model.blockNumber,
                 seqSize: seqSize + 1,
                 lastTime: currentTime
             )
 
-            let estimatedBlockTime = EstimatedBlockTime(blockTime: newBlockTime, seqSize: seqSize + 1)
+            snapshot = newSnapshot
+
+            let estimatedBlockTime = newSnapshot.estimatedBlockTime
             save(blockTime: estimatedBlockTime)
 
             deliver(estimatedBlockTime: estimatedBlockTime)
