@@ -9,8 +9,8 @@ class PayoutRewardsServiceTests: XCTestCase {
     func testPayoutRewardsListForNominator() throws {
         let operationManager = OperationManagerFacade.sharedManager
 
-        let selectedAccount = "5E5CFCa1p5e14UPYWWAddMeu64ykLxppx37iwrKwuyXj5BjH"
-        let chainId = Chain.westend.genesisHash
+        let selectedAccount = "5HKcmzDLApS5xERzruR6qwiLWjeVyg1RVQmFNoM44Gtni7SX"
+        let chainId = "70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
