@@ -198,14 +198,12 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
         switch result {
         case let .success(accountInfo):
-            if let accountInfo = accountInfo {
-                balance = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
-                    precision: assetInfo.assetPrecision
-                )
-            } else {
-                balance = nil
-            }
+            let amountInPlank = accountInfo?.data.available ?? 0
+
+            balance = Decimal.fromSubstrateAmount(
+                amountInPlank,
+                precision: assetInfo.assetPrecision
+            )
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
         }
