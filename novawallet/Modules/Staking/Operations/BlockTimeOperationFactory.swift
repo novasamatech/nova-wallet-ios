@@ -76,12 +76,15 @@ extension BlockTimeOperationFactory: BlockTimeOperationFactoryProtocol {
         let mapOperation = ClosureOperation<BlockTime> {
             let estimatedBlockTimeValue = try estimatedOperation.extractNoCancellableResultData()
             let expectedBlockTime = try expectedWrapper.targetOperation.extractNoCancellableResultData()
+                .timeInterval
 
             let boundedSeqSize = min(BlockTime(estimatedBlockTimeValue.seqSize), Self.callibrationSeqSize)
-            let estimatedPart = boundedSeqSize * estimatedBlockTimeValue.blockTime
-            let constantsPart = (Self.callibrationSeqSize - boundedSeqSize) * expectedBlockTime
+            let estimatedPart = TimeInterval(boundedSeqSize) * estimatedBlockTimeValue.blockTime.timeInterval
+            let constantsPart = TimeInterval(Self.callibrationSeqSize - boundedSeqSize) * expectedBlockTime
 
-            return (estimatedPart + constantsPart) / Self.callibrationSeqSize
+            let resultTimeInterval = (estimatedPart + constantsPart) / TimeInterval(Self.callibrationSeqSize)
+
+            return BlockTime(resultTimeInterval.milliseconds)
         }
 
         mapOperation.addDependency(expectedWrapper.targetOperation)

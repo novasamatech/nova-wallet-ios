@@ -6188,16 +6188,31 @@ import RobinHood
     
     
     
-     func createRewardCalculatorService(for chainId: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol {
+     func createRewardCalculatorService(for chainId: ChainModel.Id, stakingType: StakingType, stakingDurationFactory: StakingDurationOperationFactoryProtocol, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol {
         
-    return try cuckoo_manager.callThrows("createRewardCalculatorService(for: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol",
-            parameters: (chainId, assetPrecision, validatorService),
-            escapingParameters: (chainId, assetPrecision, validatorService),
+    return try cuckoo_manager.callThrows("createRewardCalculatorService(for: ChainModel.Id, stakingType: StakingType, stakingDurationFactory: StakingDurationOperationFactoryProtocol, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol",
+            parameters: (chainId, stakingType, stakingDurationFactory, assetPrecision, validatorService),
+            escapingParameters: (chainId, stakingType, stakingDurationFactory, assetPrecision, validatorService),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.createRewardCalculatorService(for: chainId, assetPrecision: assetPrecision, validatorService: validatorService))
+            defaultCall: __defaultImplStub!.createRewardCalculatorService(for: chainId, stakingType: stakingType, stakingDurationFactory: stakingDurationFactory, assetPrecision: assetPrecision, validatorService: validatorService))
+        
+    }
+    
+    
+    
+     func createBlockTimeService(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol? {
+        
+    return try cuckoo_manager.callThrows("createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?",
+            parameters: (chainId, consensus),
+            escapingParameters: (chainId, consensus),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.createBlockTimeService(for: chainId, consensus: consensus))
         
     }
     
@@ -6215,9 +6230,14 @@ import RobinHood
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createEraValidatorService(for: ChainModel.Id) throws -> EraValidatorServiceProtocol", parameterMatchers: matchers))
 	    }
 	    
-	    func createRewardCalculatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for chainId: M1, assetPrecision: M2, validatorService: M3) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, Int16, EraValidatorServiceProtocol), RewardCalculatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == Int16, M3.MatchedType == EraValidatorServiceProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Int16, EraValidatorServiceProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: assetPrecision) { $0.1 }, wrap(matchable: validatorService) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createRewardCalculatorService(for: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol", parameterMatchers: matchers))
+	    func createRewardCalculatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(for chainId: M1, stakingType: M2, stakingDurationFactory: M3, assetPrecision: M4, validatorService: M5) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, StakingType, StakingDurationOperationFactoryProtocol, Int16, EraValidatorServiceProtocol), RewardCalculatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == StakingType, M3.MatchedType == StakingDurationOperationFactoryProtocol, M4.MatchedType == Int16, M5.MatchedType == EraValidatorServiceProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, StakingType, StakingDurationOperationFactoryProtocol, Int16, EraValidatorServiceProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: stakingType) { $0.1 }, wrap(matchable: stakingDurationFactory) { $0.2 }, wrap(matchable: assetPrecision) { $0.3 }, wrap(matchable: validatorService) { $0.4 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createRewardCalculatorService(for: ChainModel.Id, stakingType: StakingType, stakingDurationFactory: StakingDurationOperationFactoryProtocol, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol", parameterMatchers: matchers))
+	    }
+	    
+	    func createBlockTimeService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.ProtocolStubThrowingFunction<(ChainModel.Id, ConsensusType), BlockTimeEstimationServiceProtocol?> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, ConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingServiceFactoryProtocol.self, method: "createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?", parameterMatchers: matchers))
 	    }
 	    
 	}
@@ -6243,9 +6263,15 @@ import RobinHood
 	    }
 	    
 	    @discardableResult
-	    func createRewardCalculatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(for chainId: M1, assetPrecision: M2, validatorService: M3) -> Cuckoo.__DoNotUse<(ChainModel.Id, Int16, EraValidatorServiceProtocol), RewardCalculatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == Int16, M3.MatchedType == EraValidatorServiceProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, Int16, EraValidatorServiceProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: assetPrecision) { $0.1 }, wrap(matchable: validatorService) { $0.2 }]
-	        return cuckoo_manager.verify("createRewardCalculatorService(for: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func createRewardCalculatorService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(for chainId: M1, stakingType: M2, stakingDurationFactory: M3, assetPrecision: M4, validatorService: M5) -> Cuckoo.__DoNotUse<(ChainModel.Id, StakingType, StakingDurationOperationFactoryProtocol, Int16, EraValidatorServiceProtocol), RewardCalculatorServiceProtocol> where M1.MatchedType == ChainModel.Id, M2.MatchedType == StakingType, M3.MatchedType == StakingDurationOperationFactoryProtocol, M4.MatchedType == Int16, M5.MatchedType == EraValidatorServiceProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, StakingType, StakingDurationOperationFactoryProtocol, Int16, EraValidatorServiceProtocol)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: stakingType) { $0.1 }, wrap(matchable: stakingDurationFactory) { $0.2 }, wrap(matchable: assetPrecision) { $0.3 }, wrap(matchable: validatorService) { $0.4 }]
+	        return cuckoo_manager.verify("createRewardCalculatorService(for: ChainModel.Id, stakingType: StakingType, stakingDurationFactory: StakingDurationOperationFactoryProtocol, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func createBlockTimeService<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(for chainId: M1, consensus: M2) -> Cuckoo.__DoNotUse<(ChainModel.Id, ConsensusType), BlockTimeEstimationServiceProtocol?> where M1.MatchedType == ChainModel.Id, M2.MatchedType == ConsensusType {
+	        let matchers: [Cuckoo.ParameterMatcher<(ChainModel.Id, ConsensusType)>] = [wrap(matchable: chainId) { $0.0 }, wrap(matchable: consensus) { $0.1 }]
+	        return cuckoo_manager.verify("createBlockTimeService(for: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	}
@@ -6265,8 +6291,14 @@ import RobinHood
     
     
     
-     func createRewardCalculatorService(for chainId: ChainModel.Id, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol  {
+     func createRewardCalculatorService(for chainId: ChainModel.Id, stakingType: StakingType, stakingDurationFactory: StakingDurationOperationFactoryProtocol, assetPrecision: Int16, validatorService: EraValidatorServiceProtocol) throws -> RewardCalculatorServiceProtocol  {
         return DefaultValueRegistry.defaultValue(for: (RewardCalculatorServiceProtocol).self)
+    }
+    
+    
+    
+     func createBlockTimeService(for chainId: ChainModel.Id, consensus: ConsensusType) throws -> BlockTimeEstimationServiceProtocol?  {
+        return DefaultValueRegistry.defaultValue(for: (BlockTimeEstimationServiceProtocol?).self)
     }
     
 }

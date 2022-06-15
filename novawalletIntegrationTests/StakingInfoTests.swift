@@ -50,7 +50,7 @@ class StakingInfoTests: XCTestCase {
             chainRegisty: chainRegistry,
             storageFacade: storageFacade,
             eventCenter: EventCenter.shared,
-            operationManager: OperationManagerFacade.sharedManager,
+            operationQueue: OperationQueue(),
             logger: logger
         )
 
@@ -60,6 +60,8 @@ class StakingInfoTests: XCTestCase {
 
         let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
             for: chainId,
+            stakingType: .relaychain,
+            stakingDurationFactory: BabeStakingDurationFactory(),
             assetPrecision: assetPrecision,
             validatorService: validatorService
         )

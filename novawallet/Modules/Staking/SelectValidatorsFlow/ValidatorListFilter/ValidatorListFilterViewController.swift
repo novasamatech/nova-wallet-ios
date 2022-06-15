@@ -135,7 +135,7 @@ extension ValidatorListFilterViewController: UITableViewDataSource {
             let item = viewModel.filterModel.cellViewModels[indexPath.row]
             let cell = tableView.dequeueReusableCellWithType(TitleSubtitleSwitchTableViewCell.self)!
 
-            cell.bind(viewModel: item)
+            cell.bind(viewModel: item.viewModel)
             cell.delegate = self
 
             return cell
@@ -144,7 +144,7 @@ extension ValidatorListFilterViewController: UITableViewDataSource {
             let item = viewModel.sortModel.cellViewModels[indexPath.row]
             let cell = tableView.dequeueReusableCellWithType(ValidatorListFilterSortCell.self)!
 
-            cell.bind(viewModel: item)
+            cell.bind(viewModel: item.viewModel)
             return cell
 
         default:
@@ -183,9 +183,9 @@ extension ValidatorListFilterViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard indexPath.section == 1 else { return }
+        guard indexPath.section == 1, let viewModel = viewModel else { return }
 
-        presenter.selectFilterItem(at: indexPath.row)
+        presenter.selectSorting(for: viewModel.sortModel.cellViewModels[indexPath.row])
     }
 }
 
@@ -193,11 +193,11 @@ extension ValidatorListFilterViewController: UITableViewDelegate {
 
 extension ValidatorListFilterViewController: SwitchTableViewCellDelegate {
     func didToggle(cell: SwitchTableViewCell) {
-        guard let indexPath = rootView.tableView.indexPath(for: cell) else {
+        guard let indexPath = rootView.tableView.indexPath(for: cell), let viewModel = viewModel else {
             return
         }
 
-        presenter.toggleFilterItem(at: indexPath.row)
+        presenter.toggleFilter(for: viewModel.filterModel.cellViewModels[indexPath.row])
     }
 }
 

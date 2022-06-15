@@ -11,17 +11,15 @@ final class ChangeTargetsSelectValidatorsStartWireframe: SelectValidatorsStartWi
 
     override func proceedToCustomList(
         from view: ControllerBackedProtocol?,
-        validatorList: [SelectedValidatorInfo],
-        recommendedValidatorList: [SelectedValidatorInfo],
+        selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
-        maxTargets: Int
+        validatorsSelectionParams: ValidatorsSelectionParams
     ) {
         guard let nextView = CustomValidatorListViewFactory.createChangeTargetsView(
             for: stakingState,
-            validatorList: validatorList,
-            recommendedValidatorList: recommendedValidatorList,
+            selectionValidatorGroups: selectionValidatorGroups,
             selectedValidatorList: selectedValidatorList,
-            maxTargets: maxTargets,
+            validatorsSelectionParams: validatorsSelectionParams,
             state: state
         ) else { return }
 
