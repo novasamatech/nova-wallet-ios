@@ -328,7 +328,7 @@ extension ValidatorOperationFactory: ValidatorOperationFactoryProtocol {
                     myNomination: stakeInfo != nil ? .elected : .unelected,
                     commission: commission,
                     hasSlashes: slashed.contains(accountId),
-                    blocked: prefs.blocked
+                    blocked: prefs.isBlocked
                 )
             }
         }

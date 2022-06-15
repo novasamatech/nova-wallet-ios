@@ -4,9 +4,10 @@ import RobinHood
 extension PrimitiveConstantOperation {
     static func operation(
         for path: ConstantCodingPath,
-        dependingOn factoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        dependingOn factoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        fallbackValue: T? = nil
     ) -> BaseOperation<T> {
-        let operation = PrimitiveConstantOperation<T>(path: path)
+        let operation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
 
         operation.configurationBlock = {
             do {

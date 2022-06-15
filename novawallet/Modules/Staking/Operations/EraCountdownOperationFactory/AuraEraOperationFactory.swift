@@ -2,22 +2,22 @@ import RobinHood
 import SubstrateSdk
 import SoraKeystore
 
-protocol EraCountdownOperationFactoryProtocol {
-    func fetchCountdownOperationWrapper(
-        for connection: JSONRPCEngine,
-        runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<EraCountdown>
-}
-
-enum EraCountdownOperationFactoryError: Error {
-    case noData
-}
-
-final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
+final class AuraEraOperationFactory: EraCountdownOperationFactoryProtocol {
     let storageRequestFactory: StorageRequestFactoryProtocol
+    let blockTimeService: BlockTimeEstimationServiceProtocol
+    let blockTimeOperationFactory: BlockTimeOperationFactoryProtocol
+    let defaultSessionPeriod: SessionIndex
 
-    init(storageRequestFactory: StorageRequestFactoryProtocol) {
+    init(
+        storageRequestFactory: StorageRequestFactoryProtocol,
+        blockTimeService: BlockTimeEstimationServiceProtocol,
+        blockTimeOperationFactory: BlockTimeOperationFactoryProtocol,
+        defaultSessionPeriod: SessionIndex = 50
+    ) {
         self.storageRequestFactory = storageRequestFactory
+        self.blockTimeService = blockTimeService
+        self.blockTimeOperationFactory = blockTimeOperationFactory
+        self.defaultSessionPeriod = defaultSessionPeriod
     }
 
     // swiftlint:disable function_body_length
@@ -34,13 +34,14 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
         )
 
         let sessionLengthWrapper: CompoundOperationWrapper<SessionIndex> = createFetchConstantWrapper(
-            for: .sessionLength,
-            codingFactoryOperation: codingFactoryOperation
+            for: .electionsSessionPeriod,
+            codingFactoryOperation: codingFactoryOperation,
+            fallbackValue: defaultSessionPeriod
         )
 
-        let blockTimeWrapper: CompoundOperationWrapper<Moment> = createFetchConstantWrapper(
-            for: .babeBlockTime,
-            codingFactoryOperation: codingFactoryOperation
+        let blockTimeWrapper = blockTimeOperationFactory.createBlockTimeOperation(
+            from: runtimeService,
+            blockTimeEstimationService: blockTimeService
         )
 
         let sessionIndexWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<SessionIndex>>]> =
@@ -51,20 +52,12 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
                 storagePath: .currentSessionIndex
             )
 
-        let currentSlotWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<Slot>>]> =
+        let blockNumberWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<BlockNumber>>]> =
             storageRequestFactory.queryItems(
                 engine: connection,
-                keys: { [try keyFactory.key(from: .currentSlot)] },
+                keys: { [try keyFactory.key(from: .blockNumber)] },
                 factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .currentSlot
-            )
-
-        let genesisSlotWrapper: CompoundOperationWrapper<[StorageResponse<StringScaleMapper<Slot>>]> =
-            storageRequestFactory.queryItems(
-                engine: connection,
-                keys: { [try keyFactory.key(from: .genesisSlot)] },
-                factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                storagePath: .genesisSlot
+                storagePath: .blockNumber
             )
 
         let activeEraWrapper: CompoundOperationWrapper<[StorageResponse<ActiveEraInfo>]> =
@@ -93,8 +86,7 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
             + sessionLengthWrapper.allOperations
             + blockTimeWrapper.allOperations
             + sessionIndexWrapper.allOperations
-            + currentSlotWrapper.allOperations
-            + genesisSlotWrapper.allOperations
+            + blockNumberWrapper.allOperations
             + activeEraWrapper.allOperations
             + currentEraWrapper.allOperations
             + startSessionWrapper.allOperations
@@ -108,12 +100,10 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
                 .first?.value?.value,
                 let eraLength = try? eraLengthWrapper.targetOperation.extractNoCancellableResultData(),
                 let sessionLength = try? sessionLengthWrapper.targetOperation.extractNoCancellableResultData(),
-                let babeBlockTime = try? blockTimeWrapper.targetOperation.extractNoCancellableResultData(),
+                let blockTime = try? blockTimeWrapper.targetOperation.extractNoCancellableResultData(),
                 let currentSessionIndex = try? sessionIndexWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value,
-                let currentSlot = try? currentSlotWrapper.targetOperation
-                .extractNoCancellableResultData().first?.value?.value,
-                let genesisSlot = try? genesisSlotWrapper.targetOperation
+                let currentSlot = try? blockNumberWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value,
                 let eraStartSessionIndex = try? startSessionWrapper.targetOperation
                 .extractNoCancellableResultData().first?.value?.value
@@ -128,9 +118,9 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
                 sessionLength: sessionLength,
                 activeEraStartSessionIndex: eraStartSessionIndex,
                 currentSessionIndex: currentSessionIndex,
-                currentSlot: currentSlot,
-                genesisSlot: genesisSlot,
-                blockCreationTime: babeBlockTime,
+                currentSlot: Slot(currentSlot),
+                genesisSlot: 0,
+                blockCreationTime: Moment(blockTime),
                 createdAtDate: Date()
             )
         }
@@ -167,9 +157,10 @@ final class EraCountdownOperationFactory: EraCountdownOperationFactoryProtocol {
 
     private func createFetchConstantWrapper<T: LosslessStringConvertible & Equatable>(
         for path: ConstantCodingPath,
-        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>
+        codingFactoryOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
+        fallbackValue: T? = nil
     ) -> CompoundOperationWrapper<T> {
-        let constOperation = PrimitiveConstantOperation<T>(path: path)
+        let constOperation = PrimitiveConstantOperation<T>(path: path, fallbackValue: fallbackValue)
         constOperation.configurationBlock = {
             do {
                 constOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()

@@ -386,7 +386,7 @@ final class ValidatorOperationFactory {
                     hasSlashes: hasSlashes,
                     maxNominatorsRewarded: maxNominators,
                     chainInfo: self.chainInfo,
-                    blocked: validator.prefs.blocked
+                    blocked: validator.prefs.isBlocked
                 )
             }
         }

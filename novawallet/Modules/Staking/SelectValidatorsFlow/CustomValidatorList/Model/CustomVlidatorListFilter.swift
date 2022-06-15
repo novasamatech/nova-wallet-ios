@@ -30,13 +30,22 @@ struct CustomValidatorListFilter: Equatable {
         self.sortedBy = sortedBy
     }
 
-    static func recommendedFilter() -> CustomValidatorListFilter {
-        CustomValidatorListFilter(
-            allowsNoIdentity: false,
-            allowsSlashed: false,
-            allowsOversubscribed: false,
-            allowsClusters: .limited(amount: StakingConstants.targetsClusterLimit)
-        )
+    static func recommendedFilter(havingIdentity: Bool) -> CustomValidatorListFilter {
+        if havingIdentity {
+            return CustomValidatorListFilter(
+                allowsNoIdentity: false,
+                allowsSlashed: false,
+                allowsOversubscribed: false,
+                allowsClusters: .limited(amount: StakingConstants.targetsClusterLimit)
+            )
+        } else {
+            return CustomValidatorListFilter(
+                allowsNoIdentity: true,
+                allowsSlashed: false,
+                allowsOversubscribed: false,
+                allowsClusters: .unlimited
+            )
+        }
     }
 
     static func defaultFilter() -> CustomValidatorListFilter {
