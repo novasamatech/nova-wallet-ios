@@ -15,6 +15,7 @@ final class SelectValidatorsStartPresenter {
     private var recommendedValidators: [ElectedValidatorInfo]?
     private var selectedValidators: SharedList<SelectedValidatorInfo>?
     private var maxNominations: Int?
+    private var hasIdentity: Bool?
 
     init(
         interactor: SelectValidatorsStartInteractorInputProtocol,
@@ -123,6 +124,7 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
         guard
             let electedValidators = electedValidators,
             let maxNominations = maxNominations,
+            let hasIdentity = hasIdentity,
             let selectedValidators = selectedValidators else {
             return
         }
@@ -132,12 +134,21 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartPresenterProtocol
             $0.toSelected(for: existingStashAddress)
         } ?? []
 
+        let groups = SelectionValidatorGroups(
+            fullValidatorList: electedValidatorList,
+            recommendedValidatorList: recommendedValidatorList
+        )
+
+        let selectionParams = ValidatorsSelectionParams(
+            maxNominations: maxNominations,
+            hasIdentity: hasIdentity
+        )
+
         wireframe.proceedToCustomList(
             from: view,
-            validatorList: electedValidatorList,
-            recommendedValidatorList: recommendedValidatorList,
+            selectionValidatorGroups: groups,
             selectedValidatorList: selectedValidators,
-            maxTargets: maxNominations
+            validatorsSelectionParams: selectionParams
         )
     }
 
@@ -163,6 +174,8 @@ extension SelectValidatorsStartPresenter: SelectValidatorsStartInteractorOutputP
             ) { dict, validator in
                 dict[validator.address] = validator
             }
+
+            hasIdentity = validators.contains { $0.hasIdentity }
 
             updateRecommendedValidators()
             updateSelectedValidatorsIfNeeded()
