@@ -121,8 +121,8 @@ final class XcmTransfersSyncService: BaseSyncService {
             // check that file was saved
             _ = try saveFileOperation.extractResultData()
 
-            if let data = try? newDataOperation.extractNoCancellableResultData() {
-                return try? JSONDecoder().decode(XcmTransfers.self, from: data)
+            if let data = try newDataOperation.extractNoCancellableResultData() {
+                return try JSONDecoder().decode(XcmTransfers.self, from: data)
             } else {
                 return nil
             }
