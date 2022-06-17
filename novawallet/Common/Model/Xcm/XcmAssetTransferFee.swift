@@ -1,6 +1,6 @@
 import Foundation
 
-struct XcmAssetTransferFee {
+struct XcmAssetTransferFee: Decodable {
     enum FeeType: String, Decodable {
         case proportional
         case standard

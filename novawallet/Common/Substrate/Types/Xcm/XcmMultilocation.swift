@@ -5,6 +5,6 @@ import BigInt
 extension Xcm {
     struct Multilocation: Encodable {
         @StringCodable var parents: UInt8
-        let junctions: Xcm.Junctions
+        let interior: Xcm.Junctions
     }
 }

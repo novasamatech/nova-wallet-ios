@@ -1,13 +1,13 @@
 import Foundation
 
-struct XcmAssetTransfer {
+struct XcmAssetTransfer: Decodable {
     let destination: XcmAssetTransfer.Destination
     let reserveFee: XcmAssetTransferFee?
     let type: TransferType
 }
 
 extension XcmAssetTransfer {
-    struct Destination {
+    struct Destination: Decodable {
         let chainId: ChainModel.Id
         let assetId: AssetModel.Id
         let fee: XcmAssetTransferFee

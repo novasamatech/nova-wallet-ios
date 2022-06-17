@@ -5,6 +5,7 @@ struct XcmAsset: Decodable {
     let assetId: AssetModel.Id
     let assetLocation: String
     let assetLocationPath: XcmAsset.Location
+    let xcmTransfers: [XcmAssetTransfer]
 }
 
 extension XcmAsset {
