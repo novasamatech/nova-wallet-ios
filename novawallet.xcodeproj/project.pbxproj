@@ -1705,11 +1705,14 @@
 		84FB298C2639ABA500BE0FCD /* YourValidatorList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB298B2639ABA500BE0FCD /* YourValidatorList.swift */; };
 		84FB29942639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB29932639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift */; };
 		84FB29992639AC2300BE0FCD /* YourValidatorList+SelectionConfirm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB29982639AC2300BE0FCD /* YourValidatorList+SelectionConfirm.swift */; };
-		84FB9E1A285C57D900B42FC0 /* VersionedMultilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E19285C57D900B42FC0 /* VersionedMultilocation.swift */; };
-		84FB9E1C285C57EF00B42FC0 /* Multilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1B285C57EF00B42FC0 /* Multilocation.swift */; };
+		84FB9E1A285C57D900B42FC0 /* XcmVersionedMultilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E19285C57D900B42FC0 /* XcmVersionedMultilocation.swift */; };
+		84FB9E1C285C57EF00B42FC0 /* XcmMultilocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1B285C57EF00B42FC0 /* XcmMultilocation.swift */; };
 		84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1D285C58FF00B42FC0 /* Xcm.swift */; };
 		84FB9E20285C5C9E00B42FC0 /* XcmJunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */; };
 		84FB9E22285C5D6200B42FC0 /* XcmNetworkId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E21285C5D6200B42FC0 /* XcmNetworkId.swift */; };
+		84FB9E24285C6ACC00B42FC0 /* XcmMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */; };
+		84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */; };
+		84FB9E28285C736A00B42FC0 /* XcmTransferFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */; };
 		84FD19FC27A32973008E5E68 /* HistoryRewardContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */; };
 		84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */; };
 		84FD3DAF2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */; };
@@ -3994,11 +3997,14 @@
 		84FB298B2639ABA500BE0FCD /* YourValidatorList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorList.swift; sourceTree = "<group>"; };
 		84FB29932639ABD700BE0FCD /* YourValidatorList+SelectionStart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YourValidatorList+SelectionStart.swift"; sourceTree = "<group>"; };
 		84FB29982639AC2300BE0FCD /* YourValidatorList+SelectionConfirm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YourValidatorList+SelectionConfirm.swift"; sourceTree = "<group>"; };
-		84FB9E19285C57D900B42FC0 /* VersionedMultilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionedMultilocation.swift; sourceTree = "<group>"; };
-		84FB9E1B285C57EF00B42FC0 /* Multilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Multilocation.swift; sourceTree = "<group>"; };
+		84FB9E19285C57D900B42FC0 /* XcmVersionedMultilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedMultilocation.swift; sourceTree = "<group>"; };
+		84FB9E1B285C57EF00B42FC0 /* XcmMultilocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultilocation.swift; sourceTree = "<group>"; };
 		84FB9E1D285C58FF00B42FC0 /* Xcm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xcm.swift; sourceTree = "<group>"; };
 		84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmJunction.swift; sourceTree = "<group>"; };
 		84FB9E21285C5D6200B42FC0 /* XcmNetworkId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmNetworkId.swift; sourceTree = "<group>"; };
+		84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultiasset.swift; sourceTree = "<group>"; };
+		84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmVersionedMultiasset.swift; sourceTree = "<group>"; };
+		84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferFactory.swift; sourceTree = "<group>"; };
 		84FD19FB27A32973008E5E68 /* HistoryRewardContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRewardContext.swift; sourceTree = "<group>"; };
 		84FD19FD27A3447E008E5E68 /* BalancesWithdrawEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalancesWithdrawEvent.swift; sourceTree = "<group>"; };
 		84FD3DAE2540BEA000A234E3 /* TransactionHistoryItem+Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransactionHistoryItem+Wallet.swift"; sourceTree = "<group>"; };
@@ -5497,6 +5503,7 @@
 				84117077285B1050006F4DFB /* XcmAssetTransfer.swift */,
 				84117079285B10F5006F4DFB /* XcmAssetTransferFee.swift */,
 				8411707B285B1214006F4DFB /* XcmTransfers.swift */,
+				84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -9346,11 +9353,13 @@
 		84FB9E18285C57C000B42FC0 /* Xcm */ = {
 			isa = PBXGroup;
 			children = (
-				84FB9E19285C57D900B42FC0 /* VersionedMultilocation.swift */,
-				84FB9E1B285C57EF00B42FC0 /* Multilocation.swift */,
+				84FB9E19285C57D900B42FC0 /* XcmVersionedMultilocation.swift */,
+				84FB9E1B285C57EF00B42FC0 /* XcmMultilocation.swift */,
 				84FB9E1D285C58FF00B42FC0 /* Xcm.swift */,
 				84FB9E1F285C5C9E00B42FC0 /* XcmJunction.swift */,
 				84FB9E21285C5D6200B42FC0 /* XcmNetworkId.swift */,
+				84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */,
+				84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -11739,7 +11748,7 @@
 				844EFB65265FD61D0090ACB1 /* CrowdloanContributeConfirmViewModel.swift in Sources */,
 				AEE5FAFF26415E0C002B8FDC /* StakingRebondSetupPresenter.swift in Sources */,
 				84A3B8A02836D74B00DE2669 /* StorageKeyDecodingProtocol.swift in Sources */,
-				84FB9E1C285C57EF00B42FC0 /* Multilocation.swift in Sources */,
+				84FB9E1C285C57EF00B42FC0 /* XcmMultilocation.swift in Sources */,
 				8472975D260B1B71009B86D0 /* ExistingBonding.swift in Sources */,
 				8490144C24A93D0B008F705E /* FearlessNavigationController.swift in Sources */,
 				848077D02837C637003B7C79 /* ParachainStakingValidatorFactory.swift in Sources */,
@@ -11755,6 +11764,7 @@
 				849842FE26592C2B006BBB9F /* StatusSectionView.swift in Sources */,
 				F42D125F26C1B14D00E59214 /* AnalyticsValidatorsViewModelFactory.swift in Sources */,
 				8461CC7F26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift in Sources */,
+				84FB9E24285C6ACC00B42FC0 /* XcmMultiasset.swift in Sources */,
 				841E5547282D7F5800C8438F /* StakingMainPresenterFactory+Parachain.swift in Sources */,
 				84F4A90A254CC863000CF0A3 /* KeystoreExportWrapper.swift in Sources */,
 				8467FCFE24E5C50B005D486C /* KeystoreImportService.swift in Sources */,
@@ -11971,6 +11981,7 @@
 				F4CE0F9527343E630094CD8A /* AcalaContributionConfirmPresenter.swift in Sources */,
 				847297CF260B4035009B86D0 /* ChangeTargetConfirmInteractor.swift in Sources */,
 				8428768724AE046300D91AD8 /* LanguageSelectionViewFactory.swift in Sources */,
+				84FB9E26285C6C5000B42FC0 /* XcmVersionedMultiasset.swift in Sources */,
 				84FAB0672542D06B00319F74 /* WalletContactOperationFactory.swift in Sources */,
 				84D2F1A727743DB00040C680 /* StaticImageViewModel.swift in Sources */,
 				841E5532282CD86C00C8438F /* StakingMainPresenterFactory.swift in Sources */,
@@ -12517,6 +12528,7 @@
 				8496ADD7276AFEED00306B24 /* DAppBrowserModel.swift in Sources */,
 				84F4386625D9B8C600AEDA56 /* TypeRegistryPrepared.swift in Sources */,
 				AE805FC526B3DF8B00007CE9 /* ValidatorInfoInteractorBase.swift in Sources */,
+				84FB9E28285C736A00B42FC0 /* XcmTransferFactory.swift in Sources */,
 				AEE5FB0526415E5D002B8FDC /* StakingRebondSetupViewFactory.swift in Sources */,
 				AEAC68F726E9FB8400346599 /* CoingeckoOperationFactory.swift in Sources */,
 				84C7435B251DC504009576C6 /* WalletNetworkOperationFactory+Protocol.swift in Sources */,
@@ -12908,7 +12920,7 @@
 				A8F69AC9D7294E7DCBA50470 /* SelectValidatorsStartPresenter.swift in Sources */,
 				84AE7AB127D38C9400495267 /* DisplayAddressViewModel.swift in Sources */,
 				84FB9E1E285C58FF00B42FC0 /* Xcm.swift in Sources */,
-				84FB9E1A285C57D900B42FC0 /* VersionedMultilocation.swift in Sources */,
+				84FB9E1A285C57D900B42FC0 /* XcmVersionedMultilocation.swift in Sources */,
 				849ABE6826278A4100011A2A /* NominateMapper.swift in Sources */,
 				2C3124A5EBC1AD57C01EEA17 /* SelectValidatorsStartInteractor.swift in Sources */,
 				84C5ADDF28133F3E006D7388 /* UnknownAddressView.swift in Sources */,
