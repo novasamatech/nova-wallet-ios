@@ -14,6 +14,27 @@ struct XcmTransfers: Decodable {
         instructions[key]
     }
 
+    func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath? {
+        guard let asset = asset(from: chainAssetId) else {
+            return nil
+        }
+
+        guard let assetLocation = assetLocation(for: asset.assetLocation)?.multilocation else {
+            return nil
+        }
+
+        switch asset.assetLocationPath.type {
+        case .absolute, .relative:
+            return XcmAsset.ReservePath(type: .absolute, path: assetLocation)
+        case .concrete:
+            if let concretePath = asset.assetLocationPath.path {
+                return XcmAsset.ReservePath(type: .concrete, path: concretePath)
+            } else {
+                return nil
+            }
+        }
+    }
+
     func transferableAssetIds(from chainId: ChainModel.Id) -> Set<AssetModel.Id> {
         guard let chain = chains.first(where: { $0.chainId == chainId }) else {
             return Set()
@@ -34,13 +55,34 @@ struct XcmTransfers: Decodable {
         return assetLocation.chainId?.stringValue
     }
 
-    func transfers(from chainId: ChainModel.Id, assetId: AssetModel.Id) -> [XcmAssetTransfer] {
+    func asset(from chainAssetId: ChainAssetId) -> XcmAsset? {
+        guard let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }) else {
+            return nil
+        }
+
+        return chain.assets.first(where: { $0.assetId == chainAssetId.assetId })
+    }
+
+    func transfers(from chainAssetId: ChainAssetId) -> [XcmAssetTransfer] {
         guard
-            let chain = chains.first(where: { $0.chainId == chainId }),
-            let xcmTransfers = chain.assets.first(where: { $0.assetId == assetId })?.xcmTransfers else {
+            let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }),
+            let xcmTransfers = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })?.xcmTransfers else {
             return []
         }
 
         return xcmTransfers
+    }
+
+    func transfer(
+        from chainAssetId: ChainAssetId,
+        destinationChainId: ChainModel.Id
+    ) -> XcmAssetTransfer? {
+        guard
+            let chain = chains.first(where: { $0.chainId == chainAssetId.chainId }),
+            let xcmTransfers = chain.assets.first(where: { $0.assetId == chainAssetId.assetId })?.xcmTransfers else {
+            return nil
+        }
+
+        return xcmTransfers.first { $0.destination.chainId == destinationChainId }
     }
 }

@@ -5,18 +5,54 @@ import BigInt
 protocol XcmTransferFactoryProtocol {
     func createMultilocation(
         origin: ChainModel,
-        destination: ChainModel,
-        destinationParachainId: ParaId?,
-        beneficiary: AccountId
+        destination: XcmAssetDestination
     ) -> Xcm.VersionedMultilocation
 
     func createMultiasset(
-        assetLocationPath: JSON,
-        assetLocationType: XcmAsset.LocationType,
         origin: ChainModel,
         reserve: ChainModel,
+        assetLocation: XcmAsset.ReservePath,
         amount: BigUInt
     ) throws -> Xcm.VersionedMultiasset
+}
+
+enum XcmTransferFactoryError: Error {
+    case noDestinationFound(ChainAssetId)
+    case noReserve(ChainAssetId)
+}
+
+extension XcmTransferFactoryProtocol {
+    func createMultilocationAsset(
+        from chainAsset: ChainAsset,
+        reserve: ChainModel,
+        destination: XcmAssetDestination,
+        amount: BigUInt,
+        xcmTransfers: XcmTransfers
+    ) throws -> XcmMultilocationAsset {
+        let multilocation = createMultilocation(origin: chainAsset.chain, destination: destination)
+
+        let originChainAssetId = chainAsset.chainAssetId
+
+        guard xcmTransfers.transfer(
+            from: originChainAssetId,
+            destinationChainId: destination.chain.chainId
+        ) != nil else {
+            throw XcmTransferFactoryError.noDestinationFound(originChainAssetId)
+        }
+
+        guard let reservePath = xcmTransfers.getReservePath(for: originChainAssetId) else {
+            throw XcmTransferFactoryError.noReserve(originChainAssetId)
+        }
+
+        let multiasset = try createMultiasset(
+            origin: chainAsset.chain,
+            reserve: reserve,
+            assetLocation: reservePath,
+            amount: amount
+        )
+
+        return XcmMultilocationAsset(location: multilocation, asset: multiasset)
+    }
 }
 
 final class XcmTransferFactory: XcmTransferFactoryProtocol {
@@ -91,21 +127,19 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
 
     func createMultilocation(
         origin: ChainModel,
-        destination: ChainModel,
-        destinationParachainId: ParaId?,
-        beneficiary: AccountId
+        destination: XcmAssetDestination
     ) -> Xcm.VersionedMultilocation {
         let accountIdJunction: Xcm.Junction
 
-        if destination.isEthereumBased {
-            accountIdJunction = Xcm.Junction.accountKey20(.any, accountId: beneficiary)
+        if destination.chain.isEthereumBased {
+            accountIdJunction = Xcm.Junction.accountKey20(.any, accountId: destination.accountId)
         } else {
-            accountIdJunction = Xcm.Junction.accountId32(.any, accountId: beneficiary)
+            accountIdJunction = Xcm.Junction.accountId32(.any, accountId: destination.accountId)
         }
 
         let parents: UInt8
 
-        if destinationParachainId != nil, origin.chainId != destination.chainId {
+        if destination.parachainId != nil, origin.chainId != destination.chain.chainId {
             parents = 1
         } else {
             parents = 0
@@ -113,7 +147,7 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
 
         let junctions: Xcm.Junctions
 
-        if let parachainId = destinationParachainId {
+        if let parachainId = destination.parachainId {
             let networkJunction = Xcm.Junction.parachain(parachainId)
             junctions = Xcm.Junctions(items: [networkJunction, accountIdJunction])
         } else {
@@ -126,15 +160,14 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
     }
 
     func createMultiasset(
-        assetLocationPath: JSON,
-        assetLocationType: XcmAsset.LocationType,
         origin: ChainModel,
         reserve: ChainModel,
+        assetLocation: XcmAsset.ReservePath,
         amount: BigUInt
     ) throws -> Xcm.VersionedMultiasset {
         let multilocation = try createAssetMultilocation(
-            from: assetLocationPath,
-            type: assetLocationType,
+            from: assetLocation.path,
+            type: assetLocation.type,
             origin: origin,
             reserve: reserve
         )
