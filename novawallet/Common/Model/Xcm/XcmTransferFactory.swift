@@ -8,17 +8,32 @@ protocol XcmTransferFactoryProtocol {
         destination: XcmAssetDestination
     ) -> Xcm.VersionedMultilocation
 
+    func createMultilocation(
+        origin: ChainModel,
+        destination: XcmAssetReserve
+    ) -> Xcm.VersionedMultilocation
+
     func createMultiasset(
         origin: ChainModel,
         reserve: ChainModel,
         assetLocation: XcmAsset.ReservePath,
         amount: BigUInt
     ) throws -> Xcm.VersionedMultiasset
+
+    func createWeightMessage(
+        from instructions: [String],
+        destination: Xcm.Multilocation,
+        asset: Xcm.Multiasset
+    ) throws -> Xcm.Message
 }
 
 enum XcmTransferFactoryError: Error {
     case noDestinationFound(ChainAssetId)
     case noReserve(ChainAssetId)
+    case unsupportedInstruction(String)
+    case noInstructions(String)
+    case unsupportedMultiassetVersion
+    case unsupportedMultilocationVersion
 }
 
 extension XcmTransferFactoryProtocol {
@@ -53,9 +68,80 @@ extension XcmTransferFactoryProtocol {
 
         return XcmMultilocationAsset(location: multilocation, asset: multiasset)
     }
+
+    func createWeightMessages(
+        from chainAsset: ChainAsset,
+        reserve: XcmAssetReserve,
+        destination: XcmAssetDestination,
+        amount: BigUInt,
+        xcmTransfers: XcmTransfers
+    ) throws -> XcmWeightMessages {
+        guard case .V1(let multilocation) = createMultilocation(
+            origin: chainAsset.chain,
+            destination: destination
+        ) else {
+            throw XcmTransferFactoryError.unsupportedMultilocationVersion
+        }
+
+        let originChainAssetId = chainAsset.chainAssetId
+
+        guard let xcmTransfer = xcmTransfers.transfer(
+            from: originChainAssetId,
+            destinationChainId: destination.chain.chainId
+        ) else {
+            throw XcmTransferFactoryError.noDestinationFound(originChainAssetId)
+        }
+
+        guard let reservePath = xcmTransfers.getReservePath(for: originChainAssetId) else {
+            throw XcmTransferFactoryError.noReserve(originChainAssetId)
+        }
+
+        guard case .V1(let multiasset) = try createMultiasset(
+            origin: chainAsset.chain,
+            reserve: reserve.chain,
+            assetLocation: reservePath,
+            amount: amount
+        ) else {
+            throw XcmTransferFactoryError.unsupportedMultiassetVersion
+        }
+
+        let destinationInstructionsKey = xcmTransfer.destination.fee.instructions
+        guard let destinationInstructions = xcmTransfers.instructions(for: destinationInstructionsKey) else {
+            throw XcmTransferFactoryError.noInstructions(destinationInstructionsKey)
+        }
+
+        let destinationMessage = try createWeightMessage(
+            from: destinationInstructions,
+            destination: multilocation,
+            asset: multiasset
+        )
+
+        let reserveMessage: Xcm.Message?
+
+        if let reserveFee = xcmTransfer.reserveFee {
+            guard case .V1(let reserveMultilocation) = createMultilocation(
+                origin: chainAsset.chain,
+                destination: reserve
+            ) else {
+                throw XcmTransferFactoryError.unsupportedMultilocationVersion
+            }
+
+            guard let reserveInstruction = xcmTransfers.instructions(for: reserveFee.instructions) else {
+                throw XcmTransferFactoryError.noInstructions(reserveFee.instructions)
+            }
+
+            reserveMessage = try createWeightMessage(
+                from: reserveInstruction,
+                destination: reserveMultilocation,
+                asset: multiasset
+            )
+        }
+
+        return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
+    }
 }
 
-final class XcmTransferFactory: XcmTransferFactoryProtocol {
+final class XcmTransferFactory {
     private func extractRelativeJunctions(from path: JSON) throws -> Xcm.Junctions {
         var junctions: [Xcm.Junction] = []
 
@@ -125,6 +211,10 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
         return Xcm.Multilocation(parents: parents, interior: junctions)
     }
 
+
+}
+
+extension XcmTransferFactory: XcmTransferFactoryProtocol {
     func createMultilocation(
         origin: ChainModel,
         destination: XcmAssetDestination
@@ -159,6 +249,32 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
         return .V1(multilocation)
     }
 
+    func createMultilocation(
+        origin: ChainModel,
+        destination: XcmAssetReserve
+    ) -> Xcm.VersionedMultilocation {
+        let parents: UInt8
+
+        if destination.parachainId != nil, origin.chainId != destination.chain.chainId {
+            parents = 1
+        } else {
+            parents = 0
+        }
+
+        let junctions: Xcm.Junctions
+
+        if let parachainId = destination.parachainId {
+            let networkJunction = Xcm.Junction.parachain(parachainId)
+            junctions = Xcm.Junctions(items: [networkJunction])
+        } else {
+            junctions = Xcm.Junctions(items: [])
+        }
+
+        let multilocation = Xcm.Multilocation(parents: parents, interior: junctions)
+
+        return .V1(multilocation)
+    }
+
     func createMultiasset(
         origin: ChainModel,
         reserve: ChainModel,
@@ -175,5 +291,30 @@ final class XcmTransferFactory: XcmTransferFactoryProtocol {
         let multiasset = Xcm.Multiasset.сoncreteFungible(location: multilocation, amount: amount)
 
         return .V1(multiasset)
+    }
+
+    func createWeightMessage(
+        from instructions: [String],
+        destination: Xcm.Multilocation,
+        asset: Xcm.Multiasset
+    ) throws -> Xcm.Message {
+        let xcmInstructions: [Xcm.Instruction] = try instructions.map { rawInstruction in
+            switch rawInstruction {
+            case Xcm.Instruction.fieldWithdrawAsset:
+                return .withdrawAsset([asset])
+            case Xcm.Instruction.fieldClearOrigin:
+                return .clearOrigin
+            case Xcm.Instruction.fieldReserveAssetDeposited:
+                return .reserveAssetDeposited([asset])
+            case Xcm.Instruction.fieldBuyExecution:
+                return .buyExecution(fees: asset, weightLimit: .limited(weight: 0))
+            case Xcm.Instruction.fieldDepositAsset:
+                return .depositAsset(.wild(.all), 1, destination)
+            default:
+                throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
+            }
+        }
+
+        return .V2(xcmInstructions)
     }
 }

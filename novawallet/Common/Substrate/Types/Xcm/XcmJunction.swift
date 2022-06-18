@@ -48,11 +48,9 @@ extension Xcm {
         }
     }
 
-    // swiftlint:disable identifier_name
     struct Junctions: Encodable {
         let items: [Xcm.Junction]
 
-        // swiftlint:disable:next function_body_length
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
 
@@ -66,7 +64,6 @@ extension Xcm {
             try items.forEach { try container.encode($0) }
         }
     }
-    // swiftlint:enable identifier_name
 }
 
 extension Xcm.Junctions {
