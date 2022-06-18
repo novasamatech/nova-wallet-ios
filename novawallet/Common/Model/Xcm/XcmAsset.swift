@@ -19,4 +19,9 @@ extension XcmAsset {
         let type: LocationType
         let path: JSON?
     }
+
+    struct ReservePath {
+        let type: LocationType
+        let path: JSON
+    }
 }
