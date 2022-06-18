@@ -1603,6 +1603,8 @@
 		84EBC55224F660A700459D15 /* EventProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC54724F660A700459D15 /* EventProtocols.swift */; };
 		84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */; };
 		84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */; };
+		84EBFCE2285E724C0006327E /* XcmMultilocationAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */; };
+		84EBFCE4285E734C0006327E /* XcmAssetDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */; };
 		84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */; };
 		84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */; };
 		84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */; };
@@ -3897,6 +3899,8 @@
 		84EBC54724F660A700459D15 /* EventProtocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventProtocols.swift; sourceTree = "<group>"; };
 		84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedAccountChanged.swift; sourceTree = "<group>"; };
 		84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+ReorderColor.swift"; sourceTree = "<group>"; };
+		84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultilocationAsset.swift; sourceTree = "<group>"; };
+		84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetDestination.swift; sourceTree = "<group>"; };
 		84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppScriptResponse.swift; sourceTree = "<group>"; };
 		84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionAccount.swift; sourceTree = "<group>"; };
 		84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionExtrinsic.swift; sourceTree = "<group>"; };
@@ -5504,6 +5508,8 @@
 				84117079285B10F5006F4DFB /* XcmAssetTransferFee.swift */,
 				8411707B285B1214006F4DFB /* XcmTransfers.swift */,
 				84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */,
+				84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */,
+				84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -11468,6 +11474,7 @@
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */,
+				84EBFCE4285E734C0006327E /* XcmAssetDestination.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
 				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
@@ -11868,6 +11875,7 @@
 				846F757E27B53F5100536547 /* DAppMetamaskSigningState.swift in Sources */,
 				849E17E0279094E7002D1744 /* DAppSearchHeaderView.swift in Sources */,
 				F40966CE26B297D6008CD244 /* AnalyticsStakeProtocols.swift in Sources */,
+				84EBFCE2285E724C0006327E /* XcmMultilocationAsset.swift in Sources */,
 				84216FD628279F5B00479375 /* ParaStakingRewardCalculatorServiceProtocol.swift in Sources */,
 				F47F640B263BFEF800FF67E9 /* ExtrinsicServiceFactory.swift in Sources */,
 				849014C524AA890D008F705E /* UIFont+Style.swift in Sources */,
