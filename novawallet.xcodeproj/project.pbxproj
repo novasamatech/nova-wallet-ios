@@ -1605,6 +1605,13 @@
 		84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */; };
 		84EBFCE2285E724C0006327E /* XcmMultilocationAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */; };
 		84EBFCE4285E734C0006327E /* XcmAssetDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */; };
+		84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE6285E7A7C0006327E /* XcmMessage.swift */; };
+		84EBFCE9285E7C100006327E /* XcmInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE8285E7C100006327E /* XcmInstruction.swift */; };
+		84EBFCEB285E7E130006327E /* XcmWeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */; };
+		84EBFCEE285E82BB0006327E /* XcmExecute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCED285E82BB0006327E /* XcmExecute.swift */; };
+		84EBFCF0285E84C30006327E /* XcmMultiassetFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */; };
+		84EBFCF4285E90F80006327E /* XcmWeightMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */; };
+		84EBFCF6285E955A0006327E /* XcmAssetReserve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */; };
 		84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */; };
 		84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */; };
 		84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */; };
@@ -3901,6 +3908,13 @@
 		84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+ReorderColor.swift"; sourceTree = "<group>"; };
 		84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultilocationAsset.swift; sourceTree = "<group>"; };
 		84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetDestination.swift; sourceTree = "<group>"; };
+		84EBFCE6285E7A7C0006327E /* XcmMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMessage.swift; sourceTree = "<group>"; };
+		84EBFCE8285E7C100006327E /* XcmInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmInstruction.swift; sourceTree = "<group>"; };
+		84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmWeightLimit.swift; sourceTree = "<group>"; };
+		84EBFCED285E82BB0006327E /* XcmExecute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExecute.swift; sourceTree = "<group>"; };
+		84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultiassetFilter.swift; sourceTree = "<group>"; };
+		84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmWeightMessages.swift; sourceTree = "<group>"; };
+		84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetReserve.swift; sourceTree = "<group>"; };
 		84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppScriptResponse.swift; sourceTree = "<group>"; };
 		84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionAccount.swift; sourceTree = "<group>"; };
 		84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionExtrinsic.swift; sourceTree = "<group>"; };
@@ -5510,6 +5524,8 @@
 				84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */,
 				84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */,
 				84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */,
+				84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */,
+				84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -6494,6 +6510,7 @@
 		845BB8C725E45D0600E5FCDC /* Calls */ = {
 			isa = PBXGroup;
 			children = (
+				84EBFCEC285E82AB0006327E /* Xcm */,
 				8445CC252836654B003B26CD /* Common */,
 				8445CC2428366536003B26CD /* ParachainStaking */,
 			);
@@ -9123,6 +9140,24 @@
 			path = Events;
 			sourceTree = "<group>";
 		};
+		84EBFCE5285E7A6D0006327E /* Message */ = {
+			isa = PBXGroup;
+			children = (
+				84EBFCE6285E7A7C0006327E /* XcmMessage.swift */,
+				84EBFCE8285E7C100006327E /* XcmInstruction.swift */,
+				84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */,
+			);
+			path = Message;
+			sourceTree = "<group>";
+		};
+		84EBFCEC285E82AB0006327E /* Xcm */ = {
+			isa = PBXGroup;
+			children = (
+				84EBFCED285E82BB0006327E /* XcmExecute.swift */,
+			);
+			path = Xcm;
+			sourceTree = "<group>";
+		};
 		84EC2D1B276C67EB009B0BE1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -9359,6 +9394,7 @@
 		84FB9E18285C57C000B42FC0 /* Xcm */ = {
 			isa = PBXGroup;
 			children = (
+				84EBFCE5285E7A6D0006327E /* Message */,
 				84FB9E19285C57D900B42FC0 /* XcmVersionedMultilocation.swift */,
 				84FB9E1B285C57EF00B42FC0 /* XcmMultilocation.swift */,
 				84FB9E1D285C58FF00B42FC0 /* Xcm.swift */,
@@ -9366,6 +9402,7 @@
 				84FB9E21285C5D6200B42FC0 /* XcmNetworkId.swift */,
 				84FB9E23285C6ACC00B42FC0 /* XcmMultiasset.swift */,
 				84FB9E25285C6C5000B42FC0 /* XcmVersionedMultiasset.swift */,
+				84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -12251,6 +12288,7 @@
 				F4DCAE4726207EF900CCA6BF /* PayoutRewardsServiceProtocol.swift in Sources */,
 				F4F65C3826D8B86F002EE838 /* FWXAxisEmptyValueFormatter.swift in Sources */,
 				8463A6F925E2F82E003B8160 /* CDSingleValue+CoreDataCodable.swift in Sources */,
+				84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */,
 				8424DB0B26B8466A008C834F /* ValidatorOperationFactoryProtocol.swift in Sources */,
 				848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */,
 				8493D3E927059B6700157009 /* StakingServiceFactory.swift in Sources */,
@@ -12690,6 +12728,7 @@
 				849528E326036997009DC845 /* RewardEstimationView.swift in Sources */,
 				F474D388260CBEE600013699 /* StakingRewardDetailsViewLayout.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
+				84EBFCF6285E955A0006327E /* XcmAssetReserve.swift in Sources */,
 				843910CE253F7E8000E3C217 /* SubstrateDataStorageFacade.swift in Sources */,
 				84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */,
 				84C91FAA261E724F002796B9 /* SwitchTableViewCell.swift in Sources */,
@@ -12766,6 +12805,7 @@
 				84FB1F6D2526987D00E0242B /* SubscanHistoryContext.swift in Sources */,
 				8499FEC627BEC68000712589 /* UniquesInstanceMetadata.swift in Sources */,
 				84364D5C252FB65C00281F9A /* AssetDetailsContainingViewFactory.swift in Sources */,
+				84EBFCE9285E7C100006327E /* XcmInstruction.swift in Sources */,
 				2AFF4BA2274D1E5C00D790B4 /* UsernameSetupViewLayout.swift in Sources */,
 				84265E062523D7BE005EEE2D /* WalletInputAmountView.swift in Sources */,
 				2A66CF4F25D109780006E4C1 /* CDPhishingItem+CoreDataDecodable.swift in Sources */,
@@ -12826,6 +12866,7 @@
 				7C93FA82996A426E7B8CA06E /* AccountExportPasswordViewController.swift in Sources */,
 				84D6D7FA27A7EC810094FC33 /* WalletListAssetCell.swift in Sources */,
 				61E0DC83C1D60D677274D7CE /* AccountExportPasswordViewFactory.swift in Sources */,
+				84EBFCF4285E90F80006327E /* XcmWeightMessages.swift in Sources */,
 				841E5540282D524800C8438F /* ParastakingLocalStorageSubscriber.swift in Sources */,
 				84350AD228457CC30031EF24 /* BaseValidatorInfoViewModelFactory.swift in Sources */,
 				84C11F1F2842D5D5007F7C05 /* ParaStkCollatorsSearchViewModel.swift in Sources */,
@@ -12976,6 +13017,7 @@
 				84E493252731C064000534F2 /* WalletListViewModel.swift in Sources */,
 				AEA0C8B8267C905500F9666F /* SelectedValidatorCell.swift in Sources */,
 				847F2D5927AB201200AFD476 /* GradientIconView.swift in Sources */,
+				84EBFCEE285E82BB0006327E /* XcmExecute.swift in Sources */,
 				849976C627B2B73900B14A6C /* DAppMetamaskStateMachine.swift in Sources */,
 				847F2D4427A9822200AFD476 /* AssetIconView.swift in Sources */,
 				20B2942A4241F6713A1C70D9 /* StakingRewardDetailsViewFactory.swift in Sources */,
@@ -13389,6 +13431,7 @@
 				3B6F50061AD9FC31D6712D9F /* ParaStkCollatorsSearchProtocols.swift in Sources */,
 				52326E49B049C54434C95132 /* ParaStkCollatorsSearchWireframe.swift in Sources */,
 				84117078285B1050006F4DFB /* XcmAssetTransfer.swift in Sources */,
+				84EBFCF0285E84C30006327E /* XcmMultiassetFilter.swift in Sources */,
 				BFC8C5A2C95D6EDF97D73732 /* ParaStkCollatorsSearchPresenter.swift in Sources */,
 				25993E2E536DE682E1DFC9AD /* ParaStkCollatorsSearchInteractor.swift in Sources */,
 				688F73AFD5FF20F77242B57E /* ParaStkCollatorsSearchViewController.swift in Sources */,
@@ -13407,6 +13450,7 @@
 				C1115B135F9C544C91C06B58 /* ParaStkUnstakeProtocols.swift in Sources */,
 				E2F07BE11A2A6E862164C681 /* ParaStkUnstakeWireframe.swift in Sources */,
 				2F95EEA6CBFDF483124ECF8F /* ParaStkUnstakePresenter.swift in Sources */,
+				84EBFCEB285E7E130006327E /* XcmWeightLimit.swift in Sources */,
 				D7B4AE688B93EC562F452F4E /* ParaStkUnstakeInteractor.swift in Sources */,
 				5FD7B3463822BC69AF5E3C72 /* ParaStkUnstakeViewController.swift in Sources */,
 				3E6215E91AE1C1F78246A43C /* ParaStkUnstakeViewLayout.swift in Sources */,

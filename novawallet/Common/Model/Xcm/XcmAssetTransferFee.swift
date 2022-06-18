@@ -12,5 +12,5 @@ struct XcmAssetTransferFee: Decodable {
     }
 
     let mode: XcmAssetTransferFee.Mode
-    let instructions: [String]
+    let instructions: String
 }
