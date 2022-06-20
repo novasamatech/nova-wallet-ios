@@ -2,7 +2,6 @@ import Foundation
 
 struct XcmAssetTransfer: Decodable {
     let destination: XcmAssetTransfer.Destination
-    let reserveFee: XcmAssetTransferFee?
     let type: TransferType
 }
 

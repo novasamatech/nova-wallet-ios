@@ -19,7 +19,7 @@ struct XcmTransfers: Decodable {
             return nil
         }
 
-        guard let assetLocation = assetLocation(for: asset.assetLocation)?.multilocation else {
+        guard let assetLocation = assetLocation(for: asset.assetLocation)?.multiLocation else {
             return nil
         }
 
