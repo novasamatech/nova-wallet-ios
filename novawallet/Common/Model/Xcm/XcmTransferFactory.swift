@@ -76,7 +76,7 @@ extension XcmTransferFactoryProtocol {
         amount: BigUInt,
         xcmTransfers: XcmTransfers
     ) throws -> XcmWeightMessages {
-        guard case .V1(let multilocation) = createMultilocation(
+        guard case let .V1(multilocation) = createMultilocation(
             origin: chainAsset.chain,
             destination: destination
         ) else {
@@ -96,7 +96,7 @@ extension XcmTransferFactoryProtocol {
             throw XcmTransferFactoryError.noReserve(originChainAssetId)
         }
 
-        guard case .V1(let multiasset) = try createMultiasset(
+        guard case let .V1(multiasset) = try createMultiasset(
             origin: chainAsset.chain,
             reserve: reserve.chain,
             assetLocation: reservePath,
@@ -118,8 +118,8 @@ extension XcmTransferFactoryProtocol {
 
         let reserveMessage: Xcm.Message?
 
-        if let reserveFee = xcmTransfer.reserveFee {
-            guard case .V1(let reserveMultilocation) = createMultilocation(
+        if let reserveFee = xcmTransfers.asset(from: originChainAssetId)?.reserveFee {
+            guard case let .V1(reserveMultilocation) = createMultilocation(
                 origin: chainAsset.chain,
                 destination: reserve
             ) else {
@@ -135,6 +135,8 @@ extension XcmTransferFactoryProtocol {
                 destination: reserveMultilocation,
                 asset: multiasset
             )
+        } else {
+            reserveMessage = nil
         }
 
         return XcmWeightMessages(destination: destinationMessage, reserve: reserveMessage)
@@ -210,8 +212,6 @@ final class XcmTransferFactory {
 
         return Xcm.Multilocation(parents: parents, interior: junctions)
     }
-
-
 }
 
 extension XcmTransferFactory: XcmTransferFactoryProtocol {
