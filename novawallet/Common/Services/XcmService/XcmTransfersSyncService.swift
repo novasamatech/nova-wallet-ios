@@ -19,6 +19,7 @@ final class XcmTransfersSyncService: BaseSyncService {
     let operationQueue: OperationQueue
 
     var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)?
+    var notificationQueue = DispatchQueue.main
 
     init(
         remoteUrl: URL,
@@ -56,7 +57,7 @@ final class XcmTransfersSyncService: BaseSyncService {
             return
         }
 
-        DispatchQueue.main.async {
+        notificationQueue.async {
             notificationCallback(result)
         }
     }
