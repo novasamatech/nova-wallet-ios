@@ -31,8 +31,18 @@ extension Xcm {
     }
 
     enum WildMultiasset: Encodable {
+        struct AllOfValue: Encodable {
+            enum CodingKeys: String, CodingKey {
+                case assetId = "id"
+                case fun
+            }
+
+            let assetId: AssetId
+            let fun: WildFungibility
+        }
+
         case all
-        case allOf(AssetId, WildFungibility)
+        case allOf(AllOfValue)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -40,10 +50,10 @@ extension Xcm {
             switch self {
             case .all:
                 try container.encode("All")
-            case let .allOf(assetId, wildFungibility):
+                try container.encode(JSON.null)
+            case let .allOf(value):
                 try container.encode("AllOf")
-                try container.encode(assetId)
-                try container.encode(wildFungibility)
+                try container.encode(value)
             }
         }
     }

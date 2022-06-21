@@ -3,11 +3,31 @@ import BigInt
 import SubstrateSdk
 
 extension Xcm {
+    struct AccountId32Value: Encodable {
+        enum CodingKeys: String, CodingKey {
+            case network
+            case accountId = "id"
+        }
+
+        let network: NetworkId
+        @BytesCodable var accountId: AccountId
+    }
+
+    struct AccountId20Value: Encodable {
+        let network: NetworkId
+        @BytesCodable var key: AccountId
+    }
+
+    struct AccountIndexValue: Encodable {
+        let network: NetworkId
+        @StringCodable var index: UInt64
+    }
+
     enum Junction: Encodable {
         case parachain(_ paraId: ParaId)
-        case accountId32(_ network: NetworkId, accountId: AccountId)
-        case accountIndex64(_ network: NetworkId, index: UInt64)
-        case accountKey20(_ network: NetworkId, accountId: AccountId)
+        case accountId32(AccountId32Value)
+        case accountIndex64(AccountIndexValue)
+        case accountKey20(AccountId20Value)
         case palletInstance(_ index: UInt8)
         case generalIndex(_ index: BigUInt)
         case generalKey(_ key: Data)
@@ -21,18 +41,15 @@ extension Xcm {
             case let .parachain(paraId):
                 try container.encode("Parachain")
                 try container.encode(StringScaleMapper(value: paraId))
-            case let .accountId32(network, accountId):
+            case let .accountId32(value):
                 try container.encode("AccountId32")
-                try container.encode(network)
-                try container.encode(BytesCodable(wrappedValue: accountId))
-            case let .accountIndex64(network, index):
+                try container.encode(value)
+            case let .accountIndex64(value):
                 try container.encode("AccountIndex64")
-                try container.encode(network)
-                try container.encode(StringScaleMapper(value: index))
-            case let .accountKey20(network, accountId):
+                try container.encode(value)
+            case let .accountKey20(value):
                 try container.encode("AccountKey20")
-                try container.encode(network)
-                try container.encode(BytesCodable(wrappedValue: accountId))
+                try container.encode(value)
             case let .palletInstance(index):
                 try container.encode("PalletInstance")
                 try container.encode(StringScaleMapper(value: index))
@@ -44,6 +61,7 @@ extension Xcm {
                 try container.encode(BytesCodable(wrappedValue: key))
             case .onlyChild:
                 try container.encode("OnlyChild")
+                try container.encode(JSON.null)
             }
         }
     }
@@ -61,7 +79,19 @@ extension Xcm {
                 try container.encode(xLocation)
             }
 
-            try items.forEach { try container.encode($0) }
+            if items.isEmpty {
+                try container.encode(JSON.null)
+            } else if items.count == 1 {
+                try container.encode(items[0])
+            } else {
+                var jsonDict: [String: Xcm.Junction] = [:]
+                for (index, item) in items.enumerated() {
+                    let key = String(index)
+                    jsonDict[key] = item
+                }
+
+                try container.encode(jsonDict)
+            }
         }
     }
 }
