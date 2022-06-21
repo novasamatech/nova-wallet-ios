@@ -663,6 +663,7 @@
 		8448D5BB277DDA5000FAEEBC /* DAppListGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448D5BA277DDA5000FAEEBC /* DAppListGenerator.swift */; };
 		84490E7427F2CE2C00941837 /* TransferMetadataContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
+		844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */; };
 		844B2E7A27C425E3000CC079 /* NftLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */; };
 		844B2E7C27C426A7000CC079 /* NftLocalSubscriptionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */; };
 		844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */; };
@@ -2960,6 +2961,7 @@
 		8448D5BA277DDA5000FAEEBC /* DAppListGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppListGenerator.swift; sourceTree = "<group>"; };
 		84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransferMetadataContext.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
+		844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferService.swift; sourceTree = "<group>"; };
 		844B2E7927C425E3000CC079 /* NftLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalStorageSubscriber.swift; sourceTree = "<group>"; };
 		844B2E7B27C426A7000CC079 /* NftLocalSubscriptionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftLocalSubscriptionHandler.swift; sourceTree = "<group>"; };
 		844CB56126F943AD00396E13 /* WalletLocalSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletLocalSubscriptionFactory.swift; sourceTree = "<group>"; };
@@ -6509,6 +6511,7 @@
 				8461CC7E26BBFEEA007460E4 /* ExtrinsicEraOperationFactory.swift */,
 				8461CC8026BBFF70007460E4 /* ImmortalEraOperationFactory.swift */,
 				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
+				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
 			);
 			path = ExtrinsicService;
 			sourceTree = "<group>";
@@ -12446,6 +12449,7 @@
 				F436BB9E2726FBF7004B1794 /* Coordinator.swift in Sources */,
 				84C91FAF261E7CDD002796B9 /* WalletHistoryFilterEditor.swift in Sources */,
 				84BB3CF8267D276D00676FFE /* CrowdloanTableViewCell.swift in Sources */,
+				844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */,
 				2A9F8D52274E4EC4003720E0 /* AccountCreateViewController.swift in Sources */,
 				84113B91255B2CA0009BD21A /* MainTransitionHelper.swift in Sources */,
 				8428768524AE046300D91AD8 /* LanguageSelectionProtocols.swift in Sources */,

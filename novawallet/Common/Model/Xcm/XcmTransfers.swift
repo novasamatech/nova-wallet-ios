@@ -1,9 +1,11 @@
 import Foundation
 import SubstrateSdk
+import BigInt
 
 struct XcmTransfers: Decodable {
     let assetsLocation: [String: JSON]
     let instructions: [String: [String]]
+    let networkBaseWeight: [String: String]
     let chains: [XcmChain]
 
     func assetLocation(for key: String) -> JSON? {
@@ -12,6 +14,14 @@ struct XcmTransfers: Decodable {
 
     func instructions(for key: String) -> [String]? {
         instructions[key]
+    }
+
+    func baseWeight(for chainId: String) -> BigUInt? {
+        guard let baseWeight = networkBaseWeight[chainId] else {
+            return nil
+        }
+
+        return BigUInt(baseWeight)
     }
 
     func getReservePath(for chainAssetId: ChainAssetId) -> XcmAsset.ReservePath? {

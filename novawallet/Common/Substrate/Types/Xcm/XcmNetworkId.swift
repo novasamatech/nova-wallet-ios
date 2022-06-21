@@ -14,13 +14,16 @@ extension Xcm {
             switch self {
             case .any:
                 try container.encode("Any")
+                try container.encode(JSON.null)
             case let .named(data):
                 try container.encode("Named")
                 try container.encode(BytesCodable(wrappedValue: data))
             case .polkadot:
                 try container.encode("Polkadot")
+                try container.encode(JSON.null)
             case .kusama:
                 try container.encode("Kusama")
+                try container.encode(JSON.null)
             }
         }
     }

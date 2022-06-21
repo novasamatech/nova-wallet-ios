@@ -1,6 +1,18 @@
 import Foundation
+import SubstrateSdk
 
 extension Xcm {
+    struct DepositAssetValue: Encodable {
+        let assets: MultiassetFilter
+        @StringCodable var maxAssets: UInt32
+        let beneficiary: Multilocation
+    }
+
+    struct BuyExecutionValue: Encodable {
+        let fees: Multiasset
+        let weightLimit: Xcm.WeightLimit
+    }
+
     enum Instruction: Encodable {
         static let fieldWithdrawAsset = "WithdrawAsset"
         static let fieldClearOrigin = "ClearOrigin"
@@ -9,10 +21,10 @@ extension Xcm {
         static let fieldDepositAsset = "DepositAsset"
 
         case withdrawAsset([Multiasset])
-        case depositAsset(MultiassetFilter, UInt32, Multilocation)
+        case depositAsset(DepositAssetValue)
         case clearOrigin
         case reserveAssetDeposited([Multiasset])
-        case buyExecution(fees: Multiasset, weightLimit: Xcm.WeightLimit)
+        case buyExecution(BuyExecutionValue)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -23,18 +35,16 @@ extension Xcm {
                 try container.encode(assets)
             case .clearOrigin:
                 try container.encode(Self.fieldClearOrigin)
+                try container.encode(JSON.null)
             case let .reserveAssetDeposited(assets):
                 try container.encode(Self.fieldReserveAssetDeposited)
                 try container.encode(assets)
-            case let .buyExecution(fees, weightLimit):
+            case let .buyExecution(value):
                 try container.encode(Self.fieldBuyExecution)
-                try container.encode(fees)
-                try container.encode(weightLimit)
-            case let .depositAsset(assets, maxAssets, beneficiary):
+                try container.encode(value)
+            case let .depositAsset(value):
                 try container.encode(Self.fieldDepositAsset)
-                try container.encode(assets)
-                try container.encode(maxAssets)
-                try container.encode(beneficiary)
+                try container.encode(value)
             }
         }
     }
