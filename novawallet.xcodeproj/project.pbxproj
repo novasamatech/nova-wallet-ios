@@ -1742,6 +1742,10 @@
 		84FF268228494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF268128494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift */; };
 		84FF2684284951AF003EC78D /* DelegationCallWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF2683284951AF003EC78D /* DelegationCallWrapper.swift */; };
 		84FF26862849530E003EC78D /* AccountId+Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FF26852849530E003EC78D /* AccountId+Dummy.swift */; };
+		84FFE4572861FFE5002432BB /* FeeWithWeight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE4562861FFE5002432BB /* FeeWithWeight.swift */; };
+		84FFE45928620716002432BB /* XcmTransferParties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45828620716002432BB /* XcmTransferParties.swift */; };
+		84FFE45B2862076F002432BB /* XcmTransferRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45A2862076F002432BB /* XcmTransferRequest.swift */; };
+		84FFE45D28620833002432BB /* XcmTransferResolutionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */; };
 		84FFE505261290830054EA63 /* NetworkInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FFE504261290830054EA63 /* NetworkInfoView.swift */; };
 		85547F698B551ACD387D84E2 /* SelectValidatorsStartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E62CD2831DCF0A2D5DBB08F /* SelectValidatorsStartViewController.swift */; };
 		85A093F6055DDD2E2E9253F2 /* ControllerAccountProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = F829E7F8B39EE7D977001510 /* ControllerAccountProtocols.swift */; };
@@ -4046,6 +4050,10 @@
 		84FF268128494EA4003EC78D /* ParaStkStakeConfirmPresenter+StakeMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ParaStkStakeConfirmPresenter+StakeMore.swift"; sourceTree = "<group>"; };
 		84FF2683284951AF003EC78D /* DelegationCallWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegationCallWrapper.swift; sourceTree = "<group>"; };
 		84FF26852849530E003EC78D /* AccountId+Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountId+Dummy.swift"; sourceTree = "<group>"; };
+		84FFE4562861FFE5002432BB /* FeeWithWeight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeWithWeight.swift; sourceTree = "<group>"; };
+		84FFE45828620716002432BB /* XcmTransferParties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferParties.swift; sourceTree = "<group>"; };
+		84FFE45A2862076F002432BB /* XcmTransferRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferRequest.swift; sourceTree = "<group>"; };
+		84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferResolutionService.swift; sourceTree = "<group>"; };
 		84FFE504261290830054EA63 /* NetworkInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInfoView.swift; sourceTree = "<group>"; };
 		850E0DBBF0EC8422AEBF2189 /* ControllerAccountTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ControllerAccountTests.swift; sourceTree = "<group>"; };
 		85211D55E2AF0A697FB3EB84 /* AnalyticsRewardDetailsPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AnalyticsRewardDetailsPresenter.swift; sourceTree = "<group>"; };
@@ -5532,6 +5540,8 @@
 				84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */,
 				84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */,
 				84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */,
+				84FFE45828620716002432BB /* XcmTransferParties.swift */,
+				84FFE45A2862076F002432BB /* XcmTransferRequest.swift */,
 			);
 			path = Xcm;
 			sourceTree = "<group>";
@@ -6512,6 +6522,7 @@
 				8461CC8026BBFF70007460E4 /* ImmortalEraOperationFactory.swift */,
 				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
 				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
+				84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */,
 			);
 			path = ExtrinsicService;
 			sourceTree = "<group>";
@@ -7450,6 +7461,7 @@
 				8456C08127CF9DC9001282DE /* RemoteNftModel.swift */,
 				8499FEDF27C0AE3200712589 /* KnownChainIds.swift */,
 				84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */,
+				84FFE4562861FFE5002432BB /* FeeWithWeight.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -11942,6 +11954,7 @@
 				84C1B98424F5245700FE5470 /* ManagedAccountViewModel.swift in Sources */,
 				8444D1BE2671465A00AF6D8C /* CrowdloanBonusServiceError.swift in Sources */,
 				84D2F1AF2774CEF00040C680 /* DAppURLBarView.swift in Sources */,
+				84FFE45B2862076F002432BB /* XcmTransferRequest.swift in Sources */,
 				84D1110C26B922D50016D962 /* ConnectionPool.swift in Sources */,
 				8490152E24ABD0F5008F705E /* Logger+Wallet.swift in Sources */,
 				84FF268028494D33003EC78D /* ParaStkStakeConfirmPresenter+StartStaking.swift in Sources */,
@@ -12131,6 +12144,7 @@
 				AEA2C1B62681E9B20069492E /* ValidatorSearchViewFactory.swift in Sources */,
 				84AE7ABB27D411CE00495267 /* RMRKV2DetailsInteractor.swift in Sources */,
 				AEE4E35225E945AA00D6DF31 /* RewardCalculatorFacade.swift in Sources */,
+				84FFE4572861FFE5002432BB /* FeeWithWeight.swift in Sources */,
 				AE4A71D42607B1440017C663 /* NetworkStakingInfoViewModel.swift in Sources */,
 				8439398A2636E8840087658D /* YourValidatorListViewLayout.swift in Sources */,
 				84DB4E2325E945E000A6DF41 /* SlashingSpans.swift in Sources */,
@@ -12787,6 +12801,7 @@
 				84DED3F726662CF200A153BB /* TitleValueSelectionControl.swift in Sources */,
 				84F30EA125FD3EE700039D09 /* ChildSubscriptionFactory.swift in Sources */,
 				84D2F1A027730E6D0040C680 /* DAppOperationConfirmViewModel.swift in Sources */,
+				84FFE45928620716002432BB /* XcmTransferParties.swift in Sources */,
 				8401AEC12642A71D000B03E3 /* StakingRebondConfirmationViewModel.swift in Sources */,
 				849C0671276516F900394C82 /* BaseOperation+Cancellable.swift in Sources */,
 				84E1CD0C260DCD23001E81B5 /* SwitchAccount+AccountConfirmWireframe.swift in Sources */,
@@ -13404,6 +13419,7 @@
 				F5CA222FA684AAC8B556E667 /* DAppAddFavoritePresenter.swift in Sources */,
 				AC904E313DC15AE40C927946 /* DAppAddFavoriteInteractor.swift in Sources */,
 				006BEDBD2F98FF54DB993D8C /* DAppAddFavoriteViewController.swift in Sources */,
+				84FFE45D28620833002432BB /* XcmTransferResolutionService.swift in Sources */,
 				D3F199376DAEBF380C5FFD9D /* DAppAddFavoriteViewLayout.swift in Sources */,
 				12734D7CC6ACA5B657F44519 /* DAppAddFavoriteViewFactory.swift in Sources */,
 				4E184FFD1532C293BDF6D7C1 /* DAppAuthSettingsProtocols.swift in Sources */,

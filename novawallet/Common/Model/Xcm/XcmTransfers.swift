@@ -95,4 +95,22 @@ struct XcmTransfers: Decodable {
 
         return xcmTransfers.first { $0.destination.chainId == destinationChainId }
     }
+
+    func destinationFee(
+        from chainAssetId: ChainAssetId,
+        to destinationChainId: ChainModel.Id
+    ) -> XcmAssetTransferFee? {
+        let transfer = transfer(from: chainAssetId, destinationChainId: destinationChainId)
+        return transfer?.destination.fee
+    }
+
+    func reserveFee(from chainAssetId: ChainAssetId) -> XcmAssetTransferFee? {
+        guard
+            let assetLocationId = asset(from: chainAssetId)?.assetLocation,
+            let assetLocation = assetLocation(for: assetLocationId) else {
+            return nil
+        }
+
+        return try? assetLocation.reserveFee?.map(to: XcmAssetTransferFee.self, with: nil)
+    }
 }
