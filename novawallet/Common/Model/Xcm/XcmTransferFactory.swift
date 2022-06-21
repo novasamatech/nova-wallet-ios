@@ -222,9 +222,11 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
         let accountIdJunction: Xcm.Junction
 
         if destination.chain.isEthereumBased {
-            accountIdJunction = Xcm.Junction.accountKey20(.any, accountId: destination.accountId)
+            let accountIdValue = Xcm.AccountId20Value(network: .any, key: destination.accountId)
+            accountIdJunction = Xcm.Junction.accountKey20(accountIdValue)
         } else {
-            accountIdJunction = Xcm.Junction.accountId32(.any, accountId: destination.accountId)
+            let accountIdValue = Xcm.AccountId32Value(network: .any, accountId: destination.accountId)
+            accountIdJunction = Xcm.Junction.accountId32(accountIdValue)
         }
 
         let parents: UInt8
@@ -288,7 +290,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
             reserve: reserve
         )
 
-        let multiasset = Xcm.Multiasset.сoncreteFungible(location: multilocation, amount: amount)
+        let multiasset = Xcm.Multiasset(multilocation: multilocation, amount: amount)
 
         return .V1(multiasset)
     }
@@ -307,9 +309,11 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
             case Xcm.Instruction.fieldReserveAssetDeposited:
                 return .reserveAssetDeposited([asset])
             case Xcm.Instruction.fieldBuyExecution:
-                return .buyExecution(fees: asset, weightLimit: .limited(weight: 0))
+                let value = Xcm.BuyExecutionValue(fees: asset, weightLimit: .limited(weight: 0))
+                return .buyExecution(value)
             case Xcm.Instruction.fieldDepositAsset:
-                return .depositAsset(.wild(.all), 1, destination)
+                let value = Xcm.DepositAssetValue(assets: .wild(.all), maxAssets: 1, beneficiary: destination)
+                return .depositAsset(value)
             default:
                 throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
             }
