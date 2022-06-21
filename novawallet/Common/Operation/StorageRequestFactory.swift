@@ -16,6 +16,13 @@ struct ChildStorageResponse<T: Decodable> {
 }
 
 protocol StorageRequestFactoryProtocol {
+    func queryItem<T>(
+        engine: JSONRPCEngine,
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        storagePath: StorageCodingPath,
+        at blockHash: Data?
+    ) -> CompoundOperationWrapper<StorageResponse<T>> where T: Decodable
+
     func queryItems<K, T>(
         engine: JSONRPCEngine,
         keyParams: @escaping () throws -> [K],
@@ -145,6 +152,47 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
 
             return wrappers
         }.longrunOperation()
+    }
+
+    func queryItem<T>(
+        engine: JSONRPCEngine,
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        storagePath: StorageCodingPath,
+        at blockHash: Data?
+    ) -> CompoundOperationWrapper<StorageResponse<T>> where T: Decodable {
+        do {
+            let keyData = try remoteFactory.createStorageKey(
+                moduleName: storagePath.moduleName,
+                storageName: storagePath.itemName
+            )
+
+            let wrapper: CompoundOperationWrapper<[StorageResponse<T>]> = queryItems(
+                engine: engine,
+                keyParams: { [keyData] },
+                factory: factory,
+                storagePath: storagePath,
+                at: blockHash
+            )
+
+            let mappingOperation = ClosureOperation<StorageResponse<T>> {
+                let responses = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                guard let response = responses.first else {
+                    throw CommonError.dataCorruption
+                }
+
+                return response
+            }
+
+            mappingOperation.addDependency(wrapper.targetOperation)
+
+            let dependencies = wrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
+
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
     }
 
     func queryItems<T>(
@@ -312,6 +360,19 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
 }
 
 extension StorageRequestFactoryProtocol {
+    func queryItem<T>(
+        engine: JSONRPCEngine,
+        factory: @escaping () throws -> RuntimeCoderFactoryProtocol,
+        storagePath: StorageCodingPath
+    ) -> CompoundOperationWrapper<StorageResponse<T>> where T: Decodable {
+        queryItem(
+            engine: engine,
+            factory: factory,
+            storagePath: storagePath,
+            at: nil
+        )
+    }
+
     func queryItems<K, T>(
         engine: JSONRPCEngine,
         keyParams: @escaping () throws -> [K],

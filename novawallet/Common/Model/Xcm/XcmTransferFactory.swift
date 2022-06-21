@@ -28,12 +28,17 @@ protocol XcmTransferFactoryProtocol {
 }
 
 enum XcmTransferFactoryError: Error {
-    case noDestinationFound(ChainAssetId)
+    case noOriginAssetFound(ChainAssetId)
+    case noDestinationAssetFound(ChainAssetId)
+    case noDestinationFound(ChainModel.Id)
     case noReserve(ChainAssetId)
     case unsupportedInstruction(String)
     case noInstructions(String)
     case unsupportedMultiassetVersion
     case unsupportedMultilocationVersion
+    case noDestinationFee(origin: ChainAssetId, destination: ChainModel.Id)
+    case noReserveFee(ChainAssetId)
+    case noBaseWeight(ChainModel.Id)
 }
 
 extension XcmTransferFactoryProtocol {
