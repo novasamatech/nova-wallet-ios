@@ -107,6 +107,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.order = order
     }
 
+    func asset(for assetId: AssetModel.Id) -> AssetModel? {
+        assets.first { $0.assetId == assetId }
+    }
+
     var isEthereumBased: Bool {
         options?.contains(.ethereumBased) ?? false
     }

@@ -6,7 +6,6 @@ struct XcmAsset: Decodable {
     let assetLocation: String
     let assetLocationPath: XcmAsset.Location
     let xcmTransfers: [XcmAssetTransfer]
-    let reserveFee: XcmAssetTransferFee?
 }
 
 extension XcmAsset {

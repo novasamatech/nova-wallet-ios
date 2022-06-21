@@ -5,3 +5,8 @@ struct XcmAssetDestination {
     let parachainId: ParaId?
     let accountId: AccountId
 }
+
+struct XcmAssetDestinationId {
+    let chainId: ChainModel.Id
+    let accountId: AccountId
+}
