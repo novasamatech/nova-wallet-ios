@@ -3,8 +3,8 @@ import BigInt
 import RobinHood
 import SubstrateSdk
 
-typealias XmcTrasferFeeResult = Result<FeeWithWeight, Error>
-typealias XcmTransferEstimateFeeClosure = (XmcTrasferFeeResult) -> Void
+typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
+typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
 
 protocol XcmTransferServiceProtocol {
     func estimateDestinationTransferFee(
@@ -24,9 +24,12 @@ protocol XcmTransferServiceProtocol {
 
 enum XcmTransferServiceError: Error {
     case reserveFeeNotAvailable
+    case noXcmPalletFound
 }
 
 final class XcmTransferService {
+    static let weightPerSecond = BigUInt(1_000_000_000_000)
+
     let wallet: MetaAccountModel
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
@@ -60,6 +63,21 @@ final class XcmTransferService {
             return CompoundOperationWrapper.createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
+        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+        let moduleResolutionOperation = ClosureOperation<String> {
+            let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
+            guard let moduleName = Xcm.ExecuteCall.possibleModuleNames.first(
+                where: { metadata.getModuleIndex($0) != nil }
+            ) else {
+                throw XcmTransferServiceError.noXcmPalletFound
+            }
+
+            return moduleName
+        }
+
+        moduleResolutionOperation.addDependency(coderFactoryOperation)
+
         let operationFactory = ExtrinsicOperationFactory(
             accountId: chainAccount.accountId,
             chain: chain,
@@ -70,9 +88,12 @@ final class XcmTransferService {
         )
 
         let wrapper = operationFactory.estimateFeeOperation { builder in
+            let moduleName = try moduleResolutionOperation.extractNoCancellableResultData()
             let call = Xcm.ExecuteCall(message: message, maxWeight: maxWeight)
-            return try builder.adding(call: call.runtimeCall)
+            return try builder.adding(call: call.runtimeCall(for: moduleName))
         }
+
+        wrapper.addDependency(operations: [moduleResolutionOperation])
 
         let mapperOperation = ClosureOperation<FeeWithWeight> {
             let response = try wrapper.targetOperation.extractNoCancellableResultData()
@@ -86,7 +107,9 @@ final class XcmTransferService {
 
         mapperOperation.addDependency(wrapper.targetOperation)
 
-        return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: wrapper.allOperations)
+        let dependencies = [coderFactoryOperation, moduleResolutionOperation] + wrapper.allOperations
+
+        return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
     }
 
     private func createFeeEstimationWrapper(
@@ -99,8 +122,8 @@ final class XcmTransferService {
 
         switch info.mode.type {
         case .proportional:
-            let coefficient: BigUInt = info.mode.coefficient.flatMap { BigUInt($0) } ?? 0
-            let fee = coefficient * maxWeigth
+            let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
+            let fee = coefficient * maxWeigth / Self.weightPerSecond
             let model = FeeWithWeight(fee: fee, weight: maxWeigth)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:

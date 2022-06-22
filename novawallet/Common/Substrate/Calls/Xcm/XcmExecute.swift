@@ -12,8 +12,10 @@ extension Xcm {
         let message: Xcm.Message
         @StringCodable var maxWeight: BigUInt
 
-        var runtimeCall: RuntimeCall<ExecuteCall> {
-            RuntimeCall(moduleName: "PolkadotXcm", callName: "execute", args: self)
+        func runtimeCall(for moduleName: String) -> RuntimeCall<ExecuteCall> {
+            RuntimeCall(moduleName: moduleName, callName: "execute", args: self)
         }
+
+        static var possibleModuleNames: [String] { ["XcmPallet", "PolkadotXcm"] }
     }
 }

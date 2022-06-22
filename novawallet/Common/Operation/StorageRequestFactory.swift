@@ -168,7 +168,7 @@ final class StorageRequestFactory: StorageRequestFactoryProtocol {
 
             let wrapper: CompoundOperationWrapper<[StorageResponse<T>]> = queryItems(
                 engine: engine,
-                keyParams: { [keyData] },
+                keys: { [keyData] },
                 factory: factory,
                 storagePath: storagePath,
                 at: blockHash

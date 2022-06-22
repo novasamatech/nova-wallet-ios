@@ -2,13 +2,13 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-typealias XmcTrasferResolutionResult = Result<XcmTransferParties, Error>
-typealias XcmTransferResolutionClosure = (XmcTrasferResolutionResult) -> Void
+typealias XcmTrasferResolutionResult = Result<XcmTransferParties, Error>
+typealias XcmTransferResolutionClosure = (XcmTrasferResolutionResult) -> Void
 
 protocol XcmTransferResolutionServiceProtocol {
-    func createResolutionWrapper(
+    func resolveTransferParties(
         for originChainAssetId: ChainAssetId,
-        destinationId: XcmAssetDestinationId,
+        transferDestinationId: XcmTransferDestinationId,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferResolutionClosure
@@ -43,7 +43,7 @@ final class XcmTransferResolutionService {
 
     private func resolveChains(
         for originChainAssetId: ChainAssetId,
-        destinationId: XcmAssetDestinationId,
+        destinationId: XcmTransferDestinationId,
         xcmTransfers: XcmTransfers
     ) throws -> ResolvedChains {
         guard
@@ -109,21 +109,33 @@ final class XcmTransferResolutionService {
         return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
     }
 
-    private func completeWithResult<T>(
-        _ result: Result<T, Error>,
-        queue: DispatchQueue,
-        closure: @escaping (Result<T, Error>) -> Void
-    ) {
-        queue.async {
-            closure(result)
+    private func createMergeOperation(
+        for resolvedChains: ResolvedChains,
+        transferDestinationId: XcmTransferDestinationId,
+        destinationParaIdWrapper: CompoundOperationWrapper<ParaId>?,
+        reserveParaIdWrapper: CompoundOperationWrapper<ParaId>?
+    ) -> BaseOperation<XcmTransferParties> {
+        ClosureOperation<XcmTransferParties> {
+            let destinationParaId = try destinationParaIdWrapper?.targetOperation.extractNoCancellableResultData()
+            let reserveParaId = try reserveParaIdWrapper?.targetOperation.extractNoCancellableResultData()
+
+            let destination = XcmTransferDestination(
+                chain: resolvedChains.destination,
+                parachainId: destinationParaId,
+                accountId: transferDestinationId.accountId
+            )
+
+            let reserve = XcmTransferReserve(chain: resolvedChains.reserve, parachainId: reserveParaId)
+
+            return XcmTransferParties(origin: resolvedChains.origin, destination: destination, reserve: reserve)
         }
     }
 }
 
 extension XcmTransferResolutionService: XcmTransferResolutionServiceProtocol {
-    func createResolutionWrapper(
+    func resolveTransferParties(
         for originChainAssetId: ChainAssetId,
-        destinationId: XcmAssetDestinationId,
+        transferDestinationId: XcmTransferDestinationId,
         xcmTransfers: XcmTransfers,
         runningIn queue: DispatchQueue,
         completion completionClosure: @escaping XcmTransferResolutionClosure
@@ -131,11 +143,62 @@ extension XcmTransferResolutionService: XcmTransferResolutionServiceProtocol {
         do {
             let resolvedChains = try resolveChains(
                 for: originChainAssetId,
-                destinationId: destinationId,
+                destinationId: transferDestinationId,
                 xcmTransfers: xcmTransfers
             )
 
-            let destinationParachainIdWrapper: CompoundOperationWrapper<ParaId>?
+            var dependencies: [Operation] = []
+
+            let destinationParaIdWrapper: CompoundOperationWrapper<ParaId>?
+
+            if !resolvedChains.destination.isRelaychain {
+                let wrapper = createParachainIdWrapper(
+                    for: resolvedChains.destination.chainId
+                )
+
+                dependencies.append(contentsOf: wrapper.allOperations)
+
+                destinationParaIdWrapper = wrapper
+            } else {
+                destinationParaIdWrapper = nil
+            }
+
+            let reserveParaIdWrapper: CompoundOperationWrapper<ParaId>?
+
+            if !resolvedChains.reserve.isRelaychain {
+                if resolvedChains.reserve.chainId != resolvedChains.destination.chainId {
+                    let wrapper = createParachainIdWrapper(for: resolvedChains.reserve.chainId)
+
+                    dependencies.append(contentsOf: wrapper.allOperations)
+
+                    reserveParaIdWrapper = wrapper
+                } else {
+                    reserveParaIdWrapper = destinationParaIdWrapper
+                }
+            } else {
+                reserveParaIdWrapper = nil
+            }
+
+            let mergeOperation = createMergeOperation(
+                for: resolvedChains,
+                transferDestinationId: transferDestinationId,
+                destinationParaIdWrapper: destinationParaIdWrapper,
+                reserveParaIdWrapper: reserveParaIdWrapper
+            )
+
+            dependencies.forEach { mergeOperation.addDependency($0) }
+
+            mergeOperation.completionBlock = {
+                switch mergeOperation.result {
+                case let .some(result):
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
+                case .none:
+                    let error = BaseOperationError.parentOperationCancelled
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
+                }
+            }
+
+            operationQueue.addOperations(dependencies + [mergeOperation], waitUntilFinished: false)
 
         } catch {
             callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))

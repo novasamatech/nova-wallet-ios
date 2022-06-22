@@ -8,7 +8,7 @@ struct XcmAssetTransferFee: Decodable {
 
     struct Mode: Decodable {
         let type: XcmAssetTransferFee.FeeType
-        let coefficient: String?
+        let value: String?
     }
 
     let mode: XcmAssetTransferFee.Mode

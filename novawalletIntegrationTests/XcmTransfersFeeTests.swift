@@ -4,89 +4,117 @@ import BigInt
 import RobinHood
 
 class XcmTransfersFeeTests: XCTestCase {
-    func testFeeCalculation() {
+    func testKaruraMoonriverBnc() throws {
+        let originChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
+        let destinationChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let assetId: AssetModel.Id = 4
+        let beneficiary = AccountId.dummyAccountId(of: 20)
+        let amount: BigUInt = 1_000_000_000
+
+        let transferDestinationId = XcmTransferDestinationId(
+            chainId: destinationChainId,
+            accountId: beneficiary
+        )
+
+        performTestFeeCalculation(
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            transferDestinationId: transferDestinationId,
+            amount: amount
+        )
+    }
+
+    func testMoonriverKusama() throws {
+        let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let destinationChainId = "b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+        let assetId: AssetModel.Id = 2
+        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let amount: BigUInt = 1_000_000_000_00
+
+        let transferDestinationId = XcmTransferDestinationId(
+            chainId: destinationChainId,
+            accountId: beneficiary
+        )
+
+        performTestFeeCalculation(
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            transferDestinationId: transferDestinationId,
+            amount: amount
+        )
+    }
+
+    func testMoonriverKarura() throws {
+        let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let destinationChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
+        let assetId: AssetModel.Id = 4
+        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let amount: BigUInt = 1_000_000_000_00
+
+        let transferDestinationId = XcmTransferDestinationId(
+            chainId: destinationChainId,
+            accountId: beneficiary
+        )
+
+        performTestFeeCalculation(
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            transferDestinationId: transferDestinationId,
+            amount: amount
+        )
+    }
+
+    func performTestFeeCalculation(
+        originChainAssetId: ChainAssetId,
+        transferDestinationId: XcmTransferDestinationId,
+        amount: BigUInt
+    ) {
         do {
             // given
-            let originChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
-            let destinationChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
-            let destinationParaId: ParaId? = 2023
-            let assetId: AssetModel.Id = 4
-            let beneficiaryAddress = "0x44625b6a493ec6e00166fc21ff7a1ee07eb8ee4a"
-            let amount: BigUInt = 1_000_000_000
-            let reserveParaId: ParaId? = 2001
-
             let storageFacade = SubstrateStorageTestFacade()
             let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
 
             let remoteUrl = ApplicationConfig.shared.xcmTransfersURL
             let xcmTransfers = try XcmTransfersSyncService.setupForIntegrationTest(for: remoteUrl)
 
-            guard let originChain = chainRegistry.getChain(for: originChainId) else {
-                XCTFail("Origin chain is missing")
-                return
-            }
-
-            guard let asset = originChain.assets.first(where: { $0.assetId == assetId }) else {
-                XCTFail("Invalid asset")
-                return
-            }
-
-            let originChainAsset = ChainAsset(chain: originChain, asset: asset)
-
-            guard let destinationChain = chainRegistry.getChain(for: destinationChainId) else {
-                XCTFail("Destination chain is missing")
-                return
-            }
-
-            guard
-                let reserveChainId = xcmTransfers.getReserveTransfering(from: originChainId, assetId: assetId) else {
-                XCTFail("Reserve is undefined")
-                return
-            }
-
-            guard let reserveChain = chainRegistry.getChain(for: reserveChainId) else {
-                XCTFail("Reserve chain is missing")
-                return
-            }
-
-            let xcmTransferFactory = XcmTransferFactory()
-
-            let reserve = XcmAssetReserve(chain: reserveChain, parachainId: reserveParaId)
-
-            let beneficiary = try beneficiaryAddress.toAccountId()
-            let destination = XcmAssetDestination(
-                chain: destinationChain,
-                parachainId: destinationParaId,
-                accountId: beneficiary
+            let parties = try resolveParties(
+                from: originChainAssetId,
+                transferDestinationId: transferDestinationId,
+                xcmTransfers: xcmTransfers,
+                chainRegistry: chainRegistry
             )
 
-            let feeMessages = try xcmTransferFactory.createWeightMessages(
-                from: originChainAsset,
-                reserve: reserve,
-                destination: destination,
-                amount: amount,
-                xcmTransfers: xcmTransfers
+            let wallet = MetaAccountModel(
+                metaId: UUID().uuidString,
+                name: "Test",
+                substrateAccountId: AccountId.dummyAccountId(of: 32),
+                substrateCryptoType: 0,
+                substratePublicKey: Data.random(of: 32)!,
+                ethereumAddress: AccountId.dummyAccountId(of: 20),
+                ethereumPublicKey: Data.random(of: 33)!,
+                chainAccounts: Set()
             )
 
-            let destinationBaseWeight = xcmTransfers.baseWeight(for: destinationChainId) ?? 0
-            let destinationWeight = destinationBaseWeight * BigUInt(feeMessages.destination.instructionsCount)
-            let destinationFee = try estimateFee(
-                for: feeMessages.destination,
-                chain: destinationChain,
+            let destinationFee = try estimateFees(
+                for: wallet,
+                parties: parties,
+                xcmTransfers: xcmTransfers,
                 chainRegistry: chainRegistry,
-                maxWeight: destinationWeight
+                amount: amount,
+                isForDestination: true
             )
 
-            Logger.shared.info("Fee in \(destinationChainId): \(destinationFee)")
+            Logger.shared.info("Fee for destination: \(destinationFee)")
 
-            if let reserveFeeMessage = feeMessages.reserve {
-                let reserveFee = try estimateFee(
-                    for: reserveFeeMessage,
-                    chain: reserveChain,
-                    chainRegistry: chainRegistry
+            let reserveChainId = parties.reserve.chain.chainId
+            if reserveChainId != originChainAssetId.chainId, reserveChainId != transferDestinationId.chainId {
+                let reserveFee = try estimateFees(
+                    for: wallet,
+                    parties: parties,
+                    xcmTransfers: xcmTransfers,
+                    chainRegistry: chainRegistry,
+                    amount: amount,
+                    isForDestination: false
                 )
 
-                Logger.shared.info("Fee in \(reserveChain.chainId): \(reserveFee)")
+                Logger.shared.info("Fee for reserve: \(reserveFee)")
             }
 
         } catch {
@@ -94,64 +122,97 @@ class XcmTransfersFeeTests: XCTestCase {
         }
     }
 
-    private func estimateFee(
-        for message: Xcm.Message,
-        chain: ChainModel,
-        chainRegistry: ChainRegistryProtocol,
-        maxWeight: BigUInt
-    ) throws -> RuntimeDispatchInfo {
-        guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            throw ChainRegistryError.connectionUnavailable
-        }
-
-        guard let runtimeRegistry = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            throw ChainRegistryError.runtimeMetadaUnavailable
-        }
-
-        let accountId: AccountId
-        let cryptoType: MultiassetCryptoType
-
-        if chain.isEthereumBased {
-            accountId = AccountId.dummyAccountId(of: 20)
-            cryptoType = .ethereumEcdsa
-        } else {
-            accountId = AccountId.dummyAccountId(of: 32)
-            cryptoType = .sr25519
-        }
-
-        let extrinsicService = ExtrinsicService(
-            accountId: accountId,
-            chain: chain,
-            cryptoType: cryptoType,
-            runtimeRegistry: runtimeRegistry,
-            engine: connection,
-            operationManager: OperationManager()
+    private func resolveParties(
+        from origin: ChainAssetId,
+        transferDestinationId: XcmTransferDestinationId,
+        xcmTransfers: XcmTransfers,
+        chainRegistry: ChainRegistryProtocol
+    ) throws -> XcmTransferParties {
+        let service = XcmTransferResolutionService(
+            chainRegistry: chainRegistry,
+            operationQueue: OperationQueue()
         )
-
-        let builderClosure: ExtrinsicBuilderClosure = { builder in
-            let call = Xcm.ExecuteCall(message: message, maxWeight: maxWeight)
-            return try builder.adding(call: call.runtimeCall)
-        }
-
-        var feeResult: Result<RuntimeDispatchInfo, Error>?
 
         let semaphore = DispatchSemaphore(value: 0)
 
-        extrinsicService.estimateFee(builderClosure,runningIn: .global()) { result in
-            feeResult = result
+        var partiesResult: XcmTrasferResolutionResult?
 
+        service.resolveTransferParties(
+            for: origin,
+            transferDestinationId: transferDestinationId,
+            xcmTransfers: xcmTransfers,
+            runningIn: .global()
+        ) { result in
+            partiesResult = result
             semaphore.signal()
         }
 
         _ = semaphore.wait(timeout: .now() + .seconds(60))
 
-        switch feeResult {
-        case let .success(info):
-            return info
+        switch partiesResult {
+        case let .success(parties):
+            return parties
         case let .failure(error):
             throw error
         case .none:
-            throw CommonError.undefined
+            throw BaseOperationError.parentOperationCancelled
+        }
+    }
+
+    private func estimateFees(
+        for wallet: MetaAccountModel,
+        parties: XcmTransferParties,
+        xcmTransfers: XcmTransfers,
+        chainRegistry: ChainRegistryProtocol,
+        amount: BigUInt,
+        isForDestination: Bool
+    ) throws -> FeeWithWeight {
+        let service = XcmTransferService(
+            wallet: wallet,
+            chainRegistry: chainRegistry,
+            operationQueue: OperationQueue()
+        )
+
+        let semaphore = DispatchSemaphore(value: 0)
+
+        var feeResult: XcmTrasferFeeResult?
+
+        let request = XcmTransferRequest(
+            origin: parties.origin,
+            destination: parties.destination,
+            reserve: parties.reserve,
+            amount: amount
+        )
+
+        if isForDestination {
+            service.estimateDestinationTransferFee(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                runningIn: .global()
+            ) { result in
+                feeResult = result
+                semaphore.signal()
+            }
+        } else {
+            service.estimateReserveTransferFee(
+                request: request,
+                xcmTransfers: xcmTransfers,
+                runningIn: .global()
+            ) { result in
+                feeResult = result
+                semaphore.signal()
+            }
+        }
+
+        _ = semaphore.wait(timeout: .now() + .seconds(60))
+
+        switch feeResult {
+        case let .success(parties):
+            return parties
+        case let .failure(error):
+            throw error
+        case .none:
+            throw BaseOperationError.parentOperationCancelled
         }
     }
 }
