@@ -2,7 +2,7 @@ import UIKit
 import BigInt
 import RobinHood
 
-final class TransferConfirmInteractor: TransferInteractor {
+final class TransferConfirmInteractor: OnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let eventCenter: EventCenterProtocol

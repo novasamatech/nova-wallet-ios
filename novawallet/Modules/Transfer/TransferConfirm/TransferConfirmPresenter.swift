@@ -3,7 +3,7 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-final class TransferConfirmPresenter: TransferPresenter {
+final class TransferConfirmPresenter: OnChainTransferPresenter {
     weak var view: TransferConfirmViewProtocol?
     let wireframe: TransferConfirmWireframeProtocol
     let interactor: TransferConfirmInteractorInputProtocol
