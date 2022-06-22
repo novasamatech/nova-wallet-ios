@@ -30,6 +30,7 @@ extension Xcm {
         }
     }
 
+    // swiftlint:disable nesting
     enum WildMultiasset: Encodable {
         struct AllOfValue: Encodable {
             enum CodingKeys: String, CodingKey {
@@ -57,6 +58,8 @@ extension Xcm {
             }
         }
     }
+
+    // swiftlint:enable nesting
 
     enum MultiassetFilter: Encodable {
         case definite([Multiasset])
