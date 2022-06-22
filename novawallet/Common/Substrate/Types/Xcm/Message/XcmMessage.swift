@@ -21,7 +21,7 @@ extension Xcm {
 
         var instructionsCount: Int {
             switch self {
-            case .V2(let instructions):
+            case let .V2(instructions):
                 return instructions.count
             }
         }

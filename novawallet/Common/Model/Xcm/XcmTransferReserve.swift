@@ -1,6 +1,6 @@
 import Foundation
 
-struct XcmAssetReserve {
+struct XcmTransferReserve {
     let chain: ChainModel
     let parachainId: ParaId?
 }

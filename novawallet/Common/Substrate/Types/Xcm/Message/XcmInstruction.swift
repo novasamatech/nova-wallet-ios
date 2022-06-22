@@ -13,18 +13,27 @@ extension Xcm {
         let weightLimit: Xcm.WeightLimit
     }
 
+    struct DepositReserveAssetValue: Encodable {
+        let assets: MultiassetFilter
+        @StringCodable var maxAssets: UInt32
+        let dest: Multilocation
+        let xcm: Xcm.Message
+    }
+
     enum Instruction: Encodable {
         static let fieldWithdrawAsset = "WithdrawAsset"
         static let fieldClearOrigin = "ClearOrigin"
         static let fieldReserveAssetDeposited = "ReserveAssetDeposited"
         static let fieldBuyExecution = "BuyExecution"
         static let fieldDepositAsset = "DepositAsset"
+        static let fieldDepositReserveAsset = "DepositReserveAsset"
 
         case withdrawAsset([Multiasset])
         case depositAsset(DepositAssetValue)
         case clearOrigin
         case reserveAssetDeposited([Multiasset])
         case buyExecution(BuyExecutionValue)
+        case depositReserveAsset(DepositReserveAssetValue)
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -44,6 +53,9 @@ extension Xcm {
                 try container.encode(value)
             case let .depositAsset(value):
                 try container.encode(Self.fieldDepositAsset)
+                try container.encode(value)
+            case let .depositReserveAsset(value):
+                try container.encode(Self.fieldDepositReserveAsset)
                 try container.encode(value)
             }
         }
