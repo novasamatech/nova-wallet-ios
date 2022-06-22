@@ -10,7 +10,7 @@ protocol XcmTransferFactoryProtocol {
 
     func createMultilocation(
         origin: ChainModel,
-        destination: XcmTransferReserve
+        reserve: XcmTransferReserve
     ) -> Xcm.VersionedMultilocation
 
     func createMultiasset(
@@ -103,7 +103,6 @@ extension XcmTransferFactoryProtocol {
     private func createReserveWeightMessage(
         from chainAsset: ChainAsset,
         reserve: XcmTransferReserve,
-        xcmTransfer _: XcmAssetTransfer,
         xcmTransfers: XcmTransfers,
         multiasset: Xcm.Multiasset
     ) throws -> Xcm.Message? {
@@ -113,7 +112,7 @@ extension XcmTransferFactoryProtocol {
 
         guard case let .V1(reserveMultilocation) = createMultilocation(
             origin: chainAsset.chain,
-            destination: reserve
+            reserve: reserve
         ) else {
             throw XcmTransferFactoryError.unsupportedMultilocationVersion
         }
@@ -169,7 +168,6 @@ extension XcmTransferFactoryProtocol {
         let reserveMessage = try createReserveWeightMessage(
             from: chainAsset,
             reserve: reserve,
-            xcmTransfer: xcmTransfer,
             xcmTransfers: xcmTransfers,
             multiasset: multiasset
         )
@@ -288,11 +286,11 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
 
     func createMultilocation(
         origin: ChainModel,
-        destination: XcmTransferReserve
+        reserve: XcmTransferReserve
     ) -> Xcm.VersionedMultilocation {
         let parents: UInt8
 
-        if destination.parachainId != nil, origin.chainId != destination.chain.chainId {
+        if reserve.parachainId != nil, origin.chainId != reserve.chain.chainId {
             parents = 1
         } else {
             parents = 0
@@ -300,7 +298,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
 
         let junctions: Xcm.Junctions
 
-        if let parachainId = destination.parachainId {
+        if let parachainId = reserve.parachainId {
             let networkJunction = Xcm.Junction.parachain(parachainId)
             junctions = Xcm.Junctions(items: [networkJunction])
         } else {
