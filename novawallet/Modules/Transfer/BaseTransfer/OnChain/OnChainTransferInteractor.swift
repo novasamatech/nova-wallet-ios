@@ -3,7 +3,7 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class TransferInteractor: RuntimeConstantFetching {
+class OnChainTransferInteractor: RuntimeConstantFetching {
     weak var presenter: TransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
@@ -411,7 +411,7 @@ class TransferInteractor: RuntimeConstantFetching {
     }
 }
 
-extension TransferInteractor {
+extension OnChainTransferInteractor {
     func setup() {
         extractAssetStorageInfo()
     }
@@ -466,7 +466,7 @@ extension TransferInteractor {
     }
 }
 
-extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
@@ -500,7 +500,7 @@ extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
     }
 }
 
-extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
@@ -515,7 +515,7 @@ extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
     }
 }
 
-extension TransferInteractor: ExtrinsicFeeProxyDelegate {
+extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<RuntimeDispatchInfo, Error>,
         for _: ExtrinsicFeeId

@@ -1,7 +1,7 @@
 import Foundation
 import CommonWallet
 
-final class TransferSetupWireframe: TransferSetupWireframeProtocol {
+final class OnChainTransferSetupWireframe: TransferSetupWireframeProtocol {
     weak var commandFactory: WalletCommandFactoryProtocol?
 
     func showConfirmation(
