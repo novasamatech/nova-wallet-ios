@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-class TransferPresenter {
+class OnChainTransferPresenter {
     let chainAsset: ChainAsset
 
     let senderAccountAddress: AccountAddress

@@ -19,7 +19,7 @@ struct TransferSetupViewFactory {
             return nil
         }
 
-        let wireframe = TransferSetupWireframe()
+        let wireframe = OnChainTransferSetupWireframe()
         wireframe.commandFactory = commandFactory
 
         let localizationManager = LocalizationManager.shared
@@ -55,7 +55,7 @@ struct TransferSetupViewFactory {
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let presenter = TransferSetupPresenter(
+        let presenter = OnChainTransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             chainAsset: chainAsset,
@@ -86,7 +86,7 @@ struct TransferSetupViewFactory {
     private static func createInteractor(
         for chainAsset: ChainAsset,
         account: ChainAccountResponse
-    ) -> TransferSetupInteractor? {
+    ) -> OnChainTransferSetupInteractor? {
         let chainRegistry = ChainRegistryFacade.sharedRegistry
         let chain = chainAsset.chain
         let asset = chainAsset.asset
@@ -124,7 +124,7 @@ struct TransferSetupViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        return TransferSetupInteractor(
+        return OnChainTransferSetupInteractor(
             selectedAccount: account,
             chain: chain,
             asset: asset,

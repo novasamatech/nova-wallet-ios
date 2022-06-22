@@ -3,7 +3,7 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOutputProtocol {
+final class OnChainTransferSetupPresenter: OnChainTransferPresenter, TransferSetupInteractorOutputProtocol {
     weak var view: TransferSetupViewProtocol?
     let wireframe: TransferSetupWireframeProtocol
     let interactor: TransferSetupInteractorInputProtocol
@@ -261,7 +261,7 @@ final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOu
     }
 }
 
-extension TransferSetupPresenter: TransferSetupPresenterProtocol {
+extension OnChainTransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
         updateChainAssetViewModel()
         updateFeeView()
@@ -342,7 +342,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 }
 
-extension TransferSetupPresenter: Localizable {
+extension OnChainTransferSetupPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateChainAssetViewModel()
@@ -356,7 +356,7 @@ extension TransferSetupPresenter: Localizable {
     }
 }
 
-extension TransferSetupPresenter: TransferScanDelegate {
+extension OnChainTransferSetupPresenter: TransferScanDelegate {
     func transferScanDidReceiveRecepient(address: AccountAddress) {
         wireframe.hideRecepientScan(from: view)
 
