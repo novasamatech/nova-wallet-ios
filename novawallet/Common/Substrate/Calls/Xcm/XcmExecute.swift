@@ -4,6 +4,7 @@ import BigInt
 
 extension Xcm {
     struct ExecuteCall: Codable {
+        // swiftlint:disable:next nesting
         enum CodingKeys: String, CodingKey {
             case message
             case maxWeight = "max_weight"
