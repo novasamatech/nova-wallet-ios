@@ -1607,14 +1607,14 @@
 		84EBC55B24F660F500459D15 /* SelectedAccountChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */; };
 		84EBC55F24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */; };
 		84EBFCE2285E724C0006327E /* XcmMultilocationAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */; };
-		84EBFCE4285E734C0006327E /* XcmAssetDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */; };
+		84EBFCE4285E734C0006327E /* XcmTransferDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE3285E734C0006327E /* XcmTransferDestination.swift */; };
 		84EBFCE7285E7A7C0006327E /* XcmMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE6285E7A7C0006327E /* XcmMessage.swift */; };
 		84EBFCE9285E7C100006327E /* XcmInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCE8285E7C100006327E /* XcmInstruction.swift */; };
 		84EBFCEB285E7E130006327E /* XcmWeightLimit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */; };
 		84EBFCEE285E82BB0006327E /* XcmExecute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCED285E82BB0006327E /* XcmExecute.swift */; };
 		84EBFCF0285E84C30006327E /* XcmMultiassetFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */; };
 		84EBFCF4285E90F80006327E /* XcmWeightMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */; };
-		84EBFCF6285E955A0006327E /* XcmAssetReserve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */; };
+		84EBFCF6285E955A0006327E /* XcmTransferReserve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EBFCF5285E955A0006327E /* XcmTransferReserve.swift */; };
 		84EC2D16276B92CB009B0BE1 /* DAppScriptResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */; };
 		84EC2D18276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */; };
 		84EC2D1A276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */; };
@@ -3917,14 +3917,14 @@
 		84EBC55A24F660F500459D15 /* SelectedAccountChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedAccountChanged.swift; sourceTree = "<group>"; };
 		84EBC55E24F71D6A00459D15 /* UITableViewCell+ReorderColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+ReorderColor.swift"; sourceTree = "<group>"; };
 		84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultilocationAsset.swift; sourceTree = "<group>"; };
-		84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetDestination.swift; sourceTree = "<group>"; };
+		84EBFCE3285E734C0006327E /* XcmTransferDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferDestination.swift; sourceTree = "<group>"; };
 		84EBFCE6285E7A7C0006327E /* XcmMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMessage.swift; sourceTree = "<group>"; };
 		84EBFCE8285E7C100006327E /* XcmInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmInstruction.swift; sourceTree = "<group>"; };
 		84EBFCEA285E7E130006327E /* XcmWeightLimit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmWeightLimit.swift; sourceTree = "<group>"; };
 		84EBFCED285E82BB0006327E /* XcmExecute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExecute.swift; sourceTree = "<group>"; };
 		84EBFCEF285E84C30006327E /* XcmMultiassetFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmMultiassetFilter.swift; sourceTree = "<group>"; };
 		84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmWeightMessages.swift; sourceTree = "<group>"; };
-		84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmAssetReserve.swift; sourceTree = "<group>"; };
+		84EBFCF5285E955A0006327E /* XcmTransferReserve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferReserve.swift; sourceTree = "<group>"; };
 		84EC2D15276B92CB009B0BE1 /* DAppScriptResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppScriptResponse.swift; sourceTree = "<group>"; };
 		84EC2D17276B9DBC009B0BE1 /* PolkadotExtensionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionAccount.swift; sourceTree = "<group>"; };
 		84EC2D19276C6600009B0BE1 /* PolkadotExtensionExtrinsic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolkadotExtensionExtrinsic.swift; sourceTree = "<group>"; };
@@ -5537,9 +5537,9 @@
 				8411707B285B1214006F4DFB /* XcmTransfers.swift */,
 				84FB9E27285C736A00B42FC0 /* XcmTransferFactory.swift */,
 				84EBFCE1285E724C0006327E /* XcmMultilocationAsset.swift */,
-				84EBFCE3285E734C0006327E /* XcmAssetDestination.swift */,
+				84EBFCE3285E734C0006327E /* XcmTransferDestination.swift */,
 				84EBFCF3285E90F80006327E /* XcmWeightMessages.swift */,
-				84EBFCF5285E955A0006327E /* XcmAssetReserve.swift */,
+				84EBFCF5285E955A0006327E /* XcmTransferReserve.swift */,
 				84FFE45828620716002432BB /* XcmTransferParties.swift */,
 				84FFE45A2862076F002432BB /* XcmTransferRequest.swift */,
 			);
@@ -11534,7 +11534,7 @@
 				843C49DB24DF373000B71DDA /* AccountImportRequest.swift in Sources */,
 				843910C1253F36F300E3C217 /* BaseStorageChildSubscription.swift in Sources */,
 				84FAB0812543A7EE00319F74 /* ReceiveConfigurator.swift in Sources */,
-				84EBFCE4285E734C0006327E /* XcmAssetDestination.swift in Sources */,
+				84EBFCE4285E734C0006327E /* XcmTransferDestination.swift in Sources */,
 				AE805FC726B3E54E00007CE9 /* YourValidatorInfoInteractor.swift in Sources */,
 				844DBC69274E3422009F8351 /* AccountImportSeedView.swift in Sources */,
 				84644AC52567EC05004EAA4B /* MultilineTriangularedView.swift in Sources */,
@@ -12754,7 +12754,7 @@
 				849528E326036997009DC845 /* RewardEstimationView.swift in Sources */,
 				F474D388260CBEE600013699 /* StakingRewardDetailsViewLayout.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
-				84EBFCF6285E955A0006327E /* XcmAssetReserve.swift in Sources */,
+				84EBFCF6285E955A0006327E /* XcmTransferReserve.swift in Sources */,
 				843910CE253F7E8000E3C217 /* SubstrateDataStorageFacade.swift in Sources */,
 				84E731C326652B5C00D5B15A /* AttributedString+Crowdloan.swift in Sources */,
 				84C91FAA261E724F002796B9 /* SwitchTableViewCell.swift in Sources */,
