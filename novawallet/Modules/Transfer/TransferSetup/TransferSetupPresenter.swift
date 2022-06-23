@@ -135,8 +135,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
             from: view,
             selectionState: selectionState,
             delegate: self,
-            context: selectionState,
-            locale: view?.selectedLocale ?? Locale.current
+            context: selectionState
         )
     }
 }
@@ -169,26 +168,21 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 }
 
 extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
-    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+    func modalPickerDidSelectModel(at index: Int, section: Int, context: AnyObject?) {
         view?.didCompleteDestinationSelection()
 
         guard let selectionState = context as? CrossChainDestinationSelectionState else {
             return
         }
 
-        let chains = [selectionState.originChain] + selectionState.availableDestChains
-        let selectedChain = chains[index]
-        let selectedChainId = selectedChain.chainId
+        if section == 0 {
+            destinationChainAsset = nil
+        } else {
+            let selectedChain = selectionState.availableDestChains[index]
+            let selectedChainId = selectedChain.chainId
 
-        guard
-            let newDestinationChainAsset = availableDestinations?.first(
-                where: { $0.chain.chainId == selectedChainId }
-            ),
-            newDestinationChainAsset.chain.chainId != destinationChainAsset?.chain.chainId else {
-            return
+            destinationChainAsset = availableDestinations?.first { $0.chain.chainId == selectedChainId }
         }
-
-        destinationChainAsset = newDestinationChainAsset.chain.chainId != originChainAsset.chain.chainId ? newDestinationChainAsset : nil
 
         provideChainsViewModel()
 
@@ -202,6 +196,4 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
     func modalPickerDidCancel(context _: AnyObject?) {
         view?.didCompleteDestinationSelection()
     }
-
-    func modalPickerDidSelectAction(context _: AnyObject?) {}
 }

@@ -812,3 +812,6 @@
 "parastk.cant.rebond.title" = "Нельзя вернуть в стейк";
 "parastk.cant.rebond.message" = "Вы не выводили токены для этого коллатора";
 "parachain.staking.full.message" = "Вы достигли максимального количества делегаций - %@ коллаторов";
+"xcm.destination.selection.title" = "Сеть получателя";
+"common.on.chain" = "В одной сети";
+"common.cross.chain" = "Между сетями";
