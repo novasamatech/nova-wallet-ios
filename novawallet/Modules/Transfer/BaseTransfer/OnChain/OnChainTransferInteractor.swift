@@ -4,7 +4,7 @@ import BigInt
 import SubstrateSdk
 
 class OnChainTransferInteractor: RuntimeConstantFetching {
-    weak var presenter: TransferSetupInteractorOutputProtocol?
+    weak var presenter: OnChainTransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chain: ChainModel

@@ -216,7 +216,7 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
     }
 }
 
-extension TransferSetupViewController: Localizable {
+extension TransferSetupViewController {
     func applyLocalization() {
         if isSetup {
             setupLocalization()
