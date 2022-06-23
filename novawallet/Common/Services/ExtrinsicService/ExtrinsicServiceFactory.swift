@@ -9,6 +9,12 @@ protocol ExtrinsicServiceFactoryProtocol {
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol
 
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol
+
     func createSigningWrapper(
         metaId: String,
         account: ChainAccountResponse
@@ -44,6 +50,21 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
             runtimeRegistry: runtimeRegistry,
             engine: engine,
             operationManager: operationManager
+        )
+    }
+
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol {
+        ExtrinsicOperationFactory(
+            accountId: accountId,
+            chain: chain,
+            cryptoType: cryptoType,
+            runtimeRegistry: runtimeRegistry,
+            customExtensions: DefaultExtrinsicExtension.extensions,
+            engine: engine
         )
     }
 
