@@ -20,7 +20,9 @@ final class WalletChainControlView: UIView {
     let actionControl: ActionTitleControl = {
         let view = ActionTitleControl()
         let color = R.color.colorNovaBlue()!
-        view.imageView.image = R.image.iconSmallArrowDown()?.tinted(with: color)
+        view.imageView.image = R.image.iconLinkChevron()?.tinted(with: color)
+        view.identityIconAngle = CGFloat.pi / 2.0
+        view.activationIconAngle = -CGFloat.pi / 2.0
         view.titleLabel.textColor = color
         view.titleLabel.font = .semiBoldCaps1
         view.horizontalSpacing = 2.0
