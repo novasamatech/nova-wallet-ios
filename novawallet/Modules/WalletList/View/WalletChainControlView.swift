@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class WalletChainView: UIView {
+final class WalletChainControlView: UIView {
     let backgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()
@@ -17,11 +17,14 @@ final class WalletChainView: UIView {
         return view
     }()
 
-    let nameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite80()
-        label.font = .semiBoldCaps1
-        return label
+    let actionControl: ActionTitleControl = {
+        let view = ActionTitleControl()
+        let color = R.color.colorNovaBlue()!
+        view.imageView.image = R.image.iconSmallArrowDown()?.tinted(with: color)
+        view.titleLabel.textColor = color
+        view.titleLabel.font = .semiBoldCaps1
+        view.horizontalSpacing = 2.0
+        return view
     }()
 
     let iconSize = CGSize(width: 24.0, height: 24.0)
@@ -40,28 +43,29 @@ final class WalletChainView: UIView {
     }
 
     func bind(viewModel: NetworkViewModel) {
-        nameLabel.text = viewModel.name.uppercased()
+        actionControl.titleLabel.text = viewModel.name.uppercased()
         iconView.bind(gradient: viewModel.gradient)
 
         iconView.bind(iconViewModel: viewModel.icon, size: iconSize)
 
+        actionControl.invalidateLayout()
         setNeedsLayout()
     }
 
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(iconView)
-        addSubview(nameLabel)
+        addSubview(actionControl)
 
         iconView.snp.makeConstraints { make in
             make.leading.top.bottom.equalToSuperview()
-            make.size.equalTo(iconSize)
+            make.size.equalTo(24.0)
         }
 
-        nameLabel.snp.makeConstraints { make in
+        actionControl.snp.makeConstraints { make in
             make.leading.equalTo(iconView.snp.trailing).offset(8.0)
             make.trailing.equalToSuperview().inset(8.0)
-            make.centerY.equalTo(iconView)
+            make.top.bottom.equalToSuperview()
         }
 
         backgroundView.snp.makeConstraints { make in

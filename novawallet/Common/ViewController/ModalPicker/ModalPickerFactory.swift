@@ -375,4 +375,50 @@ enum ModalPickerFactory {
 
         return viewController
     }
+
+    static func createNetworkSelectionList(
+        selectionState: CrossChainDestinationSelectionState,
+        delegate: ModalPickerViewControllerDelegate?,
+        title: LocalizableResource<String>,
+        context: AnyObject?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<NetworkSelectionTableViewCell, NetworkViewModel>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 52.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+
+        viewController.actionType = .none
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chains = [selectionState.originChain] + selectionState.availableDestChains
+
+        let selectedIndex = chains.firstIndex { $0.chainId == selectionState.selectedChainId } ?? NSNotFound
+        viewController.selectedIndex = selectedIndex
+
+        let items = chains.map { chain in
+            LocalizableResource { _ in networkViewModelFactory.createViewModel(from: chain) }
+        }
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
 }

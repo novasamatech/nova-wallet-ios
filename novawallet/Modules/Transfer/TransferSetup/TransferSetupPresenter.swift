@@ -6,6 +6,8 @@ final class TransferSetupPresenter {
 
     let interactor: TransferSetupInteractorIntputProtocol
     let wireframe: TransferSetupWireframeProtocol
+    let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     let originChainAsset: ChainAsset
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
@@ -22,12 +24,16 @@ final class TransferSetupPresenter {
         wireframe: TransferSetupWireframeProtocol,
         originChainAsset: ChainAsset,
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
+        networkViewModelFactory: NetworkViewModelFactoryProtocol,
         logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
         self.originChainAsset = originChainAsset
         self.childPresenterFactory = childPresenterFactory
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
+        self.networkViewModelFactory = networkViewModelFactory
         self.logger = logger
     }
 
@@ -67,10 +73,28 @@ final class TransferSetupPresenter {
 
         childPresenter?.setup()
     }
+
+    private func provideChainsViewModel() {
+        let originViewModel = chainAssetViewModelFactory.createViewModel(from: originChainAsset)
+
+        let destinationViewModel: NetworkViewModel?
+
+        if let destinationChainAsset = destinationChainAsset {
+            destinationViewModel = networkViewModelFactory.createViewModel(from: destinationChainAsset.chain)
+        } else if let availableDestinations = availableDestinations, !availableDestinations.isEmpty {
+            destinationViewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
+        } else {
+            destinationViewModel = nil
+        }
+
+        view?.didReceiveOriginChain(originViewModel, destinationChain: destinationViewModel)
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
+        provideChainsViewModel()
+
         childPresenter?.setup()
         interactor.setup()
     }
@@ -94,6 +118,27 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func proceed() {
         childPresenter?.proceed()
     }
+
+    func changeDestinationChain() {
+        let originChain = originChainAsset.chain
+        let selectedChainId = destinationChainAsset?.chain.chainId ?? originChain.chainId
+
+        let availableDestinationChains = availableDestinations?.map(\.chain) ?? []
+
+        let selectionState = CrossChainDestinationSelectionState(
+            originChain: originChain,
+            availableDestChains: availableDestinationChains,
+            selectedChainId: selectedChainId
+        )
+
+        wireframe.showDestinationChainSelection(
+            from: view,
+            selectionState: selectionState,
+            delegate: self,
+            context: selectionState,
+            locale: view?.selectedLocale ?? Locale.current
+        )
+    }
 }
 
 extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
@@ -112,6 +157,8 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
             setupOnChainChildPresenter()
         }
+
+        provideChainsViewModel()
     }
 
     func didReceive(error: Error) {
@@ -119,4 +166,42 @@ extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
 
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
     }
+}
+
+extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?) {
+        view?.didCompleteDestinationSelection()
+
+        guard let selectionState = context as? CrossChainDestinationSelectionState else {
+            return
+        }
+
+        let chains = [selectionState.originChain] + selectionState.availableDestChains
+        let selectedChain = chains[index]
+        let selectedChainId = selectedChain.chainId
+
+        guard
+            let newDestinationChainAsset = availableDestinations?.first(
+                where: { $0.chain.chainId == selectedChainId }
+            ),
+            newDestinationChainAsset.chain.chainId != destinationChainAsset?.chain.chainId else {
+            return
+        }
+
+        destinationChainAsset = newDestinationChainAsset.chain.chainId != originChainAsset.chain.chainId ? newDestinationChainAsset : nil
+
+        provideChainsViewModel()
+
+        if destinationChainAsset != nil {
+            setupCrossChainChildPresenter()
+        } else {
+            setupOnChainChildPresenter()
+        }
+    }
+
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompleteDestinationSelection()
+    }
+
+    func modalPickerDidSelectAction(context _: AnyObject?) {}
 }

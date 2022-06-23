@@ -6,7 +6,7 @@ extension TransferSetupPresenterFactory {
         destinationChainAsset _: ChainAsset,
         xcmTransfers _: XcmTransfers,
         initialState _: TransferSetupInputState,
-        view _: TransferSetupViewProtocol
+        view _: TransferSetupChildViewProtocol
     ) -> TransferSetupChildPresenterProtocol? {
         nil
     }

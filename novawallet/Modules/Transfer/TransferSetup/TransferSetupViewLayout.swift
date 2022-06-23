@@ -15,7 +15,7 @@ final class TransferSetupViewLayout: UIView {
         return button
     }()
 
-    let tokenLabel: UILabel = {
+    let originLabel: UILabel = {
         let label = UILabel()
         label.textColor = R.color.colorWhite()
         label.font = .boldTitle2
@@ -23,7 +23,17 @@ final class TransferSetupViewLayout: UIView {
         return label
     }()
 
-    let networkView = WalletChainView()
+    let destinationLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = R.color.colorWhite()
+        label.font = .boldTitle2
+        label.minimumScaleFactor = 0.5
+        return label
+    }()
+
+    let originNetworkView = WalletChainView()
+
+    let destinationNetworkView = WalletChainControlView()
 
     let networkContainerView: UIView = {
         let view = UIView()
@@ -79,18 +89,32 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(networkContainerView)
         networkContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
-            make.height.equalTo(28.0)
         }
 
-        networkContainerView.addSubview(tokenLabel)
-        tokenLabel.snp.makeConstraints { make in
-            make.leading.centerY.equalToSuperview()
+        networkContainerView.addSubview(originLabel)
+        originLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.top.equalToSuperview().offset(8.0)
         }
 
-        networkContainerView.addSubview(networkView)
-        networkView.snp.makeConstraints { make in
-            make.leading.equalTo(tokenLabel.snp.trailing).offset(10.0)
-            make.centerY.equalToSuperview()
+        networkContainerView.addSubview(originNetworkView)
+        originNetworkView.snp.makeConstraints { make in
+            make.leading.equalTo(originLabel.snp.trailing).offset(10.0)
+            make.centerY.equalTo(originLabel)
+            make.trailing.lessThanOrEqualToSuperview()
+        }
+
+        networkContainerView.addSubview(destinationLabel)
+        destinationLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.top.equalTo(originLabel.snp.bottom).offset(4.0)
+            make.bottom.equalToSuperview().offset(8.0)
+        }
+
+        networkContainerView.addSubview(destinationNetworkView)
+        destinationNetworkView.snp.makeConstraints { make in
+            make.leading.equalTo(destinationLabel.snp.trailing).offset(10.0)
+            make.centerY.equalTo(destinationLabel)
             make.trailing.lessThanOrEqualToSuperview()
         }
 

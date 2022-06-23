@@ -4,7 +4,7 @@ import SoraFoundation
 import SubstrateSdk
 
 final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTransferSetupInteractorOutputProtocol {
-    weak var view: TransferSetupViewProtocol?
+    weak var view: TransferSetupChildViewProtocol?
     let wireframe: OnChainTransferSetupWireframeProtocol
     let interactor: OnChainTransferSetupInteractorInputProtocol
 
@@ -63,7 +63,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
             assetViewModel: assetViewModel
         )
 
-        view?.didReceiveChainAsset(viewModel: viewModel)
+        view?.didReceiveInputChainAsset(viewModel: viewModel)
     }
 
     private func provideRecepientStateViewModel() {
