@@ -379,13 +379,14 @@ enum ModalPickerFactory {
     static func createNetworkSelectionList(
         selectionState: CrossChainDestinationSelectionState,
         delegate: ModalPickerViewControllerDelegate?,
-        title: LocalizableResource<String>,
         context: AnyObject?
     ) -> UIViewController? {
         let viewController: ModalPickerViewController<NetworkSelectionTableViewCell, NetworkViewModel>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
-        viewController.localizedTitle = title
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.xcmDestinationSelectionTitle(preferredLanguages: locale.rLanguages)
+        }
 
         viewController.delegate = delegate
         viewController.modalPresentationStyle = .custom
@@ -399,22 +400,46 @@ enum ModalPickerFactory {
         viewController.actionType = .none
 
         let networkViewModelFactory = NetworkViewModelFactory()
-        let chains = [selectionState.originChain] + selectionState.availableDestChains
 
-        let selectedIndex = chains.firstIndex { $0.chainId == selectionState.selectedChainId } ?? NSNotFound
-        viewController.selectedIndex = selectedIndex
+        let onChainViewModel = LocalizableResource { _ in
+            networkViewModelFactory.createViewModel(from: selectionState.originChain)
+        }
 
-        let items = chains.map { chain in
+        let onChainTitle = LocalizableResource { locale in
+            R.string.localizable.commonOnChain(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.addSection(viewModels: [onChainViewModel], title: onChainTitle)
+
+        let crossChainViewModels = selectionState.availableDestChains.map { chain in
             LocalizableResource { _ in networkViewModelFactory.createViewModel(from: chain) }
         }
 
-        viewController.viewModels = items
+        let crossChainTitle = LocalizableResource { locale in
+            R.string.localizable.commonCrossChain(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.addSection(viewModels: crossChainViewModels, title: crossChainTitle)
+
+        if selectionState.selectedChainId == selectionState.originChain.chainId {
+            viewController.selectedIndex = 0
+            viewController.selectedSection = 0
+        } else if let index = selectionState.availableDestChains.firstIndex(
+            where: { selectionState.selectedChainId == $0.chainId }
+        ) {
+            viewController.selectedIndex = index
+            viewController.selectedSection = 1
+        } else {
+            viewController.selectedIndex = NSNotFound
+        }
 
         let factory = ModalSheetPresentationFactory(configuration: .fearless)
         viewController.modalTransitioningFactory = factory
 
-        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
-            viewController.footerHeight
+        let itemsCount = crossChainViewModels.count + 1
+        let sectionsCount = 2
+        let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
+            CGFloat(sectionsCount) * viewController.sectionHeaderHeight + viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 
         viewController.localizationManager = LocalizationManager.shared

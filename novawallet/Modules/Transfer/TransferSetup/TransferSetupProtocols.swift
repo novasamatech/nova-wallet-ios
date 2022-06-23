@@ -48,7 +48,6 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
         delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?,
-        locale: Locale
+        context: AnyObject?
     )
 }
