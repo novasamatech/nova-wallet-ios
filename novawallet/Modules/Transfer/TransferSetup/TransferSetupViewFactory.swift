@@ -19,11 +19,16 @@ struct TransferSetupViewFactory {
 
         let wireframe = TransferSetupWireframe()
 
+        let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+
         let presenter = TransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
             originChainAsset: chainAsset,
             childPresenterFactory: presenterFactory,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
+            networkViewModelFactory: networkViewModelFactory,
             logger: Logger.shared
         )
 

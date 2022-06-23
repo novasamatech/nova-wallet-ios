@@ -5,7 +5,7 @@ protocol TransferSetupPresenterFactoryProtocol {
     func createOnChainPresenter(
         for chainAsset: ChainAsset,
         initialState: TransferSetupInputState,
-        view: TransferSetupViewProtocol
+        view: TransferSetupChildViewProtocol
     ) -> TransferSetupChildPresenterProtocol?
 
     func createCrossChainPresenter(
@@ -13,7 +13,7 @@ protocol TransferSetupPresenterFactoryProtocol {
         destinationChainAsset: ChainAsset,
         xcmTransfers: XcmTransfers,
         initialState: TransferSetupInputState,
-        view: TransferSetupViewProtocol
+        view: TransferSetupChildViewProtocol
     ) -> TransferSetupChildPresenterProtocol?
 }
 

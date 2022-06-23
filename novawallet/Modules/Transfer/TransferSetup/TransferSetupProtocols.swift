@@ -2,9 +2,9 @@ import BigInt
 import CommonWallet
 import SoraFoundation
 
-protocol TransferSetupViewProtocol: ControllerBackedProtocol, Localizable {
+protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveTransferableBalance(viewModel: String)
-    func didReceiveChainAsset(viewModel: ChainAssetViewModel)
+    func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(viewModel: String?)
@@ -12,9 +12,12 @@ protocol TransferSetupViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAccountInput(viewModel: InputViewModelProtocol)
 }
 
-protocol TransferSetupChildPresenterProtocol: AnyObject {
-    var inputState: TransferSetupInputState { get }
+protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
+    func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?)
+    func didCompleteDestinationSelection()
+}
 
+protocol TransferSetupCommonPresenterProtocol: AnyObject {
     func setup()
     func updateRecepient(partialAddress: String)
     func updateAmount(_ newValue: Decimal?)
@@ -23,13 +26,12 @@ protocol TransferSetupChildPresenterProtocol: AnyObject {
     func proceed()
 }
 
-protocol TransferSetupPresenterProtocol: AnyObject {
-    func setup()
-    func updateRecepient(partialAddress: String)
-    func updateAmount(_ newValue: Decimal?)
-    func selectAmountPercentage(_ percentage: Float)
-    func scanRecepientCode()
-    func proceed()
+protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtocol {
+    var inputState: TransferSetupInputState { get }
+}
+
+protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
+    func changeDestinationChain()
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
@@ -41,4 +43,12 @@ protocol TransferSetupInteractorOutputProtocol: AnyObject {
     func didReceive(error: Error)
 }
 
-protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {}
+protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func showDestinationChainSelection(
+        from view: TransferSetupViewProtocol?,
+        selectionState: CrossChainDestinationSelectionState,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?,
+        locale: Locale
+    )
+}
