@@ -6,17 +6,11 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
         from view: TransferSetupViewProtocol?,
         selectionState: CrossChainDestinationSelectionState,
         delegate: ModalPickerViewControllerDelegate,
-        context: AnyObject?,
-        locale _: Locale
+        context: AnyObject?
     ) {
-        let title = LocalizableResource { _ in
-            "Recipient network"
-        }
-
         guard let viewController = ModalPickerFactory.createNetworkSelectionList(
             selectionState: selectionState,
             delegate: delegate,
-            title: title,
             context: context
         ) else {
             return
