@@ -16,11 +16,11 @@ protocol TransferConfirmPresenterProtocol: AnyObject {
     func showRecepientActions()
 }
 
-protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
+protocol TransferConfirmInteractorInputProtocol: OnChainTransferSetupInteractorInputProtocol {
     func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?)
 }
 
-protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {
+protocol TransferConfirmInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
     func didCompleteSubmition()
 }
 

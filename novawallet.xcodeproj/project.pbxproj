@@ -1063,6 +1063,15 @@
 		848E6BE32763346800C91022 /* СhainAssetSelectionControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848E6BE22763346800C91022 /* СhainAssetSelectionControl.swift */; };
 		848EAEB02659310A00676CEA /* CrowdloanStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */; };
 		848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */; };
+		848F8B172863584B00204BC4 /* OnChainTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B162863584B00204BC4 /* OnChainTransferSetupProtocols.swift */; };
+		848F8B1928635A5600204BC4 /* TransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B1828635A5600204BC4 /* TransferSetupPresenter.swift */; };
+		848F8B1B28635A6D00204BC4 /* TransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B1A28635A6D00204BC4 /* TransferSetupInteractor.swift */; };
+		848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B1C2863616E00204BC4 /* ChainsStore.swift */; };
+		848F8B1F2863BB4000204BC4 /* TransferSetupPresenterFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B1E2863BB4000204BC4 /* TransferSetupPresenterFactory.swift */; };
+		848F8B222863BD1000204BC4 /* TransferSetupInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B212863BD1000204BC4 /* TransferSetupInputState.swift */; };
+		848F8B242864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B232864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift */; };
+		848F8B27286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B26286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift */; };
+		848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F8B282864503A00204BC4 /* TransferSetupWireframe.swift */; };
 		848FFE6625E6742400652AA5 /* EraValidatorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE6525E6742400652AA5 /* EraValidatorService.swift */; };
 		848FFE8325E686C200652AA5 /* StorageDecodingOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE8225E686C200652AA5 /* StorageDecodingOperation.swift */; };
 		848FFE8B25E69A6000652AA5 /* EraValidatorServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848FFE8A25E69A6000652AA5 /* EraValidatorServiceProtocol.swift */; };
@@ -3368,6 +3377,15 @@
 		848E6BE22763346800C91022 /* СhainAssetSelectionControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "СhainAssetSelectionControl.swift"; sourceTree = "<group>"; };
 		848EAEAF2659310A00676CEA /* CrowdloanStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanStatus.swift; sourceTree = "<group>"; };
 		848EAEB72659859600676CEA /* CrowdloansViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloansViewModelFactory.swift; sourceTree = "<group>"; };
+		848F8B162863584B00204BC4 /* OnChainTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnChainTransferSetupProtocols.swift; sourceTree = "<group>"; };
+		848F8B1828635A5600204BC4 /* TransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupPresenter.swift; sourceTree = "<group>"; };
+		848F8B1A28635A6D00204BC4 /* TransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupInteractor.swift; sourceTree = "<group>"; };
+		848F8B1C2863616E00204BC4 /* ChainsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainsStore.swift; sourceTree = "<group>"; };
+		848F8B1E2863BB4000204BC4 /* TransferSetupPresenterFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupPresenterFactory.swift; sourceTree = "<group>"; };
+		848F8B212863BD1000204BC4 /* TransferSetupInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupInputState.swift; sourceTree = "<group>"; };
+		848F8B232864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferSetupPresenterFactory+OnChain.swift"; sourceTree = "<group>"; };
+		848F8B26286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TransferSetupPresenterFactory+CrossChain.swift"; sourceTree = "<group>"; };
+		848F8B282864503A00204BC4 /* TransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupWireframe.swift; sourceTree = "<group>"; };
 		848FFE6525E6742400652AA5 /* EraValidatorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorService.swift; sourceTree = "<group>"; };
 		848FFE8225E686C200652AA5 /* StorageDecodingOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageDecodingOperation.swift; sourceTree = "<group>"; };
 		848FFE8A25E69A6000652AA5 /* EraValidatorServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EraValidatorServiceProtocol.swift; sourceTree = "<group>"; };
@@ -7238,8 +7256,26 @@
 				9871C4FF3B05F6055AF82F14 /* OnChainTransferSetupWireframe.swift */,
 				DD1A2F7E5E278FDCC89FE097 /* OnChainTransferSetupPresenter.swift */,
 				B765BDAA27726E2586953368 /* OnChainTransferSetupInteractor.swift */,
+				848F8B162863584B00204BC4 /* OnChainTransferSetupProtocols.swift */,
+				848F8B232864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift */,
 			);
 			path = OnChain;
+			sourceTree = "<group>";
+		};
+		848F8B202863BCF500204BC4 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				848F8B212863BD1000204BC4 /* TransferSetupInputState.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		848F8B25286444AA00204BC4 /* CrossChain */ = {
+			isa = PBXGroup;
+			children = (
+				848F8B26286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift */,
+			);
+			path = CrossChain;
 			sourceTree = "<group>";
 		};
 		848FFE6425E670CE00652AA5 /* EraValidatorsService */ = {
@@ -7670,6 +7706,7 @@
 				84E25BE127E5F23E00290BF1 /* PasteboardHandler.swift */,
 				84CF00C227F6C1E4004DB322 /* CustomAssetMapper.swift */,
 				84FF26852849530E003EC78D /* AccountId+Dummy.swift */,
+				848F8B1C2863616E00204BC4 /* ChainsStore.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -10361,12 +10398,18 @@
 		DA7D18D3AF772CC2385C228C /* TransferSetup */ = {
 			isa = PBXGroup;
 			children = (
+				848F8B202863BCF500204BC4 /* Model */,
+				848F8B25286444AA00204BC4 /* CrossChain */,
 				848F8B1528634F8C00204BC4 /* OnChain */,
 				1521715CA2071056FCE9D360 /* TransferSetupProtocols.swift */,
 				85D8B7BE70A9F907F8B43BFC /* TransferSetupViewController.swift */,
 				F63700316ADAC007DD318EC6 /* TransferSetupViewLayout.swift */,
 				8202B83B2DF36439CB6449C6 /* TransferSetupViewFactory.swift */,
 				84735C6027E055B9001DD1E6 /* TransferSetupCommand.swift */,
+				848F8B1828635A5600204BC4 /* TransferSetupPresenter.swift */,
+				848F8B1A28635A6D00204BC4 /* TransferSetupInteractor.swift */,
+				848F8B1E2863BB4000204BC4 /* TransferSetupPresenterFactory.swift */,
+				848F8B282864503A00204BC4 /* TransferSetupWireframe.swift */,
 			);
 			path = TransferSetup;
 			sourceTree = "<group>";
@@ -11903,6 +11946,7 @@
 				849014C224AA87E4008F705E /* LocalAuthPresenter.swift in Sources */,
 				8446F5F6281916D300B7A86C /* StakingRewardsHeaderCell.swift in Sources */,
 				84CA68D126BE99ED003B9453 /* RuntimeProviderFactory.swift in Sources */,
+				848F8B1928635A5600204BC4 /* TransferSetupPresenter.swift in Sources */,
 				84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */,
 				842876AB24AE049B00D91AD8 /* SelectionItemViewProtocol.swift in Sources */,
 				8472C5AF265CF9C500E2481B /* StakingRewardDestConfirmViewLayout.swift in Sources */,
@@ -12228,6 +12272,7 @@
 				8401AEC72642A71D000B03E3 /* StakingRebondConfirmationPresenter.swift in Sources */,
 				844CB56226F943AD00396E13 /* WalletLocalSubscriptionFactory.swift in Sources */,
 				84893C0324DA8641008F6A3F /* AccountCreationRequest.swift in Sources */,
+				848F8B27286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift in Sources */,
 				8490386B262E22DC0016D541 /* NominatorPayoutInfoFactory.swift in Sources */,
 				2A028D28275688AF0061CB4C /* AddChainAccount.swift in Sources */,
 				F4CE0FF3273453E30094CD8A /* AcalaContributionSetupWireframe.swift in Sources */,
@@ -12322,7 +12367,9 @@
 				84DED410266659EC00A153BB /* CustomCrowdloanDelegate.swift in Sources */,
 				8418E7202617602000DCF6C8 /* WalletRemoteHistoryProtocols.swift in Sources */,
 				849ECD3926DF792800F542A3 /* SkeletonRow+View.swift in Sources */,
+				848F8B1B28635A6D00204BC4 /* TransferSetupInteractor.swift in Sources */,
 				AE1000F426679946004753B7 /* InitiatedBondingRecommendationWireframe.swift in Sources */,
+				848F8B222863BD1000204BC4 /* TransferSetupInputState.swift in Sources */,
 				84113B6C255B2835009BD21A /* AccountCreateError.swift in Sources */,
 				849014C024AA87E4008F705E /* ScreenAuthorizationPresenter.swift in Sources */,
 				84EC2D1D276C684D009B0BE1 /* PolkadotExtensionSignerResult.swift in Sources */,
@@ -12608,6 +12655,7 @@
 				847C962825534134002D288F /* ExportGenericProtocols.swift in Sources */,
 				8472C5B0265CF9C500E2481B /* StakingRewardDestConfirmWireframe.swift in Sources */,
 				84FB1F792527065A00E0242B /* HistoryConstants.swift in Sources */,
+				848F8B292864503A00204BC4 /* TransferSetupWireframe.swift in Sources */,
 				84F18D4C27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift in Sources */,
 				4448B591D4A193DBC9E2E3BF /* AccountCreateInteractor.swift in Sources */,
 				84DF21A92535AA8F005454AE /* ExistentialDepositInfoCommand.swift in Sources */,
@@ -12883,6 +12931,7 @@
 				842A736D27DB7B5E006EE1EA /* OperationTransferViewModel.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
+				848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */,
 				84333BD7285682EC00C76A4F /* ValidatorsSelectionParams.swift in Sources */,
 				84C3F77B2601F08B00D47501 /* NominationViewModel.swift in Sources */,
 				846A2C4B2529F99400731018 /* AccountRepositoryFactory.swift in Sources */,
@@ -12896,6 +12945,7 @@
 				849976C827B2B80700B14A6C /* DAppMetamaskWaitingAuthState.swift in Sources */,
 				84DF219F25346696005454AE /* WalletAccountInfoCommand.swift in Sources */,
 				AEF5071E262369C00098574D /* PurchaseProviderProtocol.swift in Sources */,
+				848F8B172863584B00204BC4 /* OnChainTransferSetupProtocols.swift in Sources */,
 				84F47D532666F13C00F7647A /* KaruraVerifyInfo.swift in Sources */,
 				F4D96B672637E89300B23D3D /* UIView+Separator.swift in Sources */,
 				99A4B2A357ADEA45EFF515A5 /* AccountExportPasswordProtocols.swift in Sources */,
@@ -12963,6 +13013,7 @@
 				9A6A55297F41DAE45071BF57 /* ExportSeedInteractor.swift in Sources */,
 				886E8CF81EF2566D98D9693E /* ExportSeedViewFactory.swift in Sources */,
 				C20ED4531583D0C8E38715E0 /* PurchaseProtocols.swift in Sources */,
+				848F8B1F2863BB4000204BC4 /* TransferSetupPresenterFactory.swift in Sources */,
 				3CA86739CB09801714B194BD /* PurchaseWireframe.swift in Sources */,
 				84FB298C2639ABA500BE0FCD /* YourValidatorList.swift in Sources */,
 				F4D6FF0E26B3DD6E002313AF /* AnalyticsRewardsProtocols.swift in Sources */,
@@ -13334,6 +13385,7 @@
 				CE773CEC15A83AA6D0B404B8 /* DAppListViewController.swift in Sources */,
 				A07A987DE3047AF1A786D511 /* DAppListViewLayout.swift in Sources */,
 				8DF76D04C127E0048B253343 /* DAppListViewFactory.swift in Sources */,
+				848F8B242864448900204BC4 /* TransferSetupPresenterFactory+OnChain.swift in Sources */,
 				8402CC9E275B946100E5BF30 /* DAppItemView.swift in Sources */,
 				FFE19A19E5B4ED67A2C61951 /* DAppSearchProtocols.swift in Sources */,
 				F88D85C73094F6A1FC494D87 /* DAppSearchWireframe.swift in Sources */,

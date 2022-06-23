@@ -3,10 +3,10 @@ import BigInt
 import SoraFoundation
 import SubstrateSdk
 
-final class OnChainTransferSetupPresenter: OnChainTransferPresenter, TransferSetupInteractorOutputProtocol {
+final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTransferSetupInteractorOutputProtocol {
     weak var view: TransferSetupViewProtocol?
-    let wireframe: TransferSetupWireframeProtocol
-    let interactor: TransferSetupInteractorInputProtocol
+    let wireframe: OnChainTransferSetupWireframeProtocol
+    let interactor: OnChainTransferSetupInteractorInputProtocol
 
     private(set) var recepientAddress: AccountAddress?
 
@@ -15,10 +15,10 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, TransferSet
     var inputResult: AmountInputResult?
 
     init(
-        interactor: TransferSetupInteractorInputProtocol,
-        wireframe: TransferSetupWireframeProtocol,
+        interactor: OnChainTransferSetupInteractorInputProtocol,
+        wireframe: OnChainTransferSetupWireframeProtocol,
         chainAsset: ChainAsset,
-        recepientAddress: AccountAddress?,
+        initialState: TransferSetupInputState,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -30,7 +30,8 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, TransferSet
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.recepientAddress = recepientAddress
+        recepientAddress = initialState.recepient
+        inputResult = initialState.amount
         self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
@@ -261,7 +262,11 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, TransferSet
     }
 }
 
-extension OnChainTransferSetupPresenter: TransferSetupPresenterProtocol {
+extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
+    var inputState: TransferSetupInputState {
+        TransferSetupInputState(recepient: recepientAddress, amount: inputResult)
+    }
+
     func setup() {
         updateChainAssetViewModel()
         updateFeeView()
