@@ -2,4 +2,4 @@ import UIKit
 
 final class OnChainTransferSetupInteractor: OnChainTransferInteractor {}
 
-extension OnChainTransferSetupInteractor: TransferSetupInteractorInputProtocol {}
+extension OnChainTransferSetupInteractor: OnChainTransferSetupInteractorInputProtocol {}
