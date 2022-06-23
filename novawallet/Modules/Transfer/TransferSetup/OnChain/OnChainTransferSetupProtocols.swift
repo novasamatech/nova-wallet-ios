@@ -23,13 +23,13 @@ protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {
 protocol OnChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable {
     func showConfirmation(
-        from view: TransferSetupViewProtocol?,
+        from view: TransferSetupChildViewProtocol?,
         chainAsset: ChainAsset,
         sendingAmount: Decimal,
         recepient: AccountAddress
     )
 
-    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate)
+    func showRecepientScan(from view: TransferSetupChildViewProtocol?, delegate: TransferScanDelegate)
 
-    func hideRecepientScan(from view: TransferSetupViewProtocol?)
+    func hideRecepientScan(from view: TransferSetupChildViewProtocol?)
 }

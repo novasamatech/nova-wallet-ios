@@ -5,7 +5,7 @@ extension TransferSetupPresenterFactory {
     func createOnChainPresenter(
         for chainAsset: ChainAsset,
         initialState: TransferSetupInputState,
-        view: TransferSetupViewProtocol
+        view: TransferSetupChildViewProtocol
     ) -> TransferSetupChildPresenterProtocol? {
         guard
             let selectedAccountAddress = wallet.fetch(for: chainAsset.chain.accountRequest())?.toAddress(),
