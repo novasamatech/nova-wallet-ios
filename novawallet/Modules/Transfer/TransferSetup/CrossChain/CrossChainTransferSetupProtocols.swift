@@ -23,3 +23,18 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
+
+protocol CrossChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
+    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable {
+    func showConfirmation(
+        from view: TransferSetupChildViewProtocol?,
+        originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset,
+        sendingAmount: Decimal,
+        recepient: AccountAddress
+    )
+
+    func showRecepientScan(from view: TransferSetupChildViewProtocol?, delegate: TransferScanDelegate)
+
+    func hideRecepientScan(from view: TransferSetupChildViewProtocol?)
+}

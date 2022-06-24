@@ -656,6 +656,9 @@
 		84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */; };
 		8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8445CC2628366578003B26CD /* ParaStkCalls.swift */; };
 		84468A072866530100BCBE00 /* AssetDecodingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */; };
+		84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */; };
+		84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */; };
+		84468A0D28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0C28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift */; };
 		8446F5EC2817107D00B7A86C /* TitleAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5EB2817107D00B7A86C /* TitleAmountView.swift */; };
 		8446F5EE2817130600B7A86C /* TitleAmountView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5ED2817130600B7A86C /* TitleAmountView+Style.swift */; };
 		8446F5F02817279600B7A86C /* HintListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5EF2817279600B7A86C /* HintListView.swift */; };
@@ -2978,6 +2981,9 @@
 		84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRuntimeMetadataItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		8445CC2628366578003B26CD /* ParaStkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCalls.swift; sourceTree = "<group>"; };
 		84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecodingOperationFactory.swift; sourceTree = "<group>"; };
+		84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupInteractor.swift; sourceTree = "<group>"; };
+		84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupPresenter.swift; sourceTree = "<group>"; };
+		84468A0C28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupWireframe.swift; sourceTree = "<group>"; };
 		8446F5EB2817107D00B7A86C /* TitleAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleAmountView.swift; sourceTree = "<group>"; };
 		8446F5ED2817130600B7A86C /* TitleAmountView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TitleAmountView+Style.swift"; sourceTree = "<group>"; };
 		8446F5EF2817279600B7A86C /* HintListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintListView.swift; sourceTree = "<group>"; };
@@ -7313,6 +7319,9 @@
 			children = (
 				848F8B26286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift */,
 				842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */,
+				84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */,
+				84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */,
+				84468A0C28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift */,
 			);
 			path = CrossChain;
 			sourceTree = "<group>";
@@ -12084,6 +12093,7 @@
 				8490152724ABCC40008F705E /* NumberFormatter.swift in Sources */,
 				846A2C4325271CDE00731018 /* TransactionType.swift in Sources */,
 				84893C0124DA861D008F6A3F /* AccountCreationMetadata.swift in Sources */,
+				84468A0D28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift in Sources */,
 				84E25BF827E9A6A200290BF1 /* UInt32+CrowdloanAccountId.swift in Sources */,
 				2A84E87825D425750006FE9C /* AlertControllerFactory.swift in Sources */,
 				843461CB26E2590200DCE0CD /* SubscanHistoryOperationFactory.swift in Sources */,
@@ -12114,6 +12124,7 @@
 				8490152124ABC721008F705E /* WalletStaticImageViewModel.swift in Sources */,
 				F408E9BE26B80FD30043CFE0 /* AnalyticsSectionHeader.swift in Sources */,
 				84C6801824D7053B00006BF5 /* BorderedSubtitleActionView.swift in Sources */,
+				84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */,
 				84A2C90C24E192F50020D3B7 /* ShakeAnimator.swift in Sources */,
 				AEE0C43E272A8C16009F9AD5 /* AddChainAccount+AccountConfirmInteractor.swift in Sources */,
 				8456C08427CFA4A7001282DE /* ImagePlaceholderView.swift in Sources */,
@@ -12128,6 +12139,7 @@
 				84B64E412704569D00914E88 /* StakingLocalSubscriptionHandler.swift in Sources */,
 				848FFE9525E6DF2200652AA5 /* PagedKeysRequest.swift in Sources */,
 				8428766B24ADF51D00D91AD8 /* UIViewController+Modal.swift in Sources */,
+				84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */,
 				844DBC6D274E5325009F8351 /* AccountImportViewController.swift in Sources */,
 				84350ADD2846226B0031EF24 /* CollatorSelectionInfo+ViewModel.swift in Sources */,
 				84F30E9725FD3C5300039D09 /* EventEmittingStorageSubscription.swift in Sources */,
