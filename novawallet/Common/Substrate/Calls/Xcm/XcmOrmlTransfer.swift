@@ -17,8 +17,8 @@ extension Xcm {
         // must be set as maximum between reserve and destination
         @StringCodable var destinationWeight: BigUInt
 
-        var runtimeCall: RuntimeCall<OrmlTransferCall> {
-            RuntimeCall(moduleName: "xTokens", callName: "transfer_multiasset", args: self)
+        func runtimeCall(for module: String) -> RuntimeCall<OrmlTransferCall> {
+            RuntimeCall(moduleName: module, callName: "transfer_multiasset", args: self)
         }
     }
 }

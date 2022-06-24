@@ -3,15 +3,24 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class OnChainTransferInteractor: RuntimeConstantFetching {
-    weak var presenter: OnChainTransferSetupInteractorOutputProtocol?
+private struct CrossChainAssetsStorageInfo {
+    let originSending: AssetStorageInfo
+    let originUtility: AssetStorageInfo?
+    let destinationSending: AssetStorageInfo
+    let destinationUtility: AssetStorageInfo?
+}
+
+class CrossChainTransferInteractor: RuntimeConstantFetching {
+    weak var presenter: CrossChainTransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
-    let chain: ChainModel
-    let asset: AssetModel
-    let runtimeService: RuntimeCodingServiceProtocol
-    let feeProxy: ExtrinsicFeeProxyProtocol
-    let extrinsicService: ExtrinsicServiceProtocol
+    let xcmTransfers: XcmTransfers
+    let originChainAsset: ChainAsset
+    let destinationChainAsset: ChainAsset
+    let chainRegistry: ChainRegistryProtocol
+    let feeProxy: XcmExtrinsicFeeProxyProtocol
+    let extrinsicService: XcmTransferServiceProtocol
+    let resolutionFactory: XcmTransferResolutionFactoryProtocol
     let walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
@@ -26,12 +35,12 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     private var sendingAssetPriceProvider: AnySingleValueProvider<PriceData>?
     private var utilityAssetPriceProvider: AnySingleValueProvider<PriceData>?
 
-    private var setupCall: CancellableCall?
-
     private var recepientAccountId: AccountId?
 
-    private var sendingAssetInfo: AssetStorageInfo?
-    private var utilityAssetInfo: AssetStorageInfo?
+    private var setupCall: CancellableCall?
+
+    private var assetsInfo: CrossChainAssetsStorageInfo?
+    private var transferParties: XcmTransferParties?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?
@@ -39,7 +48,13 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     private var recepientSendingAssetProvider: StreamableProvider<AssetBalance>?
     private var recepientUtilityAssetProvider: StreamableProvider<AssetBalance>?
 
-    var isUtilityTransfer: Bool { chain.utilityAssets().first?.assetId == asset.assetId }
+    var isSendingUtility: Bool {
+        originChainAsset.chain.utilityAssets().first?.assetId == originChainAsset.asset.assetId
+    }
+
+    var isReceivingUtility: Bool {
+        destinationChainAsset.chain.utilityAssets().first?.assetId == destinationChainAsset.asset.assetId
+    }
 
     private lazy var chainStorage: AnyDataProviderRepository<ChainStorageItem> = {
         let storage: CoreDataRepository<ChainStorageItem, CDChainStorageItem> =
@@ -49,23 +64,29 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     init(
         selectedAccount: ChainAccountResponse,
-        chain: ChainModel,
-        asset: AssetModel,
-        runtimeService: RuntimeCodingServiceProtocol,
-        feeProxy: ExtrinsicFeeProxyProtocol,
-        extrinsicService: ExtrinsicServiceProtocol,
+        xcmTransfers: XcmTransfers,
+        originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset,
+        chainRegistry: ChainRegistryProtocol,
+        feeProxy: XcmExtrinsicFeeProxyProtocol,
+        extrinsicService: XcmTransferServiceProtocol,
+        resolutionFactory: XcmTransferResolutionFactoryProtocol,
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
+        destinationWalletRemoteWrapper _: WalletRemoteSubscriptionWrapperProtocol,
+        destinationWalletLocalSubscriptionFactory _: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue
     ) {
         self.selectedAccount = selectedAccount
-        self.chain = chain
-        self.asset = asset
-        self.runtimeService = runtimeService
+        self.xcmTransfers = xcmTransfers
+        self.originChainAsset = originChainAsset
+        self.destinationChainAsset = destinationChainAsset
+        self.chainRegistry = chainRegistry
         self.feeProxy = feeProxy
         self.extrinsicService = extrinsicService
+        self.resolutionFactory = resolutionFactory
         self.walletRemoteWrapper = walletRemoteWrapper
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
@@ -82,13 +103,15 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private func fetchStatemineMinBalance(
         for extras: StatemineAssetExtras,
+        chainId: ChainModel.Id,
+        runtimeService: RuntimeProviderProtocol,
         completionClosure: @escaping (Result<BigUInt, Error>) -> Void
     ) {
         do {
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
                 .assetsDetails,
                 encodableElement: extras.assetId,
-                chainId: chain.chainId
+                chainId: chainId
             )
 
             let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
@@ -133,8 +156,14 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private func fetchMinBalance(
         for assetStorageInfo: AssetStorageInfo,
+        chainId: ChainModel.Id,
         completionClosure: @escaping (Result<BigUInt, Error>) -> Void
     ) {
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+            completionClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
+            return
+        }
+
         switch assetStorageInfo {
         case .native:
             fetchConstant(
@@ -144,43 +173,111 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 closure: completionClosure
             )
         case let .statemine(extras):
-            fetchStatemineMinBalance(for: extras, completionClosure: completionClosure)
+            fetchStatemineMinBalance(
+                for: extras,
+                chainId: chainId,
+                runtimeService: runtimeService,
+                completionClosure: completionClosure
+            )
         case let .orml(_, _, _, existentialDeposit):
             completionClosure(.success(existentialDeposit))
         }
     }
 
-    private func createAssetExtractionWrapper() -> CompoundOperationWrapper<(AssetStorageInfo, AssetStorageInfo?)> {
-        let sendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-            from: asset,
-            runtimeProvider: runtimeService
+    private func createAssetExtractionWrapper() -> CompoundOperationWrapper<CrossChainAssetsStorageInfo> {
+        guard
+            let originProvider = chainRegistry.getRuntimeProvider(for: originChainAsset.chain.chainId),
+            let destinationProvider = chainRegistry.getRuntimeProvider(for: destinationChainAsset.chain.chainId) else {
+            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
+        let originSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: originChainAsset.asset,
+            runtimeProvider: originProvider
         )
 
-        var dependencies = sendingAssetWrapper.allOperations
+        let destSendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: destinationChainAsset.asset,
+            runtimeProvider: destinationProvider
+        )
 
-        let utilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+        var dependencies = originSendingAssetWrapper.allOperations + destSendingAssetWrapper.allOperations
 
-        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
+        let originUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+
+        if !isSendingUtility, let utilityAsset = originChainAsset.chain.utilityAssets().first {
             let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
                 from: utilityAsset,
-                runtimeProvider: runtimeService
+                runtimeProvider: originProvider
             )
 
-            utilityAssetWrapper = wrapper
+            originUtilityAssetWrapper = wrapper
 
             dependencies.append(contentsOf: wrapper.allOperations)
         } else {
-            utilityAssetWrapper = nil
+            originUtilityAssetWrapper = nil
         }
 
-        let mergeOperation = ClosureOperation<(AssetStorageInfo, AssetStorageInfo?)> {
-            let sending = try sendingAssetWrapper.targetOperation.extractNoCancellableResultData()
-            let utility = try utilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+        let destUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
 
-            return (sending, utility)
+        if !isReceivingUtility, let utilityAsset = destinationChainAsset.chain.utilityAssets().first {
+            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                from: utilityAsset,
+                runtimeProvider: destinationProvider
+            )
+
+            destUtilityAssetWrapper = wrapper
+
+            dependencies.append(contentsOf: wrapper.allOperations)
+        } else {
+            destUtilityAssetWrapper = nil
+        }
+
+        let mergeOperation = ClosureOperation<CrossChainAssetsStorageInfo> {
+            let originSending = try originSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+            let destSending = try destSendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+            let originUtility = try originUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+            let destUtility = try destUtilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return CrossChainAssetsStorageInfo(
+                originSending: originSending,
+                originUtility: originUtility,
+                destinationSending: destSending,
+                destinationUtility: destUtility
+            )
         }
 
         dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
+    }
+
+    private func createSetupWrapper() -> CompoundOperationWrapper<(XcmTransferParties, CrossChainAssetsStorageInfo)> {
+        let chain = destinationChainAsset.chain
+        let destinationId = XcmTransferDestinationId(
+            chainId: chain.chainId,
+            accountId: AccountId.dummyAccountId(of: chain.accountIdSize)
+        )
+
+        let transferResolution = resolutionFactory.createResolutionWrapper(
+            for: originChainAsset.chainAssetId,
+            transferDestinationId: destinationId,
+            xcmTransfers: xcmTransfers
+        )
+
+        let assetsInfoWrapper = createAssetExtractionWrapper()
+
+        let mergeOperation = ClosureOperation<(XcmTransferParties, CrossChainAssetsStorageInfo)> {
+            let transferParties = try transferResolution.targetOperation.extractNoCancellableResultData()
+            let assetsInfo = try assetsInfoWrapper.targetOperation.extractNoCancellableResultData()
+
+            return (transferParties, assetsInfo)
+        }
+
+        mergeOperation.addDependency(transferResolution.targetOperation)
+        mergeOperation.addDependency(assetsInfoWrapper.targetOperation)
+
+        let dependencies = transferResolution.allOperations + assetsInfoWrapper.allOperations
 
         return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
@@ -201,13 +298,15 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     private func setupSendingAssetBalanceProvider() {
         sendingAssetProvider = subscribeToAssetBalanceProvider(
             for: selectedAccount.accountId,
-            chainId: chain.chainId,
-            assetId: asset.assetId
+            chainId: originChainAsset.chain.chainId,
+            assetId: originChainAsset.asset.assetId
         )
     }
 
     private func setupUtilityAssetBalanceProviderIfNeeded() {
-        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
+        let chain = originChainAsset.chain
+
+        if !isSendingUtility, let utilityAsset = chain.utilityAssets().first {
             utilityAssetProvider = subscribeToAssetBalanceProvider(
                 for: selectedAccount.accountId,
                 chainId: chain.chainId,
@@ -217,7 +316,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func setupSendingAssetPriceProviderIfNeeded() {
-        if let priceId = asset.priceId {
+        if let priceId = originChainAsset.asset.priceId {
             let options = DataProviderObserverOptions(
                 alwaysNotifyOnRefresh: false,
                 waitsInProgressSyncOnAdd: false
@@ -230,7 +329,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func setupUtilityAssetPriceProviderIfNeeded() {
-        guard !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first else {
+        guard !isSendingUtility, let utilityAsset = originChainAsset.chain.utilityAssets().first else {
             return
         }
 
@@ -247,8 +346,10 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func provideMinBalance() {
-        if let sendingAssetInfo = sendingAssetInfo {
-            fetchMinBalance(for: sendingAssetInfo) { [weak self] result in
+        let originChainId = originChainAsset.chain.chainId
+
+        if let sendingAssetInfo = assetsInfo?.originSending {
+            fetchMinBalance(for: sendingAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
                 case let .success(minBalance):
                     self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
@@ -258,8 +359,8 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
             }
         }
 
-        if let utilityAssetInfo = utilityAssetInfo {
-            fetchMinBalance(for: utilityAssetInfo) { [weak self] result in
+        if let utilityAssetInfo = assetsInfo?.originUtility {
+            fetchMinBalance(for: utilityAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
                 case let .success(minBalance):
                     self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
@@ -268,41 +369,18 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 }
             }
         }
-    }
 
-    func addingTransferCommand(
-        to builder: ExtrinsicBuilderProtocol,
-        amount: BigUInt,
-        recepient: AccountId
-    ) throws -> (ExtrinsicBuilderProtocol, CallCodingPath?) {
-        guard let sendingAssetInfo = sendingAssetInfo else {
-            return (builder, nil)
-        }
+        if let receivingAssetInfo = assetsInfo?.destinationSending {
+            let destinationChainId = destinationChainAsset.chain.chainId
 
-        switch sendingAssetInfo {
-        case let .orml(currencyId, _, module, _):
-            let call = callFactory.ormlTransfer(
-                in: module,
-                currencyId: currencyId,
-                receiverId: recepient,
-                amount: amount
-            )
-
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-        case let .statemine(extras):
-            let call = callFactory.assetsTransfer(
-                to: recepient,
-                assetId: extras.assetId,
-                amount: amount
-            )
-
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
-        case .native:
-            let call = callFactory.nativeTransfer(to: recepient, amount: amount)
-            let newBuilder = try builder.adding(call: call)
-            return (newBuilder, CallCodingPath(moduleName: call.moduleName, callName: call.callName))
+            fetchMinBalance(for: receivingAssetInfo, chainId: destinationChainId) { [weak self] result in
+                switch result {
+                case let .success(minBalance):
+                    self?.presenter?.didReceiveDestinationAssetMinBalance(minBalance)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
         }
     }
 
@@ -313,8 +391,10 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     }
 
     private func subscribeUtilityRecepientAssetBalance() {
+        let chain = destinationChainAsset.chain
+
         guard
-            let utilityAssetInfo = utilityAssetInfo,
+            let utilityAssetInfo = assetsInfo?.destinationUtility,
             let recepientAccountId = recepientAccountId,
             let utilityAsset = chain.utilityAssets().first else {
             return
@@ -336,28 +416,28 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private func subscribeSendingRecepientAssetBalance() {
         guard
-            let sendingAssetInfo = sendingAssetInfo,
+            let destinationAssetInfo = assetsInfo?.destinationSending,
             let recepientAccountId = recepientAccountId else {
             return
         }
 
         sendingAssetSubscriptionId = walletRemoteWrapper.subscribe(
-            using: sendingAssetInfo,
+            using: destinationAssetInfo,
             accountId: recepientAccountId,
-            chainAsset: ChainAsset(chain: chain, asset: asset),
+            chainAsset: destinationChainAsset,
             completion: nil
         )
 
         recepientSendingAssetProvider = subscribeToAssetBalanceProvider(
             for: recepientAccountId,
-            chainId: chain.chainId,
-            assetId: asset.assetId
+            chainId: destinationChainAsset.chain.chainId,
+            assetId: destinationChainAsset.asset.assetId
         )
     }
 
     private func clearSendingAssetRemoteRecepientSubscription() {
         guard
-            let sendingAssetInfo = sendingAssetInfo,
+            let destinationAssetInfo = assetsInfo?.destinationSending,
             let recepientAccountId = recepientAccountId,
             let sendingAssetSubscriptionId = sendingAssetSubscriptionId else {
             return
@@ -365,9 +445,9 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
         walletRemoteWrapper.unsubscribe(
             from: sendingAssetSubscriptionId,
-            assetStorageInfo: sendingAssetInfo,
+            assetStorageInfo: destinationAssetInfo,
             accountId: recepientAccountId,
-            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            chainAssetId: destinationChainAsset.chainAssetId,
             completion: nil
         )
 
@@ -381,12 +461,14 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private func clearUtilityAssetRemoteRecepientSubscriptions() {
         guard
-            let utilityAssetInfo = utilityAssetInfo,
+            let utilityAssetInfo = assetsInfo?.destinationUtility,
             let recepientAccountId = recepientAccountId,
             let utilityAssetSubscriptionId = utilityAssetSubscriptionId,
-            let utilityAsset = chain.utilityAssets().first else {
+            let utilityAsset = destinationChainAsset.chain.utilityAssets().first else {
             return
         }
+
+        let chain = destinationChainAsset.chain
 
         walletRemoteWrapper.unsubscribe(
             from: utilityAssetSubscriptionId,
@@ -405,57 +487,105 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     }
 }
 
-extension OnChainTransferInteractor {
+extension CrossChainTransferInteractor {
     func setup() {
-        let wrapper = createAssetExtractionWrapper()
+        let setupWrapper = createSetupWrapper()
 
-        wrapper.targetOperation.completionBlock = { [weak self] in
+        setupWrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard self?.setupCall === wrapper else {
+                guard self?.setupCall === setupWrapper else {
                     return
                 }
 
                 self?.setupCall = nil
 
                 do {
-                    let (sending, utility) = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.sendingAssetInfo = sending
-                    self?.utilityAssetInfo = utility
+                    let (transferParties, assetsInfo) = try setupWrapper.targetOperation
+                        .extractNoCancellableResultData()
+
+                    self?.transferParties = transferParties
+                    self?.assetsInfo = assetsInfo
+
+                    self?.continueSetup()
                 } catch {
                     self?.presenter?.didReceiveError(error)
                 }
             }
         }
 
-        setupCall = wrapper
+        setupCall = setupWrapper
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+        operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateFee(for amount: BigUInt, recepient: AccountAddress?) {
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountAddress?, weightLimit: BigUInt?) {
         do {
+            guard let transferParties = transferParties else {
+                throw CommonError.dataCorruption
+            }
+
             let recepientAccountId: AccountId
 
             if let recepient = recepient {
                 recepientAccountId = try recepient.toAccountId()
             } else {
-                recepientAccountId = selectedAccount.accountId
+                recepientAccountId = AccountId.dummyAccountId(of: destinationChainAsset.chain.accountIdSize)
             }
 
-            let identifier = String(amount) + "-" + recepientAccountId.toHex()
+            let maxWeight = weightLimit ?? 0
+            let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex() +
+                "-" + String(maxWeight)
 
-            feeProxy.estimateFee(
+            let destination = transferParties.destination.replacing(accountId: recepientAccountId)
+            let request = XcmTransferRequest(
+                origin: originChainAsset,
+                destination: destination,
+                reserve: transferParties.reserve,
+                amount: amount
+            )
+
+            feeProxy.estimateOriginFee(
                 using: extrinsicService,
+                xcmTransferRequest: request,
+                xcmTransfers: xcmTransfers,
+                maxWeight: weightLimit ?? 0,
                 reuseIdentifier: identifier
-            ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recepient: recepientAccountId
-                ) ?? (builder, nil)
+            )
+        } catch {
+            presenter?.didReceiveError(CommonError.dataCorruption)
+        }
+    }
 
-                return newBuilder
+    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountAddress?) {
+        do {
+            guard let transferParties = transferParties else {
+                throw CommonError.dataCorruption
             }
+
+            let recepientAccountId: AccountId
+
+            if let recepient = recepient {
+                recepientAccountId = try recepient.toAccountId()
+            } else {
+                recepientAccountId = AccountId.dummyAccountId(of: destinationChainAsset.chain.accountIdSize)
+            }
+
+            let identifier = "crosschain" + "-" + String(amount) + "-" + recepientAccountId.toHex()
+
+            let destination = transferParties.destination.replacing(accountId: recepientAccountId)
+            let request = XcmTransferRequest(
+                origin: originChainAsset,
+                destination: destination,
+                reserve: transferParties.reserve,
+                amount: amount
+            )
+
+            feeProxy.estimateCrossChainFee(
+                using: extrinsicService,
+                xcmTransferRequest: request,
+                xcmTransfers: xcmTransfers,
+                reuseIdentifier: identifier
+            )
         } catch {
             presenter?.didReceiveError(CommonError.dataCorruption)
         }
@@ -480,7 +610,7 @@ extension OnChainTransferInteractor {
     }
 }
 
-extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension CrossChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
@@ -496,15 +626,15 @@ extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSu
                 )
 
             if accountId == selectedAccount.accountId {
-                if asset.assetId == assetId {
+                if originChainAsset.asset.assetId == assetId {
                     presenter?.didReceiveSendingAssetSenderBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
+                } else if originChainAsset.chain.utilityAssets().first?.assetId == assetId {
                     presenter?.didReceiveUtilityAssetSenderBalance(balance)
                 }
             } else if accountId == recepientAccountId {
-                if asset.assetId == assetId {
+                if destinationChainAsset.asset.assetId == assetId {
                     presenter?.didReceiveSendingAssetRecepientBalance(balance)
-                } else if chain.utilityAssets().first?.assetId == assetId {
+                } else if destinationChainAsset.chain.utilityAssets().first?.assetId == assetId {
                     presenter?.didReceiveUtilityAssetRecepientBalance(balance)
                 }
             }
@@ -514,13 +644,13 @@ extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSu
     }
 }
 
-extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension CrossChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
-            if asset.priceId == priceId {
+            if originChainAsset.asset.priceId == priceId {
                 presenter?.didReceiveSendingAssetPrice(priceData)
-            } else if chain.utilityAssets().first?.priceId == priceId {
+            } else if originChainAsset.chain.utilityAssets().first?.priceId == priceId {
                 presenter?.didReceiveUtilityAssetPrice(priceData)
             }
         case .failure:
@@ -529,17 +659,20 @@ extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubs
     }
 }
 
-extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
-    func didReceiveFee(
-        result: Result<RuntimeDispatchInfo, Error>,
+extension CrossChainTransferInteractor: XcmExtrinsicFeeProxyDelegate {
+    func didReceiveOriginFee(
+        result: XcmTrasferFeeResult,
         for _: ExtrinsicFeeId
     ) {
         switch result {
-        case let .success(info):
-            let fee = BigUInt(info.fee) ?? 0
-            presenter?.didReceiveFee(result: .success(fee))
+        case let .success(feeWithWeight):
+            presenter?.didReceiveOriginFee(result: .success(feeWithWeight.fee))
         case let .failure(error):
-            presenter?.didReceiveFee(result: .failure(error))
+            presenter?.didReceiveOriginFee(result: .failure(error))
         }
+    }
+
+    func didReceiveCrossChainFee(result: XcmTrasferFeeResult, for _: ExtrinsicFeeId) {
+        presenter?.didReceiveCrossChainFee(result: result)
     }
 }
