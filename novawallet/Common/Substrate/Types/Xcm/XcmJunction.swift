@@ -104,4 +104,14 @@ extension Xcm.Junctions {
     func prepending(components: [Xcm.Junction]) -> Xcm.Junctions {
         Xcm.Junctions(items: components + items)
     }
+
+    func lastComponent() -> (Xcm.Junctions, Xcm.Junctions) {
+        guard let lastJunction = items.last else {
+            return (self, Xcm.Junctions(items: []))
+        }
+
+        let remaningItems = Array(items.dropLast())
+
+        return (Xcm.Junctions(items: remaningItems), Xcm.Junctions(items: [lastJunction]))
+    }
 }
