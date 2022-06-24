@@ -36,6 +36,13 @@ extension Xcm {
         init(from _: Decoder) throws {
             fatalError("Decoding unsupported")
         }
+
+        init(versionedMultiasset: Xcm.VersionedMultiasset) {
+            switch versionedMultiasset {
+            case let .V1(multiasset):
+                self = .V1([multiasset])
+            }
+        }
     }
 
     // swiftlint:enable identifier_name

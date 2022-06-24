@@ -487,6 +487,10 @@
 		842B17FB28648FDC0014CC57 /* ChainAssetViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FA28648FDC0014CC57 /* ChainAssetViewModelFactory.swift */; };
 		842B17FD2864980B0014CC57 /* NetworkSelectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FC2864980B0014CC57 /* NetworkSelectionTableViewCell.swift */; };
 		842B17FF28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B17FE28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift */; };
+		842B18022864F9950014CC57 /* CrossChainTransferPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18012864F9950014CC57 /* CrossChainTransferPresenter.swift */; };
+		842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18032864F9A90014CC57 /* CrossChainTransferInteractor.swift */; };
+		842B1806286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */; };
+		842B18082865923B0014CC57 /* XcmExtrinsicFeeProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */; };
 		842BA36D27B64F1000D31EEF /* DAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36A27B64F1000D31EEF /* DAppViewModel.swift */; };
 		842BA36F27B64F1000D31EEF /* DAppListViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */; };
 		842BDB1E278C1CB100AB4B5A /* DAppBrowserStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */; };
@@ -651,6 +655,7 @@
 		84452F9D25D6768000F47EC5 /* RuntimeMetadataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */; };
 		84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */; };
 		8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8445CC2628366578003B26CD /* ParaStkCalls.swift */; };
+		84468A072866530100BCBE00 /* AssetDecodingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */; };
 		8446F5EC2817107D00B7A86C /* TitleAmountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5EB2817107D00B7A86C /* TitleAmountView.swift */; };
 		8446F5EE2817130600B7A86C /* TitleAmountView+Style.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5ED2817130600B7A86C /* TitleAmountView+Style.swift */; };
 		8446F5F02817279600B7A86C /* HintListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8446F5EF2817279600B7A86C /* HintListView.swift */; };
@@ -2800,6 +2805,10 @@
 		842B17FA28648FDC0014CC57 /* ChainAssetViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAssetViewModelFactory.swift; sourceTree = "<group>"; };
 		842B17FC2864980B0014CC57 /* NetworkSelectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSelectionTableViewCell.swift; sourceTree = "<group>"; };
 		842B17FE28649CCD0014CC57 /* CrossChainDestinationSelectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainDestinationSelectionState.swift; sourceTree = "<group>"; };
+		842B18012864F9950014CC57 /* CrossChainTransferPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferPresenter.swift; sourceTree = "<group>"; };
+		842B18032864F9A90014CC57 /* CrossChainTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferInteractor.swift; sourceTree = "<group>"; };
+		842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupProtocols.swift; sourceTree = "<group>"; };
+		842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmExtrinsicFeeProxy.swift; sourceTree = "<group>"; };
 		842BA36A27B64F1000D31EEF /* DAppViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppViewModel.swift; sourceTree = "<group>"; };
 		842BA36C27B64F1000D31EEF /* DAppListViewModelFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppListViewModelFactory.swift; sourceTree = "<group>"; };
 		842BDB1D278C1CB100AB4B5A /* DAppBrowserStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppBrowserStateMachine.swift; sourceTree = "<group>"; };
@@ -2968,6 +2977,7 @@
 		84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataItem.swift; sourceTree = "<group>"; };
 		84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRuntimeMetadataItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		8445CC2628366578003B26CD /* ParaStkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCalls.swift; sourceTree = "<group>"; };
+		84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecodingOperationFactory.swift; sourceTree = "<group>"; };
 		8446F5EB2817107D00B7A86C /* TitleAmountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleAmountView.swift; sourceTree = "<group>"; };
 		8446F5ED2817130600B7A86C /* TitleAmountView+Style.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TitleAmountView+Style.swift"; sourceTree = "<group>"; };
 		8446F5EF2817279600B7A86C /* HintListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintListView.swift; sourceTree = "<group>"; };
@@ -5875,6 +5885,15 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		842B18002864F97A0014CC57 /* CrossChain */ = {
+			isa = PBXGroup;
+			children = (
+				842B18012864F9950014CC57 /* CrossChainTransferPresenter.swift */,
+				842B18032864F9A90014CC57 /* CrossChainTransferInteractor.swift */,
+			);
+			path = CrossChain;
+			sourceTree = "<group>";
+		};
 		842BA36927B64F1000D31EEF /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
@@ -6418,6 +6437,14 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
+		84468A05286652EF00BCBE00 /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */,
+			);
+			path = Operation;
+			sourceTree = "<group>";
+		};
 		8448D5B9277DDA3F00FAEEBC /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -6553,6 +6580,7 @@
 				8461CC8226BC0006007460E4 /* MortalEraOperationFactory.swift */,
 				844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */,
 				84FFE45C28620833002432BB /* XcmTransferResolutionService.swift */,
+				842B18072865923B0014CC57 /* XcmExtrinsicFeeProxy.swift */,
 			);
 			path = ExtrinsicService;
 			sourceTree = "<group>";
@@ -6679,6 +6707,7 @@
 		8466780D27EB28FF007935D3 /* BaseTransfer */ = {
 			isa = PBXGroup;
 			children = (
+				842B18002864F97A0014CC57 /* CrossChain */,
 				848F8B1428634F7700204BC4 /* OnChain */,
 			);
 			path = BaseTransfer;
@@ -7283,6 +7312,7 @@
 			isa = PBXGroup;
 			children = (
 				848F8B26286444C500204BC4 /* TransferSetupPresenterFactory+CrossChain.swift */,
+				842B1805286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift */,
 			);
 			path = CrossChain;
 			sourceTree = "<group>";
@@ -9102,6 +9132,7 @@
 		84E25BE927E87D2B00290BF1 /* Transfer */ = {
 			isa = PBXGroup;
 			children = (
+				84468A05286652EF00BCBE00 /* Operation */,
 				8487583F27F079AB00495306 /* TransferScan */,
 				84E25BEA27E87D3D00290BF1 /* Validation */,
 				8466780D27EB28FF007935D3 /* BaseTransfer */,
@@ -12204,6 +12235,7 @@
 				AEA0C8C12681180900F9666F /* InitBondingCustomValidatorListWireframe.swift in Sources */,
 				849976C127B2823F00B14A6C /* DAppMetamaskBaseState.swift in Sources */,
 				842876A624AE049B00D91AD8 /* SelectableViewModelProtocol.swift in Sources */,
+				842B1806286506EE0014CC57 /* CrossChainTransferSetupProtocols.swift in Sources */,
 				84D1F2FB260F51770077DDFE /* SwitchAccount.swift in Sources */,
 				843CE3AA27D22B5200436F4E /* UniquesDetailsInteractor.swift in Sources */,
 				8428765D24ADDE0200D91AD8 /* SettingsInteractor.swift in Sources */,
@@ -12308,6 +12340,7 @@
 				F4B39C53273270A300BB6E10 /* AcalaContributionSetupPresenter.swift in Sources */,
 				842A737E27DCD1A0006EE1EA /* OperationDetailsExtrinsicView.swift in Sources */,
 				84DF21AD25363D28005454AE /* WalletAssetId+Chain.swift in Sources */,
+				842B18042864F9A90014CC57 /* CrossChainTransferInteractor.swift in Sources */,
 				848EAEB82659859600676CEA /* CrowdloansViewModelFactory.swift in Sources */,
 				84A2C90724E09DC20020D3B7 /* AccountOperationFactoryError+Presentable.swift in Sources */,
 				F406B0E626299E34004FDCCC /* ErrorStateView.swift in Sources */,
@@ -12371,12 +12404,14 @@
 				84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */,
 				84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */,
 				846AF8442525BE0100868F37 /* Price.swift in Sources */,
+				84468A072866530100BCBE00 /* AssetDecodingOperationFactory.swift in Sources */,
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				844384AE28538F4700611CE2 /* UniformCurveRewardEngine.swift in Sources */,
 				846A2C4525271F0100731018 /* DateFormatter.swift in Sources */,
 				F4F65C3326D8B81A002EE838 /* FWChartViewProtocol.swift in Sources */,
 				84DA03D427592FAA00E8B326 /* ChainAccountView.swift in Sources */,
+				842B18082865923B0014CC57 /* XcmExtrinsicFeeProxy.swift in Sources */,
 				843612C72790032400DC739E /* DAppOperationProcessedResult.swift in Sources */,
 				84DED410266659EC00A153BB /* CustomCrowdloanDelegate.swift in Sources */,
 				8418E7202617602000DCF6C8 /* WalletRemoteHistoryProtocols.swift in Sources */,
@@ -12943,6 +12978,7 @@
 				842BDB2C278C4FFE00AB4B5A /* DAppBrowserAuthorizedState.swift in Sources */,
 				848919DB26FB663D004DBAD5 /* CrowdloansChainViewModel.swift in Sources */,
 				842A736D27DB7B5E006EE1EA /* OperationTransferViewModel.swift in Sources */,
+				842B18022864F9950014CC57 /* CrossChainTransferPresenter.swift in Sources */,
 				84F3B27427F4130800D64CF5 /* PhishingSites.swift in Sources */,
 				8430AAF12602306A005B1066 /* BondedState.swift in Sources */,
 				848F8B1D2863616E00204BC4 /* ChainsStore.swift in Sources */,
