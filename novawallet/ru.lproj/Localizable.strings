@@ -815,3 +815,4 @@
 "xcm.destination.selection.title" = "Сеть получателя";
 "common.on.chain" = "В одной сети";
 "common.cross.chain" = "Между сетями";
+"common.cross.chain.fee" = "Межсетевая комиссия";

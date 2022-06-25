@@ -50,6 +50,8 @@ final class TransferSetupPresenter {
             view: view
         )
 
+        view.didSwitchOnChain()
+
         childPresenter?.setup()
     }
 
@@ -70,6 +72,8 @@ final class TransferSetupPresenter {
             initialState: initialState,
             view: view
         )
+
+        view.didSwitchCrossChain()
 
         childPresenter?.setup()
     }
@@ -112,7 +116,7 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     }
 
     func scanRecepientCode() {
-        childPresenter?.scanRecepientCode()
+        wireframe.showRecepientScan(from: view, delegate: self)
     }
 
     func proceed() {
@@ -195,5 +199,13 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
 
     func modalPickerDidCancel(context _: AnyObject?) {
         view?.didCompleteDestinationSelection()
+    }
+}
+
+extension TransferSetupPresenter: TransferScanDelegate {
+    func transferScanDidReceiveRecepient(address: AccountAddress) {
+        wireframe.hideRecepientScan(from: view)
+
+        childPresenter?.changeRecepient(address: address)
     }
 }

@@ -5,7 +5,8 @@ import SoraFoundation
 protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveTransferableBalance(viewModel: String)
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
     func didReceiveAmountInputPrice(viewModel: String?)
     func didReceiveAccountState(viewModel: AccountFieldStateViewModel)
@@ -15,6 +16,8 @@ protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
 protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?)
     func didCompleteDestinationSelection()
+    func didSwitchCrossChain()
+    func didSwitchOnChain()
 }
 
 protocol TransferSetupCommonPresenterProtocol: AnyObject {
@@ -22,16 +25,18 @@ protocol TransferSetupCommonPresenterProtocol: AnyObject {
     func updateRecepient(partialAddress: String)
     func updateAmount(_ newValue: Decimal?)
     func selectAmountPercentage(_ percentage: Float)
-    func scanRecepientCode()
     func proceed()
 }
 
 protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtocol {
     var inputState: TransferSetupInputState { get }
+
+    func changeRecepient(address: String)
 }
 
 protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func changeDestinationChain()
+    func scanRecepientCode()
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
@@ -50,4 +55,8 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
         delegate: ModalPickerViewControllerDelegate,
         context: AnyObject?
     )
+
+    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate)
+
+    func hideRecepientScan(from view: TransferSetupViewProtocol?)
 }

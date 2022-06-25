@@ -815,3 +815,4 @@
 "xcm.destination.selection.title" = "Recipient network";
 "common.on.chain" = "On-chain";
 "common.cross.chain" = "Cross-chain";
+"common.cross.chain.fee" = "Cross-chain fee";

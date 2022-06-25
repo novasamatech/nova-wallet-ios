@@ -28,8 +28,4 @@ protocol OnChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentab
         sendingAmount: Decimal,
         recepient: AccountAddress
     )
-
-    func showRecepientScan(from view: TransferSetupChildViewProtocol?, delegate: TransferScanDelegate)
-
-    func hideRecepientScan(from view: TransferSetupChildViewProtocol?)
 }

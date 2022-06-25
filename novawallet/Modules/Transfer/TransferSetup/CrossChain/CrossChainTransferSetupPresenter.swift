@@ -4,7 +4,7 @@ import SoraFoundation
 import SubstrateSdk
 
 final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
-                                            CrossChainTransferSetupInteractorOutputProtocol {
+    CrossChainTransferSetupInteractorOutputProtocol {
     weak var view: TransferSetupChildViewProtocol?
     let wireframe: CrossChainTransferSetupWireframeProtocol
     let interactor: CrossChainTransferSetupInteractorInputProtocol
@@ -24,7 +24,6 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
-        senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
@@ -42,7 +41,6 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
-            senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
             logger: logger
         )
@@ -108,7 +106,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
-    private func updateFeeView() {
+    private func updateOriginFeeView() {
         let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = originFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
@@ -124,9 +122,28 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
                 priceData: priceData
             ).value(for: selectedLocale)
 
-            view?.didReceiveFee(viewModel: viewModel)
+            view?.didReceiveOriginFee(viewModel: viewModel)
         } else {
-            view?.didReceiveFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: nil)
+        }
+    }
+
+    private func updateCrossChainFeeView() {
+        let assetInfo = originChainAsset.assetDisplayInfo
+        if let fee = crossChainFee?.fee {
+            let feeDecimal = Decimal.fromSubstrateAmount(
+                fee,
+                precision: assetInfo.assetPrecision
+            ) ?? 0.0
+
+            let viewModel = sendingBalanceViewModelFactory.balanceFromPrice(
+                feeDecimal,
+                priceData: sendingAssetPrice
+            ).value(for: selectedLocale)
+
+            view?.didReceiveCrossChainFee(viewModel: viewModel)
+        } else {
+            view?.didReceiveCrossChainFee(viewModel: nil)
         }
     }
 
@@ -166,17 +183,19 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = isUtilityTransfer ? (originFee ?? 0) : 0
+        let originFeeValue = isUtilityTransfer ? (originFee ?? 0) : 0
+        let crossChainFeeValue = crossChainFee?.fee ?? 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
 
         guard
             let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
-            let fee = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
+            let originFee = Decimal.fromSubstrateAmount(originFeeValue, precision: precision),
+            let crossChainFee = Decimal.fromSubstrateAmount(crossChainFeeValue, precision: precision) else {
             return 0
         }
 
-        return balance - fee
+        return balance - originFee - crossChainFee
     }
 
     private func updateRecepientAddress(_ newAddress: String) {
@@ -191,7 +210,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         provideRecepientStateViewModel()
 
-        refreshOriginFee()
+        refreshCrossChainFee()
     }
 
     // MARK: Subsclass
@@ -207,11 +226,33 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         }
 
         updateOriginFee(nil)
-        updateFeeView()
+        updateOriginFeeView()
 
         let weightLimit = crossChainFee?.weight ?? 0
 
         interactor.estimateOriginFee(for: amount, recepient: recepientAddress, weightLimit: weightLimit)
+    }
+
+    override func refreshCrossChainFee() {
+        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
+        let assetInfo = originChainAsset.assetDisplayInfo
+
+        guard let amount = inputAmount.toSubstrateAmount(
+            precision: assetInfo.assetPrecision
+        ) else {
+            return
+        }
+
+        updateCrossChainFee(nil)
+        updateCrossChainFeeView()
+
+        interactor.estimateCrossChainFee(for: amount, recepient: recepientAddress)
+    }
+
+    override func askCrossChainFeeRetry() {
+        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.refreshCrossChainFee()
+        }
     }
 
     override func askOriginFeeRetry() {
@@ -230,9 +271,20 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         super.didReceiveOriginFee(result: result)
 
         if case .success = result {
-            updateFeeView()
+            updateOriginFeeView()
             provideAmountInputViewModelIfRate()
             updateAmountPriceView()
+        }
+    }
+
+    override func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>) {
+        super.didReceiveCrossChainFee(result: result)
+
+        if case .success = result {
+            updateCrossChainFeeView()
+            provideAmountInputViewModelIfRate()
+            updateAmountPriceView()
+            refreshOriginFee()
         }
     }
 
@@ -240,16 +292,17 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         super.didReceiveSendingAssetPrice(priceData)
 
         if isUtilityTransfer {
-            updateFeeView()
+            updateOriginFeeView()
         }
 
+        updateCrossChainFeeView()
         updateAmountPriceView()
     }
 
     override func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
         super.didReceiveUtilityAssetPrice(priceData)
 
-        updateFeeView()
+        updateOriginFeeView()
     }
 
     override func didCompleteSetup() {
@@ -275,7 +328,8 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
 
     func setup() {
         updateChainAssetViewModel()
-        updateFeeView()
+        updateOriginFeeView()
+        updateCrossChainFeeView()
         provideRecepientStateViewModel()
         provideRecepientInputViewModel()
         provideAmountInputViewModel()
@@ -306,8 +360,14 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         updateAmountPriceView()
     }
 
-    func scanRecepientCode() {
-        wireframe.showRecepientScan(from: view, delegate: self)
+    func changeRecepient(address: String) {
+        guard address != recepientAddress else {
+            return
+        }
+
+        recepientAddress = address
+        provideRecepientInputViewModel()
+        updateRecepientAddress(address)
     }
 
     func proceed() {
@@ -361,28 +421,12 @@ extension CrossChainTransferSetupPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             updateChainAssetViewModel()
-            updateFeeView()
+            updateOriginFeeView()
             updateTransferableBalance()
             provideRecepientStateViewModel()
             provideRecepientInputViewModel()
             provideAmountInputViewModel()
             updateAmountPriceView()
         }
-    }
-}
-
-extension CrossChainTransferSetupPresenter: TransferScanDelegate {
-    func transferScanDidReceiveRecepient(address: AccountAddress) {
-        wireframe.hideRecepientScan(from: view)
-
-        guard recepientAddress != address else {
-            return
-        }
-
-        recepientAddress = address
-
-        provideRecepientInputViewModel()
-
-        updateRecepientAddress(address)
     }
 }

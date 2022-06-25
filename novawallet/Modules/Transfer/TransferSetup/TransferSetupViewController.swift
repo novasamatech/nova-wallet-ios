@@ -97,11 +97,17 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
-        rootView.networkFeeView.locale = selectedLocale
+        rootView.originFeeView.locale = selectedLocale
+
+        setupCrossChainLocalization()
 
         setupAmountInputAccessoryView(for: selectedLocale)
 
         updateActionButtonState()
+    }
+
+    private func setupCrossChainLocalization() {
+        rootView.crossChainFeeView?.locale = selectedLocale
     }
 
     private func setupAmountInputAccessoryView(for locale: Locale) {
@@ -173,6 +179,15 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 }
 
 extension TransferSetupViewController: TransferSetupViewProtocol {
+    func didSwitchCrossChain() {
+        rootView.switchCrossChain()
+        setupCrossChainLocalization()
+    }
+
+    func didSwitchOnChain() {
+        rootView.switchOnChain()
+    }
+
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {
         let assetViewModel = originChain.assetViewModel
         rootView.originLabel.text = R.string.localizable.walletTransferTokenFormat(
@@ -207,8 +222,12 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         detailsValueLabel.text = viewModel
     }
 
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeView.bind(viewModel: viewModel)
+    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.originFeeView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.crossChainFeeView?.bind(viewModel: viewModel)
     }
 
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {

@@ -1,7 +1,16 @@
 import UIKit
 import SoraUI
+import SoraFoundation
 
 class NetworkFeeView: TitleAmountView {
+    var title: LocalizableResource<String> = LocalizableResource { locale in
+        R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
+    } {
+        didSet {
+            applyLocalization()
+        }
+    }
+
     var locale = Locale.current {
         didSet {
             if locale != oldValue {
@@ -22,6 +31,6 @@ class NetworkFeeView: TitleAmountView {
     }
 
     private func applyLocalization() {
-        titleLabel.text = R.string.localizable.commonNetworkFee(preferredLanguages: locale.rLanguages)
+        titleLabel.text = title.value(for: locale)
     }
 }
