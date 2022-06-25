@@ -3,53 +3,6 @@ import BigInt
 import RobinHood
 import SubstrateSdk
 
-typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
-typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
-
-typealias XcmSubmitExtrinsicResult = Result<String, Error>
-typealias XcmExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
-
-protocol XcmTransferServiceProtocol {
-    func estimateOriginFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-
-    func estimateDestinationTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-
-    func estimateReserveTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-
-    // Note: weight of the result contains max between reserve and destination weights
-    func estimateCrossChainFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-
-    func submit(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmExtrinsicSubmitClosure
-    )
-}
-
 enum XcmTransferServiceError: Error {
     case reserveFeeNotAvailable
     case noXcmPalletFound
@@ -62,7 +15,7 @@ final class XcmTransferService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
-    private lazy var xcmFactory = XcmTransferFactory()
+    private(set) lazy var xcmFactory = XcmTransferFactory()
 
     init(
         wallet: MetaAccountModel,
@@ -74,7 +27,7 @@ final class XcmTransferService {
         self.operationQueue = operationQueue
     }
 
-    private func createModuleResolutionWrapper(
+    func createModuleResolutionWrapper(
         for transferType: XcmAssetTransfer.TransferType,
         runtimeProvider: RuntimeProviderProtocol
     ) -> CompoundOperationWrapper<String> {
@@ -104,7 +57,7 @@ final class XcmTransferService {
         }
     }
 
-    private func createOperationFactory(for chain: ChainModel) throws -> ExtrinsicOperationFactoryProtocol {
+    func createOperationFactory(for chain: ChainModel) throws -> ExtrinsicOperationFactoryProtocol {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
@@ -127,7 +80,7 @@ final class XcmTransferService {
         )
     }
 
-    private func createStardardFeeEstimationWrapper(
+    func createStardardFeeEstimationWrapper(
         chain: ChainModel,
         message: Xcm.Message,
         maxWeight: BigUInt
@@ -169,7 +122,7 @@ final class XcmTransferService {
         }
     }
 
-    private func createFeeEstimationWrapper(
+    func createFeeEstimationWrapper(
         for chain: ChainModel,
         message: Xcm.Message,
         info: XcmAssetTransferFee,
@@ -188,9 +141,9 @@ final class XcmTransferService {
         }
     }
 
-    private func createDestinationFeeWrapper(
+    func createDestinationFeeWrapper(
         for message: Xcm.Message,
-        request: XcmTransferRequest,
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<FeeWithWeight> {
         guard let feeInfo = xcmTransfers.destinationFee(
@@ -218,9 +171,9 @@ final class XcmTransferService {
         )
     }
 
-    private func createReserveFeeWrapper(
+    func createReserveFeeWrapper(
         for message: Xcm.Message,
-        request: XcmTransferRequest,
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<FeeWithWeight> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
@@ -241,16 +194,15 @@ final class XcmTransferService {
         )
     }
 
-    private func createTransferWrapper(
-        request: XcmTransferRequest,
+    func createTransferWrapper(
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         maxWeight: BigUInt
     ) -> CompoundOperationWrapper<ExtrinsicBuilderClosure> {
-        guard let xcmTransfer = xcmTransfers.transfer(
-            from: request.origin.chainAssetId,
-            destinationChainId: request.destination.chain.chainId
-        ) else {
-            let error = XcmTransferFactoryError.noDestinationAssetFound(request.origin.chainAssetId)
+        let destChainId = request.destination.chain.chainId
+        let originChainAssetId = request.origin.chainAssetId
+        guard let xcmTransfer = xcmTransfers.transfer(from: originChainAssetId, destinationChainId: destChainId) else {
+            let error = XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
             return CompoundOperationWrapper.createWithError(error)
         }
 
@@ -277,15 +229,12 @@ final class XcmTransferService {
 
                 switch xcmTransfer.type {
                 case .xtokens:
-                    let call = Xcm.OrmlTransferCall(
-                        asset: destinationAsset.asset,
-                        destination: destinationAsset.location,
-                        destinationWeight: maxWeight
-                    )
+                    let asset = destinationAsset.asset
+                    let location = destinationAsset.location
 
-                    return { builder in
-                        try builder.adding(call: call.runtimeCall(for: module))
-                    }
+                    let call = Xcm.OrmlTransferCall(asset: asset, destination: location, destinationWeight: maxWeight)
+
+                    return { try $0.adding(call: call.runtimeCall(for: module)) }
                 case .xcmpallet:
                     let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
                     let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
@@ -297,267 +246,17 @@ final class XcmTransferService {
                         weightLimit: .limited(weight: UInt64(maxWeight))
                     )
 
-                    return { builder in
-                        try builder.adding(call: call.runtimeCall(for: module))
-                    }
+                    return { try $0.adding(call: call.runtimeCall(for: module)) }
                 }
             }
 
             mapOperation.addDependency(moduleResolutionWrapper.targetOperation)
 
-            return CompoundOperationWrapper(
-                targetOperation: mapOperation,
-                dependencies: moduleResolutionWrapper.allOperations
-            )
+            let dependencies = moduleResolutionWrapper.allOperations
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
 
         } catch {
             return CompoundOperationWrapper.createWithError(error)
-        }
-    }
-}
-
-extension XcmTransferService: XcmTransferServiceProtocol {
-    func estimateOriginFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
-        do {
-            let callBuilderWrapper = createTransferWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                maxWeight: maxWeight
-            )
-
-            let operationFactory = try createOperationFactory(for: request.origin.chain)
-
-            let feeWrapper = operationFactory.estimateFeeOperation { builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
-                return try callClosure(builder)
-            }
-
-            feeWrapper.addDependency(wrapper: callBuilderWrapper)
-
-            feeWrapper.targetOperation.completionBlock = {
-                switch feeWrapper.targetOperation.result {
-                case let .success(dispatchInfo):
-                    if let feeWithWeight = FeeWithWeight(dispatchInfo: dispatchInfo) {
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .success(feeWithWeight))
-                    } else {
-                        let error = CommonError.dataCorruption
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
-                case let .failure(error):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            let operations = callBuilderWrapper.allOperations + feeWrapper.allOperations
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func estimateDestinationTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
-
-            let wrapper = createDestinationFeeWrapper(
-                for: feeMessages.destination,
-                request: request,
-                xcmTransfers: xcmTransfers
-            )
-
-            wrapper.targetOperation.completionBlock = {
-                switch wrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func estimateReserveTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
-
-            if let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
-
-                wrapper.targetOperation.completionBlock = {
-                    switch wrapper.targetOperation.result {
-                    case let .some(result):
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
-                }
-
-                operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-            } else {
-                callbackClosureIfProvided(
-                    completionClosure,
-                    queue: queue,
-                    result: .failure(XcmTransferServiceError.reserveFeeNotAvailable)
-                )
-            }
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func estimateCrossChainFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
-
-            let destWrapper = createDestinationFeeWrapper(
-                for: feeMessages.destination,
-                request: request,
-                xcmTransfers: xcmTransfers
-            )
-
-            var dependencies = destWrapper.allOperations
-
-            let optReserveWrapper: CompoundOperationWrapper<FeeWithWeight>?
-
-            if let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
-
-                dependencies.append(contentsOf: wrapper.allOperations)
-
-                optReserveWrapper = wrapper
-            } else {
-                optReserveWrapper = nil
-            }
-
-            let mergeOperation = ClosureOperation<FeeWithWeight> {
-                let destFeeWeight = try destWrapper.targetOperation.extractNoCancellableResultData()
-                let optReserveFeeWeight = try optReserveWrapper?.targetOperation.extractNoCancellableResultData()
-
-                if let reserveFeeWeight = optReserveFeeWeight {
-                    let fee = destFeeWeight.fee + reserveFeeWeight.fee
-                    let weight = max(destFeeWeight.weight, reserveFeeWeight.weight)
-                    return FeeWithWeight(fee: fee, weight: weight)
-                } else {
-                    return destFeeWeight
-                }
-            }
-
-            dependencies.forEach { mergeOperation.addDependency($0) }
-
-            mergeOperation.completionBlock = {
-                switch mergeOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mergeOperation], waitUntilFinished: false)
-
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-        }
-    }
-
-    func submit(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
-        signer: SigningWrapperProtocol,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmExtrinsicSubmitClosure
-    ) {
-        do {
-            let callBuilderWrapper = createTransferWrapper(
-                request: request,
-                xcmTransfers: xcmTransfers,
-                maxWeight: maxWeight
-            )
-
-            let operationFactory = try createOperationFactory(for: request.origin.chain)
-
-            let submitWrapper = operationFactory.submit({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
-                return try callClosure(builder)
-            }, signer: signer)
-
-            submitWrapper.addDependency(wrapper: callBuilderWrapper)
-
-            submitWrapper.targetOperation.completionBlock = {
-                switch submitWrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            let operations = callBuilderWrapper.allOperations + submitWrapper.allOperations
-
-            operationQueue.addOperations(operations, waitUntilFinished: false)
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
         }
     }
 }

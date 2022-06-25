@@ -80,57 +80,6 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchStatemineMinBalance(
-        for extras: StatemineAssetExtras,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
-    ) {
-        do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .assetsDetails,
-                encodableElement: extras.assetId,
-                chainId: chain.chainId
-            )
-
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let localRequestFactory = LocalStorageRequestFactory()
-
-            let fetchWrapper: CompoundOperationWrapper<LocalStorageResponse<AssetDetails>> =
-                localRequestFactory.queryItems(
-                    repository: chainStorage,
-                    key: { localKey },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
-                )
-
-            fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<BigUInt> {
-                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-                return details.value?.minBalance ?? 0
-            }
-
-            let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
-
-            dependencies.forEach { mappingOperation.addDependency($0) }
-
-            mappingOperation.completionBlock = {
-                DispatchQueue.main.async {
-                    do {
-                        let minBalance = try mappingOperation.extractNoCancellableResultData()
-                        completionClosure(.success(minBalance))
-                    } catch {
-                        completionClosure(.failure(error))
-                    }
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mappingOperation], waitUntilFinished: false)
-        } catch {
-            completionClosure(.failure(error))
-        }
-    }
-
     private func fetchMinBalance(
         for assetStorageInfo: AssetStorageInfo,
         completionClosure: @escaping (Result<BigUInt, Error>) -> Void
@@ -144,7 +93,25 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
                 closure: completionClosure
             )
         case let .statemine(extras):
-            fetchStatemineMinBalance(for: extras, completionClosure: completionClosure)
+            let wrapper = assetStorageInfoFactory.createAssetsMinBalanceOperation(
+                for: extras,
+                chainId: chain.chainId,
+                storage: chainStorage,
+                runtimeService: runtimeService
+            )
+
+            wrapper.targetOperation.completionBlock = {
+                DispatchQueue.main.async {
+                    do {
+                        let minBalance = try wrapper.targetOperation.extractNoCancellableResultData()
+                        completionClosure(.success(minBalance))
+                    } catch {
+                        completionClosure(.failure(error))
+                    }
+                }
+            }
+
+            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
         case let .orml(_, _, _, existentialDeposit):
             completionClosure(.success(existentialDeposit))
         }

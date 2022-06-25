@@ -17,9 +17,10 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>)
     func didReceiveSendingAssetPrice(_ price: PriceData?)
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
-    func didReceiveUtilityAssetMinBalance(_ value: BigUInt)
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt)
-    func didReceiveDestinationAssetMinBalance(_ value: BigUInt)
+    func didReceiveOriginUtilityMinBalance(_ value: BigUInt)
+    func didReceiveOriginSendingMinBalance(_ value: BigUInt)
+    func didReceiveDestSendingMinBalance(_ value: BigUInt)
+    func didReceiveDestUtilityMinBalance(_ value: BigUInt)
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
 }
