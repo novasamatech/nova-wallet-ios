@@ -13,13 +13,12 @@ protocol XcmExtrinsicFeeProxyProtocol: AnyObject {
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
         reuseIdentifier: ExtrinsicFeeId
     )
 
     func estimateCrossChainFee(
         using service: XcmTransferServiceProtocol,
-        xcmTransferRequest: XcmTransferRequest,
+        xcmTransferRequest: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         reuseIdentifier: ExtrinsicFeeId
     )
@@ -60,7 +59,6 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         using service: XcmTransferServiceProtocol,
         xcmTransferRequest: XcmTransferRequest,
         xcmTransfers: XcmTransfers,
-        maxWeight: BigUInt,
         reuseIdentifier: ExtrinsicFeeId
     ) {
         if let state = feeStore[reuseIdentifier] {
@@ -76,7 +74,6 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
         service.estimateOriginFee(
             request: xcmTransferRequest,
             xcmTransfers: xcmTransfers,
-            maxWeight: maxWeight,
             runningIn: .main
         ) { [weak self] result in
             self?.handle(result: result, for: reuseIdentifier, origin: true)
@@ -85,7 +82,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
 
     func estimateCrossChainFee(
         using service: XcmTransferServiceProtocol,
-        xcmTransferRequest: XcmTransferRequest,
+        xcmTransferRequest: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         reuseIdentifier: ExtrinsicFeeId
     ) {
