@@ -6,8 +6,6 @@ class CrossChainTransferPresenter {
     let originChainAsset: ChainAsset
     let destinationChainAsset: ChainAsset
 
-    let senderAccountAddress: AccountAddress
-
     private(set) var senderSendingAssetBalance: AssetBalance?
     private(set) var senderUtilityAssetBalance: AssetBalance?
 
@@ -49,7 +47,6 @@ class CrossChainTransferPresenter {
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
-        senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
@@ -58,7 +55,6 @@ class CrossChainTransferPresenter {
         self.networkViewModelFactory = networkViewModelFactory
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
-        self.senderAccountAddress = senderAccountAddress
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
     }
@@ -87,6 +83,19 @@ class CrossChainTransferPresenter {
         originFee = newValue
     }
 
+    private func totalFee() -> BigUInt? {
+        let optDestSendingFee = crossChainFee?.fee
+        let optOriginSendingFee: BigUInt? = (isUtilityTransfer ? originFee : 0)
+
+        let totalFee: BigUInt?
+
+        if let originSendingFee = optOriginSendingFee, let destSendingFee = optDestSendingFee {
+            return originSendingFee + destSendingFee
+        } else {
+            return nil
+        }
+    }
+
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
@@ -97,12 +106,6 @@ class CrossChainTransferPresenter {
                 recepient: recepientAddress,
                 chainFormat: destinationChainAsset.chain.chainFormat,
                 chainName: destinationChainAsset.chain.name,
-                locale: selectedLocale
-            ),
-
-            dataValidatingFactory.receiverDiffers(
-                recepient: recepientAddress,
-                sender: senderAccountAddress,
                 locale: selectedLocale
             ),
 
@@ -118,7 +121,7 @@ class CrossChainTransferPresenter {
 
             dataValidatingFactory.canSend(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? originFee : 0,
+                fee: totalFee(),
                 transferable: senderSendingAssetBalance?.transferable,
                 locale: selectedLocale
             ),
@@ -133,7 +136,7 @@ class CrossChainTransferPresenter {
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: destinationAssetMinBalance,
                 locale: selectedLocale
             )
         ]

@@ -35,7 +35,11 @@ final class XcmExtrinsicFeeProxy {
 
     weak var delegate: XcmExtrinsicFeeProxyDelegate?
 
-    private func handle(result: Result<FeeWithWeight, Error>, for identifier: ExtrinsicFeeId) {
+    private func handle(
+        result: Result<FeeWithWeight, Error>,
+        for identifier: ExtrinsicFeeId,
+        origin: Bool
+    ) {
         switch result {
         case .success:
             feeStore[identifier] = .loaded(result: result)
@@ -43,7 +47,11 @@ final class XcmExtrinsicFeeProxy {
             feeStore[identifier] = nil
         }
 
-        delegate?.didReceiveCrossChainFee(result: result, for: identifier)
+        if origin {
+            delegate?.didReceiveOriginFee(result: result, for: identifier)
+        } else {
+            delegate?.didReceiveCrossChainFee(result: result, for: identifier)
+        }
     }
 }
 
@@ -71,7 +79,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
             maxWeight: maxWeight,
             runningIn: .main
         ) { [weak self] result in
-            self?.handle(result: result, for: reuseIdentifier)
+            self?.handle(result: result, for: reuseIdentifier, origin: true)
         }
     }
 
@@ -96,7 +104,7 @@ extension XcmExtrinsicFeeProxy: XcmExtrinsicFeeProxyProtocol {
             xcmTransfers: xcmTransfers,
             runningIn: .main
         ) { [weak self] result in
-            self?.handle(result: result, for: reuseIdentifier)
+            self?.handle(result: result, for: reuseIdentifier, origin: false)
         }
     }
 }

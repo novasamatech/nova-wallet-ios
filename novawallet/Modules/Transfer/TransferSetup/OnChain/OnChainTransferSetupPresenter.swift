@@ -121,9 +121,9 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
                 priceData: priceData
             ).value(for: selectedLocale)
 
-            view?.didReceiveFee(viewModel: viewModel)
+            view?.didReceiveOriginFee(viewModel: viewModel)
         } else {
-            view?.didReceiveFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: nil)
         }
     }
 
@@ -282,6 +282,16 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         updateRecepientAddress(partialAddress)
     }
 
+    func changeRecepient(address: String) {
+        guard address != recepientAddress else {
+            return
+        }
+
+        recepientAddress = address
+        provideRecepientInputViewModel()
+        updateRecepientAddress(address)
+    }
+
     func updateAmount(_ newValue: Decimal?) {
         inputResult = newValue.map { .absolute($0) }
 
@@ -296,10 +306,6 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
         refreshFee()
         updateAmountPriceView()
-    }
-
-    func scanRecepientCode() {
-        wireframe.showRecepientScan(from: view, delegate: self)
     }
 
     func proceed() {
@@ -358,21 +364,5 @@ extension OnChainTransferSetupPresenter: Localizable {
             provideAmountInputViewModel()
             updateAmountPriceView()
         }
-    }
-}
-
-extension OnChainTransferSetupPresenter: TransferScanDelegate {
-    func transferScanDidReceiveRecepient(address: AccountAddress) {
-        wireframe.hideRecepientScan(from: view)
-
-        guard recepientAddress != address else {
-            return
-        }
-
-        recepientAddress = address
-
-        provideRecepientInputViewModel()
-
-        updateRecepientAddress(address)
     }
 }

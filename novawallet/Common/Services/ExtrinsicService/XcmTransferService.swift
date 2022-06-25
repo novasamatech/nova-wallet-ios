@@ -175,16 +175,16 @@ final class XcmTransferService {
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
     ) -> CompoundOperationWrapper<FeeWithWeight> {
-        let maxWeigth = baseWeight * BigUInt(message.instructionsCount)
+        let maxWeight = baseWeight * BigUInt(message.instructionsCount)
 
         switch info.mode.type {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
-            let fee = coefficient * maxWeigth / Self.weightPerSecond
-            let model = FeeWithWeight(fee: fee, weight: maxWeigth)
+            let fee = coefficient * maxWeight / Self.weightPerSecond
+            let model = FeeWithWeight(fee: fee, weight: maxWeight)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
-            return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeigth)
+            return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
         }
     }
 

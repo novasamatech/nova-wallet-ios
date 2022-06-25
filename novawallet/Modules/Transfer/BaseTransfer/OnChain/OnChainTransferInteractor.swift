@@ -421,6 +421,8 @@ extension OnChainTransferInteractor {
                     let (sending, utility) = try wrapper.targetOperation.extractNoCancellableResultData()
                     self?.sendingAssetInfo = sending
                     self?.utilityAssetInfo = utility
+
+                    self?.continueSetup()
                 } catch {
                     self?.presenter?.didReceiveError(error)
                 }
