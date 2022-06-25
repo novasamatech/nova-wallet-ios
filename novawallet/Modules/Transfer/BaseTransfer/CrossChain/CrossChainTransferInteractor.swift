@@ -99,59 +99,6 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchStatemineMinBalance(
-        for extras: StatemineAssetExtras,
-        chainId: ChainModel.Id,
-        runtimeService: RuntimeProviderProtocol,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
-    ) {
-        do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .assetsDetails,
-                encodableElement: extras.assetId,
-                chainId: chainId
-            )
-
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let localRequestFactory = LocalStorageRequestFactory()
-
-            let fetchWrapper: CompoundOperationWrapper<LocalStorageResponse<AssetDetails>> =
-                localRequestFactory.queryItems(
-                    repository: chainStorage,
-                    key: { localKey },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
-                )
-
-            fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<BigUInt> {
-                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-                return details.value?.minBalance ?? 0
-            }
-
-            let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
-
-            dependencies.forEach { mappingOperation.addDependency($0) }
-
-            mappingOperation.completionBlock = {
-                DispatchQueue.main.async {
-                    do {
-                        let minBalance = try mappingOperation.extractNoCancellableResultData()
-                        completionClosure(.success(minBalance))
-                    } catch {
-                        completionClosure(.failure(error))
-                    }
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mappingOperation], waitUntilFinished: false)
-        } catch {
-            completionClosure(.failure(error))
-        }
-    }
-
     private func fetchMinBalance(
         for assetStorageInfo: AssetStorageInfo,
         chainId: ChainModel.Id,
@@ -171,12 +118,25 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
                 closure: completionClosure
             )
         case let .statemine(extras):
-            fetchStatemineMinBalance(
+            let wrapper = assetStorageInfoFactory.createAssetsMinBalanceOperation(
                 for: extras,
                 chainId: chainId,
-                runtimeService: runtimeService,
-                completionClosure: completionClosure
+                storage: chainStorage,
+                runtimeService: runtimeService
             )
+
+            wrapper.targetOperation.completionBlock = {
+                DispatchQueue.main.async {
+                    do {
+                        let minBalance = try wrapper.targetOperation.extractNoCancellableResultData()
+                        completionClosure(.success(minBalance))
+                    } catch {
+                        completionClosure(.failure(error))
+                    }
+                }
+            }
+
+            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
         case let .orml(_, _, _, existentialDeposit):
             completionClosure(.success(existentialDeposit))
         }
@@ -203,11 +163,8 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         let originUtilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
 
-        if !isSendingUtility, let utilityAsset = originChainAsset.chain.utilityAssets().first {
-            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
-                from: utilityAsset,
-                runtimeProvider: originProvider
-            )
+        if !isSendingUtility, let asset = originChainAsset.chain.utilityAssets().first {
+            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(from: asset, runtimeProvider: originProvider)
 
             originUtilityAssetWrapper = wrapper
 
@@ -346,35 +303,48 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     private func provideMinBalance() {
         let originChainId = originChainAsset.chain.chainId
 
-        if let sendingAssetInfo = assetsInfo?.originSending {
-            fetchMinBalance(for: sendingAssetInfo, chainId: originChainId) { [weak self] result in
+        if let originSendingAssetInfo = assetsInfo?.originSending {
+            fetchMinBalance(for: originSendingAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
                 case let .success(minBalance):
-                    self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
+                    self?.presenter?.didReceiveOriginSendingMinBalance(minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
             }
         }
 
-        if let utilityAssetInfo = assetsInfo?.originUtility {
-            fetchMinBalance(for: utilityAssetInfo, chainId: originChainId) { [weak self] result in
+        if let originUtilityAssetInfo = assetsInfo?.originUtility {
+            fetchMinBalance(for: originUtilityAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
                 case let .success(minBalance):
-                    self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
+                    self?.presenter?.didReceiveOriginUtilityMinBalance(minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
             }
         }
 
-        if let receivingAssetInfo = assetsInfo?.destinationSending {
+        if let destSendingAssetInfo = assetsInfo?.destinationSending {
             let destinationChainId = destinationChainAsset.chain.chainId
 
-            fetchMinBalance(for: receivingAssetInfo, chainId: destinationChainId) { [weak self] result in
+            fetchMinBalance(for: destSendingAssetInfo, chainId: destinationChainId) { [weak self] result in
                 switch result {
                 case let .success(minBalance):
-                    self?.presenter?.didReceiveDestinationAssetMinBalance(minBalance)
+                    self?.presenter?.didReceiveDestSendingMinBalance(minBalance)
+                case let .failure(error):
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        if let destUtilityAssetInfo = assetsInfo?.destinationUtility {
+            let destinationChainId = destinationChainAsset.chain.chainId
+
+            fetchMinBalance(for: destUtilityAssetInfo, chainId: destinationChainId) { [weak self] result in
+                switch result {
+                case let .success(minBalance):
+                    self?.presenter?.didReceiveDestUtilityMinBalance(minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -535,18 +505,19 @@ extension CrossChainTransferInteractor {
                 "-" + String(maxWeight)
 
             let destination = transferParties.destination.replacing(accountId: recepientAccountId)
-            let request = XcmTransferRequest(
+            let unweightedRequest = XcmUnweightedTransferRequest(
                 origin: originChainAsset,
                 destination: destination,
                 reserve: transferParties.reserve,
                 amount: amount
             )
 
+            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit ?? 0)
+
             feeProxy.estimateOriginFee(
                 using: extrinsicService,
-                xcmTransferRequest: request,
+                xcmTransferRequest: transferRequest,
                 xcmTransfers: xcmTransfers,
-                maxWeight: weightLimit ?? 0,
                 reuseIdentifier: identifier
             )
         } catch {
@@ -571,7 +542,7 @@ extension CrossChainTransferInteractor {
             let identifier = "crosschain" + "-" + String(amount) + "-" + recepientAccountId.toHex()
 
             let destination = transferParties.destination.replacing(accountId: recepientAccountId)
-            let request = XcmTransferRequest(
+            let request = XcmUnweightedTransferRequest(
                 origin: originChainAsset,
                 destination: destination,
                 reserve: transferParties.reserve,

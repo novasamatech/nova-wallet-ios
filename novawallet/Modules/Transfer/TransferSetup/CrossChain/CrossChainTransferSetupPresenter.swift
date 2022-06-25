@@ -115,7 +115,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
             ) ?? 0.0
 
             let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
+            let priceData = isOriginUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
 
             let viewModel = viewModelFactory.balanceFromPrice(
                 feeDecimal,
@@ -183,7 +183,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func balanceMinusFee() -> Decimal {
         let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let originFeeValue = isUtilityTransfer ? (originFee ?? 0) : 0
+        let originFeeValue = isOriginUtilityTransfer ? (originFee ?? 0) : 0
         let crossChainFeeValue = crossChainFee?.fee ?? 0
 
         let precision = originChainAsset.assetDisplayInfo.assetPrecision
@@ -291,7 +291,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         super.didReceiveSendingAssetPrice(priceData)
 
-        if isUtilityTransfer {
+        if isOriginUtilityTransfer {
             updateOriginFeeView()
         }
 
@@ -381,9 +381,9 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         validators.append(
             dataValidatingFactory.willBeReaped(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? originFee : 0,
+                fee: isOriginUtilityTransfer ? originFee : 0,
                 totalAmount: senderSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: originSendingMinBalance,
                 locale: selectedLocale
             )
         )

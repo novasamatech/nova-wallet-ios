@@ -15,12 +15,13 @@ class CrossChainTransferPresenter {
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
 
-    private(set) var sendingAssetMinBalance: BigUInt?
-    private(set) var utilityAssetMinBalance: BigUInt?
-    private(set) var destinationAssetMinBalance: BigUInt?
+    private(set) var originSendingMinBalance: BigUInt?
+    private(set) var originUtilityMinBalance: BigUInt?
+    private(set) var destSendingMinBalance: BigUInt?
+    private(set) var destUtilityMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
+        isOriginUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
             senderUtilityAssetBalance?.totalInPlank
     }
 
@@ -37,8 +38,12 @@ class CrossChainTransferPresenter {
 
     let logger: LoggerProtocol?
 
-    var isUtilityTransfer: Bool {
+    var isOriginUtilityTransfer: Bool {
         originChainAsset.chain.utilityAssets().first?.assetId == originChainAsset.asset.assetId
+    }
+
+    var isDestUtilityTransfer: Bool {
+        destinationChainAsset.chain.utilityAssets().first?.assetId == destinationChainAsset.asset.assetId
     }
 
     init(
@@ -85,9 +90,7 @@ class CrossChainTransferPresenter {
 
     private func totalFee() -> BigUInt? {
         let optDestSendingFee = crossChainFee?.fee
-        let optOriginSendingFee: BigUInt? = (isUtilityTransfer ? originFee : 0)
-
-        let totalFee: BigUInt?
+        let optOriginSendingFee: BigUInt? = (isOriginUtilityTransfer ? originFee : 0)
 
         if let originSendingFee = optOriginSendingFee, let destSendingFee = optDestSendingFee {
             return originSendingFee + destSendingFee
@@ -129,23 +132,23 @@ class CrossChainTransferPresenter {
             dataValidatingFactory.canPay(
                 fee: originFee,
                 total: senderUtilityAssetTotal,
-                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: destinationAssetMinBalance,
+                minBalance: destSendingMinBalance,
                 locale: selectedLocale
             )
         ]
 
-        if !isUtilityTransfer {
+        if !isDestUtilityTransfer {
             validators.append(
                 dataValidatingFactory.receiverHasUtilityAccount(
                     totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: utilityAssetMinBalance,
+                    minBalance: destUtilityMinBalance,
                     locale: selectedLocale
                 )
             )
@@ -196,16 +199,20 @@ class CrossChainTransferPresenter {
         utilityAssetPrice = priceData
     }
 
-    func didReceiveUtilityAssetMinBalance(_ value: BigUInt) {
-        utilityAssetMinBalance = value
+    func didReceiveOriginSendingMinBalance(_ value: BigUInt) {
+        originSendingMinBalance = value
     }
 
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
-        sendingAssetMinBalance = value
+    func didReceiveOriginUtilityMinBalance(_ value: BigUInt) {
+        originUtilityMinBalance = value
     }
 
-    func didReceiveDestinationAssetMinBalance(_ value: BigUInt) {
-        destinationAssetMinBalance = value
+    func didReceiveDestSendingMinBalance(_ value: BigUInt) {
+        destSendingMinBalance = value
+    }
+
+    func didReceiveDestUtilityMinBalance(_ value: BigUInt) {
+        destUtilityMinBalance = value
     }
 
     func didCompleteSetup() {}
