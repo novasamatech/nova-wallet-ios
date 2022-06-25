@@ -22,20 +22,4 @@ final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol
         command?.presentationStyle = .push(hidesBottomBar: true)
         try? command?.execute()
     }
-
-    func showRecepientScan(from view: TransferSetupChildViewProtocol?, delegate: TransferScanDelegate) {
-        guard let scanView = TransferScanViewFactory.createView(for: delegate) else {
-            return
-        }
-
-        let navigationController = FearlessNavigationController(
-            rootViewController: scanView.controller
-        )
-
-        view?.controller.present(navigationController, animated: true, completion: nil)
-    }
-
-    func hideRecepientScan(from view: TransferSetupChildViewProtocol?) {
-        view?.controller.dismiss(animated: true)
-    }
 }

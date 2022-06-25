@@ -73,8 +73,6 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         resolutionFactory: XcmTransferResolutionFactoryProtocol,
         walletRemoteWrapper: WalletRemoteSubscriptionWrapperProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        destinationWalletRemoteWrapper _: WalletRemoteSubscriptionWrapperProtocol,
-        destinationWalletLocalSubscriptionFactory _: WalletLocalSubscriptionFactoryProtocol,
         priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
         substrateStorageFacade: StorageFacadeProtocol,
         operationQueue: OperationQueue

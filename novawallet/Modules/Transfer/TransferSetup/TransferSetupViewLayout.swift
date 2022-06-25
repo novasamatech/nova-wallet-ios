@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class TransferSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -53,7 +54,8 @@ final class TransferSetupViewLayout: UIView {
         return view
     }()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let originFeeView = UIFactory.default.createNetwork26FeeView()
+    private(set) var crossChainFeeView: NetworkFeeView?
 
     let amountView = TitleHorizontalMultiValueView()
 
@@ -72,6 +74,30 @@ final class TransferSetupViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func switchCrossChain() {
+        guard crossChainFeeView == nil else {
+            return
+        }
+
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.title = LocalizableResource { locale in
+            R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
+        }
+
+        containerView.stackView.addArrangedSubview(view)
+        view.snp.makeConstraints { make in
+            make.height.equalTo(64.0)
+        }
+
+        crossChainFeeView = view
+    }
+
+    func switchOnChain() {
+        crossChainFeeView?.removeFromSuperview()
+        crossChainFeeView = nil
+    }
+
+    // swiftlint:disable:next function_body_length
     private func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -135,8 +161,8 @@ final class TransferSetupViewLayout: UIView {
             make.height.equalTo(64)
         }
 
-        containerView.stackView.addArrangedSubview(networkFeeView)
-        networkFeeView.snp.makeConstraints { make in
+        containerView.stackView.addArrangedSubview(originFeeView)
+        originFeeView.snp.makeConstraints { make in
             make.height.equalTo(64.0)
         }
     }
