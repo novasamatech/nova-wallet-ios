@@ -26,6 +26,11 @@ final class WalletChainView: UIView {
 
     let iconSize = CGSize(width: 24.0, height: 24.0)
 
+    convenience init() {
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 48.0, height: 24.0))
+        self.init(frame: defaultFrame)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
