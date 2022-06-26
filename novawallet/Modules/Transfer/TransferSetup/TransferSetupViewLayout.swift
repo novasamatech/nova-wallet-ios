@@ -16,31 +16,7 @@ final class TransferSetupViewLayout: UIView {
         return button
     }()
 
-    let originLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .boldTitle2
-        label.minimumScaleFactor = 0.5
-        return label
-    }()
-
-    let destinationLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .boldTitle2
-        label.minimumScaleFactor = 0.5
-        return label
-    }()
-
-    let originNetworkView = WalletChainView()
-
-    let destinationNetworkView = WalletChainControlView()
-
-    let networkContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
+    let networkContainerView = TransferNetworkContainerView()
 
     let recepientTitleLabel: UILabel = {
         let label = UILabel()
@@ -97,7 +73,6 @@ final class TransferSetupViewLayout: UIView {
         crossChainFeeView = nil
     }
 
-    // swiftlint:disable:next function_body_length
     private func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -115,33 +90,6 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(networkContainerView)
         networkContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
-        }
-
-        networkContainerView.addSubview(originLabel)
-        originLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.equalToSuperview().offset(8.0)
-        }
-
-        networkContainerView.addSubview(originNetworkView)
-        originNetworkView.snp.makeConstraints { make in
-            make.leading.equalTo(originLabel.snp.trailing).offset(10.0)
-            make.centerY.equalTo(originLabel)
-            make.trailing.lessThanOrEqualToSuperview()
-        }
-
-        networkContainerView.addSubview(destinationLabel)
-        destinationLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.equalTo(originLabel.snp.bottom).offset(4.0)
-            make.bottom.equalToSuperview().offset(8.0)
-        }
-
-        networkContainerView.addSubview(destinationNetworkView)
-        destinationNetworkView.snp.makeConstraints { make in
-            make.leading.equalTo(destinationLabel.snp.trailing).offset(10.0)
-            make.centerY.equalTo(destinationLabel)
-            make.trailing.lessThanOrEqualToSuperview()
         }
 
         containerView.stackView.setCustomSpacing(16.0, after: networkContainerView)
