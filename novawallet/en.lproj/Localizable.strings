@@ -816,3 +816,8 @@
 "common.on.chain" = "On-chain";
 "common.cross.chain" = "Cross-chain";
 "common.cross.chain.fee" = "Cross-chain fee";
+"wallet.transfer.cross.chain.from" = "Send %@ from";
+"wallet.transfer.cross.chain.to" = "to";
+"wallet.transfer.cross.chain.from" = "from";
+"wallet.transfer.token.format_v2_9_1" = "Send %@";
+"wallet.transfer.on" = "on";
