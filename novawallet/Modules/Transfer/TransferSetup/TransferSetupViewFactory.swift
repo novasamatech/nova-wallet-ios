@@ -8,12 +8,14 @@ struct TransferSetupViewFactory {
         recepient: DisplayAddress?,
         commandFactory: WalletCommandFactoryProtocol?
     ) -> TransferSetupViewProtocol? {
-        let walletSettings = SelectedWalletSettings.shared
+        guard let wallet = SelectedWalletSettings.shared.value else {
+            return nil
+        }
 
         let interactor = createInteractor(for: chainAsset)
         let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
 
-        let presenterFactory = createPresenterFactory(for: walletSettings.value, commandFactory: commandFactory)
+        let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
 
         let localizationManager = LocalizationManager.shared
 
@@ -25,6 +27,7 @@ struct TransferSetupViewFactory {
         let presenter = TransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
+            wallet: wallet,
             originChainAsset: chainAsset,
             childPresenterFactory: presenterFactory,
             chainAssetViewModelFactory: chainAssetViewModelFactory,

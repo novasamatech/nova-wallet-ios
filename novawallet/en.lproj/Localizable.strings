@@ -821,3 +821,4 @@
 "wallet.transfer.cross.chain.from" = "from";
 "wallet.transfer.token.format_v2_9_1" = "Send %@";
 "wallet.transfer.on" = "on";
+"common.myself" = "Myself";
