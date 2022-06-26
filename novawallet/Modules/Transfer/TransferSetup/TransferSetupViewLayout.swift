@@ -30,7 +30,12 @@ final class TransferSetupViewLayout: UIView {
         return view
     }()
 
-    let originFeeView = UIFactory.default.createNetwork26FeeView()
+    let originFeeView: NetworkFeeView = {
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
+        return view
+    }()
+
     private(set) var crossChainFeeView: NetworkFeeView?
 
     let amountView = TitleHorizontalMultiValueView()
@@ -56,14 +61,12 @@ final class TransferSetupViewLayout: UIView {
         }
 
         let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
         view.title = LocalizableResource { locale in
             R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
         }
 
         containerView.stackView.addArrangedSubview(view)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(64.0)
-        }
 
         crossChainFeeView = view
     }
@@ -109,9 +112,8 @@ final class TransferSetupViewLayout: UIView {
             make.height.equalTo(64)
         }
 
+        containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+
         containerView.stackView.addArrangedSubview(originFeeView)
-        originFeeView.snp.makeConstraints { make in
-            make.height.equalTo(64.0)
-        }
     }
 }
