@@ -816,3 +816,8 @@
 "common.on.chain" = "В одной сети";
 "common.cross.chain" = "Между сетями";
 "common.cross.chain.fee" = "Межсетевая комиссия";
+"wallet.transfer.cross.chain.from" = "Отправить %@ из";
+"wallet.transfer.cross.chain.to" = "в";
+"wallet.transfer.cross.chain.from" = "из";
+"wallet.transfer.token.format_v2_9_1" = "Отправить %@";
+"wallet.transfer.on" = "в";

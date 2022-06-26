@@ -75,12 +75,6 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
             action: #selector(actionRecepientScan),
             for: .touchUpInside
         )
-
-        rootView.destinationNetworkView.actionControl.addTarget(
-            self,
-            action: #selector(actionChangeDestination),
-            for: .touchUpInside
-        )
     }
 
     private func setupLocalization() {
@@ -98,6 +92,8 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
 
         rootView.recepientInputView.locale = selectedLocale
         rootView.originFeeView.locale = selectedLocale
+
+        rootView.networkContainerView.locale = selectedLocale
 
         setupCrossChainLocalization()
 
@@ -190,21 +186,23 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
 
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {
         let assetViewModel = originChain.assetViewModel
-        rootView.originLabel.text = R.string.localizable.walletTransferTokenFormat(
-            assetViewModel.symbol,
-            preferredLanguages: selectedLocale.rLanguages
+        let viewModel = TransferNetworkContainerViewModel(
+            assetSymbol: assetViewModel.symbol,
+            originNetwork: originChain.networkViewModel,
+            destNetwork: destinationChain
         )
 
-        rootView.originNetworkView.bind(viewModel: originChain.networkViewModel)
+        rootView.networkContainerView.bind(viewModel: viewModel)
 
-        rootView.destinationLabel.text = "to"
-
-        let destChainViewModel = destinationChain ?? originChain.networkViewModel
-        rootView.destinationNetworkView.bind(viewModel: destChainViewModel)
+        rootView.networkContainerView.destinationNetworkView?.actionControl.addTarget(
+            self,
+            action: #selector(actionChangeDestination),
+            for: .touchUpInside
+        )
     }
 
     func didCompleteDestinationSelection() {
-        rootView.destinationNetworkView.actionControl.deactivate(animated: true)
+        rootView.networkContainerView.destinationNetworkView?.actionControl.deactivate(animated: true)
     }
 
     func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
