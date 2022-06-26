@@ -9,6 +9,7 @@ final class TransferSetupPresenter {
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
+    let wallet: MetaAccountModel
     let originChainAsset: ChainAsset
     let childPresenterFactory: TransferSetupPresenterFactoryProtocol
     let logger: LoggerProtocol
@@ -22,6 +23,7 @@ final class TransferSetupPresenter {
     init(
         interactor: TransferSetupInteractorIntputProtocol,
         wireframe: TransferSetupWireframeProtocol,
+        wallet: MetaAccountModel,
         originChainAsset: ChainAsset,
         childPresenterFactory: TransferSetupPresenterFactoryProtocol,
         chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
@@ -30,6 +32,7 @@ final class TransferSetupPresenter {
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.wallet = wallet
         self.originChainAsset = originChainAsset
         self.childPresenterFactory = childPresenterFactory
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
@@ -117,6 +120,16 @@ extension TransferSetupPresenter: TransferSetupPresenterProtocol {
 
     func scanRecepientCode() {
         wireframe.showRecepientScan(from: view, delegate: self)
+    }
+
+    func applyMyselfRecepient() {
+        guard
+            let destinationChain = destinationChainAsset?.chain,
+            let address = wallet.fetch(for: destinationChain.accountRequest())?.toAddress() else {
+            return
+        }
+
+        childPresenter?.changeRecepient(address: address)
     }
 
     func proceed() {

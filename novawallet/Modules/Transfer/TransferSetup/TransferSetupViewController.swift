@@ -172,16 +172,29 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     @objc func actionChangeDestination() {
         presenter.changeDestinationChain()
     }
+
+    @objc func actionSendMyself() {
+        presenter.applyMyselfRecepient()
+    }
 }
 
 extension TransferSetupViewController: TransferSetupViewProtocol {
     func didSwitchCrossChain() {
         rootView.switchCrossChain()
         setupCrossChainLocalization()
+
+        rootView.recepientInputView.showsMyself = true
+
+        rootView.recepientInputView.mySelfButton?.addTarget(
+            self,
+            action: #selector(actionSendMyself),
+            for: .touchUpInside
+        )
     }
 
     func didSwitchOnChain() {
         rootView.switchOnChain()
+        rootView.recepientInputView.showsMyself = false
     }
 
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {

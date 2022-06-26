@@ -37,6 +37,7 @@ protocol TransferSetupChildPresenterProtocol: TransferSetupCommonPresenterProtoc
 protocol TransferSetupPresenterProtocol: TransferSetupCommonPresenterProtocol {
     func changeDestinationChain()
     func scanRecepientCode()
+    func applyMyselfRecepient()
 }
 
 protocol TransferSetupInteractorIntputProtocol: AnyObject {
