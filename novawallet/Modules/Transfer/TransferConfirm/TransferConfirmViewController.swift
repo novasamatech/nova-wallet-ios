@@ -57,7 +57,17 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
         rootView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.networkCell.titleLabel.text = R.string.localizable.commonNetwork(
+        if rootView.destinationNetworkCell == nil {
+            rootView.originNetworkCell.titleLabel.text = R.string.localizable.commonNetwork(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        } else {
+            rootView.originNetworkCell.titleLabel.text = R.string.localizable.commonFromNetwork(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+        }
+
+        rootView.destinationNetworkCell?.titleLabel.text = R.string.localizable.commonToNetwork(
             preferredLanguages: selectedLocale.rLanguages
         )
 
@@ -69,7 +79,14 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
 
-        rootView.networkFeeCell.rowContentView.locale = selectedLocale
+        rootView.originFeeCell.rowContentView.locale = selectedLocale
+
+        rootView.crossChainFeeCell?.rowContentView.locale = selectedLocale
+
+        if let hintView = rootView.crossChainHintView {
+            let hint = R.string.localizable.transferCrossChainHint(preferredLanguages: selectedLocale.rLanguages)
+            hintView.bind(texts: [hint])
+        }
 
         rootView.recepientCell.titleLabel.text = R.string.localizable.commonRecipient(
             preferredLanguages: selectedLocale.rLanguages
@@ -89,9 +106,17 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     }
 }
 
-extension TransferConfirmViewController: TransferConfirmViewProtocol {
-    func didReceiveNetwork(viewModel: NetworkViewModel) {
-        rootView.networkCell.bind(viewModel: viewModel)
+extension TransferConfirmViewController: TransferConfirmCrossChainViewProtocol, TransferConfirmOnChainViewProtocol {
+    func didReceiveOriginNetwork(viewModel: NetworkViewModel) {
+        rootView.originNetworkCell.bind(viewModel: viewModel)
+    }
+
+    func didReceiveDestinationNetwork(viewModel: NetworkViewModel) {
+        rootView.switchCrossChain()
+
+        rootView.destinationNetworkCell?.bind(viewModel: viewModel)
+
+        setupLocalization()
     }
 
     func didReceiveSender(viewModel: DisplayAddressViewModel) {
@@ -110,8 +135,12 @@ extension TransferConfirmViewController: TransferConfirmViewProtocol {
         rootView.amountView.bind(viewModel: viewModel)
     }
 
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeCell.rowContentView.bind(viewModel: viewModel)
+    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.originFeeCell.rowContentView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.crossChainFeeCell?.rowContentView.bind(viewModel: viewModel)
     }
 }
 

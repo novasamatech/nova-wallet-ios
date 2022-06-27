@@ -812,3 +812,16 @@
 "parastk.cant.rebond.title" = "Нельзя вернуть в стейк";
 "parastk.cant.rebond.message" = "Вы не выводили токены для этого коллатора";
 "parachain.staking.full.message" = "Вы достигли максимального количества делегаций - %@ коллаторов";
+"xcm.destination.selection.title" = "Сеть получателя";
+"common.on.chain" = "В одной сети";
+"common.cross.chain" = "Между сетями";
+"common.cross.chain.fee" = "Межсетевая комиссия";
+"wallet.transfer.cross.chain.from" = "Отправить %@ из";
+"wallet.transfer.cross.chain.to" = "в";
+"wallet.transfer.cross.chain.from" = "из";
+"wallet.transfer.token.format_v2_9_1" = "Отправить %@";
+"wallet.transfer.on" = "в";
+"common.myself" = "Себе";
+"common.from.network" = "Из сети";
+"common.to.network" = "В сеть";
+"transfer.cross.chain.hint" = "Межсетевая комиссия добавляется к отправлямой сумме. Получатель может получить часть межсетевой комиссии.";

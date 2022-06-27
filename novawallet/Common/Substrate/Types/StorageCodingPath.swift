@@ -173,4 +173,8 @@ extension StorageCodingPath {
     static var uniquesClassDetails: StorageCodingPath {
         StorageCodingPath(moduleName: "Uniques", itemName: "Class")
     }
+
+    static var parachainId: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainInfo", itemName: "ParachainId")
+    }
 }
