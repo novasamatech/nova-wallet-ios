@@ -822,3 +822,6 @@
 "wallet.transfer.token.format_v2_9_1" = "Send %@";
 "wallet.transfer.on" = "on";
 "common.myself" = "Myself";
+"common.from.network" = "From network";
+"common.to.network" = "To network";
+"transfer.cross.chain.hint" = "Cross-chain fee is added on top of entered amount. Recipient may receive part of cross-chain fee";

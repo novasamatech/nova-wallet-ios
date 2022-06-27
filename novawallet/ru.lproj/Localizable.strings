@@ -822,3 +822,6 @@
 "wallet.transfer.token.format_v2_9_1" = "Отправить %@";
 "wallet.transfer.on" = "в";
 "common.myself" = "Себе";
+"common.from.network" = "Из сети";
+"common.to.network" = "В сеть";
+"transfer.cross.chain.hint" = "Межсетевая комиссия добавляется к отправлямой сумме. Получатель может получить часть межсетевой комиссии.";

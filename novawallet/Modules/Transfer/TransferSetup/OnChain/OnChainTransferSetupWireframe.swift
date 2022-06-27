@@ -10,7 +10,7 @@ final class OnChainTransferSetupWireframe: OnChainTransferSetupWireframeProtocol
         sendingAmount: Decimal,
         recepient: AccountAddress
     ) {
-        guard let confirmView = TransferConfirmViewFactory.createView(
+        guard let confirmView = TransferConfirmOnChainViewFactory.createView(
             chainAsset: chainAsset,
             recepient: recepient,
             amount: sendingAmount
