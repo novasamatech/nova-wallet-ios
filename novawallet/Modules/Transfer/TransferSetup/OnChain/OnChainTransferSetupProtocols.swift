@@ -2,8 +2,8 @@ import BigInt
 
 protocol OnChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateFee(for amount: BigUInt, recepient: AccountAddress?)
-    func change(recepient: AccountAddress?)
+    func estimateFee(for amount: BigUInt, recepient: AccountId?)
+    func change(recepient: AccountId?)
 }
 
 protocol OnChainTransferSetupInteractorOutputProtocol: AnyObject {

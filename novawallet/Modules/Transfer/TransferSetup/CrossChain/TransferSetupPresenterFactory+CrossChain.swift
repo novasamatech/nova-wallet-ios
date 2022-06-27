@@ -21,6 +21,8 @@ extension TransferSetupPresenterFactory {
         wireframe.commandFactory = commandFactory
 
         let networkViewModelFactory = NetworkViewModelFactory()
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+
         let sendBalanceViewModelFactory = BalanceViewModelFactory(
             targetAssetInfo: originChainAsset.assetDisplayInfo
         )
@@ -57,6 +59,7 @@ extension TransferSetupPresenterFactory {
             originChainAsset: originChainAsset,
             destinationChainAsset: destinationChainAsset,
             initialState: initialState,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,

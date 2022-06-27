@@ -19,9 +19,8 @@ extension TransferSetupPresenterFactory {
         let localizationManager = LocalizationManager.shared
 
         let networkViewModelFactory = NetworkViewModelFactory()
-        let sendingBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
-        )
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
+        let sendingBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: chainAsset.assetDisplayInfo)
 
         let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
@@ -29,9 +28,7 @@ extension TransferSetupPresenterFactory {
             let utilityAsset = chainAsset.chain.utilityAssets().first,
             utilityAsset.assetId != chainAsset.asset.assetId {
             let utilityAssetInfo = utilityAsset.displayInfo(with: chainAsset.chain.icon)
-            utilityBalanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAssetInfo
-            )
+            utilityBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: utilityAssetInfo)
         } else {
             utilityBalanceViewModelFactory = nil
         }
@@ -54,6 +51,7 @@ extension TransferSetupPresenterFactory {
             wireframe: wireframe,
             chainAsset: chainAsset,
             initialState: initialState,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,

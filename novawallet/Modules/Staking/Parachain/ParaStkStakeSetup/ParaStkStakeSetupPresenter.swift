@@ -238,7 +238,7 @@ final class ParaStkStakeSetupPresenter {
 
         let callWrapper = DelegationCallWrapper(
             amount: amount,
-            collator: collator ?? AccountId.dummyAccountId(of: chainAsset.chain.accountIdSize),
+            collator: collator ?? AccountId.zeroAccountId(of: chainAsset.chain.accountIdSize),
             collatorDelegationsCount: collatorsDelegationsCount,
             delegationsCount: UInt32(delegationsCount),
             existingBond: existingStakeInPlank()
