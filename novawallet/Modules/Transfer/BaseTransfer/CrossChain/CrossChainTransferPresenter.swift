@@ -17,7 +17,7 @@ class CrossChainTransferPresenter {
 
     private(set) var originSendingMinBalance: BigUInt?
     private(set) var originUtilityMinBalance: BigUInt?
-    private(set) var destSendingMinBalance: BigUInt?
+    private(set) var destSendingExistence: AssetBalanceExistence?
     private(set) var destUtilityMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
@@ -139,16 +139,17 @@ class CrossChainTransferPresenter {
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: destSendingMinBalance,
+                minBalance: destSendingExistence?.minBalance,
                 locale: selectedLocale
             )
         ]
 
         if !isDestUtilityTransfer {
             validators.append(
-                dataValidatingFactory.receiverHasUtilityAccount(
-                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: destUtilityMinBalance,
+                dataValidatingFactory.receiverHasAccountProvider(
+                    utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                    utilityMinBalance: destUtilityMinBalance,
+                    assetExistence: destSendingExistence,
                     locale: selectedLocale
                 )
             )
@@ -207,8 +208,8 @@ class CrossChainTransferPresenter {
         originUtilityMinBalance = value
     }
 
-    func didReceiveDestSendingMinBalance(_ value: BigUInt) {
-        destSendingMinBalance = value
+    func didReceiveDestSendingExistence(_ value: AssetBalanceExistence) {
+        destSendingExistence = value
     }
 
     func didReceiveDestUtilityMinBalance(_ value: BigUInt) {

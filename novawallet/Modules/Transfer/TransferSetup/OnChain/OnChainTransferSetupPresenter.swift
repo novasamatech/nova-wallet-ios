@@ -339,7 +339,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
                 amount: sendingAmount,
                 fee: isUtilityTransfer ? fee : 0,
                 totalAmount: senderSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
         )

@@ -16,7 +16,7 @@ class OnChainTransferPresenter {
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
 
-    private(set) var sendingAssetMinBalance: BigUInt?
+    private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
@@ -104,23 +104,24 @@ class OnChainTransferPresenter {
             dataValidatingFactory.canPay(
                 fee: fee,
                 total: senderUtilityAssetTotal,
-                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
         ]
 
         if !isUtilityTransfer {
             validators.append(
-                dataValidatingFactory.receiverHasUtilityAccount(
-                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: utilityAssetMinBalance,
+                dataValidatingFactory.receiverHasAccountProvider(
+                    utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                    utilityMinBalance: utilityAssetMinBalance,
+                    assetExistence: sendingAssetExistence,
                     locale: selectedLocale
                 )
             )
@@ -166,8 +167,8 @@ class OnChainTransferPresenter {
         utilityAssetMinBalance = value
     }
 
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
-        sendingAssetMinBalance = value
+    func didReceiveSendingAssetExistence(_ value: AssetBalanceExistence) {
+        sendingAssetExistence = value
     }
 
     func didCompleteSetup() {}

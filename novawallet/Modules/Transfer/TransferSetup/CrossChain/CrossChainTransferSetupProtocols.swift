@@ -19,7 +19,7 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveOriginUtilityMinBalance(_ value: BigUInt)
     func didReceiveOriginSendingMinBalance(_ value: BigUInt)
-    func didReceiveDestSendingMinBalance(_ value: BigUInt)
+    func didReceiveDestSendingExistence(_ value: AssetBalanceExistence)
     func didReceiveDestUtilityMinBalance(_ value: BigUInt)
     func didCompleteSetup()
     func didReceiveError(_ error: Error)
