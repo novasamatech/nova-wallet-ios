@@ -6,7 +6,12 @@ enum XcmTransfersSyncServiceError: Error {
     case invalidLocalFile(remote: URL)
 }
 
-final class XcmTransfersSyncService: BaseSyncService {
+protocol XcmTransfersSyncServiceProtocol: AnyObject, ApplicationServiceProtocol {
+    var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)? { get set }
+    var notificationQueue: DispatchQueue { get set }
+}
+
+final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServiceProtocol {
     struct FetchResult {
         let data: Data?
         let transfers: XcmTransfers?

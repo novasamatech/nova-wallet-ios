@@ -27,6 +27,22 @@ class AccountInputView: BackgroundedContentControl {
         return textField
     }()
 
+    var showsMyself: Bool {
+        get {
+            mySelfButton != nil
+        }
+
+        set {
+            if newValue {
+                setupMyselfButton()
+            } else {
+                clearMyselfButton()
+            }
+        }
+    }
+
+    private(set) var mySelfButton: RoundedButton?
+
     let pasteButton: RoundedButton = {
         let button = RoundedButton()
         button.applyAccessoryStyle()
@@ -173,7 +189,15 @@ class AccountInputView: BackgroundedContentControl {
             preferredLanguages: locale.rLanguages
         )
 
+        setupMyselfLocalization()
+
         setNeedsLayout()
+    }
+
+    private func setupMyselfLocalization() {
+        mySelfButton?.imageWithTitleView?.title = R.string.localizable.commonMyself(
+            preferredLanguages: locale.rLanguages
+        )
     }
 
     private func layoutContent() {
@@ -188,7 +212,12 @@ class AccountInputView: BackgroundedContentControl {
         let buttonHeight: CGFloat = 32.0
         var actionsWidth: CGFloat = 0
 
+        if let mySelfButton = mySelfButton, !mySelfButton.isHidden {
+            actionsWidth += mySelfButton.intrinsicContentSize.width
+        }
+
         if !pasteButton.isHidden {
+            actionsWidth += (mySelfButton?.isHidden == false) ? stackView.spacing : 0
             actionsWidth += pasteButton.intrinsicContentSize.width
         }
 
@@ -314,10 +343,12 @@ class AccountInputView: BackgroundedContentControl {
             clearButton.isHidden = false
             pasteButton.isHidden = true
             scanButton.isHidden = true
+            mySelfButton?.isHidden = true
         } else {
             clearButton.isHidden = true
             pasteButton.isHidden = !pasteboardService.pasteboard.hasStrings
             scanButton.isHidden = false
+            mySelfButton?.isHidden = false
         }
 
         let newStates = stackView.arrangedSubviews.map(\.isHidden)
@@ -325,6 +356,34 @@ class AccountInputView: BackgroundedContentControl {
         if oldStates != newStates {
             setNeedsLayout()
         }
+    }
+
+    private func setupMyselfButton() {
+        guard mySelfButton == nil else {
+            return
+        }
+
+        let button = RoundedButton()
+        button.applyAccessoryStyle()
+        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
+        button.imageWithTitleView?.titleFont = .semiBoldFootnote
+
+        mySelfButton = button
+
+        stackView.insertArrangedSubview(button, at: 0)
+
+        mySelfButton?.isHidden = hasText
+
+        setupMyselfLocalization()
+
+        setNeedsLayout()
+    }
+
+    private func clearMyselfButton() {
+        mySelfButton?.removeFromSuperview()
+        mySelfButton = nil
+
+        setNeedsLayout()
     }
 
     // MARK: Action

@@ -3,25 +3,6 @@ import BigInt
 import RobinHood
 import SubstrateSdk
 
-typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
-typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
-
-protocol XcmTransferServiceProtocol {
-    func estimateDestinationTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-
-    func estimateReserveTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    )
-}
-
 enum XcmTransferServiceError: Error {
     case reserveFeeNotAvailable
     case noXcmPalletFound
@@ -34,7 +15,7 @@ final class XcmTransferService {
     let chainRegistry: ChainRegistryProtocol
     let operationQueue: OperationQueue
 
-    private lazy var xcmFactory = XcmTransferFactory()
+    private(set) lazy var xcmFactory = XcmTransferFactory()
 
     init(
         wallet: MetaAccountModel,
@@ -46,39 +27,50 @@ final class XcmTransferService {
         self.operationQueue = operationQueue
     }
 
-    private func createStardardFeeEstimationWrapper(
-        chain: ChainModel,
-        message: Xcm.Message,
-        maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<FeeWithWeight> {
+    func createModuleResolutionWrapper(
+        for transferType: XcmAssetTransfer.TransferType,
+        runtimeProvider: RuntimeProviderProtocol
+    ) -> CompoundOperationWrapper<String> {
+        switch transferType {
+        case .xtokens:
+            return CompoundOperationWrapper.createWithResult("XTokens")
+        case .xcmpallet:
+            let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
+
+            let moduleResolutionOperation = ClosureOperation<String> {
+                let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
+                guard let moduleName = Xcm.ExecuteCall.possibleModuleNames.first(
+                    where: { metadata.getModuleIndex($0) != nil }
+                ) else {
+                    throw XcmTransferServiceError.noXcmPalletFound
+                }
+
+                return moduleName
+            }
+
+            moduleResolutionOperation.addDependency(coderFactoryOperation)
+
+            return CompoundOperationWrapper(
+                targetOperation: moduleResolutionOperation,
+                dependencies: [coderFactoryOperation]
+            )
+        }
+    }
+
+    func createOperationFactory(for chain: ChainModel) throws -> ExtrinsicOperationFactoryProtocol {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
+            throw ChainRegistryError.connectionUnavailable
         }
 
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+            throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
         guard let chainAccount = wallet.fetch(for: chain.accountRequest()) else {
-            return CompoundOperationWrapper.createWithError(ChainAccountFetchingError.accountNotExists)
+            throw ChainAccountFetchingError.accountNotExists
         }
 
-        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-
-        let moduleResolutionOperation = ClosureOperation<String> {
-            let metadata = try coderFactoryOperation.extractNoCancellableResultData().metadata
-            guard let moduleName = Xcm.ExecuteCall.possibleModuleNames.first(
-                where: { metadata.getModuleIndex($0) != nil }
-            ) else {
-                throw XcmTransferServiceError.noXcmPalletFound
-            }
-
-            return moduleName
-        }
-
-        moduleResolutionOperation.addDependency(coderFactoryOperation)
-
-        let operationFactory = ExtrinsicOperationFactory(
+        return ExtrinsicOperationFactory(
             accountId: chainAccount.accountId,
             chain: chain,
             cryptoType: chainAccount.cryptoType,
@@ -86,54 +78,72 @@ final class XcmTransferService {
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
         )
-
-        let wrapper = operationFactory.estimateFeeOperation { builder in
-            let moduleName = try moduleResolutionOperation.extractNoCancellableResultData()
-            let call = Xcm.ExecuteCall(message: message, maxWeight: maxWeight)
-            return try builder.adding(call: call.runtimeCall(for: moduleName))
-        }
-
-        wrapper.addDependency(operations: [moduleResolutionOperation])
-
-        let mapperOperation = ClosureOperation<FeeWithWeight> {
-            let response = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let fee = BigUInt(response.fee) else {
-                throw CommonError.dataCorruption
-            }
-
-            return FeeWithWeight(fee: fee, weight: maxWeight)
-        }
-
-        mapperOperation.addDependency(wrapper.targetOperation)
-
-        let dependencies = [coderFactoryOperation, moduleResolutionOperation] + wrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
     }
 
-    private func createFeeEstimationWrapper(
+    func createStardardFeeEstimationWrapper(
+        chain: ChainModel,
+        message: Xcm.Message,
+        maxWeight: BigUInt
+    ) -> CompoundOperationWrapper<FeeWithWeight> {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
+            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
+        do {
+            let moduleWrapper = createModuleResolutionWrapper(for: .xcmpallet, runtimeProvider: runtimeProvider)
+
+            let operationFactory = try createOperationFactory(for: chain)
+
+            let wrapper = operationFactory.estimateFeeOperation { builder in
+                let moduleName = try moduleWrapper.targetOperation.extractNoCancellableResultData()
+                let call = Xcm.ExecuteCall(message: message, maxWeight: maxWeight)
+                return try builder.adding(call: call.runtimeCall(for: moduleName))
+            }
+
+            wrapper.addDependency(wrapper: moduleWrapper)
+
+            let mapperOperation = ClosureOperation<FeeWithWeight> {
+                let response = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                guard let fee = BigUInt(response.fee) else {
+                    throw CommonError.dataCorruption
+                }
+
+                return FeeWithWeight(fee: fee, weight: maxWeight)
+            }
+
+            mapperOperation.addDependency(wrapper.targetOperation)
+
+            let dependencies = moduleWrapper.allOperations + wrapper.allOperations
+
+            return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
+        } catch {
+            return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    func createFeeEstimationWrapper(
         for chain: ChainModel,
         message: Xcm.Message,
         info: XcmAssetTransferFee,
         baseWeight: BigUInt
     ) -> CompoundOperationWrapper<FeeWithWeight> {
-        let maxWeigth = baseWeight * BigUInt(message.instructionsCount)
+        let maxWeight = baseWeight * BigUInt(message.instructionsCount)
 
         switch info.mode.type {
         case .proportional:
             let coefficient: BigUInt = info.mode.value.flatMap { BigUInt($0) } ?? 0
-            let fee = coefficient * maxWeigth / Self.weightPerSecond
-            let model = FeeWithWeight(fee: fee, weight: maxWeigth)
+            let fee = coefficient * maxWeight / Self.weightPerSecond
+            let model = FeeWithWeight(fee: fee, weight: maxWeight)
             return CompoundOperationWrapper.createWithResult(model)
         case .standard:
-            return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeigth)
+            return createStardardFeeEstimationWrapper(chain: chain, message: message, maxWeight: maxWeight)
         }
     }
 
-    private func createDestinationFeeWrapper(
+    func createDestinationFeeWrapper(
         for message: Xcm.Message,
-        request: XcmTransferRequest,
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<FeeWithWeight> {
         guard let feeInfo = xcmTransfers.destinationFee(
@@ -161,9 +171,9 @@ final class XcmTransferService {
         )
     }
 
-    private func createReserveFeeWrapper(
+    func createReserveFeeWrapper(
         for message: Xcm.Message,
-        request: XcmTransferRequest,
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers
     ) -> CompoundOperationWrapper<FeeWithWeight> {
         guard let feeInfo = xcmTransfers.reserveFee(from: request.origin.chainAssetId) else {
@@ -183,89 +193,70 @@ final class XcmTransferService {
             baseWeight: baseWeight
         )
     }
-}
 
-extension XcmTransferService: XcmTransferServiceProtocol {
-    func estimateDestinationTransferFee(
-        request: XcmTransferRequest,
+    func createTransferWrapper(
+        request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
-        do {
-            let feeMessages = try xcmFactory.createWeightMessages(
-                from: request.origin,
-                reserve: request.reserve,
-                destination: request.destination,
-                amount: request.amount,
-                xcmTransfers: xcmTransfers
-            )
-
-            let wrapper = createDestinationFeeWrapper(
-                for: feeMessages.destination,
-                request: request,
-                xcmTransfers: xcmTransfers
-            )
-
-            wrapper.targetOperation.completionBlock = {
-                switch wrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-
-        } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
+        maxWeight: BigUInt
+    ) -> CompoundOperationWrapper<(ExtrinsicBuilderClosure, CallCodingPath)> {
+        let destChainId = request.destination.chain.chainId
+        let originChainAssetId = request.origin.chainAssetId
+        guard let xcmTransfer = xcmTransfers.transfer(from: originChainAssetId, destinationChainId: destChainId) else {
+            let error = XcmTransferFactoryError.noDestinationAssetFound(originChainAssetId)
+            return CompoundOperationWrapper.createWithError(error)
         }
-    }
 
-    func estimateReserveTransferFee(
-        request: XcmTransferRequest,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferEstimateFeeClosure
-    ) {
+        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: request.origin.chain.chainId) else {
+            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
+        }
+
         do {
-            let feeMessages = try xcmFactory.createWeightMessages(
+            let destinationAsset = try xcmFactory.createMultilocationAsset(
                 from: request.origin,
-                reserve: request.reserve,
+                reserve: request.reserve.chain,
                 destination: request.destination,
                 amount: request.amount,
                 xcmTransfers: xcmTransfers
             )
 
-            if let reserveMessage = feeMessages.reserve {
-                let wrapper = createReserveFeeWrapper(
-                    for: reserveMessage,
-                    request: request,
-                    xcmTransfers: xcmTransfers
-                )
+            let moduleResolutionWrapper = createModuleResolutionWrapper(
+                for: xcmTransfer.type,
+                runtimeProvider: runtimeProvider
+            )
 
-                wrapper.targetOperation.completionBlock = {
-                    switch wrapper.targetOperation.result {
-                    case let .some(result):
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                    case .none:
-                        let error = BaseOperationError.parentOperationCancelled
-                        callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                    }
+            let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
+                let module = try moduleResolutionWrapper.targetOperation.extractNoCancellableResultData()
+
+                switch xcmTransfer.type {
+                case .xtokens:
+                    let asset = destinationAsset.asset
+                    let location = destinationAsset.location
+
+                    let call = Xcm.OrmlTransferCall(asset: asset, destination: location, destinationWeight: maxWeight)
+
+                    return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
+                case .xcmpallet:
+                    let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
+                    let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+                    let call = Xcm.PalletTransferCall(
+                        destination: destination,
+                        beneficiary: beneficiary,
+                        assets: assets,
+                        feeAssetItem: 0,
+                        weightLimit: .limited(weight: UInt64(maxWeight))
+                    )
+
+                    return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
                 }
-
-                operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-            } else {
-                callbackClosureIfProvided(
-                    completionClosure,
-                    queue: queue,
-                    result: .failure(XcmTransferServiceError.reserveFeeNotAvailable)
-                )
             }
+
+            mapOperation.addDependency(moduleResolutionWrapper.targetOperation)
+
+            let dependencies = moduleResolutionWrapper.allOperations
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+
         } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
+            return CompoundOperationWrapper.createWithError(error)
         }
     }
 }

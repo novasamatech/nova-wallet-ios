@@ -2,10 +2,9 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-class TransferPresenter {
-    let chainAsset: ChainAsset
-
-    let senderAccountAddress: AccountAddress
+class CrossChainTransferPresenter {
+    let originChainAsset: ChainAsset
+    let destinationChainAsset: ChainAsset
 
     private(set) var senderSendingAssetBalance: AssetBalance?
     private(set) var senderUtilityAssetBalance: AssetBalance?
@@ -16,17 +15,20 @@ class TransferPresenter {
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
 
-    private(set) var sendingAssetMinBalance: BigUInt?
-    private(set) var utilityAssetMinBalance: BigUInt?
+    private(set) var originSendingMinBalance: BigUInt?
+    private(set) var originUtilityMinBalance: BigUInt?
+    private(set) var destSendingMinBalance: BigUInt?
+    private(set) var destUtilityMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
-        isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
+        isOriginUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
             senderUtilityAssetBalance?.totalInPlank
     }
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
-    private(set) var fee: BigUInt?
+    private(set) var originFee: BigUInt?
+    private(set) var crossChainFee: FeeWithWeight?
 
     let networkViewModelFactory: NetworkViewModelFactoryProtocol
     let sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol
@@ -36,38 +38,65 @@ class TransferPresenter {
 
     let logger: LoggerProtocol?
 
-    var isUtilityTransfer: Bool {
-        chainAsset.chain.utilityAssets().first?.assetId == chainAsset.asset.assetId
+    var isOriginUtilityTransfer: Bool {
+        originChainAsset.chain.utilityAssets().first?.assetId == originChainAsset.asset.assetId
+    }
+
+    var isDestUtilityTransfer: Bool {
+        destinationChainAsset.chain.utilityAssets().first?.assetId == destinationChainAsset.asset.assetId
     }
 
     init(
-        chainAsset: ChainAsset,
+        originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
-        senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         logger: LoggerProtocol? = nil
     ) {
-        self.chainAsset = chainAsset
+        self.originChainAsset = originChainAsset
+        self.destinationChainAsset = destinationChainAsset
         self.networkViewModelFactory = networkViewModelFactory
         self.sendingBalanceViewModelFactory = sendingBalanceViewModelFactory
         self.utilityBalanceViewModelFactory = utilityBalanceViewModelFactory
-        self.senderAccountAddress = senderAccountAddress
         self.dataValidatingFactory = dataValidatingFactory
         self.logger = logger
     }
 
-    func refreshFee() {
+    func refreshOriginFee() {
         fatalError("Child classes must implement this method")
     }
 
-    func askFeeRetry() {
+    func askOriginFeeRetry() {
         fatalError("Child classes must implement this method")
     }
 
-    func updateFee(_ newValue: BigUInt?) {
-        fee = newValue
+    func updateOriginFee(_ newValue: BigUInt?) {
+        originFee = newValue
+    }
+
+    func refreshCrossChainFee() {
+        fatalError("Child classes must implement this method")
+    }
+
+    func askCrossChainFeeRetry() {
+        fatalError("Child classes must implement this method")
+    }
+
+    func updateCrossChainFee(_ newValue: BigUInt?) {
+        originFee = newValue
+    }
+
+    private func totalFee() -> BigUInt? {
+        let optDestSendingFee = crossChainFee?.fee
+        let optOriginSendingFee: BigUInt? = (isOriginUtilityTransfer ? originFee : 0)
+
+        if let originSendingFee = optOriginSendingFee, let destSendingFee = optDestSendingFee {
+            return originSendingFee + destSendingFee
+        } else {
+            return nil
+        }
     }
 
     func baseValidators(
@@ -78,49 +107,48 @@ class TransferPresenter {
         var validators: [DataValidating] = [
             dataValidatingFactory.receiverMatchesChain(
                 recepient: recepientAddress,
-                chainFormat: chainAsset.chain.chainFormat,
-                chainName: chainAsset.chain.name,
+                chainFormat: destinationChainAsset.chain.chainFormat,
+                chainName: destinationChainAsset.chain.name,
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.receiverDiffers(
-                recepient: recepientAddress,
-                sender: senderAccountAddress,
-                locale: selectedLocale
-            ),
+            dataValidatingFactory.has(fee: originFee, locale: selectedLocale) { [weak self] in
+                self?.refreshOriginFee()
+                return
+            },
 
-            dataValidatingFactory.has(fee: fee, locale: selectedLocale) { [weak self] in
-                self?.refreshFee()
+            dataValidatingFactory.has(fee: crossChainFee?.fee, locale: selectedLocale) { [weak self] in
+                self?.refreshCrossChainFee()
                 return
             },
 
             dataValidatingFactory.canSend(
                 amount: sendingAmount,
-                fee: isUtilityTransfer ? fee : 0,
+                fee: totalFee(),
                 transferable: senderSendingAssetBalance?.transferable,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.canPay(
-                fee: fee,
+                fee: originFee,
                 total: senderUtilityAssetTotal,
-                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: destSendingMinBalance,
                 locale: selectedLocale
             )
         ]
 
-        if !isUtilityTransfer {
+        if !isDestUtilityTransfer {
             validators.append(
                 dataValidatingFactory.receiverHasUtilityAccount(
                     totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: utilityAssetMinBalance,
+                    minBalance: destUtilityMinBalance,
                     locale: selectedLocale
                 )
             )
@@ -145,12 +173,21 @@ class TransferPresenter {
         recepientUtilityAssetBalance = balance
     }
 
-    func didReceiveFee(result: Result<BigUInt, Error>) {
+    func didReceiveOriginFee(result: Result<BigUInt, Error>) {
         switch result {
         case let .success(fee):
-            self.fee = fee
+            originFee = fee
         case .failure:
-            askFeeRetry()
+            askOriginFeeRetry()
+        }
+    }
+
+    func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>) {
+        switch result {
+        case let .success(fee):
+            crossChainFee = fee
+        case .failure:
+            askCrossChainFeeRetry()
         }
     }
 
@@ -162,12 +199,20 @@ class TransferPresenter {
         utilityAssetPrice = priceData
     }
 
-    func didReceiveUtilityAssetMinBalance(_ value: BigUInt) {
-        utilityAssetMinBalance = value
+    func didReceiveOriginSendingMinBalance(_ value: BigUInt) {
+        originSendingMinBalance = value
     }
 
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
-        sendingAssetMinBalance = value
+    func didReceiveOriginUtilityMinBalance(_ value: BigUInt) {
+        originUtilityMinBalance = value
+    }
+
+    func didReceiveDestSendingMinBalance(_ value: BigUInt) {
+        destSendingMinBalance = value
+    }
+
+    func didReceiveDestUtilityMinBalance(_ value: BigUInt) {
+        destUtilityMinBalance = value
     }
 
     func didCompleteSetup() {}

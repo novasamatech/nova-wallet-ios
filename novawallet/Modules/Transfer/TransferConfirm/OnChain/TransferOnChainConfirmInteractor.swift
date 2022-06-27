@@ -2,13 +2,13 @@ import UIKit
 import BigInt
 import RobinHood
 
-final class TransferConfirmInteractor: TransferInteractor {
+final class TransferOnChainConfirmInteractor: OnChainTransferInteractor {
     let signingWrapper: SigningWrapperProtocol
     let persistExtrinsicService: PersistentExtrinsicServiceProtocol
     let eventCenter: EventCenterProtocol
 
-    var submitionPresenter: TransferConfirmInteractorOutputProtocol? {
-        presenter as? TransferConfirmInteractorOutputProtocol
+    var submitionPresenter: TransferConfirmOnChainInteractorOutputProtocol? {
+        presenter as? TransferConfirmOnChainInteractorOutputProtocol
     }
 
     init(
@@ -65,7 +65,7 @@ final class TransferConfirmInteractor: TransferInteractor {
     }
 }
 
-extension TransferConfirmInteractor: TransferConfirmInteractorInputProtocol {
+extension TransferOnChainConfirmInteractor: TransferConfirmOnChainInteractorInputProtocol {
     func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?) {
         do {
             let accountId = try recepient.toAccountId(using: chain.chainFormat)
