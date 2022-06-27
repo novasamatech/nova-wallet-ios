@@ -2,20 +2,15 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-typealias XcmTrasferResolutionResult = Result<XcmTransferParties, Error>
-typealias XcmTransferResolutionClosure = (XcmTrasferResolutionResult) -> Void
-
-protocol XcmTransferResolutionServiceProtocol {
-    func resolveTransferParties(
+protocol XcmTransferResolutionFactoryProtocol {
+    func createResolutionWrapper(
         for originChainAssetId: ChainAssetId,
         transferDestinationId: XcmTransferDestinationId,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferResolutionClosure
-    )
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<XcmTransferParties>
 }
 
-final class XcmTransferResolutionService {
+final class XcmTransferResolutionFactory {
     struct ResolvedChains {
         let origin: ChainAsset
         let destination: ChainModel
@@ -132,14 +127,12 @@ final class XcmTransferResolutionService {
     }
 }
 
-extension XcmTransferResolutionService: XcmTransferResolutionServiceProtocol {
-    func resolveTransferParties(
+extension XcmTransferResolutionFactory: XcmTransferResolutionFactoryProtocol {
+    func createResolutionWrapper(
         for originChainAssetId: ChainAssetId,
         transferDestinationId: XcmTransferDestinationId,
-        xcmTransfers: XcmTransfers,
-        runningIn queue: DispatchQueue,
-        completion completionClosure: @escaping XcmTransferResolutionClosure
-    ) {
+        xcmTransfers: XcmTransfers
+    ) -> CompoundOperationWrapper<XcmTransferParties> {
         do {
             let resolvedChains = try resolveChains(
                 for: originChainAssetId,
@@ -188,20 +181,10 @@ extension XcmTransferResolutionService: XcmTransferResolutionServiceProtocol {
 
             dependencies.forEach { mergeOperation.addDependency($0) }
 
-            mergeOperation.completionBlock = {
-                switch mergeOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mergeOperation], waitUntilFinished: false)
+            return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
 
         } catch {
-            callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
+            return CompoundOperationWrapper.createWithError(error)
         }
     }
 }

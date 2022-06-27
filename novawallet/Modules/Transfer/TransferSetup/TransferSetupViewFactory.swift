@@ -2,71 +2,36 @@ import Foundation
 import SoraFoundation
 import CommonWallet
 
-// swiftlint:disable function_body_length
 struct TransferSetupViewFactory {
     static func createView(
         from chainAsset: ChainAsset,
         recepient: DisplayAddress?,
         commandFactory: WalletCommandFactoryProtocol?
     ) -> TransferSetupViewProtocol? {
-        let walletSettings = SelectedWalletSettings.shared
-        let accountRequest = chainAsset.chain.accountRequest()
-
-        guard
-            let selectedAccount = walletSettings.value.fetch(for: accountRequest),
-            let senderAccountAddress = selectedAccount.toAddress(),
-            let interactor = createInteractor(for: chainAsset, account: selectedAccount) else {
+        guard let wallet = SelectedWalletSettings.shared.value else {
             return nil
         }
 
-        let wireframe = TransferSetupWireframe()
-        wireframe.commandFactory = commandFactory
+        let interactor = createInteractor(for: chainAsset)
+        let initPresenterState = TransferSetupInputState(recepient: recepient?.address, amount: nil)
+
+        let presenterFactory = createPresenterFactory(for: wallet, commandFactory: commandFactory)
 
         let localizationManager = LocalizationManager.shared
 
+        let wireframe = TransferSetupWireframe()
+
         let networkViewModelFactory = NetworkViewModelFactory()
-        let sendingBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
-        )
-
-        let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
-
-        if
-            let utilityAsset = chainAsset.chain.utilityAssets().first,
-            utilityAsset.assetId != chainAsset.asset.assetId {
-            let utilityAssetInfo = utilityAsset.displayInfo(with: chainAsset.chain.icon)
-            utilityBalanceViewModelFactory = BalanceViewModelFactory(
-                targetAssetInfo: utilityAssetInfo
-            )
-        } else {
-            utilityBalanceViewModelFactory = nil
-        }
-
-        let dataValidatingFactory = TransferDataValidatorFactory(
-            presentable: wireframe,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
-        )
-
-        let phishingRepository = SubstrateRepositoryFactory().createPhishingRepository()
-        let phishingValidatingFactory = PhishingAddressValidatorFactory(
-            repository: phishingRepository,
-            presentable: wireframe,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
-        )
+        let chainAssetViewModelFactory = ChainAssetViewModelFactory(networkViewModelFactory: networkViewModelFactory)
 
         let presenter = TransferSetupPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            chainAsset: chainAsset,
-            recepientAddress: recepient?.address,
+            wallet: wallet,
+            originChainAsset: chainAsset,
+            childPresenterFactory: presenterFactory,
+            chainAssetViewModelFactory: chainAssetViewModelFactory,
             networkViewModelFactory: networkViewModelFactory,
-            sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
-            utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
-            senderAccountAddress: senderAccountAddress,
-            dataValidatingFactory: dataValidatingFactory,
-            phishingValidatingFactory: phishingValidatingFactory,
-            localizationManager: localizationManager,
             logger: Logger.shared
         )
 
@@ -75,69 +40,46 @@ struct TransferSetupViewFactory {
             localizationManager: localizationManager
         )
 
+        presenter.childPresenter = presenterFactory.createOnChainPresenter(
+            for: chainAsset,
+            initialState: initPresenterState,
+            view: view
+        )
+
         presenter.view = view
-        dataValidatingFactory.view = view
-        phishingValidatingFactory.view = view
         interactor.presenter = presenter
 
         return view
     }
 
-    private static func createInteractor(
-        for chainAsset: ChainAsset,
-        account: ChainAccountResponse
-    ) -> TransferSetupInteractor? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let chain = chainAsset.chain
-        let asset = chainAsset.asset
-
-        guard
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId) else {
-            return nil
-        }
-
-        let repositoryFactory = SubstrateRepositoryFactory()
-        let repository = repositoryFactory.createChainStorageItemRepository()
-
-        let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
+    private static func createPresenterFactory(
+        for wallet: MetaAccountModel,
+        commandFactory: WalletCommandFactoryProtocol?
+    ) -> TransferSetupPresenterFactory {
+        TransferSetupPresenterFactory(
+            wallet: wallet,
+            chainRegistry: ChainRegistryFacade.sharedRegistry,
+            storageFacade: SubstrateDataStorageFacade.shared,
+            commandFactory: commandFactory,
+            eventCenter: EventCenter.shared,
             logger: Logger.shared
         )
+    }
 
-        let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
-            remoteSubscriptionService: walletRemoteSubscriptionService,
-            chainRegistry: chainRegistry,
-            repositoryFactory: repositoryFactory,
-            eventCenter: EventCenter.shared,
+    private static func createInteractor(
+        for chainAsset: ChainAsset
+    ) -> TransferSetupInteractor {
+        let syncService = XcmTransfersSyncService(
+            remoteUrl: ApplicationConfig.shared.xcmTransfersURL,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
-        let extrinsicService = ExtrinsicService(
-            accountId: account.accountId,
-            chain: chain,
-            cryptoType: account.cryptoType,
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
-        )
+        let chainsStore = ChainsStore(chainRegistry: ChainRegistryFacade.sharedRegistry)
 
         return TransferSetupInteractor(
-            selectedAccount: account,
-            chain: chain,
-            asset: asset,
-            runtimeService: runtimeProvider,
-            feeProxy: ExtrinsicFeeProxy(),
-            extrinsicService: extrinsicService,
-            walletRemoteWrapper: walletRemoteSubscriptionWrapper,
-            walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
-            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            substrateStorageFacade: SubstrateDataStorageFacade.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            originChainAssetId: chainAsset.chainAssetId,
+            xcmTransfersSyncService: syncService,
+            chainsStore: chainsStore
         )
     }
 }
-
-// swiftlint:enable function_body_length

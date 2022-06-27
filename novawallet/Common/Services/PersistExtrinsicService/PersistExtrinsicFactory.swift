@@ -7,6 +7,11 @@ protocol PersistExtrinsicFactoryProtocol {
         chainAssetId: ChainAssetId,
         details: PersistTransferDetails
     ) -> CompoundOperationWrapper<Void>
+
+    func createExtrinsicSaveOperation(
+        chainAssetId: ChainAssetId,
+        details: PersistExtrinsicDetails
+    ) -> CompoundOperationWrapper<Void>
 }
 
 final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
@@ -40,6 +45,34 @@ final class PersistExtrinsicFactory: PersistExtrinsicFactoryProtocol {
         )
 
         let operation = repository.saveOperation({ [transferItem] }, { [] })
+
+        return CompoundOperationWrapper(targetOperation: operation)
+    }
+
+    func createExtrinsicSaveOperation(
+        chainAssetId: ChainAssetId,
+        details: PersistExtrinsicDetails
+    ) -> CompoundOperationWrapper<Void> {
+        let timestamp = Int64(Date().timeIntervalSince1970)
+        let feeString = details.fee.map { String($0) }
+
+        let item = TransactionHistoryItem(
+            chainId: chainAssetId.chainId,
+            assetId: chainAssetId.assetId,
+            sender: details.sender,
+            receiver: nil,
+            amountInPlank: nil,
+            status: .pending,
+            txHash: details.txHash.toHex(includePrefix: true),
+            timestamp: timestamp,
+            fee: feeString,
+            blockNumber: nil,
+            txIndex: nil,
+            callPath: details.callPath,
+            call: nil
+        )
+
+        let operation = repository.saveOperation({ [item] }, { [] })
 
         return CompoundOperationWrapper(targetOperation: operation)
     }

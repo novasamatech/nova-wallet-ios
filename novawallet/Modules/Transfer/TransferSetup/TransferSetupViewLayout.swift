@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class TransferSetupViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -15,21 +16,7 @@ final class TransferSetupViewLayout: UIView {
         return button
     }()
 
-    let tokenLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .boldTitle2
-        label.minimumScaleFactor = 0.5
-        return label
-    }()
-
-    let networkView = WalletChainView()
-
-    let networkContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        return view
-    }()
+    let networkContainerView = TransferNetworkContainerView()
 
     let recepientTitleLabel: UILabel = {
         let label = UILabel()
@@ -43,7 +30,13 @@ final class TransferSetupViewLayout: UIView {
         return view
     }()
 
-    let networkFeeView = UIFactory.default.createNetwork26FeeView()
+    let originFeeView: NetworkFeeView = {
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
+        return view
+    }()
+
+    private(set) var crossChainFeeView: NetworkFeeView?
 
     let amountView = TitleHorizontalMultiValueView()
 
@@ -60,6 +53,27 @@ final class TransferSetupViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func switchCrossChain() {
+        guard crossChainFeeView == nil else {
+            return
+        }
+
+        let view = UIFactory.default.createNetwork26FeeView()
+        view.verticalOffset = 13.0
+        view.title = LocalizableResource { locale in
+            R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
+        }
+
+        containerView.stackView.addArrangedSubview(view)
+
+        crossChainFeeView = view
+    }
+
+    func switchOnChain() {
+        crossChainFeeView?.removeFromSuperview()
+        crossChainFeeView = nil
     }
 
     private func setupLayout() {
@@ -79,19 +93,6 @@ final class TransferSetupViewLayout: UIView {
         containerView.stackView.addArrangedSubview(networkContainerView)
         networkContainerView.snp.makeConstraints { make in
             make.width.equalToSuperview().offset(-2 * UIConstants.horizontalInset)
-            make.height.equalTo(28.0)
-        }
-
-        networkContainerView.addSubview(tokenLabel)
-        tokenLabel.snp.makeConstraints { make in
-            make.leading.centerY.equalToSuperview()
-        }
-
-        networkContainerView.addSubview(networkView)
-        networkView.snp.makeConstraints { make in
-            make.leading.equalTo(tokenLabel.snp.trailing).offset(10.0)
-            make.centerY.equalToSuperview()
-            make.trailing.lessThanOrEqualToSuperview()
         }
 
         containerView.stackView.setCustomSpacing(16.0, after: networkContainerView)
@@ -111,9 +112,8 @@ final class TransferSetupViewLayout: UIView {
             make.height.equalTo(64)
         }
 
-        containerView.stackView.addArrangedSubview(networkFeeView)
-        networkFeeView.snp.makeConstraints { make in
-            make.height.equalTo(64.0)
-        }
+        containerView.stackView.setCustomSpacing(16.0, after: amountInputView)
+
+        containerView.stackView.addArrangedSubview(originFeeView)
     }
 }

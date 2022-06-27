@@ -8,6 +8,13 @@ protocol PersistentExtrinsicServiceProtocol {
         runningIn queue: DispatchQueue,
         completion closure: @escaping (Result<Void, Error>) -> Void
     )
+
+    func saveExtrinsic(
+        chainAssetId: ChainAssetId,
+        details: PersistExtrinsicDetails,
+        runningIn queue: DispatchQueue,
+        completion closure: @escaping (Result<Void, Error>) -> Void
+    )
 }
 
 final class PersistentExtrinsicService {
@@ -46,6 +53,31 @@ extension PersistentExtrinsicService: PersistentExtrinsicServiceProtocol {
             }
         }
 
-        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: true)
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func saveExtrinsic(
+        chainAssetId: ChainAssetId,
+        details: PersistExtrinsicDetails,
+        runningIn queue: DispatchQueue,
+        completion closure: @escaping (Result<Void, Error>) -> Void
+    ) {
+        let wrapper = factory.createExtrinsicSaveOperation(
+            chainAssetId: chainAssetId,
+            details: details
+        )
+
+        wrapper.targetOperation.completionBlock = {
+            queue.async {
+                do {
+                    try wrapper.targetOperation.extractNoCancellableResultData()
+                    closure(.success(()))
+                } catch {
+                    closure(.failure(error))
+                }
+            }
+        }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 }

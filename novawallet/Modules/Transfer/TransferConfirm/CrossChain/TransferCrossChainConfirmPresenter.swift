@@ -3,10 +3,10 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-final class TransferConfirmPresenter: TransferPresenter {
-    weak var view: TransferConfirmViewProtocol?
+final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
+    weak var view: TransferConfirmCrossChainViewProtocol?
     let wireframe: TransferConfirmWireframeProtocol
-    let interactor: TransferConfirmInteractorInputProtocol
+    let interactor: TransferConfirmCrossChainInteractorInputProtocol
 
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
@@ -17,17 +17,17 @@ final class TransferConfirmPresenter: TransferPresenter {
     private lazy var walletIconGenerator = NovaIconGenerator()
 
     init(
-        interactor: TransferConfirmInteractorInputProtocol,
+        interactor: TransferConfirmCrossChainInteractorInputProtocol,
         wireframe: TransferConfirmWireframeProtocol,
         wallet: MetaAccountModel,
         recepient: AccountAddress,
         amount: Decimal,
         displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol,
-        chainAsset: ChainAsset,
+        originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
-        senderAccountAddress: AccountAddress,
         dataValidatingFactory: TransferDataValidatorFactoryProtocol,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
@@ -40,11 +40,11 @@ final class TransferConfirmPresenter: TransferPresenter {
         self.displayAddressViewModelFactory = displayAddressViewModelFactory
 
         super.init(
-            chainAsset: chainAsset,
+            originChainAsset: originChainAsset,
+            destinationChainAsset: destinationChainAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
-            senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
             logger: logger
         )
@@ -52,9 +52,14 @@ final class TransferConfirmPresenter: TransferPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideNetworkViewModel() {
-        let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        view?.didReceiveNetwork(viewModel: viewModel)
+    private func provideOriginNetworkViewModel() {
+        let viewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
+        view?.didReceiveOriginNetwork(viewModel: viewModel)
+    }
+
+    private func provideDestinationNetworkViewModel() {
+        let viewModel = networkViewModelFactory.createViewModel(from: destinationChainAsset.chain)
+        view?.didReceiveDestinationNetwork(viewModel: viewModel)
     }
 
     private func provideWalletViewModel() {
@@ -67,7 +72,11 @@ final class TransferConfirmPresenter: TransferPresenter {
     }
 
     private func provideSenderViewModel() {
-        let displayAddress = DisplayAddress(address: senderAccountAddress, username: "")
+        guard let senderAddress = wallet.fetch(for: originChainAsset.chain.accountRequest())?.toAddress() else {
+            return
+        }
+
+        let displayAddress = DisplayAddress(address: senderAddress, username: "")
         let viewModel = displayAddressViewModelFactory.createViewModel(from: displayAddress)
         view?.didReceiveSender(viewModel: viewModel)
     }
@@ -78,23 +87,43 @@ final class TransferConfirmPresenter: TransferPresenter {
         view?.didReceiveRecepient(viewModel: viewModel)
     }
 
-    private func provideNetworkFeeViewModel() {
-        let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
+    private func provideOriginFeeViewModel() {
+        let optAssetInfo = originChainAsset.chain.utilityAssets().first?.displayInfo
+        if let fee = originFee, let assetInfo = optAssetInfo {
             let feeDecimal = Decimal.fromSubstrateAmount(
                 fee,
                 precision: assetInfo.assetPrecision
             ) ?? 0.0
 
             let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
+            let priceData = isOriginUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
 
             let viewModel = viewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
 
-            view?.didReceiveFee(viewModel: viewModel)
+            view?.didReceiveOriginFee(viewModel: viewModel)
         } else {
-            view?.didReceiveFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: nil)
+        }
+    }
+
+    private func provideCrossChainFeeViewModel() {
+        let assetInfo = originChainAsset.assetDisplayInfo
+        if let fee = crossChainFee?.fee {
+            let feeDecimal = Decimal.fromSubstrateAmount(
+                fee,
+                precision: assetInfo.assetPrecision
+            ) ?? 0.0
+
+            let viewModel = sendingBalanceViewModelFactory.balanceFromPrice(
+                feeDecimal,
+                priceData: sendingAssetPrice
+            ).value(for: selectedLocale)
+
+            view?.didReceiveCrossChainFee(viewModel: viewModel)
+
+        } else {
+            view?.didReceiveCrossChainFee(viewModel: nil)
         }
     }
 
@@ -107,7 +136,7 @@ final class TransferConfirmPresenter: TransferPresenter {
         view?.didReceiveAmount(viewModel: viewModel)
     }
 
-    private func presentOptions(for address: AccountAddress) {
+    private func presentOptions(for address: AccountAddress, chain: ChainModel) {
         guard let view = view else {
             return
         }
@@ -115,57 +144,83 @@ final class TransferConfirmPresenter: TransferPresenter {
         wireframe.presentAccountOptions(
             from: view,
             address: address,
-            explorers: chainAsset.chain.explorers,
+            explorers: chain.explorers,
             locale: selectedLocale
         )
     }
 
     // MARK: Subsclass
 
-    override func refreshFee() {
-        let assetInfo = chainAsset.assetDisplayInfo
+    override func refreshOriginFee() {
+        let assetInfo = originChainAsset.assetDisplayInfo
 
         guard let amountValue = amount.toSubstrateAmount(precision: assetInfo.assetPrecision) else {
             return
         }
 
-        interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
+        interactor.estimateOriginFee(for: amountValue, recepient: recepientAccountAddress, weightLimit: crossChainFee?.weight)
     }
 
-    override func askFeeRetry() {
+    override func refreshCrossChainFee() {
+        let assetInfo = originChainAsset.assetDisplayInfo
+
+        guard let amountValue = amount.toSubstrateAmount(precision: assetInfo.assetPrecision) else {
+            return
+        }
+
+        interactor.estimateCrossChainFee(for: amountValue, recepient: recepientAccountAddress)
+    }
+
+    override func askOriginFeeRetry() {
         wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.refreshFee()
+            self?.refreshOriginFee()
         }
     }
 
-    override func didReceiveFee(result: Result<BigUInt, Error>) {
-        super.didReceiveFee(result: result)
+    override func askCrossChainFeeRetry() {
+        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
+            self?.refreshCrossChainFee()
+        }
+    }
+
+    override func didReceiveOriginFee(result: Result<BigUInt, Error>) {
+        super.didReceiveOriginFee(result: result)
 
         if case .success = result {
-            provideNetworkFeeViewModel()
+            provideOriginFeeViewModel()
+        }
+    }
+
+    override func didReceiveCrossChainFee(result: Result<FeeWithWeight, Error>) {
+        super.didReceiveCrossChainFee(result: result)
+
+        if case .success = result {
+            provideCrossChainFeeViewModel()
+            refreshOriginFee()
         }
     }
 
     override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
         super.didReceiveSendingAssetPrice(priceData)
 
-        if isUtilityTransfer {
-            provideNetworkFeeViewModel()
+        if isOriginUtilityTransfer {
+            provideOriginFeeViewModel()
         }
 
+        provideCrossChainFeeViewModel()
         provideAmountViewModel()
     }
 
     override func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
         super.didReceiveUtilityAssetPrice(priceData)
 
-        provideNetworkFeeViewModel()
+        provideOriginFeeViewModel()
     }
 
     override func didCompleteSetup() {
         super.didCompleteSetup()
 
-        refreshFee()
+        refreshCrossChainFee()
 
         interactor.change(recepient: recepientAccountAddress)
     }
@@ -179,21 +234,23 @@ final class TransferConfirmPresenter: TransferPresenter {
     }
 }
 
-extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
+extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
     func setup() {
         provideAmountViewModel()
-        provideNetworkViewModel()
+        provideOriginNetworkViewModel()
+        provideDestinationNetworkViewModel()
         provideWalletViewModel()
         provideSenderViewModel()
-        provideNetworkFeeViewModel()
+        provideOriginFeeViewModel()
+        provideCrossChainFeeViewModel()
         provideRecepientViewModel()
 
         interactor.setup()
     }
 
     func submit() {
-        guard let amountValue = amount.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
+        guard let amountInPlank = amount.toSubstrateAmount(
+            precision: originChainAsset.assetDisplayInfo.assetPrecision
         ) else {
             return
         }
@@ -205,40 +262,46 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
         )
 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
-            guard let strongSelf = self else {
+            guard let strongSelf = self, let crossChainFee = self?.crossChainFee else {
                 return
             }
 
             strongSelf.view?.didStartLoading()
 
             strongSelf.interactor.submit(
-                amount: amountValue,
+                amount: amountInPlank + crossChainFee.fee,
                 recepient: strongSelf.recepientAccountAddress,
-                lastFee: strongSelf.fee
+                weightLimit: crossChainFee.weight,
+                originFee: strongSelf.originFee
             )
         }
     }
 
     func showSenderActions() {
-        presentOptions(for: senderAccountAddress)
+        guard let senderAddress = wallet.fetch(for: originChainAsset.chain.accountRequest())?.toAddress() else {
+            return
+        }
+
+        presentOptions(for: senderAddress, chain: originChainAsset.chain)
     }
 
     func showRecepientActions() {
-        presentOptions(for: recepientAccountAddress)
+        presentOptions(for: recepientAccountAddress, chain: destinationChainAsset.chain)
     }
 }
 
-extension TransferConfirmPresenter: TransferConfirmInteractorOutputProtocol {
+extension TransferCrossChainConfirmPresenter: TransferConfirmCrossChainInteractorOutputProtocol {
     func didCompleteSubmition() {
         view?.didStopLoading()
         wireframe.complete(on: view, locale: selectedLocale)
     }
 }
 
-extension TransferConfirmPresenter: Localizable {
+extension TransferCrossChainConfirmPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
-            provideNetworkFeeViewModel()
+            provideOriginFeeViewModel()
+            provideCrossChainFeeViewModel()
         }
     }
 }

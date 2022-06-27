@@ -812,3 +812,16 @@
 "parastk.cant.rebond.title" = "You cannot return to stake";
 "parastk.cant.rebond.message" = "You don't have unstaking tokens for this collator";
 "parachain.staking.full.message" = "You have reached the maximum number of delegations of %@ collators";
+"xcm.destination.selection.title" = "Recipient network";
+"common.on.chain" = "On-chain";
+"common.cross.chain" = "Cross-chain";
+"common.cross.chain.fee" = "Cross-chain fee";
+"wallet.transfer.cross.chain.from" = "Send %@ from";
+"wallet.transfer.cross.chain.to" = "to";
+"wallet.transfer.cross.chain.from" = "from";
+"wallet.transfer.token.format_v2_9_1" = "Send %@";
+"wallet.transfer.on" = "on";
+"common.myself" = "Myself";
+"common.from.network" = "From network";
+"common.to.network" = "To network";
+"transfer.cross.chain.hint" = "Cross-chain fee is added on top of entered amount. Recipient may receive part of cross-chain fee";
