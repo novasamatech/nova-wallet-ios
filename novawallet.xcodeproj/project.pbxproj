@@ -655,7 +655,7 @@
 		84452F9D25D6768000F47EC5 /* RuntimeMetadataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */; };
 		84452FA525D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */; };
 		8445CC2728366578003B26CD /* ParaStkCalls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8445CC2628366578003B26CD /* ParaStkCalls.swift */; };
-		84468A072866530100BCBE00 /* AssetDecodingOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */; };
+		84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */; };
 		84468A09286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */; };
 		84468A0B286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */; };
 		84468A0D28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84468A0C28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift */; };
@@ -1662,6 +1662,7 @@
 		84F18D4A27A1869E00CA7554 /* OrmlAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4927A1869E00CA7554 /* OrmlAccount.swift */; };
 		84F18D4C27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4B27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift */; };
 		84F18D4E27A18C1400CA7554 /* OrmlAccountSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */; };
+		84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */; };
 		84F1CB2B27CE4E4B0095D523 /* NftListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB2A27CE4E4B0095D523 /* NftListViewModel.swift */; };
 		84F1CB2F27CE50B50095D523 /* NftListMetadataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB2E27CE50B50095D523 /* NftListMetadataViewModel.swift */; };
 		84F1CB3127CE56740095D523 /* NftListStaticViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F1CB3027CE56740095D523 /* NftListStaticViewModel.swift */; };
@@ -2987,7 +2988,7 @@
 		84452F9C25D6768000F47EC5 /* RuntimeMetadataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeMetadataItem.swift; sourceTree = "<group>"; };
 		84452FA425D679F200F47EC5 /* CDRuntimeMetadataItem+CoreDataCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDRuntimeMetadataItem+CoreDataCodable.swift"; sourceTree = "<group>"; };
 		8445CC2628366578003B26CD /* ParaStkCalls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaStkCalls.swift; sourceTree = "<group>"; };
-		84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetDecodingOperationFactory.swift; sourceTree = "<group>"; };
+		84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStorageInfoOperationFactory.swift; sourceTree = "<group>"; };
 		84468A08286662E000BCBE00 /* CrossChainTransferSetupInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupInteractor.swift; sourceTree = "<group>"; };
 		84468A0A286663E500BCBE00 /* CrossChainTransferSetupPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupPresenter.swift; sourceTree = "<group>"; };
 		84468A0C28666BFF00BCBE00 /* CrossChainTransferSetupWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossChainTransferSetupWireframe.swift; sourceTree = "<group>"; };
@@ -4002,6 +4003,7 @@
 		84F18D4927A1869E00CA7554 /* OrmlAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccount.swift; sourceTree = "<group>"; };
 		84F18D4B27A1874000CA7554 /* OrmlAccountSubcriptionHandlingFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccountSubcriptionHandlingFactory.swift; sourceTree = "<group>"; };
 		84F18D4D27A18C1400CA7554 /* OrmlAccountSubscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrmlAccountSubscription.swift; sourceTree = "<group>"; };
+		84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetBalanceExistence.swift; sourceTree = "<group>"; };
 		84F1CB2A27CE4E4B0095D523 /* NftListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListViewModel.swift; sourceTree = "<group>"; };
 		84F1CB2E27CE50B50095D523 /* NftListMetadataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListMetadataViewModel.swift; sourceTree = "<group>"; };
 		84F1CB3027CE56740095D523 /* NftListStaticViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftListStaticViewModel.swift; sourceTree = "<group>"; };
@@ -6462,7 +6464,7 @@
 		84468A05286652EF00BCBE00 /* Operation */ = {
 			isa = PBXGroup;
 			children = (
-				84468A062866530100BCBE00 /* AssetDecodingOperationFactory.swift */,
+				84468A062866530100BCBE00 /* AssetStorageInfoOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -7585,6 +7587,7 @@
 				8499FEDF27C0AE3200712589 /* KnownChainIds.swift */,
 				84C5ADDC2813248B006D7388 /* WalletDisplayAddress.swift */,
 				84FFE4562861FFE5002432BB /* FeeWithWeight.swift */,
+				84F1A0702869DA51007DB053 /* AssetBalanceExistence.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -12461,7 +12464,7 @@
 				84DA03D62759341200E8B326 /* ChainAccountControl.swift in Sources */,
 				84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */,
 				846AF8442525BE0100868F37 /* Price.swift in Sources */,
-				84468A072866530100BCBE00 /* AssetDecodingOperationFactory.swift in Sources */,
+				84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */,
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				844384AE28538F4700611CE2 /* UniformCurveRewardEngine.swift in Sources */,
@@ -12596,6 +12599,7 @@
 				F41C728326428A9400E8BB41 /* ControllerAccountViewLayout.swift in Sources */,
 				84DA03D82759362100E8B326 /* ChainAccountViewModel.swift in Sources */,
 				84C1FA18278D44DD008B2711 /* PolkadotExtensionPayload.swift in Sources */,
+				84F1A0712869DA51007DB053 /* AssetBalanceExistence.swift in Sources */,
 				84F1CB3127CE56740095D523 /* NftListStaticViewModel.swift in Sources */,
 				848CCB482832EF4400A1FD00 /* GeneralLocalStorageHandler.swift in Sources */,
 				849013D024A9267F008F705E /* R.generated.swift in Sources */,
