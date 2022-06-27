@@ -4,8 +4,13 @@ import RobinHood
 typealias XcmTrasferFeeResult = Result<FeeWithWeight, Error>
 typealias XcmTransferEstimateFeeClosure = (XcmTrasferFeeResult) -> Void
 
-typealias XcmSubmitExtrinsicResult = Result<String, Error>
-typealias XcmExtrinsicSubmitClosure = (SubmitExtrinsicResult) -> Void
+struct XcmSubmitExtrinsic {
+    let txHash: String
+    let callPath: CallCodingPath
+}
+
+typealias XcmSubmitExtrinsicResult = Result<XcmSubmitExtrinsic, Error>
+typealias XcmExtrinsicSubmitClosure = (XcmSubmitExtrinsicResult) -> Void
 
 protocol XcmTransferServiceProtocol {
     func estimateOriginFee(
@@ -66,7 +71,7 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             let operationFactory = try createOperationFactory(for: unweighted.origin.chain)
 
             let feeWrapper = operationFactory.estimateFeeOperation { builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
                 return try callClosure(builder)
             }
 
@@ -265,18 +270,20 @@ extension XcmTransferService: XcmTransferServiceProtocol {
             let operationFactory = try createOperationFactory(for: request.unweighted.origin.chain)
 
             let submitWrapper = operationFactory.submit({ builder in
-                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData()
+                let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
                 return try callClosure(builder)
             }, signer: signer)
 
             submitWrapper.addDependency(wrapper: callBuilderWrapper)
 
             submitWrapper.targetOperation.completionBlock = {
-                switch submitWrapper.targetOperation.result {
-                case let .some(result):
-                    callbackClosureIfProvided(completionClosure, queue: queue, result: result)
-                case .none:
-                    let error = BaseOperationError.parentOperationCancelled
+                do {
+                    let txHash = try submitWrapper.targetOperation.extractNoCancellableResultData()
+                    let callPath = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().1
+                    let extrinsicResult = XcmSubmitExtrinsic(txHash: txHash, callPath: callPath)
+
+                    callbackClosureIfProvided(completionClosure, queue: queue, result: .success(extrinsicResult))
+                } catch {
                     callbackClosureIfProvided(completionClosure, queue: queue, result: .failure(error))
                 }
             }

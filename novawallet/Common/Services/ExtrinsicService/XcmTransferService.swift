@@ -198,7 +198,7 @@ final class XcmTransferService {
         request: XcmUnweightedTransferRequest,
         xcmTransfers: XcmTransfers,
         maxWeight: BigUInt
-    ) -> CompoundOperationWrapper<ExtrinsicBuilderClosure> {
+    ) -> CompoundOperationWrapper<(ExtrinsicBuilderClosure, CallCodingPath)> {
         let destChainId = request.destination.chain.chainId
         let originChainAssetId = request.origin.chainAssetId
         guard let xcmTransfer = xcmTransfers.transfer(from: originChainAssetId, destinationChainId: destChainId) else {
@@ -224,7 +224,7 @@ final class XcmTransferService {
                 runtimeProvider: runtimeProvider
             )
 
-            let mapOperation = ClosureOperation<ExtrinsicBuilderClosure> {
+            let mapOperation = ClosureOperation<(ExtrinsicBuilderClosure, CallCodingPath)> {
                 let module = try moduleResolutionWrapper.targetOperation.extractNoCancellableResultData()
 
                 switch xcmTransfer.type {
@@ -234,7 +234,7 @@ final class XcmTransferService {
 
                     let call = Xcm.OrmlTransferCall(asset: asset, destination: location, destinationWeight: maxWeight)
 
-                    return { try $0.adding(call: call.runtimeCall(for: module)) }
+                    return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
                 case .xcmpallet:
                     let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
                     let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
@@ -246,7 +246,7 @@ final class XcmTransferService {
                         weightLimit: .limited(weight: UInt64(maxWeight))
                     )
 
-                    return { try $0.adding(call: call.runtimeCall(for: module)) }
+                    return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
                 }
             }
 

@@ -40,7 +40,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
     private var setupCall: CancellableCall?
 
     private var assetsInfo: CrossChainAssetsStorageInfo?
-    private var transferParties: XcmTransferParties?
+    private(set) var transferParties: XcmTransferParties?
 
     private var sendingAssetSubscriptionId: UUID?
     private var utilityAssetSubscriptionId: UUID?

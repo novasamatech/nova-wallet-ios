@@ -1,4 +1,5 @@
 import UIKit
+import SoraFoundation
 
 final class TransferConfirmViewLayout: UIView {
     let containerView: ScrollableContainerView = {
@@ -13,7 +14,10 @@ final class TransferConfirmViewLayout: UIView {
 
     let senderTableView = StackTableView()
 
-    let networkCell = StackNetworkCell()
+    let originNetworkCell = StackNetworkCell()
+
+    private(set) var destinationNetworkCell: StackNetworkCell?
+
     let walletCell = StackTableCell()
     let senderCell: StackInfoTableCell = {
         let cell = StackInfoTableCell()
@@ -29,7 +33,10 @@ final class TransferConfirmViewLayout: UIView {
         return cell
     }()
 
-    let networkFeeCell = StackNetworkFeeCell()
+    let originFeeCell = StackNetworkFeeCell()
+
+    private(set) var crossChainFeeCell: StackNetworkFeeCell?
+    private(set) var crossChainHintView: HintListView?
 
     let actionButton: TriangularedButton = {
         let button = TriangularedButton()
@@ -48,6 +55,39 @@ final class TransferConfirmViewLayout: UIView {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func switchCrossChain() {
+        if destinationNetworkCell == nil {
+            let destinationNetworkCell = StackNetworkCell()
+
+            recepientTableView.insertArrangedSubview(destinationNetworkCell, at: 0)
+
+            self.destinationNetworkCell = destinationNetworkCell
+        }
+
+        if crossChainFeeCell == nil {
+            let crossChainFeeCell = StackNetworkFeeCell()
+            crossChainFeeCell.rowContentView.title = LocalizableResource { locale in
+                R.string.localizable.commonCrossChainFee(preferredLanguages: locale.rLanguages)
+            }
+
+            senderTableView.addArrangedSubview(crossChainFeeCell)
+
+            self.crossChainFeeCell = crossChainFeeCell
+        }
+
+        if crossChainHintView == nil {
+            let crossChainHintView = HintListView()
+
+            containerView.stackView.insertArranged(view: crossChainHintView, after: senderTableView)
+
+            containerView.stackView.setCustomSpacing(12.0, after: crossChainHintView)
+
+            self.crossChainHintView = crossChainHintView
+        }
+
+        setNeedsLayout()
     }
 
     private func setupLayout() {
@@ -70,10 +110,10 @@ final class TransferConfirmViewLayout: UIView {
         containerView.stackView.addArrangedSubview(senderTableView)
         containerView.stackView.setCustomSpacing(12.0, after: senderTableView)
 
-        senderTableView.addArrangedSubview(networkCell)
+        senderTableView.addArrangedSubview(originNetworkCell)
         senderTableView.addArrangedSubview(walletCell)
         senderTableView.addArrangedSubview(senderCell)
-        senderTableView.addArrangedSubview(networkFeeCell)
+        senderTableView.addArrangedSubview(originFeeCell)
 
         containerView.stackView.addArrangedSubview(recepientTableView)
         recepientTableView.addArrangedSubview(recepientCell)
