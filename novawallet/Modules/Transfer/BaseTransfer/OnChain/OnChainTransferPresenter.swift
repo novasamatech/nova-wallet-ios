@@ -70,6 +70,11 @@ class OnChainTransferPresenter {
         fee = newValue
     }
 
+    func resetRecepientBalance() {
+        recepientSendingAssetBalance = nil
+        recepientUtilityAssetBalance = nil
+    }
+
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,

@@ -9,10 +9,10 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     let wireframe: CrossChainTransferSetupWireframeProtocol
     let interactor: CrossChainTransferSetupInteractorInputProtocol
 
-    private(set) var recepientAddress: AccountAddress?
+    private(set) var partialRecepientAddress: AccountAddress?
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
-    let initialState: TransferSetupInputState?
+    let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     var inputResult: AmountInputResult?
 
@@ -22,6 +22,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         originChainAsset: ChainAsset,
         destinationChainAsset: ChainAsset,
         initialState: TransferSetupInputState,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -32,7 +33,9 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.initialState = initialState
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
+        partialRecepientAddress = initialState.recepient
+        inputResult = initialState.amount
         self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
@@ -48,29 +51,18 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         self.localizationManager = localizationManager
     }
 
+    func getRecepientAccountId() -> AccountId? {
+        try? partialRecepientAddress?.toAccountId(using: destinationChainAsset.chain.chainFormat)
+    }
+
     private func updateChainAssetViewModel() {
-        let networkViewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
-
-        let assetIconUrl = originChainAsset.asset.icon ?? originChainAsset.chain.icon
-        let assetIconViewModel = RemoteImageViewModel(url: assetIconUrl)
-
-        let assetViewModel = AssetViewModel(
-            symbol: originChainAsset.asset.symbol,
-            imageViewModel: assetIconViewModel
-        )
-
-        let viewModel = ChainAssetViewModel(
-            networkViewModel: networkViewModel,
-            assetViewModel: assetViewModel
-        )
-
+        let viewModel = chainAssetViewModelFactory.createViewModel(from: originChainAsset)
         view?.didReceiveInputChainAsset(viewModel: viewModel)
     }
 
     private func provideRecepientStateViewModel() {
         if
-            let recepientAddress = recepientAddress,
-            let accountId = try? recepientAddress.toAccountId(),
+            let accountId = getRecepientAccountId(),
             let icon = try? iconGenerator.generateFromAccountId(accountId) {
             let iconViewModel = DrawableIconViewModel(icon: icon)
             let viewModel = AccountFieldStateViewModel(icon: iconViewModel)
@@ -82,12 +74,9 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     }
 
     private func provideRecepientInputViewModel() {
-        let value = recepientAddress ?? ""
-        provideRecepientInputViewModel(for: value)
-    }
+        let value = partialRecepientAddress ?? ""
 
-    private func provideRecepientInputViewModel(for address: AccountAddress) {
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: address)
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
 
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
@@ -202,19 +191,20 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         return balance - originFee - crossChainFee
     }
 
-    private func updateRecepientFieldIfValue(_ newAddress: String) {
-        let accountId = try? newAddress.toAccountId(using: destinationChainAsset.chain.chainFormat)
-        if accountId != nil {
-            recepientAddress = newAddress
-        } else {
-            recepientAddress = nil
-        }
-    }
-
     private func updateRecepientAddress(_ newAddress: String) {
-        updateRecepientFieldIfValue(newAddress)
+        guard partialRecepientAddress != newAddress else {
+            return
+        }
 
-        interactor.change(recepient: recepientAddress)
+        partialRecepientAddress = newAddress
+
+        let optAccountId = getRecepientAccountId()
+
+        interactor.change(recepient: optAccountId)
+
+        if optAccountId == nil {
+            resetRecepientBalance()
+        }
 
         provideRecepientStateViewModel()
 
@@ -238,7 +228,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
         let weightLimit = crossChainFee?.weight ?? 0
 
-        interactor.estimateOriginFee(for: amount, recepient: recepientAddress, weightLimit: weightLimit)
+        interactor.estimateOriginFee(for: amount, recepient: getRecepientAccountId(), weightLimit: weightLimit)
     }
 
     override func refreshCrossChainFee() {
@@ -254,7 +244,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         updateCrossChainFee(nil)
         updateCrossChainFeeView()
 
-        interactor.estimateCrossChainFee(for: amount, recepient: recepientAddress)
+        interactor.estimateCrossChainFee(for: amount, recepient: getRecepientAccountId())
     }
 
     override func askCrossChainFeeRetry() {
@@ -316,10 +306,9 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     override func didCompleteSetup() {
         super.didCompleteSetup()
 
-        refreshOriginFee()
-        refreshCrossChainFee()
+        interactor.change(recepient: getRecepientAccountId())
 
-        interactor.change(recepient: recepientAddress)
+        refreshCrossChainFee()
     }
 
     override func didReceiveError(_ error: Error) {
@@ -331,24 +320,15 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
 extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
     var inputState: TransferSetupInputState {
-        TransferSetupInputState(recepient: recepientAddress, amount: inputResult)
+        TransferSetupInputState(recepient: partialRecepientAddress, amount: inputResult)
     }
 
     func setup() {
         updateChainAssetViewModel()
         updateOriginFeeView()
         updateCrossChainFeeView()
-
-        if let receiverAddress = initialState?.recepient {
-            updateRecepientFieldIfValue(receiverAddress)
-            provideRecepientStateViewModel()
-            provideRecepientInputViewModel(for: receiverAddress)
-        } else {
-            provideRecepientStateViewModel()
-            provideRecepientInputViewModel()
-        }
-
-        inputResult = initialState?.amount
+        provideRecepientStateViewModel()
+        provideRecepientInputViewModel()
         provideAmountInputViewModel()
         updateAmountPriceView()
 
@@ -378,20 +358,15 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
     }
 
     func changeRecepient(address: String) {
-        guard address != recepientAddress else {
-            return
-        }
-
-        recepientAddress = address
-        provideRecepientInputViewModel()
         updateRecepientAddress(address)
+        provideRecepientInputViewModel()
     }
 
     func proceed() {
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
-            recepientAddress: recepientAddress,
+            recepientAddress: partialRecepientAddress,
             selectedLocale: selectedLocale
         )
 
@@ -407,7 +382,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
 
         validators.append(
             phishingValidatingFactory.notPhishing(
-                address: recepientAddress,
+                address: partialRecepientAddress,
                 locale: selectedLocale
             )
         )
@@ -415,7 +390,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard
                 let amount = sendingAmount,
-                let recepient = self?.recepientAddress,
+                let recepient = self?.partialRecepientAddress,
                 let originChainAsset = self?.originChainAsset,
                 let destinationChainAsset = self?.destinationChainAsset else {
                 return

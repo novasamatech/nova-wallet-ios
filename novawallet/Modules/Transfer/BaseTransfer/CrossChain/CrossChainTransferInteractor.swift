@@ -199,7 +199,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         let chain = destinationChainAsset.chain
         let destinationId = XcmTransferDestinationId(
             chainId: chain.chainId,
-            accountId: AccountId.dummyAccountId(of: chain.accountIdSize)
+            accountId: AccountId.zeroAccountId(of: chain.accountIdSize)
         )
 
         let transferResolution = resolutionFactory.createResolutionWrapper(
@@ -474,84 +474,62 @@ extension CrossChainTransferInteractor {
         operationQueue.addOperations(setupWrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountAddress?, weightLimit: BigUInt?) {
-        do {
-            guard let transferParties = transferParties else {
-                throw CommonError.dataCorruption
-            }
-
-            let recepientAccountId: AccountId
-
-            if let recepient = recepient {
-                recepientAccountId = try recepient.toAccountId()
-            } else {
-                recepientAccountId = AccountId.dummyAccountId(of: destinationChainAsset.chain.accountIdSize)
-            }
-
-            let maxWeight = weightLimit ?? 0
-            let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex() +
-                "-" + String(maxWeight)
-
-            let destination = transferParties.destination.replacing(accountId: recepientAccountId)
-            let unweightedRequest = XcmUnweightedTransferRequest(
-                origin: originChainAsset,
-                destination: destination,
-                reserve: transferParties.reserve,
-                amount: amount
-            )
-
-            let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit ?? 0)
-
-            feeProxy.estimateOriginFee(
-                using: extrinsicService,
-                xcmTransferRequest: transferRequest,
-                xcmTransfers: xcmTransfers,
-                reuseIdentifier: identifier
-            )
-        } catch {
-            presenter?.didReceiveError(CommonError.dataCorruption)
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?) {
+        guard let transferParties = transferParties else {
+            return
         }
+
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
+
+        let maxWeight = weightLimit ?? 0
+        let identifier = "origin" + "-" + String(amount) + "-" + recepientAccountId.toHex() +
+            "-" + String(maxWeight)
+
+        let destination = transferParties.destination.replacing(accountId: recepientAccountId)
+        let unweightedRequest = XcmUnweightedTransferRequest(
+            origin: originChainAsset,
+            destination: destination,
+            reserve: transferParties.reserve,
+            amount: amount
+        )
+
+        let transferRequest = XcmTransferRequest(unweighted: unweightedRequest, maxWeight: weightLimit ?? 0)
+
+        feeProxy.estimateOriginFee(
+            using: extrinsicService,
+            xcmTransferRequest: transferRequest,
+            xcmTransfers: xcmTransfers,
+            reuseIdentifier: identifier
+        )
     }
 
-    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountAddress?) {
-        do {
-            guard let transferParties = transferParties else {
-                throw CommonError.dataCorruption
-            }
-
-            let recepientAccountId: AccountId
-
-            if let recepient = recepient {
-                recepientAccountId = try recepient.toAccountId()
-            } else {
-                recepientAccountId = AccountId.dummyAccountId(of: destinationChainAsset.chain.accountIdSize)
-            }
-
-            let identifier = "crosschain" + "-" + String(amount) + "-" + recepientAccountId.toHex()
-
-            let destination = transferParties.destination.replacing(accountId: recepientAccountId)
-            let request = XcmUnweightedTransferRequest(
-                origin: originChainAsset,
-                destination: destination,
-                reserve: transferParties.reserve,
-                amount: amount
-            )
-
-            feeProxy.estimateCrossChainFee(
-                using: extrinsicService,
-                xcmTransferRequest: request,
-                xcmTransfers: xcmTransfers,
-                reuseIdentifier: identifier
-            )
-        } catch {
-            presenter?.didReceiveError(CommonError.dataCorruption)
+    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountId?) {
+        guard let transferParties = transferParties else {
+            return
         }
+
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: destinationChainAsset.chain.accountIdSize)
+
+        let identifier = "crosschain" + "-" + String(amount) + "-" + recepientAccountId.toHex()
+
+        let destination = transferParties.destination.replacing(accountId: recepientAccountId)
+        let request = XcmUnweightedTransferRequest(
+            origin: originChainAsset,
+            destination: destination,
+            reserve: transferParties.reserve,
+            amount: amount
+        )
+
+        feeProxy.estimateCrossChainFee(
+            using: extrinsicService,
+            xcmTransferRequest: request,
+            xcmTransfers: xcmTransfers,
+            reuseIdentifier: identifier
+        )
     }
 
-    func change(recepient: AccountAddress?) {
-        guard
-            let newRecepientAccountId = try? recepient?.toAccountId(),
-            newRecepientAccountId != recepientAccountId else {
+    func change(recepient: AccountId?) {
+        guard recepientAccountId != recepient else {
             return
         }
 
@@ -560,7 +538,7 @@ extension CrossChainTransferInteractor {
         clearSendingAssetLocaleRecepientSubscription()
         clearUtilityAssetLocaleRecepientSubscriptions()
 
-        recepientAccountId = newRecepientAccountId
+        recepientAccountId = recepient
 
         subscribeSendingRecepientAssetBalance()
         subscribeUtilityRecepientAssetBalance()

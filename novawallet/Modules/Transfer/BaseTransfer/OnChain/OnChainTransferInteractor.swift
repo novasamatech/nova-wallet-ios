@@ -389,39 +389,27 @@ extension OnChainTransferInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateFee(for amount: BigUInt, recepient: AccountAddress?) {
-        do {
-            let recepientAccountId: AccountId
+    func estimateFee(for amount: BigUInt, recepient: AccountId?) {
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
-            if let recepient = recepient {
-                recepientAccountId = try recepient.toAccountId()
-            } else {
-                recepientAccountId = selectedAccount.accountId
-            }
+        let identifier = String(amount) + "-" + recepientAccountId.toHex()
 
-            let identifier = String(amount) + "-" + recepientAccountId.toHex()
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
 
-            feeProxy.estimateFee(
-                using: extrinsicService,
-                reuseIdentifier: identifier
-            ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recepient: recepientAccountId
-                ) ?? (builder, nil)
-
-                return newBuilder
-            }
-        } catch {
-            presenter?.didReceiveError(CommonError.dataCorruption)
+            return newBuilder
         }
     }
 
-    func change(recepient: AccountAddress?) {
-        guard
-            let newRecepientAccountId = try? recepient?.toAccountId(),
-            newRecepientAccountId != recepientAccountId else {
+    func change(recepient: AccountId?) {
+        guard recepient != recepientAccountId else {
             return
         }
 
@@ -430,7 +418,7 @@ extension OnChainTransferInteractor {
         clearSendingAssetLocaleRecepientSubscription()
         clearUtilityAssetLocaleRecepientSubscriptions()
 
-        recepientAccountId = newRecepientAccountId
+        recepientAccountId = recepient
 
         subscribeSendingRecepientAssetBalance()
         subscribeUtilityRecepientAssetBalance()

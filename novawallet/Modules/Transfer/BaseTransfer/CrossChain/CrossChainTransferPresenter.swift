@@ -88,6 +88,11 @@ class CrossChainTransferPresenter {
         originFee = newValue
     }
 
+    func resetRecepientBalance() {
+        recepientSendingAssetBalance = nil
+        recepientUtilityAssetBalance = nil
+    }
+
     private func totalFee() -> BigUInt? {
         let optDestSendingFee = crossChainFee?.fee
         let optOriginSendingFee: BigUInt? = (isOriginUtilityTransfer ? originFee : 0)
