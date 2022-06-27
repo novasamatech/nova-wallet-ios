@@ -184,9 +184,15 @@ final class XcmTransferFactory {
             junctions.append(.palletInstance(UInt8(palletInstance)))
         }
 
-        if let generalKeyString = path.palletInstance?.stringValue {
+        if let generalKeyString = path.generalKey?.stringValue {
             let generalKey = try Data(hexString: generalKeyString)
             junctions.append(.generalKey(generalKey))
+        } else if let generalIndexString = path.generalIndex?.stringValue {
+            guard let generalIndex = BigUInt(generalIndexString) else {
+                throw CommonError.dataCorruption
+            }
+
+            junctions.append(.generalIndex(generalIndex))
         }
 
         return Xcm.Junctions(items: junctions)
@@ -210,7 +216,7 @@ final class XcmTransferFactory {
     ) -> UInt8 {
         switch type {
         case .absolute:
-            return reserve.isRelaychain ? 0 : 1
+            return origin.isRelaychain ? 0 : 1
         case .relative:
             if origin.chainId != reserve.chainId, !origin.isRelaychain {
                 return 1
@@ -264,7 +270,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
 
         let parents: UInt8
 
-        if destination.parachainId != nil, origin.chainId != destination.chain.chainId {
+        if !origin.isRelaychain, origin.chainId != destination.chain.chainId {
             parents = 1
         } else {
             parents = 0
@@ -290,7 +296,7 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
     ) -> Xcm.VersionedMultilocation {
         let parents: UInt8
 
-        if reserve.parachainId != nil, origin.chainId != reserve.chain.chainId {
+        if !origin.isRelaychain, origin.chainId != reserve.chain.chainId {
             parents = 1
         } else {
             parents = 0
