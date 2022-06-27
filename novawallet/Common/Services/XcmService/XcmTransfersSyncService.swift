@@ -26,6 +26,8 @@ final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServicePro
     var notificationCallback: ((Result<XcmTransfers, Error>) -> Void)?
     var notificationQueue = DispatchQueue.main
 
+    private var operations: [Operation]?
+
     init(
         remoteUrl: URL,
         operationQueue: OperationQueue,
@@ -65,6 +67,20 @@ final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServicePro
         notificationQueue.async {
             notificationCallback(result)
         }
+    }
+
+    private func clearOperations() -> Bool {
+        mutex.lock()
+
+        defer {
+            mutex.unlock()
+        }
+
+        let exists = operations != nil
+
+        operations = nil
+
+        return exists
     }
 
     private func createLocalWrapper(for localPath: String) -> CompoundOperationWrapper<FetchResult> {
@@ -164,6 +180,10 @@ final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServicePro
 
         remoteWrapper.targetOperation.completionBlock = { [weak self] in
             do {
+                guard self?.clearOperations() == true else {
+                    return
+                }
+
                 if let xcmTransfers = try remoteWrapper.targetOperation.extractNoCancellableResultData() {
                     self?.notify(with: .success(xcmTransfers))
                 }
@@ -176,6 +196,16 @@ final class XcmTransfersSyncService: BaseSyncService, XcmTransfersSyncServicePro
 
         let operations = localWrapper.allOperations + remoteWrapper.allOperations
 
+        self.operations = operations
+
         operationQueue.addOperations(operations, waitUntilFinished: false)
+    }
+
+    override func stopSyncUp() {
+        let operations = self.operations
+
+        self.operations = nil
+
+        operations?.forEach { $0.cancel() }
     }
 }
