@@ -11,6 +11,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     private(set) var recepientAddress: AccountAddress?
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
+    let initialState: TransferSetupInputState?
 
     var inputResult: AmountInputResult?
 
@@ -30,8 +31,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        recepientAddress = initialState.recepient
-        inputResult = initialState.amount
+        self.initialState = initialState
         self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
@@ -82,7 +82,12 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
     private func provideRecepientInputViewModel() {
         let value = recepientAddress ?? ""
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
+
+        provideRecepientInputViewModel(for: value)
+    }
+
+    private func provideRecepientInputViewModel(for address: AccountAddress) {
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: address)
 
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
@@ -176,13 +181,17 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         return balance - fee
     }
 
-    private func updateRecepientAddress(_ newAddress: String) {
+    private func updateRecepientFieldIfValue(_ newAddress: String) {
         let accountId = try? newAddress.toAccountId(using: chainAsset.chain.chainFormat)
         if accountId != nil {
             recepientAddress = newAddress
         } else {
             recepientAddress = nil
         }
+    }
+
+    private func updateRecepientAddress(_ newAddress: String) {
+        updateRecepientFieldIfValue(newAddress)
 
         interactor.change(recepient: recepientAddress)
 
@@ -270,8 +279,17 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
     func setup() {
         updateChainAssetViewModel()
         updateFeeView()
-        provideRecepientStateViewModel()
-        provideRecepientInputViewModel()
+
+        if let receiverAddress = initialState?.recepient {
+            updateRecepientFieldIfValue(receiverAddress)
+            provideRecepientStateViewModel()
+            provideRecepientInputViewModel(for: receiverAddress)
+        } else {
+            provideRecepientStateViewModel()
+            provideRecepientInputViewModel()
+        }
+
+        inputResult = initialState?.amount
         provideAmountInputViewModel()
         updateAmountPriceView()
 
