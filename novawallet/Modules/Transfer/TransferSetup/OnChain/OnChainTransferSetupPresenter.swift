@@ -8,10 +8,10 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     let wireframe: OnChainTransferSetupWireframeProtocol
     let interactor: OnChainTransferSetupInteractorInputProtocol
 
-    private(set) var recepientAddress: AccountAddress?
+    private(set) var partialRecepientAddress: AccountAddress?
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
-    let initialState: TransferSetupInputState?
+    let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     var inputResult: AmountInputResult?
 
@@ -20,6 +20,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         wireframe: OnChainTransferSetupWireframeProtocol,
         chainAsset: ChainAsset,
         initialState: TransferSetupInputState,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
         sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
         utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
@@ -31,7 +32,9 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.initialState = initialState
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
+        partialRecepientAddress = initialState.recepient
+        inputResult = initialState.amount
         self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
@@ -47,29 +50,18 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         self.localizationManager = localizationManager
     }
 
+    func getRecepientAccountId() -> AccountId? {
+        try? partialRecepientAddress?.toAccountId(using: chainAsset.chain.chainFormat)
+    }
+
     private func updateChainAssetViewModel() {
-        let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-
-        let assetIconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
-        let assetIconViewModel = RemoteImageViewModel(url: assetIconUrl)
-
-        let assetViewModel = AssetViewModel(
-            symbol: chainAsset.asset.symbol,
-            imageViewModel: assetIconViewModel
-        )
-
-        let viewModel = ChainAssetViewModel(
-            networkViewModel: networkViewModel,
-            assetViewModel: assetViewModel
-        )
-
+        let viewModel = chainAssetViewModelFactory.createViewModel(from: chainAsset)
         view?.didReceiveInputChainAsset(viewModel: viewModel)
     }
 
     private func provideRecepientStateViewModel() {
         if
-            let recepientAddress = recepientAddress,
-            let accountId = try? recepientAddress.toAccountId(),
+            let accountId = getRecepientAccountId(),
             let icon = try? iconGenerator.generateFromAccountId(accountId) {
             let iconViewModel = DrawableIconViewModel(icon: icon)
             let viewModel = AccountFieldStateViewModel(icon: iconViewModel)
@@ -81,13 +73,9 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     }
 
     private func provideRecepientInputViewModel() {
-        let value = recepientAddress ?? ""
+        let value = partialRecepientAddress ?? ""
 
-        provideRecepientInputViewModel(for: value)
-    }
-
-    private func provideRecepientInputViewModel(for address: AccountAddress) {
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: address)
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
 
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
@@ -181,19 +169,20 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         return balance - fee
     }
 
-    private func updateRecepientFieldIfValue(_ newAddress: String) {
-        let accountId = try? newAddress.toAccountId(using: chainAsset.chain.chainFormat)
-        if accountId != nil {
-            recepientAddress = newAddress
-        } else {
-            recepientAddress = nil
-        }
-    }
-
     private func updateRecepientAddress(_ newAddress: String) {
-        updateRecepientFieldIfValue(newAddress)
+        guard partialRecepientAddress != newAddress else {
+            return
+        }
 
-        interactor.change(recepient: recepientAddress)
+        partialRecepientAddress = newAddress
+
+        let optAccountId = getRecepientAccountId()
+
+        interactor.change(recepient: optAccountId)
+
+        if optAccountId != nil {
+            resetRecepientBalance()
+        }
 
         provideRecepientStateViewModel()
 
@@ -215,7 +204,7 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         updateFee(nil)
         updateFeeView()
 
-        interactor.estimateFee(for: amount, recepient: recepientAddress)
+        interactor.estimateFee(for: amount, recepient: getRecepientAccountId())
     }
 
     override func askFeeRetry() {
@@ -259,9 +248,8 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
     override func didCompleteSetup() {
         super.didCompleteSetup()
 
+        interactor.change(recepient: getRecepientAccountId())
         refreshFee()
-
-        interactor.change(recepient: recepientAddress)
     }
 
     override func didReceiveError(_ error: Error) {
@@ -273,23 +261,14 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
 
 extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
     var inputState: TransferSetupInputState {
-        TransferSetupInputState(recepient: recepientAddress, amount: inputResult)
+        TransferSetupInputState(recepient: partialRecepientAddress, amount: inputResult)
     }
 
     func setup() {
         updateChainAssetViewModel()
         updateFeeView()
-
-        if let receiverAddress = initialState?.recepient {
-            updateRecepientFieldIfValue(receiverAddress)
-            provideRecepientStateViewModel()
-            provideRecepientInputViewModel(for: receiverAddress)
-        } else {
-            provideRecepientStateViewModel()
-            provideRecepientInputViewModel()
-        }
-
-        inputResult = initialState?.amount
+        provideRecepientStateViewModel()
+        provideRecepientInputViewModel()
         provideAmountInputViewModel()
         updateAmountPriceView()
 
@@ -301,13 +280,8 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
     }
 
     func changeRecepient(address: String) {
-        guard address != recepientAddress else {
-            return
-        }
-
-        recepientAddress = address
-        provideRecepientInputViewModel()
         updateRecepientAddress(address)
+        provideRecepientInputViewModel()
     }
 
     func updateAmount(_ newValue: Decimal?) {
@@ -330,7 +304,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
-            recepientAddress: recepientAddress,
+            recepientAddress: partialRecepientAddress,
             selectedLocale: selectedLocale
         )
 
@@ -346,7 +320,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
 
         validators.append(
             phishingValidatingFactory.notPhishing(
-                address: recepientAddress,
+                address: partialRecepientAddress,
                 locale: selectedLocale
             )
         )
@@ -354,7 +328,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         DataValidationRunner(validators: validators).runValidation { [weak self] in
             guard
                 let amount = sendingAmount,
-                let recepient = self?.recepientAddress,
+                let recepient = self?.partialRecepientAddress,
                 let chainAsset = self?.chainAsset else {
                 return
             }

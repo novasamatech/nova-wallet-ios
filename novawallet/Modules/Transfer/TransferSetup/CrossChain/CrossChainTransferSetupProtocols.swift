@@ -3,9 +3,9 @@ import BigInt
 
 protocol CrossChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountAddress?, weightLimit: BigUInt?)
-    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountAddress?)
-    func change(recepient: AccountAddress?)
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?)
+    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountId?)
+    func change(recepient: AccountId?)
 }
 
 protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {

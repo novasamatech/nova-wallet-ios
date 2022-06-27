@@ -8,7 +8,7 @@ class XcmTransfersFeeTests: XCTestCase {
         let originChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
         let destinationChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
         let assetId: AssetModel.Id = 4
-        let beneficiary = AccountId.dummyAccountId(of: 20)
+        let beneficiary = AccountId.zeroAccountId(of: 20)
         let amount: BigUInt = 1_000_000_000
 
         let transferDestinationId = XcmTransferDestinationId(
@@ -27,7 +27,7 @@ class XcmTransfersFeeTests: XCTestCase {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
         let destinationChainId = "b0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
         let assetId: AssetModel.Id = 2
-        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
@@ -46,7 +46,7 @@ class XcmTransfersFeeTests: XCTestCase {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
         let destinationChainId = "9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed"
         let assetId: AssetModel.Id = 0
-        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_000_000_000
 
         let transferDestinationId = XcmTransferDestinationId(
@@ -65,7 +65,7 @@ class XcmTransfersFeeTests: XCTestCase {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
         let destinationChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
         let assetId: AssetModel.Id = 4
-        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let beneficiary = AccountId.zeroAccountId(of: 32)
         let amount: BigUInt = 1_000_000_000_00
 
         let transferDestinationId = XcmTransferDestinationId(
@@ -103,10 +103,10 @@ class XcmTransfersFeeTests: XCTestCase {
             let wallet = MetaAccountModel(
                 metaId: UUID().uuidString,
                 name: "Test",
-                substrateAccountId: AccountId.dummyAccountId(of: 32),
+                substrateAccountId: AccountId.zeroAccountId(of: 32),
                 substrateCryptoType: 0,
                 substratePublicKey: Data.random(of: 32)!,
-                ethereumAddress: AccountId.dummyAccountId(of: 20),
+                ethereumAddress: AccountId.zeroAccountId(of: 20),
                 ethereumPublicKey: Data.random(of: 33)!,
                 chainAccounts: Set()
             )
