@@ -99,47 +99,35 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchMinBalance(
+    private func fetchAssetExistence(
         for assetStorageInfo: AssetStorageInfo,
         chainId: ChainModel.Id,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
+        completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
     ) {
         guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
             completionClosure(.failure(ChainRegistryError.runtimeMetadaUnavailable))
             return
         }
 
-        switch assetStorageInfo {
-        case .native:
-            fetchConstant(
-                for: .existentialDeposit,
-                runtimeCodingService: runtimeService,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                closure: completionClosure
-            )
-        case let .statemine(extras):
-            let wrapper = assetStorageInfoFactory.createAssetsMinBalanceOperation(
-                for: extras,
-                chainId: chainId,
-                storage: chainStorage,
-                runtimeService: runtimeService
-            )
+        let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
+            for: assetStorageInfo,
+            chainId: chainId,
+            storage: chainStorage,
+            runtimeService: runtimeService
+        )
 
-            wrapper.targetOperation.completionBlock = {
-                DispatchQueue.main.async {
-                    do {
-                        let minBalance = try wrapper.targetOperation.extractNoCancellableResultData()
-                        completionClosure(.success(minBalance))
-                    } catch {
-                        completionClosure(.failure(error))
-                    }
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(.success(assetExistence))
+                } catch {
+                    completionClosure(.failure(error))
                 }
             }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        case let .orml(_, _, _, existentialDeposit):
-            completionClosure(.success(existentialDeposit))
         }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func createAssetExtractionWrapper() -> CompoundOperationWrapper<CrossChainAssetsStorageInfo> {
@@ -304,10 +292,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         let originChainId = originChainAsset.chain.chainId
 
         if let originSendingAssetInfo = assetsInfo?.originSending {
-            fetchMinBalance(for: originSendingAssetInfo, chainId: originChainId) { [weak self] result in
+            fetchAssetExistence(for: originSendingAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveOriginSendingMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveOriginSendingMinBalance(existence.minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -315,10 +303,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         }
 
         if let originUtilityAssetInfo = assetsInfo?.originUtility {
-            fetchMinBalance(for: originUtilityAssetInfo, chainId: originChainId) { [weak self] result in
+            fetchAssetExistence(for: originUtilityAssetInfo, chainId: originChainId) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveOriginUtilityMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveOriginUtilityMinBalance(existence.minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -328,10 +316,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         if let destSendingAssetInfo = assetsInfo?.destinationSending {
             let destinationChainId = destinationChainAsset.chain.chainId
 
-            fetchMinBalance(for: destSendingAssetInfo, chainId: destinationChainId) { [weak self] result in
+            fetchAssetExistence(for: destSendingAssetInfo, chainId: destinationChainId) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveDestSendingMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveDestSendingExistence(existence)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -341,10 +329,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
         if let destUtilityAssetInfo = assetsInfo?.destinationUtility {
             let destinationChainId = destinationChainAsset.chain.chainId
 
-            fetchMinBalance(for: destUtilityAssetInfo, chainId: destinationChainId) { [weak self] result in
+            fetchAssetExistence(for: destUtilityAssetInfo, chainId: destinationChainId) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveDestUtilityMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveDestUtilityMinBalance(existence.minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
