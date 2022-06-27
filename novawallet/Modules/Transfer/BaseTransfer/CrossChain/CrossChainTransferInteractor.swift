@@ -235,7 +235,7 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
         provideMinBalance()
 
-        presenter?.didCompleteSetup()
+        presenter?.didCompleteSetup(result: .success(()))
     }
 
     private func setupSendingAssetBalanceProvider() {
@@ -445,6 +445,10 @@ class CrossChainTransferInteractor: RuntimeConstantFetching {
 
 extension CrossChainTransferInteractor {
     func setup() {
+        guard setupCall == nil else {
+            return
+        }
+
         let setupWrapper = createSetupWrapper()
 
         setupWrapper.targetOperation.completionBlock = { [weak self] in
@@ -464,7 +468,7 @@ extension CrossChainTransferInteractor {
 
                     self?.continueSetup()
                 } catch {
-                    self?.presenter?.didReceiveError(error)
+                    self?.presenter?.didCompleteSetup(result: .failure(error))
                 }
             }
         }

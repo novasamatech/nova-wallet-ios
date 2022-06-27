@@ -221,7 +221,7 @@ class CrossChainTransferPresenter {
         destUtilityMinBalance = value
     }
 
-    func didCompleteSetup() {}
+    func didCompleteSetup(result _: Result<Void, Error>) {}
 
     func didReceiveError(_: Error) {}
 }

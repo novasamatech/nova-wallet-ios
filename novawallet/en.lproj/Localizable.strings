@@ -825,3 +825,4 @@
 "common.from.network" = "From network";
 "common.to.network" = "To network";
 "transfer.cross.chain.hint" = "Cross-chain fee is added on top of entered amount. Recipient may receive part of cross-chain fee";
+"common.request.retry" = "Data loading failed. Would you like to retry?";

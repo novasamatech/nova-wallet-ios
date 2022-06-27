@@ -21,12 +21,13 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveOriginSendingMinBalance(_ value: BigUInt)
     func didReceiveDestSendingExistence(_ value: AssetBalanceExistence)
     func didReceiveDestUtilityMinBalance(_ value: BigUInt)
-    func didCompleteSetup()
+    func didCompleteSetup(result: Result<Void, Error>)
     func didReceiveError(_ error: Error)
 }
 
 protocol CrossChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable {
+    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable,
+    CommonRetryable {
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         originChainAsset: ChainAsset,
