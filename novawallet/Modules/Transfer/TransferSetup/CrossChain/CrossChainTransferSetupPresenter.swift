@@ -303,12 +303,21 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         updateOriginFeeView()
     }
 
-    override func didCompleteSetup() {
-        super.didCompleteSetup()
+    override func didCompleteSetup(result: Result<Void, Error>) {
+        super.didCompleteSetup(result: result)
 
-        interactor.change(recepient: getRecepientAccountId())
+        switch result {
+        case .success:
+            interactor.change(recepient: getRecepientAccountId())
 
-        refreshCrossChainFee()
+            refreshCrossChainFee()
+        case let .failure(error):
+            logger?.error("Setup failed: \(error)")
+
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        }
     }
 
     override func didReceiveError(_ error: Error) {
