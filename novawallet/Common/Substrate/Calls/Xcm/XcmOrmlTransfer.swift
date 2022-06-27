@@ -11,6 +11,8 @@ extension Xcm {
             case destinationWeight = "dest_weight"
         }
 
+        static let callName = "transfer_multiasset"
+
         let asset: VersionedMultiasset
         let destination: VersionedMultilocation
 
@@ -18,7 +20,11 @@ extension Xcm {
         @StringCodable var destinationWeight: BigUInt
 
         func runtimeCall(for module: String) -> RuntimeCall<OrmlTransferCall> {
-            RuntimeCall(moduleName: module, callName: "transfer_multiasset", args: self)
+            RuntimeCall(moduleName: module, callName: Self.callName, args: self)
+        }
+
+        func codingPath(for module: String) -> CallCodingPath {
+            CallCodingPath(moduleName: module, callName: Self.callName)
         }
     }
 }
