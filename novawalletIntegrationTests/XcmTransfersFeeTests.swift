@@ -42,6 +42,25 @@ class XcmTransfersFeeTests: XCTestCase {
         )
     }
 
+    func testMoonriverBifrost() throws {
+        let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+        let destinationChainId = "9f28c6a68e0fc9646eff64935684f6eeeece527e37bbe1f213d22caa1d9d6bed"
+        let assetId: AssetModel.Id = 0
+        let beneficiary = AccountId.dummyAccountId(of: 32)
+        let amount: BigUInt = 1_000_000_000_000_000_000
+
+        let transferDestinationId = XcmTransferDestinationId(
+            chainId: destinationChainId,
+            accountId: beneficiary
+        )
+
+        performTestFeeCalculation(
+            originChainAssetId: ChainAssetId(chainId: originChainId, assetId: assetId),
+            transferDestinationId: transferDestinationId,
+            amount: amount
+        )
+    }
+
     func testMoonriverKarura() throws {
         let originChainId = "401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
         let destinationChainId = "baf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b"
@@ -128,24 +147,35 @@ class XcmTransfersFeeTests: XCTestCase {
         xcmTransfers: XcmTransfers,
         chainRegistry: ChainRegistryProtocol
     ) throws -> XcmTransferParties {
-        let service = XcmTransferResolutionService(
+        let operationQueue = OperationQueue()
+
+        let factory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
             operationQueue: OperationQueue()
         )
 
         let semaphore = DispatchSemaphore(value: 0)
 
-        var partiesResult: XcmTrasferResolutionResult?
+        var partiesResult: Result<XcmTransferParties, Error>?
 
-        service.resolveTransferParties(
+        let wrapper = factory.createResolutionWrapper(
             for: origin,
             transferDestinationId: transferDestinationId,
-            xcmTransfers: xcmTransfers,
-            runningIn: .global()
-        ) { result in
-            partiesResult = result
+            xcmTransfers: xcmTransfers
+        )
+
+        wrapper.targetOperation.completionBlock = {
+            do {
+                let parties = try wrapper.targetOperation.extractNoCancellableResultData()
+                partiesResult = .success(parties)
+            } catch {
+                partiesResult = .failure(error)
+            }
+
             semaphore.signal()
         }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
 
         _ = semaphore.wait(timeout: .now() + .seconds(60))
 
@@ -177,7 +207,7 @@ class XcmTransfersFeeTests: XCTestCase {
 
         var feeResult: XcmTrasferFeeResult?
 
-        let request = XcmTransferRequest(
+        let request = XcmUnweightedTransferRequest(
             origin: parties.origin,
             destination: parties.destination,
             reserve: parties.reserve,
