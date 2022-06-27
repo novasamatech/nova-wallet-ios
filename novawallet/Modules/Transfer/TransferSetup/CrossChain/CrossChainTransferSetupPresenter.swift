@@ -12,6 +12,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     private(set) var recepientAddress: AccountAddress?
 
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
+    let initialState: TransferSetupInputState?
 
     var inputResult: AmountInputResult?
 
@@ -31,8 +32,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        recepientAddress = initialState.recepient
-        inputResult = initialState.amount
+        self.initialState = initialState
         self.phishingValidatingFactory = phishingValidatingFactory
 
         super.init(
@@ -83,7 +83,11 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private func provideRecepientInputViewModel() {
         let value = recepientAddress ?? ""
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
+        provideRecepientInputViewModel(for: value)
+    }
+
+    private func provideRecepientInputViewModel(for address: AccountAddress) {
+        let inputViewModel = InputViewModel.createAccountInputViewModel(for: address)
 
         view?.didReceiveAccountInput(viewModel: inputViewModel)
     }
@@ -198,13 +202,17 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         return balance - originFee - crossChainFee
     }
 
-    private func updateRecepientAddress(_ newAddress: String) {
+    private func updateRecepientFieldIfValue(_ newAddress: String) {
         let accountId = try? newAddress.toAccountId(using: destinationChainAsset.chain.chainFormat)
         if accountId != nil {
             recepientAddress = newAddress
         } else {
             recepientAddress = nil
         }
+    }
+
+    private func updateRecepientAddress(_ newAddress: String) {
+        updateRecepientFieldIfValue(newAddress)
 
         interactor.change(recepient: recepientAddress)
 
@@ -330,8 +338,17 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         updateChainAssetViewModel()
         updateOriginFeeView()
         updateCrossChainFeeView()
-        provideRecepientStateViewModel()
-        provideRecepientInputViewModel()
+
+        if let receiverAddress = initialState?.recepient {
+            updateRecepientFieldIfValue(receiverAddress)
+            provideRecepientStateViewModel()
+            provideRecepientInputViewModel(for: receiverAddress)
+        } else {
+            provideRecepientStateViewModel()
+            provideRecepientInputViewModel()
+        }
+
+        inputResult = initialState?.amount
         provideAmountInputViewModel()
         updateAmountPriceView()
 
