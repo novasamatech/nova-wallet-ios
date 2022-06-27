@@ -3,22 +3,22 @@ import SoraFoundation
 import SoraKeystore
 
 // swiftlint:disable function_body_length
-struct TransferConfirmViewFactory {
+struct TransferConfirmCrossChainViewFactory {
     static func createView(
-        chainAsset: ChainAsset,
+        originChainAsset: ChainAsset,
+        destinationAsset: ChainAsset,
+        xcmTransfers: XcmTransfers,
         recepient: AccountAddress,
         amount: Decimal
-    ) -> TransferConfirmViewProtocol? {
+    ) -> TransferConfirmOnChainViewProtocol? {
         let walletSettings = SelectedWalletSettings.shared
 
         guard
             let wallet = walletSettings.value,
-            let selectedAccount = wallet.fetch(for: chainAsset.chain.accountRequest()),
-            let senderAccountAddress = selectedAccount.toAddress(),
             let interactor = createInteractor(
-                for: chainAsset,
-                account: selectedAccount,
-                accountMetaId: wallet.metaId
+                for: originChainAsset,
+                destinationChainAsset: destinationAsset,
+                xcmTransfers: xcmTransfers
             ) else {
             return nil
         }
@@ -29,15 +29,15 @@ struct TransferConfirmViewFactory {
 
         let networkViewModelFactory = NetworkViewModelFactory()
         let sendingBalanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: chainAsset.assetDisplayInfo
+            targetAssetInfo: originChainAsset.assetDisplayInfo
         )
 
         let utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?
 
         if
-            let utilityAsset = chainAsset.chain.utilityAssets().first,
-            utilityAsset.assetId != chainAsset.asset.assetId {
-            let utilityAssetInfo = utilityAsset.displayInfo(with: chainAsset.chain.icon)
+            let utilityAsset = originChainAsset.chain.utilityAssets().first,
+            utilityAsset.assetId != originChainAsset.asset.assetId {
+            let utilityAssetInfo = utilityAsset.displayInfo(with: originChainAsset.chain.icon)
             utilityBalanceViewModelFactory = BalanceViewModelFactory(
                 targetAssetInfo: utilityAssetInfo
             )
@@ -47,24 +47,25 @@ struct TransferConfirmViewFactory {
 
         let dataValidatingFactory = TransferDataValidatorFactory(
             presentable: wireframe,
-            assetDisplayInfo: chainAsset.assetDisplayInfo,
-            utilityAssetInfo: chainAsset.chain.utilityAssets().first?.displayInfo
+            assetDisplayInfo: originChainAsset.assetDisplayInfo,
+            utilityAssetInfo: originChainAsset.chain.utilityAssets().first?.displayInfo
         )
 
-        let presenter = TransferConfirmPresenter(
+        let presenter = TransferCrossChainConfirmPresenter(
             interactor: interactor,
             wireframe: wireframe,
             wallet: wallet,
             recepient: recepient,
             amount: amount,
             displayAddressViewModelFactory: DisplayAddressViewModelFactory(),
-            chainAsset: chainAsset,
+            originChainAsset: originChainAsset,
+            destinationChainAsset: destinationAsset,
             networkViewModelFactory: networkViewModelFactory,
             sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
             utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
-            senderAccountAddress: senderAccountAddress,
             dataValidatingFactory: dataValidatingFactory,
-            localizationManager: localizationManager
+            localizationManager: localizationManager,
+            logger: Logger.shared
         )
 
         let view = TransferConfirmViewController(
@@ -80,74 +81,74 @@ struct TransferConfirmViewFactory {
     }
 
     private static func createInteractor(
-        for chainAsset: ChainAsset,
-        account: ChainAccountResponse,
-        accountMetaId: String
-    ) -> TransferConfirmInteractor? {
-        let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let chain = chainAsset.chain
-        let asset = chainAsset.asset
-
+        for originChainAsset: ChainAsset,
+        destinationChainAsset: ChainAsset,
+        xcmTransfers: XcmTransfers
+    ) -> TransferCrossChainConfirmInteractor? {
         guard
-            let runtimeProvider = chainRegistry.getRuntimeProvider(for: chain.chainId),
-            let connection = chainRegistry.getConnection(for: chain.chainId) else {
+            let wallet = SelectedWalletSettings.shared.value,
+            let selectedAccount = wallet.fetch(for: originChainAsset.chain.accountRequest()) else {
             return nil
         }
 
-        let repositoryFactory = SubstrateRepositoryFactory()
+        let storageFacade = SubstrateDataStorageFacade.shared
+        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let chainRegistry = ChainRegistryFacade.sharedRegistry
+        let logger = Logger.shared
+        let eventCenter = EventCenter.shared
+
+        let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
         let repository = repositoryFactory.createChainStorageItemRepository()
 
         let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
             chainRegistry: chainRegistry,
             repository: repository,
             operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
+            logger: logger
         )
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
-            eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            eventCenter: eventCenter,
+            operationQueue: operationQueue
         )
 
-        let extrinsicService = ExtrinsicService(
-            accountId: account.accountId,
-            chain: chain,
-            cryptoType: account.cryptoType,
-            runtimeRegistry: runtimeProvider,
-            engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+        let extrinsicService = XcmTransferService(
+            wallet: wallet,
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: accountMetaId,
-            accountResponse: account
+        let resolutionFactory = XcmTransferResolutionFactory(
+            chainRegistry: chainRegistry,
+            operationQueue: operationQueue
         )
 
         let transactionStorage = repositoryFactory.createTxRepository()
         let persistentExtrinsicService = PersistentExtrinsicService(
             repository: transactionStorage,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
 
-        return TransferConfirmInteractor(
-            selectedAccount: account,
-            chain: chain,
-            asset: asset,
-            runtimeService: runtimeProvider,
-            feeProxy: ExtrinsicFeeProxy(),
+        return TransferCrossChainConfirmInteractor(
+            selectedAccount: selectedAccount,
+            xcmTransfers: xcmTransfers,
+            originChainAsset: originChainAsset,
+            destinationChainAsset: destinationChainAsset,
+            chainRegistry: chainRegistry,
+            feeProxy: XcmExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
-            signingWrapper: signingWrapper,
+            resolutionFactory: resolutionFactory,
+            signingWrapper: SigningWrapper(keystore: Keychain(), metaId: wallet.metaId, accountResponse: selectedAccount),
             persistExtrinsicService: persistentExtrinsicService,
-            eventCenter: EventCenter.shared,
+            eventCenter: eventCenter,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
             substrateStorageFacade: SubstrateDataStorageFacade.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: operationQueue
         )
     }
 }
