@@ -1,26 +1,22 @@
 import Foundation
-import CommonWallet
+import SoraFoundation
 
 final class TransferSetupWireframe: TransferSetupWireframeProtocol {
-    weak var commandFactory: WalletCommandFactoryProtocol?
-
-    func showConfirmation(
-        from _: TransferSetupViewProtocol?,
-        chainAsset: ChainAsset,
-        sendingAmount: Decimal,
-        recepient: AccountAddress
+    func showDestinationChainSelection(
+        from view: TransferSetupViewProtocol?,
+        selectionState: CrossChainDestinationSelectionState,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
     ) {
-        guard let confirmView = TransferConfirmViewFactory.createView(
-            chainAsset: chainAsset,
-            recepient: recepient,
-            amount: sendingAmount
+        guard let viewController = ModalPickerFactory.createNetworkSelectionList(
+            selectionState: selectionState,
+            delegate: delegate,
+            context: context
         ) else {
             return
         }
 
-        let command = commandFactory?.preparePresentationCommand(for: confirmView.controller)
-        command?.presentationStyle = .push(hidesBottomBar: true)
-        try? command?.execute()
+        view?.controller.present(viewController, animated: true, completion: nil)
     }
 
     func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate) {

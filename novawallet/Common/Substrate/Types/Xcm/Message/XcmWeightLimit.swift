@@ -2,7 +2,7 @@ import Foundation
 import SubstrateSdk
 
 extension Xcm {
-    enum WeightLimit: Encodable {
+    enum WeightLimit: Codable {
         case unlimited
         case limited(weight: UInt64)
 
@@ -16,6 +16,10 @@ extension Xcm {
                 try container.encode("Limited")
                 try container.encode(StringScaleMapper(value: weight))
             }
+        }
+
+        init(from _: Decoder) throws {
+            fatalError("Decoding unsupported")
         }
     }
 }

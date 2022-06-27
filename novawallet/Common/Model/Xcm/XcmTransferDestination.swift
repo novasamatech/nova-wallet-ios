@@ -4,6 +4,10 @@ struct XcmTransferDestination {
     let chain: ChainModel
     let parachainId: ParaId?
     let accountId: AccountId
+
+    func replacing(accountId: AccountId) -> XcmTransferDestination {
+        XcmTransferDestination(chain: chain, parachainId: parachainId, accountId: accountId)
+    }
 }
 
 struct XcmTransferDestinationId {
