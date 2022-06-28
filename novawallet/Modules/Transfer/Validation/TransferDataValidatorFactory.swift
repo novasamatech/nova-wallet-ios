@@ -12,7 +12,7 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
-    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating
+    func notViolatingMinBalancePaying(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating
 
     func willBeReaped(
         amount: Decimal?,
@@ -112,7 +112,7 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: { fee != nil })
     }
 
-    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating {
+    func notViolatingMinBalancePaying(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return

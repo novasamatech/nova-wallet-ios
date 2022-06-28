@@ -134,7 +134,7 @@ class CrossChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPay(
+            dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: originFee,
                 total: senderUtilityAssetTotal,
                 minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
