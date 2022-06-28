@@ -25,6 +25,10 @@ class CrossChainTransferPresenter {
             senderUtilityAssetBalance?.totalInPlank
     }
 
+    var senderUtilityAssetTransferable: BigUInt? {
+        isOriginUtilityTransfer ? senderSendingAssetBalance?.transferable : senderUtilityAssetBalance?.transferable
+    }
+
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var originFee: BigUInt?
@@ -107,6 +111,7 @@ class CrossChainTransferPresenter {
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
+        utilityAssetInfo: AssetBalanceDisplayInfo,
         selectedLocale: Locale
     ) -> [DataValidating] {
         var validators: [DataValidating] = [
@@ -131,6 +136,13 @@ class CrossChainTransferPresenter {
                 amount: sendingAmount,
                 fee: totalFee(),
                 transferable: senderSendingAssetBalance?.transferable,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: senderUtilityAssetTransferable,
+                fee: originFee,
+                asset: utilityAssetInfo,
                 locale: selectedLocale
             ),
 
