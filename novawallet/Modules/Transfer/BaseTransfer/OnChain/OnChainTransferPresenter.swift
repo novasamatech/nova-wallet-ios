@@ -106,7 +106,7 @@ class OnChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPay(
+            dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee,
                 total: senderUtilityAssetTotal,
                 minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
