@@ -52,6 +52,10 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         self.localizationManager = localizationManager
     }
 
+    func getRecepientAccountId() -> AccountId? {
+        try? recepientAccountAddress.toAccountId(using: destinationChainAsset.chain.chainFormat)
+    }
+
     private func provideOriginNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
         view?.didReceiveOriginNetwork(viewModel: viewModel)
@@ -158,7 +162,11 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
             return
         }
 
-        interactor.estimateOriginFee(for: amountValue, recepient: recepientAccountAddress, weightLimit: crossChainFee?.weight)
+        interactor.estimateOriginFee(
+            for: amountValue,
+            recepient: getRecepientAccountId(),
+            weightLimit: crossChainFee?.weight
+        )
     }
 
     override func refreshCrossChainFee() {
@@ -168,7 +176,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
             return
         }
 
-        interactor.estimateCrossChainFee(for: amountValue, recepient: recepientAccountAddress)
+        interactor.estimateCrossChainFee(for: amountValue, recepient: getRecepientAccountId())
     }
 
     override func askOriginFeeRetry() {
@@ -217,12 +225,21 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         provideOriginFeeViewModel()
     }
 
-    override func didCompleteSetup() {
-        super.didCompleteSetup()
+    override func didCompleteSetup(result: Result<Void, Error>) {
+        super.didCompleteSetup(result: result)
 
-        refreshCrossChainFee()
+        switch result {
+        case .success:
+            interactor.change(recepient: getRecepientAccountId())
 
-        interactor.change(recepient: recepientAccountAddress)
+            refreshCrossChainFee()
+        case let .failure(error):
+            logger?.error("Setup failed: \(error)")
+
+            wireframe.presentRequestStatus(on: view, locale: selectedLocale) { [weak self] in
+                self?.interactor.setup()
+            }
+        }
     }
 
     override func didReceiveError(_ error: Error) {

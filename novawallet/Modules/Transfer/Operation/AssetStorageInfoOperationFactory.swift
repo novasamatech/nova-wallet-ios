@@ -8,12 +8,12 @@ protocol AssetStorageInfoOperationFactoryProtocol {
         runtimeProvider: RuntimeCodingServiceProtocol
     ) -> CompoundOperationWrapper<AssetStorageInfo>
 
-    func createAssetsMinBalanceOperation(
-        for extras: StatemineAssetExtras,
+    func createAssetBalanceExistenceOperation(
+        for assetStorageInfo: AssetStorageInfo,
         chainId: ChainModel.Id,
         storage: AnyDataProviderRepository<ChainStorageItem>,
         runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<BigUInt>
+    ) -> CompoundOperationWrapper<AssetBalanceExistence>
 }
 
 final class AssetStorageInfoOperationFactory {}
@@ -39,12 +39,12 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
         )
     }
 
-    func createAssetsMinBalanceOperation(
+    private func createAssetsExistenceOperation(
         for extras: StatemineAssetExtras,
         chainId: ChainModel.Id,
         storage: AnyDataProviderRepository<ChainStorageItem>,
         runtimeService: RuntimeCodingServiceProtocol
-    ) -> CompoundOperationWrapper<BigUInt> {
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
         do {
             let localKey = try LocalStorageKeyFactory().createFromStoragePath(
                 .assetsDetails,
@@ -66,9 +66,12 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
 
             fetchWrapper.addDependency(operations: [codingFactoryOperation])
 
-            let mappingOperation = ClosureOperation<BigUInt> {
-                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-                return details.value?.minBalance ?? 0
+            let mappingOperation = ClosureOperation<AssetBalanceExistence> {
+                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData().value
+                return AssetBalanceExistence(
+                    minBalance: details?.minBalance ?? 0,
+                    isSelfSufficient: details?.isSufficient ?? false
+                )
             }
 
             let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
@@ -78,6 +81,55 @@ extension AssetStorageInfoOperationFactory: AssetStorageInfoOperationFactoryProt
             return CompoundOperationWrapper(targetOperation: mappingOperation, dependencies: dependencies)
         } catch {
             return CompoundOperationWrapper.createWithError(error)
+        }
+    }
+
+    private func createNativeAssetExistenceOperation(
+        for runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+        let constOperation = PrimitiveConstantOperation<BigUInt>(path: .existentialDeposit, fallbackValue: nil)
+        constOperation.configurationBlock = {
+            do {
+                constOperation.codingFactory = try codingFactoryOperation.extractNoCancellableResultData()
+            } catch {
+                constOperation.result = .failure(error)
+            }
+        }
+
+        let mapOperation = ClosureOperation<AssetBalanceExistence> {
+            let minBalance = try constOperation.extractNoCancellableResultData()
+
+            return AssetBalanceExistence(minBalance: minBalance, isSelfSufficient: true)
+        }
+
+        constOperation.addDependency(codingFactoryOperation)
+        mapOperation.addDependency(constOperation)
+
+        let dependencies = [codingFactoryOperation, constOperation]
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+    }
+
+    func createAssetBalanceExistenceOperation(
+        for assetStorageInfo: AssetStorageInfo,
+        chainId: ChainModel.Id,
+        storage: AnyDataProviderRepository<ChainStorageItem>,
+        runtimeService: RuntimeCodingServiceProtocol
+    ) -> CompoundOperationWrapper<AssetBalanceExistence> {
+        switch assetStorageInfo {
+        case .native:
+            return createNativeAssetExistenceOperation(for: runtimeService)
+        case let .statemine(extras):
+            return createAssetsExistenceOperation(
+                for: extras,
+                chainId: chainId,
+                storage: storage,
+                runtimeService: runtimeService
+            )
+        case let .orml(_, _, _, existentialDeposit):
+            let assetExistence = AssetBalanceExistence(minBalance: existentialDeposit, isSelfSufficient: true)
+            return CompoundOperationWrapper.createWithResult(assetExistence)
         }
     }
 }

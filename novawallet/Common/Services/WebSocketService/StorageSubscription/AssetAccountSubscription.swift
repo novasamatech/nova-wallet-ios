@@ -25,7 +25,7 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
         )
     }
 
-    func handle(storageItem _: ChainStorageItem?) {
+    func handle(storageItem _: ChainStorageItem?, isRemoved _: Bool) {
         fatalError("Must be overriden by subclass")
     }
 
@@ -39,7 +39,9 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
         if case let .success(optionalChange) = result {
             logger.debug("Successfull asset account info")
 
-            handle(storageItem: remoteItem)
+            let isRemoved = optionalChange?.isDeletion ?? false
+
+            handle(storageItem: remoteItem, isRemoved: isRemoved)
 
             if optionalChange != nil, let blockHash = blockHash {
                 transactionSubscription?.process(blockHash: blockHash)
@@ -49,13 +51,13 @@ class BaseAssetAccountSubscription: BaseStorageChildSubscription {
 }
 
 final class AssetAccountSubscription: BaseAssetAccountSubscription {
-    override func handle(storageItem: ChainStorageItem?) {
-        assetBalanceUpdater.handleAssetAccount(value: storageItem)
+    override func handle(storageItem: ChainStorageItem?, isRemoved: Bool) {
+        assetBalanceUpdater.handleAssetAccount(value: storageItem, isRemoved: isRemoved)
     }
 }
 
 final class AssetDetailsSubscription: BaseAssetAccountSubscription {
-    override func handle(storageItem: ChainStorageItem?) {
-        assetBalanceUpdater.handleAssetDetails(value: storageItem)
+    override func handle(storageItem: ChainStorageItem?, isRemoved: Bool) {
+        assetBalanceUpdater.handleAssetDetails(value: storageItem, isRemoved: isRemoved)
     }
 }

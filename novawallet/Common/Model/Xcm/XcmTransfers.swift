@@ -35,7 +35,7 @@ struct XcmTransfers: Decodable {
 
         switch asset.assetLocationPath.type {
         case .absolute, .relative:
-            return XcmAsset.ReservePath(type: .absolute, path: assetLocation)
+            return XcmAsset.ReservePath(type: asset.assetLocationPath.type, path: assetLocation)
         case .concrete:
             if let concretePath = asset.assetLocationPath.path {
                 return XcmAsset.ReservePath(type: .concrete, path: concretePath)

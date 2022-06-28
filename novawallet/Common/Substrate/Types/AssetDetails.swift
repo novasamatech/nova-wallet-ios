@@ -5,4 +5,5 @@ import SubstrateSdk
 struct AssetDetails: Codable {
     @StringCodable var minBalance: BigUInt
     let isFrozen: Bool
+    let isSufficient: Bool
 }
