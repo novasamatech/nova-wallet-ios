@@ -372,10 +372,17 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
     }
 
     func proceed() {
+        guard let utilityAsset = originChainAsset.chain.utilityAsset() else {
+            return
+        }
+
+        let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
+
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
+            utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
         )
 

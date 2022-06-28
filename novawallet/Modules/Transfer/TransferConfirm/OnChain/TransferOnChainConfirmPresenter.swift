@@ -196,15 +196,19 @@ extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
     }
 
     func submit() {
-        guard let amountValue = amount.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ) else {
+        let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
+        guard
+            let amountValue = amount.toSubstrateAmount(precision: assetPrecision),
+            let utilityAsset = chainAsset.chain.utilityAsset() else {
             return
         }
+
+        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let validators: [DataValidating] = baseValidators(
             for: amount,
             recepientAddress: recepientAccountAddress,
+            utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
         )
 
