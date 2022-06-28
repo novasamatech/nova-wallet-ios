@@ -11,6 +11,15 @@ extension DataProviderChange {
         }
     }
 
+    var isDeletion: Bool {
+        switch self {
+        case .insert, .update:
+            return false
+        case .delete:
+            return true
+        }
+    }
+
     static func change<P: Identifiable & Equatable>(
         value1: P?,
         value2: P?
