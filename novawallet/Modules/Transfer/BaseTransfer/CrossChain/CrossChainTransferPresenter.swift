@@ -17,7 +17,7 @@ class CrossChainTransferPresenter {
 
     private(set) var originSendingMinBalance: BigUInt?
     private(set) var originUtilityMinBalance: BigUInt?
-    private(set) var destSendingMinBalance: BigUInt?
+    private(set) var destSendingExistence: AssetBalanceExistence?
     private(set) var destUtilityMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
@@ -88,6 +88,11 @@ class CrossChainTransferPresenter {
         originFee = newValue
     }
 
+    func resetRecepientBalance() {
+        recepientSendingAssetBalance = nil
+        recepientUtilityAssetBalance = nil
+    }
+
     private func totalFee() -> BigUInt? {
         let optDestSendingFee = crossChainFee?.fee
         let optOriginSendingFee: BigUInt? = (isOriginUtilityTransfer ? originFee : 0)
@@ -139,16 +144,17 @@ class CrossChainTransferPresenter {
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: destSendingMinBalance,
+                minBalance: destSendingExistence?.minBalance,
                 locale: selectedLocale
             )
         ]
 
         if !isDestUtilityTransfer {
             validators.append(
-                dataValidatingFactory.receiverHasUtilityAccount(
-                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: destUtilityMinBalance,
+                dataValidatingFactory.receiverHasAccountProvider(
+                    utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                    utilityMinBalance: destUtilityMinBalance,
+                    assetExistence: destSendingExistence,
                     locale: selectedLocale
                 )
             )
@@ -207,15 +213,15 @@ class CrossChainTransferPresenter {
         originUtilityMinBalance = value
     }
 
-    func didReceiveDestSendingMinBalance(_ value: BigUInt) {
-        destSendingMinBalance = value
+    func didReceiveDestSendingExistence(_ value: AssetBalanceExistence) {
+        destSendingExistence = value
     }
 
     func didReceiveDestUtilityMinBalance(_ value: BigUInt) {
         destUtilityMinBalance = value
     }
 
-    func didCompleteSetup() {}
+    func didCompleteSetup(result _: Result<Void, Error>) {}
 
     func didReceiveError(_: Error) {}
 }

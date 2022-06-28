@@ -3,9 +3,9 @@ import BigInt
 
 protocol CrossChainTransferSetupInteractorInputProtocol: AnyObject {
     func setup()
-    func estimateOriginFee(for amount: BigUInt, recepient: AccountAddress?, weightLimit: BigUInt?)
-    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountAddress?)
-    func change(recepient: AccountAddress?)
+    func estimateOriginFee(for amount: BigUInt, recepient: AccountId?, weightLimit: BigUInt?)
+    func estimateCrossChainFee(for amount: BigUInt, recepient: AccountId?)
+    func change(recepient: AccountId?)
 }
 
 protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
@@ -19,14 +19,15 @@ protocol CrossChainTransferSetupInteractorOutputProtocol: AnyObject {
     func didReceiveUtilityAssetPrice(_ price: PriceData?)
     func didReceiveOriginUtilityMinBalance(_ value: BigUInt)
     func didReceiveOriginSendingMinBalance(_ value: BigUInt)
-    func didReceiveDestSendingMinBalance(_ value: BigUInt)
+    func didReceiveDestSendingExistence(_ value: AssetBalanceExistence)
     func didReceiveDestUtilityMinBalance(_ value: BigUInt)
-    func didCompleteSetup()
+    func didCompleteSetup(result: Result<Void, Error>)
     func didReceiveError(_ error: Error)
 }
 
 protocol CrossChainTransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable {
+    TransferErrorPresentable, PhishingErrorPresentable, FeeRetryable,
+    CommonRetryable {
     func showConfirmation(
         from view: TransferSetupChildViewProtocol?,
         originChainAsset: ChainAsset,

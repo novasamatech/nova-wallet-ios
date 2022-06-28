@@ -22,9 +22,10 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         locale: Locale
     ) -> DataValidating
 
-    func receiverHasUtilityAccount(
-        totalAmount: BigUInt?,
-        minBalance: BigUInt?,
+    func receiverHasAccountProvider(
+        utilityTotalAmount: BigUInt?,
+        utilityMinBalance: BigUInt?,
+        assetExistence: AssetBalanceExistence?,
         locale: Locale
     ) -> DataValidating
 
@@ -169,9 +170,10 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         })
     }
 
-    func receiverHasUtilityAccount(
-        totalAmount: BigUInt?,
-        minBalance: BigUInt?,
+    func receiverHasAccountProvider(
+        utilityTotalAmount: BigUInt?,
+        utilityMinBalance: BigUInt?,
+        assetExistence: AssetBalanceExistence?,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -188,9 +190,11 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
             )
 
         }, preservesCondition: {
-            if
-                let totalAmount = totalAmount,
-                let minBalance = minBalance {
+            if let assetExistence = assetExistence, assetExistence.isSelfSufficient {
+                return true
+            }
+
+            if let totalAmount = utilityTotalAmount, let minBalance = utilityMinBalance {
                 return minBalance <= totalAmount
             } else {
                 return false

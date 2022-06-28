@@ -80,41 +80,29 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchMinBalance(
+    private func fetchAssetExistence(
         for assetStorageInfo: AssetStorageInfo,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
+        completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
     ) {
-        switch assetStorageInfo {
-        case .native:
-            fetchConstant(
-                for: .existentialDeposit,
-                runtimeCodingService: runtimeService,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                closure: completionClosure
-            )
-        case let .statemine(extras):
-            let wrapper = assetStorageInfoFactory.createAssetsMinBalanceOperation(
-                for: extras,
-                chainId: chain.chainId,
-                storage: chainStorage,
-                runtimeService: runtimeService
-            )
+        let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
+            for: assetStorageInfo,
+            chainId: chain.chainId,
+            storage: chainStorage,
+            runtimeService: runtimeService
+        )
 
-            wrapper.targetOperation.completionBlock = {
-                DispatchQueue.main.async {
-                    do {
-                        let minBalance = try wrapper.targetOperation.extractNoCancellableResultData()
-                        completionClosure(.success(minBalance))
-                    } catch {
-                        completionClosure(.failure(error))
-                    }
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(.success(assetExistence))
+                } catch {
+                    completionClosure(.failure(error))
                 }
             }
-
-            operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
-        case let .orml(_, _, _, existentialDeposit):
-            completionClosure(.success(existentialDeposit))
         }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
     private func createAssetExtractionWrapper() -> CompoundOperationWrapper<(AssetStorageInfo, AssetStorageInfo?)> {
@@ -215,10 +203,10 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
 
     private func provideMinBalance() {
         if let sendingAssetInfo = sendingAssetInfo {
-            fetchMinBalance(for: sendingAssetInfo) { [weak self] result in
+            fetchAssetExistence(for: sendingAssetInfo) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveSendingAssetExistence(existence)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -226,10 +214,10 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         }
 
         if let utilityAssetInfo = utilityAssetInfo {
-            fetchMinBalance(for: utilityAssetInfo) { [weak self] result in
+            fetchAssetExistence(for: utilityAssetInfo) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveUtilityAssetMinBalance(existence.minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -401,39 +389,27 @@ extension OnChainTransferInteractor {
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateFee(for amount: BigUInt, recepient: AccountAddress?) {
-        do {
-            let recepientAccountId: AccountId
+    func estimateFee(for amount: BigUInt, recepient: AccountId?) {
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
-            if let recepient = recepient {
-                recepientAccountId = try recepient.toAccountId()
-            } else {
-                recepientAccountId = selectedAccount.accountId
-            }
+        let identifier = String(amount) + "-" + recepientAccountId.toHex()
 
-            let identifier = String(amount) + "-" + recepientAccountId.toHex()
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
 
-            feeProxy.estimateFee(
-                using: extrinsicService,
-                reuseIdentifier: identifier
-            ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recepient: recepientAccountId
-                ) ?? (builder, nil)
-
-                return newBuilder
-            }
-        } catch {
-            presenter?.didReceiveError(CommonError.dataCorruption)
+            return newBuilder
         }
     }
 
-    func change(recepient: AccountAddress?) {
-        guard
-            let newRecepientAccountId = try? recepient?.toAccountId(),
-            newRecepientAccountId != recepientAccountId else {
+    func change(recepient: AccountId?) {
+        guard recepient != recepientAccountId else {
             return
         }
 
@@ -442,7 +418,7 @@ extension OnChainTransferInteractor {
         clearSendingAssetLocaleRecepientSubscription()
         clearUtilityAssetLocaleRecepientSubscriptions()
 
-        recepientAccountId = newRecepientAccountId
+        recepientAccountId = recepient
 
         subscribeSendingRecepientAssetBalance()
         subscribeUtilityRecepientAssetBalance()
