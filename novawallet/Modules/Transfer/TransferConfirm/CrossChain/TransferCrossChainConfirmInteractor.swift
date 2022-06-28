@@ -115,7 +115,7 @@ extension TransferCrossChainConfirmInteractor: TransferConfirmCrossChainInteract
 
                         self?.persistExtrinsicAndComplete(details: details)
                     } else {
-                        self?.presenter?.didCompleteSetup()
+                        self?.submitionPresenter?.didReceiveError(CommonError.dataCorruption)
                     }
 
                 case let .failure(error):

@@ -38,34 +38,34 @@ final class AssetsBalanceUpdater {
         self.operationQueue = operationQueue
     }
 
-    func handleAssetDetails(value: ChainStorageItem?) {
+    func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        hasChanges = hasChanges || (value != nil) || (!receivedDetails)
+        hasChanges = hasChanges || (value != nil) || isRemoved || (!receivedDetails)
         receivedDetails = true
 
-        if value != nil {
+        if value != nil || isRemoved {
             lastDetailsValue = value
         }
 
         checkChanges(chainAssetId: chainAssetId, accountId: accountId)
     }
 
-    func handleAssetAccount(value: ChainStorageItem?) {
+    func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool) {
         mutex.lock()
 
         defer {
             mutex.unlock()
         }
 
-        hasChanges = hasChanges || (value != nil) || (!receivedAccount)
+        hasChanges = hasChanges || (value != nil) || isRemoved || (!receivedAccount)
         receivedAccount = true
 
-        if value != nil {
+        if value != nil || isRemoved {
             lastAccountValue = value
         }
 

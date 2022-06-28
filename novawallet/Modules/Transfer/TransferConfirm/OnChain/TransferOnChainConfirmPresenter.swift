@@ -52,6 +52,10 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
         self.localizationManager = localizationManager
     }
 
+    func getRecepientAccountId() -> AccountId? {
+        try? recepientAccountAddress.toAccountId(using: chainAsset.chain.chainFormat)
+    }
+
     private func provideNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
         view?.didReceiveOriginNetwork(viewModel: viewModel)
@@ -129,7 +133,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
             return
         }
 
-        interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
+        interactor.estimateFee(for: amountValue, recepient: getRecepientAccountId())
     }
 
     override func askFeeRetry() {
@@ -167,7 +171,7 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
         refreshFee()
 
-        interactor.change(recepient: recepientAccountAddress)
+        interactor.change(recepient: getRecepientAccountId())
     }
 
     override func didReceiveError(_ error: Error) {
