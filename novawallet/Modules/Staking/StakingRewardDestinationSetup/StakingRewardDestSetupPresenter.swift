@@ -138,7 +138,7 @@ extension StakingRewardDestSetupPresenter: StakingRewardDestSetupPresenterProtoc
                 self?.refreshFeeIfNeeded()
             }),
 
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale)
 
         ]).runValidation { [weak self] in
             guard let rewardDestination = self?.rewardDestination else { return }

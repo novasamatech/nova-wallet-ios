@@ -16,6 +16,7 @@ protocol BaseDataValidatingFactoryProtocol: AnyObject {
     func canPayFee(
         balance: Decimal?,
         fee: Decimal?,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
 
@@ -57,6 +58,7 @@ extension BaseDataValidatingFactoryProtocol {
     func canPayFee(
         balance: Decimal?,
         fee: Decimal?,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
@@ -64,7 +66,12 @@ extension BaseDataValidatingFactoryProtocol {
                 return
             }
 
-            self?.basePresentable.presentFeeTooHigh(from: view, locale: locale)
+            let viewModelFactory = BalanceViewModelFactory(targetAssetInfo: asset)
+
+            let balanceString = viewModelFactory.amountFromValue(balance ?? 0).value(for: locale)
+            let feeString = viewModelFactory.amountFromValue(fee ?? 0).value(for: locale)
+
+            self?.basePresentable.presentFeeTooHigh(from: view, balance: balanceString, fee: feeString, locale: locale)
 
         }, preservesCondition: {
             if let balance = balance,
@@ -142,15 +149,17 @@ extension BaseDataValidatingFactoryProtocol {
     func canPayFeeInPlank(
         balance: BigUInt?,
         fee: BigUInt?,
-        precision: Int16,
+        asset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating {
+        let precision = asset.assetPrecision
         let balanceDecimal = balance.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
         let feeDecimal = fee.flatMap { Decimal.fromSubstrateAmount($0, precision: precision) }
 
         return canPayFee(
             balance: balanceDecimal,
             fee: feeDecimal,
+            asset: asset,
             locale: locale
         )
     }
