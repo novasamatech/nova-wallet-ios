@@ -132,9 +132,11 @@ class CrossChainTransferPresenter {
                 return
             },
 
+            // check whether sending amount and might be origin fee might be spent
+            // for cross chain there is a separate check
             dataValidatingFactory.canSend(
                 amount: sendingAmount,
-                fee: totalFee(),
+                fee: isOriginUtilityTransfer ? originFee : 0,
                 transferable: senderSendingAssetBalance?.transferable,
                 locale: selectedLocale
             ),
@@ -150,6 +152,15 @@ class CrossChainTransferPresenter {
                 fee: originFee,
                 total: senderUtilityAssetTotal,
                 minBalance: isOriginUtilityTransfer ? originSendingMinBalance : originUtilityMinBalance,
+                locale: selectedLocale
+            ),
+
+            // check whether cross chain fee can be paid after sending amount and paying origin fee
+            dataValidatingFactory.canPayCrossChainFee(
+                for: sendingAmount,
+                fee: (origin: isOriginUtilityTransfer ? originFee : 0, crossChain: crossChainFee?.fee),
+                transferable: senderSendingAssetBalance?.transferable,
+                destinationAsset: destinationChainAsset.assetDisplayInfo,
                 locale: selectedLocale
             ),
 
