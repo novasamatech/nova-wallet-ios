@@ -102,7 +102,8 @@ extension TransferSetupPresenterFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: eventCenter,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         let extrinsicService = XcmTransferService(

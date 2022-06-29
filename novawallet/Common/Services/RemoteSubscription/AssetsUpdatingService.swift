@@ -152,7 +152,8 @@ final class AssetsUpdatingService {
             assetRepository: assetRepository,
             chainRepository: chainItemRepository,
             eventCenter: eventCenter,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         let maybeSubscriptionId = remoteSubscriptionService.attachToAsset(
