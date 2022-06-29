@@ -96,7 +96,8 @@ extension TransferSetupPresenterFactory {
             chainRegistry: chainRegistry,
             repositoryFactory: repositoryFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: OperationManagerFacade.sharedDefaultQueue
+            operationQueue: OperationManagerFacade.sharedDefaultQueue,
+            logger: Logger.shared
         )
 
         let extrinsicService = ExtrinsicService(

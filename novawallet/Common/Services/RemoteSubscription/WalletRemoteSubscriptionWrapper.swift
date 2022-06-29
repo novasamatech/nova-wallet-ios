@@ -24,19 +24,22 @@ final class WalletRemoteSubscriptionWrapper {
     let repositoryFactory: SubstrateRepositoryFactoryProtocol
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     init(
         remoteSubscriptionService: WalletRemoteSubscriptionServiceProtocol,
         chainRegistry: ChainRegistryProtocol,
         repositoryFactory: SubstrateRepositoryFactoryProtocol,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.remoteSubscriptionService = remoteSubscriptionService
         self.chainRegistry = chainRegistry
         self.repositoryFactory = repositoryFactory
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     func subscribeAssets(
@@ -55,7 +58,8 @@ final class WalletRemoteSubscriptionWrapper {
             assetRepository: assetRepository,
             chainRepository: chainItemRepository,
             eventCenter: eventCenter,
-            operationQueue: operationQueue
+            operationQueue: operationQueue,
+            logger: logger
         )
 
         return remoteSubscriptionService.attachToAsset(
