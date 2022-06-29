@@ -301,10 +301,17 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
     }
 
     func proceed() {
+        guard let utilityAsset = chainAsset.chain.utilityAsset() else {
+            return
+        }
+
+        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
+
         let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
         var validators: [DataValidating] = baseValidators(
             for: sendingAmount,
             recepientAddress: partialRecepientAddress,
+            utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
         )
 

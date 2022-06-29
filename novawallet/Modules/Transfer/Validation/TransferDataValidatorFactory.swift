@@ -2,6 +2,8 @@ import Foundation
 import BigInt
 import SoraFoundation
 
+typealias CrossChainValidationFee = (origin: BigUInt?, crossChain: BigUInt?)
+
 protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol {
     func canSend(
         amount: Decimal?,
@@ -12,7 +14,12 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
 
     func has(fee: BigUInt?, locale: Locale, onError: (() -> Void)?) -> DataValidating
 
-    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating
+    func notViolatingMinBalancePaying(
+        fee: BigUInt?,
+        total: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating
 
     func willBeReaped(
         amount: Decimal?,
@@ -46,6 +53,14 @@ protocol TransferDataValidatorFactoryProtocol: BaseDataValidatingFactoryProtocol
         recepient: AccountAddress?,
         chainFormat: ChainFormat,
         chainName: String,
+        locale: Locale
+    ) -> DataValidating
+
+    func canPayCrossChainFee(
+        for amount: Decimal?,
+        fee: CrossChainValidationFee?,
+        transferable: BigUInt?,
+        destinationAsset: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> DataValidating
 }
@@ -112,7 +127,12 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: { fee != nil })
     }
 
-    func canPay(fee: BigUInt?, total: BigUInt?, minBalance: BigUInt?, locale: Locale) -> DataValidating {
+    func notViolatingMinBalancePaying(
+        fee: BigUInt?,
+        total: BigUInt?,
+        minBalance: BigUInt?,
+        locale: Locale
+    ) -> DataValidating {
         ErrorConditionViolation(onError: { [weak self] in
             guard let view = self?.view else {
                 return
@@ -267,6 +287,69 @@ final class TransferDataValidatorFactory: TransferDataValidatorFactoryProtocol {
         }, preservesCondition: {
             let accountId = try? recepient?.toAccountId(using: chainFormat)
             return accountId != nil
+        })
+    }
+
+    func canPayCrossChainFee(
+        for amount: Decimal?,
+        fee: CrossChainValidationFee?,
+        transferable: BigUInt?,
+        destinationAsset: AssetBalanceDisplayInfo,
+        locale: Locale
+    ) -> DataValidating {
+        let precision = assetDisplayInfo.assetPrecision
+        let sendingAmount = amount.flatMap {
+            $0.toSubstrateAmount(precision: precision)
+        }
+
+        return ErrorConditionViolation(onError: { [weak self] in
+            guard let view = self?.view, let originAsset = self?.assetDisplayInfo else {
+                return
+            }
+
+            let destBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: destinationAsset)
+            let originBalanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: originAsset)
+
+            let crossChainFeeDecimal = Decimal.fromSubstrateAmount(
+                fee?.crossChain ?? 0,
+                precision: destinationAsset.assetPrecision
+            ) ?? 0
+
+            let crossChainFeeString = destBalanceViewModelFactory.amountFromValue(crossChainFeeDecimal)
+                .value(for: locale)
+
+            let sendingAmountDecimal = amount ?? 0
+            let transferableDecimal = Decimal.fromSubstrateAmount(
+                transferable ?? 0,
+                precision: originAsset.assetPrecision
+            ) ?? 0
+
+            let originFeeDecimal = Decimal.fromSubstrateAmount(
+                fee?.origin ?? 0,
+                precision: originAsset.assetPrecision
+            ) ?? 0
+
+            let remainingString = originBalanceViewModelFactory.amountFromValue(
+                transferableDecimal - sendingAmountDecimal - originFeeDecimal
+            ).value(for: locale)
+
+            self?.presentable.presentCantPayCrossChainFee(
+                from: view,
+                feeString: crossChainFeeString,
+                balance: remainingString,
+                locale: locale
+            )
+
+        }, preservesCondition: {
+            if
+                let sendingAmount = sendingAmount,
+                let originFee = fee?.origin,
+                let crossChainFee = fee?.crossChain,
+                let transferable = transferable {
+                return sendingAmount + originFee + crossChainFee <= transferable
+            } else {
+                return false
+            }
         })
     }
 }

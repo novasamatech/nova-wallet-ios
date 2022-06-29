@@ -129,6 +129,10 @@ struct ChainModel: Equatable, Codable, Hashable {
         assets.filter { $0.isUtility }
     }
 
+    func utilityAsset() -> AssetModel? {
+        utilityAssets().first
+    }
+
     var typesUsage: TypesUsage {
         if let types = types {
             return types.overridesCommon ? .onlyOwn : .both
