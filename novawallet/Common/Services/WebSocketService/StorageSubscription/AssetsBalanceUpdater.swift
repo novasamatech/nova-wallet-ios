@@ -9,6 +9,7 @@ final class AssetsBalanceUpdater {
     let chainRepository: AnyDataProviderRepository<ChainStorageItem>
     let eventCenter: EventCenterProtocol
     let operationQueue: OperationQueue
+    let logger: LoggerProtocol
 
     private var lastDetailsValue: ChainStorageItem?
     private var receivedDetails: Bool = false
@@ -27,7 +28,8 @@ final class AssetsBalanceUpdater {
         assetRepository: AnyDataProviderRepository<AssetBalance>,
         chainRepository: AnyDataProviderRepository<ChainStorageItem>,
         eventCenter: EventCenterProtocol,
-        operationQueue: OperationQueue
+        operationQueue: OperationQueue,
+        logger: LoggerProtocol
     ) {
         self.chainAssetId = chainAssetId
         self.accountId = accountId
@@ -36,6 +38,7 @@ final class AssetsBalanceUpdater {
         self.chainRepository = chainRepository
         self.eventCenter = eventCenter
         self.operationQueue = operationQueue
+        self.logger = logger
     }
 
     func handleAssetDetails(value: ChainStorageItem?, isRemoved: Bool) {
@@ -52,7 +55,7 @@ final class AssetsBalanceUpdater {
             lastDetailsValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
     }
 
     func handleAssetAccount(value: ChainStorageItem?, isRemoved: Bool) {
@@ -69,10 +72,10 @@ final class AssetsBalanceUpdater {
             lastAccountValue = value
         }
 
-        checkChanges(chainAssetId: chainAssetId, accountId: accountId)
+        checkChanges(chainAssetId: chainAssetId, accountId: accountId, logger: logger)
     }
 
-    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId) {
+    private func checkChanges(chainAssetId: ChainAssetId, accountId: AccountId, logger: LoggerProtocol) {
         if hasChanges, receivedAccount, receivedDetails {
             hasChanges = false
 
@@ -91,6 +94,8 @@ final class AssetsBalanceUpdater {
 
             let saveOperation = assetRepository.saveOperation({
                 let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
+
+                logger.debug("Asset change \(chainAssetId): \(change)")
 
                 if let remoteModel = change?.item {
                     return [remoteModel]
