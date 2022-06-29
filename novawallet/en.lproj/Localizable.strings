@@ -826,3 +826,6 @@
 "common.to.network" = "To network";
 "transfer.cross.chain.hint" = "Cross-chain fee is added on top of entered amount. Recipient may receive part of cross-chain fee";
 "common.request.retry" = "Data loading failed. Would you like to retry?";
+"common.not.enough.fee.message_v2.9.1" = "You don’t have enough balance to pay the network fee of %@.\nTransferable balance: %@";
+"common.not.enough.crosschain.fee.message" = "You don’t have enough balance to pay the Cross-chain fee of %@.\nRemaining balance after transfer: %@";
+"common.insufficient.balance" = "Insufficient balance";

@@ -24,6 +24,10 @@ class OnChainTransferPresenter {
             senderUtilityAssetBalance?.totalInPlank
     }
 
+    var senderUtilityAssetTransferable: BigUInt? {
+        isUtilityTransfer ? senderSendingAssetBalance?.transferable : senderUtilityAssetBalance?.transferable
+    }
+
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
 
     private(set) var fee: BigUInt?
@@ -78,6 +82,7 @@ class OnChainTransferPresenter {
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
+        utilityAssetInfo: AssetBalanceDisplayInfo,
         selectedLocale: Locale
     ) -> [DataValidating] {
         var validators: [DataValidating] = [
@@ -106,7 +111,14 @@ class OnChainTransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPay(
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: senderUtilityAssetTransferable,
+                fee: fee,
+                asset: utilityAssetInfo,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee,
                 total: senderUtilityAssetTotal,
                 minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
@@ -122,14 +134,14 @@ class OnChainTransferPresenter {
         ]
 
         if !isUtilityTransfer {
-            validators.append(
-                dataValidatingFactory.receiverHasAccountProvider(
-                    utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    utilityMinBalance: utilityAssetMinBalance,
-                    assetExistence: sendingAssetExistence,
-                    locale: selectedLocale
-                )
+            let accountProviderValidation = dataValidatingFactory.receiverHasAccountProvider(
+                utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                utilityMinBalance: utilityAssetMinBalance,
+                assetExistence: sendingAssetExistence,
+                locale: selectedLocale
             )
+
+            validators.append(accountProviderValidation)
         }
 
         return validators

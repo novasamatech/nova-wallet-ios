@@ -266,15 +266,19 @@ extension TransferCrossChainConfirmPresenter: TransferConfirmPresenterProtocol {
     }
 
     func submit() {
-        guard let amountInPlank = amount.toSubstrateAmount(
-            precision: originChainAsset.assetDisplayInfo.assetPrecision
-        ) else {
+        let assetPresicion = originChainAsset.assetDisplayInfo.assetPrecision
+        guard
+            let amountInPlank = amount.toSubstrateAmount(precision: assetPresicion),
+            let utilityAsset = originChainAsset.chain.utilityAsset() else {
             return
         }
+
+        let utilityAssetInfo = ChainAsset(chain: originChainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let validators: [DataValidating] = baseValidators(
             for: amount,
             recepientAddress: recepientAccountAddress,
+            utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
         )
 

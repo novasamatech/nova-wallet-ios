@@ -2,6 +2,6 @@ import Foundation
 import SubstrateSdk
 
 struct UniquesClassDetails: Codable {
-    @StringCodable var instances: UInt32
+    @StringCodable var items: UInt32
     let issuer: AccountId
 }

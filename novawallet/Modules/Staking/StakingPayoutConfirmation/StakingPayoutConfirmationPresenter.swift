@@ -95,6 +95,7 @@ extension StakingPayoutConfirmationPresenter: StakingPayoutConfirmationPresenter
             dataValidatingFactory.canPayFee(
                 balance: balance,
                 fee: fee,
+                asset: assetInfo,
                 locale: locale
             )
         ]).runValidation { [weak self] in
