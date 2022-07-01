@@ -88,7 +88,7 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         let message = R.string.localizable
             .stakingRedeemNoTokensMessage(preferredLanguages: locale?.rLanguages)
         let title = R.string.localizable
-            .stakingErrorInsufficientBalanceTitle(preferredLanguages: locale?.rLanguages)
+            .commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
@@ -98,7 +98,7 @@ extension StakingErrorPresentable where Self: AlertPresentable & ErrorPresentabl
         let message = R.string.localizable
             .stakingRebondInsufficientBondings(preferredLanguages: locale?.rLanguages)
         let title = R.string.localizable
-            .stakingErrorInsufficientBalanceTitle(preferredLanguages: locale?.rLanguages)
+            .commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
         let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
 
         present(message: message, title: title, closeAction: closeAction, from: view)
