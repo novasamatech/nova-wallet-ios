@@ -88,14 +88,8 @@ extension TransferSetupPresenterFactory {
         let operationQueue = OperationManagerFacade.sharedDefaultQueue
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-        let repository = repositoryFactory.createChainStorageItemRepository()
 
-        let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: logger
-        )
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
@@ -114,7 +108,7 @@ extension TransferSetupPresenterFactory {
 
         let resolutionFactory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            paraIdOperationFactory: ParaIdOperationFactory.shared
         )
 
         return CrossChainTransferSetupInteractor(

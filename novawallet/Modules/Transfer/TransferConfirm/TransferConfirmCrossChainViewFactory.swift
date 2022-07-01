@@ -98,14 +98,8 @@ struct TransferConfirmCrossChainViewFactory {
         let eventCenter = EventCenter.shared
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
-        let repository = repositoryFactory.createChainStorageItemRepository()
 
-        let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: logger
-        )
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
@@ -124,13 +118,19 @@ struct TransferConfirmCrossChainViewFactory {
 
         let resolutionFactory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            paraIdOperationFactory: ParaIdOperationFactory.shared
         )
 
         let transactionStorage = repositoryFactory.createTxRepository()
         let persistentExtrinsicService = PersistentExtrinsicService(
             repository: transactionStorage,
             operationQueue: operationQueue
+        )
+
+        let signingWrapper = SigningWrapper(
+            keystore: Keychain(),
+            metaId: wallet.metaId,
+            accountResponse: selectedAccount
         )
 
         return TransferCrossChainConfirmInteractor(
@@ -142,7 +142,7 @@ struct TransferConfirmCrossChainViewFactory {
             feeProxy: XcmExtrinsicFeeProxy(),
             extrinsicService: extrinsicService,
             resolutionFactory: resolutionFactory,
-            signingWrapper: SigningWrapper(keystore: Keychain(), metaId: wallet.metaId, accountResponse: selectedAccount),
+            signingWrapper: signingWrapper,
             persistExtrinsicService: persistentExtrinsicService,
             eventCenter: eventCenter,
             walletRemoteWrapper: walletRemoteSubscriptionWrapper,
