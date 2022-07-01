@@ -38,11 +38,7 @@ final class TransferConfirmViewLayout: UIView {
     private(set) var crossChainFeeCell: StackNetworkFeeCell?
     private(set) var crossChainHintView: HintListView?
 
-    let actionButton: TriangularedButton = {
-        let button = TriangularedButton()
-        button.applyDefaultStyle()
-        return button
-    }()
+    let actionLoadableView = LoadableActionView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -91,8 +87,8 @@ final class TransferConfirmViewLayout: UIView {
     }
 
     private func setupLayout() {
-        addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        addSubview(actionLoadableView)
+        actionLoadableView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
             make.height.equalTo(UIConstants.actionHeight)
@@ -101,7 +97,7 @@ final class TransferConfirmViewLayout: UIView {
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(actionButton.snp.top).offset(-8.0)
+            make.bottom.equalTo(actionLoadableView.snp.top).offset(-8.0)
         }
 
         containerView.stackView.addArrangedSubview(amountView)

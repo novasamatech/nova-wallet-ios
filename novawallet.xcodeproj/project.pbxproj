@@ -1048,6 +1048,8 @@
 		848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */; };
 		848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837C274BB03E004493DD /* PublicSans-ExtraBold.otf */; };
 		848A8381274BB03F004493DD /* PublicSans-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 848A837D274BB03E004493DD /* PublicSans-Regular.otf */; };
+		848B2FFE286EDA4700465BA2 /* WalletServiceFacade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */; };
+		848B3000286EDE3800465BA2 /* ParaIdOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */; };
 		848C3D0926248A3B005481C3 /* TransferCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848C3D0826248A3B005481C3 /* TransferCall.swift */; };
 		848CCB442832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB432832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift */; };
 		848CCB462832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848CCB452832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift */; };
@@ -3382,6 +3384,8 @@
 		848A837B274BB03E004493DD /* PublicSans-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-SemiBold.otf"; sourceTree = "<group>"; };
 		848A837C274BB03E004493DD /* PublicSans-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-ExtraBold.otf"; sourceTree = "<group>"; };
 		848A837D274BB03E004493DD /* PublicSans-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PublicSans-Regular.otf"; sourceTree = "<group>"; };
+		848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletServiceFacade.swift; sourceTree = "<group>"; };
+		848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParaIdOperationFactory.swift; sourceTree = "<group>"; };
 		848C3D0826248A3B005481C3 /* TransferCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferCall.swift; sourceTree = "<group>"; };
 		848CCB432832EE9B00A1FD00 /* GeneralStorageSubscriptionFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralStorageSubscriptionFactory.swift; sourceTree = "<group>"; };
 		848CCB452832EF3400A1FD00 /* GeneralLocalStorageSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralLocalStorageSubscriber.swift; sourceTree = "<group>"; };
@@ -5636,6 +5640,7 @@
 				84155DEC2539817200A27058 /* ApplicationService.swift */,
 				84BE209D25E85CCA00B4748C /* ServiceCoordinator.swift */,
 				84F3B27B27F419B100D64CF5 /* BaseSyncService.swift */,
+				848B2FFD286EDA4700465BA2 /* WalletServiceFacade.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -7844,6 +7849,7 @@
 				84CC128527B8336900C8E6AB /* AsyncClosureOperation.swift */,
 				8499FE7027BE214A00712589 /* StorageKeyDecodingOperation.swift */,
 				841E555A282E6B0900C8438F /* StorageDecodingOperation+Init.swift */,
+				848B2FFF286EDE3800465BA2 /* ParaIdOperationFactory.swift */,
 			);
 			path = Operation;
 			sourceTree = "<group>";
@@ -12340,6 +12346,7 @@
 				F41CEBEA273161DE00C06154 /* CrowdloanRewardDestinationView.swift in Sources */,
 				84364D58252FAE0A00281F9A /* AssetDetailsView.swift in Sources */,
 				AE398384272AF97500BC8A85 /* WalletTableViewCell.swift in Sources */,
+				848B2FFE286EDA4700465BA2 /* WalletServiceFacade.swift in Sources */,
 				84DF21A125347031005454AE /* DetailsDisplayTableViewCell.swift in Sources */,
 				F43A8A95265B9CF400A8A5A8 /* CustomValidatorCell.swift in Sources */,
 				8482F62F280C618B0006C3A0 /* DAppAuthSettingsTableCell.swift in Sources */,
@@ -12886,6 +12893,7 @@
 				2A902079273E7CE200F2D584 /* RichAmountInputViewModel.swift in Sources */,
 				8468B87024F63D2000B76BC6 /* AddAccount+UsernameSetupWireframe.swift in Sources */,
 				84754CA42513E6DC00854599 /* PrimitiveContextWrapper.swift in Sources */,
+				848B3000286EDE3800465BA2 /* ParaIdOperationFactory.swift in Sources */,
 				84F47D4B2666EF1C00F7647A /* KaruraStatementData.swift in Sources */,
 				8443FE24255586230092893D /* ExportMnemonicConfirmProtocols.swift in Sources */,
 				84644A0C256713D5004EAA4B /* TriangularedBlurView+Inspectable.swift in Sources */,

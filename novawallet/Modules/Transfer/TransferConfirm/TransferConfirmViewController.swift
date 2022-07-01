@@ -32,7 +32,7 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     }
 
     private func setupHandlers() {
-        rootView.actionButton.addTarget(
+        rootView.actionLoadableView.actionButton.addTarget(
             self,
             action: #selector(actionSubmit),
             for: .touchUpInside
@@ -54,7 +54,7 @@ final class TransferConfirmViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         title = R.string.localizable.walletSendTitle(preferredLanguages: selectedLocale.rLanguages)
 
-        rootView.actionButton.imageWithTitleView?.title = R.string.localizable
+        rootView.actionLoadableView.actionButton.imageWithTitleView?.title = R.string.localizable
             .commonConfirm(preferredLanguages: selectedLocale.rLanguages)
 
         if rootView.destinationNetworkCell == nil {
@@ -141,6 +141,14 @@ extension TransferConfirmViewController: TransferConfirmCrossChainViewProtocol, 
 
     func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?) {
         rootView.crossChainFeeCell?.rowContentView.bind(viewModel: viewModel)
+    }
+
+    func didStartLoading() {
+        rootView.actionLoadableView.startLoading()
+    }
+
+    func didStopLoading() {
+        rootView.actionLoadableView.stopLoading()
     }
 }
 
