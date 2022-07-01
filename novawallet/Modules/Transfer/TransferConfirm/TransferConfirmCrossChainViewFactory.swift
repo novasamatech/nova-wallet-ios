@@ -118,7 +118,7 @@ struct TransferConfirmCrossChainViewFactory {
 
         let resolutionFactory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            paraIdOperationFactory: ParaIdOperationFactory.shared
         )
 
         let transactionStorage = repositoryFactory.createTxRepository()
