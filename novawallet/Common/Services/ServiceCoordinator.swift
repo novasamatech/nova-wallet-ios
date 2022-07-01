@@ -60,7 +60,6 @@ extension ServiceCoordinator {
         let githubPhishingAPIService = GitHubPhishingServiceFactory.createService()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
 
         let assetsOperationQueue = OperationManagerFacade.assetsQueue
@@ -69,12 +68,7 @@ extension ServiceCoordinator {
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
-        let walletRemoteSubscription = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: assetsOperationManager,
-            logger: logger
-        )
+        let walletRemoteSubscription = WalletServiceFacade.sharedRemoteSubscriptionService
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),

@@ -109,7 +109,7 @@ final class XcmTransferService {
                     throw CommonError.dataCorruption
                 }
 
-                return FeeWithWeight(fee: fee, weight: maxWeight)
+                return FeeWithWeight(fee: fee, weight: BigUInt(response.weight))
             }
 
             mapperOperation.addDependency(wrapper.targetOperation)

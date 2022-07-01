@@ -95,14 +95,8 @@ struct TransferConfirmOnChainViewFactory {
         }
 
         let repositoryFactory = SubstrateRepositoryFactory()
-        let repository = repositoryFactory.createChainStorageItemRepository()
 
-        let walletRemoteSubscriptionService = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: OperationManagerFacade.sharedManager,
-            logger: Logger.shared
-        )
+        let walletRemoteSubscriptionService = WalletServiceFacade.sharedRemoteSubscriptionService
 
         let walletRemoteSubscriptionWrapper = WalletRemoteSubscriptionWrapper(
             remoteSubscriptionService: walletRemoteSubscriptionService,
