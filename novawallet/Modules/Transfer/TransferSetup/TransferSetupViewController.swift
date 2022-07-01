@@ -182,19 +182,10 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
     func didSwitchCrossChain() {
         rootView.switchCrossChain()
         setupCrossChainLocalization()
-
-        rootView.recepientInputView.showsMyself = true
-
-        rootView.recepientInputView.mySelfButton?.addTarget(
-            self,
-            action: #selector(actionSendMyself),
-            for: .touchUpInside
-        )
     }
 
     func didSwitchOnChain() {
         rootView.switchOnChain()
-        rootView.recepientInputView.showsMyself = false
     }
 
     func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {
@@ -259,6 +250,16 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         rootView.recepientInputView.bind(inputViewModel: viewModel)
 
         updateActionButtonState()
+    }
+
+    func didReceiveCanSendMySelf(_ canSendMySelf: Bool) {
+        rootView.recepientInputView.showsMyself = canSendMySelf
+
+        rootView.recepientInputView.mySelfButton?.addTarget(
+            self,
+            action: #selector(actionSendMyself),
+            for: .touchUpInside
+        )
     }
 }
 

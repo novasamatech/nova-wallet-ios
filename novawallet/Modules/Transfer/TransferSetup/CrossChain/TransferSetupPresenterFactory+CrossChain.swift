@@ -9,11 +9,13 @@ extension TransferSetupPresenterFactory {
         initialState: TransferSetupInputState,
         view: TransferSetupChildViewProtocol
     ) -> TransferSetupChildPresenterProtocol? {
-        guard let interactor = createInteractor(
-            for: originChainAsset,
-            destinationChainAsset: destinationChainAsset,
-            xcmTransfers: xcmTransfers
-        ) else {
+        guard
+            let wallet = SelectedWalletSettings.shared.value,
+            let interactor = createInteractor(
+                for: originChainAsset,
+                destinationChainAsset: destinationChainAsset,
+                xcmTransfers: xcmTransfers
+            ) else {
             return nil
         }
 
@@ -54,6 +56,7 @@ extension TransferSetupPresenterFactory {
         )
 
         let presenter = CrossChainTransferSetupPresenter(
+            wallet: wallet,
             interactor: interactor,
             wireframe: wireframe,
             originChainAsset: originChainAsset,
