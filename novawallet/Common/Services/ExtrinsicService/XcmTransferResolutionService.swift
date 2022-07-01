@@ -18,22 +18,14 @@ final class XcmTransferResolutionFactory {
     }
 
     let chainRegistry: ChainRegistryProtocol
-    let operationQueue: OperationQueue
-
-    private lazy var storageRequestFactory: StorageRequestFactoryProtocol = {
-        let operationManager = OperationManager(operationQueue: operationQueue)
-        return StorageRequestFactory(
-            remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
-        )
-    }()
+    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
 
     init(
         chainRegistry: ChainRegistryProtocol,
-        operationQueue: OperationQueue
+        paraIdOperationFactory: ParaIdOperationFactoryProtocol
     ) {
         self.chainRegistry = chainRegistry
-        self.operationQueue = operationQueue
+        self.paraIdOperationFactory = paraIdOperationFactory
     }
 
     private func resolveChains(
@@ -68,40 +60,7 @@ final class XcmTransferResolutionFactory {
     }
 
     private func createParachainIdWrapper(for chainId: ChainModel.Id) -> CompoundOperationWrapper<ParaId> {
-        guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.runtimeMetadaUnavailable)
-        }
-
-        guard let connection = chainRegistry.getConnection(for: chainId) else {
-            return CompoundOperationWrapper.createWithError(ChainRegistryError.connectionUnavailable)
-        }
-
-        let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
-        let wrapper: CompoundOperationWrapper<StorageResponse<StringScaleMapper<ParaId>>>
-
-        wrapper = storageRequestFactory.queryItem(
-            engine: connection,
-            factory: { try coderFactoryOperation.extractNoCancellableResultData() },
-            storagePath: .parachainId
-        )
-
-        wrapper.addDependency(operations: [coderFactoryOperation])
-
-        let mapperOperation = ClosureOperation<ParaId> {
-            let response = try wrapper.targetOperation.extractNoCancellableResultData()
-
-            guard let paraId = response.value?.value else {
-                throw CommonError.undefined
-            }
-
-            return paraId
-        }
-
-        mapperOperation.addDependency(wrapper.targetOperation)
-
-        let dependencies = [coderFactoryOperation] + wrapper.allOperations
-
-        return CompoundOperationWrapper(targetOperation: mapperOperation, dependencies: dependencies)
+        paraIdOperationFactory.createParaIdOperation(for: chainId)
     }
 
     private func createMergeOperation(
