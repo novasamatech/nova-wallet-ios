@@ -127,7 +127,7 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var xcmTransfersURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/transfers_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/transfers.json")!
         #else
             URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/transfers_dev.json")!
         #endif
