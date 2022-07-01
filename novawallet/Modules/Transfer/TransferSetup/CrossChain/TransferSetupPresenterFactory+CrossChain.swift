@@ -108,7 +108,7 @@ extension TransferSetupPresenterFactory {
 
         let resolutionFactory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
-            operationQueue: operationQueue
+            paraIdOperationFactory: ParaIdOperationFactory.shared
         )
 
         return CrossChainTransferSetupInteractor(
