@@ -11,6 +11,7 @@ protocol TransferSetupChildViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveAmountInputPrice(viewModel: String?)
     func didReceiveAccountState(viewModel: AccountFieldStateViewModel)
     func didReceiveAccountInput(viewModel: InputViewModelProtocol)
+    func didReceiveCanSendMySelf(_ canSendMySelf: Bool)
 }
 
 protocol TransferSetupViewProtocol: TransferSetupChildViewProtocol {

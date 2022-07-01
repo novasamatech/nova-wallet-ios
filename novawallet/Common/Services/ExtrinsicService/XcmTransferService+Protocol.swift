@@ -68,7 +68,8 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: maxWeight
             )
 
-            let operationFactory = try createOperationFactory(for: unweighted.origin.chain)
+            let chainAccount = wallet.fetch(for: unweighted.origin.chain.accountRequest())
+            let operationFactory = try createOperationFactory(for: unweighted.origin.chain, chainAccount: chainAccount)
 
             let feeWrapper = operationFactory.estimateFeeOperation { builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
@@ -267,7 +268,11 @@ extension XcmTransferService: XcmTransferServiceProtocol {
                 maxWeight: request.maxWeight
             )
 
-            let operationFactory = try createOperationFactory(for: request.unweighted.origin.chain)
+            guard let chainAccount = wallet.fetch(for: request.unweighted.origin.chain.accountRequest()) else {
+                throw ChainAccountFetchingError.accountNotExists
+            }
+
+            let operationFactory = try createOperationFactory(for: request.unweighted.origin.chain, chainAccount: chainAccount)
 
             let submitWrapper = operationFactory.submit({ builder in
                 let callClosure = try callBuilderWrapper.targetOperation.extractNoCancellableResultData().0
