@@ -1,15 +1,23 @@
 import Foundation
 import RobinHood
+import BigInt
+import SubstrateSdk
 
 protocol StakingLocalSubscriptionFactoryProtocol {
-    func getMinNominatorBondProvider(for chainId: ChainModel.Id) throws
-        -> AnyDataProvider<DecodedBigUInt>
+    func getMinNominatorBondProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
+    ) throws -> AnyDataProvider<DecodedBigUInt>
 
-    func getCounterForNominatorsProvider(for chainId: ChainModel.Id) throws
-        -> AnyDataProvider<DecodedU32>
+    func getCounterForNominatorsProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
 
-    func getMaxNominatorsCountProvider(for chainId: ChainModel.Id) throws
-        -> AnyDataProvider<DecodedU32>
+    func getMaxNominatorsCountProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32>
 
     func getNominationProvider(for accountId: AccountId, chainId: ChainModel.Id) throws
         -> AnyDataProvider<DecodedNomination>
@@ -42,39 +50,63 @@ protocol StakingLocalSubscriptionFactoryProtocol {
 
 final class StakingLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
     StakingLocalSubscriptionFactoryProtocol {
-    func getMinNominatorBondProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedBigUInt> {
+    func getMinNominatorBondProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
+    ) throws -> AnyDataProvider<DecodedBigUInt> {
         let codingPath = StorageCodingPath.minNominatorBond
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
         return try getDataProvider(
             for: localKey,
             chainId: chainId,
             storageCodingPath: codingPath,
-            shouldUseFallback: false
+            fallback: fallback
         )
     }
 
-    func getCounterForNominatorsProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedU32> {
+    func getCounterForNominatorsProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
         let codingPath = StorageCodingPath.counterForNominators
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
 
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
+
         return try getDataProvider(
             for: localKey,
             chainId: chainId,
             storageCodingPath: codingPath,
-            shouldUseFallback: false
+            fallback: fallback
         )
     }
 
-    func getMaxNominatorsCountProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedU32> {
+    func getMaxNominatorsCountProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
         let codingPath = StorageCodingPath.maxNominatorsCount
         let localKey = try LocalStorageKeyFactory().createFromStoragePath(codingPath, chainId: chainId)
+
+        let fallback = StorageProviderSourceFallback(
+            usesRuntimeFallback: false,
+            missingEntryStrategy: missingEntryStrategy
+        )
 
         return try getDataProvider(
             for: localKey,
             chainId: chainId,
             storageCodingPath: codingPath,
-            shouldUseFallback: false
+            fallback: fallback
         )
     }
 
