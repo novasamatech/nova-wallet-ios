@@ -1364,6 +1364,7 @@
 		84B73ADE279D90BD0071AE16 /* AssetsTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B73ADD279D90BD0071AE16 /* AssetsTransfer.swift */; };
 		84B73AE0279E6A600071AE16 /* FeeMetadataContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B73ADF279E6A600071AE16 /* FeeMetadataContext.swift */; };
 		84B73AE2279E95810071AE16 /* TransferInfoContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B73AE1279E95810071AE16 /* TransferInfoContext.swift */; };
+		84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84B91AEC287078B0001A0420 /* StorageProviderSourceFallback.swift */; };
 		84BA1F7E27CE23C1000AAB82 /* NftChainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BA1F7D27CE23C1000AAB82 /* NftChainModel.swift */; };
 		84BAB6102642C286007782D0 /* SelectedRebondVariant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAB60F2642C286007782D0 /* SelectedRebondVariant.swift */; };
 		84BAFCD026AF585900871E86 /* SharedArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */; };
@@ -3706,6 +3707,7 @@
 		84B73ADD279D90BD0071AE16 /* AssetsTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsTransfer.swift; sourceTree = "<group>"; };
 		84B73ADF279E6A600071AE16 /* FeeMetadataContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeMetadataContext.swift; sourceTree = "<group>"; };
 		84B73AE1279E95810071AE16 /* TransferInfoContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferInfoContext.swift; sourceTree = "<group>"; };
+		84B91AEC287078B0001A0420 /* StorageProviderSourceFallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageProviderSourceFallback.swift; sourceTree = "<group>"; };
 		84BA1F7D27CE23C1000AAB82 /* NftChainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftChainModel.swift; sourceTree = "<group>"; };
 		84BAB60F2642C286007782D0 /* SelectedRebondVariant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedRebondVariant.swift; sourceTree = "<group>"; };
 		84BAFCCF26AF585900871E86 /* SharedArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedArrayTests.swift; sourceTree = "<group>"; };
@@ -6724,6 +6726,7 @@
 				F4C086C626D1159E00716AEC /* SubqueryEraStakersInfoSource.swift */,
 				AEAC68FD26EA3C2A00346599 /* CoingeckoPriceSource.swift */,
 				84F0316E27302888003BDCF8 /* CoingeckoPriceListSource.swift */,
+				84B91AEC287078B0001A0420 /* StorageProviderSourceFallback.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -13428,6 +13431,7 @@
 				CE2792E78B14CE02394D8CF4 /* ReferralCrowdloanViewLayout.swift in Sources */,
 				84E5D14227E32E8B00D27B1E /* AccountInputView.swift in Sources */,
 				2B0FC94B4AE9AFE9532F493F /* ReferralCrowdloanViewFactory.swift in Sources */,
+				84B91AED287078B0001A0420 /* StorageProviderSourceFallback.swift in Sources */,
 				33D23A4A92AF90C385568462 /* ChainSelectionProtocols.swift in Sources */,
 				436D8B9651C88360A6D72E90 /* ChainSelectionWireframe.swift in Sources */,
 				3DF50E6F78F1B1052625BA7D /* ChainSelectionPresenter.swift in Sources */,
