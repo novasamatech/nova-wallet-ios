@@ -11,8 +11,10 @@ class AnyProviderAutoClearTests: XCTestCase {
         let singleValueProvider = StakingLocalSubscriptionFactoryStub()
         let chain = ChainModelGenerator.generate(count: 1).first!
 
-        var provider: AnyDataProvider<DecodedBigUInt>? =
-            try singleValueProvider.getMinNominatorBondProvider(for: chain.chainId)
+        var provider: AnyDataProvider<DecodedBigUInt>? = try singleValueProvider.getMinNominatorBondProvider(
+            for: chain.chainId,
+            missingEntryStrategy: .emitError
+        )
 
         // when
 
