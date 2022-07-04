@@ -191,7 +191,7 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol
     }
 
     func confirm() {
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
+        let assetInfo = chainAsset.assetDisplayInfo
         let collatorId = callWrapper.collator
         let stakedAmount = delegationsDict?[collatorId]?.amount
 
@@ -199,13 +199,13 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmPresenterProtocol
             dataValidatingFactory.hasInPlank(
                 fee: fee,
                 locale: selectedLocale,
-                precision: precision,
+                precision: assetInfo.assetPrecision,
                 onError: { [weak self] in self?.refreshFee() }
             ),
             dataValidatingFactory.canPayFeeInPlank(
                 balance: balance?.transferable,
                 fee: fee,
-                precision: precision,
+                asset: assetInfo,
                 locale: selectedLocale
             ),
             dataValidatingFactory.canUnstake(

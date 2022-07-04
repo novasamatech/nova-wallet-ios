@@ -3,8 +3,8 @@ import RobinHood
 import BigInt
 import SubstrateSdk
 
-class TransferInteractor: RuntimeConstantFetching {
-    weak var presenter: TransferSetupInteractorOutputProtocol?
+class OnChainTransferInteractor: RuntimeConstantFetching {
+    weak var presenter: OnChainTransferSetupInteractorOutputProtocol?
 
     let selectedAccount: ChainAccountResponse
     let chain: ChainModel
@@ -19,12 +19,15 @@ class TransferInteractor: RuntimeConstantFetching {
     let operationQueue: OperationQueue
 
     private lazy var callFactory = SubstrateCallFactory()
+    private lazy var assetStorageInfoFactory = AssetStorageInfoOperationFactory()
 
     private var sendingAssetProvider: StreamableProvider<AssetBalance>?
     private var utilityAssetProvider: StreamableProvider<AssetBalance>?
     private var sendingAssetPriceProvider: AnySingleValueProvider<PriceData>?
     private var utilityAssetPriceProvider: AnySingleValueProvider<PriceData>?
-    private var codingFactoryOperation: CancellableCall?
+
+    private var setupCall: CancellableCall?
+
     private var recepientAccountId: AccountId?
 
     private var sendingAssetInfo: AssetStorageInfo?
@@ -71,125 +74,70 @@ class TransferInteractor: RuntimeConstantFetching {
     }
 
     deinit {
-        cancelCodingFactoryOperation()
+        cancelSetupCall()
 
         clearSendingAssetRemoteRecepientSubscription()
         clearUtilityAssetRemoteRecepientSubscriptions()
     }
 
-    private func fetchStatemineMinBalance(
-        for extras: StatemineAssetExtras,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
-    ) {
-        do {
-            let localKey = try LocalStorageKeyFactory().createFromStoragePath(
-                .assetsDetails,
-                encodableElement: extras.assetId,
-                chainId: chain.chainId
-            )
-
-            let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
-
-            let localRequestFactory = LocalStorageRequestFactory()
-
-            let fetchWrapper: CompoundOperationWrapper<LocalStorageResponse<AssetDetails>> =
-                localRequestFactory.queryItems(
-                    repository: chainStorage,
-                    key: { localKey },
-                    factory: { try codingFactoryOperation.extractNoCancellableResultData() },
-                    params: StorageRequestParams(path: .assetsDetails, shouldFallback: false)
-                )
-
-            fetchWrapper.addDependency(operations: [codingFactoryOperation])
-
-            let mappingOperation = ClosureOperation<BigUInt> {
-                let details = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-                return details.value?.minBalance ?? 0
-            }
-
-            let dependencies = [codingFactoryOperation] + fetchWrapper.allOperations
-
-            dependencies.forEach { mappingOperation.addDependency($0) }
-
-            mappingOperation.completionBlock = {
-                DispatchQueue.main.async {
-                    do {
-                        let minBalance = try mappingOperation.extractNoCancellableResultData()
-                        completionClosure(.success(minBalance))
-                    } catch {
-                        completionClosure(.failure(error))
-                    }
-                }
-            }
-
-            operationQueue.addOperations(dependencies + [mappingOperation], waitUntilFinished: false)
-        } catch {
-            completionClosure(.failure(error))
-        }
-    }
-
-    private func fetchMinBalance(
+    private func fetchAssetExistence(
         for assetStorageInfo: AssetStorageInfo,
-        completionClosure: @escaping (Result<BigUInt, Error>) -> Void
+        completionClosure: @escaping (Result<AssetBalanceExistence, Error>) -> Void
     ) {
-        switch assetStorageInfo {
-        case .native:
-            fetchConstant(
-                for: .existentialDeposit,
-                runtimeCodingService: runtimeService,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                closure: completionClosure
-            )
-        case let .statemine(extras):
-            fetchStatemineMinBalance(for: extras, completionClosure: completionClosure)
-        case let .orml(_, _, _, existentialDeposit):
-            completionClosure(.success(existentialDeposit))
-        }
-    }
-
-    private func extractAssetStorageInfo() {
-        guard codingFactoryOperation == nil else {
-            return
-        }
-
-        let operation = runtimeService.fetchCoderFactoryOperation()
-
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    guard !operation.isCancelled else {
-                        return
-                    }
-
-                    self?.codingFactoryOperation = nil
-
-                    let codingFactory = try operation.extractNoCancellableResultData()
-                    try self?.extractAssetStorageInfo(using: codingFactory)
-
-                    self?.continueSetup()
-                } catch {
-                    self?.presenter?.didReceiveError(CommonError.dataCorruption)
-                }
-            }
-        }
-
-        codingFactoryOperation = operation
-
-        operationQueue.addOperation(operation)
-    }
-
-    private func extractAssetStorageInfo(using codingFactory: RuntimeCoderFactoryProtocol) throws {
-        sendingAssetInfo = try AssetStorageInfo.extract(
-            from: asset,
-            codingFactory: codingFactory
+        let wrapper = assetStorageInfoFactory.createAssetBalanceExistenceOperation(
+            for: assetStorageInfo,
+            chainId: chain.chainId,
+            storage: chainStorage,
+            runtimeService: runtimeService
         )
 
-        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
-            utilityAssetInfo = try AssetStorageInfo.extract(
-                from: utilityAsset,
-                codingFactory: codingFactory
-            )
+        wrapper.targetOperation.completionBlock = {
+            DispatchQueue.main.async {
+                do {
+                    let assetExistence = try wrapper.targetOperation.extractNoCancellableResultData()
+                    completionClosure(.success(assetExistence))
+                } catch {
+                    completionClosure(.failure(error))
+                }
+            }
         }
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    private func createAssetExtractionWrapper() -> CompoundOperationWrapper<(AssetStorageInfo, AssetStorageInfo?)> {
+        let sendingAssetWrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+            from: asset,
+            runtimeProvider: runtimeService
+        )
+
+        var dependencies = sendingAssetWrapper.allOperations
+
+        let utilityAssetWrapper: CompoundOperationWrapper<AssetStorageInfo>?
+
+        if !isUtilityTransfer, let utilityAsset = chain.utilityAssets().first {
+            let wrapper = assetStorageInfoFactory.createStorageInfoWrapper(
+                from: utilityAsset,
+                runtimeProvider: runtimeService
+            )
+
+            utilityAssetWrapper = wrapper
+
+            dependencies.append(contentsOf: wrapper.allOperations)
+        } else {
+            utilityAssetWrapper = nil
+        }
+
+        let mergeOperation = ClosureOperation<(AssetStorageInfo, AssetStorageInfo?)> {
+            let sending = try sendingAssetWrapper.targetOperation.extractNoCancellableResultData()
+            let utility = try utilityAssetWrapper?.targetOperation.extractNoCancellableResultData()
+
+            return (sending, utility)
+        }
+
+        dependencies.forEach { mergeOperation.addDependency($0) }
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 
     private func continueSetup() {
@@ -255,10 +203,10 @@ class TransferInteractor: RuntimeConstantFetching {
 
     private func provideMinBalance() {
         if let sendingAssetInfo = sendingAssetInfo {
-            fetchMinBalance(for: sendingAssetInfo) { [weak self] result in
+            fetchAssetExistence(for: sendingAssetInfo) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveSendingAssetMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveSendingAssetExistence(existence)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -266,10 +214,10 @@ class TransferInteractor: RuntimeConstantFetching {
         }
 
         if let utilityAssetInfo = utilityAssetInfo {
-            fetchMinBalance(for: utilityAssetInfo) { [weak self] result in
+            fetchAssetExistence(for: utilityAssetInfo) { [weak self] result in
                 switch result {
-                case let .success(minBalance):
-                    self?.presenter?.didReceiveUtilityAssetMinBalance(minBalance)
+                case let .success(existence):
+                    self?.presenter?.didReceiveUtilityAssetMinBalance(existence.minBalance)
                 case let .failure(error):
                     self?.presenter?.didReceiveError(error)
                 }
@@ -313,16 +261,17 @@ class TransferInteractor: RuntimeConstantFetching {
         }
     }
 
-    private func cancelCodingFactoryOperation() {
-        let cancellingOperation = codingFactoryOperation
-        codingFactoryOperation = nil
-        cancellingOperation?.cancel()
+    private func cancelSetupCall() {
+        let cancellingCall = setupCall
+        setupCall = nil
+        cancellingCall?.cancel()
     }
 
     private func subscribeUtilityRecepientAssetBalance() {
         guard
             let utilityAssetInfo = utilityAssetInfo,
             let recepientAccountId = recepientAccountId,
+            recepientAccountId != selectedAccount.accountId,
             let utilityAsset = chain.utilityAssets().first else {
             return
         }
@@ -344,7 +293,8 @@ class TransferInteractor: RuntimeConstantFetching {
     private func subscribeSendingRecepientAssetBalance() {
         guard
             let sendingAssetInfo = sendingAssetInfo,
-            let recepientAccountId = recepientAccountId else {
+            let recepientAccountId = recepientAccountId,
+            recepientAccountId != selectedAccount.accountId else {
             return
         }
 
@@ -390,7 +340,8 @@ class TransferInteractor: RuntimeConstantFetching {
         guard
             let utilityAssetInfo = utilityAssetInfo,
             let recepientAccountId = recepientAccountId,
-            let utilityAssetSubscriptionId = utilityAssetSubscriptionId else {
+            let utilityAssetSubscriptionId = utilityAssetSubscriptionId,
+            let utilityAsset = chain.utilityAssets().first else {
             return
         }
 
@@ -398,7 +349,7 @@ class TransferInteractor: RuntimeConstantFetching {
             from: utilityAssetSubscriptionId,
             assetStorageInfo: utilityAssetInfo,
             accountId: recepientAccountId,
-            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
+            chainAssetId: ChainAssetId(chainId: chain.chainId, assetId: utilityAsset.assetId),
             completion: nil
         )
 
@@ -411,46 +362,56 @@ class TransferInteractor: RuntimeConstantFetching {
     }
 }
 
-extension TransferInteractor {
+extension OnChainTransferInteractor {
     func setup() {
-        extractAssetStorageInfo()
+        let wrapper = createAssetExtractionWrapper()
+
+        wrapper.targetOperation.completionBlock = { [weak self] in
+            DispatchQueue.main.async {
+                guard self?.setupCall === wrapper else {
+                    return
+                }
+
+                self?.setupCall = nil
+
+                do {
+                    let (sending, utility) = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.sendingAssetInfo = sending
+                    self?.utilityAssetInfo = utility
+
+                    self?.continueSetup()
+                } catch {
+                    self?.presenter?.didReceiveError(error)
+                }
+            }
+        }
+
+        setupCall = wrapper
+
+        operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
     }
 
-    func estimateFee(for amount: BigUInt, recepient: AccountAddress?) {
-        do {
-            cancelCodingFactoryOperation()
+    func estimateFee(for amount: BigUInt, recepient: AccountId?) {
+        let recepientAccountId = recepient ?? AccountId.zeroAccountId(of: chain.accountIdSize)
 
-            let recepientAccountId: AccountId
+        let identifier = String(amount) + "-" + recepientAccountId.toHex()
 
-            if let recepient = recepient {
-                recepientAccountId = try recepient.toAccountId()
-            } else {
-                recepientAccountId = selectedAccount.accountId
-            }
+        feeProxy.estimateFee(
+            using: extrinsicService,
+            reuseIdentifier: identifier
+        ) { [weak self] builder in
+            let (newBuilder, _) = try self?.addingTransferCommand(
+                to: builder,
+                amount: amount,
+                recepient: recepientAccountId
+            ) ?? (builder, nil)
 
-            let identifier = String(amount) + "-" + recepientAccountId.toHex()
-
-            feeProxy.estimateFee(
-                using: extrinsicService,
-                reuseIdentifier: identifier
-            ) { [weak self] builder in
-                let (newBuilder, _) = try self?.addingTransferCommand(
-                    to: builder,
-                    amount: amount,
-                    recepient: recepientAccountId
-                ) ?? (builder, nil)
-
-                return newBuilder
-            }
-        } catch {
-            presenter?.didReceiveError(CommonError.dataCorruption)
+            return newBuilder
         }
     }
 
-    func change(recepient: AccountAddress?) {
-        guard
-            let newRecepientAccountId = try? recepient?.toAccountId(),
-            newRecepientAccountId != recepientAccountId else {
+    func change(recepient: AccountId?) {
+        guard recepient != recepientAccountId else {
             return
         }
 
@@ -459,14 +420,14 @@ extension TransferInteractor {
         clearSendingAssetLocaleRecepientSubscription()
         clearUtilityAssetLocaleRecepientSubscriptions()
 
-        recepientAccountId = newRecepientAccountId
+        recepientAccountId = recepient
 
         subscribeSendingRecepientAssetBalance()
         subscribeUtilityRecepientAssetBalance()
     }
 }
 
-extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension OnChainTransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAssetBalance(
         result: Result<AssetBalance?, Error>,
         accountId: AccountId,
@@ -500,7 +461,7 @@ extension TransferInteractor: WalletLocalStorageSubscriber, WalletLocalSubscript
     }
 }
 
-extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
+extension OnChainTransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptionHandler {
     func handlePrice(result: Result<PriceData?, Error>, priceId: AssetModel.PriceId) {
         switch result {
         case let .success(priceData):
@@ -515,7 +476,7 @@ extension TransferInteractor: PriceLocalStorageSubscriber, PriceLocalSubscriptio
     }
 }
 
-extension TransferInteractor: ExtrinsicFeeProxyDelegate {
+extension OnChainTransferInteractor: ExtrinsicFeeProxyDelegate {
     func didReceiveFee(
         result: Result<RuntimeDispatchInfo, Error>,
         for _: ExtrinsicFeeId

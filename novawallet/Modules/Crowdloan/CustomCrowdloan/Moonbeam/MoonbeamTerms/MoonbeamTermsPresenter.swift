@@ -75,6 +75,7 @@ extension MoonbeamTermsPresenter: MoonbeamTermsPresenterProtocol {
             dataValidatingFactory.canPayFee(
                 balance: balance,
                 fee: fee,
+                asset: assetInfo,
                 locale: locale
             ),
             dataValidatingFactory.exsitentialDepositIsNotViolated(

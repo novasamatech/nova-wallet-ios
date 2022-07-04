@@ -98,6 +98,7 @@ extension ControllerAccountConfirmationPresenter: ControllerAccountConfirmationP
             dataValidatingFactory.canPayFee(
                 balance: balance,
                 fee: fee,
+                asset: assetInfo,
                 locale: locale
             ),
             dataValidatingFactory.ledgerNotExist(

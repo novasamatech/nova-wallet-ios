@@ -56,7 +56,7 @@ final class UniquesSyncService: BaseNftSyncService {
                 )
 
                 let metadata: Data? = instanceMetadata?.data ?? classMetadata?.data
-                let totalIssuance = classDetails.map { Int32(bitPattern: $0.instances) }
+                let totalIssuance = classDetails.map { Int32(bitPattern: $0.items) }
 
                 let instanceId = String(accountKey.instanceId)
                 let collectionId = String(accountKey.classId)

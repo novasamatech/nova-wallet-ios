@@ -2,7 +2,7 @@ import Foundation
 import BigInt
 import SubstrateSdk
 
-class TransferPresenter {
+class OnChainTransferPresenter {
     let chainAsset: ChainAsset
 
     let senderAccountAddress: AccountAddress
@@ -16,12 +16,16 @@ class TransferPresenter {
     private(set) var sendingAssetPrice: PriceData?
     private(set) var utilityAssetPrice: PriceData?
 
-    private(set) var sendingAssetMinBalance: BigUInt?
+    private(set) var sendingAssetExistence: AssetBalanceExistence?
     private(set) var utilityAssetMinBalance: BigUInt?
 
     var senderUtilityAssetTotal: BigUInt? {
         isUtilityTransfer ? senderSendingAssetBalance?.totalInPlank :
             senderUtilityAssetBalance?.totalInPlank
+    }
+
+    var senderUtilityAssetTransferable: BigUInt? {
+        isUtilityTransfer ? senderSendingAssetBalance?.transferable : senderUtilityAssetBalance?.transferable
     }
 
     private(set) lazy var iconGenerator = PolkadotIconGenerator()
@@ -70,9 +74,15 @@ class TransferPresenter {
         fee = newValue
     }
 
+    func resetRecepientBalance() {
+        recepientSendingAssetBalance = nil
+        recepientUtilityAssetBalance = nil
+    }
+
     func baseValidators(
         for sendingAmount: Decimal?,
         recepientAddress: AccountAddress?,
+        utilityAssetInfo: AssetBalanceDisplayInfo,
         selectedLocale: Locale
     ) -> [DataValidating] {
         var validators: [DataValidating] = [
@@ -101,29 +111,37 @@ class TransferPresenter {
                 locale: selectedLocale
             ),
 
-            dataValidatingFactory.canPay(
+            dataValidatingFactory.canPayFeeInPlank(
+                balance: senderUtilityAssetTransferable,
+                fee: fee,
+                asset: utilityAssetInfo,
+                locale: selectedLocale
+            ),
+
+            dataValidatingFactory.notViolatingMinBalancePaying(
                 fee: fee,
                 total: senderUtilityAssetTotal,
-                minBalance: isUtilityTransfer ? sendingAssetMinBalance : utilityAssetMinBalance,
+                minBalance: isUtilityTransfer ? sendingAssetExistence?.minBalance : utilityAssetMinBalance,
                 locale: selectedLocale
             ),
 
             dataValidatingFactory.receiverWillHaveAssetAccount(
                 sendingAmount: sendingAmount,
                 totalAmount: recepientSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
+                minBalance: sendingAssetExistence?.minBalance,
                 locale: selectedLocale
             )
         ]
 
         if !isUtilityTransfer {
-            validators.append(
-                dataValidatingFactory.receiverHasUtilityAccount(
-                    totalAmount: recepientUtilityAssetBalance?.totalInPlank,
-                    minBalance: utilityAssetMinBalance,
-                    locale: selectedLocale
-                )
+            let accountProviderValidation = dataValidatingFactory.receiverHasAccountProvider(
+                utilityTotalAmount: recepientUtilityAssetBalance?.totalInPlank,
+                utilityMinBalance: utilityAssetMinBalance,
+                assetExistence: sendingAssetExistence,
+                locale: selectedLocale
             )
+
+            validators.append(accountProviderValidation)
         }
 
         return validators
@@ -166,8 +184,8 @@ class TransferPresenter {
         utilityAssetMinBalance = value
     }
 
-    func didReceiveSendingAssetMinBalance(_ value: BigUInt) {
-        sendingAssetMinBalance = value
+    func didReceiveSendingAssetExistence(_ value: AssetBalanceExistence) {
+        sendingAssetExistence = value
     }
 
     func didCompleteSetup() {}

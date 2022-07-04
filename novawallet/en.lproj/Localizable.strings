@@ -291,7 +291,7 @@
 "common.error.no.data.retrieved" = "No data retrieved.";
 "staking.reward.payouts.empty.rewards" = "Perfect! All rewards are paid.";
 "staking.reward.details.validator" = "Validator";
-"staking.error.insufficient.balance.title" = "Insufficient balance";
+"common.insufficient.balance" = "Insufficient balance";
 "common.confirmation.title" = "Are you sure?";
 "staking.warning.tiny.payout" = "The reward is less than the network fee.";
 "staking.unbonding.limit.reached.title" = "Unstaking requests limit reached";
@@ -812,3 +812,18 @@
 "parastk.cant.rebond.title" = "You cannot return to stake";
 "parastk.cant.rebond.message" = "You don't have unstaking tokens for this collator";
 "parachain.staking.full.message" = "You have reached the maximum number of delegations of %@ collators";
+"wallet.transfer.cross.chain.to" = "to";
+"xcm.destination.selection.title" = "Recipient network";
+"common.cross.chain" = "Cross-chain";
+"common.on.chain" = "On-chain";
+"common.cross.chain.fee" = "Cross-chain fee";
+"common.from.network" = "From network";
+"common.to.network" = "To network";
+"transfer.cross.chain.hint" = "Cross-chain fee is added on top of entered amount. Recipient may receive part of cross-chain fee";
+"common.not.enough.crosschain.fee.message" = "You don’t have enough balance to pay the Cross-chain fee of %s.\nRemaining balance after transfer: %s";
+"common.not.enough.fee.message_v2.9.1" = "You don’t have enough balance to pay the network fee of %s.\nTransferable balance: %s";
+"common.myself" = "Myself";
+"wallet.transfer.cross.chain.from" = "from";
+"wallet.transfer.token.format_v2_9_1" = "Send %@";
+"wallet.transfer.on" = "on";
+"common.request.retry" = "Data loading failed. Would you like to retry?";

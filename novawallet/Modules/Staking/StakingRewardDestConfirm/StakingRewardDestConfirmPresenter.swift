@@ -93,7 +93,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
                 self?.refreshFeeIfNeeded()
             }),
 
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale)
 
         ]).runValidation { [weak self] in
             guard
