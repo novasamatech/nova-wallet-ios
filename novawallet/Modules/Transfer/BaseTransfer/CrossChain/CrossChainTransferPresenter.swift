@@ -88,8 +88,8 @@ class CrossChainTransferPresenter {
         fatalError("Child classes must implement this method")
     }
 
-    func updateCrossChainFee(_ newValue: BigUInt?) {
-        originFee = newValue
+    func updateCrossChainFee(_ newValue: FeeWithWeight?) {
+        crossChainFee = newValue
     }
 
     func resetRecepientBalance() {

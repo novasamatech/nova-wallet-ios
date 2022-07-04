@@ -57,7 +57,10 @@ final class XcmTransferService {
         }
     }
 
-    func createOperationFactory(for chain: ChainModel) throws -> ExtrinsicOperationFactoryProtocol {
+    func createOperationFactory(
+        for chain: ChainModel,
+        chainAccount: ChainAccountResponse?
+    ) throws -> ExtrinsicOperationFactoryProtocol {
         guard let connection = chainRegistry.getConnection(for: chain.chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
@@ -66,14 +69,22 @@ final class XcmTransferService {
             throw ChainRegistryError.runtimeMetadaUnavailable
         }
 
-        guard let chainAccount = wallet.fetch(for: chain.accountRequest()) else {
-            throw ChainAccountFetchingError.accountNotExists
+        let accountId: AccountId
+        let cryptoType: MultiassetCryptoType
+
+        if let chainAccount = chainAccount {
+            accountId = chainAccount.accountId
+            cryptoType = chainAccount.cryptoType
+        } else {
+            // account doesn't exists but we still might want to calculate fee
+            accountId = AccountId.zeroAccountId(of: chain.accountIdSize)
+            cryptoType = chain.isEthereumBased ? .ethereumEcdsa : .sr25519
         }
 
         return ExtrinsicOperationFactory(
-            accountId: chainAccount.accountId,
+            accountId: accountId,
             chain: chain,
-            cryptoType: chainAccount.cryptoType,
+            cryptoType: cryptoType,
             runtimeRegistry: runtimeProvider,
             customExtensions: DefaultExtrinsicExtension.extensions,
             engine: connection
@@ -92,7 +103,8 @@ final class XcmTransferService {
         do {
             let moduleWrapper = createModuleResolutionWrapper(for: .xcmpallet, runtimeProvider: runtimeProvider)
 
-            let operationFactory = try createOperationFactory(for: chain)
+            let optChainAccount = wallet.fetch(for: chain.accountRequest())
+            let operationFactory = try createOperationFactory(for: chain, chainAccount: optChainAccount)
 
             let wrapper = operationFactory.estimateFeeOperation { builder in
                 let moduleName = try moduleWrapper.targetOperation.extractNoCancellableResultData()

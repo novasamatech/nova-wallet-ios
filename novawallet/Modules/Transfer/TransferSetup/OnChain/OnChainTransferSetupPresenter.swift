@@ -98,6 +98,10 @@ final class OnChainTransferSetupPresenter: OnChainTransferPresenter, OnChainTran
         view?.didReceiveAmount(inputViewModel: viewModel)
     }
 
+    private func provideCanSendMySelf() {
+        view?.didReceiveCanSendMySelf(false)
+    }
+
     private func updateFeeView() {
         let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
         if let fee = fee, let assetInfo = optAssetInfo {
@@ -269,6 +273,7 @@ extension OnChainTransferSetupPresenter: TransferSetupChildPresenterProtocol {
         updateFeeView()
         provideRecepientStateViewModel()
         provideRecepientInputViewModel()
+        provideCanSendMySelf()
         provideAmountInputViewModel()
         updateAmountPriceView()
 
