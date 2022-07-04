@@ -3,10 +3,10 @@ import SoraFoundation
 import SubstrateSdk
 import BigInt
 
-final class TransferConfirmPresenter: TransferPresenter {
-    weak var view: TransferConfirmViewProtocol?
+final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
+    weak var view: TransferConfirmOnChainViewProtocol?
     let wireframe: TransferConfirmWireframeProtocol
-    let interactor: TransferConfirmInteractorInputProtocol
+    let interactor: TransferConfirmOnChainInteractorInputProtocol
 
     let displayAddressViewModelFactory: DisplayAddressViewModelFactoryProtocol
 
@@ -17,7 +17,7 @@ final class TransferConfirmPresenter: TransferPresenter {
     private lazy var walletIconGenerator = NovaIconGenerator()
 
     init(
-        interactor: TransferConfirmInteractorInputProtocol,
+        interactor: TransferConfirmOnChainInteractorInputProtocol,
         wireframe: TransferConfirmWireframeProtocol,
         wallet: MetaAccountModel,
         recepient: AccountAddress,
@@ -52,9 +52,13 @@ final class TransferConfirmPresenter: TransferPresenter {
         self.localizationManager = localizationManager
     }
 
+    func getRecepientAccountId() -> AccountId? {
+        try? recepientAccountAddress.toAccountId(using: chainAsset.chain.chainFormat)
+    }
+
     private func provideNetworkViewModel() {
         let viewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-        view?.didReceiveNetwork(viewModel: viewModel)
+        view?.didReceiveOriginNetwork(viewModel: viewModel)
     }
 
     private func provideWalletViewModel() {
@@ -92,9 +96,9 @@ final class TransferConfirmPresenter: TransferPresenter {
             let viewModel = viewModelFactory.balanceFromPrice(feeDecimal, priceData: priceData)
                 .value(for: selectedLocale)
 
-            view?.didReceiveFee(viewModel: viewModel)
+            view?.didReceiveOriginFee(viewModel: viewModel)
         } else {
-            view?.didReceiveFee(viewModel: nil)
+            view?.didReceiveOriginFee(viewModel: nil)
         }
     }
 
@@ -129,7 +133,7 @@ final class TransferConfirmPresenter: TransferPresenter {
             return
         }
 
-        interactor.estimateFee(for: amountValue, recepient: recepientAccountAddress)
+        interactor.estimateFee(for: amountValue, recepient: getRecepientAccountId())
     }
 
     override func askFeeRetry() {
@@ -167,7 +171,7 @@ final class TransferConfirmPresenter: TransferPresenter {
 
         refreshFee()
 
-        interactor.change(recepient: recepientAccountAddress)
+        interactor.change(recepient: getRecepientAccountId())
     }
 
     override func didReceiveError(_ error: Error) {
@@ -179,7 +183,7 @@ final class TransferConfirmPresenter: TransferPresenter {
     }
 }
 
-extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
+extension TransferOnChainConfirmPresenter: TransferConfirmPresenterProtocol {
     func setup() {
         provideAmountViewModel()
         provideNetworkViewModel()
@@ -192,15 +196,19 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
     }
 
     func submit() {
-        guard let amountValue = amount.toSubstrateAmount(
-            precision: chainAsset.assetDisplayInfo.assetPrecision
-        ) else {
+        let assetPrecision = chainAsset.assetDisplayInfo.assetPrecision
+        guard
+            let amountValue = amount.toSubstrateAmount(precision: assetPrecision),
+            let utilityAsset = chainAsset.chain.utilityAsset() else {
             return
         }
+
+        let utilityAssetInfo = ChainAsset(chain: chainAsset.chain, asset: utilityAsset).assetDisplayInfo
 
         let validators: [DataValidating] = baseValidators(
             for: amount,
             recepientAddress: recepientAccountAddress,
+            utilityAssetInfo: utilityAssetInfo,
             selectedLocale: selectedLocale
         )
 
@@ -228,14 +236,14 @@ extension TransferConfirmPresenter: TransferConfirmPresenterProtocol {
     }
 }
 
-extension TransferConfirmPresenter: TransferConfirmInteractorOutputProtocol {
+extension TransferOnChainConfirmPresenter: TransferConfirmOnChainInteractorOutputProtocol {
     func didCompleteSubmition() {
         view?.didStopLoading()
         wireframe.complete(on: view, locale: selectedLocale)
     }
 }
 
-extension TransferConfirmPresenter: Localizable {
+extension TransferOnChainConfirmPresenter: Localizable {
     func applyLocalization() {
         if let view = view, view.isSetup {
             provideNetworkFeeViewModel()

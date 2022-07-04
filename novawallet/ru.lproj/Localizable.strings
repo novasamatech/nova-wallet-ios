@@ -291,7 +291,7 @@
 "common.error.no.data.retrieved" = "Данные не получены.";
 "staking.reward.payouts.empty.rewards" = "Прекрасно! Все вознаграждения выплачены.";
 "staking.reward.details.validator" = "Валидатор";
-"staking.error.insufficient.balance.title" = "Недостаточный баланс";
+"common.insufficient.balance" = "Недостаточный баланс";
 "common.confirmation.title" = "Уверены ли вы?";
 "staking.warning.tiny.payout" = "Вознаграждение меньше комиссии сети.";
 "staking.unbonding.limit.reached.title" = "Достигнут лимит запросов на вывод из стейка";
@@ -812,3 +812,18 @@
 "parastk.cant.rebond.title" = "Нельзя вернуть в стейк";
 "parastk.cant.rebond.message" = "Вы не выводили токены для этого коллатора";
 "parachain.staking.full.message" = "Вы достигли максимального количества делегаций - %@ коллаторов";
+"wallet.transfer.cross.chain.to" = "в";
+"xcm.destination.selection.title" = "Сеть получателя";
+"common.cross.chain" = "Между сетями";
+"common.on.chain" = "Внутри сети";
+"common.cross.chain.fee" = "Межсетевая комиссия";
+"common.from.network" = "Из сети";
+"common.to.network" = "В сеть";
+"transfer.cross.chain.hint" = "Межсетевая комиссия добавляется к введенной сумме. Получатель может получить часть межсетевой комиссии";
+"common.not.enough.crosschain.fee.message" = "У вас недостаточно токенов для оплаты межсетевой комиссии в размере %s.\nОстаток баланса после перевода: %s";
+"common.not.enough.fee.message_v2.9.1" = "У вас недостаточно токенов, чтобы оплатить комиссию сети в размере %s.\n Доступный баланс: %s";
+"common.myself" = "Себе";
+"wallet.transfer.cross.chain.from" = "из";
+"wallet.transfer.token.format_v2_9_1" = "Send %@";
+"wallet.transfer.on" = "в";
+"common.request.retry" = "Загрузка данных завершилась ошибкой. Хотите повторить?";
