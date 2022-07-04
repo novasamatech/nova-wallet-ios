@@ -81,32 +81,17 @@ final class StakingServiceFactory: StakingServiceFactoryProtocol {
             assetPrecision: assetPrecision
         )
 
-        switch stakingType {
-        case .azero:
-            return RewardCalculatorService(
-                chainId: chainId,
-                rewardCalculatorFactory: rewardCalculatorFactory,
-                eraValidatorsService: validatorService,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                providerFactory: substrateDataProviderFactory,
-                runtimeCodingService: runtimeService,
-                stakingDurationFactory: stakingDurationFactory,
-                storageFacade: storageFacade,
-                logger: logger
-            )
-        default:
-            return RewardCalculatorService(
-                chainId: chainId,
-                rewardCalculatorFactory: rewardCalculatorFactory,
-                eraValidatorsService: validatorService,
-                operationManager: OperationManager(operationQueue: operationQueue),
-                providerFactory: substrateDataProviderFactory,
-                runtimeCodingService: runtimeService,
-                stakingDurationFactory: BabeStakingDurationFactory(),
-                storageFacade: storageFacade,
-                logger: logger
-            )
-        }
+        return RewardCalculatorService(
+            chainId: chainId,
+            rewardCalculatorFactory: rewardCalculatorFactory,
+            eraValidatorsService: validatorService,
+            operationManager: OperationManager(operationQueue: operationQueue),
+            providerFactory: substrateDataProviderFactory,
+            runtimeCodingService: runtimeService,
+            stakingDurationFactory: stakingDurationFactory,
+            storageFacade: storageFacade,
+            logger: logger
+        )
     }
 
     func createBlockTimeService(
