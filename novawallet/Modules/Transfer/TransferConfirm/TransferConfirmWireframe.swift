@@ -1,7 +1,7 @@
 import Foundation
 
 final class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAlertPresenting {
-    func complete(on view: TransferConfirmViewProtocol?, locale: Locale) {
+    func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale) {
         let title = R.string.localizable
             .commonTransactionSubmitted(preferredLanguages: locale.rLanguages)
 
