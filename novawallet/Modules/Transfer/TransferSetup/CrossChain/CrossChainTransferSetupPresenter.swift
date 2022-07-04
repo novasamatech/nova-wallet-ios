@@ -11,12 +11,14 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
 
     private(set) var partialRecepientAddress: AccountAddress?
 
+    let wallet: MetaAccountModel
     let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
     let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
     var inputResult: AmountInputResult?
 
     init(
+        wallet: MetaAccountModel,
         interactor: CrossChainTransferSetupInteractorInputProtocol,
         wireframe: CrossChainTransferSetupWireframeProtocol,
         originChainAsset: ChainAsset,
@@ -31,6 +33,7 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         localizationManager: LocalizationManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
+        self.wallet = wallet
         self.interactor = interactor
         self.wireframe = wireframe
         self.chainAssetViewModelFactory = chainAssetViewModelFactory
@@ -172,6 +175,11 @@ final class CrossChainTransferSetupPresenter: CrossChainTransferPresenter,
         } else {
             view?.didReceiveAmountInputPrice(viewModel: nil)
         }
+    }
+
+    private func provideCanSendMySelf() {
+        let destinationAccountExists = wallet.fetch(for: destinationChainAsset.chain.accountRequest()) != nil
+        view?.didReceiveCanSendMySelf(destinationAccountExists)
     }
 
     private func balanceMinusFee() -> Decimal {
@@ -338,6 +346,7 @@ extension CrossChainTransferSetupPresenter: TransferSetupChildPresenterProtocol 
         updateCrossChainFeeView()
         provideRecepientStateViewModel()
         provideRecepientInputViewModel()
+        provideCanSendMySelf()
         provideAmountInputViewModel()
         updateAmountPriceView()
 
