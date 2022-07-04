@@ -34,7 +34,7 @@ final class XcmTransferService {
         switch transferType {
         case .xtokens:
             return CompoundOperationWrapper.createWithResult("XTokens")
-        case .xcmpallet:
+        case .xcmpallet, .teleport:
             let coderFactoryOperation = runtimeProvider.fetchCoderFactoryOperation()
 
             let moduleResolutionOperation = ClosureOperation<String> {
@@ -54,6 +54,8 @@ final class XcmTransferService {
                 targetOperation: moduleResolutionOperation,
                 dependencies: [coderFactoryOperation]
             )
+        case .unknown:
+            return CompoundOperationWrapper.createWithError(XcmAssetTransfer.TransferTypeError.unknownType)
         }
     }
 
@@ -259,6 +261,20 @@ final class XcmTransferService {
                     )
 
                     return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
+                case .teleport:
+                    let (destination, beneficiary) = destinationAsset.location.separatingDestinationBenifiary()
+                    let assets = Xcm.VersionedMultiassets(versionedMultiasset: destinationAsset.asset)
+                    let call = Xcm.TeleportCall(
+                        destination: destination,
+                        beneficiary: beneficiary,
+                        assets: assets,
+                        feeAssetItem: 0,
+                        weightLimit: .limited(weight: UInt64(maxWeight))
+                    )
+
+                    return ({ try $0.adding(call: call.runtimeCall(for: module)) }, call.codingPath(for: module))
+                case .unknown:
+                    throw XcmAssetTransfer.TransferTypeError.unknownType
                 }
             }
 
