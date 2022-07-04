@@ -27,6 +27,7 @@ extension Xcm {
         static let fieldBuyExecution = "BuyExecution"
         static let fieldDepositAsset = "DepositAsset"
         static let fieldDepositReserveAsset = "DepositReserveAsset"
+        static let fieldReceiveTeleportedAsset = "ReceiveTeleportedAsset"
 
         case withdrawAsset([Multiasset])
         case depositAsset(DepositAssetValue)
@@ -34,6 +35,7 @@ extension Xcm {
         case reserveAssetDeposited([Multiasset])
         case buyExecution(BuyExecutionValue)
         case depositReserveAsset(DepositReserveAssetValue)
+        case receiveTeleportedAsset([Multiasset])
 
         func encode(to encoder: Encoder) throws {
             var container = encoder.unkeyedContainer()
@@ -57,6 +59,9 @@ extension Xcm {
             case let .depositReserveAsset(value):
                 try container.encode(Self.fieldDepositReserveAsset)
                 try container.encode(value)
+            case let .receiveTeleportedAsset(assets):
+                try container.encode(Self.fieldReceiveTeleportedAsset)
+                try container.encode(assets)
             }
         }
     }
