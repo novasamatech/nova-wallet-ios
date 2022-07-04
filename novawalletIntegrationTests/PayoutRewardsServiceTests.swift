@@ -163,6 +163,11 @@ class PayoutRewardsServiceTests: XCTestCase {
         wrapper.targetOperation.completionBlock = {
             do {
                 let info = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                for payout in info.payouts {
+                    Logger.shared.info("Reward for era \(payout.era): \(payout.reward)")
+                }
+
                 let totalReward = info.payouts.reduce(Decimal(0.0)) { $0 + $1.reward }
                 let eras = info.payouts.map { $0.era }.sorted()
                 Logger.shared.info("Active era: \(info.activeEra)")

@@ -72,12 +72,6 @@ extension StakingMainPresenterFactory {
             logger: logger
         )
 
-        let keyFactory = StorageKeyFactory()
-        let storageRequestFactory = StorageRequestFactory(
-            remoteFactory: keyFactory,
-            operationManager: operationManager
-        )
-
         let substrateRepositoryFactory = SubstrateRepositoryFactory(
             storageFacade: SubstrateDataStorageFacade.shared
         )
