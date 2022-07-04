@@ -149,9 +149,10 @@ class XcmTransfersFeeTests: XCTestCase {
     ) throws -> XcmTransferParties {
         let operationQueue = OperationQueue()
 
+        let paraIdFactory = ParaIdOperationFactory(chainRegistry: chainRegistry, operationQueue: OperationQueue())
         let factory = XcmTransferResolutionFactory(
             chainRegistry: chainRegistry,
-            operationQueue: OperationQueue()
+            paraIdOperationFactory: paraIdFactory
         )
 
         let semaphore = DispatchSemaphore(value: 0)

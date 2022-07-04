@@ -271,6 +271,7 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
         guard
             let utilityAssetInfo = utilityAssetInfo,
             let recepientAccountId = recepientAccountId,
+            recepientAccountId != selectedAccount.accountId,
             let utilityAsset = chain.utilityAssets().first else {
             return
         }
@@ -292,7 +293,8 @@ class OnChainTransferInteractor: RuntimeConstantFetching {
     private func subscribeSendingRecepientAssetBalance() {
         guard
             let sendingAssetInfo = sendingAssetInfo,
-            let recepientAccountId = recepientAccountId else {
+            let recepientAccountId = recepientAccountId,
+            recepientAccountId != selectedAccount.accountId else {
             return
         }
 
