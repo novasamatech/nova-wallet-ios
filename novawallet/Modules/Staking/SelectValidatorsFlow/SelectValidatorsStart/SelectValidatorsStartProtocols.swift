@@ -26,10 +26,9 @@ protocol SelectValidatorsStartInteractorOutputProtocol: AnyObject {
 protocol SelectValidatorsStartWireframeProtocol: WebPresentable, AlertPresentable, ErrorPresentable {
     func proceedToCustomList(
         from view: ControllerBackedProtocol?,
-        validatorList: [SelectedValidatorInfo],
-        recommendedValidatorList: [SelectedValidatorInfo],
+        selectionValidatorGroups: SelectionValidatorGroups,
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
-        maxTargets: Int
+        validatorsSelectionParams: ValidatorsSelectionParams
     )
 
     func proceedToRecommendedList(

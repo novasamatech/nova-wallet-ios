@@ -65,11 +65,7 @@ final class CustomValidatorListViewLayout: UIView {
 
     private static func createRoundedButton() -> RoundedButton {
         let button = RoundedButton()
-        button.applyEnabledStyle()
-        button.roundedBackgroundView?.cornerRadius = 10.0
-        button.contentInsets = UIEdgeInsets(top: 8.0, left: 12.0, bottom: 8.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
-        button.imageWithTitleView?.titleColor = R.color.colorWhite()!
+        button.applySecondaryStyle()
         return button
     }
 

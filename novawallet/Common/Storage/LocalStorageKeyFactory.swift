@@ -78,6 +78,21 @@ extension LocalStorageKeyFactoryProtocol {
 
         return try createRestorableKey(from: data, chainId: chainId)
     }
+
+    func createRestorableRecurrentKey(
+        from storagePath: StorageCodingPath,
+        chainId: ChainModel.Id,
+        items: [Data]
+    ) throws -> String {
+        let storagePathData = try StorageKeyFactory().createStorageKey(
+            moduleName: storagePath.moduleName,
+            storageName: storagePath.itemName
+        )
+
+        let remoteKey = storagePathData + Data(items.joined())
+
+        return try createRestorableKey(from: remoteKey, chainId: chainId)
+    }
 }
 
 final class LocalStorageKeyFactory: LocalStorageKeyFactoryProtocol {

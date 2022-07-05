@@ -9,8 +9,8 @@ class PayoutRewardsServiceTests: XCTestCase {
     func testPayoutRewardsListForNominator() throws {
         let operationManager = OperationManagerFacade.sharedManager
 
-        let selectedAccount = "5E5CFCa1p5e14UPYWWAddMeu64ykLxppx37iwrKwuyXj5BjH"
-        let chainId = Chain.westend.genesisHash
+        let selectedAccount = "5HKcmzDLApS5xERzruR6qwiLWjeVyg1RVQmFNoM44Gtni7SX"
+        let chainId = "70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
 
         let storageFacade = SubstrateStorageTestFacade()
         let chainRegistry = ChainRegistryFacade.setupForIntegrationTest(with: storageFacade)
@@ -54,8 +54,7 @@ class PayoutRewardsServiceTests: XCTestCase {
             operationManager: operationManager
         )
         let validatorsResolutionFactory = PayoutValidatorsForNominatorFactory(
-            url: rewardUrl,
-            addressFactory: SS58AddressFactory()
+            url: rewardUrl
         )
 
         let identityOperation = IdentityOperationFactory(requestFactory: storageRequestFactory)
@@ -164,6 +163,11 @@ class PayoutRewardsServiceTests: XCTestCase {
         wrapper.targetOperation.completionBlock = {
             do {
                 let info = try wrapper.targetOperation.extractNoCancellableResultData()
+
+                for payout in info.payouts {
+                    Logger.shared.info("Reward for era \(payout.era): \(payout.reward)")
+                }
+
                 let totalReward = info.payouts.reduce(Decimal(0.0)) { $0 + $1.reward }
                 let eras = info.payouts.map { $0.era }.sorted()
                 Logger.shared.info("Active era: \(info.activeEra)")

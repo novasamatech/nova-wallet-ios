@@ -7,7 +7,7 @@ protocol BlockTimeEstimationServiceProtocol: ApplicationServiceProtocol {
 }
 
 struct EstimatedBlockTime: Codable {
-    let blockTime: Moment
+    let blockTime: BlockTime
     let seqSize: Int
 
     static func storageKey(for chainId: ChainModel.Id) -> String {
@@ -15,15 +15,27 @@ struct EstimatedBlockTime: Codable {
     }
 }
 
+struct BlockTimeSubscriptionModel: JSONListConvertible {
+    let blockNumber: BlockNumber
+    let timestamp: BlockTime
+    let blockHash: Data?
+
+    init(jsonList: [JSON], context: [CodingUserInfoKey: Any]?) throws {
+        blockNumber = try jsonList[0].map(to: StringScaleMapper<BlockNumber>.self, with: context).value
+        timestamp = try jsonList[1].map(to: StringScaleMapper<BlockTime>.self, with: context).value
+        blockHash = try jsonList[2].map(to: Data?.self, with: context)
+    }
+}
+
 final class BlockTimeEstimationService {
     private struct Snapshot {
-        let blockTime: Moment
+        let blockTime: TimeInterval
         let lastBlock: BlockNumber?
         let seqSize: Int
-        let lastTime: TimeInterval?
+        let lastTime: BlockTime?
 
         var estimatedBlockTime: EstimatedBlockTime {
-            EstimatedBlockTime(blockTime: blockTime, seqSize: seqSize)
+            EstimatedBlockTime(blockTime: BlockTime(blockTime.milliseconds), seqSize: seqSize)
         }
 
         static var empty: Snapshot {
@@ -51,7 +63,7 @@ final class BlockTimeEstimationService {
 
     private var snapshot: Snapshot?
 
-    private var subscription: CallbackStorageSubscription<StringScaleMapper<Moment>>?
+    private var subscription: CallbackBatchStorageSubscription<BlockTimeSubscriptionModel>?
 
     private var pendingRequests: [PendingRequest] = []
 
@@ -109,7 +121,7 @@ final class BlockTimeEstimationService {
         }
     }
 
-    private func readStartBlock() {
+    private func readStartBlock(for chainId: ChainModel.Id) {
         let modelId = EstimatedBlockTime.storageKey(for: chainId)
         let localQueryOperation = repository.fetchOperation(by: modelId, options: RepositoryFetchOptions())
 
@@ -128,7 +140,7 @@ final class BlockTimeEstimationService {
                 let blockTime = try mapOperation.extractNoCancellableResultData()
                 self?.setupInitialSnapshot(for: blockTime)
             } catch {
-                self?.logger.error("Unexpected error: \(error)")
+                self?.logger.error("\(chainId) Unexpected error: \(error)")
             }
         }
 
@@ -140,7 +152,7 @@ final class BlockTimeEstimationService {
     private func setupInitialSnapshot(for estimatedBlockTime: EstimatedBlockTime) {
         syncQueue.async { [weak self] in
             let snapshot = Snapshot(
-                blockTime: estimatedBlockTime.blockTime,
+                blockTime: estimatedBlockTime.blockTime.timeInterval,
                 lastBlock: nil,
                 seqSize: estimatedBlockTime.seqSize,
                 lastTime: nil
@@ -154,31 +166,40 @@ final class BlockTimeEstimationService {
     }
 
     private func subscribeBlockNumber() {
-        guard
-            isActive,
-            let localKey = try? localKeyFactory.createFromStoragePath(.blockNumber, chainId: chainId) else {
+        guard isActive else {
             return
         }
 
-        subscription = CallbackStorageSubscription(
-            request: UnkeyedSubscriptionRequest(storagePath: .blockNumber, localKey: localKey),
-            storagePath: .blockNumber,
+        let storagePaths: [StorageCodingPath] = [.blockNumber, .timestampNow]
+        let optRequests: [UnkeyedSubscriptionRequest]? = try? storagePaths.map { path in
+            let localKey = try localKeyFactory.createFromStoragePath(path, chainId: chainId)
+            return UnkeyedSubscriptionRequest(storagePath: path, localKey: localKey)
+        }
+
+        guard let requests = optRequests else {
+            return
+        }
+
+        subscription = CallbackBatchStorageSubscription(
+            requests: requests,
             connection: connection,
             runtimeService: runtimeService,
             repository: repository,
             operationQueue: operationQueue,
             callbackQueue: syncQueue
-        ) { [weak self] (result: Result<StringScaleMapper<Moment>?, Error>) in
+        ) { [weak self] (result: Result<BlockTimeSubscriptionModel, Error>) in
             self?.processResult(result)
         }
+
+        subscription?.subscribe()
     }
 
-    private func processResult(_ result: Result<StringScaleMapper<Moment>?, Error>) {
+    private func processResult(_ result: Result<BlockTimeSubscriptionModel, Error>) {
         switch result {
-        case let .success(optBlockNumber):
-            processBlockNumber(optBlockNumber?.value)
+        case let .success(model):
+            processBlockNumber(model)
         case let .failure(error):
-            logger.error("Unexpected error: \(error)")
+            logger.error("\(chainId) Unexpected error: \(error)")
         }
     }
 
@@ -204,56 +225,58 @@ final class BlockTimeEstimationService {
         operationQueue.addOperation(saveOperation)
     }
 
-    private func processBlockNumber(_ blockNumber: Moment?) {
-        guard let blockNumber = blockNumber, let prevSnapshot = snapshot else {
+    private func processBlockNumber(_ model: BlockTimeSubscriptionModel) {
+        guard let prevSnapshot = snapshot else {
             return
         }
 
         // sync block number first
         guard
             let lastBlock = prevSnapshot.lastBlock,
-            blockNumber == lastBlock + 1 else {
-            let lastTime = blockNumber == prevSnapshot.lastBlock ? prevSnapshot.lastTime : nil
+            model.blockNumber == lastBlock + 1 else {
+            let lastTime = model.blockNumber == prevSnapshot.lastBlock ? prevSnapshot.lastTime : nil
             snapshot = Snapshot(
                 blockTime: prevSnapshot.blockTime,
-                lastBlock: blockNumber,
+                lastBlock: model.blockNumber,
                 seqSize: prevSnapshot.seqSize,
                 lastTime: lastTime
             )
             return
         }
 
-        let currentTime = Date().timeIntervalSince1970
+        let currentTime = model.timestamp
 
         // then sync time diff
         if
             let prevTime = prevSnapshot.lastTime,
             currentTime > prevTime {
-            let newBlockTimeElement = Moment((currentTime - prevTime).milliseconds)
+            let newBlockTimeElement = (currentTime - prevTime).timeInterval
 
-            logger.debug("Block time: \(newBlockTimeElement)")
+            logger.debug("(\(chainId) Block time: \(newBlockTimeElement)")
 
             let blockTime = prevSnapshot.blockTime
             let seqSize = prevSnapshot.seqSize
-            let newBlockTime = (blockTime * Moment(seqSize) + newBlockTimeElement) / Moment(seqSize + 1)
+            let newBlockTime = (blockTime * TimeInterval(seqSize) + newBlockTimeElement) / TimeInterval(seqSize + 1)
 
-            logger.debug("Cumulative block time: \(newBlockTime)")
+            logger.debug("\(chainId) Cumulative block time: \(newBlockTime)")
 
-            snapshot = Snapshot(
+            let newSnapshot = Snapshot(
                 blockTime: newBlockTime,
-                lastBlock: blockNumber,
+                lastBlock: model.blockNumber,
                 seqSize: seqSize + 1,
                 lastTime: currentTime
             )
 
-            let estimatedBlockTime = EstimatedBlockTime(blockTime: newBlockTime, seqSize: seqSize + 1)
+            snapshot = newSnapshot
+
+            let estimatedBlockTime = newSnapshot.estimatedBlockTime
             save(blockTime: estimatedBlockTime)
 
             deliver(estimatedBlockTime: estimatedBlockTime)
         } else {
             snapshot = Snapshot(
                 blockTime: prevSnapshot.blockTime,
-                lastBlock: blockNumber,
+                lastBlock: model.blockNumber,
                 seqSize: prevSnapshot.seqSize,
                 lastTime: currentTime
             )
@@ -270,7 +293,9 @@ extension BlockTimeEstimationService: BlockTimeEstimationServiceProtocol {
 
             self.isActive = true
 
-            self.readStartBlock()
+            self.readStartBlock(for: self.chainId)
+
+            self.logger.debug("(\(self.chainId) block time service setup")
         }
     }
 
@@ -282,7 +307,10 @@ extension BlockTimeEstimationService: BlockTimeEstimationServiceProtocol {
 
             self.isActive = false
 
+            self.subscription?.unsubscribe()
             self.subscription = nil
+
+            self.logger.debug("(\(self.chainId) block time service throttled")
         }
     }
 

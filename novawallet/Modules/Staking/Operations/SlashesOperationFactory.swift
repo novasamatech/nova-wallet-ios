@@ -32,7 +32,7 @@ extension SlashesOperationFactory: SlashesOperationFactoryProtocol {
         let runtimeFetchOperation = runtimeService.fetchCoderFactoryOperation()
 
         let keyParams: () throws -> [AccountId] = {
-            let accountId: AccountId = try SS58AddressFactory().accountId(from: stashAddress)
+            let accountId: AccountId = try stashAddress.toAccountId()
             return [accountId]
         }
 

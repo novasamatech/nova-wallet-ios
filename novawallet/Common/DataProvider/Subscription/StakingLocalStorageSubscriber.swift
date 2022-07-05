@@ -1,5 +1,6 @@
 import Foundation
 import RobinHood
+import SubstrateSdk
 
 protocol StakingLocalStorageSubscriber where Self: AnyObject {
     var stakingLocalSubscriptionFactory: StakingLocalSubscriptionFactoryProtocol { get }
@@ -43,7 +44,8 @@ protocol StakingLocalStorageSubscriber where Self: AnyObject {
 extension StakingLocalStorageSubscriber {
     func subscribeToMinNominatorBond(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedBigUInt>? {
         guard let minBondProvider = try? stakingLocalSubscriptionFactory.getMinNominatorBondProvider(
-            for: chainId
+            for: chainId,
+            missingEntryStrategy: .defaultValue(StringScaleMapper(value: 0))
         ) else {
             return nil
         }
@@ -82,7 +84,10 @@ extension StakingLocalStorageSubscriber {
 
     func subscribeToCounterForNominators(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
         guard let counterForNominatorProvider = try? stakingLocalSubscriptionFactory
-            .getCounterForNominatorsProvider(for: chainId) else {
+            .getCounterForNominatorsProvider(
+                for: chainId,
+                missingEntryStrategy: .defaultValue(StringScaleMapper(value: 0))
+            ) else {
             return nil
         }
 
@@ -120,7 +125,10 @@ extension StakingLocalStorageSubscriber {
 
     func subscribeMaxNominatorsCount(for chainId: ChainModel.Id) -> AnyDataProvider<DecodedU32>? {
         guard let maxNominatorsCountProvider = try? stakingLocalSubscriptionFactory
-            .getMaxNominatorsCountProvider(for: chainId) else {
+            .getMaxNominatorsCountProvider(
+                for: chainId,
+                missingEntryStrategy: .defaultValue(StringScaleMapper(value: UInt32.max))
+            ) else {
             return nil
         }
 

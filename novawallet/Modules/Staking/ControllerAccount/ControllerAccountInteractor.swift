@@ -107,15 +107,18 @@ extension ControllerAccountInteractor: ControllerAccountInteractorInputProtocol 
                 DispatchQueue.main.async {
                     do {
                         let accountInfo = try accountInfoOperation.targetOperation.extractNoCancellableResultData()
-                        presenter?.didReceiveAccountInfo(result: .success(accountInfo), address: controllerAddress)
+                        presenter?.didReceiveControllerAccountInfo(
+                            result: .success(accountInfo),
+                            address: controllerAddress
+                        )
                     } catch {
-                        presenter?.didReceiveAccountInfo(result: .failure(error), address: controllerAddress)
+                        presenter?.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
                     }
                 }
             }
             operationManager.enqueue(operations: accountInfoOperation.allOperations, in: .transient)
         } catch {
-            presenter.didReceiveAccountInfo(result: .failure(error), address: controllerAddress)
+            presenter.didReceiveControllerAccountInfo(result: .failure(error), address: controllerAddress)
         }
     }
 
@@ -210,6 +213,8 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                     chainId: chainAsset.chain.chainId
                 )
 
+                let chain = chainAsset.chain
+
                 fetchFirstMetaAccountResponse(
                     for: stashId,
                     accountRequest: chainAsset.chain.accountRequest(),
@@ -223,7 +228,7 @@ extension ControllerAccountInteractor: StakingLocalStorageSubscriber, StakingLoc
                         if let accountResponse = accountResponse, let account = maybeAccount {
                             self?.extrinsicService = self?.extrinsicServiceFactory.createService(
                                 accountId: accountResponse.chainAccount.accountId,
-                                chainFormat: accountResponse.chainAccount.chainFormat,
+                                chain: chain,
                                 cryptoType: accountResponse.chainAccount.cryptoType
                             )
                             self?.estimateFee(for: account)

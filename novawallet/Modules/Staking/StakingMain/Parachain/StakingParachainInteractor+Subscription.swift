@@ -216,6 +216,25 @@ extension StakingParachainInteractor: ParastakingLocalStorageSubscriber,
         }
     }
 
+    func handleParastakingScheduledRequests(
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
+        for chainId: ChainModel.Id,
+        delegatorId: AccountId
+    ) {
+        guard
+            chainId == selectedChainAsset?.chain.chainId,
+            selectedAccount?.chainAccount.accountId == delegatorId else {
+            return
+        }
+
+        switch result {
+        case let .success(requests):
+            presenter?.didReceiveScheduledRequests(requests)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
     func handleTotalReward(
         result: Result<TotalRewardItem, Error>,
         for address: AccountAddress,

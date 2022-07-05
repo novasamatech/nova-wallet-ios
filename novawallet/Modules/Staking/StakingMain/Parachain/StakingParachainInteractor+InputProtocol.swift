@@ -7,53 +7,69 @@ extension StakingParachainInteractor: StakingParachainInteractorInputProtocol {
         continueSetup()
     }
 
-    func fetchScheduledRequests(for collators: [AccountId]) {
-        clear(cancellable: &scheduledRequestsCancellable)
+    func fetchDelegations(for collators: [AccountId]) {
+        clear(cancellable: &delegationsCancellable)
 
         guard
-            let chainId = selectedChainAsset?.chain.chainId,
-            let connection = chainRegistry.getConnection(for: chainId) else {
+            let chain = selectedChainAsset?.chain,
+            let connection = chainRegistry.getConnection(for: chain.chainId) else {
             presenter?.didReceiveError(ChainRegistryError.connectionUnavailable)
             return
         }
 
-        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chainId) else {
+        guard let runtimeService = chainRegistry.getRuntimeProvider(for: chain.chainId) else {
             presenter?.didReceiveError(ChainRegistryError.runtimeMetadaUnavailable)
             return
         }
 
-        guard let delegator = selectedAccount?.chainAccount.accountId else {
-            presenter?.didReceiveScheduledRequests(nil)
+        guard
+            let collatorService = sharedState.collatorService,
+            let rewardService = sharedState.rewardCalculationService else {
+            presenter?.didReceiveError(CommonError.dataCorruption)
             return
         }
 
-        let wrapper = scheduledRequestsFactory.createOperation(
-            for: delegator,
-            collators: collators,
-            runtimeService: runtimeService,
-            connection: connection
+        let wrapper = collatorsOperationFactory.selectedCollatorsInfoOperation(
+            for: collators,
+            collatorService: collatorService,
+            rewardService: rewardService,
+            connection: connection,
+            runtimeProvider: runtimeService,
+            chainFormat: chain.chainFormat
         )
 
         wrapper.targetOperation.completionBlock = { [weak self] in
             DispatchQueue.main.async {
-                guard wrapper === self?.scheduledRequestsCancellable else {
+                guard wrapper === self?.delegationsCancellable else {
                     return
                 }
 
-                self?.scheduledRequestsCancellable = nil
+                self?.delegationsCancellable = nil
 
                 do {
-                    let requests = try wrapper.targetOperation.extractNoCancellableResultData()
-                    self?.presenter?.didReceiveScheduledRequests(requests)
+                    let delegations = try wrapper.targetOperation.extractNoCancellableResultData()
+                    self?.presenter?.didReceiveDelegations(delegations)
                 } catch {
                     self?.presenter?.didReceiveError(error)
                 }
             }
         }
 
-        scheduledRequestsCancellable = wrapper
+        delegationsCancellable = wrapper
 
         operationQueue.addOperations(wrapper.allOperations, waitUntilFinished: false)
+    }
+
+    func fetchScheduledRequests() {
+        clear(streamableProvider: &scheduledRequestsProvider)
+
+        guard
+            let chainId = selectedChainAsset?.chain.chainId,
+            let delegatorId = selectedAccount?.chainAccount.accountId else {
+            return
+        }
+
+        scheduledRequestsProvider = subscribeToScheduledRequests(for: chainId, delegatorId: delegatorId)
     }
 }
 

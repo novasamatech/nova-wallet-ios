@@ -3,10 +3,9 @@ import Foundation
 class SelectValidatorsStartWireframe: SelectValidatorsStartWireframeProtocol {
     func proceedToCustomList(
         from _: ControllerBackedProtocol?,
-        validatorList _: [SelectedValidatorInfo],
-        recommendedValidatorList _: [SelectedValidatorInfo],
+        selectionValidatorGroups _: SelectionValidatorGroups,
         selectedValidatorList _: SharedList<SelectedValidatorInfo>,
-        maxTargets _: Int
+        validatorsSelectionParams _: ValidatorsSelectionParams
     ) {}
 
     func proceedToRecommendedList(

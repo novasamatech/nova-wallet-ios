@@ -20,9 +20,9 @@ protocol ParastakingLocalStorageHandler: AnyObject {
     )
 
     func handleParastakingScheduledRequests(
-        result: Result<[ParachainStaking.ScheduledRequest]?, Error>,
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
         for chainId: ChainModel.Id,
-        accountId: AccountId
+        delegatorId: AccountId
     )
 
     func handleTotalReward(
@@ -45,9 +45,9 @@ extension ParastakingLocalStorageHandler {
     ) {}
 
     func handleParastakingScheduledRequests(
-        result _: Result<[ParachainStaking.ScheduledRequest]?, Error>,
+        result _: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
         for _: ChainModel.Id,
-        accountId _: AccountId
+        delegatorId _: AccountId
     ) {}
 
     func handleTotalReward(

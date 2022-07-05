@@ -13,8 +13,7 @@ class AccountItemMapperTests: XCTestCase {
 
         // when
         let keypair = try SECKeyFactory().createRandomKeypair()
-        let address = try SS58AddressFactory().address(fromPublicKey: keypair.publicKey(),
-                                                       type: .kusamaMain)
+        let address = try keypair.publicKey().rawData().toAddress(using: .substrate(2))
         let accountId = try keypair.publicKey().rawData().publicKeyToAccountId()
 
         let metaAccountItem = MetaAccountModel(
