@@ -5,6 +5,7 @@ struct ValidatorListFilterViewFactory {
     static func createView(
         for state: StakingSharedState,
         filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         delegate: ValidatorListFilterDelegate?
     ) -> ValidatorListFilterViewProtocol? {
         guard let assetInfo = state.settings.value?.assetDisplayInfo else {
@@ -20,6 +21,7 @@ struct ValidatorListFilterViewFactory {
             viewModelFactory: viewModelFactory,
             assetInfo: assetInfo,
             filter: filter,
+            hasIdentity: hasIdentity,
             localizationManager: LocalizationManager.shared
         )
 

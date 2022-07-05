@@ -39,7 +39,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         }
 
         let title = LocalizableResource { _ in
-            assetInfo.symbol.uppercased()
+            assetInfo.symbol
         }
 
         view.bind(title: title, iconViewModel: iconViewModel)

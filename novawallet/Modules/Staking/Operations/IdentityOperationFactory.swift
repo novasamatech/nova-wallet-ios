@@ -12,11 +12,45 @@ protocol IdentityOperationFactoryProtocol {
     ) -> CompoundOperationWrapper<[AccountAddress: AccountIdentity]>
 }
 
+extension IdentityOperationFactoryProtocol {
+    func createIdentityWrapperByAccountId(
+        for accountIdClosure: @escaping () throws -> [AccountId],
+        engine: JSONRPCEngine,
+        runtimeService: RuntimeCodingServiceProtocol,
+        chainFormat: ChainFormat
+    ) -> CompoundOperationWrapper<[AccountId: AccountIdentity]> {
+        let wrapper = createIdentityWrapper(
+            for: accountIdClosure,
+            engine: engine,
+            runtimeService: runtimeService,
+            chainFormat: chainFormat
+        )
+
+        let mapOperation = ClosureOperation<[AccountId: AccountIdentity]> {
+            let identities = try wrapper.targetOperation.extractNoCancellableResultData()
+
+            return identities.reduce(into: [AccountId: AccountIdentity]()) { result, keyValue in
+                guard let accountId = try? keyValue.key.toAccountId() else {
+                    return
+                }
+
+                return result[accountId] = keyValue.value
+            }
+        }
+
+        mapOperation.addDependency(wrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: wrapper.allOperations)
+    }
+}
+
 final class IdentityOperationFactory {
     let requestFactory: StorageRequestFactoryProtocol
+    let emptyIdentitiesWhenNoStorage: Bool
 
-    init(requestFactory: StorageRequestFactoryProtocol) {
+    init(requestFactory: StorageRequestFactoryProtocol, emptyIdentitiesWhenNoStorage: Bool = true) {
         self.requestFactory = requestFactory
+        self.emptyIdentitiesWhenNoStorage = emptyIdentitiesWhenNoStorage
     }
 
     private func createSuperIdentityOperation(
@@ -44,53 +78,58 @@ final class IdentityOperationFactory {
         dependingOn superOperation: SuperIdentityOperation,
         identityOperation: IdentityOperation,
         runtimeOperation: BaseOperation<RuntimeCoderFactoryProtocol>,
-        chainFormat: ChainFormat
+        chainFormat: ChainFormat,
+        emptyWhenNoStorage _: Bool
     ) -> BaseOperation<[AccountAddress: AccountIdentity]> {
         ClosureOperation<[AccountAddress: AccountIdentity]> {
-            let superIdentities = try superOperation.extractNoCancellableResultData()
-            let coderFactory = try runtimeOperation.extractNoCancellableResultData()
-            let identities = try identityOperation.extractNoCancellableResultData()
-                .reduce(into: [AccountAddress: Identity]()) { result, item in
+            do {
+                let superIdentities = try superOperation.extractNoCancellableResultData()
+                let coderFactory = try runtimeOperation.extractNoCancellableResultData()
+                let identities = try identityOperation.extractNoCancellableResultData()
+                    .reduce(into: [AccountAddress: Identity]()) { result, item in
+                        if let value = item.value {
+                            let address = try LastAccountIdKey.decodeStorageKey(
+                                from: item.key,
+                                path: .identity,
+                                coderFactory: coderFactory
+                            ).value.toAddress(using: chainFormat)
+
+                            result[address] = value
+                        }
+                    }
+
+                return try superIdentities.reduce(into: [String: AccountIdentity]()) { result, item in
+                    let address = try LastAccountIdKey.decodeStorageKey(
+                        from: item.key,
+                        path: .superIdentity,
+                        coderFactory: coderFactory
+                    ).value.toAddress(using: chainFormat)
+
                     if let value = item.value {
-                        let address = try LastAccountIdKey.decodeStorageKey(
-                            from: item.key,
-                            path: .identity,
-                            coderFactory: coderFactory
-                        ).value.toAddress(using: chainFormat)
+                        let parentAddress = try value.parentAccountId.toAddress(using: chainFormat)
 
-                        result[address] = value
-                    }
-                }
+                        if let parentIdentity = identities[parentAddress] {
+                            result[address] = AccountIdentity(
+                                name: value.data.stringValue ?? "",
+                                parentAddress: parentAddress,
+                                parentName: parentIdentity.info.display.stringValue,
+                                identity: parentIdentity.info
+                            )
+                        } else {
+                            result[address] = AccountIdentity(name: value.data.stringValue ?? "")
+                        }
 
-            return try superIdentities.reduce(into: [String: AccountIdentity]()) { result, item in
-                let address = try LastAccountIdKey.decodeStorageKey(
-                    from: item.key,
-                    path: .superIdentity,
-                    coderFactory: coderFactory
-                ).value.toAddress(using: chainFormat)
-
-                if let value = item.value {
-                    let parentAddress = try value.parentAccountId.toAddress(using: chainFormat)
-
-                    if let parentIdentity = identities[parentAddress] {
+                    } else if let identity = identities[address] {
                         result[address] = AccountIdentity(
-                            name: value.data.stringValue ?? "",
-                            parentAddress: parentAddress,
-                            parentName: parentIdentity.info.display.stringValue,
-                            identity: parentIdentity.info
+                            name: identity.info.display.stringValue ?? "",
+                            parentAddress: nil,
+                            parentName: nil,
+                            identity: identity.info
                         )
-                    } else {
-                        result[address] = AccountIdentity(name: value.data.stringValue ?? "")
                     }
-
-                } else if let identity = identities[address] {
-                    result[address] = AccountIdentity(
-                        name: identity.info.display.stringValue ?? "",
-                        parentAddress: nil,
-                        parentName: nil,
-                        identity: identity.info
-                    )
                 }
+            } catch StorageKeyEncodingOperationError.invalidStoragePath {
+                return [:]
             }
         }
     }
@@ -134,7 +173,8 @@ final class IdentityOperationFactory {
             dependingOn: superIdentityOperation,
             identityOperation: identityWrapper.targetOperation,
             runtimeOperation: runtimeOperation,
-            chainFormat: chainFormat
+            chainFormat: chainFormat,
+            emptyWhenNoStorage: emptyIdentitiesWhenNoStorage
         )
 
         mergeOperation.addDependency(identityWrapper.targetOperation)

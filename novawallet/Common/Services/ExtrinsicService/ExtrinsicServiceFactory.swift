@@ -5,9 +5,15 @@ import SubstrateSdk
 protocol ExtrinsicServiceFactoryProtocol {
     func createService(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol
+
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol
 
     func createSigningWrapper(
         metaId: String,
@@ -34,16 +40,31 @@ final class ExtrinsicServiceFactory {
 extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
     func createService(
         accountId: AccountId,
-        chainFormat: ChainFormat,
+        chain: ChainModel,
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol {
         ExtrinsicService(
             accountId: accountId,
-            chainFormat: chainFormat,
+            chain: chain,
             cryptoType: cryptoType,
             runtimeRegistry: runtimeRegistry,
             engine: engine,
             operationManager: operationManager
+        )
+    }
+
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol {
+        ExtrinsicOperationFactory(
+            accountId: accountId,
+            chain: chain,
+            cryptoType: cryptoType,
+            runtimeRegistry: runtimeRegistry,
+            customExtensions: DefaultExtrinsicExtension.extensions,
+            engine: engine
         )
     }
 

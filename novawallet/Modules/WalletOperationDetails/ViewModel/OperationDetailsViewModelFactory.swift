@@ -94,12 +94,12 @@ final class OperationDetailsViewModelFactory {
 
     private func createTransferViewModel(
         from model: OperationTransferModel,
-        assetInfo: AssetBalanceDisplayInfo,
+        feeAssetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationTransferViewModel {
         let feeString = Decimal.fromSubstrateAmount(
             model.fee,
-            precision: assetInfo.assetPrecision
+            precision: feeAssetInfo.assetPrecision
         ).map { amount in
             let viewModelFactory = feeViewModelFactory ?? balanceViewModelFactory
             return viewModelFactory.amountFromValue(amount).value(for: locale)
@@ -186,14 +186,14 @@ final class OperationDetailsViewModelFactory {
 
     private func createContentViewModel(
         from data: OperationDetailsModel.OperationData,
-        assetInfo: AssetBalanceDisplayInfo,
+        feeAssetInfo: AssetBalanceDisplayInfo,
         locale: Locale
     ) -> OperationDetailsViewModel.ContentViewModel {
         switch data {
         case let .transfer(model):
             let viewModel = createTransferViewModel(
                 from: model,
-                assetInfo: assetInfo,
+                feeAssetInfo: feeAssetInfo,
                 locale: locale
             )
 
@@ -229,10 +229,11 @@ extension OperationDetailsViewModelFactory: OperationDetailsViewModelFactoryProt
         let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
 
         let assetInfo = chainAsset.assetDisplayInfo
+        let feeAssetInfo = chainAsset.chain.utilityAsset()?.displayInfo(with: chainAsset.chain.icon) ?? assetInfo
 
         let contentViewModel = createContentViewModel(
             from: model.operation,
-            assetInfo: chainAsset.assetDisplayInfo,
+            feeAssetInfo: feeAssetInfo,
             locale: locale
         )
 

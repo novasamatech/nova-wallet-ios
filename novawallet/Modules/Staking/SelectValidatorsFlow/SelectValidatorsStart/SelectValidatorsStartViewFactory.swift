@@ -8,7 +8,7 @@ final class SelectValidatorsStartViewFactory {
         with state: InitiatedBonding,
         stakingState: StakingSharedState
     ) -> SelectValidatorsStartViewProtocol? {
-        let wireframe = InitBondingSelectValidatorsStartWireframe(state: state, stakingState: stakingState)
+        let wireframe = InitBondSelectValidatorsStartWireframe(state: state, stakingState: stakingState)
         return createView(
             with: wireframe,
             existingStashAddress: nil,

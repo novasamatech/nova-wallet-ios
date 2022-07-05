@@ -73,7 +73,7 @@ struct WestendStub {
 
     static let ledgerInfo: DecodedLedgerInfo = {
         let address = "5DnQFjSrJUiCnDb9mrbbCkGRXwKZc5v31M261PMMTTMFDawq"
-        let accountId = try! SS58AddressFactory().accountId(from: address)
+        let accountId = try! address.toAccountId()
         let info = StakingLedger(stash: accountId,
                                    total: BigUInt(1e+12),
                                    active: BigUInt(1e+12),
@@ -153,7 +153,7 @@ struct WestendStub {
     static let rewardCalculator: RewardCalculatorEngineProtocol = {
         let total = eraValidators.reduce(BigUInt(0)) { $0 + $1.exposure.total }
 
-        return RewardCalculatorEngine(
+        return InflationCurveRewardEngine(
             chainId: Chain.westend.genesisHash,
             assetPrecision: Chain.westend.addressType.precision,
             totalIssuance: total,

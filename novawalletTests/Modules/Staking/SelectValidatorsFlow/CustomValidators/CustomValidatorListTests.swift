@@ -44,6 +44,8 @@ class CustomValidatorListTests: XCTestCase {
         let recommendedValidatorList = generator
             .createSelectedValidators(from: WestendStub.recommendedValidators)
 
+        let validatorsSelectionParams = ValidatorsSelectionParams(maxNominations: 16, hasIdentity: true)
+
         let presenter = CustomValidatorListPresenter(
             interactor: interactor,
             wireframe: wireframe,
@@ -52,7 +54,7 @@ class CustomValidatorListTests: XCTestCase {
             fullValidatorList: fullValidatorList,
             recommendedValidatorList: recommendedValidatorList,
             selectedValidatorList: SharedList<SelectedValidatorInfo>(items: []),
-            maxTargets: 16
+            validatorsSelectionParams: validatorsSelectionParams
         )
 
         presenter.view = view

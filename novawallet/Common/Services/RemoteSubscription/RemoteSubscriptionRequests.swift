@@ -4,6 +4,9 @@ import SubstrateSdk
 
 protocol SubscriptionRequestProtocol {
     var localKey: String { get }
+
+    var storagePath: StorageCodingPath { get }
+
     func createKeyEncodingWrapper(
         using storageKeyFactory: StorageKeyFactoryProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol

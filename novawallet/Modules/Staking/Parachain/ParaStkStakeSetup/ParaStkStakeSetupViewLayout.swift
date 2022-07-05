@@ -16,8 +16,14 @@ final class ParaStkStakeSetupViewLayout: UIView {
         return label
     }()
 
-    let collatorTableView = StackTableView()
-    let collatorActionView = StackActionCell()
+    let collatorTableView: StackTableView = {
+        let view = StackTableView()
+        view.cellHeight = 34.0
+        view.contentInsets = UIEdgeInsets(top: 7.0, left: 16.0, bottom: 7.0, right: 16.0)
+        return view
+    }()
+
+    let collatorActionView = StackAccountSelectionCell()
 
     let amountView = TitleHorizontalMultiValueView()
 

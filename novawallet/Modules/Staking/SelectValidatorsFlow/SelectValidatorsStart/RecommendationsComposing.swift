@@ -52,7 +52,7 @@ extension RecommendationsComposing {
     }
 }
 
-final class RecommendationsComposer: RecommendationsComposing {
+final class RecommendationsComposer {
     typealias RecommendableType = ElectedValidatorInfo
 
     let resultSize: Int
@@ -63,11 +63,29 @@ final class RecommendationsComposer: RecommendationsComposing {
         self.clusterSizeLimit = clusterSizeLimit
     }
 
-    func compose(from validators: [RecommendableType]) -> [RecommendableType] {
+    private func composeWithoutIdentities(from validators: [RecommendableType]) -> [RecommendableType] {
+        let recommendations = validators
+            .filter { !$0.hasSlashes && !$0.oversubscribed && !$0.blocked }
+            .sorted(by: { $0.stakeReturn >= $1.stakeReturn })
+            .prefix(resultSize)
+        return Array(recommendations)
+    }
+
+    private func composeWithIdentities(from validators: [RecommendableType]) -> [RecommendableType] {
         let filtered = validators
             .filter { $0.hasIdentity && !$0.hasSlashes && !$0.oversubscribed && !$0.blocked }
             .sorted(by: { $0.stakeReturn >= $1.stakeReturn })
 
         return processClusters(items: filtered, clusterSizeLimit: clusterSizeLimit, resultSize: resultSize)
+    }
+}
+
+extension RecommendationsComposer: RecommendationsComposing {
+    func compose(from validators: [RecommendableType]) -> [RecommendableType] {
+        if validators.contains(where: { $0.hasIdentity }) {
+            return composeWithIdentities(from: validators)
+        } else {
+            return composeWithoutIdentities(from: validators)
+        }
     }
 }

@@ -3,13 +3,13 @@ platform :ios, '13.0'
 abstract_target 'novawalletAll' do
   use_frameworks!
 
-  pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '16ebc9bedbf6eb58f9045b16bb31cddb90585059'
+  pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.2.0'
   pod 'SwiftLint'
   pod 'R.swift', :inhibit_warnings => true
   pod 'SoraKeystore', '~> 1.0.0'
-  pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :commit => '5d364b42000925775361d2098276871e429bfc47'
+  pod 'SoraUI', :git => 'https://github.com/ERussel/UIkit-iOS.git', :tag => '1.11.1'
   pod 'RobinHood', '~> 2.6.0'
-  pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
+  pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :tag => '1.16.0'
   pod 'SoraFoundation', '~> 1.0.0'
   pod 'SwiftyBeaver'
   pod 'ReachabilitySwift'
@@ -20,21 +20,21 @@ abstract_target 'novawalletAll' do
   pod 'SVGKit', :git => 'https://github.com/SVGKit/SVGKit.git', :tag => '3.0.0'
   pod 'Charts'
   pod 'SwiftRLP', :git => 'https://github.com/ERussel/SwiftRLP.git'
-  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
+  pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
 
   target 'novawalletTests' do
     inherit! :search_paths
 
     pod 'Cuckoo'
-    pod 'SubstrateSdk', :git => 'https://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@github.com/nova-wallet/substrate-sdk-ios.git', :commit => '16ebc9bedbf6eb58f9045b16bb31cddb90585059'
+    pod 'SubstrateSdk', :git => 'https://github.com/nova-wallet/substrate-sdk-ios.git', :tag => '1.2.0'
     pod 'SoraFoundation', '~> 1.0.0'
     pod 'R.swift', :inhibit_warnings => true
     pod 'FireMock', :inhibit_warnings => true
     pod 'SoraKeystore', '~> 1.0.0'
     pod 'RobinHood', '~> 2.6.0'
-    pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :commit => 'da686d69620aea28dc1aef0fbaf322e2c4b5c84e'
+    pod 'CommonWallet/Core', :git => 'https://github.com/ERussel/Capital-iOS.git', :tag => '1.16.0'
     pod 'Sourcery', '~> 1.4'
-    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :commit => '96b40350509663ecdbf82c8498b457303c6fc10d'
+    pod 'Starscream', :git => 'https://github.com/ERussel/Starscream.git', :tag => '4.0.5'
 
   end
 
