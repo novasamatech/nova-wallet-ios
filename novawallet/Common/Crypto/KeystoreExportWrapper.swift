@@ -20,8 +20,6 @@ final class KeystoreExportWrapper: KeystoreExportWrapperProtocol {
         return encoder
     }()
 
-    private lazy var ss58Factory = SS58AddressFactory()
-
     init(keystore: KeystoreProtocol) {
         self.keystore = keystore
     }

@@ -20,6 +20,7 @@ protocol ApplicationConfigProtocol {
     var phishingListURL: URL { get }
     var phishingDAppsURL: URL { get }
     var chainListURL: URL { get }
+    var xcmTransfersURL: URL { get }
     var dAppsListURL: URL { get }
     var commonTypesURL: URL { get }
     var learnPayoutURL: URL { get }
@@ -118,9 +119,17 @@ extension ApplicationConfig: ApplicationConfigProtocol {
 
     var chainListURL: URL {
         #if F_RELEASE
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v3/chains.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v4/chains.json")!
         #else
-            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v3/chains_dev.json")!
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/chains/v4/chains_dev.json")!
+        #endif
+    }
+
+    var xcmTransfersURL: URL {
+        #if F_RELEASE
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers.json")!
+        #else
+            URL(string: "https://raw.githubusercontent.com/nova-wallet/nova-utils/master/xcm/v2/transfers_dev.json")!
         #endif
     }
 

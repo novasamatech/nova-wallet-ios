@@ -1,5 +1,6 @@
 import Foundation
 import SubstrateSdk
+import RobinHood
 
 protocol ParachainStakingAccountSubscriptionServiceProtocol {
     func attachToAccountData(
@@ -74,12 +75,19 @@ extension ParachainStaking {
                     accountId: accountId
                 )
 
+                let subscriptionHandlingFactory = ParaStkAccountSubscribeHandlingFactory(
+                    chainId: chainId,
+                    accountId: accountId,
+                    chainRegistry: chainRegistry
+                )
+
                 return attachToSubscription(
                     with: requests,
                     chainId: chainId,
                     cacheKey: cacheKey,
                     queue: queue,
-                    closure: closure
+                    closure: closure,
+                    subscriptionHandlingFactory: subscriptionHandlingFactory
                 )
 
             } catch {

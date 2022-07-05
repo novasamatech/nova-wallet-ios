@@ -26030,6 +26030,21 @@ import SoraFoundation
     
     
     
+     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)  {
+        
+    return cuckoo_manager.call("didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)",
+            parameters: (result, address),
+            escapingParameters: (result, address),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveControllerAccountInfo(result: result, address: address))
+        
+    }
+    
+    
+    
      func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)  {
         
     return cuckoo_manager.call("didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)",
@@ -26092,6 +26107,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveControllerAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>, AccountAddress)> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<AccountInfo?, Error>, AccountAddress)> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockControllerAccountInteractorOutputProtocol.self, method: "didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", parameterMatchers: matchers))
@@ -26149,6 +26169,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveControllerAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.__DoNotUse<(Result<AccountInfo?, Error>, AccountAddress), Void> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
+	        return cuckoo_manager.verify("didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveAccountInfo<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable>(result: M1, address: M2) -> Cuckoo.__DoNotUse<(Result<AccountInfo?, Error>, AccountAddress), Void> where M1.MatchedType == Result<AccountInfo?, Error>, M2.MatchedType == AccountAddress {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<AccountInfo?, Error>, AccountAddress)>] = [wrap(matchable: result) { $0.0 }, wrap(matchable: address) { $0.1 }]
 	        return cuckoo_manager.verify("didReceiveAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -26196,6 +26222,12 @@ import SoraFoundation
     
     
      func didReceiveFee(result: Result<RuntimeDispatchInfo, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveControllerAccountInfo(result: Result<AccountInfo?, Error>, address: AccountAddress)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -27768,16 +27800,16 @@ import SoraFoundation
     
     
     
-     func presentFilters(from view: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)  {
+     func presentFilters(from view: ControllerBackedProtocol?, filter: CustomValidatorListFilter, hasIdentity: Bool, delegate: ValidatorListFilterDelegate?)  {
         
-    return cuckoo_manager.call("presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)",
-            parameters: (view, filter, delegate),
-            escapingParameters: (view, filter, delegate),
+    return cuckoo_manager.call("presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, hasIdentity: Bool, delegate: ValidatorListFilterDelegate?)",
+            parameters: (view, filter, hasIdentity, delegate),
+            escapingParameters: (view, filter, hasIdentity, delegate),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.presentFilters(from: view, filter: filter, delegate: delegate))
+            defaultCall: __defaultImplStub!.presentFilters(from: view, filter: filter, hasIdentity: hasIdentity, delegate: delegate))
         
     }
     
@@ -27855,9 +27887,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCustomValidatorListWireframeProtocol.self, method: "present(_: ValidatorInfoProtocol, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
 	    }
 	    
-	    func presentFilters<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, filter: M2, delegate: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, CustomValidatorListFilter, ValidatorListFilterDelegate?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == CustomValidatorListFilter, M3.OptionalMatchedType == ValidatorListFilterDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, CustomValidatorListFilter, ValidatorListFilterDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: filter) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockCustomValidatorListWireframeProtocol.self, method: "presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)", parameterMatchers: matchers))
+	    func presentFilters<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, filter: M2, hasIdentity: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, CustomValidatorListFilter, Bool, ValidatorListFilterDelegate?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == CustomValidatorListFilter, M3.MatchedType == Bool, M4.OptionalMatchedType == ValidatorListFilterDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, CustomValidatorListFilter, Bool, ValidatorListFilterDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: filter) { $0.1 }, wrap(matchable: hasIdentity) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCustomValidatorListWireframeProtocol.self, method: "presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, hasIdentity: Bool, delegate: ValidatorListFilterDelegate?)", parameterMatchers: matchers))
 	    }
 	    
 	    func presentSearch<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, fullValidatorList: M2, selectedValidatorList: M3, delegate: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, [SelectedValidatorInfo], [SelectedValidatorInfo], ValidatorSearchDelegate?)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.OptionalMatchedType == ValidatorSearchDelegate {
@@ -27903,9 +27935,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func presentFilters<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(from view: M1, filter: M2, delegate: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, CustomValidatorListFilter, ValidatorListFilterDelegate?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == CustomValidatorListFilter, M3.OptionalMatchedType == ValidatorListFilterDelegate {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, CustomValidatorListFilter, ValidatorListFilterDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: filter) { $0.1 }, wrap(matchable: delegate) { $0.2 }]
-	        return cuckoo_manager.verify("presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func presentFilters<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(from view: M1, filter: M2, hasIdentity: M3, delegate: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, CustomValidatorListFilter, Bool, ValidatorListFilterDelegate?), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == CustomValidatorListFilter, M3.MatchedType == Bool, M4.OptionalMatchedType == ValidatorListFilterDelegate {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, CustomValidatorListFilter, Bool, ValidatorListFilterDelegate?)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: filter) { $0.1 }, wrap(matchable: hasIdentity) { $0.2 }, wrap(matchable: delegate) { $0.3 }]
+	        return cuckoo_manager.verify("presentFilters(from: ControllerBackedProtocol?, filter: CustomValidatorListFilter, hasIdentity: Bool, delegate: ValidatorListFilterDelegate?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -27949,7 +27981,7 @@ import SoraFoundation
     
     
     
-     func presentFilters(from view: ControllerBackedProtocol?, filter: CustomValidatorListFilter, delegate: ValidatorListFilterDelegate?)   {
+     func presentFilters(from view: ControllerBackedProtocol?, filter: CustomValidatorListFilter, hasIdentity: Bool, delegate: ValidatorListFilterDelegate?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -30627,16 +30659,16 @@ import SoraFoundation
     
     
     
-     func proceedToCustomList(from view: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)  {
+     func proceedToCustomList(from view: ControllerBackedProtocol?, selectionValidatorGroups: SelectionValidatorGroups, selectedValidatorList: SharedList<SelectedValidatorInfo>, validatorsSelectionParams: ValidatorsSelectionParams)  {
         
-    return cuckoo_manager.call("proceedToCustomList(from: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)",
-            parameters: (view, validatorList, recommendedValidatorList, selectedValidatorList, maxTargets),
-            escapingParameters: (view, validatorList, recommendedValidatorList, selectedValidatorList, maxTargets),
+    return cuckoo_manager.call("proceedToCustomList(from: ControllerBackedProtocol?, selectionValidatorGroups: SelectionValidatorGroups, selectedValidatorList: SharedList<SelectedValidatorInfo>, validatorsSelectionParams: ValidatorsSelectionParams)",
+            parameters: (view, selectionValidatorGroups, selectedValidatorList, validatorsSelectionParams),
+            escapingParameters: (view, selectionValidatorGroups, selectedValidatorList, validatorsSelectionParams),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.proceedToCustomList(from: view, validatorList: validatorList, recommendedValidatorList: recommendedValidatorList, selectedValidatorList: selectedValidatorList, maxTargets: maxTargets))
+            defaultCall: __defaultImplStub!.proceedToCustomList(from: view, selectionValidatorGroups: selectionValidatorGroups, selectedValidatorList: selectedValidatorList, validatorsSelectionParams: validatorsSelectionParams))
         
     }
     
@@ -30709,9 +30741,9 @@ import SoraFoundation
 	    }
 	    
 	    
-	    func proceedToCustomList<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(from view: M1, validatorList: M2, recommendedValidatorList: M3, selectedValidatorList: M4, maxTargets: M5) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, [SelectedValidatorInfo], [SelectedValidatorInfo], SharedList<SelectedValidatorInfo>, Int)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == SharedList<SelectedValidatorInfo>, M5.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, [SelectedValidatorInfo], [SelectedValidatorInfo], SharedList<SelectedValidatorInfo>, Int)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: validatorList) { $0.1 }, wrap(matchable: recommendedValidatorList) { $0.2 }, wrap(matchable: selectedValidatorList) { $0.3 }, wrap(matchable: maxTargets) { $0.4 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartWireframeProtocol.self, method: "proceedToCustomList(from: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)", parameterMatchers: matchers))
+	    func proceedToCustomList<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, selectionValidatorGroups: M2, selectedValidatorList: M3, validatorsSelectionParams: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, SelectionValidatorGroups, SharedList<SelectedValidatorInfo>, ValidatorsSelectionParams)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == SelectionValidatorGroups, M3.MatchedType == SharedList<SelectedValidatorInfo>, M4.MatchedType == ValidatorsSelectionParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, SelectionValidatorGroups, SharedList<SelectedValidatorInfo>, ValidatorsSelectionParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: selectionValidatorGroups) { $0.1 }, wrap(matchable: selectedValidatorList) { $0.2 }, wrap(matchable: validatorsSelectionParams) { $0.3 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockSelectValidatorsStartWireframeProtocol.self, method: "proceedToCustomList(from: ControllerBackedProtocol?, selectionValidatorGroups: SelectionValidatorGroups, selectedValidatorList: SharedList<SelectedValidatorInfo>, validatorsSelectionParams: ValidatorsSelectionParams)", parameterMatchers: matchers))
 	    }
 	    
 	    func proceedToRecommendedList<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, validatorList: M2, maxTargets: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(SelectValidatorsStartViewProtocol?, [SelectedValidatorInfo], Int)> where M1.OptionalMatchedType == SelectValidatorsStartViewProtocol, M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == Int {
@@ -30751,9 +30783,9 @@ import SoraFoundation
 	
 	    
 	    @discardableResult
-	    func proceedToCustomList<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable, M5: Cuckoo.Matchable>(from view: M1, validatorList: M2, recommendedValidatorList: M3, selectedValidatorList: M4, maxTargets: M5) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, [SelectedValidatorInfo], [SelectedValidatorInfo], SharedList<SelectedValidatorInfo>, Int), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == [SelectedValidatorInfo], M3.MatchedType == [SelectedValidatorInfo], M4.MatchedType == SharedList<SelectedValidatorInfo>, M5.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, [SelectedValidatorInfo], [SelectedValidatorInfo], SharedList<SelectedValidatorInfo>, Int)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: validatorList) { $0.1 }, wrap(matchable: recommendedValidatorList) { $0.2 }, wrap(matchable: selectedValidatorList) { $0.3 }, wrap(matchable: maxTargets) { $0.4 }]
-	        return cuckoo_manager.verify("proceedToCustomList(from: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func proceedToCustomList<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.Matchable>(from view: M1, selectionValidatorGroups: M2, selectedValidatorList: M3, validatorsSelectionParams: M4) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, SelectionValidatorGroups, SharedList<SelectedValidatorInfo>, ValidatorsSelectionParams), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == SelectionValidatorGroups, M3.MatchedType == SharedList<SelectedValidatorInfo>, M4.MatchedType == ValidatorsSelectionParams {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, SelectionValidatorGroups, SharedList<SelectedValidatorInfo>, ValidatorsSelectionParams)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: selectionValidatorGroups) { $0.1 }, wrap(matchable: selectedValidatorList) { $0.2 }, wrap(matchable: validatorsSelectionParams) { $0.3 }]
+	        return cuckoo_manager.verify("proceedToCustomList(from: ControllerBackedProtocol?, selectionValidatorGroups: SelectionValidatorGroups, selectedValidatorList: SharedList<SelectedValidatorInfo>, validatorsSelectionParams: ValidatorsSelectionParams)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -30791,7 +30823,7 @@ import SoraFoundation
     
     
     
-     func proceedToCustomList(from view: ControllerBackedProtocol?, validatorList: [SelectedValidatorInfo], recommendedValidatorList: [SelectedValidatorInfo], selectedValidatorList: SharedList<SelectedValidatorInfo>, maxTargets: Int)   {
+     func proceedToCustomList(from view: ControllerBackedProtocol?, selectionValidatorGroups: SelectionValidatorGroups, selectedValidatorList: SharedList<SelectedValidatorInfo>, validatorsSelectionParams: ValidatorsSelectionParams)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -33076,66 +33108,6 @@ import SoraFoundation
     
 
     
-    
-    
-     func showStakingAmounts(from view: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])  {
-        
-    return cuckoo_manager.call("showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])",
-            parameters: (view, items),
-            escapingParameters: (view, items),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showStakingAmounts(from: view, items: items))
-        
-    }
-    
-    
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
-        
-    return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
-            parameters: (url, view, style),
-            escapingParameters: (url, view, style),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.showWeb(url: url, from: view, style: style))
-        
-    }
-    
-    
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
-            parameters: (message, title, closeAction, view),
-            escapingParameters: (message, title, closeAction, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(message: message, title: title, closeAction: closeAction, from: view))
-        
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)  {
-        
-    return cuckoo_manager.call("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)",
-            parameters: (viewModel, style, view),
-            escapingParameters: (viewModel, style, view),
-            superclassCall:
-                
-                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
-                ,
-            defaultCall: __defaultImplStub!.present(viewModel: viewModel, style: style, from: view))
-        
-    }
-    
 
 	 struct __StubbingProxy_ValidatorInfoWireframeProtocol: Cuckoo.StubbingProxy {
 	    private let cuckoo_manager: Cuckoo.MockManager
@@ -33144,26 +33116,6 @@ import SoraFoundation
 	        self.cuckoo_manager = manager
 	    }
 	    
-	    
-	    func showStakingAmounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, items: M2) -> Cuckoo.ProtocolStubNoReturnFunction<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])> where M1.OptionalMatchedType == ValidatorInfoViewProtocol, M2.MatchedType == [LocalizableResource<StakingAmountViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: items) { $0.1 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])", parameterMatchers: matchers))
-	    }
-	    
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
-	    
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorInfoWireframeProtocol.self, method: "present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
-	    }
 	    
 	}
 
@@ -33181,30 +33133,6 @@ import SoraFoundation
 	    
 	
 	    
-	    @discardableResult
-	    func showStakingAmounts<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable>(from view: M1, items: M2) -> Cuckoo.__DoNotUse<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>]), Void> where M1.OptionalMatchedType == ValidatorInfoViewProtocol, M2.MatchedType == [LocalizableResource<StakingAmountViewModel>] {
-	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorInfoViewProtocol?, [LocalizableResource<StakingAmountViewModel>])>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: items) { $0.1 }]
-	        return cuckoo_manager.verify("showStakingAmounts(from: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
-	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
-	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
-	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
-	    @discardableResult
-	    func present<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.OptionalMatchable>(viewModel: M1, style: M2, from view: M3) -> Cuckoo.__DoNotUse<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?), Void> where M1.MatchedType == AlertPresentableViewModel, M2.MatchedType == UIAlertController.Style, M3.OptionalMatchedType == ControllerBackedProtocol {
-	        let matchers: [Cuckoo.ParameterMatcher<(AlertPresentableViewModel, UIAlertController.Style, ControllerBackedProtocol?)>] = [wrap(matchable: viewModel) { $0.0 }, wrap(matchable: style) { $0.1 }, wrap(matchable: view) { $0.2 }]
-	        return cuckoo_manager.verify("present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
-	    }
-	    
 	}
 }
 
@@ -33213,30 +33141,6 @@ import SoraFoundation
 
     
 
-    
-    
-    
-     func showStakingAmounts(from view: ValidatorInfoViewProtocol?, items: [LocalizableResource<StakingAmountViewModel>])   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
-    
-    
-    
-     func present(viewModel: AlertPresentableViewModel, style: UIAlertController.Style, from view: ControllerBackedProtocol?)   {
-        return DefaultValueRegistry.defaultValue(for: (Void).self)
-    }
     
 }
 
@@ -33664,31 +33568,31 @@ import SoraFoundation
     
     
     
-     func toggleFilterItem(at index: Int)  {
+     func toggleFilter(for viewModel: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)  {
         
-    return cuckoo_manager.call("toggleFilterItem(at: Int)",
-            parameters: (index),
-            escapingParameters: (index),
+    return cuckoo_manager.call("toggleFilter(for: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.toggleFilterItem(at: index))
+            defaultCall: __defaultImplStub!.toggleFilter(for: viewModel))
         
     }
     
     
     
-     func selectFilterItem(at index: Int)  {
+     func selectSorting(for viewModel: ValidatorListFilterCellViewModel<ValidatorListSortRow>)  {
         
-    return cuckoo_manager.call("selectFilterItem(at: Int)",
-            parameters: (index),
-            escapingParameters: (index),
+    return cuckoo_manager.call("selectSorting(for: ValidatorListFilterCellViewModel<ValidatorListSortRow>)",
+            parameters: (viewModel),
+            escapingParameters: (viewModel),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.selectFilterItem(at: index))
+            defaultCall: __defaultImplStub!.selectSorting(for: viewModel))
         
     }
     
@@ -33761,14 +33665,14 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorListFilterPresenterProtocol.self, method: "setup()", parameterMatchers: matchers))
 	    }
 	    
-	    func toggleFilterItem<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorListFilterPresenterProtocol.self, method: "toggleFilterItem(at: Int)", parameterMatchers: matchers))
+	    func toggleFilter<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ValidatorListFilterCellViewModel<ValidatorListFilterRow>)> where M1.MatchedType == ValidatorListFilterCellViewModel<ValidatorListFilterRow> {
+	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorListFilterCellViewModel<ValidatorListFilterRow>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorListFilterPresenterProtocol.self, method: "toggleFilter(for: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)", parameterMatchers: matchers))
 	    }
 	    
-	    func selectFilterItem<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Int)> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorListFilterPresenterProtocol.self, method: "selectFilterItem(at: Int)", parameterMatchers: matchers))
+	    func selectSorting<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(ValidatorListFilterCellViewModel<ValidatorListSortRow>)> where M1.MatchedType == ValidatorListFilterCellViewModel<ValidatorListSortRow> {
+	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorListFilterCellViewModel<ValidatorListSortRow>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockValidatorListFilterPresenterProtocol.self, method: "selectSorting(for: ValidatorListFilterCellViewModel<ValidatorListSortRow>)", parameterMatchers: matchers))
 	    }
 	    
 	    func applyFilter() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
@@ -33819,15 +33723,15 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func toggleFilterItem<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return cuckoo_manager.verify("toggleFilterItem(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func toggleFilter<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.__DoNotUse<(ValidatorListFilterCellViewModel<ValidatorListFilterRow>), Void> where M1.MatchedType == ValidatorListFilterCellViewModel<ValidatorListFilterRow> {
+	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorListFilterCellViewModel<ValidatorListFilterRow>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("toggleFilter(for: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
-	    func selectFilterItem<M1: Cuckoo.Matchable>(at index: M1) -> Cuckoo.__DoNotUse<(Int), Void> where M1.MatchedType == Int {
-	        let matchers: [Cuckoo.ParameterMatcher<(Int)>] = [wrap(matchable: index) { $0 }]
-	        return cuckoo_manager.verify("selectFilterItem(at: Int)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func selectSorting<M1: Cuckoo.Matchable>(for viewModel: M1) -> Cuckoo.__DoNotUse<(ValidatorListFilterCellViewModel<ValidatorListSortRow>), Void> where M1.MatchedType == ValidatorListFilterCellViewModel<ValidatorListSortRow> {
+	        let matchers: [Cuckoo.ParameterMatcher<(ValidatorListFilterCellViewModel<ValidatorListSortRow>)>] = [wrap(matchable: viewModel) { $0 }]
+	        return cuckoo_manager.verify("selectSorting(for: ValidatorListFilterCellViewModel<ValidatorListSortRow>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -33887,13 +33791,13 @@ import SoraFoundation
     
     
     
-     func toggleFilterItem(at index: Int)   {
+     func toggleFilter(for viewModel: ValidatorListFilterCellViewModel<ValidatorListFilterRow>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
     
     
-     func selectFilterItem(at index: Int)   {
+     func selectSorting(for viewModel: ValidatorListFilterCellViewModel<ValidatorListSortRow>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41136,16 +41040,16 @@ import SoraFoundation
     
     
     
-     func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse)  {
+     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)  {
         
-    return cuckoo_manager.call("didReceiveSelectedAccount(_: MetaChainAccountResponse)",
-            parameters: (selectedAccount),
-            escapingParameters: (selectedAccount),
+    return cuckoo_manager.call("didReceiveSelectedAccount(_: MetaAccountModel)",
+            parameters: (metaAccount),
+            escapingParameters: (metaAccount),
             superclassCall:
                 
                 Cuckoo.MockManager.crashOnProtocolSuperclassCall()
                 ,
-            defaultCall: __defaultImplStub!.didReceiveSelectedAccount(selectedAccount))
+            defaultCall: __defaultImplStub!.didReceiveSelectedAccount(metaAccount))
         
     }
     
@@ -41208,9 +41112,9 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveAccountInfo(_: AccountInfo?)", parameterMatchers: matchers))
 	    }
 	    
-	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ selectedAccount: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaChainAccountResponse)> where M1.MatchedType == MetaChainAccountResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse)>] = [wrap(matchable: selectedAccount) { $0 }]
-	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveSelectedAccount(_: MetaChainAccountResponse)", parameterMatchers: matchers))
+	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ metaAccount: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountModel)> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: metaAccount) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainInteractorOutputProtocol.self, method: "didReceiveSelectedAccount(_: MetaAccountModel)", parameterMatchers: matchers))
 	    }
 	    
 	    func didReceiveStakingSettings<M1: Cuckoo.Matchable>(_ stakingSettings: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(StakingAssetSettings)> where M1.MatchedType == StakingAssetSettings {
@@ -41251,9 +41155,9 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
-	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ selectedAccount: M1) -> Cuckoo.__DoNotUse<(MetaChainAccountResponse), Void> where M1.MatchedType == MetaChainAccountResponse {
-	        let matchers: [Cuckoo.ParameterMatcher<(MetaChainAccountResponse)>] = [wrap(matchable: selectedAccount) { $0 }]
-	        return cuckoo_manager.verify("didReceiveSelectedAccount(_: MetaChainAccountResponse)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    func didReceiveSelectedAccount<M1: Cuckoo.Matchable>(_ metaAccount: M1) -> Cuckoo.__DoNotUse<(MetaAccountModel), Void> where M1.MatchedType == MetaAccountModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel)>] = [wrap(matchable: metaAccount) { $0 }]
+	        return cuckoo_manager.verify("didReceiveSelectedAccount(_: MetaAccountModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
 	    }
 	    
 	    @discardableResult
@@ -41291,7 +41195,7 @@ import SoraFoundation
     
     
     
-     func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse)   {
+     func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -41372,6 +41276,36 @@ import SoraFoundation
     
     
     
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)",
+            parameters: (view, wallet, chain),
+            escapingParameters: (view, wallet, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showCreateAccount(from: view, wallet: wallet, chain: chain))
+        
+    }
+    
+    
+    
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)",
+            parameters: (view, wallet, chain),
+            escapingParameters: (view, wallet, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showImportAccount(from: view, wallet: wallet, chain: chain))
+        
+    }
+    
+    
+    
      func present(message: String?, title: String?, closeAction: String?, from view: ControllerBackedProtocol?)  {
         
     return cuckoo_manager.call("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)",
@@ -41419,6 +41353,16 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showChainAssetSelection(from: StakingMainViewProtocol?, selectedChainAssetId: ChainAssetId?, delegate: AssetSelectionDelegate)", parameterMatchers: matchers))
 	    }
 	    
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(String?, String?, String?, ControllerBackedProtocol?)> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockStakingMainWireframeProtocol.self, method: "present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", parameterMatchers: matchers))
@@ -41458,6 +41402,18 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func showCreateAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return cuckoo_manager.verify("showCreateAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
+	    func showImportAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return cuckoo_manager.verify("showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func present<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.OptionalMatchable, M3: Cuckoo.OptionalMatchable, M4: Cuckoo.OptionalMatchable>(message: M1, title: M2, closeAction: M3, from view: M4) -> Cuckoo.__DoNotUse<(String?, String?, String?, ControllerBackedProtocol?), Void> where M1.OptionalMatchedType == String, M2.OptionalMatchedType == String, M3.OptionalMatchedType == String, M4.OptionalMatchedType == ControllerBackedProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(String?, String?, String?, ControllerBackedProtocol?)>] = [wrap(matchable: message) { $0.0 }, wrap(matchable: title) { $0.1 }, wrap(matchable: closeAction) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("present(message: String?, title: String?, closeAction: String?, from: ControllerBackedProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -41487,6 +41443,18 @@ import SoraFoundation
     
     
      func showChainAssetSelection(from view: StakingMainViewProtocol?, selectedChainAssetId: ChainAssetId?, delegate: AssetSelectionDelegate)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showCreateAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

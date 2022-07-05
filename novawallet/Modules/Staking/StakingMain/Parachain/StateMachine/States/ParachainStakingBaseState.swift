@@ -99,6 +99,8 @@ extension ParachainStaking {
 
         func process(delegatorState _: ParachainStaking.Delegator?) {}
 
+        func process(delegations _: [CollatorSelectionInfo]?) {}
+
         func process(scheduledRequests _: [ParachainStaking.DelegatorScheduledRequest]?) {}
     }
 }

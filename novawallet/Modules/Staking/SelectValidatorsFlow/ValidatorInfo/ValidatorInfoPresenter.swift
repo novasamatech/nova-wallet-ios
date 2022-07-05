@@ -29,33 +29,6 @@ final class ValidatorInfoPresenter {
         self.localizationManager = localizationManager
     }
 
-    func activateEmail(_ email: String) {
-        guard let view = view else { return }
-
-        let message = SocialMessage(
-            body: nil,
-            subject: "",
-            recepients: [email]
-        )
-        if !wireframe.writeEmail(with: message, from: view, completionHandler: nil) {
-            wireframe.present(
-                message: R.string.localizable
-                    .noEmailBoundErrorMessage(preferredLanguages: selectedLocale.rLanguages),
-                title: R.string.localizable
-                    .commonErrorGeneralTitle(preferredLanguages: selectedLocale.rLanguages),
-                closeAction: R.string.localizable
-                    .commonClose(preferredLanguages: selectedLocale.rLanguages),
-                from: view
-            )
-        }
-    }
-
-    private func show(_ url: URL) {
-        if let view = view {
-            wireframe.showWeb(url: url, from: view, style: .automatic)
-        }
-    }
-
     private func updateView() {
         guard let validatorInfoResult = self.validatorInfoResult else {
             view?.didRecieve(state: .empty)
@@ -124,26 +97,16 @@ extension ValidatorInfoPresenter: ValidatorInfoPresenterProtocol {
     }
 
     func presentIdentityItem(_ value: ValidatorInfoViewModel.IdentityItemValue) {
-        guard case let .link(value, tag) = value else {
+        guard case let .link(value, tag) = value, let view = view else {
             return
         }
 
-        switch tag {
-        case .email:
-            activateEmail(value)
-        case .web:
-            if let url = URL(string: value) {
-                show(url)
-            }
-        case .riot:
-            if let url = URL.riotAddress(for: value) {
-                show(url)
-            }
-        case .twitter:
-            if let url = URL.twitterAddress(for: value) {
-                show(url)
-            }
-        }
+        wireframe.presentIdentityItem(
+            from: view,
+            tag: tag,
+            value: value,
+            locale: selectedLocale
+        )
     }
 }
 

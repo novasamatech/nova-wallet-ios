@@ -9,6 +9,7 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
 
         sharedState.eraValidatorService?.setup()
         sharedState.rewardCalculationService?.setup()
+        sharedState.blockTimeService?.setup()
 
         provideNewChain()
         provideSelectedAccount()
@@ -44,12 +45,23 @@ extension StakingRelaychainInteractor: StakingRelaychainInteractorInputProtocol 
         }
 
         do {
+            let blockTimeService = try stakingServiceFactory.createBlockTimeService(
+                for: chainAsset.chain.chainId,
+                consensus: sharedState.consensus
+            )
+
+            sharedState.replaceBlockTimeService(blockTimeService)
+
             let eraValidatorService = try stakingServiceFactory.createEraValidatorService(
                 for: chainAsset.chain.chainId
             )
 
+            let stakingDurationFactory = try sharedState.createStakingDurationOperationFactory(for: chainAsset.chain)
+
             let rewardCalculatorService = try stakingServiceFactory.createRewardCalculatorService(
                 for: chainAsset.chain.chainId,
+                stakingType: StakingType(rawType: chainAsset.asset.staking),
+                stakingDurationFactory: stakingDurationFactory,
                 assetPrecision: Int16(chainAsset.asset.precision),
                 validatorService: eraValidatorService
             )

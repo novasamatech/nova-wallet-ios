@@ -2,15 +2,22 @@ import UIKit
 import CommonWallet
 import SoraFoundation
 
-final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
+final class ParaStkStakeSetupViewController: UIViewController, ViewHolder, ImportantViewProtocol {
     typealias RootViewType = ParaStkStakeSetupViewLayout
 
     let presenter: ParaStkStakeSetupPresenterProtocol
+    let localizableTitle: LocalizableResource<String>
 
-    private var collatorViewModel: DisplayAddressViewModel?
+    private var collatorViewModel: AccountDetailsSelectionViewModel?
 
-    init(presenter: ParaStkStakeSetupPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(
+        presenter: ParaStkStakeSetupPresenterProtocol,
+        localizableTitle: LocalizableResource<String>,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.localizableTitle = localizableTitle
+
         super.init(nibName: nil, bundle: nil)
 
         self.localizationManager = localizationManager
@@ -39,13 +46,15 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
 
+        title = localizableTitle.value(for: selectedLocale)
+
         setupAmountInputAccessoryView()
 
         rootView.collatorTitleLabel.text = R.string.localizable.parachainStakingCollator(
             preferredLanguages: languages
         )
 
-        applyCollatorTitle(viewModel: collatorViewModel)
+        applyCollator(viewModel: collatorViewModel)
 
         rootView.amountView.titleView.text = R.string.localizable.walletSendAmountTitle(
             preferredLanguages: languages
@@ -55,11 +64,11 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
             preferredLanguages: languages
         )
 
-        rootView.rewardsView.titleLabel.text = R.string.localizable.parachainStakingTransferrableRewards(
+        rootView.rewardsView.titleLabel.text = R.string.localizable.stakingSetupPayoutTitle(
             preferredLanguages: languages
         )
 
-        rootView.minStakeView.titleLabel.text = R.string.localizable.parachainStakingMinimumStake(
+        rootView.minStakeView.titleLabel.text = R.string.localizable.stakingMainMinimumStakeTitle(
             preferredLanguages: languages
         )
 
@@ -110,38 +119,24 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
         rootView.amountInputView.bind(priceViewModel: viewModel.price)
 
         rootView.amountView.detailsValueLabel.text = viewModel.balance
-
-        title = R.string.localizable.stakingStakeFormat(
-            viewModel.symbol,
-            preferredLanguages: selectedLocale.rLanguages
-        )
     }
 
-    private func stopCollatorLoading() {
-        collatorViewModel?.imageViewModel?.cancel(on: rootView.collatorActionView.imageView)
-    }
-
-    private func applyCollatorImage(viewModel: DisplayAddressViewModel?) {
+    private func applyCollator(viewModel: AccountDetailsSelectionViewModel?) {
         if let viewModel = viewModel {
-            viewModel.imageViewModel?.loadImage(
-                on: rootView.collatorActionView.imageView,
-                targetSize: UIConstants.address24IconSize,
-                animated: true
-            )
+            rootView.collatorActionView.bind(viewModel: viewModel)
         } else {
-            rootView.collatorActionView.imageView.image = R.image.iconAddressPlaceholder()
-        }
-    }
+            let emptyViewModel = AccountDetailsSelectionViewModel(
+                displayAddress: DisplayAddressViewModel(
+                    address: "",
+                    name: R.string.localizable.parachainStakingSelectCollator(
+                        preferredLanguages: selectedLocale.rLanguages
+                    ),
+                    imageViewModel: nil
+                ),
+                details: nil
+            )
 
-    private func applyCollatorTitle(viewModel: DisplayAddressViewModel?) {
-        if let viewModel = viewModel {
-            rootView.collatorActionView.titleLabel.lineBreakMode = viewModel.lineBreakMode
-            rootView.collatorActionView.titleLabel.text = viewModel.name ?? viewModel.address
-        } else {
-            rootView.collatorActionView.titleLabel.lineBreakMode = .byTruncatingTail
-            rootView.collatorActionView.titleLabel.text = R.string.localizable.parachainStakingSelectCollator(
-                preferredLanguages: selectedLocale.rLanguages
-            )
+            rootView.collatorActionView.bind(viewModel: emptyViewModel)
         }
     }
 
@@ -202,13 +197,10 @@ final class ParaStkStakeSetupViewController: UIViewController, ViewHolder {
 }
 
 extension ParaStkStakeSetupViewController: ParaStkStakeSetupViewProtocol {
-    func didReceiveCollator(viewModel: DisplayAddressViewModel?) {
-        stopCollatorLoading()
-
+    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?) {
         collatorViewModel = viewModel
 
-        applyCollatorImage(viewModel: viewModel)
-        applyCollatorTitle(viewModel: viewModel)
+        applyCollator(viewModel: viewModel)
 
         updateActionButtonState()
     }

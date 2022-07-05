@@ -60,25 +60,19 @@ extension ServiceCoordinator {
         let githubPhishingAPIService = GitHubPhishingServiceFactory.createService()
 
         let chainRegistry = ChainRegistryFacade.sharedRegistry
-        let repository = SubstrateRepositoryFactory().createChainStorageItemRepository()
         let logger = Logger.shared
 
-        let operationManager = OperationManagerFacade.sharedManager
-        let operationQueue = OperationManagerFacade.sharedDefaultQueue
+        let assetsOperationQueue = OperationManagerFacade.assetsQueue
+        let assetsOperationManager = OperationManager(operationQueue: assetsOperationQueue)
 
         let walletSettings = SelectedWalletSettings.shared
         let substrateStorageFacade = SubstrateDataStorageFacade.shared
 
-        let walletRemoteSubscription = WalletRemoteSubscriptionService(
-            chainRegistry: chainRegistry,
-            repository: repository,
-            operationManager: operationManager,
-            logger: logger
-        )
+        let walletRemoteSubscription = WalletServiceFacade.sharedRemoteSubscriptionService
 
         let storageRequestFactory = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
-            operationManager: operationManager
+            operationManager: assetsOperationManager
         )
 
         let accountInfoService = AccountInfoUpdatingService(
@@ -88,7 +82,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: operationQueue,
+            operationQueue: assetsOperationQueue,
             logger: logger
         )
 
@@ -99,7 +93,7 @@ extension ServiceCoordinator {
             storageFacade: substrateStorageFacade,
             storageRequestFactory: storageRequestFactory,
             eventCenter: EventCenter.shared,
-            operationQueue: operationQueue,
+            operationQueue: assetsOperationQueue,
             logger: logger
         )
 

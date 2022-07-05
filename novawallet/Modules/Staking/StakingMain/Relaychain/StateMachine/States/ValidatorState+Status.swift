@@ -9,7 +9,7 @@ extension ValidatorState {
         }
 
         do {
-            let accountId = try SS58AddressFactory().accountId(from: stashItem.stash)
+            let accountId = try stashItem.stash.toAccountId()
 
             if eraStakers.validators
                 .first(where: { $0.accountId == accountId }) != nil {

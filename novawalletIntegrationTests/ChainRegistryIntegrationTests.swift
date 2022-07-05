@@ -49,8 +49,7 @@ class ChainRegistryIntegrationTests: XCTestCase {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let addressFactory = SS58AddressFactory()
-        let accountId = try! addressFactory.accountId(from: address)
+        let accountId = try! address.toAccountId()
 
         let operationQueue = OperationQueue()
 

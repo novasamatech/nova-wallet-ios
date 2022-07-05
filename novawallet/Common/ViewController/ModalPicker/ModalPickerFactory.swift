@@ -4,12 +4,55 @@ import SoraFoundation
 import IrohaCrypto
 import SubstrateSdk
 
-enum AccountHeaderType {
-    case title(_ title: LocalizableResource<String>)
-    case address(_ type: SNAddressType, title: LocalizableResource<String>)
-}
+typealias AccountDetailsPickerViewModel = LocalizableResource<SelectableViewModel<AccountDetailsSelectionViewModel>>
 
 enum ModalPickerFactory {
+    static func createStakingManageSource(
+        options: [StakingManageOption],
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !options.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<StakingManageTableViewCell, StakingManageViewModel>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.parastkManageCollators(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.selectedIndex = NSNotFound
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.headerBorderType = .none
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 48.0
+
+        viewController.viewModels = options.map { option in
+            LocalizableResource { locale in
+                StakingManageViewModel(
+                    icon: option.icon,
+                    title: option.titleForLocale(locale, statics: nil),
+                    details: nil
+                )
+            }
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(options.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
     static func createPickerListForSecretSource(
         options: [SecretSource],
         delegate: ModalPickerViewControllerDelegate?,
@@ -113,33 +156,10 @@ enum ModalPickerFactory {
         delegate: ModalPickerViewControllerDelegate?,
         context: AnyObject?
     ) -> UIViewController? {
-        createPickerList(
-            accounts,
-            selectedAccount: selectedAccount,
-            headerType: .title(title),
-            delegate: delegate,
-            context: context
-        )
-    }
-
-    static func createPickerList(
-        _ accounts: [MetaChainAccountResponse],
-        selectedAccount: MetaChainAccountResponse?,
-        headerType: AccountHeaderType,
-        delegate: ModalPickerViewControllerDelegate?,
-        context: AnyObject?
-    ) -> UIViewController? {
         let viewController: ModalPickerViewController<AccountPickerTableViewCell, WalletAccountViewModel>
             = ModalPickerViewController(nib: R.nib.modalPickerViewController)
 
-        switch headerType {
-        case let .title(title):
-            viewController.localizedTitle = title
-        case let .address(type, title):
-            viewController.localizedTitle = title
-            viewController.icon = type.icon
-            viewController.actionType = .add
-        }
+        viewController.localizedTitle = title
 
         viewController.delegate = delegate
         viewController.modalPresentationStyle = .custom
@@ -253,6 +273,173 @@ enum ModalPickerFactory {
 
         let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
             viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    static func createCollatorsPickingList(
+        _ items: [AccountDetailsPickerViewModel],
+        actionViewModel: LocalizableResource<IconWithTitleViewModel>?,
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<
+            AccountDetailsSelectionCell,
+            SelectableViewModel<AccountDetailsSelectionViewModel>
+        >
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.parachainStakingCollator(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.selectedIndex = selectedIndex
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 56.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+
+        if let actionViewModel = actionViewModel {
+            viewController.actionType = .iconTitle(viewModel: actionViewModel)
+        } else {
+            viewController.actionType = .none
+        }
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let itemsCount = actionViewModel != nil ? items.count + 1 : items.count
+        let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    static func createCollatorsSelectionList(
+        _ items: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        delegate: ModalPickerViewControllerDelegate?,
+        title: LocalizableResource<String>,
+        context: AnyObject?
+    ) -> UIViewController? {
+        guard !items.isEmpty else {
+            return nil
+        }
+
+        let viewController: ModalPickerViewController<
+            AccountDetailsNavigationCell,
+            AccountDetailsSelectionViewModel
+        >
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = title
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 56.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+        viewController.selectedIndex = NSNotFound
+
+        viewController.actionType = .none
+
+        viewController.viewModels = items
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let height = viewController.headerHeight + CGFloat(items.count) * viewController.cellHeight +
+            viewController.footerHeight
+        viewController.preferredContentSize = CGSize(width: 0.0, height: height)
+
+        viewController.localizationManager = LocalizationManager.shared
+
+        return viewController
+    }
+
+    static func createNetworkSelectionList(
+        selectionState: CrossChainDestinationSelectionState,
+        delegate: ModalPickerViewControllerDelegate?,
+        context: AnyObject?
+    ) -> UIViewController? {
+        let viewController: ModalPickerViewController<NetworkSelectionTableViewCell, NetworkViewModel>
+            = ModalPickerViewController(nib: R.nib.modalPickerViewController)
+
+        viewController.localizedTitle = LocalizableResource { locale in
+            R.string.localizable.xcmDestinationSelectionTitle(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.delegate = delegate
+        viewController.modalPresentationStyle = .custom
+        viewController.context = context
+        viewController.separatorStyle = .none
+        viewController.cellHeight = 52.0
+        viewController.headerHeight = 40.0
+        viewController.footerHeight = 0.0
+        viewController.headerBorderType = []
+
+        viewController.actionType = .none
+
+        let networkViewModelFactory = NetworkViewModelFactory()
+
+        let onChainViewModel = LocalizableResource { _ in
+            networkViewModelFactory.createViewModel(from: selectionState.originChain)
+        }
+
+        let onChainTitle = LocalizableResource { locale in
+            R.string.localizable.commonOnChain(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.addSection(viewModels: [onChainViewModel], title: onChainTitle)
+
+        let crossChainViewModels = selectionState.availableDestChains.map { chain in
+            LocalizableResource { _ in networkViewModelFactory.createViewModel(from: chain) }
+        }
+
+        let crossChainTitle = LocalizableResource { locale in
+            R.string.localizable.commonCrossChain(preferredLanguages: locale.rLanguages)
+        }
+
+        viewController.addSection(viewModels: crossChainViewModels, title: crossChainTitle)
+
+        if selectionState.selectedChainId == selectionState.originChain.chainId {
+            viewController.selectedIndex = 0
+            viewController.selectedSection = 0
+        } else if let index = selectionState.availableDestChains.firstIndex(
+            where: { selectionState.selectedChainId == $0.chainId }
+        ) {
+            viewController.selectedIndex = index
+            viewController.selectedSection = 1
+        } else {
+            viewController.selectedIndex = NSNotFound
+        }
+
+        let factory = ModalSheetPresentationFactory(configuration: .fearless)
+        viewController.modalTransitioningFactory = factory
+
+        let itemsCount = crossChainViewModels.count + 1
+        let sectionsCount = 2
+        let height = viewController.headerHeight + CGFloat(itemsCount) * viewController.cellHeight +
+            CGFloat(sectionsCount) * viewController.sectionHeaderHeight + viewController.footerHeight
         viewController.preferredContentSize = CGSize(width: 0.0, height: height)
 
         viewController.localizationManager = LocalizationManager.shared

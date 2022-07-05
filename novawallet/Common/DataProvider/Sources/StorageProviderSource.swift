@@ -24,7 +24,7 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
     let runtimeService: RuntimeCodingServiceProtocol
     let provider: StreamableProvider<ChainStorageItem>
     let trigger: DataProviderTriggerProtocol
-    let shouldUseFallback: Bool
+    let fallback: StorageProviderSourceFallback<T>
 
     private var lastSeenResult: LastSeen = .waiting
     private var lastSeenError: Error?
@@ -37,14 +37,14 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
         runtimeService: RuntimeCodingServiceProtocol,
         provider: StreamableProvider<ChainStorageItem>,
         trigger: DataProviderTriggerProtocol,
-        shouldUseFallback: Bool
+        fallback: StorageProviderSourceFallback<T>
     ) {
         self.itemIdentifier = itemIdentifier
         self.codingPath = codingPath
         self.runtimeService = runtimeService
         self.provider = provider
         self.trigger = trigger
-        self.shouldUseFallback = shouldUseFallback
+        self.fallback = fallback
 
         subscribe()
     }
@@ -96,7 +96,9 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
         )
     }
 
-    private func prepareFallbackBaseOperation() -> CompoundOperationWrapper<T?> {
+    private func prepareFallbackBaseOperation(
+        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>
+    ) -> CompoundOperationWrapper<T?> {
         if let error = lastSeenError {
             return CompoundOperationWrapper<T?>.createWithError(error)
         }
@@ -118,7 +120,16 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
         decodingOperation.addDependency(codingFactoryOperation)
 
         let mappingOperation: BaseOperation<T?> = ClosureOperation {
-            try decodingOperation.extractNoCancellableResultData()
+            do {
+                return try decodingOperation.extractNoCancellableResultData()
+            } catch StorageDecodingOperationError.invalidStoragePath {
+                switch missingEntryStrategy {
+                case .emitError:
+                    throw StorageDecodingOperationError.invalidStoragePath
+                case let .defaultValue(value):
+                    return value
+                }
+            }
         }
 
         mappingOperation.addDependency(decodingOperation)
@@ -129,13 +140,41 @@ final class StorageProviderSource<T: Decodable & Equatable>: DataProviderSourceP
         )
     }
 
-    private func prepareOptionalBaseOperation() -> CompoundOperationWrapper<T?> {
+    private func prepareOptionalBaseNillOperation(
+        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>,
+        codingPath: StorageCodingPath
+    ) -> CompoundOperationWrapper<T?> {
+        let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
+
+        let mapOperation = ClosureOperation<T?> {
+            let runtime = try codingFactoryOperation.extractNoCancellableResultData().metadata
+
+            if runtime.getStorageMetadata(in: codingPath.moduleName, storageName: codingPath.itemName) != nil {
+                return nil
+            } else {
+                switch missingEntryStrategy {
+                case .emitError:
+                    throw StorageDecodingOperationError.invalidStoragePath
+                case let .defaultValue(value):
+                    return value
+                }
+            }
+        }
+
+        mapOperation.addDependency(codingFactoryOperation)
+
+        return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [codingFactoryOperation])
+    }
+
+    private func prepareOptionalBaseOperation(
+        for missingEntryStrategy: MissingRuntimeEntryStrategy<T>
+    ) -> CompoundOperationWrapper<T?> {
         if let error = lastSeenError {
             return CompoundOperationWrapper<T?>.createWithError(error)
         }
 
         guard let data = lastSeenResult.data else {
-            return CompoundOperationWrapper.createWithResult(nil)
+            return prepareOptionalBaseNillOperation(for: missingEntryStrategy, codingPath: codingPath)
         }
 
         let codingFactoryOperation = runtimeService.fetchCoderFactoryOperation()
@@ -177,8 +216,9 @@ extension StorageProviderSource {
             return CompoundOperationWrapper<Model?>.createWithResult(value)
         }
 
-        let baseOperationWrapper = shouldUseFallback ? prepareFallbackBaseOperation() :
-            prepareOptionalBaseOperation()
+        let baseOperationWrapper = fallback.usesRuntimeFallback ?
+            prepareFallbackBaseOperation(for: fallback.missingEntryStrategy) :
+            prepareOptionalBaseOperation(for: fallback.missingEntryStrategy)
         let mappingOperation: BaseOperation<Model?> = ClosureOperation {
             if let item = try baseOperationWrapper.targetOperation.extractNoCancellableResultData() {
                 return ChainStorageDecodedItem(identifier: modelId, item: item)
@@ -205,8 +245,9 @@ extension StorageProviderSource {
 
         let currentId = itemIdentifier
 
-        let baseOperationWrapper = shouldUseFallback ? prepareFallbackBaseOperation() :
-            prepareOptionalBaseOperation()
+        let baseOperationWrapper = fallback.usesRuntimeFallback ?
+            prepareFallbackBaseOperation(for: fallback.missingEntryStrategy) :
+            prepareOptionalBaseOperation(for: fallback.missingEntryStrategy)
         let mappingOperation: BaseOperation<[Model]> = ClosureOperation {
             if let item = try baseOperationWrapper.targetOperation.extractNoCancellableResultData() {
                 return [ChainStorageDecodedItem(identifier: currentId, item: item)]

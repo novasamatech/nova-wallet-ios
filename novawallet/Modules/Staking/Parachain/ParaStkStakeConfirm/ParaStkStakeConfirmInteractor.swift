@@ -25,7 +25,8 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
     private var priceProvider: AnySingleValueProvider<PriceData>?
     private var collatorProvider: AnyDataProvider<ParachainStaking.DecodedCandidateMetadata>?
     private var delegatorProvider: AnyDataProvider<ParachainStaking.DecodedDelegator>?
-    private var extrinsicSubscriptionId: UInt16?
+    private var scheduledRequestsProvider: StreamableProvider<ParachainStaking.MappedScheduledRequest>?
+    private(set) var extrinsicSubscriptionId: UInt16?
 
     init(
         chainAsset: ChainAsset,
@@ -86,6 +87,13 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
         )
     }
 
+    private func subscribeScheduledRequests() {
+        scheduledRequestsProvider = subscribeToScheduledRequests(
+            for: chainAsset.chain.chainId,
+            delegatorId: selectedAccount.chainAccount.accountId
+        )
+    }
+
     private func subscribeCollatorMetadata() {
         guard let collatorId = try? selectedCollator.address.toAccountId() else {
             presenter?.didReceiveError(CommonError.dataCorruption)
@@ -107,6 +115,36 @@ final class ParaStkStakeConfirmInteractor: RuntimeConstantFetching {
             switch result {
             case let .success(minStake):
                 self?.presenter?.didReceiveMinTechStake(minStake)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideMinDelegationAmount() {
+        fetchConstant(
+            for: ParachainStaking.minDelegation,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<BigUInt, Error>) in
+            switch result {
+            case let .success(minDelegation):
+                self?.presenter?.didReceiveMinDelegationAmount(minDelegation)
+            case let .failure(error):
+                self?.presenter?.didReceiveError(error)
+            }
+        }
+    }
+
+    private func provideMaxDelegationsPerDelegator() {
+        fetchConstant(
+            for: ParachainStaking.maxDelegations,
+            runtimeCodingService: runtimeProvider,
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] (result: Result<UInt32, Error>) in
+            switch result {
+            case let .success(maxDelegations):
+                self?.presenter?.didReceiveMaxDelegations(maxDelegations)
             case let .failure(error):
                 self?.presenter?.didReceiveError(error)
             }
@@ -149,47 +187,28 @@ extension ParaStkStakeConfirmInteractor: ParaStkStakeConfirmInteractorInputProto
         subscribePriceIfNeeded()
         subscribeDelegator()
         subscribeCollatorMetadata()
+        subscribeScheduledRequests()
 
         provideMinTechStake()
+        provideMinDelegationAmount()
+        provideMaxDelegationsPerDelegator()
         provideStakingDuration()
     }
 
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    ) {
-        let call = ParachainStaking.DelegateCall(
-            candidate: collator,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
+    func estimateFee(with callWrapper: DelegationCallWrapper) {
+        let identifier = callWrapper.extrinsicId()
 
         feeProxy.estimateFee(
             using: extrinsicService,
-            reuseIdentifier: call.extrinsicIdentifier
+            reuseIdentifier: identifier
         ) { builder in
-            try builder.adding(call: call.runtimeCall)
+            try callWrapper.accept(builder: builder)
         }
     }
 
-    func confirm(
-        _ amount: BigUInt,
-        collator: AccountId,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    ) {
-        let call = ParachainStaking.DelegateCall(
-            candidate: collator,
-            amount: amount,
-            candidateDelegationCount: collatorDelegationsCount,
-            delegationCount: delegationsCount
-        )
-
+    func confirm(with callWrapper: DelegationCallWrapper) {
         let builderClosure: (ExtrinsicBuilderProtocol) throws -> ExtrinsicBuilderProtocol = { builder in
-            try builder.adding(call: call.runtimeCall)
+            try callWrapper.accept(builder: builder)
         }
 
         let subscriptionIdClosure: ExtrinsicSubscriptionIdClosure = { [weak self] subscriptionId in
@@ -273,6 +292,19 @@ extension ParaStkStakeConfirmInteractor: ParastakingLocalStorageSubscriber, Para
         switch result {
         case let .success(metadata):
             presenter?.didReceiveCollator(metadata: metadata)
+        case let .failure(error):
+            presenter?.didReceiveError(error)
+        }
+    }
+
+    func handleParastakingScheduledRequests(
+        result: Result<[ParachainStaking.DelegatorScheduledRequest]?, Error>,
+        for _: ChainModel.Id,
+        delegatorId _: AccountId
+    ) {
+        switch result {
+        case let .success(scheduledRequests):
+            presenter?.didReceiveScheduledRequests(scheduledRequests)
         case let .failure(error):
             presenter?.didReceiveError(error)
         }

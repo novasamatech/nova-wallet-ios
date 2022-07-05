@@ -126,6 +126,10 @@ extension StorageCodingPath {
         StorageCodingPath(moduleName: "System", itemName: "Number")
     }
 
+    static var timestampNow: StorageCodingPath {
+        StorageCodingPath(moduleName: "Timestamp", itemName: "Now")
+    }
+
     static var currentSlot: StorageCodingPath {
         StorageCodingPath(moduleName: "Babe", itemName: "CurrentSlot")
     }
@@ -168,5 +172,9 @@ extension StorageCodingPath {
 
     static var uniquesClassDetails: StorageCodingPath {
         StorageCodingPath(moduleName: "Uniques", itemName: "Class")
+    }
+
+    static var parachainId: StorageCodingPath {
+        StorageCodingPath(moduleName: "ParachainInfo", itemName: "ParachainId")
     }
 }

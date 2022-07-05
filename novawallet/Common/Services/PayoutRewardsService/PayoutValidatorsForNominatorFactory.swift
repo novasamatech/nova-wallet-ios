@@ -5,11 +5,9 @@ import IrohaCrypto
 
 final class PayoutValidatorsForNominatorFactory {
     let url: URL
-    let addressFactory: SS58AddressFactoryProtocol
 
-    init(url: URL, addressFactory: SS58AddressFactoryProtocol) {
+    init(url: URL) {
         self.url = url
-        self.addressFactory = addressFactory
     }
 
     private func createRequestFactory(
@@ -32,9 +30,7 @@ final class PayoutValidatorsForNominatorFactory {
         }
     }
 
-    private func createResultFactory(
-        for addressFactory: SS58AddressFactoryProtocol
-    ) -> AnyNetworkResultFactory<[AccountId]> {
+    private func createResultFactory() -> AnyNetworkResultFactory<[AccountId]> {
         AnyNetworkResultFactory<[AccountId]> { data in
             guard
                 let resultData = try? JSONDecoder().decode(JSON.self, from: data),
@@ -46,7 +42,7 @@ final class PayoutValidatorsForNominatorFactory {
                     return nil
                 }
 
-                return try addressFactory.accountId(from: address)
+                return try address.toAccountId()
             }
         }
     }
@@ -82,7 +78,7 @@ extension PayoutValidatorsForNominatorFactory: PayoutValidatorsFactoryProtocol {
         eraRangeClosure _: @escaping () throws -> EraRange?
     ) -> CompoundOperationWrapper<[AccountId]> {
         let requestFactory = createRequestFactory(address: address, historyRange: { nil })
-        let resultFactory = createResultFactory(for: addressFactory)
+        let resultFactory = createResultFactory()
 
         let networkOperation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
         return CompoundOperationWrapper(targetOperation: networkOperation)

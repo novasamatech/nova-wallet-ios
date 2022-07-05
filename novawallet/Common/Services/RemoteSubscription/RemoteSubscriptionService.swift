@@ -104,7 +104,8 @@ class RemoteSubscriptionService {
             using: requests,
             chainId: chainId,
             cacheKey: cacheKey,
-            subscriptionHandlingFactory: subscriptionHandlingFactory ?? defaultSubscriptionHandlingFactory
+            subscriptionHandlingFactory: subscriptionHandlingFactory ?? defaultSubscriptionHandlingFactory,
+            logger: logger
         )
 
         let pending = Pending(
@@ -120,6 +121,8 @@ class RemoteSubscriptionService {
         pendingSubscriptions[cacheKey] = pending
 
         operationManager.enqueue(operations: wrapper.allOperations, in: .transient)
+
+        logger.debug("Operations enqued for subscription: \(chainId)")
 
         return subscriptionId
     }
@@ -163,7 +166,8 @@ class RemoteSubscriptionService {
         using requests: [SubscriptionRequestProtocol],
         chainId: ChainModel.Id,
         cacheKey: String,
-        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol
+        subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol,
+        logger: LoggerProtocol
     ) -> CompoundOperationWrapper<StorageSubscriptionContainer> {
         guard let runtimeProvider = chainRegistry.getRuntimeProvider(for: chainId) else {
             return CompoundOperationWrapper.createWithError(
@@ -184,13 +188,25 @@ class RemoteSubscriptionService {
         }
 
         let containerOperation = ClosureOperation<StorageSubscriptionContainer> {
-            let remoteKeys = try keyEncodingWrappers.map { try $0.targetOperation.extractNoCancellableResultData() }
-            let localKeys = requests.map(\.localKey)
+            guard keyEncodingWrappers.count == requests.count else {
+                throw RemoteSubscriptionServiceError.remoteKeysNotMatchLocal
+            }
+
+            let remoteLocalKeys: [SubscriptionStorageKeys] = try zip(keyEncodingWrappers, requests)
+                .compactMap { encodingWrapper, request in
+                    do {
+                        let remoteKey = try encodingWrapper.targetOperation.extractNoCancellableResultData()
+                        return SubscriptionStorageKeys(remote: remoteKey, local: request.localKey)
+                    } catch StorageKeyEncodingOperationError.invalidStoragePath {
+                        // ignore keys if path missing in runtime
+                        logger.warning("Subscription path missing in runtime: \(request.storagePath)")
+                        return nil
+                    }
+                }
 
             let container = try self.createContainer(
                 for: chainId,
-                remoteKeys: remoteKeys,
-                localKeys: localKeys,
+                remoteLocalKeys: remoteLocalKeys,
                 subscriptionHandlingFactory: subscriptionHandlingFactory
             )
 
@@ -221,22 +237,17 @@ class RemoteSubscriptionService {
 
     private func createContainer(
         for chainId: ChainModel.Id,
-        remoteKeys: [Data],
-        localKeys: [String],
+        remoteLocalKeys: [SubscriptionStorageKeys],
         subscriptionHandlingFactory: RemoteSubscriptionHandlingFactoryProtocol
     ) throws -> StorageSubscriptionContainer {
-        guard remoteKeys.count == localKeys.count else {
-            throw RemoteSubscriptionServiceError.remoteKeysNotMatchLocal
-        }
-
         guard let connection = chainRegistry.getConnection(for: chainId) else {
             throw ChainRegistryError.connectionUnavailable
         }
 
-        let subscriptions = zip(remoteKeys, localKeys).map { keysPair in
+        let subscriptions = remoteLocalKeys.map { keysPair in
             subscriptionHandlingFactory.createHandler(
-                remoteStorageKey: keysPair.0,
-                localStorageKey: keysPair.1,
+                remoteStorageKey: keysPair.remote,
+                localStorageKey: keysPair.local,
                 storage: repository,
                 operationManager: operationManager,
                 logger: logger
@@ -256,6 +267,8 @@ class RemoteSubscriptionService {
         guard let pending = pendingSubscriptions[cacheKey] else {
             return
         }
+
+        logger.debug("Complete subscription with key: \(cacheKey)")
 
         switch result {
         case let .success(container):

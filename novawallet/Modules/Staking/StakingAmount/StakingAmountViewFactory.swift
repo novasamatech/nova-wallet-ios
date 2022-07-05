@@ -89,7 +89,7 @@ final class StakingAmountViewFactory {
 
         let extrinsicService = ExtrinsicService(
             accountId: selectedAccount.accountId,
-            chainFormat: chainAsset.chain.chainFormat,
+            chain: chainAsset.chain,
             cryptoType: selectedAccount.cryptoType,
             runtimeRegistry: runtimeService,
             engine: connection,

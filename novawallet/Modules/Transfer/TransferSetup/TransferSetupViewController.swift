@@ -91,11 +91,19 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
         )
 
         rootView.recepientInputView.locale = selectedLocale
-        rootView.networkFeeView.locale = selectedLocale
+        rootView.originFeeView.locale = selectedLocale
+
+        rootView.networkContainerView.locale = selectedLocale
+
+        setupCrossChainLocalization()
 
         setupAmountInputAccessoryView(for: selectedLocale)
 
         updateActionButtonState()
+    }
+
+    private func setupCrossChainLocalization() {
+        rootView.crossChainFeeView?.locale = selectedLocale
     }
 
     private func setupAmountInputAccessoryView(for locale: Locale) {
@@ -160,24 +168,49 @@ final class TransferSetupViewController: UIViewController, ViewHolder {
     @objc func actionProceed() {
         presenter.proceed()
     }
+
+    @objc func actionChangeDestination() {
+        presenter.changeDestinationChain()
+    }
+
+    @objc func actionSendMyself() {
+        presenter.applyMyselfRecepient()
+    }
 }
 
 extension TransferSetupViewController: TransferSetupViewProtocol {
-    func didReceiveChainAsset(viewModel: ChainAssetViewModel) {
-        let assetViewModel = viewModel.assetViewModel
-        rootView.tokenLabel.text = R.string.localizable.walletTransferTokenFormat(
-            assetViewModel.symbol,
-            preferredLanguages: selectedLocale.rLanguages
+    func didSwitchCrossChain() {
+        rootView.switchCrossChain()
+        setupCrossChainLocalization()
+    }
+
+    func didSwitchOnChain() {
+        rootView.switchOnChain()
+    }
+
+    func didReceiveOriginChain(_ originChain: ChainAssetViewModel, destinationChain: NetworkViewModel?) {
+        let assetViewModel = originChain.assetViewModel
+        let viewModel = TransferNetworkContainerViewModel(
+            assetSymbol: assetViewModel.symbol,
+            originNetwork: originChain.networkViewModel,
+            destNetwork: destinationChain
         )
 
-        rootView.amountInputView.bind(assetViewModel: assetViewModel)
+        rootView.networkContainerView.bind(viewModel: viewModel)
 
-        let networkViewModel = viewModel.networkViewModel
-        rootView.networkView.nameLabel.text = networkViewModel.name.uppercased()
-        rootView.networkView.iconView.bind(gradient: networkViewModel.gradient)
+        rootView.networkContainerView.destinationNetworkView?.actionControl.addTarget(
+            self,
+            action: #selector(actionChangeDestination),
+            for: .touchUpInside
+        )
+    }
 
-        let imageSize = CGSize(width: 24.0, height: 24.0)
-        rootView.networkView.iconView.bind(iconViewModel: networkViewModel.icon, size: imageSize)
+    func didCompleteDestinationSelection() {
+        rootView.networkContainerView.destinationNetworkView?.actionControl.deactivate(animated: true)
+    }
+
+    func didReceiveInputChainAsset(viewModel: ChainAssetViewModel) {
+        rootView.amountInputView.bind(assetViewModel: viewModel.assetViewModel)
     }
 
     func didReceiveTransferableBalance(viewModel: String) {
@@ -191,8 +224,12 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
         detailsValueLabel.text = viewModel
     }
 
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?) {
-        rootView.networkFeeView.bind(viewModel: viewModel)
+    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.originFeeView.bind(viewModel: viewModel)
+    }
+
+    func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?) {
+        rootView.crossChainFeeView?.bind(viewModel: viewModel)
     }
 
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol) {
@@ -214,9 +251,19 @@ extension TransferSetupViewController: TransferSetupViewProtocol {
 
         updateActionButtonState()
     }
+
+    func didReceiveCanSendMySelf(_ canSendMySelf: Bool) {
+        rootView.recepientInputView.showsMyself = canSendMySelf
+
+        rootView.recepientInputView.mySelfButton?.addTarget(
+            self,
+            action: #selector(actionSendMyself),
+            for: .touchUpInside
+        )
+    }
 }
 
-extension TransferSetupViewController: Localizable {
+extension TransferSetupViewController {
     func applyLocalization() {
         if isSetup {
             setupLocalization()
