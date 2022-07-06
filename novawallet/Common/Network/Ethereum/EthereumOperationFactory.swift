@@ -49,11 +49,7 @@ final class EthereumOperationFactory {
             }
 
             if let error = response.error {
-                throw NSError(
-                    domain: Self.errorDomain,
-                    code: error.code,
-                    userInfo: [NSLocalizedDescriptionKey: error.message]
-                )
+                throw error
             }
 
             throw BaseOperationError.unexpectedDependentResult
