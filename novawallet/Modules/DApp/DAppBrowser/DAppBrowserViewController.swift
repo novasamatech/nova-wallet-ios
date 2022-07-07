@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import SoraFoundation
 
 final class DAppBrowserViewController: UIViewController, ViewHolder {
     typealias RootViewType = DAppBrowserViewLayout
@@ -15,8 +16,19 @@ final class DAppBrowserViewController: UIViewController, ViewHolder {
 
     private var scriptMessageHandlers: [String: DAppBrowserScriptHandler] = [:]
 
-    init(presenter: DAppBrowserPresenterProtocol) {
+    private let localizationManager: LocalizationManagerProtocol
+
+    private var selectedLocale: Locale {
+        localizationManager.selectedLocale
+    }
+
+    init(
+        presenter: DAppBrowserPresenterProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
         self.presenter = presenter
+        self.localizationManager = localizationManager
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -255,5 +267,31 @@ extension DAppBrowserViewController: WKUIDelegate {
         }
 
         return nil
+    }
+
+    func webView(
+        _: WKWebView,
+        runJavaScriptAlertPanelWithMessage message: String,
+        initiatedByFrame _: WKFrameInfo,
+        completionHandler: @escaping () -> Void
+    ) {
+        let alertController = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+
+        let languages = selectedLocale.rLanguages
+        let confirmTitle = R.string.localizable.commonConfirmTitle(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: confirmTitle, style: .default, handler: { _ in
+            completionHandler()
+        }))
+
+        let cancelTitle = R.string.localizable.commonCancel(
+            preferredLanguages: languages
+        )
+
+        alertController.addAction(UIAlertAction(title: cancelTitle, style: .cancel))
+
+        present(alertController, animated: true, completion: nil)
     }
 }

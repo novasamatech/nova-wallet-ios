@@ -65,6 +65,25 @@ class SubstrateLocalSubscriptionFactory {
         storageCodingPath: StorageCodingPath,
         shouldUseFallback: Bool
     ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> where T: Equatable & Decodable {
+        let fallback = StorageProviderSourceFallback<T>(
+            usesRuntimeFallback: shouldUseFallback,
+            missingEntryStrategy: .defaultValue(nil)
+        )
+
+        return try getDataProvider(
+            for: localKey,
+            chainId: chainId,
+            storageCodingPath: storageCodingPath,
+            fallback: fallback
+        )
+    }
+
+    func getDataProvider<T>(
+        for localKey: String,
+        chainId: ChainModel.Id,
+        storageCodingPath: StorageCodingPath,
+        fallback: StorageProviderSourceFallback<T>
+    ) throws -> AnyDataProvider<ChainStorageDecodedItem<T>> where T: Equatable & Decodable {
         clearIfNeeded()
 
         if let dataProvider = getProvider(for: localKey) as? DataProvider<ChainStorageDecodedItem<T>> {
@@ -86,7 +105,7 @@ class SubstrateLocalSubscriptionFactory {
             runtimeService: runtimeCodingProvider,
             provider: streamableProvider,
             trigger: trigger,
-            shouldUseFallback: shouldUseFallback
+            fallback: fallback
         )
 
         let dataProvider = DataProvider(
