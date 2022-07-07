@@ -88,7 +88,8 @@ final class DAppBrowserInteractor {
                 urlComponents?.scheme = "https"
             }
 
-            if NSPredicate.urlPredicate.evaluate(with: string), let inputUrl = urlComponents?.url {
+            let isValidUrl = NSPredicate.urlPredicate.evaluate(with: string)
+            if isValidUrl, let inputUrl = urlComponents?.url {
                 return inputUrl
             } else {
                 let querySet = CharacterSet.urlQueryAllowed

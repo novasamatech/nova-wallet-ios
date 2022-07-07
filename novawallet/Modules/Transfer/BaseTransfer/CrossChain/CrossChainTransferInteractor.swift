@@ -564,16 +564,24 @@ extension CrossChainTransferInteractor: WalletLocalStorageSubscriber, WalletLoca
                     accountId: accountId
                 )
 
+            let chainAssetId = ChainAssetId(chainId: chainId, assetId: assetId)
+
             if accountId == selectedAccount.accountId {
-                if originChainAsset.asset.assetId == assetId {
+                if originChainAsset.chainAssetId == chainAssetId {
                     presenter?.didReceiveSendingAssetSenderBalance(balance)
-                } else if originChainAsset.chain.utilityAssets().first?.assetId == assetId {
+                } else if
+                    originChainAsset.chain.chainId == chainId,
+                    originChainAsset.chain.utilityAssets().first?.assetId == assetId {
                     presenter?.didReceiveUtilityAssetSenderBalance(balance)
                 }
-            } else if accountId == recepientAccountId {
-                if destinationChainAsset.asset.assetId == assetId {
+            }
+
+            if accountId == recepientAccountId {
+                if destinationChainAsset.chainAssetId == chainAssetId {
                     presenter?.didReceiveSendingAssetRecepientBalance(balance)
-                } else if destinationChainAsset.chain.utilityAssets().first?.assetId == assetId {
+                } else if
+                    destinationChainAsset.chain.chainId == chainId,
+                    destinationChainAsset.chain.utilityAssets().first?.assetId == assetId {
                     presenter?.didReceiveUtilityAssetRecepientBalance(balance)
                 }
             }

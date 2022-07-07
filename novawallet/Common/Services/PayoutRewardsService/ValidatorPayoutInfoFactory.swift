@@ -40,10 +40,10 @@ final class ValidatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
             return nil
         }
 
-        let rewardFraction = Decimal(validatorPoints) / Decimal(points.total)
+        let rewardFraction = points.total > 0 ? Decimal(validatorPoints) / Decimal(points.total) : 0
         let validatorTotalReward = totalReward * rewardFraction
-        let stakeReward = validatorTotalReward * (1 - comission) *
-            (ownStake / totalStake)
+        let ownPortion = totalStake > 0 ? ownStake / totalStake : 0
+        let stakeReward = validatorTotalReward * (1 - comission) * ownPortion
         let commissionReward = validatorTotalReward * comission
 
         let validatorAddress = try validatorInfo.accountId.toAddress(using: chainAssetInfo.chain)
