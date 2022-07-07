@@ -362,6 +362,8 @@ extension XcmTransferFactory: XcmTransferFactoryProtocol {
                 )
 
                 return .depositReserveAsset(value)
+            case Xcm.Instruction.fieldReceiveTeleportedAsset:
+                return .receiveTeleportedAsset([asset])
             default:
                 throw XcmTransferFactoryError.unsupportedInstruction(rawInstruction)
             }

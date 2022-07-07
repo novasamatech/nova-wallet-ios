@@ -824,6 +824,6 @@
 "common.not.enough.fee.message_v2.9.1" = "У вас недостаточно токенов, чтобы оплатить комиссию сети в размере %s.\n Доступный баланс: %s";
 "common.myself" = "Себе";
 "wallet.transfer.cross.chain.from" = "из";
-"wallet.transfer.token.format_v2_9_1" = "Send %@";
+"wallet.transfer.token.format_v2_9_1" = "Отправить %@";
 "wallet.transfer.on" = "в";
 "common.request.retry" = "Загрузка данных завершилась ошибкой. Хотите повторить?";
