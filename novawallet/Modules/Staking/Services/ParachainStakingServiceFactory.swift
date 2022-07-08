@@ -8,6 +8,7 @@ protocol ParachainStakingServiceFactoryProtocol {
 
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
+        stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
     ) throws -> ParaStakingRewardCalculatorServiceProtocol
@@ -64,6 +65,7 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
 
     func createRewardCalculatorService(
         for chainId: ChainModel.Id,
+        stakingType: StakingType,
         assetPrecision: Int16,
         collatorService: ParachainStakingCollatorServiceProtocol
     ) throws -> ParaStakingRewardCalculatorServiceProtocol {
@@ -77,17 +79,57 @@ final class ParachainStakingServiceFactory: ParachainStakingServiceFactoryProtoc
 
         let repositoryFactory = SubstrateRepositoryFactory(storageFacade: storageFacade)
 
-        return ParaStakingRewardCalculatorService(
-            chainId: chainId,
-            collatorsService: collatorService,
-            providerFactory: stakingProviderFactory,
-            connection: connection,
-            runtimeCodingService: runtimeService,
-            repositoryFactory: repositoryFactory,
-            operationQueue: operationQueue,
-            assetPrecision: assetPrecision,
-            logger: logger
-        )
+        switch stakingType {
+        case .parachain:
+            return ParaStakingRewardCalculatorService(
+                chainId: chainId,
+                collatorsService: collatorService,
+                providerFactory: stakingProviderFactory,
+                connection: connection,
+                runtimeCodingService: runtimeService,
+                repositoryFactory: repositoryFactory,
+                operationQueue: operationQueue,
+                assetPrecision: assetPrecision,
+                logger: logger
+            )
+        case .turing:
+
+            let repository = SubstrateRepositoryFactory(
+                storageFacade: storageFacade
+            ).createChainStorageItemRepository()
+
+            let operationManager = OperationManager(operationQueue: operationQueue)
+
+            let rewardsRemoteService = TuringStakingRemoteSubscriptionService(
+                chainRegistry: chainRegisty,
+                repository: repository,
+                operationManager: operationManager,
+                logger: logger
+            )
+
+            let rewardsLocalSubscriptionFactory = TuringStakingLocalSubscriptionFactory(
+                chainRegistry: chainRegisty,
+                storageFacade: storageFacade,
+                operationManager: operationManager,
+                logger: logger
+            )
+
+            return TuringRewardCalculatorService(
+                chainId: chainId,
+                rewardsRemoteSubscriptionService: rewardsRemoteService,
+                rewardsLocalSubscriptionFactory: rewardsLocalSubscriptionFactory,
+                collatorsService: collatorService,
+                providerFactory: stakingProviderFactory,
+                connection: connection,
+                runtimeCodingService: runtimeService,
+                repositoryFactory: repositoryFactory,
+                operationQueue: operationQueue,
+                assetPrecision: assetPrecision,
+                logger: logger
+            )
+        default:
+            throw CommonError.dataCorruption
+        }
     }
 
     func createBlockTimeService(for chainId: ChainModel.Id) throws -> BlockTimeEstimationServiceProtocol {
