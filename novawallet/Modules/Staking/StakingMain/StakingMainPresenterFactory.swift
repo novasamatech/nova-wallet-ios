@@ -22,7 +22,7 @@ extension StakingMainPresenterFactory: StakingMainPresenterFactoryProtocol {
             return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .babe)
         case .auraRelaychain:
             return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
-        case .parachain:
+        case .parachain, .turing:
             return createParachainPresenter(for: stakingAssetSettings, view: view)
         case .azero:
             return createRelaychainPresenter(for: stakingAssetSettings, view: view, consensus: .aura)
