@@ -3,15 +3,15 @@ import BigInt
 import SubstrateSdk
 import RobinHood
 
-final class ParaStakingRewardCalculatorService {
+class BaseParaStakingRewardCalculatoService {
     static let queueLabelPrefix = "com.novawallet.parastk.rewcalculator"
 
-    private struct PendingRequest {
+    struct PendingRequest {
         let resultClosure: (ParaStakingRewardCalculatorEngineProtocol) -> Void
         let queue: DispatchQueue?
     }
 
-    private struct Snapshot {
+    struct Snapshot {
         let totalStaked: BigUInt
         let totalIssuance: BigUInt
         let inflation: ParachainStaking.InflationConfig
@@ -26,10 +26,10 @@ final class ParaStakingRewardCalculatorService {
     private var isActive: Bool = false
     private var snapshot: Snapshot?
 
-    private var totalIssuance: BigUInt?
-    private var totalStaked: BigUInt?
-    private var inflationConfig: ParachainStaking.InflationConfig?
-    private var parachainBondConfig: ParachainStaking.ParachainBondConfig?
+    private(set) var totalIssuance: BigUInt?
+    private(set) var totalStaked: BigUInt?
+    private(set) var inflationConfig: ParachainStaking.InflationConfig?
+    private(set) var parachainBondConfig: ParachainStaking.ParachainBondConfig?
 
     private var totalIssuanceProvider: AnyDataProvider<DecodedBigUInt>?
     private var roundProvider: AnyDataProvider<ParachainStaking.DecodedRoundInfo>?
@@ -79,7 +79,7 @@ final class ParaStakingRewardCalculatorService {
         didUpdateShapshotParam()
     }
 
-    private func didUpdateShapshotParam() {
+    func didUpdateShapshotParam() {
         if
             let totalIssuance = totalIssuance,
             let totalStaked = totalStaked,
@@ -92,10 +92,14 @@ final class ParaStakingRewardCalculatorService {
                 parachainBond: parachainBondConfig
             )
 
-            self.snapshot = snapshot
-
-            notifyPendingClosures(with: snapshot)
+            updateSnapshotAndNotify(snapshot)
         }
+    }
+
+    func updateSnapshotAndNotify(_ snapshot: Snapshot) {
+        self.snapshot = snapshot
+
+        notifyPendingClosures(with: snapshot)
     }
 
     private func fetchInfoFactory(
@@ -168,7 +172,7 @@ final class ParaStakingRewardCalculatorService {
         logger.debug("Fulfilled pendings")
     }
 
-    private func subscribe() {
+    func subscribe() {
         do {
             try subscribeTotalIssuance()
             try subscribeRound()
@@ -179,7 +183,7 @@ final class ParaStakingRewardCalculatorService {
         }
     }
 
-    private func unsubscribe() {
+    func unsubscribe() {
         totalIssuanceProvider?.removeObserver(self)
         totalIssuanceProvider = nil
 
@@ -197,7 +201,7 @@ final class ParaStakingRewardCalculatorService {
     }
 }
 
-extension ParaStakingRewardCalculatorService {
+extension BaseParaStakingRewardCalculatoService {
     private func subscribeTotalIssuance() throws {
         guard totalIssuanceProvider == nil else {
             return
@@ -326,7 +330,7 @@ extension ParaStakingRewardCalculatorService {
     }
 }
 
-extension ParaStakingRewardCalculatorService: ParaStakingRewardCalculatorServiceProtocol {
+extension BaseParaStakingRewardCalculatoService: ParaStakingRewardCalculatorServiceProtocol {
     func setup() {
         syncQueue.async {
             guard !self.isActive else {
