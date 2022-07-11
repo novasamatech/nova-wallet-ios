@@ -5,6 +5,7 @@ enum StakingType: String, Equatable {
     case parachain
     case azero = "aleph-zero"
     case auraRelaychain = "aura-relaychain"
+    case turing
     case unsupported
 
     init(rawType: String?) {

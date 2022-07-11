@@ -1,6 +1,6 @@
 import Foundation
 
-extension ParaStakingRewardCalculatorService {
+extension BaseParaStakingRewardCalculatoService {
     func updateStaked(for roundInfo: ParachainStaking.RoundInfo) {
         totalStakedService?.throttle()
         totalStakedService = nil
