@@ -29,6 +29,18 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
         collectionOperation?.cancel()
     }
 
+    private func provideInstanceDetails() {
+        if let image = nftChainModel.nft.media, let url = URL(string: image) {
+            let mediaViewModel = NftImageViewModel(url: url)
+
+            presenter?.didReceive(media: mediaViewModel)
+
+            provideInstanceMetadata(false)
+        } else {
+            provideInstanceMetadata(true)
+        }
+    }
+
     private func provideCollection(from model: RMRKV2Collection) {
         if
             let issuer = model.issuer,
@@ -131,7 +143,7 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
 
     private func load() {
         provideOwner()
-        provideInstanceMetadata(true)
+        provideInstanceDetails()
         provideCollection()
         provideLabel()
         providePrice()
