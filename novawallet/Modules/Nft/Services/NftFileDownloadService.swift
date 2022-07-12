@@ -7,9 +7,18 @@ struct NftMediaFetchResult {
     let type: String?
 }
 
+enum NftMediaAlias {
+    static let original: [String] = ["image", "mediaUri"]
+    static let thumbnail: [String] = ["thumbnailUri"]
+
+    static var list: [String] { thumbnail + original }
+    static var details: [String] { original + thumbnail }
+}
+
 protocol NftFileDownloadServiceProtocol {
     func resolveImageUrl(
         for nftMetadata: String,
+        aliases: [String],
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<URL?, Error>) -> Void
     ) -> CancellableCall?
@@ -123,6 +132,7 @@ final class NftFileDownloadService {
 extension NftFileDownloadService: NftFileDownloadServiceProtocol {
     func resolveImageUrl(
         for nftMetadata: String,
+        aliases: [String],
         dispatchQueue: DispatchQueue,
         completion: @escaping (Result<URL?, Error>) -> Void
     ) -> CancellableCall? {
@@ -133,11 +143,15 @@ extension NftFileDownloadService: NftFileDownloadServiceProtocol {
         let mapOperation = ClosureOperation<URL?> { [weak self] in
             let metadata = try fetchWrapper.targetOperation.extractNoCancellableResultData()
 
-            if let image = metadata.image?.stringValue {
-                return self?.imageUrl(from: image)
-            } else {
-                return nil
+            for alias in aliases {
+                if
+                    let imageString = metadata.dictValue?[alias]?.stringValue,
+                    let url = self?.imageUrl(from: imageString) {
+                    return url
+                }
             }
+
+            return nil
         }
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
