@@ -80,6 +80,7 @@ final class NftListViewModelFactory {
             let metadataReference = String(data: metadataData, encoding: .utf8) {
             mediaViewModel = NftMediaViewModel(
                 metadataReference: metadataReference,
+                aliases: NftMediaAlias.list,
                 downloadService: nftDownloadService
             )
         } else {
@@ -114,11 +115,15 @@ final class NftListViewModelFactory {
         }
     }
 
-    private func createRMRKV1Metadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
+    private func createRMRKMetadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
         if
             let metadataReferenceData = model.metadata,
             let reference = String(data: metadataReferenceData, encoding: .utf8) {
-            let mediaViewModel = NftMediaViewModel(metadataReference: reference, downloadService: nftDownloadService)
+            let mediaViewModel = NftMediaViewModel(
+                metadataReference: reference,
+                aliases: NftMediaAlias.list,
+                downloadService: nftDownloadService
+            )
 
             let name = model.name ?? model.instanceId
 
@@ -127,7 +132,8 @@ final class NftListViewModelFactory {
             if
                 let snString = model.label,
                 let serialNumber = Int32(snString),
-                let totalIssuance = model.totalIssuance {
+                let totalIssuance = model.totalIssuance,
+                totalIssuance > 0 {
                 label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
                 label = createUnlimitedIssuanceLabel(for: locale)
@@ -146,9 +152,9 @@ final class NftListViewModelFactory {
         switch NftType(rawValue: model.nft.type) {
         case .uniques:
             return createUniquesMetadata(from: model.nft, locale: locale)
-        case .rmrkV1:
-            return createRMRKV1Metadata(from: model.nft, locale: locale)
-        case .rmrkV2, .none:
+        case .rmrkV1, .rmrkV2:
+            return createRMRKMetadata(from: model.nft, locale: locale)
+        case .none:
             return createStaticMetadata(from: model.nft)
         }
     }

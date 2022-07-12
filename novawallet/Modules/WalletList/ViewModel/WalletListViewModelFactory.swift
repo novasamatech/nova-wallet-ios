@@ -264,7 +264,11 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
             }
 
             if let metadata = nft.metadata, let metadataString = String(data: metadata, encoding: .utf8) {
-                return NftMediaViewModel(metadataReference: metadataString, downloadService: nftDownloadService)
+                return NftMediaViewModel(
+                    metadataReference: metadataString,
+                    aliases: NftMediaAlias.list,
+                    downloadService: nftDownloadService
+                )
             }
 
             return nil

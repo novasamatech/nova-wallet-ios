@@ -59,6 +59,7 @@ final class RMRKV1DetailsInteractor: NftDetailsInteractor {
             if collectionOperation == nil {
                 collectionOperation = nftMetadataService.resolveImageUrl(
                     for: metadata,
+                    aliases: NftMediaAlias.list,
                     dispatchQueue: .main
                 ) { [weak self] result in
                     self?.collectionOperation = nil
@@ -116,7 +117,8 @@ final class RMRKV1DetailsInteractor: NftDetailsInteractor {
         if
             let snString = nftChainModel.nft.label,
             let serialNumber = UInt32(snString),
-            let totalIssuance = nftChainModel.nft.totalIssuance {
+            let totalIssuance = nftChainModel.nft.totalIssuance,
+            totalIssuance > 0 {
             let label: NftDetailsLabel = .limited(
                 serialNumber: serialNumber,
                 totalIssuance: UInt32(bitPattern: totalIssuance)
