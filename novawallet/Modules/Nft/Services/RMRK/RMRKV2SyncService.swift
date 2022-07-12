@@ -33,16 +33,12 @@ final class RMRKV2SyncService: BaseNftSyncService {
             let address = try ownerId.toAddress(using: chain.chainFormat)
             let chainId = chain.chainId
 
-            let birdsOperation = operationFactory.fetchBirdNfts(for: address)
-            let itemsOperation = operationFactory.fetchItemNfts(for: address)
+            let itemsOperation = operationFactory.fetchNfts(for: address)
 
             let mapOperation = ClosureOperation<[RemoteNftModel]> {
-                let birds = try birdsOperation.extractNoCancellableResultData()
                 let items = try itemsOperation.extractNoCancellableResultData()
 
-                let remoteItems = birds + items
-
-                return remoteItems.map { remoteItem in
+                return items.map { remoteItem in
                     let identifier = NftModel.rmrkv2Identifier(
                         for: chainId,
                         identifier: remoteItem.identifier
@@ -67,19 +63,17 @@ final class RMRKV2SyncService: BaseNftSyncService {
                         instanceId: nil,
                         metadata: metadata,
                         totalIssuance: nil,
-                        name: remoteItem.name,
-                        label: remoteItem.rarity,
+                        name: remoteItem.symbol,
+                        label: remoteItem.serialNumber,
                         media: remoteItem.image,
                         price: price
                     )
                 }
             }
 
-            let dependencies = [birdsOperation, itemsOperation]
+            mapOperation.addDependency(itemsOperation)
 
-            dependencies.forEach { mapOperation.addDependency($0) }
-
-            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
+            return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [itemsOperation])
         } catch {
             return CompoundOperationWrapper.createWithError(error)
         }
