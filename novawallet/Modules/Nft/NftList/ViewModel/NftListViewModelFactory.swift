@@ -115,7 +115,34 @@ final class NftListViewModelFactory {
         }
     }
 
-    private func createRMRKMetadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
+    private func createRMRKV2Metadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
+        if
+            let metadataReferenceData = model.metadata,
+            let reference = String(data: metadataReferenceData, encoding: .utf8) {
+            let label: String
+
+            if
+                let totalIssuence = model.totalIssuance,
+                let instanceIdString = model.instanceId,
+                let instanceId = Int32(instanceIdString) {
+                label = createLimitedIssuanceLabel(from: instanceId, totalNumber: totalIssuence, locale: locale)
+            } else {
+                label = createUnlimitedIssuanceLabel(for: locale)
+            }
+
+            return NftListRMRKV2ViewModel(
+                metadataReference: reference,
+                metadataService: nftDownloadService,
+                label: label,
+                imageUrl: model.media,
+                fallbackName: model.label
+            )
+        } else {
+            return createStaticMetadata(from: model)
+        }
+    }
+
+    private func createRMRKV1Metadata(from model: NftModel, locale: Locale) -> NftListMetadataViewModelProtocol {
         if
             let metadataReferenceData = model.metadata,
             let reference = String(data: metadataReferenceData, encoding: .utf8) {
@@ -132,8 +159,7 @@ final class NftListViewModelFactory {
             if
                 let snString = model.label,
                 let serialNumber = Int32(snString),
-                let totalIssuance = model.totalIssuance,
-                totalIssuance > 0 {
+                let totalIssuance = model.totalIssuance {
                 label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
                 label = createUnlimitedIssuanceLabel(for: locale)
@@ -152,8 +178,10 @@ final class NftListViewModelFactory {
         switch NftType(rawValue: model.nft.type) {
         case .uniques:
             return createUniquesMetadata(from: model.nft, locale: locale)
-        case .rmrkV1, .rmrkV2:
-            return createRMRKMetadata(from: model.nft, locale: locale)
+        case .rmrkV1:
+            return createRMRKV1Metadata(from: model.nft, locale: locale)
+        case .rmrkV2:
+            return createRMRKV2Metadata(from: model.nft, locale: locale)
         case .none:
             return createStaticMetadata(from: model.nft)
         }
