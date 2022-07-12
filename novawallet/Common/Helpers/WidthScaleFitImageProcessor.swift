@@ -7,6 +7,10 @@ final class WidthScaleFitProcessor: ImageProcessor {
     func process(item: ImageProcessItem, options: KingfisherParsedOptionsInfo) -> KFCrossPlatformImage? {
         switch item {
         case let .image(kFCrossPlatformImage):
+            guard kFCrossPlatformImage.size.width > 0 else {
+                return kFCrossPlatformImage
+            }
+
             let height = (preferredWidth / kFCrossPlatformImage.size.width)
                 * kFCrossPlatformImage.size.height
 
