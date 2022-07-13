@@ -122,10 +122,11 @@ final class NftListViewModelFactory {
             let label: String
 
             if
-                let totalIssuence = model.totalIssuance,
-                let instanceIdString = model.instanceId,
-                let instanceId = Int32(instanceIdString) {
-                label = createLimitedIssuanceLabel(from: instanceId, totalNumber: totalIssuence, locale: locale)
+                let snString = model.label,
+                let serialNumber = Int32(snString),
+                let totalIssuance = model.totalIssuance,
+                totalIssuance > 0 {
+                label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
                 label = createUnlimitedIssuanceLabel(for: locale)
             }
@@ -135,7 +136,7 @@ final class NftListViewModelFactory {
                 metadataService: nftDownloadService,
                 label: label,
                 imageUrl: model.media,
-                fallbackName: model.label
+                fallbackName: model.name
             )
         } else {
             return createStaticMetadata(from: model)
