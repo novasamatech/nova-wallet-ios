@@ -81,3 +81,16 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         imageView.kf.cancelDownloadTask()
     }
 }
+
+extension NftImageViewModel: ImageViewModelProtocol {
+    func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
+        let displaySettings = NftMediaDisplaySettings(
+            targetSize: settings.targetSize,
+            cornerRadius: settings.cornerRadius,
+            animated: animated,
+            isAspectFit: false
+        )
+
+        loadMedia(on: imageView, displaySettings: displaySettings, completion: nil)
+    }
+}
