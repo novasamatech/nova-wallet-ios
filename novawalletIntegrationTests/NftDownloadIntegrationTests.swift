@@ -22,7 +22,11 @@ class NftDownloadIntegrationTests: XCTestCase {
 
         // when
 
-        _ = nftDownloadService.resolveImageUrl(for: ipfsHash, dispatchQueue: .main) { result in
+        _ = nftDownloadService.resolveImageUrl(
+            for: ipfsHash,
+            aliases: NftMediaAlias.original,
+            dispatchQueue: .main
+        ) { result in
             requestResult = result
 
             expectation.fulfill()
