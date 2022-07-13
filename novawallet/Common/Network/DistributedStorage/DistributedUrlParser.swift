@@ -12,6 +12,17 @@ protocol DistributedUrlParserProtocol {
     func parse(url: String) -> DistributedStorage?
 }
 
+extension DistributedUrlParserProtocol {
+    func isDistributedUrl(_ url: String) -> Bool {
+        switch parse(url: url) {
+        case .ipfs:
+            return true
+        case .none:
+            return false
+        }
+    }
+}
+
 final class DistributedUrlParser: DistributedUrlParserProtocol {
     func parse(url: String) -> DistributedStorage? {
         guard
