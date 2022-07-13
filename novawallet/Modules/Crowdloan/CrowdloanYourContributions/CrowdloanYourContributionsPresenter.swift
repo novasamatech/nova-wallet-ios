@@ -9,6 +9,10 @@ final class CrowdloanYourContributionsPresenter {
     let logger: LoggerProtocol?
 
     private var externalContributions: [ExternalContribution]?
+    private var blockNumber: BlockNumber?
+    private var blockDuration: BlockTime?
+    private var leasingPeriod: LeasingPeriod?
+    private var price: PriceData?
 
     init(
         input: CrowdloanYourContributionsViewInput,
@@ -45,16 +49,31 @@ extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsPresent
 }
 
 extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInteractorOutputProtocol {
-    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>) {
-        switch result {
-        case let .success(contributions):
-            let positiveContributions = contributions.filter { $0.amount > 0 }
-            externalContributions = positiveContributions
-            if !positiveContributions.isEmpty {
-                updateView()
-            }
-        case let .failure(error):
-            logger?.error("Did receive external contributions error: \(error)")
+    func didReceiveExternalContributions(_ externalContributions: [ExternalContribution]) {
+        let positiveContributions = externalContributions.filter { $0.amount > 0 }
+        self.externalContributions = positiveContributions
+        if !positiveContributions.isEmpty {
+            updateView()
         }
+    }
+
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?) {
+        self.blockNumber = blockNumber
+
+        updateView()
+    }
+
+    func didReceiveBlockDuration(_ blockDuration: BlockTime) {
+        self.blockDuration = blockDuration
+    }
+
+    func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod) {
+        self.leasingPeriod = leasingPeriod
+
+        updateView()
+    }
+
+    func didReceiveError(_ error: Error) {
+        logger?.error("Did receive external contributions error: \(error)")
     }
 }
