@@ -14,6 +14,21 @@ final class CrowdloanYourContributionsPresenter {
     private var leasingPeriod: LeasingPeriod?
     private var price: PriceData?
 
+    private var crowloanMetadata: CrowdloanMetadata? {
+        guard
+            let blockNumber = blockNumber,
+            let blockDuration = blockDuration,
+            let leasingPeriod = leasingPeriod else {
+            return nil
+        }
+
+        return CrowdloanMetadata(
+            blockNumber: blockNumber,
+            blockDuration: blockDuration,
+            leasingPeriod: leasingPeriod
+        )
+    }
+
     init(
         input: CrowdloanYourContributionsViewInput,
         viewModelFactory: CrowdloanYourContributionsVMFactoryProtocol,
@@ -69,6 +84,12 @@ extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInterac
 
     func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod) {
         self.leasingPeriod = leasingPeriod
+
+        updateView()
+    }
+
+    func didReceivePrice(_ priceData: PriceData?) {
+        self.price = priceData
 
         updateView()
     }
