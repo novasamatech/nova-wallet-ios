@@ -25,9 +25,11 @@ protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
 
 protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
     func didReceiveExternalContributions(_ externalContributions: [ExternalContribution])
+    func didReceiveExternalCrowdloanFunds(_ funds: [ParaId: CrowdloanFunds])
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveBlockDuration(_ blockDuration: BlockTime)
     func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod)
+    func didReceivePrice(_ priceData: PriceData?)
     func didReceiveError(_ error: Error)
 }
 
