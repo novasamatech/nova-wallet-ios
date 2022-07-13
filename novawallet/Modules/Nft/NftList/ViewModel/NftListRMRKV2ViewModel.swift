@@ -2,9 +2,11 @@ import Foundation
 import RobinHood
 import SubstrateSdk
 
-final class NftListUniquesViewModel {
+final class NftListRMRKV2ViewModel {
     let metadataReference: String
     let metadataService: NftFileDownloadServiceProtocol
+    let fallbackName: String?
+    let imageUrl: String?
     let label: String
 
     private var loadingOperation: CancellableCall?
@@ -12,15 +14,19 @@ final class NftListUniquesViewModel {
     init(
         metadataReference: String,
         metadataService: NftFileDownloadServiceProtocol,
-        label: String
+        label: String,
+        imageUrl: String?,
+        fallbackName: String?
     ) {
         self.metadataReference = metadataReference
         self.metadataService = metadataService
         self.label = label
+        self.imageUrl = imageUrl
+        self.fallbackName = fallbackName
     }
 
     func provideData(from json: JSON, to view: NftListItemViewProtocol) {
-        let name = json.name?.stringValue
+        let name = json.name?.stringValue ?? fallbackName
         view.setName(name)
     }
 
@@ -39,7 +45,7 @@ final class NftListUniquesViewModel {
     }
 }
 
-extension NftListUniquesViewModel: NftListMetadataViewModelProtocol {
+extension NftListRMRKV2ViewModel: NftListMetadataViewModelProtocol {
     func load(on view: NftListItemViewProtocol, completion: ((Error?) -> Void)?) {
         guard loadingOperation == nil else {
             return
@@ -47,13 +53,19 @@ extension NftListUniquesViewModel: NftListMetadataViewModelProtocol {
 
         view.setLabel(label)
 
-        let mediaViewModel = NftMediaViewModel(
-            metadataReference: metadataReference,
-            aliases: NftMediaAlias.list,
-            downloadService: metadataService
-        )
+        if let urlString = imageUrl, !urlString.isEmpty, let url = URL(string: urlString) {
+            let mediaViewModel = NftImageViewModel(url: url)
 
-        view.setMedia(mediaViewModel)
+            view.setMedia(mediaViewModel)
+        } else {
+            let mediaViewModel = NftMediaViewModel(
+                metadataReference: metadataReference,
+                aliases: NftMediaAlias.list,
+                downloadService: metadataService
+            )
+
+            view.setMedia(mediaViewModel)
+        }
 
         loadingOperation = metadataService.downloadMetadata(
             for: metadataReference,

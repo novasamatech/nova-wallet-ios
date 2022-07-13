@@ -245,6 +245,7 @@ final class NftMediaView: RoundedView {
         }
 
         let placeholderView = ImagePlaceholderView()
+        placeholderView.cornerRadius = mediaSettings?.cornerRadius ?? 0
         addSubview(placeholderView)
 
         placeholderView.snp.makeConstraints { make in

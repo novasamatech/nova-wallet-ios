@@ -131,6 +131,7 @@ class NftDetailsInteractor {
             if shouldProvideMedia {
                 let mediaViewModel = NftMediaViewModel(
                     metadataReference: metadataReference,
+                    aliases: NftMediaAlias.details,
                     downloadService: nftMetadataService
                 )
 

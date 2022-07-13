@@ -23,6 +23,8 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
 
         var compoundProcessor: ImageProcessor = SVGImageProcessor()
 
+        let brokenImageClosure: (KFCrossPlatformImage) -> Bool = { image in image.cgImage != nil }
+
         if let targetSize = targetSize {
             let scaleProcessor: ImageProcessor
 
@@ -37,12 +39,18 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
                 scaleProcessor = resizeProcessor |> cropProcessor
             }
 
-            compoundProcessor = compoundProcessor.append(another: scaleProcessor)
+            let filterProcessor = FilterImageProcessor(proccessor: scaleProcessor, filter: brokenImageClosure)
+            compoundProcessor = compoundProcessor.append(another: filterProcessor)
         }
 
         if let cornerRadius = cornerRadius, cornerRadius > 0 {
             let cornerRadiusProcessor = RoundCornerImageProcessor(cornerRadius: cornerRadius)
-            compoundProcessor = compoundProcessor.append(another: cornerRadiusProcessor)
+            let filterProcessor = FilterImageProcessor(
+                proccessor: cornerRadiusProcessor,
+                filter: brokenImageClosure
+            )
+
+            compoundProcessor = compoundProcessor.append(another: filterProcessor)
         }
 
         var options: KingfisherOptionsInfo = [
@@ -62,8 +70,9 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             options: options,
             completionHandler: { result in
                 switch result {
-                case .success:
-                    completion?(true, nil)
+                case let .success(kImage):
+                    let isResolved = brokenImageClosure(kImage.image)
+                    completion?(isResolved, nil)
                 case let .failure(error):
                     if !error.isTaskCancelled {
                         completion?(true, error)

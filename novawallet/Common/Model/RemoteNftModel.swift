@@ -58,3 +58,52 @@ struct RemoteNftModel: Equatable, Identifiable {
         price = localModel.price
     }
 }
+
+extension RemoteNftModel {
+    static func createFromRMRKV2(
+        _ remoteItem: RMRKNftV2,
+        ownerId: AccountId,
+        chainId: ChainModel.Id,
+        collection: RMRKV2Collection?
+    ) -> RemoteNftModel {
+        let identifier = NftModel.rmrkv2Identifier(
+            for: chainId,
+            identifier: remoteItem.identifier
+        )
+
+        let metadata: Data?
+
+        if let metadataString = remoteItem.metadata {
+            metadata = metadataString.data(using: .utf8)
+        } else {
+            metadata = nil
+        }
+
+        let price = remoteItem.forsale.map(\.stringWithPointSeparator)
+
+        let imageUrl: String?
+
+        if
+            let imageString = remoteItem.image,
+            !DistributedUrlParser().isDistributedUrl(imageString) {
+            imageUrl = imageString
+        } else {
+            imageUrl = nil
+        }
+
+        return RemoteNftModel(
+            identifier: identifier,
+            type: NftType.rmrkV2.rawValue,
+            chainId: chainId,
+            ownerId: ownerId,
+            collectionId: remoteItem.collectionId,
+            instanceId: nil,
+            metadata: metadata,
+            totalIssuance: collection?.max,
+            name: remoteItem.symbol,
+            label: remoteItem.serialNumber,
+            media: imageUrl,
+            price: price
+        )
+    }
+}
