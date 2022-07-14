@@ -24,7 +24,7 @@ extension WalletListPresenter {
             } else if model2.chainValue > 0 {
                 return false
             } else {
-                return model1.chain.name.lexicographicallyPrecedes(model2.chain.name)
+                return ChainModelCompator.defaultComparator(chain1: model1.chain, chain2: model2.chain)
             }
         }
 
@@ -55,6 +55,8 @@ extension WalletListPresenter {
                 return true
             } else if balance2 > 0 {
                 return false
+            } else if model1.assetModel.isUtility != model2.assetModel.isUtility {
+                return model1.assetModel.isUtility.intValue > model2.assetModel.isUtility.intValue
             } else {
                 return model1.assetModel.symbol.lexicographicallyPrecedes(model2.assetModel.symbol)
             }
