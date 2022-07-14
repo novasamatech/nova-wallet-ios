@@ -61,23 +61,27 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
             presenter?.didReceive(issuer: nil)
         }
 
-        guard let name = model.symbol else {
-            presenter?.didReceive(collection: nil)
-            return
-        }
-
         if let metadata = model.metadata {
             if collectionOperation == nil {
-                collectionOperation = nftMetadataService.resolveImageUrl(
+                collectionOperation = nftMetadataService.downloadMetadata(
                     for: metadata,
-                    aliases: NftMediaAlias.list,
                     dispatchQueue: .main
                 ) { [weak self] result in
                     self?.collectionOperation = nil
 
                     switch result {
-                    case let .success(url):
-                        let collection = NftDetailsCollection(name: name, imageUrl: url)
+                    case let .success(json):
+                        let name = json.name?.stringValue ?? model.symbol
+
+                        let url: URL? = NftMediaAlias.list.compactMap { alias in
+                            if let imageReference = json.dictValue?[alias]?.stringValue {
+                                return self?.nftMetadataService.imageUrl(from: imageReference)
+                            } else {
+                                return nil
+                            }
+                        }.first
+
+                        let collection = NftDetailsCollection(name: name ?? "", imageUrl: url)
                         self?.presenter?.didReceive(collection: collection)
                     case let .failure(error):
                         self?.presenter?.didReceive(error: error)
@@ -85,7 +89,7 @@ final class RMRKV2DetailsInteractor: NftDetailsInteractor {
                 }
             }
         } else {
-            let collection = NftDetailsCollection(name: name, imageUrl: nil)
+            let collection = NftDetailsCollection(name: model.symbol ?? "", imageUrl: nil)
             presenter?.didReceive(collection: collection)
         }
     }
