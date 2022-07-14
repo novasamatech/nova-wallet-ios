@@ -112,7 +112,7 @@ final class CrowdloanYourContributionsPresenter {
         let elapsedTime = maxReturnInInterval >= remainedTimeInterval ? maxReturnInInterval - remainedTimeInterval : 0
 
         let returnInViewModels: [String?] = returnInIntervals?.map { timeInterval in
-            guard timeInterval >= elapsedTime else {
+            guard timeInterval > elapsedTime else {
                 return nil
             }
 
