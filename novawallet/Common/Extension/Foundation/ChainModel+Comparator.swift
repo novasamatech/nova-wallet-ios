@@ -1,14 +1,24 @@
 import Foundation
 
 enum ChainModelCompator {
-    static func defaultComparator(chain1: ChainModel, chain2: ChainModel) -> Bool {
+    static func priorityAndTestnetComparator(chain1: ChainModel, chain2: ChainModel) -> ComparisonResult {
         let priority1 = chainPriority(for: chain1.chainId)
         let priority2 = chainPriority(for: chain2.chainId)
 
         if priority1 != priority2 {
-            return priority1 < priority2
+            return priority1 < priority2 ? .orderedAscending : .orderedDescending
         } else if chain1.isTestnet != chain2.isTestnet {
-            return chain1.isTestnet.intValue < chain2.isTestnet.intValue
+            return chain1.isTestnet.intValue < chain2.isTestnet.intValue ? .orderedAscending : .orderedDescending
+        }
+
+        return .orderedSame
+    }
+
+    static func defaultComparator(chain1: ChainModel, chain2: ChainModel) -> Bool {
+        let priorityAndTestResult = priorityAndTestnetComparator(chain1: chain1, chain2: chain2)
+
+        if priorityAndTestResult != .orderedSame {
+            return priorityAndTestResult == .orderedAscending ? true : false
         } else {
             return chain1.name.lexicographicallyPrecedes(chain2.name)
         }
