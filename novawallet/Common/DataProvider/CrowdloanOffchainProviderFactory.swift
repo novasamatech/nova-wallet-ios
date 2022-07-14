@@ -12,9 +12,11 @@ class CrowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
     private var providers: [String: WeakWrapper] = [:]
 
     let storageFacade: StorageFacadeProtocol
+    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
 
-    init(storageFacade: StorageFacadeProtocol) {
+    init(storageFacade: StorageFacadeProtocol, paraIdOperationFactory: ParaIdOperationFactoryProtocol) {
         self.storageFacade = storageFacade
+        self.paraIdOperationFactory = paraIdOperationFactory
     }
 
     func getExternalContributionProvider(
@@ -30,10 +32,15 @@ class CrowdloanOffchainProviderFactory: CrowdloanOffchainProviderFactoryProtocol
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
+        let externalSources = ExternalContributionSourcesFactory.createExternalSources(
+            for: chain.chainId,
+            paraIdOperationFactory: paraIdOperationFactory
+        )
+
         let source = ExternalContributionDataProviderSource(
             accountId: accountId,
             chain: chain,
-            children: ExternalContributionSourcesFactory.createExternalSources(for: chain.chainId)
+            children: externalSources
         )
 
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
