@@ -41,6 +41,22 @@ final class AssetSelectionPresenter {
         return balance ?? 0
     }
 
+    private func extractFiatBalance(for chainAsset: ChainAsset) -> Decimal? {
+        guard
+            let balanceResult = accountBalances[chainAsset.chainAssetId],
+            case let .success(balance) = balanceResult,
+            let priceString = assetPrices[chainAsset.chainAssetId]?.price,
+            let price = Decimal(string: priceString),
+            let balanceDecimal = Decimal.fromSubstrateAmount(
+                balance ?? 0,
+                precision: chainAsset.assetDisplayInfo.assetPrecision
+            ) else {
+            return nil
+        }
+
+        return balanceDecimal * price
+    }
+
     private func extractFormattedBalance(for chainAsset: ChainAsset) -> String? {
         let assetInfo = chainAsset.assetDisplayInfo
 
@@ -63,6 +79,39 @@ final class AssetSelectionPresenter {
             .value(for: selectedLocale)
 
         return tokenFormatter.stringFromDecimal(balance)
+    }
+
+    private func updateSorting() {
+        assets.sort { chainAsset1, chainAsset2 in
+            let balance1 = extractAvailableBalanceInPlank(for: chainAsset1) ?? 0
+            let balance2 = extractAvailableBalanceInPlank(for: chainAsset2) ?? 0
+
+            let assetValue1 = extractFiatBalance(for: chainAsset1) ?? 0
+            let assetValue2 = extractFiatBalance(for: chainAsset2) ?? 0
+
+            let priorityAndTestnetResult = ChainModelCompator.priorityAndTestnetComparator(
+                chain1: chainAsset1.chain,
+                chain2: chainAsset2.chain
+            )
+
+            if priorityAndTestnetResult != .orderedSame {
+                return priorityAndTestnetResult == .orderedAscending ? true : false
+            } else if assetValue1 > 0, assetValue2 > 0 {
+                return assetValue1 > assetValue2
+            } else if assetValue1 > 0 {
+                return true
+            } else if assetValue2 > 0 {
+                return false
+            } else if balance1 > 0, balance2 > 0 {
+                return balance1 > balance2
+            } else if balance1 > 0 {
+                return true
+            } else if balance2 > 0 {
+                return false
+            } else {
+                return chainAsset1.chain.name.lexicographicallyPrecedes(chainAsset2.chain.name)
+            }
+        }
     }
 
     private func updateView() {
@@ -116,6 +165,7 @@ extension AssetSelectionPresenter: AssetSelectionInteractorOutputProtocol {
         case let .success(chainAssets):
             assets = chainAssets
 
+            updateSorting()
             updateView()
         case let .failure(error):
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
@@ -127,6 +177,7 @@ extension AssetSelectionPresenter: AssetSelectionInteractorOutputProtocol {
             accountBalances[key] = value
         }
 
+        updateSorting()
         updateView()
     }
 
@@ -135,6 +186,7 @@ extension AssetSelectionPresenter: AssetSelectionInteractorOutputProtocol {
         case let .success(prices):
             assetPrices = prices
 
+            updateSorting()
             updateView()
         case .failure, .none:
             // ignore any price errors as it is needed only for sorting
