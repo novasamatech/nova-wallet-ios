@@ -128,7 +128,7 @@ final class NftDetailsPresenter {
 
     private func provideCollection(with model: NftDetailsCollection?) {
         if let model = model {
-            let imageViewModel = model.imageUrl.map { RemoteImageViewModel(url: $0) }
+            let imageViewModel = model.imageUrl.map { NftImageViewModel(url: $0) }
             let viewModel = StackCellViewModel(details: model.name, imageViewModel: imageViewModel)
             view?.didReceive(collectionViewModel: viewModel)
         } else {
