@@ -3,52 +3,50 @@ import SoraFoundation
 import BigInt
 
 final class AssetSelectionPresenter {
-    weak var view: ChainSelectionViewProtocol?
+    weak var view: AssetSelectionViewProtocol?
     let wireframe: AssetSelectionWireframeProtocol
-    let interactor: ChainSelectionInteractorInputProtocol
+    let interactor: AssetSelectionInteractorInputProtocol
     let selectedChainAssetId: ChainAssetId?
-    let assetFilter: AssetSelectionFilter
+
     let assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol
 
-    private var assets: [(ChainModel.Id, AssetModel)] = []
-    private var chains: [ChainModel.Id: ChainModel] = [:]
+    private var assets: [ChainAsset] = []
 
-    private var accountInfoResults: [ChainModel.Id: Result<AccountInfo?, Error>] = [:]
+    private var accountBalances: [ChainAssetId: Result<BigUInt?, Error>] = [:]
+    private var assetPrices: [ChainAssetId: PriceData] = [:]
 
     private var viewModels: [SelectableIconDetailsListViewModel] = []
 
     init(
-        interactor: ChainSelectionInteractorInputProtocol,
+        interactor: AssetSelectionInteractorInputProtocol,
         wireframe: AssetSelectionWireframeProtocol,
-        assetFilter: @escaping AssetSelectionFilter,
         selectedChainAssetId: ChainAssetId?,
         assetBalanceFormatterFactory: AssetBalanceFormatterFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.assetFilter = assetFilter
         self.selectedChainAssetId = selectedChainAssetId
         self.assetBalanceFormatterFactory = assetBalanceFormatterFactory
         self.localizationManager = localizationManager
     }
 
-    private func extractAvailableBalanceInPlank(for chain: ChainModel) -> BigUInt? {
+    private func extractAvailableBalanceInPlank(for chainAsset: ChainAsset) -> BigUInt? {
         guard
-            let accountInfoResult = accountInfoResults[chain.chainId],
-            case let .success(accountInfo) = accountInfoResult else {
+            let balanceResult = accountBalances[chainAsset.chainAssetId],
+            case let .success(balance) = balanceResult else {
             return nil
         }
 
-        return accountInfo?.data.available ?? 0
+        return balance ?? 0
     }
 
-    private func extractBalance(for chain: ChainModel, asset: AssetModel) -> String? {
-        let assetInfo = asset.displayInfo
+    private func extractFormattedBalance(for chainAsset: ChainAsset) -> String? {
+        let assetInfo = chainAsset.assetDisplayInfo
 
         let maybeBalance: Decimal?
 
-        if let balanceInPlank = extractAvailableBalanceInPlank(for: chain) {
+        if let balanceInPlank = extractAvailableBalanceInPlank(for: chainAsset) {
             maybeBalance = Decimal.fromSubstrateAmount(
                 balanceInPlank,
                 precision: assetInfo.assetPrecision
@@ -68,18 +66,15 @@ final class AssetSelectionPresenter {
     }
 
     private func updateView() {
-        viewModels = assets.compactMap { assetPair in
-            guard let chain = chains[assetPair.0] else {
-                return nil
-            }
-
-            let asset = assetPair.1
+        viewModels = assets.compactMap { chainAsset in
+            let chain = chainAsset.chain
+            let asset = chainAsset.asset
 
             let icon = RemoteImageViewModel(url: asset.icon ?? chain.icon)
             let title = asset.name ?? chain.name
             let isSelected = selectedChainAssetId?.assetId == asset.assetId &&
                 selectedChainAssetId?.chainId == chain.chainId
-            let balance = extractBalance(for: chain, asset: asset) ?? ""
+            let balance = extractFormattedBalance(for: chainAsset) ?? ""
 
             return SelectableIconDetailsListViewModel(
                 title: title,
@@ -93,7 +88,7 @@ final class AssetSelectionPresenter {
     }
 }
 
-extension AssetSelectionPresenter: ChainSelectionPresenterProtocol {
+extension AssetSelectionPresenter: AssetSelectionPresenterProtocol {
     var numberOfItems: Int {
         viewModels.count
     }
@@ -103,14 +98,11 @@ extension AssetSelectionPresenter: ChainSelectionPresenterProtocol {
     }
 
     func selectItem(at index: Int) {
-        let chainId = assets[index].0
-        let asset = assets[index].1
-
-        guard let view = view, let chain = chains[chainId] else {
+        guard let view = view else {
             return
         }
 
-        wireframe.complete(on: view, selecting: ChainAsset(chain: chain, asset: asset))
+        wireframe.complete(on: view, selecting: assets[index])
     }
 
     func setup() {
@@ -118,25 +110,11 @@ extension AssetSelectionPresenter: ChainSelectionPresenterProtocol {
     }
 }
 
-extension AssetSelectionPresenter: ChainSelectionInteractorOutputProtocol {
-    func didReceiveChains(result: Result<[ChainModel], Error>) {
+extension AssetSelectionPresenter: AssetSelectionInteractorOutputProtocol {
+    func didReceiveChainAssets(result: Result<[ChainAsset], Error>) {
         switch result {
-        case let .success(chains):
-            self.chains = chains.reduce(into: [:]) { result, item in
-                result[item.chainId] = item
-            }
-
-            assets = chains.reduce(into: []) { result, item in
-                let assets: [(ChainModel.Id, AssetModel)] = item.assets.compactMap { asset in
-                    if assetFilter(item, asset) {
-                        return (item.chainId, asset)
-                    } else {
-                        return nil
-                    }
-                }
-
-                result.append(contentsOf: assets)
-            }
+        case let .success(chainAssets):
+            assets = chainAssets
 
             updateView()
         case let .failure(error):
@@ -144,9 +122,24 @@ extension AssetSelectionPresenter: ChainSelectionInteractorOutputProtocol {
         }
     }
 
-    func didReceiveAccountInfo(result: Result<AccountInfo?, Error>, for chainId: ChainModel.Id) {
-        accountInfoResults[chainId] = result
+    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+        results.forEach { key, value in
+            accountBalances[key] = value
+        }
+
         updateView()
+    }
+
+    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
+        switch result {
+        case let .success(prices):
+            assetPrices = prices
+
+            updateView()
+        case .failure, .none:
+            // ignore any price errors as it is needed only for sorting
+            break
+        }
     }
 }
 
