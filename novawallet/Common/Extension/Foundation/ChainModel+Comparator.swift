@@ -8,7 +8,7 @@ enum ChainModelCompator {
         if priority1 != priority2 {
             return priority1 < priority2
         } else if chain1.isTestnet != chain2.isTestnet {
-            return (chain1.isTestnet ? 1 : 0) < (chain2.isTestnet ? 1 : 0)
+            return chain1.isTestnet.intValue < chain2.isTestnet.intValue
         } else {
             return chain1.name.lexicographicallyPrecedes(chain2.name)
         }
