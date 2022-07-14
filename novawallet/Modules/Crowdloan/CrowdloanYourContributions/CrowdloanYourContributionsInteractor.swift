@@ -70,7 +70,6 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
             case let .failure(error):
                 self?.presenter.didReceiveError(error)
             }
-
         }
 
         fetchConstant(
