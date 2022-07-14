@@ -301,6 +301,7 @@
 		840D92A3278EDB2E0007B979 /* DAppParsedCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D92A2278EDB2E0007B979 /* DAppParsedCall.swift */; };
 		840D92A7278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D92A6278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift */; };
 		840D92A9278EEE5C0007B979 /* DAppOperationBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840D92A8278EEE5C0007B979 /* DAppOperationBaseInteractor.swift */; };
+		840DC83E288085AE0039A054 /* ChainModel+Comparator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DC83D288085AE0039A054 /* ChainModel+Comparator.swift */; };
 		840DCBF125DFEE4800D45C6A /* AmountInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBF025DFEE4800D45C6A /* AmountInputView.swift */; };
 		840DCBF625E0059D00D45C6A /* AmountInputView+Inspectable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */; };
 		840DCBFB25E0703A00D45C6A /* RewardSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DCBFA25E0703A00D45C6A /* RewardSelectionView.swift */; };
@@ -2643,6 +2644,7 @@
 		840D92A2278EDB2E0007B979 /* DAppParsedCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppParsedCall.swift; sourceTree = "<group>"; };
 		840D92A6278EE8690007B979 /* DAppSignBytesConfirmInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppSignBytesConfirmInteractor.swift; sourceTree = "<group>"; };
 		840D92A8278EEE5C0007B979 /* DAppOperationBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppOperationBaseInteractor.swift; sourceTree = "<group>"; };
+		840DC83D288085AE0039A054 /* ChainModel+Comparator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChainModel+Comparator.swift"; sourceTree = "<group>"; };
 		840DCBF025DFEE4800D45C6A /* AmountInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmountInputView.swift; sourceTree = "<group>"; };
 		840DCBF525E0059D00D45C6A /* AmountInputView+Inspectable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AmountInputView+Inspectable.swift"; sourceTree = "<group>"; };
 		840DCBFA25E0703A00D45C6A /* RewardSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardSelectionView.swift; sourceTree = "<group>"; };
@@ -7836,6 +7838,7 @@
 				84216FDD282B979900479375 /* Decimal+Conversion.swift */,
 				84329ECF2832461D0020BC1C /* TimeInterval+Localization.swift */,
 				84333BDA285772F300C76A4F /* UInt64+TimeInterval.swift */,
+				840DC83D288085AE0039A054 /* ChainModel+Comparator.swift */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -12798,6 +12801,7 @@
 				8466BB472640152A00E065A8 /* StakingUnbondConfirmViewModelFactory.swift in Sources */,
 				84CE6A312566800000559427 /* ByteLengthProcessor+Username.swift in Sources */,
 				8482F633281024B80006C3A0 /* Data+EthereumSign.swift in Sources */,
+				840DC83E288085AE0039A054 /* ChainModel+Comparator.swift in Sources */,
 				84C5ADD728127A64006D7388 /* WalletAccountActionView.swift in Sources */,
 				4083005E0DC01C9BB57BEBAE /* UsernameSetupViewFactory.swift in Sources */,
 				6B62E63FB9E379EA19A41464 /* AccountCreateProtocols.swift in Sources */,
