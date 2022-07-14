@@ -21,9 +21,12 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         let cornerRadius = displaySettings.cornerRadius
         let animated = displaySettings.animated
 
-        var compoundProcessor: ImageProcessor = SVGImageProcessor()
-
         let brokenImageClosure: (KFCrossPlatformImage) -> Bool = { image in image.cgImage != nil }
+
+        var compoundProcessor: ImageProcessor = FilterImageProcessor(
+            proccessor: DefaultImageProcessor.default,
+            filter: brokenImageClosure
+        )
 
         if let targetSize = targetSize {
             let scaleProcessor: ImageProcessor
@@ -45,11 +48,8 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
 
         if let cornerRadius = cornerRadius, cornerRadius > 0 {
             let cornerRadiusProcessor = RoundCornerImageProcessor(cornerRadius: cornerRadius)
-            let filterProcessor = FilterImageProcessor(
-                proccessor: cornerRadiusProcessor,
-                filter: brokenImageClosure
-            )
 
+            let filterProcessor = FilterImageProcessor(proccessor: cornerRadiusProcessor, filter: brokenImageClosure)
             compoundProcessor = compoundProcessor.append(another: filterProcessor)
         }
 
@@ -58,6 +58,7 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             .scaleFactor(UIScreen.main.scale),
             .cacheSerializer(RemoteImageSerializer.shared),
             .cacheOriginalImage,
+            .onlyLoadFirstFrame,
             .diskCacheExpiration(.days(1))
         ]
 
@@ -70,11 +71,13 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             options: options,
             completionHandler: { result in
                 switch result {
-                case let .success(kImage):
-                    let isResolved = brokenImageClosure(kImage.image)
+                case let .success(imageResult):
+                    let isResolved = brokenImageClosure(imageResult.image)
                     completion?(isResolved, nil)
                 case let .failure(error):
-                    if !error.isTaskCancelled {
+                    if case KingfisherError.processorError = error {
+                        completion?(false, error)
+                    } else if !error.isTaskCancelled {
                         completion?(true, error)
                     }
                 }
@@ -84,5 +87,18 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
 
     func cancel(on imageView: UIImageView) {
         imageView.kf.cancelDownloadTask()
+    }
+}
+
+extension NftImageViewModel: ImageViewModelProtocol {
+    func loadImage(on imageView: UIImageView, settings: ImageViewModelSettings, animated: Bool) {
+        let displaySettings = NftMediaDisplaySettings(
+            targetSize: settings.targetSize,
+            cornerRadius: settings.cornerRadius,
+            animated: animated,
+            isAspectFit: false
+        )
+
+        loadMedia(on: imageView, displaySettings: displaySettings, completion: nil)
     }
 }
