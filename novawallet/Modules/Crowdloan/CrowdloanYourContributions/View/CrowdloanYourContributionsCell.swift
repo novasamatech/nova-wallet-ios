@@ -9,18 +9,24 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
 
     private var iconViewModel: ImageViewModelProtocol?
 
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .p0Paragraph
-        return label
+    private let nameDetailsView: MultiValueView = {
+        let view = MultiValueView()
+        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.font = .regularSubheadline
+        view.valueTop.textAlignment = .left
+        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.font = .caption1
+        view.valueBottom.textAlignment = .left
+        return view
     }()
 
-    private let contributedAmountLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = R.color.colorWhite()
-        label.font = .p0Paragraph
-        return label
+    private let contributedAmountView: MultiValueView = {
+        let view = MultiValueView()
+        view.valueTop.textColor = R.color.colorWhite()
+        view.valueTop.font = .regularSubheadline
+        view.valueBottom.textColor = R.color.colorTransparentText()
+        view.valueBottom.font = .caption1
+        return view
     }()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -46,7 +52,7 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
             alignment: .center,
             spacing: 12,
             [
-                iconImageView, nameLabel, UIView(), contributedAmountLabel
+                iconImageView, nameDetailsView, UIView(), contributedAmountView
             ]
         )
         iconImageView.snp.makeConstraints { $0.size.equalTo(32) }
@@ -58,15 +64,22 @@ final class CrowdloanYourContributionsCell: UITableViewCell {
         }
     }
 
-    func bind(viewModel: CrowdloanContributionViewModel) {
-        nameLabel.text = viewModel.name
-        contributedAmountLabel.text = viewModel.contributed
+    func bind(contributionViewModel: CrowdloanContributionViewModel) {
+        nameDetailsView.bind(topValue: contributionViewModel.name, bottomValue: nameDetailsView.valueBottom.text)
+        contributedAmountView.bind(
+            topValue: contributionViewModel.contributed.amount,
+            bottomValue: contributionViewModel.contributed.price
+        )
 
-        viewModel.iconViewModel?.loadImage(
+        contributionViewModel.iconViewModel?.loadImage(
             on: iconImageView,
             targetSize: CGSize(width: 32, height: 32),
             animated: true
         )
-        iconViewModel = viewModel.iconViewModel
+        iconViewModel = contributionViewModel.iconViewModel
+    }
+
+    func bind(returnInViewModel: String?) {
+        nameDetailsView.bind(topValue: nameDetailsView.valueTop.text ?? "", bottomValue: returnInViewModel)
     }
 }

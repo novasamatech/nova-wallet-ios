@@ -827,3 +827,5 @@
 "wallet.transfer.token.format_v2_9_1" = "Send %@";
 "wallet.transfer.on" = "on";
 "common.request.retry" = "Data loading failed. Would you like to retry?";
+"crowdloan.returns.in.format" = "Returns in %@";
+"crowdloan.return.in.progress" = "To be returned by parachain";
