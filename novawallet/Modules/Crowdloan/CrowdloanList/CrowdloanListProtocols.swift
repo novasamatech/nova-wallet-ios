@@ -52,7 +52,7 @@ protocol CrowdloanListWireframeProtocol: AnyObject {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: ChainSelectionDelegate,
-        selectedChainId: ChainModel.Id?
+        delegate: AssetSelectionDelegate,
+        selectedChainAssetId: ChainAssetId?
     )
 }

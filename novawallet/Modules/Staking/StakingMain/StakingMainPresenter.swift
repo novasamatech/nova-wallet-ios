@@ -237,7 +237,7 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
 }
 
 extension StakingMainPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: ChainSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
         interactor.save(chainAsset: chainAsset)
     }
 }

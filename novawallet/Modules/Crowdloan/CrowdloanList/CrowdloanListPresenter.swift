@@ -209,12 +209,18 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func selectChain() {
-        let chainId = try? selectedChainResult?.get().chainId
+        guard
+            let chain = try? selectedChainResult?.get(),
+            let asset = chain.utilityAsset() else {
+            return
+        }
+
+        let chainAssetId = ChainAsset(chain: chain, asset: asset).chainAssetId
 
         wireframe.selectChain(
             from: view,
             delegate: self,
-            selectedChainId: chainId
+            selectedChainAssetId: chainAssetId
         )
     }
 
@@ -323,13 +329,13 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     }
 }
 
-extension CrowdloanListPresenter: ChainSelectionDelegate {
-    func chainSelection(view _: ChainSelectionViewProtocol, didCompleteWith chain: ChainModel) {
-        if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chain.chainId {
+extension CrowdloanListPresenter: AssetSelectionDelegate {
+    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+        if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chainAsset.chain.chainId {
             return
         }
 
-        selectedChainResult = .success(chain)
+        selectedChainResult = .success(chainAsset.chain)
         accountInfoResult = nil
         crowdloansResult = nil
         displayInfoResult = nil
@@ -340,9 +346,10 @@ extension CrowdloanListPresenter: ChainSelectionDelegate {
         leaseInfoResult = nil
 
         updateChainView()
+
         view?.didReceive(listState: .loading)
 
-        interactor.saveSelected(chainModel: chain)
+        interactor.saveSelected(chainModel: chainAsset.chain)
     }
 }
 
