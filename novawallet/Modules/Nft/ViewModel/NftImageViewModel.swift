@@ -21,7 +21,12 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
         let cornerRadius = displaySettings.cornerRadius
         let animated = displaySettings.animated
 
-        var compoundProcessor: ImageProcessor = DefaultImageProcessor.default
+        let brokenImageClosure: (KFCrossPlatformImage) -> Bool = { image in image.cgImage != nil }
+
+        var compoundProcessor: ImageProcessor = FilterImageProcessor(
+            proccessor: DefaultImageProcessor.default,
+            filter: brokenImageClosure
+        )
 
         if let targetSize = targetSize {
             let scaleProcessor: ImageProcessor
@@ -37,13 +42,15 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
                 scaleProcessor = resizeProcessor |> cropProcessor
             }
 
-            compoundProcessor = compoundProcessor.append(another: scaleProcessor)
+            let filterProcessor = FilterImageProcessor(proccessor: scaleProcessor, filter: brokenImageClosure)
+            compoundProcessor = compoundProcessor.append(another: filterProcessor)
         }
 
         if let cornerRadius = cornerRadius, cornerRadius > 0 {
             let cornerRadiusProcessor = RoundCornerImageProcessor(cornerRadius: cornerRadius)
 
-            compoundProcessor = compoundProcessor.append(another: cornerRadiusProcessor)
+            let filterProcessor = FilterImageProcessor(proccessor: cornerRadiusProcessor, filter: brokenImageClosure)
+            compoundProcessor = compoundProcessor.append(another: filterProcessor)
         }
 
         var options: KingfisherOptionsInfo = [
@@ -64,8 +71,9 @@ final class NftImageViewModel: NftMediaViewModelProtocol {
             options: options,
             completionHandler: { result in
                 switch result {
-                case .success:
-                    completion?(true, nil)
+                case let .success(imageResult):
+                    let isResolved = brokenImageClosure(imageResult.image)
+                    completion?(isResolved, nil)
                 case let .failure(error):
                     if case KingfisherError.processorError = error {
                         completion?(false, error)
