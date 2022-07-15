@@ -933,6 +933,8 @@
 		8472C601265D7A1F00E2481B /* WebSocketProviderSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472C600265D7A1F00E2481B /* WebSocketProviderSource.swift */; };
 		84735C6127E055B9001DD1E6 /* TransferSetupCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84735C6027E055B9001DD1E6 /* TransferSetupCommand.swift */; };
 		84735C6327E05FE6001DD1E6 /* OnChainTransferInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84735C6227E05FE6001DD1E6 /* OnChainTransferInteractor.swift */; };
+		84735E76288197F900BADC1B /* WalletListBasePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84735E75288197F900BADC1B /* WalletListBasePresenter.swift */; };
+		84735E782881986900BADC1B /* WalletListBasePresenter+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84735E772881986900BADC1B /* WalletListBasePresenter+Model.swift */; };
 		8473D4002657E8BB00B394B2 /* CrowdloanFunds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D3FF2657E8BB00B394B2 /* CrowdloanFunds.swift */; };
 		8473D4082657E9AD00B394B2 /* CrowdloanLastContribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D4072657E9AD00B394B2 /* CrowdloanLastContribution.swift */; };
 		8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473D40C2657E9DC00B394B2 /* MultiSigner.swift */; };
@@ -3292,6 +3294,8 @@
 		8472C600265D7A1F00E2481B /* WebSocketProviderSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketProviderSource.swift; sourceTree = "<group>"; };
 		84735C6027E055B9001DD1E6 /* TransferSetupCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferSetupCommand.swift; sourceTree = "<group>"; };
 		84735C6227E05FE6001DD1E6 /* OnChainTransferInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnChainTransferInteractor.swift; sourceTree = "<group>"; };
+		84735E75288197F900BADC1B /* WalletListBasePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListBasePresenter.swift; sourceTree = "<group>"; };
+		84735E772881986900BADC1B /* WalletListBasePresenter+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WalletListBasePresenter+Model.swift"; sourceTree = "<group>"; };
 		8473D3FF2657E8BB00B394B2 /* CrowdloanFunds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanFunds.swift; sourceTree = "<group>"; };
 		8473D4072657E9AD00B394B2 /* CrowdloanLastContribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanLastContribution.swift; sourceTree = "<group>"; };
 		8473D40C2657E9DC00B394B2 /* MultiSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiSigner.swift; sourceTree = "<group>"; };
@@ -7193,13 +7197,15 @@
 			path = ModalAlert;
 			sourceTree = "<group>";
 		};
-		847A6C0728817DAD00477F77 /* BaseInteractor */ = {
+		847A6C0728817DAD00477F77 /* Base */ = {
 			isa = PBXGroup;
 			children = (
 				847A6C0828817DC700477F77 /* WalletListBaseInteractorProtocol.swift */,
 				847A6C0A28817E4000477F77 /* WalletListBaseInteractor.swift */,
+				84735E75288197F900BADC1B /* WalletListBasePresenter.swift */,
+				84735E772881986900BADC1B /* WalletListBasePresenter+Model.swift */,
 			);
-			path = BaseInteractor;
+			path = Base;
 			sourceTree = "<group>";
 		};
 		847C961E255340CD002D288F /* ExportGenericView */ = {
@@ -9894,7 +9900,7 @@
 		ADEC075C60AA6D00785D2BDF /* WalletList */ = {
 			isa = PBXGroup;
 			children = (
-				847A6C0728817DAD00477F77 /* BaseInteractor */,
+				847A6C0728817DAD00477F77 /* Base */,
 				847F2D4B27AA68CB00AFD476 /* Models */,
 				84E493232731C04A000534F2 /* ViewModel */,
 				84E493202731BAA5000534F2 /* View */,
@@ -11734,6 +11740,7 @@
 				84216FD1282797ED00479375 /* ParachainStakingCollatorServiceProtocol.swift in Sources */,
 				F458D3C12642B7D80055CB75 /* LearnMoreView.swift in Sources */,
 				F4E17FCA272182A200FE36D3 /* MoonbeamAgreeRemarkResponse.swift in Sources */,
+				84735E782881986900BADC1B /* WalletListBasePresenter+Model.swift in Sources */,
 				8460E11F25420A2C00826F55 /* DetailsTriangularedView+Inspectable.swift in Sources */,
 				AE8D028E2638074D00780D18 /* CIKeys.generated.swift in Sources */,
 				F40966B726B297D6008CD244 /* AnalyticsContainerViewController.swift in Sources */,
@@ -13383,6 +13390,7 @@
 				84D2F1A927744C280040C680 /* PolkadotExtensionError.swift in Sources */,
 				37E1E9782B9752BC50AF2476 /* YourValidatorListViewFactory.swift in Sources */,
 				84C7A1FC2872DDF900E1B767 /* XcmTeleport.swift in Sources */,
+				84735E76288197F900BADC1B /* WalletListBasePresenter.swift in Sources */,
 				8461CC8126BBFF70007460E4 /* ImmortalEraOperationFactory.swift in Sources */,
 				6D5851FB5F830D55EFDB8B7D /* StakingUnbondSetupProtocols.swift in Sources */,
 				84DBEA4E265ED5B600FDF73C /* CrowdloanDataValidatorFactory.swift in Sources */,
