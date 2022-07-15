@@ -51,10 +51,11 @@ final class ChainAccountViewModelFactory {
 
             return viewModel
         }.sorted { viewModel1, viewModel2 in
-            let order1 = chains[viewModel1.chainId]?.order ?? 0
-            let order2 = chains[viewModel2.chainId]?.order ?? 0
+            guard let chain1 = chains[viewModel1.chainId], let chain2 = chains[viewModel2.chainId] else {
+                return chains[viewModel1.chainId] != nil
+            }
 
-            return order1 < order2
+            return ChainModelCompator.defaultComparator(chain1: chain1, chain2: chain2)
         }
     }
 
@@ -90,14 +91,17 @@ final class ChainAccountViewModelFactory {
                 accountIcon: icon
             )
         }.sorted { first, second in
-            guard first.address != nil, second.address != nil else {
+            if
+                (first.address != nil && second.address != nil) ||
+                (first.address == nil && second.address == nil) {
+                guard let chain1 = chains[first.chainId], let chain2 = chains[second.chainId] else {
+                    return chains[first.chainId] != nil
+                }
+
+                return ChainModelCompator.defaultComparator(chain1: chain1, chain2: chain2)
+            } else {
                 return first.address == nil
             }
-
-            let order1 = chains[first.chainId]?.order ?? 0
-            let order2 = chains[second.chainId]?.order ?? 0
-
-            return order1 < order2
         }
     }
 }
