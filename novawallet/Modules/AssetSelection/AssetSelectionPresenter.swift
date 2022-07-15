@@ -95,7 +95,7 @@ final class AssetSelectionPresenter {
             )
 
             if priorityAndTestnetResult != .orderedSame {
-                return priorityAndTestnetResult == .orderedAscending ? true : false
+                return priorityAndTestnetResult == .orderedAscending
             } else if assetValue1 > 0, assetValue2 > 0 {
                 return assetValue1 > assetValue2
             } else if assetValue1 > 0 {
