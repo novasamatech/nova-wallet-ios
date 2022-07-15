@@ -4,25 +4,23 @@ import SubstrateSdk
 import SoraKeystore
 import BigInt
 
-final class WalletListInteractor {
-    weak var presenter: WalletListInteractorOutputProtocol!
+final class WalletListInteractor: WalletListBaseInteractor {
+    var presenter: WalletListInteractorOutputProtocol? {
+        get {
+            basePresenter as? WalletListInteractorOutputProtocol
+        }
 
-    let selectedWalletSettings: SelectedWalletSettings
-    let chainRegistry: ChainRegistryProtocol
-    let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
-    let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
+        set {
+            basePresenter = newValue
+        }
+    }
+
     let nftLocalSubscriptionFactory: NftLocalSubscriptionFactoryProtocol
     let eventCenter: EventCenterProtocol
     let settingsManager: SettingsManagerProtocol
-    let logger: LoggerProtocol?
 
-    private var assetBalanceSubscriptions: [AccountId: StreamableProvider<AssetBalance>] = [:]
-    private var assetBalanceIdMapping: [String: AssetBalanceId] = [:]
-    private var priceSubscription: AnySingleValueProvider<[PriceData]>?
     private var nftSubscription: StreamableProvider<NftModel>?
     private var nftChainIds: Set<ChainModel.Id>?
-    private var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
-    private var availableChains: [ChainModel.Id: ChainModel] = [:]
 
     init(
         selectedWalletSettings: SelectedWalletSettings,
@@ -34,14 +32,17 @@ final class WalletListInteractor {
         settingsManager: SettingsManagerProtocol,
         logger: LoggerProtocol? = nil
     ) {
-        self.selectedWalletSettings = selectedWalletSettings
-        self.chainRegistry = chainRegistry
-        self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.nftLocalSubscriptionFactory = nftLocalSubscriptionFactory
-        self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
         self.eventCenter = eventCenter
         self.settingsManager = settingsManager
-        self.logger = logger
+
+        super.init(
+            selectedWalletSettings: selectedWalletSettings,
+            chainRegistry: chainRegistry,
+            walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceLocalSubscriptionFactory,
+            logger: logger
+        )
     }
 
     private func resetWallet() {
@@ -60,7 +61,7 @@ final class WalletListInteractor {
             DataProviderChange.insert(newItem: $0)
         }
 
-        presenter.didReceiveChainModelChanges(changes)
+        presenter?.didReceiveChainModelChanges(changes)
 
         updateAccountInfoSubscription(from: changes)
 
@@ -72,7 +73,7 @@ final class WalletListInteractor {
             return
         }
 
-        presenter.didReceive(
+        presenter?.didReceive(
             genericAccountId: selectedMetaAccount.substrateAccountId,
             name: selectedMetaAccount.name
         )
@@ -80,14 +81,7 @@ final class WalletListInteractor {
 
     private func provideHidesZeroBalances() {
         let value = settingsManager.hidesZeroBalances
-        presenter.didReceive(hidesZeroBalances: value)
-    }
-
-    private func clearAccountSubscriptions() {
-        assetBalanceSubscriptions.values.forEach { $0.removeObserver(self) }
-        assetBalanceSubscriptions = [:]
-
-        assetBalanceIdMapping = [:]
+        presenter?.didReceive(hidesZeroBalances: value)
     }
 
     private func clearNftSubscription() {
@@ -97,38 +91,11 @@ final class WalletListInteractor {
         nftChainIds = nil
     }
 
-    private func handle(changes: [DataProviderChange<ChainModel>]) {
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
+    override func applyChanges(allChanges: [DataProviderChange<ChainModel>], accountDependentChanges: [DataProviderChange<ChainModel>]) {
+        super.applyChanges(allChanges: allChanges, accountDependentChanges: accountDependentChanges)
 
-        let actualChanges = changes.filter { change in
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                return selectedMetaAccount.fetch(for: newItem.accountRequest()) != nil ? true : false
-            case .delete:
-                return true
-            }
-        }
-
-        presenter.didReceiveChainModelChanges(actualChanges)
-        updateAvailableChains(from: changes)
-        updateAccountInfoSubscription(from: actualChanges)
-        updateConnectionStatus(from: changes)
-        updatePriceSubscription(from: changes)
-
+        updateConnectionStatus(from: allChanges)
         setupNftSubscription(from: Array(availableChains.values))
-    }
-
-    private func updateAvailableChains(from changes: [DataProviderChange<ChainModel>]) {
-        for change in changes {
-            switch change {
-            case let .insert(newItem), let .update(newItem):
-                availableChains[newItem.chainId] = newItem
-            case let .delete(deletedIdentifier):
-                availableChains[deletedIdentifier] = nil
-            }
-        }
     }
 
     private func updateConnectionStatus(from changes: [DataProviderChange<ChainModel>]) {
@@ -138,58 +105,6 @@ final class WalletListInteractor {
                 chainRegistry.subscribeChainState(self, chainId: chain.chainId)
             case let .delete(identifier):
                 chainRegistry.unsubscribeChainState(self, chainId: identifier)
-            }
-        }
-    }
-
-    private func updateAccountInfoSubscription(from changes: [DataProviderChange<ChainModel>]) {
-        guard let selectedMetaAccount = selectedWalletSettings.value else {
-            return
-        }
-
-        assetBalanceIdMapping = changes.reduce(into: assetBalanceIdMapping) { result, change in
-            switch change {
-            case let .insert(chain), let .update(chain):
-                guard let accountId = selectedMetaAccount.fetch(
-                    for: chain.accountRequest()
-                )?.accountId else {
-                    return
-                }
-
-                for asset in chain.assets {
-                    let assetBalanceRawId = AssetBalance.createIdentifier(
-                        for: ChainAssetId(chainId: chain.chainId, assetId: asset.assetId),
-                        accountId: accountId
-                    )
-
-                    if result[assetBalanceRawId] == nil {
-                        result[assetBalanceRawId] = AssetBalanceId(
-                            chainId: chain.chainId,
-                            assetId: asset.assetId,
-                            accountId: accountId
-                        )
-                    }
-                }
-            case let .delete(deletedIdentifier):
-                result = result.filter { $0.value.chainId != deletedIdentifier }
-            }
-        }
-
-        assetBalanceSubscriptions = changes.reduce(into: assetBalanceSubscriptions) { result, change in
-            switch change {
-            case let .insert(chain), let .update(chain):
-                guard let accountId = selectedMetaAccount.fetch(
-                    for: chain.accountRequest()
-                )?.accountId else {
-                    return
-                }
-
-                if result[accountId] == nil {
-                    result[accountId] = subscribeToAccountBalanceProvider(for: accountId)
-                }
-            case .delete:
-                // we might have the same account id used in other
-                break
             }
         }
     }
@@ -205,7 +120,7 @@ final class WalletListInteractor {
 
         clearNftSubscription()
 
-        presenter.didResetNftProvider()
+        presenter?.didResetNftProvider()
 
         nftChainIds = newNftChainIds
 
@@ -213,193 +128,25 @@ final class WalletListInteractor {
         nftSubscription?.refresh()
     }
 
-    private func updatePriceSubscription(from changes: [DataProviderChange<ChainModel>]) {
-        let prevPrices = availableTokenPrice
-        for change in changes {
-            switch change {
-            case let .insert(chain), let .update(chain):
-                availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != chain.chainId }
+    override func setup() {
+        provideHidesZeroBalances()
+        providerWalletInfo()
 
-                availableTokenPrice = chain.assets.reduce(into: availableTokenPrice) { result, asset in
-                    guard let priceId = asset.priceId else {
-                        return
-                    }
+        subscribeChains()
 
-                    let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
-                    result[chainAssetId] = priceId
-                }
-            case let .delete(deletedIdentifier):
-                availableTokenPrice = availableTokenPrice.filter { $0.key.chainId != deletedIdentifier }
-            }
-        }
-
-        if prevPrices != availableTokenPrice {
-            updatePriceProvider(for: Set(availableTokenPrice.values))
-        }
-    }
-
-    private func updatePriceProvider(for priceIdSet: Set<AssetModel.PriceId>) {
-        priceSubscription = nil
-
-        let priceIds = Array(priceIdSet).sorted()
-
-        guard !priceIds.isEmpty else {
-            return
-        }
-
-        priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
-
-        let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
-            let finalValue = changes.reduceToLastChange()
-
-            switch finalValue {
-            case let .some(prices):
-                let chainPrices = zip(priceIds, prices).reduce(
-                    into: [ChainAssetId: PriceData]()
-                ) { result, item in
-                    guard let chainAssetIds = self?.availableTokenPrice.filter({ $0.value == item.0 })
-                        .map(\.key) else {
-                        return
-                    }
-
-                    for chainAssetId in chainAssetIds {
-                        result[chainAssetId] = item.1
-                    }
-                }
-
-                self?.presenter.didReceivePrices(result: .success(chainPrices))
-            case .none:
-                self?.presenter.didReceivePrices(result: nil)
-            }
-        }
-
-        let failureClosure = { [weak self] (error: Error) in
-            self?.presenter.didReceivePrices(result: .failure(error))
-            return
-        }
-
-        let options = DataProviderObserverOptions(
-            alwaysNotifyOnRefresh: true,
-            waitsInProgressSyncOnAdd: false
-        )
-
-        priceSubscription?.addObserver(
-            self,
-            deliverOn: .main,
-            executing: updateClosure,
-            failing: failureClosure,
-            options: options
-        )
+        eventCenter.add(observer: self, dispatchIn: .main)
     }
 }
 
 extension WalletListInteractor: WalletListInteractorInputProtocol {
-    func setup() {
-        provideHidesZeroBalances()
-        providerWalletInfo()
-
-        chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
-            self?.handle(changes: changes)
-        }
-
-        eventCenter.add(observer: self, dispatchIn: .main)
-    }
-
     func refresh() {
         if let provider = priceSubscription {
             provider.refresh()
         } else {
-            presenter.didReceivePrices(result: nil)
+            presenter?.didReceivePrices(result: nil)
         }
 
         nftSubscription?.refresh()
-    }
-}
-
-extension WalletListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
-    private func handleAccountBalanceError(_ error: Error, accountId: AccountId) {
-        let results = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = .failure(error)
-        }
-
-        presenter.didReceiveBalance(results: results)
-    }
-
-    private func handleAccountBalanceChanges(
-        _ changes: [DataProviderChange<AssetBalance>],
-        accountId: AccountId
-    ) {
-        // prepopulate non existing balances with zeros
-        let initialItems = assetBalanceIdMapping.values.reduce(
-            into: [ChainAssetId: Result<BigUInt?, Error>]()
-        ) { accum, assetBalanceId in
-            guard assetBalanceId.accountId == accountId else {
-                return
-            }
-
-            let chainAssetId = ChainAssetId(
-                chainId: assetBalanceId.chainId,
-                assetId: assetBalanceId.assetId
-            )
-
-            accum[chainAssetId] = .success(nil)
-        }
-
-        let results = changes.reduce(
-            into: initialItems
-        ) { accum, change in
-            switch change {
-            case let .insert(balance), let .update(balance):
-                guard
-                    let assetBalanceId = assetBalanceIdMapping[balance.identifier],
-                    assetBalanceId.accountId == accountId else {
-                    return
-                }
-
-                let chainAssetId = ChainAssetId(
-                    chainId: assetBalanceId.chainId,
-                    assetId: assetBalanceId.assetId
-                )
-
-                accum[chainAssetId] = .success(balance.totalInPlank)
-            case let .delete(deletedIdentifier):
-                guard let assetBalanceId = assetBalanceIdMapping[deletedIdentifier] else {
-                    return
-                }
-
-                let chainAssetId = ChainAssetId(
-                    chainId: assetBalanceId.chainId,
-                    assetId: assetBalanceId.assetId
-                )
-
-                accum[chainAssetId] = .success(0)
-            }
-        }
-
-        presenter.didReceiveBalance(results: results)
-    }
-
-    func handleAccountBalance(
-        result: Result<[DataProviderChange<AssetBalance>], Error>,
-        accountId: AccountId
-    ) {
-        switch result {
-        case let .success(changes):
-            handleAccountBalanceChanges(changes, accountId: accountId)
-        case let .failure(error):
-            handleAccountBalanceError(error, accountId: accountId)
-        }
     }
 }
 
@@ -413,16 +160,16 @@ extension WalletListInteractor: NftLocalStorageSubscriber, NftLocalSubscriptionH
 
         switch result {
         case let .success(changes):
-            presenter.didReceiveNft(changes: changes)
+            presenter?.didReceiveNft(changes: changes)
         case let .failure(error):
-            presenter.didReceiveNft(error: error)
+            presenter?.didReceiveNft(error: error)
         }
     }
 }
 
 extension WalletListInteractor: ConnectionStateSubscription {
     func didReceive(state: WebSocketEngine.State, for chainId: ChainModel.Id) {
-        presenter.didReceive(state: state, for: chainId)
+        presenter?.didReceive(state: state, for: chainId)
     }
 }
 
@@ -440,7 +187,7 @@ extension WalletListInteractor: EventVisitorProtocol {
             return
         }
 
-        presenter.didChange(name: name)
+        presenter?.didChange(name: name)
     }
 
     func processHideZeroBalances(event _: HideZeroBalancesChanged) {
