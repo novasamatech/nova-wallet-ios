@@ -18,7 +18,7 @@ enum ChainModelCompator {
         let priorityAndTestResult = priorityAndTestnetComparator(chain1: chain1, chain2: chain2)
 
         if priorityAndTestResult != .orderedSame {
-            return priorityAndTestResult == .orderedAscending ? true : false
+            return priorityAndTestResult == .orderedAscending
         } else {
             return chain1.name.lexicographicallyPrecedes(chain2.name)
         }
