@@ -1,7 +1,8 @@
 import SoraFoundation
 
-protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol, Localizable {
+protocol CrowdloanYourContributionsViewProtocol: ControllerBackedProtocol {
     func reload(contributions: [CrowdloanContributionViewModel])
+    func reload(returnInIntervals: [String?])
 }
 
 protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
@@ -10,13 +11,17 @@ protocol CrowdloanYourContributionsPresenterProtocol: AnyObject {
 
 protocol CrowdloanYourContributionsVMFactoryProtocol: AnyObject {
     func createViewModel(
-        for crowdloans: [Crowdloan],
-        contributions: CrowdloanContributionDict,
+        input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
-        displayInfo: CrowdloanDisplayInfoDict?,
-        chainAsset: ChainAssetDisplayInfo,
+        price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel
+
+    func createReturnInIntervals(
+        input: CrowdloanYourContributionsViewInput,
+        externalContributions: [ExternalContribution]?,
+        metadata: CrowdloanMetadata
+    ) -> [TimeInterval]
 }
 
 protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
@@ -24,7 +29,12 @@ protocol CrowdloanYourContributionsInteractorInputProtocol: AnyObject {
 }
 
 protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
-    func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)
+    func didReceiveExternalContributions(_ externalContributions: [ExternalContribution])
+    func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
+    func didReceiveBlockDuration(_ blockDuration: BlockTime)
+    func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod)
+    func didReceivePrice(_ priceData: PriceData?)
+    func didReceiveError(_ error: Error)
 }
 
 protocol CrowdloanYourContributionsWireframeProtocol: AnyObject {}
