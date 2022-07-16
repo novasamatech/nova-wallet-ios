@@ -17,6 +17,7 @@ protocol WalletListPresenterProtocol: AnyObject {
     func selectNfts()
     func refresh()
     func presentSettings()
+    func presentSearch()
 }
 
 protocol WalletListInteractorInputProtocol: WalletListBaseInteractorInputProtocol {
@@ -37,5 +38,6 @@ protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
     func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsManage(from view: WalletListViewProtocol?)
+    func showAssetsSearch(from view: WalletListViewProtocol?)
     func showNfts(from view: WalletListViewProtocol?)
 }
