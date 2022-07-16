@@ -6,7 +6,12 @@ final class AssetsSearchViewLayout: UIView {
         static let searchBarHeight: CGFloat = 54
     }
 
-    let searchView = CustomSearchView()
+    let searchView: CustomSearchView = {
+        let view = CustomSearchView()
+        view.searchBar.textField.autocorrectionType = .no
+        view.searchBar.textField.autocapitalizationType = .none
+        return view
+    }()
 
     var searchBar: CustomSearchBar { searchView.searchBar }
 
