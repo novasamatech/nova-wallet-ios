@@ -58,7 +58,7 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
 
         collectionViewLayout?.register(
             TokenGroupDecorationView.self,
-            forDecorationViewOfKind: WalletListFlowLayout.assetGroupDecoration
+            forDecorationViewOfKind: AssetsSearchFlowLayout.assetGroupDecoration
         )
 
         rootView.collectionView.dataSource = self
@@ -138,7 +138,7 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        WalletListFlowLayout.SectionType(section: section).cellSpacing
+        AssetsSearchFlowLayout.SectionType(section: section).cellSpacing
     }
 
     func collectionView(
@@ -146,7 +146,7 @@ extension AssetsSearchViewController: UICollectionViewDelegateFlowLayout {
         layout _: UICollectionViewLayout,
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
-        WalletListFlowLayout.SectionType(section: section).insets
+        AssetsSearchFlowLayout.SectionType(section: section).insets
     }
 }
 
@@ -160,7 +160,7 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
         case .technical:
             return groupsState.isEmpty ? 1 : 0
         case .assetGroup:
-            if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
+            if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(section) {
                 return groupsState.groups[groupIndex].assets.count
             } else {
                 return 0
@@ -192,7 +192,7 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
+        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
             let viewModel = groupsState.groups[groupIndex].assets[assetIndex]
@@ -225,7 +225,7 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        if let groupIndex = WalletListFlowLayout.SectionType.assetsGroupIndexFromSection(
+        if let groupIndex = AssetsSearchFlowLayout.SectionType.assetsGroupIndexFromSection(
             indexPath.section
         ) {
             let viewModel = groupsState.groups[groupIndex]

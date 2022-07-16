@@ -20,7 +20,7 @@ final class AssetsSearchViewLayout: UIView {
         let view = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         view.backgroundColor = .clear
         view.contentInsetAdjustmentBehavior = .always
-        view.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 16.0, right: 0.0)
+        view.contentInset = UIEdgeInsets(top: 12.0, left: 0.0, bottom: 16.0, right: 0.0)
 
         return view
     }()
@@ -42,15 +42,16 @@ final class AssetsSearchViewLayout: UIView {
             make.edges.equalToSuperview()
         }
 
-        addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-
         addSubview(searchView)
         searchView.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview()
+            make.leading.top.trailing.equalToSuperview()
             make.bottom.equalTo(safeAreaLayoutGuide.snp.top).offset(54.0)
+        }
+
+        addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(searchView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 }

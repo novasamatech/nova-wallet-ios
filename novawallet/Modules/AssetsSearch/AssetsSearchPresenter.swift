@@ -1,22 +1,160 @@
 import Foundation
 import BigInt
 import RobinHood
+import SoraFoundation
 
-final class AssetsSearchPresenter {
+final class AssetsSearchPresenter: WalletListBasePresenter {
     weak var view: AssetsSearchViewProtocol?
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
+    let viewModelFactory: WalletListAssetViewModelFactoryProtocol
 
-    private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
-    private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
-    private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
+    private var query: String = ""
 
     init(
         interactor: AssetsSearchInteractorInputProtocol,
-        wireframe: AssetsSearchWireframeProtocol
+        wireframe: AssetsSearchWireframeProtocol,
+        viewModelFactory: WalletListAssetViewModelFactoryProtocol,
+        localizationManager: LocalizationManagerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.viewModelFactory = viewModelFactory
+
+        super.init()
+
+        self.localizationManager = localizationManager
+    }
+
+    private func filterAndUpdateView() {
+        applyFilter()
+        provideAssetsViewModel()
+    }
+
+    private func applyFilter() {
+        let filteredAssets = filterAssets(for: query, chains: allChains)
+        updateGroups(from: filteredAssets, allChains: allChains)
+    }
+
+    private func updateGroups(from assets: [ChainAsset], allChains: [ChainModel.Id: ChainModel]) {
+        let assetModels = assets.reduce(into: [ChainModel.Id: [WalletListAssetModel]]()) { result, chainAsset in
+            let assetModel = createAssetModel(for: chainAsset.chain, assetModel: chainAsset.asset)
+            let currentModels = result[chainAsset.chain.chainId] ?? []
+            result[chainAsset.chain.chainId] = currentModels + [assetModel]
+        }
+
+        let groupAssetCalculators = assetModels.mapValues { models in
+            Self.createAssetsDiffCalculator(from: models)
+        }
+
+        let chainModels: [WalletListGroupModel] = assetModels.compactMap { chainId, assetModels in
+            guard let chain = allChains[chainId] else {
+                return nil
+            }
+
+            return createGroupModel(from: chain, assets: assetModels)
+        }
+
+        let groupChainCalculator = Self.createGroupsDiffCalculator(from: chainModels)
+
+        storeGroups(groupChainCalculator, groupLists: groupAssetCalculators)
+    }
+
+    private func filterAssets(for query: String, chains: [ChainModel.Id: ChainModel]) -> [ChainAsset] {
+        let chainAssets = chains.values.flatMap { chain in
+            chain.assets.map { ChainAsset(chain: chain, asset: $0) }
+        }
+
+        guard !query.isEmpty else {
+            return chainAssets
+        }
+
+        let allAssetsMatching = chainAssets.compactMap { chainAsset in
+            SearchMatch<ChainAsset>.matchString(for: query, recordField: chainAsset.asset.symbol, record: chainAsset)
+        }
+
+        let allMatchedAssets = allAssetsMatching.map(\.item)
+
+        if allAssetsMatching.contains(where: { $0.isFull }) {
+            return allMatchedAssets
+        }
+
+        let matchedChainAssetsIds = Set(allMatchedAssets.map(\.chainAssetId))
+
+        let allMatchedChains = chains.values.reduce(into: [ChainAsset]()) { result, chain in
+            let match = SearchMatch<ChainAsset>.matchInclusion(
+                for: query,
+                recordField: chain.name,
+                record: chain
+            )
+
+            guard match != nil else {
+                return
+            }
+
+            chain.assets.forEach { asset in
+                let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: asset.assetId)
+
+                if !matchedChainAssetsIds.contains(chainAssetId) {
+                    let chainAsset = ChainAsset(chain: chain, asset: asset)
+                    result.append(chainAsset)
+                }
+            }
+        }
+
+        return allMatchedAssets + allMatchedChains
+    }
+
+    private func provideAssetsViewModel() {
+        let maybePrices = try? priceResult?.get()
+        let viewModels: [WalletListGroupViewModel] = groups.allItems.compactMap { groupModel in
+            createGroupViewModel(from: groupModel, maybePrices: maybePrices)
+        }
+
+        if viewModels.isEmpty, !balanceResults.isEmpty, balanceResults.count >= allChains.count {
+            view?.didReceiveGroups(state: .empty)
+        } else {
+            view?.didReceiveGroups(state: .list(groups: viewModels))
+        }
+    }
+
+    private func createGroupViewModel(
+        from groupModel: WalletListGroupModel,
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> WalletListGroupViewModel? {
+        let chain = groupModel.chain
+
+        let assets = groupLists[chain.chainId]?.allItems ?? []
+
+        let assetInfoList: [WalletListAssetAccountInfo] = assets.map { asset in
+            createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
+        }
+
+        return viewModelFactory.createGroupViewModel(
+            for: chain,
+            assets: assetInfoList,
+            value: groupModel.chainValue,
+            connected: true,
+            locale: selectedLocale
+        )
+    }
+
+    override func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        storeChainChanges(changes)
+
+        filterAndUpdateView()
+    }
+
+    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+        super.didReceiveBalance(results: results)
+
+        filterAndUpdateView()
+    }
+
+    override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
+        super.didReceivePrices(result: result)
+
+        filterAndUpdateView()
     }
 }
 
@@ -27,41 +165,23 @@ extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
 
     func selectAsset(for _: ChainAssetId) {}
 
-    func updateSearch(query _: String) {}
+    func updateSearch(query: String) {
+        self.query = query
+
+        filterAndUpdateView()
+    }
 
     func cancel() {
         wireframe.close(view: view)
     }
 }
 
-extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
-    func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
-        allChains = changes.reduce(into: allChains) { result, change in
-            switch change {
-            case let .insert(newItem):
-                result[newItem.chainId] = newItem
-            case let .update(newItem):
-                result[newItem.chainId] = newItem
-            case let .delete(deletedIdentifier):
-                result[deletedIdentifier] = nil
-            }
+extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {}
+
+extension AssetsSearchPresenter: Localizable {
+    func applyLocalization() {
+        if let view = view, view.isSetup {
+            provideAssetsViewModel()
         }
     }
-
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
-        for (chainAssetId, result) in results {
-            switch result {
-            case let .success(maybeAmount):
-                if let amount = maybeAmount {
-                    balanceResults[chainAssetId] = .success(amount)
-                } else if balanceResults[chainAssetId] == nil {
-                    balanceResults[chainAssetId] = .success(0)
-                }
-            case let .failure(error):
-                balanceResults[chainAssetId] = .failure(error)
-            }
-        }
-    }
-
-    func didReceivePrices(result _: Result<[ChainAssetId: PriceData], Error>?) {}
 }
