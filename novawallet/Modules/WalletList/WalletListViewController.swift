@@ -267,7 +267,8 @@ extension WalletListViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        cell.locale = selectedLocale
+        let text = R.string.localizable.walletListEmptyMessage(preferredLanguages: selectedLocale.rLanguages)
+        cell.bind(text: text)
 
         return cell
     }
