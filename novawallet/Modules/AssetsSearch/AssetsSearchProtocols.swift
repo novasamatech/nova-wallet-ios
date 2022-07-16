@@ -16,3 +16,12 @@ protocol AssetsSearchInteractorOutputProtocol: WalletListBaseInteractorOutputPro
 protocol AssetsSearchWireframeProtocol: AnyObject {
     func close(view: AssetsSearchViewProtocol?)
 }
+
+protocol AssetsSearchDelegate: AnyObject {
+    func assetSearchDidSelect(chainAssetId: ChainAssetId)
+    func assetSearchDidCancel()
+}
+
+extension AssetsSearchDelegate {
+    func assetSearchDidCancel() {}
+}
