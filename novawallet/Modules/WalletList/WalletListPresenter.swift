@@ -261,6 +261,16 @@ final class WalletListPresenter: WalletListBasePresenter {
         scheduler = nil
     }
 
+    private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+        guard
+            let chain = allChains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
+            return
+        }
+
+        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+    }
+
     // MARK: Interactor Output overridings
 
     override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
@@ -294,13 +304,7 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     }
 
     func selectAsset(for chainAssetId: ChainAssetId) {
-        guard
-            let chain = allChains[chainAssetId.chainId],
-            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
-            return
-        }
-
-        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+        presentAssetDetails(for: chainAssetId)
     }
 
     func selectNfts() {
@@ -316,7 +320,7 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     }
 
     func presentSearch() {
-        wireframe.showAssetsSearch(from: view)
+        wireframe.showAssetsSearch(from: view, delegate: self)
     }
 }
 
@@ -376,5 +380,11 @@ extension WalletListPresenter: Localizable {
 extension WalletListPresenter: SchedulerDelegate {
     func didTrigger(scheduler _: SchedulerProtocol) {
         updateAssetsView()
+    }
+}
+
+extension WalletListPresenter: AssetsSearchDelegate {
+    func assetSearchDidSelect(chainAssetId: ChainAssetId) {
+        presentAssetDetails(for: chainAssetId)
     }
 }

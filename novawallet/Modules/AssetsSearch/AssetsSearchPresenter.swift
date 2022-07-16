@@ -5,6 +5,8 @@ import SoraFoundation
 
 final class AssetsSearchPresenter: WalletListBasePresenter {
     weak var view: AssetsSearchViewProtocol?
+    weak var delegate: AssetsSearchDelegate?
+
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
     let viewModelFactory: WalletListAssetViewModelFactoryProtocol
@@ -12,11 +14,13 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
     private var query: String = ""
 
     init(
+        delegate: AssetsSearchDelegate,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
         viewModelFactory: WalletListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
+        self.delegate = delegate
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
@@ -163,7 +167,11 @@ extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
         interactor.setup()
     }
 
-    func selectAsset(for _: ChainAssetId) {}
+    func selectAsset(for chainAssetId: ChainAssetId) {
+        delegate?.assetSearchDidSelect(chainAssetId: chainAssetId)
+
+        wireframe.close(view: view)
+    }
 
     func updateSearch(query: String) {
         self.query = query
