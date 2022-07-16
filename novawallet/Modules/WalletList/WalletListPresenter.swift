@@ -220,34 +220,6 @@ final class WalletListPresenter: WalletListBasePresenter {
         )
     }
 
-    private func createAssetAccountInfo(
-        from asset: WalletListAssetModel,
-        chain: ChainModel,
-        maybePrices: [ChainAssetId: PriceData]?
-    ) -> WalletListAssetAccountInfo {
-        let assetModel = asset.assetModel
-        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
-
-        let assetInfo = assetModel.displayInfo(with: chain.icon)
-
-        let priceData: PriceData?
-
-        if let prices = maybePrices {
-            priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
-        } else {
-            priceData = nil
-        }
-
-        let balance = try? asset.balanceResult?.get()
-
-        return WalletListAssetAccountInfo(
-            assetId: asset.assetModel.assetId,
-            assetInfo: assetInfo,
-            balance: balance,
-            priceData: priceData
-        )
-    }
-
     private func provideNftViewModel() {
         let allNfts = nftList.allItems
 

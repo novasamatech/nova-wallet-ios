@@ -13,7 +13,19 @@ struct AssetsSearchViewFactory {
 
         let wireframe = AssetsSearchWireframe()
 
-        let presenter = AssetsSearchPresenter(interactor: interactor, wireframe: wireframe)
+        let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
+        let viewModelFactory = WalletListAssetViewModelFactory(
+            priceFormatter: priceFormatter,
+            assetFormatterFactory: AssetBalanceFormatterFactory(),
+            percentFormatter: NumberFormatter.signedPercent.localizableResource()
+        )
+
+        let presenter = AssetsSearchPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            viewModelFactory: viewModelFactory,
+            localizationManager: LocalizationManager.shared
+        )
 
         let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
 
