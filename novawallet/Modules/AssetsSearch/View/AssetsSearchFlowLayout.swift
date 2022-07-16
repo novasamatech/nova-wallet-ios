@@ -52,7 +52,7 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .technical:
                 return UIEdgeInsets(
-                    top: 0.0,
+                    top: 12.0,
                     left: 0,
                     bottom: 0.0,
                     right: 0
