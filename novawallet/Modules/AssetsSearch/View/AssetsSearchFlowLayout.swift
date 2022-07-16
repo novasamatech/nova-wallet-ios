@@ -1,5 +1,9 @@
 import UIKit
 
+enum AssetsSearchMeasurement {
+    static let emptyStateCellHeight: CGFloat = 168
+}
+
 final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
     static let assetGroupDecoration = "assetGroupDecoration"
 
@@ -89,7 +93,7 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
         var height: CGFloat {
             switch self {
             case .emptyState:
-                return WalletListMeasurement.emptyStateCellHeight
+                return AssetsSearchMeasurement.emptyStateCellHeight
             case .asset:
                 return WalletListMeasurement.assetHeight
             }

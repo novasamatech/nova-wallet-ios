@@ -12,9 +12,11 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
 
     private var groupsState: WalletListGroupState = .list(groups: [])
 
-    init(presenter: AssetsSearchPresenterProtocol, localizationManager _: LocalizationManagerProtocol) {
+    init(presenter: AssetsSearchPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
     }
 
     @available(*, unavailable)
@@ -177,7 +179,8 @@ extension AssetsSearchViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        cell.locale = selectedLocale
+        let text = R.string.localizable.assetsSearchEmpty(preferredLanguages: selectedLocale.rLanguages)
+        cell.bind(text: text)
 
         return cell
     }
