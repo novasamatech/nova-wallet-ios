@@ -830,3 +830,4 @@
 "crowdloan.returns.in.format" = "Returns in %@";
 "crowdloan.return.in.progress" = "To be returned by parachain";
 "assets.search.placeholder" = "Search by network or token";
+"assets.search.empty" = "No networks or tokens with entered name were found";

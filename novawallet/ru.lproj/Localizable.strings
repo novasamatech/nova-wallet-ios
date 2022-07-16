@@ -830,3 +830,4 @@
 "crowdloan.returns.in.format" = "Возращаются через %@";
 "crowdloan.return.in.progress" = "Возвращается парачейном";
 "assets.search.placeholder" = "Поиск по сетям или токенам";
+"assets.search.empty" = "Не удалось найти сеть или токен по введенному имени";
