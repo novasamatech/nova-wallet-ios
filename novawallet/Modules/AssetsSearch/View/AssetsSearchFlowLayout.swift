@@ -48,7 +48,7 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
             switch self {
             case .technical:
                 return UIEdgeInsets(
-                    top: 76.0,
+                    top: 0.0,
                     left: 0,
                     bottom: 0.0,
                     right: 0
@@ -160,7 +160,8 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
             let section = SectionType.assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
-            let contentHeight = WalletListMeasurement.assetHeaderHeight + CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
+            let contentHeight = WalletListMeasurement.assetHeaderHeight +
+                CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
             let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
                 WalletListMeasurement.decorationInset
 

@@ -22,6 +22,55 @@ class WalletListBasePresenter: WalletListBaseInteractorOutputProtocol {
         groupLists = [:]
     }
 
+    func storeChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        allChains = changes.reduce(into: allChains) { result, change in
+            switch change {
+            case let .insert(newItem):
+                result[newItem.chainId] = newItem
+            case let .update(newItem):
+                result[newItem.chainId] = newItem
+            case let .delete(deletedIdentifier):
+                result[deletedIdentifier] = nil
+            }
+        }
+    }
+
+    func storeGroups(
+        _ groups: ListDifferenceCalculator<WalletListGroupModel>,
+        groupLists: [ChainModel.Id: ListDifferenceCalculator<WalletListAssetModel>]
+    ) {
+        self.groups = groups
+        self.groupLists = groupLists
+    }
+
+    func createAssetAccountInfo(
+        from asset: WalletListAssetModel,
+        chain: ChainModel,
+        maybePrices: [ChainAssetId: PriceData]?
+    ) -> WalletListAssetAccountInfo {
+        let assetModel = asset.assetModel
+        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
+
+        let assetInfo = assetModel.displayInfo(with: chain.icon)
+
+        let priceData: PriceData?
+
+        if let prices = maybePrices {
+            priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
+        } else {
+            priceData = nil
+        }
+
+        let balance = try? asset.balanceResult?.get()
+
+        return WalletListAssetAccountInfo(
+            assetId: asset.assetModel.assetId,
+            assetInfo: assetInfo,
+            balance: balance,
+            priceData: priceData
+        )
+    }
+
     func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
         guard let result = result else {
             return
@@ -70,16 +119,7 @@ class WalletListBasePresenter: WalletListBaseInteractorOutputProtocol {
             }
         }
 
-        allChains = changes.reduce(into: allChains) { result, change in
-            switch change {
-            case let .insert(newItem):
-                result[newItem.chainId] = newItem
-            case let .update(newItem):
-                result[newItem.chainId] = newItem
-            case let .delete(deletedIdentifier):
-                result[deletedIdentifier] = nil
-            }
-        }
+        storeChainChanges(changes)
 
         groups.apply(changes: groupChanges)
     }
