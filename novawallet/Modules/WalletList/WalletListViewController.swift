@@ -80,6 +80,10 @@ final class WalletListViewController: UIViewController, ViewHolder {
     @objc func actionSettings() {
         presenter.presentSettings()
     }
+
+    @objc func actionSearch() {
+        presenter.presentSearch()
+    }
 }
 
 extension WalletListViewController: UICollectionViewDelegateFlowLayout {
@@ -101,7 +105,7 @@ extension WalletListViewController: UICollectionViewDelegateFlowLayout {
         case .assetGroup:
             return CGSize(
                 width: collectionView.frame.width,
-                height: WalletListFlowLayout.Constants.assetHeaderHeight
+                height: WalletListMeasurement.assetHeaderHeight
             )
 
         case .summary, .settings, .nfts:
@@ -219,9 +223,15 @@ extension WalletListViewController: UICollectionViewDataSource {
 
         settingsCell.locale = selectedLocale
 
-        settingsCell.actionButton.addTarget(
+        settingsCell.settingsButton.addTarget(
             self,
             action: #selector(actionSettings),
+            for: .touchUpInside
+        )
+
+        settingsCell.searchButton.addTarget(
+            self,
+            action: #selector(actionSearch),
             for: .touchUpInside
         )
 

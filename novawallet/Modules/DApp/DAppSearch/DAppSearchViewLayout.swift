@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 
 final class DAppSearchViewLayout: UIView {
-    let searchBar = DAppSearchBar()
+    let searchBar = CustomSearchBar()
 
     let tableView: UITableView = {
         let view = UITableView()

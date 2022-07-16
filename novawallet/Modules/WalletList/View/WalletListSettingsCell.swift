@@ -8,9 +8,21 @@ final class WalletListSettingsCell: UICollectionViewCell {
         return view
     }()
 
-    let actionButton: TriangularedBlurButton = {
+    let settingsButton: TriangularedBlurButton = {
         let button = TriangularedBlurButton()
         button.imageWithTitleView?.iconImage = R.image.iconAssetsSettings()?
+            .withRenderingMode(.alwaysTemplate)
+            .tinted(with: R.color.colorWhite80()!)
+        button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
+        button.changesContentOpacityWhenHighlighted = true
+        button.triangularedBlurView?.overlayView.highlightedFillColor =
+            R.color.colorAccentSelected()!
+        return button
+    }()
+
+    let searchButton: TriangularedBlurButton = {
+        let button = TriangularedBlurButton()
+        button.imageWithTitleView?.iconImage = R.image.iconSearchButton()?
             .withRenderingMode(.alwaysTemplate)
             .tinted(with: R.color.colorWhite80()!)
         button.contentInsets = UIEdgeInsets(top: 6, left: 12, bottom: 6, right: 12)
@@ -47,10 +59,17 @@ final class WalletListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLayout() {
-        addSubview(actionButton)
+        addSubview(settingsButton)
 
-        actionButton.snp.makeConstraints { make in
+        settingsButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
+            make.centerY.equalToSuperview()
+        }
+
+        addSubview(searchButton)
+
+        searchButton.snp.makeConstraints { make in
+            make.trailing.equalTo(settingsButton.snp.leading).inset(-8.0)
             make.centerY.equalToSuperview()
         }
 
@@ -58,7 +77,7 @@ final class WalletListSettingsCell: UICollectionViewCell {
 
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.trailing.lessThanOrEqualTo(actionButton.snp.leading).offset(-8.0)
+            make.trailing.lessThanOrEqualTo(searchButton.snp.leading).offset(-8.0)
             make.centerY.equalToSuperview()
         }
     }

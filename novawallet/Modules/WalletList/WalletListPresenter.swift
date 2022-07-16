@@ -342,6 +342,10 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     func presentSettings() {
         wireframe.showAssetsManage(from: view)
     }
+
+    func presentSearch() {
+        wireframe.showAssetsSearch(from: view)
+    }
 }
 
 extension WalletListPresenter: WalletListInteractorOutputProtocol {
