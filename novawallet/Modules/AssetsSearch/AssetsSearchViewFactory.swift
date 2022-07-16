@@ -1,4 +1,5 @@
 import Foundation
+import SoraFoundation
 
 struct AssetsSearchViewFactory {
     static func createView() -> AssetsSearchViewProtocol? {
@@ -14,7 +15,7 @@ struct AssetsSearchViewFactory {
 
         let presenter = AssetsSearchPresenter(interactor: interactor, wireframe: wireframe)
 
-        let view = AssetsSearchViewController(presenter: presenter)
+        let view = AssetsSearchViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
 
         presenter.view = view
         interactor.presenter = presenter

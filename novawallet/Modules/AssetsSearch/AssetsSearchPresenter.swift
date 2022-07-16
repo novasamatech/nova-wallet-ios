@@ -21,7 +21,17 @@ final class AssetsSearchPresenter {
 }
 
 extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
-    func setup() {}
+    func setup() {
+        interactor.setup()
+    }
+
+    func selectAsset(for _: ChainAssetId) {}
+
+    func updateSearch(query _: String) {}
+
+    func cancel() {
+        wireframe.close(view: view)
+    }
 }
 
 extension AssetsSearchPresenter: AssetsSearchInteractorOutputProtocol {
