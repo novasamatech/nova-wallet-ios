@@ -34,7 +34,11 @@ final class WalletListViewModelFactory: WalletListAssetViewModelFactory {
         self.quantityFormatter = quantityFormatter
         self.nftDownloadService = nftDownloadService
 
-        super.init(priceFormatter: priceFormatter, assetFormatterFactory: assetFormatterFactory, percentFormatter: percentFormatter)
+        super.init(
+            priceFormatter: priceFormatter,
+            assetFormatterFactory: assetFormatterFactory,
+            percentFormatter: percentFormatter
+        )
     }
 
     private lazy var iconGenerator = NovaIconGenerator()
