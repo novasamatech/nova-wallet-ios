@@ -827,7 +827,7 @@
 "wallet.transfer.token.format_v2_9_1" = "Отправить %@";
 "wallet.transfer.on" = "в";
 "common.request.retry" = "Загрузка данных завершилась ошибкой. Хотите повторить?";
-"crowdloan.returns.in.format" = "Возращаются через %@";
-"crowdloan.return.in.progress" = "Возвращается парачейном";
-"assets.search.placeholder" = "Поиск по сетям или токенам";
-"assets.search.empty" = "Не удалось найти сеть или токен по введенному имени";
+"crowdloan.return.in.progress" = "Ожидает возвращения парачейном";
+"crowdloan.returns.in.format" = "Вернется через %s";
+"assets.search.empty" = "Не найдено сетей или токенов с\nуказаным именем";
+"assets.search.placeholder" = "Поиск по названию сети или токена";
