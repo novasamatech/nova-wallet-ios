@@ -91,7 +91,10 @@ final class WalletListInteractor: WalletListBaseInteractor {
         nftChainIds = nil
     }
 
-    override func applyChanges(allChanges: [DataProviderChange<ChainModel>], accountDependentChanges: [DataProviderChange<ChainModel>]) {
+    override func applyChanges(
+        allChanges: [DataProviderChange<ChainModel>],
+        accountDependentChanges: [DataProviderChange<ChainModel>]
+    ) {
         super.applyChanges(allChanges: allChanges, accountDependentChanges: accountDependentChanges)
 
         updateConnectionStatus(from: allChanges)

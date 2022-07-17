@@ -192,7 +192,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
 
         if hasSummarySection {
-            groupY = WalletListMeasurement.accountHeight + SectionType.summary.cellSpacing + WalletListMeasurement.totalBalanceHeight
+            groupY = WalletListMeasurement.accountHeight + SectionType.summary.cellSpacing +
+                WalletListMeasurement.totalBalanceHeight
         }
 
         groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
@@ -208,16 +209,16 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         groupY += SectionType.settings.insets.top + WalletListMeasurement.settingsHeight +
             SectionType.settings.insets.bottom
 
-        let (attributes, _) = (0 ..< groupsCount).reduce(
-            ([UICollectionViewLayoutAttributes](), groupY)
-        ) { result, groupIndex in
+        let initAttributes = [UICollectionViewLayoutAttributes]()
+        let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, groupY)) { result, groupIndex in
             let attributes = result.0
             let positionY = result.1
 
             let section = SectionType.assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
-            let contentHeight = WalletListMeasurement.assetHeaderHeight + CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
+            let contentHeight = WalletListMeasurement.assetHeaderHeight +
+                CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
             let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
                 WalletListMeasurement.decorationInset
 
