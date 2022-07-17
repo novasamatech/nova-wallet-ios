@@ -97,7 +97,10 @@ final class RuntimeHelper {
         case .v14(let metadata):
             return try TypeRegistryCatalog.createFromSiDefinition(
                 versioningData: networkData,
-                runtimeMetadata: metadata
+                runtimeMetadata: metadata,
+                customExtensions: DefaultExtrinsicExtension.coders,
+                customTypeMapper: SiDataTypeMapper(),
+                customNameMapper: ScaleInfoCamelCaseMapper()
             )
         }
 
