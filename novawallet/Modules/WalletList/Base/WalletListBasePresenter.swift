@@ -43,6 +43,12 @@ class WalletListBasePresenter: WalletListBaseInteractorOutputProtocol {
         self.groupLists = groupLists
     }
 
+    func applyInitState(_ initState: WalletListInitState) {
+        allChains = initState.allChains
+        balanceResults = initState.balanceResults
+        priceResult = initState.priceResult
+    }
+
     func createAssetAccountInfo(
         from asset: WalletListAssetModel,
         chain: ChainModel,
