@@ -23,6 +23,7 @@ class CrowdloanContributionSetupPresenter {
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
+    private var leasingOffset: LeasingOffset?
     private var minimumBalance: BigUInt?
     var minimumContribution: BigUInt?
 
@@ -34,11 +35,13 @@ class CrowdloanContributionSetupPresenter {
         if
             let blockNumber = blockNumber,
             let blockDuration = blockDuration,
-            let leasingPeriod = leasingPeriod {
+            let leasingPeriod = leasingPeriod,
+            let leasingOffset = leasingOffset {
             return CrowdloanMetadata(
                 blockNumber: blockNumber,
                 blockDuration: blockDuration,
-                leasingPeriod: leasingPeriod
+                leasingPeriod: leasingPeriod,
+                leasingOffset: leasingOffset
             )
         } else {
             return nil
@@ -427,6 +430,17 @@ extension CrowdloanContributionSetupPresenter: CrowdloanContributionSetupInterac
         switch result {
         case let .success(leasingPeriod):
             self.leasingPeriod = leasingPeriod
+
+            provideCrowdloanContributionViewModel()
+        case let .failure(error):
+            logger?.error("Did receive leasing period error: \(error)")
+        }
+    }
+
+    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>) {
+        switch result {
+        case let .success(leasingOffset):
+            self.leasingOffset = leasingOffset
 
             provideCrowdloanContributionViewModel()
         case let .failure(error):
