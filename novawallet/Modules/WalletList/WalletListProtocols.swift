@@ -38,6 +38,12 @@ protocol WalletListWireframeProtocol: AnyObject {
     func showWalletList(from view: WalletListViewProtocol?)
     func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel)
     func showAssetsManage(from view: WalletListViewProtocol?)
-    func showAssetsSearch(from view: WalletListViewProtocol?, initState: WalletListInitState, delegate: AssetsSearchDelegate)
+
+    func showAssetsSearch(
+        from view: WalletListViewProtocol?,
+        initState: WalletListInitState,
+        delegate: AssetsSearchDelegate
+    )
+
     func showNfts(from view: WalletListViewProtocol?)
 }

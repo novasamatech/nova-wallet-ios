@@ -2,7 +2,10 @@ import Foundation
 import SoraFoundation
 
 struct AssetsSearchViewFactory {
-    static func createView(for initState: WalletListInitState, delegate: AssetsSearchDelegate) -> AssetsSearchViewProtocol? {
+    static func createView(
+        for initState: WalletListInitState,
+        delegate: AssetsSearchDelegate
+    ) -> AssetsSearchViewProtocol? {
         let interactor = AssetsSearchInteractor(
             selectedWalletSettings: SelectedWalletSettings.shared,
             chainRegistry: ChainRegistryFacade.sharedRegistry,
