@@ -49,8 +49,12 @@ final class WalletListWireframe: WalletListWireframeProtocol {
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
-    func showAssetsSearch(from view: WalletListViewProtocol?, delegate: AssetsSearchDelegate) {
-        guard let assetsSearchView = AssetsSearchViewFactory.createView(for: delegate) else {
+    func showAssetsSearch(
+        from view: WalletListViewProtocol?,
+        initState: WalletListInitState,
+        delegate: AssetsSearchDelegate
+    ) {
+        guard let assetsSearchView = AssetsSearchViewFactory.createView(for: initState, delegate: delegate) else {
             return
         }
 

@@ -320,7 +320,13 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     }
 
     func presentSearch() {
-        wireframe.showAssetsSearch(from: view, delegate: self)
+        let initState = WalletListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains
+        )
+
+        wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
     }
 }
 

@@ -683,6 +683,7 @@
 		8448F7A22882ABF50080CEA9 /* CustomSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */; };
 		8448F7A42882E21E0080CEA9 /* SearchMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A32882E21E0080CEA9 /* SearchMatch.swift */; };
 		8448F7A6288314250080CEA9 /* WalletListAssetsViewModelFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A5288314250080CEA9 /* WalletListAssetsViewModelFactory.swift */; };
+		8448F7A8288401A60080CEA9 /* WalletListInitState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8448F7A7288401A60080CEA9 /* WalletListInitState.swift */; };
 		84490E7427F2CE2C00941837 /* TransferMetadataContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */; };
 		8449660A25E15ECA00F2E9F5 /* RewardDestinationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */; };
 		844AE53C2861B3BC0020ECBC /* XcmTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */; };
@@ -3046,6 +3047,7 @@
 		8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchView.swift; sourceTree = "<group>"; };
 		8448F7A32882E21E0080CEA9 /* SearchMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMatch.swift; sourceTree = "<group>"; };
 		8448F7A5288314250080CEA9 /* WalletListAssetsViewModelFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListAssetsViewModelFactory.swift; sourceTree = "<group>"; };
+		8448F7A7288401A60080CEA9 /* WalletListInitState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListInitState.swift; sourceTree = "<group>"; };
 		84490E7327F2CE2C00941837 /* TransferMetadataContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransferMetadataContext.swift; sourceTree = "<group>"; };
 		8449660925E15ECA00F2E9F5 /* RewardDestinationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RewardDestinationViewModel.swift; sourceTree = "<group>"; };
 		844AE53B2861B3BC0020ECBC /* XcmTransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XcmTransferService.swift; sourceTree = "<group>"; };
@@ -7210,6 +7212,7 @@
 				84735E75288197F900BADC1B /* WalletListBasePresenter.swift */,
 				84735E772881986900BADC1B /* WalletListBasePresenter+Model.swift */,
 				8448F7A5288314250080CEA9 /* WalletListAssetsViewModelFactory.swift */,
+				8448F7A7288401A60080CEA9 /* WalletListInitState.swift */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -13825,6 +13828,7 @@
 				912ECC319A48CAD09FB694AC /* AssetsSearchProtocols.swift in Sources */,
 				8582395FEF296771447439FF /* AssetsSearchWireframe.swift in Sources */,
 				CC1723581BAC50E8B9E6DE48 /* AssetsSearchPresenter.swift in Sources */,
+				8448F7A8288401A60080CEA9 /* WalletListInitState.swift in Sources */,
 				0909E06D5D06569554F70DD8 /* AssetsSearchInteractor.swift in Sources */,
 				2F21134DE157A4B98ED309E2 /* AssetsSearchViewController.swift in Sources */,
 				73B9C322A5033A4534238B25 /* AssetsSearchViewLayout.swift in Sources */,

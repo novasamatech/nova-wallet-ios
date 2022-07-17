@@ -14,6 +14,7 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
     private var query: String = ""
 
     init(
+        initState: WalletListInitState,
         delegate: AssetsSearchDelegate,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
@@ -28,6 +29,8 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
         super.init()
 
         self.localizationManager = localizationManager
+
+        applyInitState(initState)
     }
 
     private func filterAndUpdateView() {
@@ -164,6 +167,8 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
 
 extension AssetsSearchPresenter: AssetsSearchPresenterProtocol {
     func setup() {
+        filterAndUpdateView()
+
         interactor.setup()
     }
 
