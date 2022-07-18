@@ -8066,6 +8066,21 @@ import Foundation
     
     
     
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveLeasingOffset(result: result))
+        
+    }
+    
+    
+    
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)  {
         
     return cuckoo_manager.call("didReceiveMinimumBalance(result: Result<BigUInt, Error>)",
@@ -8163,6 +8178,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<LeasingOffset, Error>)> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BigUInt, Error>)> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionInteractorOutputProtocol.self, method: "didReceiveMinimumBalance(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
@@ -8236,6 +8256,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<LeasingOffset, Error>), Void> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<BigUInt, Error>), Void> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveMinimumBalance(result: Result<BigUInt, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -8301,6 +8327,12 @@ import Foundation
     
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -9402,6 +9434,21 @@ import SoraFoundation
     
     
     
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveLeasingOffset(result: result))
+        
+    }
+    
+    
+    
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)  {
         
     return cuckoo_manager.call("didReceiveMinimumBalance(result: Result<BigUInt, Error>)",
@@ -9514,6 +9561,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<LeasingOffset, Error>)> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BigUInt, Error>)> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionConfirmInteractorOutputProtocol.self, method: "didReceiveMinimumBalance(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
@@ -9605,6 +9657,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<LeasingOffset, Error>), Void> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<BigUInt, Error>), Void> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveMinimumBalance(result: Result<BigUInt, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -9688,6 +9746,12 @@ import SoraFoundation
     
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -10967,6 +11031,21 @@ import SoraFoundation
     
     
     
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveLeasingOffset(result: result))
+        
+    }
+    
+    
+    
      func didReceiveMinimumBalance(result: Result<BigUInt, Error>)  {
         
     return cuckoo_manager.call("didReceiveMinimumBalance(result: Result<BigUInt, Error>)",
@@ -11064,6 +11143,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<LeasingOffset, Error>)> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<BigUInt, Error>)> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanContributionSetupInteractorOutputProtocol.self, method: "didReceiveMinimumBalance(result: Result<BigUInt, Error>)", parameterMatchers: matchers))
@@ -11137,6 +11221,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<LeasingOffset, Error>), Void> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveMinimumBalance<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<BigUInt, Error>), Void> where M1.MatchedType == Result<BigUInt, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<BigUInt, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveMinimumBalance(result: Result<BigUInt, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -11202,6 +11292,12 @@ import SoraFoundation
     
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -12450,6 +12546,21 @@ import SoraFoundation
     
     
     
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)  {
+        
+    return cuckoo_manager.call("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)",
+            parameters: (result),
+            escapingParameters: (result),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.didReceiveLeasingOffset(result: result))
+        
+    }
+    
+    
+    
      func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)  {
         
     return cuckoo_manager.call("didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)",
@@ -12557,6 +12668,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)", parameterMatchers: matchers))
 	    }
 	    
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<LeasingOffset, Error>)> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", parameterMatchers: matchers))
+	    }
+	    
 	    func didReceiveContributions<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(Result<CrowdloanContributionDict, Error>)> where M1.MatchedType == Result<CrowdloanContributionDict, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<CrowdloanContributionDict, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockCrowdloanListInteractorOutputProtocol.self, method: "didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)", parameterMatchers: matchers))
@@ -12629,6 +12745,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func didReceiveLeasingOffset<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<LeasingOffset, Error>), Void> where M1.MatchedType == Result<LeasingOffset, Error> {
+	        let matchers: [Cuckoo.ParameterMatcher<(Result<LeasingOffset, Error>)>] = [wrap(matchable: result) { $0 }]
+	        return cuckoo_manager.verify("didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func didReceiveContributions<M1: Cuckoo.Matchable>(result: M1) -> Cuckoo.__DoNotUse<(Result<CrowdloanContributionDict, Error>), Void> where M1.MatchedType == Result<CrowdloanContributionDict, Error> {
 	        let matchers: [Cuckoo.ParameterMatcher<(Result<CrowdloanContributionDict, Error>)>] = [wrap(matchable: result) { $0 }]
 	        return cuckoo_manager.verify("didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -12694,6 +12816,12 @@ import SoraFoundation
     
     
      func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     

@@ -84,6 +84,19 @@ final class CrowdloanYourContributionsInteractor: RuntimeConstantFetching {
                 self?.presenter.didReceiveError(error)
             }
         }
+
+        fetchConstant(
+            for: .paraLeasingOffset,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<LeasingOffset, Error>) in
+            switch result {
+            case let .success(offset):
+                self?.presenter.didReceiveLeasingOffset(offset)
+            case let .failure(error):
+                self?.presenter.didReceiveError(error)
+            }
+        }
     }
 }
 

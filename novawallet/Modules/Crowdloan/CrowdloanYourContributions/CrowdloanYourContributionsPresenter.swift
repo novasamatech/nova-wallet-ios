@@ -18,20 +18,23 @@ final class CrowdloanYourContributionsPresenter {
     private var blockNumber: BlockNumber?
     private var blockDuration: BlockTime?
     private var leasingPeriod: LeasingPeriod?
+    private var leasingOffset: LeasingOffset?
     private var price: PriceData?
 
     private var crowloanMetadata: CrowdloanMetadata? {
         guard
             let blockNumber = blockNumber,
             let blockDuration = blockDuration,
-            let leasingPeriod = leasingPeriod else {
+            let leasingPeriod = leasingPeriod,
+            let leasingOffset = leasingOffset else {
             return nil
         }
 
         return CrowdloanMetadata(
             blockNumber: blockNumber,
             blockDuration: blockDuration,
-            leasingPeriod: leasingPeriod
+            leasingPeriod: leasingPeriod,
+            leasingOffset: leasingOffset
         )
     }
 
@@ -160,6 +163,12 @@ extension CrowdloanYourContributionsPresenter: CrowdloanYourContributionsInterac
 
     func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod) {
         self.leasingPeriod = leasingPeriod
+
+        updateReturnInTimeIntervals()
+    }
+
+    func didReceiveLeasingOffset(_ leasingOffset: LeasingOffset) {
+        self.leasingOffset = leasingOffset
 
         updateReturnInTimeIntervals()
     }
