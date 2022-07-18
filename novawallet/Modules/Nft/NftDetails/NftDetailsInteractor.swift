@@ -113,7 +113,7 @@ class NftDetailsInteractor {
     }
 
     private func provideInstanceInfo(from json: JSON) {
-        let name = json.name?.stringValue
+        let name = json.name?.stringValue ?? nftChainModel.nft.name ?? nftChainModel.nft.instanceId
         presenter?.didReceive(name: name)
 
         let description = json.description?.stringValue
@@ -157,8 +157,14 @@ class NftDetailsInteractor {
             }
 
         } else {
-            presenter?.didReceive(name: nil)
-            presenter?.didReceive(media: nil)
+            let name = nftChainModel.nft.name ?? nftChainModel.nft.instanceId
+
+            presenter?.didReceive(name: name)
+
+            if shouldProvideMedia {
+                presenter?.didReceive(media: nil)
+            }
+
             presenter?.didReceive(description: nil)
         }
     }

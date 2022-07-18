@@ -8,7 +8,7 @@ protocol DistributedStorageOperationFactoryProtocol {
 final class DistributedStorageOperationFactory: BaseFetchOperationFactory {
     static let ipfsBaseUrl = URL(string: "https://ipfs.rmrk.link/ipfs")!
 
-    private func resolveUrl(from storage: DistributedStorage) -> URL {
+    static func resolveUrl(from storage: DistributedStorage) -> URL {
         switch storage {
         case let .ipfs(path):
             return Self.ipfsBaseUrl.appendingPathComponent(path)
@@ -18,7 +18,7 @@ final class DistributedStorageOperationFactory: BaseFetchOperationFactory {
 
 extension DistributedStorageOperationFactory: DistributedStorageOperationFactoryProtocol {
     func createOperation<T>(for storage: DistributedStorage) -> BaseOperation<T> where T: Decodable {
-        let url = resolveUrl(from: storage)
+        let url = Self.resolveUrl(from: storage)
         return createFetchOperation(from: url)
     }
 }
