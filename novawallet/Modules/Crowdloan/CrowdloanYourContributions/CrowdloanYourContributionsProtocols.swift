@@ -33,6 +33,7 @@ protocol CrowdloanYourContributionsInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(_ blockNumber: BlockNumber?)
     func didReceiveBlockDuration(_ blockDuration: BlockTime)
     func didReceiveLeasingPeriod(_ leasingPeriod: LeasingPeriod)
+    func didReceiveLeasingOffset(_ leasingOffset: LeasingOffset)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveError(_ error: Error)
 }
