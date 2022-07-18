@@ -37,6 +37,12 @@ final class AssetsSearchViewController: UIViewController, ViewHolder {
         presenter.setup()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        rootView.searchBar.textField.becomeFirstResponder()
+    }
+
     private func setupLocalization() {
         let languages = selectedLocale.rLanguages
         rootView.searchBar.textField.placeholder = R.string.localizable.assetsSearchPlaceholder(
