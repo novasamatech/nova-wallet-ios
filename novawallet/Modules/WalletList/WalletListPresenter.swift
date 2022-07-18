@@ -5,18 +5,13 @@ import SoraFoundation
 import BigInt
 import CommonWallet
 
-final class WalletListPresenter {
+final class WalletListPresenter: WalletListBasePresenter {
     static let viewUpdatePeriod: TimeInterval = 1.0
-
-    typealias ChainAssetPrice = (chainId: ChainModel.Id, assetId: AssetModel.Id, price: PriceData)
 
     weak var view: WalletListViewProtocol?
     let wireframe: WalletListWireframeProtocol
     let interactor: WalletListInteractorInputProtocol
     let viewModelFactory: WalletListViewModelFactoryProtocol
-
-    private(set) var groups: ListDifferenceCalculator<WalletListGroupModel>
-    private(set) var groupLists: [ChainModel.Id: ListDifferenceCalculator<WalletListAssetModel>] = [:]
 
     private(set) var nftList: ListDifferenceCalculator<NftModel>
 
@@ -24,9 +19,6 @@ final class WalletListPresenter {
     private var name: String?
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
-    private(set) var priceResult: Result<[ChainAssetId: PriceData], Error>?
-    private(set) var balanceResults: [ChainAssetId: Result<BigUInt, Error>] = [:]
-    private(set) var allChains: [ChainModel.Id: ChainModel] = [:]
 
     private var scheduler: SchedulerProtocol?
 
@@ -43,8 +35,10 @@ final class WalletListPresenter {
         self.interactor = interactor
         self.wireframe = wireframe
         self.viewModelFactory = viewModelFactory
-        groups = Self.createGroupsDiffCalculator(from: [])
         nftList = Self.createNftDiffCalculator()
+
+        super.init()
+
         self.localizationManager = localizationManager
     }
 
@@ -226,34 +220,6 @@ final class WalletListPresenter {
         )
     }
 
-    private func createAssetAccountInfo(
-        from asset: WalletListAssetModel,
-        chain: ChainModel,
-        maybePrices: [ChainAssetId: PriceData]?
-    ) -> WalletListAssetAccountInfo {
-        let assetModel = asset.assetModel
-        let chainAssetId = ChainAssetId(chainId: chain.chainId, assetId: assetModel.assetId)
-
-        let assetInfo = assetModel.displayInfo(with: chain.icon)
-
-        let priceData: PriceData?
-
-        if let prices = maybePrices {
-            priceData = prices[chainAssetId] ?? PriceData(price: "0", usdDayChange: 0)
-        } else {
-            priceData = nil
-        }
-
-        let balance = try? asset.balanceResult?.get()
-
-        return WalletListAssetAccountInfo(
-            assetId: asset.assetModel.assetId,
-            assetInfo: assetInfo,
-            balance: balance,
-            priceData: priceData
-        )
-    }
-
     private func provideNftViewModel() {
         let allNfts = nftList.allItems
 
@@ -294,6 +260,38 @@ final class WalletListPresenter {
         scheduler?.cancel()
         scheduler = nil
     }
+
+    private func presentAssetDetails(for chainAssetId: ChainAssetId) {
+        guard
+            let chain = allChains[chainAssetId.chainId],
+            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
+            return
+        }
+
+        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+    }
+
+    // MARK: Interactor Output overridings
+
+    override func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
+        view?.didCompleteRefreshing()
+
+        super.didReceivePrices(result: result)
+
+        updateAssetsView()
+    }
+
+    override func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
+        super.didReceiveChainModelChanges(changes)
+
+        updateAssetsView()
+    }
+
+    override func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
+        super.didReceiveBalance(results: results)
+
+        updateAssetsView()
+    }
 }
 
 extension WalletListPresenter: WalletListPresenterProtocol {
@@ -306,13 +304,7 @@ extension WalletListPresenter: WalletListPresenterProtocol {
     }
 
     func selectAsset(for chainAssetId: ChainAssetId) {
-        guard
-            let chain = allChains[chainAssetId.chainId],
-            let asset = chain.assets.first(where: { $0.assetId == chainAssetId.assetId }) else {
-            return
-        }
-
-        wireframe.showAssetDetails(from: view, chain: chain, asset: asset)
+        presentAssetDetails(for: chainAssetId)
     }
 
     func selectNfts() {
@@ -325,6 +317,16 @@ extension WalletListPresenter: WalletListPresenterProtocol {
 
     func presentSettings() {
         wireframe.showAssetsManage(from: view)
+    }
+
+    func presentSearch() {
+        let initState = WalletListInitState(
+            priceResult: priceResult,
+            balanceResults: balanceResults,
+            allChains: allChains
+        )
+
+        wireframe.showAssetsSearch(from: view, initState: initState, delegate: self)
     }
 }
 
@@ -345,11 +347,7 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         self.genericAccountId = genericAccountId
         self.name = name
 
-        allChains = [:]
-        balanceResults = [:]
-
-        groups = Self.createGroupsDiffCalculator(from: [])
-        groupLists = [:]
+        resetStorages()
 
         nftList = Self.createNftDiffCalculator()
 
@@ -361,127 +359,6 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         connectionStates[chainId] = state
 
         scheduleViewUpdate()
-    }
-
-    func didReceivePrices(result: Result<[ChainAssetId: PriceData], Error>?) {
-        view?.didCompleteRefreshing()
-
-        guard let result = result else {
-            return
-        }
-
-        priceResult = result
-
-        for chain in allChains.values {
-            let models = chain.assets.map { asset in
-                createAssetModel(for: chain, assetModel: asset)
-            }
-
-            let changes: [DataProviderChange<WalletListAssetModel>] = models.map { model in
-                .update(newItem: model)
-            }
-
-            groupLists[chain.chainId]?.apply(changes: changes)
-
-            let groupModel = createGroupModel(from: chain, assets: models)
-            groups.apply(changes: [.update(newItem: groupModel)])
-        }
-
-        updateAssetsView()
-    }
-
-    func didReceiveChainModelChanges(_ changes: [DataProviderChange<ChainModel>]) {
-        var groupChanges: [DataProviderChange<WalletListGroupModel>] = []
-        for change in changes {
-            switch change {
-            case let .insert(newItem):
-                let assets = createAssetModels(for: newItem)
-                let assetsCalculator = Self.createAssetsDiffCalculator(from: assets)
-                groupLists[newItem.chainId] = assetsCalculator
-
-                let groupModel = createGroupModel(from: newItem, assets: assets)
-                groupChanges.append(.insert(newItem: groupModel))
-            case let .update(newItem):
-                let assets = createAssetModels(for: newItem)
-
-                groupLists[newItem.chainId] = Self.createAssetsDiffCalculator(from: assets)
-
-                let groupModel = createGroupModel(from: newItem, assets: assets)
-                groupChanges.append(.update(newItem: groupModel))
-
-            case let .delete(deletedIdentifier):
-                groupLists[deletedIdentifier] = nil
-                groupChanges.append(.delete(deletedIdentifier: deletedIdentifier))
-            }
-        }
-
-        allChains = changes.reduce(into: allChains) { result, change in
-            switch change {
-            case let .insert(newItem):
-                result[newItem.chainId] = newItem
-            case let .update(newItem):
-                result[newItem.chainId] = newItem
-            case let .delete(deletedIdentifier):
-                result[deletedIdentifier] = nil
-            }
-        }
-
-        groups.apply(changes: groupChanges)
-
-        updateAssetsView()
-    }
-
-    func didReceiveBalance(results: [ChainAssetId: Result<BigUInt?, Error>]) {
-        var assetsChanges: [ChainModel.Id: [DataProviderChange<WalletListAssetModel>]] = [:]
-        var changedGroups: [ChainModel.Id: ChainModel] = [:]
-
-        for (chainAssetId, result) in results {
-            switch result {
-            case let .success(maybeAmount):
-                if let amount = maybeAmount {
-                    balanceResults[chainAssetId] = .success(amount)
-                } else if balanceResults[chainAssetId] == nil {
-                    balanceResults[chainAssetId] = .success(0)
-                }
-            case let .failure(error):
-                balanceResults[chainAssetId] = .failure(error)
-            }
-        }
-
-        for chainAssetId in results.keys {
-            guard
-                let chainModel = allChains[chainAssetId.chainId],
-                let assetModel = chainModel.assets.first(
-                    where: { $0.assetId == chainAssetId.assetId }
-                ) else {
-                continue
-            }
-
-            let assetListModel = createAssetModel(for: chainModel, assetModel: assetModel)
-            var chainChanges = assetsChanges[chainAssetId.chainId] ?? []
-            chainChanges.append(.update(newItem: assetListModel))
-            assetsChanges[chainAssetId.chainId] = chainChanges
-
-            changedGroups[chainModel.chainId] = chainModel
-        }
-
-        for (chainId, changes) in assetsChanges {
-            groupLists[chainId]?.apply(changes: changes)
-        }
-
-        let groupChanges: [DataProviderChange<WalletListGroupModel>] = changedGroups.map { keyValue in
-            let chainId = keyValue.key
-            let chainModel = keyValue.value
-
-            let allItems = groupLists[chainId]?.allItems ?? []
-            let groupModel = createGroupModel(from: chainModel, assets: allItems)
-
-            return .update(newItem: groupModel)
-        }
-
-        groups.apply(changes: groupChanges)
-
-        updateAssetsView()
     }
 
     func didChange(name: String) {
@@ -509,5 +386,11 @@ extension WalletListPresenter: Localizable {
 extension WalletListPresenter: SchedulerDelegate {
     func didTrigger(scheduler _: SchedulerProtocol) {
         updateAssetsView()
+    }
+}
+
+extension WalletListPresenter: AssetsSearchDelegate {
+    func assetSearchDidSelect(chainAssetId: ChainAssetId) {
+        presentAssetDetails(for: chainAssetId)
     }
 }
