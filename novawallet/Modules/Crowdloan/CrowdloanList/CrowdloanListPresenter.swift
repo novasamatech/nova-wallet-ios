@@ -16,6 +16,7 @@ final class CrowdloanListPresenter {
     private var blockNumber: BlockNumber?
     private var blockDurationResult: Result<BlockTime, Error>?
     private var leasingPeriodResult: Result<LeasingPeriod, Error>?
+    private var leasingOffsetResult: Result<LeasingOffset, Error>?
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
@@ -74,6 +75,7 @@ final class CrowdloanListPresenter {
         guard
             let blockDurationResult = blockDurationResult,
             let leasingPeriodResult = leasingPeriodResult,
+            let leasingOffsetResult = leasingOffsetResult,
             let blockNumber = blockNumber else {
             return nil
         }
@@ -81,11 +83,13 @@ final class CrowdloanListPresenter {
         do {
             let blockDuration = try blockDurationResult.get()
             let leasingPeriod = try leasingPeriodResult.get()
+            let leasingOffset = try leasingOffsetResult.get()
 
             let metadata = CrowdloanMetadata(
                 blockNumber: blockNumber,
                 blockDuration: blockDuration,
-                leasingPeriod: leasingPeriod
+                leasingPeriod: leasingPeriod,
+                leasingOffset: leasingOffset
             )
 
             return .success(metadata)
@@ -283,6 +287,11 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
 
     func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>) {
         leasingPeriodResult = result
+        updateListView()
+    }
+
+    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>) {
+        leasingOffsetResult = result
         updateListView()
     }
 

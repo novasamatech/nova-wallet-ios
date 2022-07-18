@@ -73,6 +73,14 @@ class CrowdloanContributionInteractor: CrowdloanContributionInteractorInputProto
         }
 
         fetchConstant(
+            for: .paraLeasingOffset,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<LeasingOffset, Error>) in
+            self?.presenter.didReceiveLeasingOffset(result: result)
+        }
+
+        fetchConstant(
             for: .existentialDeposit,
             runtimeCodingService: runtimeService,
             operationManager: operationManager

@@ -827,7 +827,7 @@
 "wallet.transfer.token.format_v2_9_1" = "Send %@";
 "wallet.transfer.on" = "on";
 "common.request.retry" = "Data loading failed. Would you like to retry?";
-"crowdloan.returns.in.format" = "Returns in %@";
 "crowdloan.return.in.progress" = "To be returned by parachain";
+"crowdloan.returns.in.format" = "Returns in %@";
+"assets.search.empty" = "No networks or tokens with\nentered name were found";
 "assets.search.placeholder" = "Search by network or token";
-"assets.search.empty" = "No networks or tokens with entered name were found";

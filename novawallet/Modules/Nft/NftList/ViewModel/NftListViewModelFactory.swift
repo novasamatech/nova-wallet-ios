@@ -160,7 +160,8 @@ final class NftListViewModelFactory {
             if
                 let snString = model.label,
                 let serialNumber = Int32(snString),
-                let totalIssuance = model.totalIssuance {
+                let totalIssuance = model.totalIssuance,
+                totalIssuance > 0 {
                 label = createLimitedIssuanceLabel(from: serialNumber, totalNumber: totalIssuance, locale: locale)
             } else {
                 label = createUnlimitedIssuanceLabel(for: locale)

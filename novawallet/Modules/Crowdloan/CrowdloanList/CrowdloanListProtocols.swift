@@ -29,6 +29,7 @@ protocol CrowdloanListInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)
     func didReceiveBlockDuration(result: Result<BlockTime, Error>)
     func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)
+    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)
     func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>)
     func didReceiveExternalContributions(result: Result<[ExternalContribution], Error>)
     func didReceiveLeaseInfo(result: Result<ParachainLeaseInfoDict, Error>)
