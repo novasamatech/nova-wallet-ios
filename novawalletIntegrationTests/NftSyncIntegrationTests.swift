@@ -42,7 +42,8 @@ class NftSyncIntegrationTests: XCTestCase {
                 substratePublicKey: ownerId,
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
-                chainAccounts: []
+                chainAccounts: [],
+                type: .secrets
             )
 
             var chains: [ChainModel] = []
