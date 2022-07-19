@@ -47,7 +47,7 @@ extension BaseAccountConfirmInteractor: AccountConfirmInteractorInputProtocol {
             return
         }
 
-        let operation = accountOperationFactory.newMetaAccountOperation(
+        let operation = accountOperationFactory.newSecretsMetaAccountOperation(
             request: request,
             mnemonic: mnemonic
         )
@@ -55,7 +55,7 @@ extension BaseAccountConfirmInteractor: AccountConfirmInteractorInputProtocol {
     }
 
     func skipConfirmation() {
-        let operation = accountOperationFactory.newMetaAccountOperation(
+        let operation = accountOperationFactory.newSecretsMetaAccountOperation(
             request: request,
             mnemonic: mnemonic
         )

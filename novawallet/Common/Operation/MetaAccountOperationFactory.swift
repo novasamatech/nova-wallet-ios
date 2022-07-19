@@ -5,10 +5,10 @@ import RobinHood
 import SoraKeystore
 
 protocol MetaAccountOperationFactoryProtocol {
-    func newMetaAccountOperation(request: MetaAccountCreationRequest, mnemonic: IRMnemonicProtocol)
+    func newSecretsMetaAccountOperation(request: MetaAccountCreationRequest, mnemonic: IRMnemonicProtocol)
         -> BaseOperation<MetaAccountModel>
-    func newMetaAccountOperation(request: MetaAccountImportSeedRequest) -> BaseOperation<MetaAccountModel>
-    func newMetaAccountOperation(request: MetaAccountImportKeystoreRequest) -> BaseOperation<MetaAccountModel>
+    func newSecretsMetaAccountOperation(request: MetaAccountImportSeedRequest) -> BaseOperation<MetaAccountModel>
+    func newSecretsMetaAccountOperation(request: MetaAccountImportKeystoreRequest) -> BaseOperation<MetaAccountModel>
 
     func replaceChainAccountOperation(
         for metaAccount: MetaAccountModel,
@@ -165,6 +165,7 @@ final class MetaAccountOperationFactory {
 
     private func prepopulateMetaAccount(
         name: String,
+        type: MetaAccountModelType,
         publicKey: Data,
         cryptoType: MultiassetCryptoType
     ) throws -> MetaAccountModel {
@@ -182,7 +183,8 @@ final class MetaAccountOperationFactory {
             substratePublicKey: publicKey,
             ethereumAddress: nil,
             ethereumPublicKey: nil,
-            chainAccounts: []
+            chainAccounts: [],
+            type: type
         )
     }
 }
@@ -190,15 +192,12 @@ final class MetaAccountOperationFactory {
 // MARK: - MetaAccountOperationFactoryProtocol
 
 extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
-    func newMetaAccountOperation(
+    func newSecretsMetaAccountOperation(
         request: MetaAccountCreationRequest,
         mnemonic: IRMnemonicProtocol
     ) -> BaseOperation<MetaAccountModel> {
         ClosureOperation { [self] in
-            let junctionResult = try getJunctionResult(
-                from: request.derivationPath,
-                ethereumBased: false
-            )
+            let junctionResult = try getJunctionResult(from: request.derivationPath, ethereumBased: false)
 
             let password = junctionResult?.password ?? ""
             let chaincodes = junctionResult?.chaincodes ?? []
@@ -217,6 +216,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
 
             let metaAccount = try prepopulateMetaAccount(
                 name: request.username,
+                type: .secrets,
                 publicKey: substrateKeypair.publicKey,
                 cryptoType: request.cryptoType
             )
@@ -229,10 +229,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
             let ethereumChaincodes = ethereumJunctionResult?.chaincodes ?? []
 
             let ethereumSeedFactory = BIP32SeedFactory()
-            let ethereumSeedResult = try ethereumSeedFactory.deriveSeed(
-                from: mnemonic.toString(),
-                password: password
-            )
+            let ethereumSeedResult = try ethereumSeedFactory.deriveSeed(from: mnemonic.toString(), password: password)
 
             let keypairFactory = createKeypairFactory(.ethereumEcdsa)
 
@@ -257,13 +254,12 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
 
             try saveEntropy(mnemonic.entropy(), metaId: metaId)
 
-            return metaAccount
-                .replacingEthereumPublicKey(ethereumPublicKey)
+            return metaAccount.replacingEthereumPublicKey(ethereumPublicKey)
                 .replacingEthereumAddress(ethereumAddress)
         }
     }
 
-    func newMetaAccountOperation(request: MetaAccountImportSeedRequest) -> BaseOperation<MetaAccountModel> {
+    func newSecretsMetaAccountOperation(request: MetaAccountImportSeedRequest) -> BaseOperation<MetaAccountModel> {
         ClosureOperation { [self] in
             let junctionResult = try getJunctionResult(
                 from: request.derivationPath,
@@ -281,6 +277,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
 
             let metaAccount = try prepopulateMetaAccount(
                 name: request.username,
+                type: .secrets,
                 publicKey: keypair.publicKey,
                 cryptoType: request.cryptoType
             )
@@ -295,7 +292,7 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
         }
     }
 
-    func newMetaAccountOperation(request: MetaAccountImportKeystoreRequest) -> BaseOperation<MetaAccountModel> {
+    func newSecretsMetaAccountOperation(request: MetaAccountImportKeystoreRequest) -> BaseOperation<MetaAccountModel> {
         ClosureOperation { [self] in
             let keystoreExtractor = KeystoreExtractor()
 
@@ -340,7 +337,8 @@ extension MetaAccountOperationFactory: MetaAccountOperationFactoryProtocol {
                 substratePublicKey: publicKey.rawData(),
                 ethereumAddress: nil,
                 ethereumPublicKey: nil,
-                chainAccounts: []
+                chainAccounts: [],
+                type: .secrets
             )
         }
     }
