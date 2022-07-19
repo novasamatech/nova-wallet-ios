@@ -108,7 +108,8 @@ class XcmTransfersFeeTests: XCTestCase {
                 substratePublicKey: Data.random(of: 32)!,
                 ethereumAddress: AccountId.zeroAccountId(of: 20),
                 ethereumPublicKey: Data.random(of: 33)!,
-                chainAccounts: Set()
+                chainAccounts: Set(),
+                type: .secrets
             )
 
             let destinationFee = try estimateFees(
