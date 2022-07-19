@@ -12,7 +12,7 @@ enum UserStorageParams {
      *  - add new case to UserStorageVersion and set associated value to the data model version name;
      *  - add transition to UserStorageVersion.nextVersion;
      *  - if lightweight migration is not an option then add MigrationMapping
-     *  and implement migration police;
+     *  and implement migration policy;
      *  - update mappings between CoreData Entities and App Models;
      *  - switch version of UserStorageParams.modelVersion;
      */
