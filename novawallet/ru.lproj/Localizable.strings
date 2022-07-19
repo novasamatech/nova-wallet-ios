@@ -831,3 +831,6 @@
 "crowdloan.returns.in.format" = "Вернется через %@";
 "assets.search.empty" = "Не найдено сетей или токенов с\nуказаным именем";
 "assets.search.placeholder" = "Поиск по названию сети или токена";
+"welcome.import.subtitle" = "Nova совместимо со всеми приложениями";
+"welcome.watch.only.title" = "Добавить кошелек для просмотра";
+"welcome.watch.only.subtitle" = "Введите адрес для просмотра балансов и активностей";

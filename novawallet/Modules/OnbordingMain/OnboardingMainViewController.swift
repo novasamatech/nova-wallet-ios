@@ -1,97 +1,104 @@
 import UIKit
+import SoraFoundation
 import SoraUI
 
-final class OnboardingMainViewController: UIViewController, AdaptiveDesignable {
-    var presenter: OnboardingMainPresenterProtocol!
+final class OnboardingMainViewController: UIViewController, ViewHolder {
+    typealias RootViewType = OnboardingMainViewLayout
 
-    @IBOutlet private var termsLabel: UILabel!
-    @IBOutlet private var signUpButton: TriangularedButton!
-    @IBOutlet private var restoreButton: TriangularedButton!
-    @IBOutlet private var logoView: UIImageView!
+    let presenter: OnboardingMainPresenterProtocol
+    let termDecorator: AttributedStringDecoratorProtocol
 
-    @IBOutlet private var restoreBottomConstraint: NSLayoutConstraint!
-    @IBOutlet private var restoreWidthConstraint: NSLayoutConstraint!
-    @IBOutlet private var signupWidthConstraint: NSLayoutConstraint!
+    init(
+        presenter: OnboardingMainPresenterProtocol,
+        termDecorator: AttributedStringDecoratorProtocol,
+        localizationManager: LocalizationManagerProtocol
+    ) {
+        self.presenter = presenter
+        self.termDecorator = termDecorator
 
-    @IBOutlet private var termsBottomConstraint: NSLayoutConstraint!
+        super.init(nibName: nil, bundle: nil)
 
-    var locale: Locale?
+        self.localizationManager = localizationManager
+    }
 
-    var termDecorator: AttributedStringDecoratorProtocol?
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
-    // MARK: Appearance
+    override func loadView() {
+        view = OnboardingMainViewLayout()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupLocalization()
-        configureLogoView()
-        configureTermsLabel()
-        adjustLayout()
+        setupHandlers()
 
         presenter.setup()
     }
 
-    private func configureTermsLabel() {
-        if let attributedText = termsLabel.attributedText {
-            termsLabel.attributedText = termDecorator?.decorate(attributedString: attributedText)
-        }
-    }
-
-    private func configureLogoView() {
-        logoView.tintColor = R.color.colorWhite()!
-    }
-
     private func setupLocalization() {
-        signUpButton.imageWithTitleView?.title = R.string.localizable
-            .onboardingCreateWallet(preferredLanguages: locale?.rLanguages)
-        restoreButton.imageWithTitleView?.title = R.string.localizable
-            .onboardingRestoreWallet(preferredLanguages: locale?.rLanguages)
+        let languages = selectedLocale.rLanguages
 
-        let text = NSAttributedString(string: R.string.localizable
-            .onboardingTermsAndConditions1_v2_2_0(preferredLanguages: locale?.rLanguages))
-        termsLabel.attributedText = text
+        let createTitle = R.string.localizable.onboardingCreateWallet(preferredLanguages: languages)
+        rootView.createButton.bind(title: createTitle, details: nil)
+
+        let importTitle = R.string.localizable.onboardingRestoreWallet(preferredLanguages: languages)
+        let importSubtitle = R.string.localizable.welcomeImportSubtitle(preferredLanguages: languages)
+        rootView.importButton.bind(title: importTitle, details: importSubtitle)
+
+        let watchOnlyTitle = R.string.localizable.welcomeWatchOnlyTitle(preferredLanguages: languages)
+        let watchOnlySubtitle = R.string.localizable.welcomeWatchOnlySubtitle(preferredLanguages: languages)
+        rootView.watchOnlyButton.bind(title: watchOnlyTitle, details: watchOnlySubtitle)
+
+        let termsText = R.string.localizable.onboardingTermsAndConditions1_v2_2_0(
+            preferredLanguages: languages
+        )
+
+        let attributedText = NSAttributedString(string: termsText)
+        rootView.termsLabel.attributedText = termDecorator.decorate(attributedString: attributedText)
     }
 
-    private func adjustLayout() {
-        if isAdaptiveHeightDecreased {
-            restoreBottomConstraint.constant *= designScaleRatio.height
-            termsBottomConstraint.constant *= designScaleRatio.height
-        }
+    private func setupHandlers() {
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(actionTerms(gestureRecognizer:)))
+        rootView.termsLabel.addGestureRecognizer(tapRecognizer)
 
-        if isAdaptiveWidthDecreased {
-            restoreWidthConstraint.constant *= designScaleRatio.width
-            signupWidthConstraint.constant *= designScaleRatio.width
-        }
-//
-//        signUpButton.imageWithTitleView?.spacingBetweenLabelAndIcon =
-//        signUpButton.frame.size.width - signUpButton.imageWithTitleView?.titleLabel
-//
-//        imageWithTitleView!.spacingBetweenLabelAndIcon = newValue
-//        invalidateLayout()
+        rootView.createButton.addTarget(self, action: #selector(actionSignup), for: .touchUpInside)
+        rootView.importButton.addTarget(self, action: #selector(actionRestoreAccess), for: .touchUpInside)
+        rootView.watchOnlyButton.addTarget(self, action: #selector(actionCreateWatchOnly), for: .touchUpInside)
     }
 
-    // MARK: Action
-
-    @IBAction private func actionSignup(sender _: AnyObject) {
+    @objc private func actionSignup() {
         presenter.activateSignup()
     }
 
-    @IBAction private func actionRestoreAccess(sender _: AnyObject) {
+    @objc private func actionRestoreAccess() {
         presenter.activateAccountRestore()
     }
 
-    @IBAction private func actionTerms(gestureRecognizer: UITapGestureRecognizer) {
+    @objc private func actionTerms(gestureRecognizer: UITapGestureRecognizer) {
         if gestureRecognizer.state == .ended {
-            let location = gestureRecognizer.location(in: termsLabel.superview)
+            let location = gestureRecognizer.location(in: rootView.termsLabel.superview)
 
-            if location.x < termsLabel.center.x {
+            if location.x < rootView.termsLabel.center.x {
                 presenter.activateTerms()
             } else {
                 presenter.activatePrivacy()
             }
         }
     }
+
+    @objc private func actionCreateWatchOnly() {}
 }
 
 extension OnboardingMainViewController: OnboardingMainViewProtocol {}
+
+extension OnboardingMainViewController: Localizable {
+    func applyLocalization() {
+        if isViewLoaded {
+            setupLocalization()
+        }
+    }
+}
