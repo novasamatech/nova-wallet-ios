@@ -120,10 +120,12 @@ extension RemoteNftModel {
 
         let imageUrl: String?
 
-        if
-            let imageString = remoteItem.image,
-            !DistributedUrlParser().isDistributedUrl(imageString) {
-            imageUrl = imageString
+        if let imageString = remoteItem.image {
+            if let parsingResult = DistributedUrlParser().parse(url: imageString) {
+                imageUrl = DistributedStorageOperationFactory.resolveUrl(from: parsingResult).absoluteString
+            } else {
+                imageUrl = imageString
+            }
         } else {
             imageUrl = nil
         }
@@ -134,7 +136,7 @@ extension RemoteNftModel {
             chainId: chainId,
             ownerId: ownerId,
             collectionId: remoteItem.collectionId,
-            instanceId: nil,
+            instanceId: remoteItem.identifier,
             metadata: metadata,
             totalIssuance: collection?.max,
             name: remoteItem.symbol,
