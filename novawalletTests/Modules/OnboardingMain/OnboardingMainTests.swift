@@ -132,14 +132,18 @@ class OnboardingMainTests: XCTestCase {
                                             legal: LegalData,
                                             keystoreImportService: KeystoreImportServiceProtocol = KeystoreImportService(logger: Logger.shared))
         -> OnboardingMainPresenter {
-        let presenter = OnboardingMainPresenter(legalData: legal, locale: Locale.current)
+        let interactor = OnboardingMainInteractor(keystoreImportService: keystoreImportService)
+
+        let presenter = OnboardingMainPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            legalData: legal,
+            locale: Locale.current
+        )
 
         presenter.view = view
-        presenter.wireframe = wireframe
 
-        let interactor = OnboardingMainInteractor(keystoreImportService: keystoreImportService)
         interactor.presenter = presenter
-        presenter.interactor = interactor
 
         stub(view) { stub in
             when(stub).isSetup.get.thenReturn(false, true)
