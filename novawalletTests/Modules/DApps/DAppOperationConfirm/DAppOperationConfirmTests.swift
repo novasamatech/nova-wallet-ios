@@ -54,7 +54,8 @@ class DAppOperationConfirmTests: XCTestCase {
             substratePublicKey: accountId,
             ethereumAddress: nil,
             ethereumPublicKey: nil,
-            chainAccounts: []
+            chainAccounts: [],
+            type: .secrets
         )
 
         let chainId = try Data(hexString: extrinsicRequest.genesisHash).toHex()
@@ -200,7 +201,8 @@ class DAppOperationConfirmTests: XCTestCase {
             substratePublicKey: accountId,
             ethereumAddress: nil,
             ethereumPublicKey: nil,
-            chainAccounts: []
+            chainAccounts: [],
+            type: .secrets
         )
 
         let chain = ChainModelGenerator.generateChain(
