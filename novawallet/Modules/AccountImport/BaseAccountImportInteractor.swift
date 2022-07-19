@@ -87,7 +87,7 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
             cryptoType: request.cryptoType
         )
 
-        let accountOperation = metaAccountOperationFactory.newMetaAccountOperation(
+        let accountOperation = metaAccountOperationFactory.newSecretsMetaAccountOperation(
             request: creationRequest,
             mnemonic: mnemonic
         )
@@ -96,12 +96,12 @@ extension BaseAccountImportInteractor: AccountImportInteractorInputProtocol {
     }
 
     func importAccountWithSeed(request: MetaAccountImportSeedRequest) {
-        let operation = metaAccountOperationFactory.newMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactory.newSecretsMetaAccountOperation(request: request)
         importAccountUsingOperation(operation)
     }
 
     func importAccountWithKeystore(request: MetaAccountImportKeystoreRequest) {
-        let operation = metaAccountOperationFactory.newMetaAccountOperation(request: request)
+        let operation = metaAccountOperationFactory.newSecretsMetaAccountOperation(request: request)
         importAccountUsingOperation(operation)
     }
 
