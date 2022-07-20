@@ -1,7 +1,12 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class CreateWatchOnlyViewLayout: UIView {
+    enum Constants {
+        static let presetsInsets: CGFloat = 16.0
+    }
+
     static func createSectionTitleLabel() -> UILabel {
         let label = UILabel()
         label.font = .regularFootnote
@@ -19,7 +24,7 @@ final class CreateWatchOnlyViewLayout: UIView {
 
     let containerView: ScrollableContainerView = {
         let view = ScrollableContainerView(axis: .vertical, respectsSafeArea: true)
-        view.stackView.layoutMargins = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(top: 12.0, left: 16.0, bottom: 0.0, right: 16.0)
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.alignment = .fill
         return view
@@ -52,10 +57,17 @@ final class CreateWatchOnlyViewLayout: UIView {
         let view = ScrollableContainerView(axis: .horizontal)
         view.stackView.distribution = .fill
         view.stackView.alignment = .center
-        view.stackView.layoutMargins = UIEdgeInsets(top: 0.0, left: 16.0, bottom: 0.0, right: 16.0)
+        view.stackView.layoutMargins = UIEdgeInsets(
+            top: 0.0,
+            left: Constants.presetsInsets,
+            bottom: 0.0,
+            right: Constants.presetsInsets
+        )
+
         view.stackView.isLayoutMarginsRelativeArrangement = true
         view.stackView.spacing = 6.0
         view.scrollView.showsHorizontalScrollIndicator = false
+        view.clipsToBounds = false
         return view
     }()
 
@@ -108,6 +120,33 @@ final class CreateWatchOnlyViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func addPresetButton(with title: String) -> RoundedButton {
+        let button = RoundedButton()
+        button.imageWithTitleView?.titleFont = .regularFootnote
+        button.roundedBackgroundView?.shadowOpacity = 0.0
+        button.roundedBackgroundView?.strokeWidth = 0.0
+        button.roundedBackgroundView?.fillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.highlightedFillColor = R.color.colorDarkInactive()!
+        button.roundedBackgroundView?.cornerRadius = 10.0
+        button.changesContentOpacityWhenHighlighted = true
+        button.contentInsets = UIEdgeInsets(top: 0.0, left: 12.0, bottom: 0.0, right: 12.0)
+        button.imageWithTitleView?.title = title
+
+        presetsContainerView.stackView.addArrangedSubview(button)
+
+        button.snp.makeConstraints { make in
+            make.height.equalTo(32.0)
+        }
+
+        return button
+    }
+
+    func clearPresets() {
+        let presetButtons = presetsContainerView.stackView.arrangedSubviews
+
+        presetButtons.forEach { $0.removeFromSuperview() }
+    }
+
     private func setupLayout() {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
@@ -131,8 +170,16 @@ final class CreateWatchOnlyViewLayout: UIView {
         containerView.stackView.addArrangedSubview(presetsTitleLabel)
         containerView.stackView.setCustomSpacing(8.0, after: presetsTitleLabel)
 
-        containerView.stackView.addArrangedSubview(presetsContainerView)
-        containerView.stackView.setCustomSpacing(16.0, after: presetsContainerView)
+        let presetsContentView = UIView()
+        containerView.stackView.addArrangedSubview(presetsContentView)
+
+        presetsContentView.addSubview(presetsContainerView)
+        presetsContainerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview().inset(-Constants.presetsInsets)
+        }
+
+        containerView.stackView.setCustomSpacing(16.0, after: presetsContentView)
 
         containerView.stackView.addArrangedSubview(walletNameTitleLabel)
         containerView.stackView.setCustomSpacing(8.0, after: walletNameTitleLabel)

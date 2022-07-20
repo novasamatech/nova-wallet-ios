@@ -1,5 +1,6 @@
 import UIKit
 import SoraFoundation
+import SoraUI
 
 final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
     typealias RootViewType = CreateWatchOnlyViewLayout
@@ -75,9 +76,18 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
         )
 
         rootView.substrateAddressInputView.locale = selectedLocale
-        rootView.evmAddressInputView.locale = selectedLocale
 
         rootView.substrateAddressHintLabel.text = R.string.localizable.commonSubstrateAddressHint(
+            preferredLanguages: languages
+        )
+
+        rootView.evmAddressTitleLabel.text = R.string.localizable.commonEvmAddressOptionalTitle(
+            preferredLanguages: languages
+        )
+
+        rootView.evmAddressInputView.locale = selectedLocale
+
+        rootView.evmAddressHintLabel.text = R.string.localizable.commonEvmAddressHint(
             preferredLanguages: languages
         )
 
@@ -216,9 +226,52 @@ extension CreateWatchOnlyViewController: KeyboardAdoptable {
             }
         }
     }
+
+    @objc private func actionPreset(_ sender: RoundedButton) {
+        guard let index = rootView.presetsContainerView.stackView.arrangedSubviews.firstIndex(of: sender) else {
+            return
+        }
+
+        presenter.selectPreset(at: index)
+    }
 }
 
-extension CreateWatchOnlyViewController: CreateWatchOnlyViewProtocol {}
+extension CreateWatchOnlyViewController: CreateWatchOnlyViewProtocol {
+    func didReceiveNickname(viewModel: InputViewModelProtocol) {
+        rootView.walletNameInputView.bind(inputViewModel: viewModel)
+
+        updateActionButtonState()
+    }
+
+    func didReceiveSubstrateAddressState(viewModel: AccountFieldStateViewModel) {
+        rootView.substrateAddressInputView.bind(fieldStateViewModel: viewModel)
+    }
+
+    func didReceiveSubstrateAddressInput(viewModel: InputViewModelProtocol) {
+        rootView.substrateAddressInputView.bind(inputViewModel: viewModel)
+
+        updateActionButtonState()
+    }
+
+    func didReceiveEVMAddressState(viewModel: AccountFieldStateViewModel) {
+        rootView.evmAddressInputView.bind(fieldStateViewModel: viewModel)
+    }
+
+    func didReceiveEVMAddressInput(viewModel: InputViewModelProtocol) {
+        rootView.evmAddressInputView.bind(inputViewModel: viewModel)
+
+        updateActionButtonState()
+    }
+
+    func didReceivePreset(titles: [String]) {
+        rootView.clearPresets()
+
+        titles.forEach { title in
+            let button = rootView.addPresetButton(with: title)
+            button.addTarget(self, action: #selector(actionPreset), for: .touchUpInside)
+        }
+    }
+}
 
 extension CreateWatchOnlyViewController: Localizable {
     func applyLocalization() {
