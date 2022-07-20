@@ -848,3 +848,4 @@
 "common.address.scan.error" = "Can't extract address from the code";
 "common.address.scan.title" = "Scan QR";
 "common.address.scan.message" = "Scan QR code with the address";
+"username.examples" = "Name examples: Main account, My validator, Dotsama crowdloans, etc.";
