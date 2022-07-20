@@ -729,6 +729,8 @@
 		8452585127ABC531004F9082 /* AssetsManageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585027ABC531004F9082 /* AssetsManageViewModel.swift */; };
 		8452585327ABCA07004F9082 /* HideZeroBalancesChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */; };
 		8452585527ABF270004F9082 /* WalletListEmptyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8452585427ABF270004F9082 /* WalletListEmptyCell.swift */; };
+		845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845353BA2886E3B4006C871A /* OnboardingMainViewLayout.swift */; };
+		845353BD2886EB1A006C871A /* ButtonLargeControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 845353BC2886EB1A006C871A /* ButtonLargeControl.swift */; };
 		8454C21D2632A78900657DAD /* EventRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C21C2632A78900657DAD /* EventRecord.swift */; };
 		8454C2652632B0EF00657DAD /* EventCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2642632B0EF00657DAD /* EventCodingPath.swift */; };
 		8454C26A2632B8CE00657DAD /* BalanceDepositEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8454C2692632B8CE00657DAD /* BalanceDepositEvent.swift */; };
@@ -1124,7 +1126,6 @@
 		849013FD24A92A05008F705E /* novawallet.debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 849013FA24A92A05008F705E /* novawallet.debug.xcconfig */; };
 		8490141124A92F6D008F705E /* OnboardingMainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140224A92F6D008F705E /* OnboardingMainViewController.swift */; };
 		8490141324A92F6D008F705E /* AttributedStringDecorator+Terms.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140524A92F6D008F705E /* AttributedStringDecorator+Terms.swift */; };
-		8490141424A92F6D008F705E /* OnbordingMain.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8490140624A92F6D008F705E /* OnbordingMain.xib */; };
 		8490141524A92F6D008F705E /* OnboardingMainPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140824A92F6D008F705E /* OnboardingMainPresenter.swift */; };
 		8490141624A92F6D008F705E /* OnboardingMainViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */; };
 		8490141724A92F6D008F705E /* OnboardingMainWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */; };
@@ -3094,6 +3095,8 @@
 		8452585027ABC531004F9082 /* AssetsManageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsManageViewModel.swift; sourceTree = "<group>"; };
 		8452585227ABCA07004F9082 /* HideZeroBalancesChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideZeroBalancesChanged.swift; sourceTree = "<group>"; };
 		8452585427ABF270004F9082 /* WalletListEmptyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListEmptyCell.swift; sourceTree = "<group>"; };
+		845353BA2886E3B4006C871A /* OnboardingMainViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewLayout.swift; sourceTree = "<group>"; };
+		845353BC2886EB1A006C871A /* ButtonLargeControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLargeControl.swift; sourceTree = "<group>"; };
 		8454C21C2632A78900657DAD /* EventRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRecord.swift; sourceTree = "<group>"; };
 		8454C2642632B0EF00657DAD /* EventCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCodingPath.swift; sourceTree = "<group>"; };
 		8454C2692632B8CE00657DAD /* BalanceDepositEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceDepositEvent.swift; sourceTree = "<group>"; };
@@ -3493,7 +3496,6 @@
 		849013FA24A92A05008F705E /* novawallet.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = novawallet.debug.xcconfig; sourceTree = "<group>"; };
 		8490140224A92F6D008F705E /* OnboardingMainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewController.swift; sourceTree = "<group>"; };
 		8490140524A92F6D008F705E /* AttributedStringDecorator+Terms.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AttributedStringDecorator+Terms.swift"; sourceTree = "<group>"; };
-		8490140724A92F6D008F705E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OnbordingMain.xib; sourceTree = "<group>"; };
 		8490140824A92F6D008F705E /* OnboardingMainPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainPresenter.swift; sourceTree = "<group>"; };
 		8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainViewFactory.swift; sourceTree = "<group>"; };
 		8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingMainWireframe.swift; sourceTree = "<group>"; };
@@ -7669,13 +7671,13 @@
 			children = (
 				8490140324A92F6D008F705E /* ViewModel */,
 				8490140224A92F6D008F705E /* OnboardingMainViewController.swift */,
-				8490140624A92F6D008F705E /* OnbordingMain.xib */,
 				8490140824A92F6D008F705E /* OnboardingMainPresenter.swift */,
 				8490140924A92F6D008F705E /* OnboardingMainViewFactory.swift */,
 				8490140A24A92F6D008F705E /* OnboardingMainWireframe.swift */,
 				8490140E24A92F6D008F705E /* OnboardingMainProtocol.swift */,
 				8467FD0124E5D2D9005D486C /* OnboardingMainInteractor.swift */,
 				844DBC70274E83F5009F8351 /* OnboardingMainBaseWireframe.swift */,
+				845353BA2886E3B4006C871A /* OnboardingMainViewLayout.swift */,
 			);
 			path = OnbordingMain;
 			sourceTree = "<group>";
@@ -8018,6 +8020,7 @@
 				842806F42847A82500702F3A /* StackAccountSelectionCell.swift */,
 				84D2F1AB2774B3A00040C680 /* CustomSearchBar.swift */,
 				8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */,
+				845353BC2886EB1A006C871A /* ButtonLargeControl.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -11411,7 +11414,6 @@
 				84452F7625D5E2B300F47EC5 /* runtime-default.json in Resources */,
 				848A837F274BB03F004493DD /* PublicSans-SemiBold.otf in Resources */,
 				8409C2662522110F0049B5C8 /* WalletAmountView.xib in Resources */,
-				8490141424A92F6D008F705E /* OnbordingMain.xib in Resources */,
 				AEF5058B261EF27B0098574D /* PurchaseProviderPickerTableViewCell.xib in Resources */,
 				849013B524A80986008F705E /* Assets.xcassets in Resources */,
 				848A8380274BB03F004493DD /* PublicSans-ExtraBold.otf in Resources */,
@@ -12877,6 +12879,7 @@
 				846952A62852A1E60083E0B4 /* AuraStakingDurationFactory.swift in Sources */,
 				F40966DB26B29839008CD244 /* SubqueryRewardData.swift in Sources */,
 				84C4C2D7255D2B780045B582 /* PinChangeWireframe.swift in Sources */,
+				845353BB2886E3B4006C871A /* OnboardingMainViewLayout.swift in Sources */,
 				84FB29992639AC2300BE0FCD /* YourValidatorList+SelectionConfirm.swift in Sources */,
 				84D17ED828053E3200F7BAFF /* DAppFavoriteMapper.swift in Sources */,
 				8493D0DF26FE7D7400A28008 /* ChainRepositoryFactory.swift in Sources */,
@@ -13515,6 +13518,7 @@
 				847A6C0B28817E4000477F77 /* WalletListBaseInteractor.swift in Sources */,
 				8CDA490B390BFA261906F8FC /* CrowdloanContributionSetupViewLayout.swift in Sources */,
 				1BEADE77C6236CB3BF719A47 /* CrowdloanContributionSetupViewFactory.swift in Sources */,
+				845353BD2886EB1A006C871A /* ButtonLargeControl.swift in Sources */,
 				8466781827EC9CDA007935D3 /* PersistTransferDetails.swift in Sources */,
 				84800B02273301C800E1E4DD /* RemoteChainModel.swift in Sources */,
 				849A4EF4279A7AC600AB6709 /* AssetType.swift in Sources */,
@@ -14004,14 +14008,6 @@
 				8490145B24A94328008F705E /* en */,
 			);
 			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		8490140624A92F6D008F705E /* OnbordingMain.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8490140724A92F6D008F705E /* en */,
-			);
-			name = OnbordingMain.xib;
 			sourceTree = "<group>";
 		};
 		8490146024A94373008F705E /* Localizable.strings */ = {
