@@ -843,3 +843,5 @@
 "common.evm.address" = "EVM адрес";
 "create.watch.only.missing.nickname" = "Введите имя кошелька...";
 "create.watch.only.missing.substrate" = "Введите substrate адрес...";
+"common.invalid.substrate.address" = "Неправильный формат substrate адреса";
+"common.invalid.evm.address" = "Неправильный формат evm адреса";

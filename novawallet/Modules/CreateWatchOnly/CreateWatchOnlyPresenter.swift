@@ -6,6 +6,7 @@ final class CreateWatchOnlyPresenter {
     weak var view: CreateWatchOnlyViewProtocol?
     let wireframe: CreateWatchOnlyWireframeProtocol
     let interactor: CreateWatchOnlyInteractorInputProtocol
+    let logger: LoggerProtocol
 
     private var partialSubstrateAddress: AccountAddress?
     private var partialEvmAddress: AccountAddress?
@@ -16,18 +17,20 @@ final class CreateWatchOnlyPresenter {
 
     init(
         interactor: CreateWatchOnlyInteractorInputProtocol,
-        wireframe: CreateWatchOnlyWireframeProtocol
+        wireframe: CreateWatchOnlyWireframeProtocol,
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
+        self.logger = logger
     }
 
     private func getSubstrateAccountId() -> AccountId? {
-        try? partialSubstrateAddress?.toAccountId()
+        try? partialSubstrateAddress?.toSubstrateAccountId()
     }
 
     private func getEVMAccountId() -> AccountId? {
-        try? partialEvmAddress?.toAccountId()
+        try? partialEvmAddress?.toEthereumAccountId()
     }
 
     private func provideSubstrateAddressStateViewModel() {
@@ -102,7 +105,39 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
         interactor.setup()
     }
 
-    func performContinue() {}
+    func performContinue() {
+        guard let name = partialNickname else {
+            return
+        }
+
+        guard
+            getSubstrateAccountId() != nil,
+            let substrateAddress = partialSubstrateAddress else {
+            let languages = view?.selectedLocale.rLanguages
+            wireframe.present(
+                message: R.string.localizable.commonInvalidSubstrateAddress(preferredLanguages: languages),
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: languages),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: languages),
+                from: view
+            )
+
+            return
+        }
+
+        if partialEvmAddress != nil, getEVMAccountId() == nil {
+            let languages = view?.selectedLocale.rLanguages
+            wireframe.present(
+                message: R.string.localizable.commonInvalidEvmAddress(preferredLanguages: languages),
+                title: R.string.localizable.commonErrorGeneralTitle(preferredLanguages: languages),
+                closeAction: R.string.localizable.commonClose(preferredLanguages: languages),
+                from: view
+            )
+            return
+        }
+
+        let wallet = WatchOnlyWallet(name: name, substrateAddress: substrateAddress, evmAddress: partialEvmAddress)
+        interactor.save(wallet: wallet)
+    }
 
     func performSubstrateScan() {}
 
@@ -139,5 +174,14 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyInteractorOutputProtocol {
         presets = wallets
 
         providePresetViewModel()
+    }
+
+    func didCreateWallet() {
+        wireframe.proceed(from: view)
+    }
+
+    func didFailWalletCreation(with error: Error) {
+        _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
+        logger.error("Did receiver error: \(error)")
     }
 }

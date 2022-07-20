@@ -39,7 +39,7 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
     }
 
     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?) {
-        guard let watchOnlyView = CreateWatchOnlyViewFactory.createView() else {
+        guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForOnboarding() else {
             return
         }
 

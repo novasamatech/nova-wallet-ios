@@ -843,3 +843,5 @@
 "common.evm.address" = "EVM address";
 "create.watch.only.missing.nickname" = "Enter wallet nickname...";
 "create.watch.only.missing.substrate" = "Enter substrate address...";
+"common.invalid.substrate.address" = "Invalid substrate address";
+"common.invalid.evm.address" = "Invalid ethereum address";
