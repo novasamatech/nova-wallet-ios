@@ -845,3 +845,6 @@
 "create.watch.only.missing.substrate" = "Enter substrate address...";
 "common.invalid.substrate.address" = "Invalid substrate address";
 "common.invalid.evm.address" = "Invalid ethereum address";
+"common.address.scan.error" = "Can't extract address from the code";
+"common.address.scan.title" = "Scan QR";
+"common.address.scan.message" = "Scan QR code with the address";
