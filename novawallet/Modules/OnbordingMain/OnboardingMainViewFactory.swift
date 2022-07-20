@@ -37,19 +37,23 @@ final class OnboardingMainViewFactory: OnboardingMainViewFactoryProtocol {
             privacyPolicyUrl: applicationConfig.privacyPolicyURL
         )
 
-        let view = OnboardingMainViewController(nib: R.nib.onbordingMain)
-        view.termDecorator = CompoundAttributedStringDecorator.legal(for: locale)
-        view.locale = locale
-
-        let presenter = OnboardingMainPresenter(legalData: legalData, locale: locale)
-
         let interactor = OnboardingMainInteractor(keystoreImportService: kestoreImportService)
+        let presenter = OnboardingMainPresenter(
+            interactor: interactor,
+            wireframe: wireframe,
+            legalData: legalData,
+            locale: locale
+        )
 
-        view.presenter = presenter
+        let termDecorator = CompoundAttributedStringDecorator.legal(for: locale)
+
+        let view = OnboardingMainViewController(
+            presenter: presenter,
+            termDecorator: termDecorator,
+            localizationManager: LocalizationManager.shared
+        )
+
         presenter.view = view
-        presenter.wireframe = wireframe
-        presenter.interactor = interactor
-
         interactor.presenter = presenter
 
         return view
