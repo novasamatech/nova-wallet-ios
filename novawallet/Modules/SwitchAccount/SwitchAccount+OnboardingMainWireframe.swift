@@ -29,7 +29,7 @@ extension SwitchAccount {
         }
 
         func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?) {
-            guard let watchOnlyView = CreateWatchOnlyViewFactory.createView() else {
+            guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForSwitch() else {
                 return
             }
 

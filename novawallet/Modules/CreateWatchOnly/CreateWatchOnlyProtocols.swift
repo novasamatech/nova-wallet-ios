@@ -1,6 +1,6 @@
 import SoraFoundation
 
-protocol CreateWatchOnlyViewProtocol: ControllerBackedProtocol {
+protocol CreateWatchOnlyViewProtocol: ControllerBackedProtocol, Localizable {
     func didReceiveNickname(viewModel: InputViewModelProtocol)
     func didReceiveSubstrateAddressState(viewModel: AccountFieldStateViewModel)
     func didReceiveSubstrateAddressInput(viewModel: InputViewModelProtocol)
@@ -27,6 +27,10 @@ protocol CreateWatchOnlyInteractorInputProtocol: AnyObject {
 
 protocol CreateWatchOnlyInteractorOutputProtocol: AnyObject {
     func didReceivePreset(wallets: [WatchOnlyWallet])
+    func didCreateWallet()
+    func didFailWalletCreation(with error: Error)
 }
 
-protocol CreateWatchOnlyWireframeProtocol: AnyObject {}
+protocol CreateWatchOnlyWireframeProtocol: AlertPresentable, ErrorPresentable {
+    func proceed(from view: CreateWatchOnlyViewProtocol?)
+}
