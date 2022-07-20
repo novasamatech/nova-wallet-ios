@@ -2,7 +2,7 @@ import UIKit
 import SoraUI
 import SoraFoundation
 
-class AccountInputView: BackgroundedContentControl {
+class TextInputView: BackgroundedContentControl {
     let textField: UITextField = {
         let textField = UITextField()
         textField.font = .regularSubheadline
@@ -14,7 +14,7 @@ class AccountInputView: BackgroundedContentControl {
         let currentStyle = attributes[.paragraphStyle] as? NSParagraphStyle
         let paragraphStyle = (currentStyle?.mutableCopy() as? NSMutableParagraphStyle) ??
             NSMutableParagraphStyle()
-        paragraphStyle.lineBreakMode = .byTruncatingMiddle
+        paragraphStyle.lineBreakMode = .byTruncatingTail
 
         attributes[.paragraphStyle] = paragraphStyle
         textField.defaultTextAttributes = attributes
@@ -25,43 +25,6 @@ class AccountInputView: BackgroundedContentControl {
         textField.autocapitalizationType = .none
 
         return textField
-    }()
-
-    var showsMyself: Bool {
-        get {
-            mySelfButton != nil
-        }
-
-        set {
-            if newValue {
-                setupMyselfButton()
-            } else {
-                clearMyselfButton()
-            }
-        }
-    }
-
-    private(set) var mySelfButton: RoundedButton?
-
-    let pasteButton: RoundedButton = {
-        let button = RoundedButton()
-        button.applyAccessoryStyle()
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
-
-        return button
-    }()
-
-    let scanButton: RoundedButton = {
-        let button = RoundedButton()
-        button.applyAccessoryStyle()
-
-        let icon = R.image.iconTransferScan()?.tinted(with: R.color.colorAccent()!)
-        button.imageWithTitleView?.iconImage = icon
-        button.imageWithTitleView?.spacingBetweenLabelAndIcon = 0
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 8.0, bottom: 6.0, right: 8.0)
-
-        return button
     }()
 
     let clearButton: RoundedButton = {
@@ -75,14 +38,6 @@ class AccountInputView: BackgroundedContentControl {
 
         return button
     }()
-
-    var localizablePlaceholder: LocalizableResource<String> = LocalizableResource { locale in
-        R.string.localizable.commonAddress(preferredLanguages: locale.rLanguages)
-    } {
-        didSet {
-            setupPlaceholder()
-        }
-    }
 
     private let stackView: UIStackView = {
         let view = UIStackView()
@@ -98,27 +53,6 @@ class AccountInputView: BackgroundedContentControl {
         backgroundView as? RoundedView
     }
 
-    var iconSize = CGSize(width: 24.0, height: 24.0) {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-
-    let iconView: UIImageView = {
-        let view = UIImageView()
-        view.image = R.image.iconAddressPlaceholder()
-        return view
-    }()
-
-    var locale = Locale.current {
-        didSet {
-            if oldValue != locale {
-                setupLocalization()
-            }
-        }
-    }
-
-    private var fieldStateViewModel: AccountFieldStateViewModel?
     private var inputViewModel: InputViewModelProtocol?
 
     var completed: Bool {
@@ -145,16 +79,6 @@ class AccountInputView: BackgroundedContentControl {
         super.init(frame: frame)
 
         configure()
-        setupLocalization()
-    }
-
-    func bind(fieldStateViewModel: AccountFieldStateViewModel) {
-        self.fieldStateViewModel?.icon?.cancel(on: iconView)
-        self.fieldStateViewModel = fieldStateViewModel
-
-        iconView.image = R.image.iconAddressPlaceholder()
-
-        fieldStateViewModel.icon?.loadImage(on: iconView, targetSize: iconSize, animated: true)
     }
 
     func bind(inputViewModel: InputViewModelProtocol) {
@@ -182,61 +106,9 @@ class AccountInputView: BackgroundedContentControl {
         layoutContent()
     }
 
-    private func setupLocalization() {
-        setupPlaceholder()
-
-        pasteButton.imageWithTitleView?.title = R.string.localizable.commonPaste(
-            preferredLanguages: locale.rLanguages
-        )
-
-        setupMyselfLocalization()
-
-        setNeedsLayout()
-    }
-
-    private func setupPlaceholder() {
-        let placeholder = localizablePlaceholder.value(for: locale)
-
-        textField.attributedPlaceholder = NSAttributedString(
-            string: placeholder,
-            attributes: [
-                .foregroundColor: R.color.colorWhite32()!,
-                .font: UIFont.regularSubheadline
-            ]
-        )
-    }
-
-    private func setupMyselfLocalization() {
-        mySelfButton?.imageWithTitleView?.title = R.string.localizable.commonMyself(
-            preferredLanguages: locale.rLanguages
-        )
-    }
-
     private func layoutContent() {
-        iconView.frame = CGRect(
-            origin: CGPoint(
-                x: bounds.minX + contentInsets.left,
-                y: bounds.midY - iconSize.height / 2.0
-            ),
-            size: iconSize
-        )
-
         let buttonHeight: CGFloat = 32.0
         var actionsWidth: CGFloat = 0
-
-        if let mySelfButton = mySelfButton, !mySelfButton.isHidden {
-            actionsWidth += mySelfButton.intrinsicContentSize.width
-        }
-
-        if !pasteButton.isHidden {
-            actionsWidth += (mySelfButton?.isHidden == false) ? stackView.spacing : 0
-            actionsWidth += pasteButton.intrinsicContentSize.width
-        }
-
-        if !scanButton.isHidden {
-            actionsWidth += !pasteButton.isHidden ? stackView.spacing : 0
-            actionsWidth += scanButton.intrinsicContentSize.width
-        }
 
         if !clearButton.isHidden {
             actionsWidth += clearButton.intrinsicContentSize.width
@@ -249,23 +121,22 @@ class AccountInputView: BackgroundedContentControl {
             height: buttonHeight
         )
 
-        let leftFieldSpacing: CGFloat = 12.0
         let rightFieldSpacing: CGFloat = 8.0
         let fieldWidth: CGFloat
 
         if actionsWidth > 0 {
             fieldWidth = max(
-                stackView.frame.minX - iconView.frame.maxX - leftFieldSpacing - rightFieldSpacing,
+                stackView.frame.minX - contentInsets.left - rightFieldSpacing,
                 0
             )
         } else {
-            fieldWidth = max(stackView.frame.minX - iconView.frame.maxX - leftFieldSpacing, 0)
+            fieldWidth = max(stackView.frame.minX - contentInsets.left, 0)
         }
 
         let fieldHeight = textField.intrinsicContentSize.height
 
         textField.frame = CGRect(
-            x: iconView.frame.maxX + leftFieldSpacing,
+            x: contentInsets.left,
             y: bounds.midY - fieldHeight / 2.0,
             width: fieldWidth,
             height: fieldHeight
@@ -280,7 +151,6 @@ class AccountInputView: BackgroundedContentControl {
         configureBackgroundViewIfNeeded()
         configureContentViewIfNeeded()
         configureTextFieldHandlers()
-        configurePasteHandlers()
         configureClearHandlers()
 
         updateControlsState()
@@ -309,12 +179,8 @@ class AccountInputView: BackgroundedContentControl {
             self.contentView = contentView
         }
 
-        contentView?.addSubview(iconView)
-
         addSubview(textField)
 
-        stackView.addArrangedSubview(pasteButton)
-        stackView.addArrangedSubview(scanButton)
         stackView.addArrangedSubview(clearButton)
 
         addSubview(stackView)
@@ -334,12 +200,6 @@ class AccountInputView: BackgroundedContentControl {
         textField.delegate = self
     }
 
-    private func configurePasteHandlers() {
-        pasteButton.addTarget(self, action: #selector(actionPaste), for: .touchUpInside)
-
-        pasteboardService.delegate = self
-    }
-
     private func configureClearHandlers() {
         clearButton.addTarget(
             self,
@@ -353,14 +213,8 @@ class AccountInputView: BackgroundedContentControl {
 
         if hasText {
             clearButton.isHidden = false
-            pasteButton.isHidden = true
-            scanButton.isHidden = true
-            mySelfButton?.isHidden = true
         } else {
             clearButton.isHidden = true
-            pasteButton.isHidden = !pasteboardService.pasteboard.hasStrings
-            scanButton.isHidden = false
-            mySelfButton?.isHidden = false
         }
 
         let newStates = stackView.arrangedSubviews.map(\.isHidden)
@@ -368,34 +222,6 @@ class AccountInputView: BackgroundedContentControl {
         if oldStates != newStates {
             setNeedsLayout()
         }
-    }
-
-    private func setupMyselfButton() {
-        guard mySelfButton == nil else {
-            return
-        }
-
-        let button = RoundedButton()
-        button.applyAccessoryStyle()
-        button.contentInsets = UIEdgeInsets(top: 6.0, left: 12.0, bottom: 6.0, right: 12.0)
-        button.imageWithTitleView?.titleFont = .semiBoldFootnote
-
-        mySelfButton = button
-
-        stackView.insertArrangedSubview(button, at: 0)
-
-        mySelfButton?.isHidden = hasText
-
-        setupMyselfLocalization()
-
-        setNeedsLayout()
-    }
-
-    private func clearMyselfButton() {
-        mySelfButton?.removeFromSuperview()
-        mySelfButton = nil
-
-        setNeedsLayout()
     }
 
     // MARK: Action
@@ -420,24 +246,6 @@ class AccountInputView: BackgroundedContentControl {
         updateControlsState()
     }
 
-    @objc func actionPaste() {
-        if
-            let pasteString = pasteboardService.pasteboard.string,
-            let inputViewModel = inputViewModel,
-            inputViewModel.inputHandler.value != pasteString {
-            let currentValue = inputViewModel.inputHandler.value as NSString
-            let currentLength = currentValue.length
-            let range = NSRange(location: 0, length: currentLength)
-
-            if inputViewModel.inputHandler.didReceiveReplacement(pasteString, for: range) {
-                textField.text = pasteString
-                sendActions(for: .editingChanged)
-            }
-
-            updateControlsState()
-        }
-    }
-
     @objc func actionClear() {
         guard hasText else {
             return
@@ -452,7 +260,7 @@ class AccountInputView: BackgroundedContentControl {
     }
 }
 
-extension AccountInputView: UITextFieldDelegate {
+extension TextInputView: UITextFieldDelegate {
     func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
@@ -480,15 +288,5 @@ extension AccountInputView: UITextFieldDelegate {
     func textFieldShouldReturn(_: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
-    }
-}
-
-extension AccountInputView: PasteboardHandlerDelegate {
-    func didReceivePasteboardChange(notification _: Notification) {
-        updateControlsState()
-    }
-
-    func didReceivePasteboardRemove(notification _: Notification) {
-        updateControlsState()
     }
 }

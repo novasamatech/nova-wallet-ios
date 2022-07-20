@@ -90,7 +90,9 @@ final class OnboardingMainViewController: UIViewController, ViewHolder {
         }
     }
 
-    @objc private func actionCreateWatchOnly() {}
+    @objc private func actionCreateWatchOnly() {
+        presenter.activateWatchOnlyCreate()
+    }
 }
 
 extension OnboardingMainViewController: OnboardingMainViewProtocol {}

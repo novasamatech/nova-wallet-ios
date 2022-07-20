@@ -54,6 +54,10 @@ extension OnboardingMainPresenter: OnboardingMainPresenterProtocol {
     func activateAccountRestore() {
         wireframe.showAccountRestore(from: view)
     }
+
+    func activateWatchOnlyCreate() {
+        wireframe.showWatchOnlyCreate(from: view)
+    }
 }
 
 extension OnboardingMainPresenter: OnboardingMainInteractorOutputProtocol {
