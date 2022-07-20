@@ -1,6 +1,6 @@
 import Foundation
 
-final class CreateWatchOnlyWireframe: CreateWatchOnlyWireframeProtocol {
+final class CreateWatchOnlyWireframe: BaseCreateWatchOnlyWireframe, CreateWatchOnlyWireframeProtocol {
     lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
 
     func proceed(from _: CreateWatchOnlyViewProtocol?) {

@@ -1,7 +1,7 @@
 import Foundation
 
 extension SwitchAccount {
-    final class CreateWatchOnlyWireframe: CreateWatchOnlyWireframeProtocol {
+    final class CreateWatchOnlyWireframe: BaseCreateWatchOnlyWireframe, CreateWatchOnlyWireframeProtocol {
         func proceed(from view: CreateWatchOnlyViewProtocol?) {
             guard let navigationController = view?.controller.navigationController else {
                 return

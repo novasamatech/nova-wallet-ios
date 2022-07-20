@@ -845,3 +845,6 @@
 "create.watch.only.missing.substrate" = "Введите substrate адрес...";
 "common.invalid.substrate.address" = "Неправильный формат substrate адреса";
 "common.invalid.evm.address" = "Неправильный формат evm адреса";
+"common.address.scan.error" = "Не удается извлечь адреса из кода";
+"common.address.scan.title" = "Сканировать QR";
+"common.address.scan.message" = "Отсканируйте QR с адресом";

@@ -3,8 +3,10 @@ import SoraFoundation
 
 final class TransferScanPresenter: QRScannerPresenter {
     let matcher: AddressQRMatching
+    let context: AnyObject?
+    let qrExtractionError: LocalizableResource<String>
 
-    weak var delegate: TransferScanDelegate?
+    weak var delegate: AddressScanDelegate?
 
     private var lastHandledCode: String?
 
@@ -13,14 +15,18 @@ final class TransferScanPresenter: QRScannerPresenter {
     init(
         matcher: AddressQRMatching,
         wireframe: QRScannerWireframeProtocol,
-        delegate: TransferScanDelegate,
+        delegate: AddressScanDelegate,
+        context: AnyObject?,
         qrScanService: QRCaptureServiceProtocol,
         qrExtractionService: QRExtractionServiceProtocol,
         localizationManager: LocalizationManagerProtocol,
+        qrExtractionError: LocalizableResource<String>,
         logger: LoggerProtocol? = nil
     ) {
         self.matcher = matcher
         self.delegate = delegate
+        self.context = context
+        self.qrExtractionError = qrExtractionError
         self.localizationManager = localizationManager
 
         super.init(
@@ -33,7 +39,7 @@ final class TransferScanPresenter: QRScannerPresenter {
 
     private func handleFailure() {
         let locale = localizationManager.selectedLocale
-        let message = R.string.localizable.recepientScanError(preferredLanguages: locale.rLanguages)
+        let message = qrExtractionError.value(for: locale)
         view?.present(message: message, animated: true)
     }
 
@@ -46,7 +52,7 @@ final class TransferScanPresenter: QRScannerPresenter {
 
         if let address = matcher.match(code: code) {
             DispatchQueue.main.async { [weak self] in
-                self?.delegate?.transferScanDidReceiveRecepient(address: address)
+                self?.delegate?.addressScanDidReceiveRecepient(address: address, context: self?.context)
             }
         } else {
             DispatchQueue.main.async { [weak self] in
