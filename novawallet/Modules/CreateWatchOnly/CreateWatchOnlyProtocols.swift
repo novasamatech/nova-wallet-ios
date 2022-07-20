@@ -31,6 +31,14 @@ protocol CreateWatchOnlyInteractorOutputProtocol: AnyObject {
     func didFailWalletCreation(with error: Error)
 }
 
-protocol CreateWatchOnlyWireframeProtocol: AlertPresentable, ErrorPresentable {
+protocol BaseCreateWatchOnlyWireframeProtocol {
+    func showAddressScan(
+        from view: CreateWatchOnlyViewProtocol?,
+        delegate: AddressScanDelegate,
+        context: AnyObject?
+    )
+}
+
+protocol CreateWatchOnlyWireframeProtocol: BaseCreateWatchOnlyWireframeProtocol, AlertPresentable, ErrorPresentable {
     func proceed(from view: CreateWatchOnlyViewProtocol?)
 }

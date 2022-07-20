@@ -58,7 +58,7 @@ protocol TransferSetupWireframeProtocol: AlertPresentable, ErrorPresentable {
         context: AnyObject?
     )
 
-    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate)
+    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate)
 
     func hideRecepientScan(from view: TransferSetupViewProtocol?)
 }

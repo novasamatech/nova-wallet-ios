@@ -139,9 +139,21 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
         interactor.save(wallet: wallet)
     }
 
-    func performSubstrateScan() {}
+    func performSubstrateScan() {
+        wireframe.showAddressScan(
+            from: view,
+            delegate: self,
+            context: NSNumber(value: true)
+        )
+    }
 
-    func performEVMScan() {}
+    func performEVMScan() {
+        wireframe.showAddressScan(
+            from: view,
+            delegate: self,
+            context: NSNumber(value: false)
+        )
+    }
 
     func updateWalletNickname(_ partialNickname: String) {
         self.partialNickname = partialNickname
@@ -183,5 +195,25 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyInteractorOutputProtocol {
     func didFailWalletCreation(with error: Error) {
         _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
         logger.error("Did receiver error: \(error)")
+    }
+}
+
+extension CreateWatchOnlyPresenter: AddressScanDelegate {
+    func addressScanDidReceiveRecepient(address: AccountAddress, context: AnyObject?) {
+        guard let isSubstrate = (context as? NSNumber)?.boolValue else {
+            return
+        }
+
+        if isSubstrate {
+            partialSubstrateAddress = address
+
+            provideSubstrateAddressStateViewModel()
+            provideSubstrateInputViewModel()
+        } else {
+            partialEvmAddress = address
+
+            provideEVMAddressStateViewModel()
+            provideEVMInputViewModel()
+        }
     }
 }
