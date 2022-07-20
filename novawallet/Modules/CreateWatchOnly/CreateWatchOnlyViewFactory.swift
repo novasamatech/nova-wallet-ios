@@ -3,7 +3,10 @@ import SoraFoundation
 
 struct CreateWatchOnlyViewFactory {
     static func createView() -> CreateWatchOnlyViewProtocol? {
-        let interactor = CreateWatchOnlyInteractor()
+        guard let interactor = createInteractor() else {
+            return nil
+        }
+
         let wireframe = CreateWatchOnlyWireframe()
 
         let localizationManager = LocalizationManager.shared
@@ -19,5 +22,12 @@ struct CreateWatchOnlyViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createInteractor() -> CreateWatchOnlyInteractor? {
+        CreateWatchOnlyInteractor(
+            repository: WatchOnlyPresetRepository(),
+            operationQueue: OperationManagerFacade.sharedDefaultQueue
+        )
     }
 }
