@@ -2,14 +2,21 @@ import Foundation
 
 final class OnboardingMainPresenter {
     weak var view: OnboardingMainViewProtocol?
-    var wireframe: OnboardingMainWireframeProtocol!
-    var interactor: OnboardingMainInteractorInputProtocol!
+    let wireframe: OnboardingMainWireframeProtocol
+    let interactor: OnboardingMainInteractorInputProtocol
 
     let legalData: LegalData
 
     let locale: Locale
 
-    init(legalData: LegalData, locale: Locale) {
+    init(
+        interactor: OnboardingMainInteractorInputProtocol,
+        wireframe: OnboardingMainWireframeProtocol,
+        legalData: LegalData,
+        locale: Locale
+    ) {
+        self.interactor = interactor
+        self.wireframe = wireframe
         self.legalData = legalData
         self.locale = locale
     }
