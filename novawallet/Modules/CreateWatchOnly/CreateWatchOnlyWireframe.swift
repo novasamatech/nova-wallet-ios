@@ -1,3 +1,13 @@
 import Foundation
 
-final class CreateWatchOnlyWireframe: CreateWatchOnlyWireframeProtocol {}
+final class CreateWatchOnlyWireframe: CreateWatchOnlyWireframeProtocol {
+    lazy var rootAnimator: RootControllerAnimationCoordinatorProtocol = RootControllerAnimationCoordinator()
+
+    func proceed(from _: CreateWatchOnlyViewProtocol?) {
+        guard let pincodeViewController = PinViewFactory.createPinSetupView()?.controller else {
+            return
+        }
+
+        rootAnimator.animateTransition(to: pincodeViewController)
+    }
+}

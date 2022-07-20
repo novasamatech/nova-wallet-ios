@@ -3,6 +3,7 @@ import RobinHood
 
 enum MetaAccountModelType: UInt8 {
     case secrets
+    case watchOnly
 }
 
 struct MetaAccountModel: Equatable {

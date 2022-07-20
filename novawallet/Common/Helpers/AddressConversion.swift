@@ -50,6 +50,24 @@ extension AccountAddress {
             return try addressFactory.accountId(fromAddress: self, type: type.uint16Value)
         }
     }
+
+    func toSubstrateAccountId(using prefix: UInt16? = nil) throws -> AccountId {
+        let factory = SS58AddressFactory()
+
+        let type: UInt16
+
+        if let prefix = prefix {
+            type = prefix
+        } else {
+            type = try factory.type(fromAddress: self).uint16Value
+        }
+
+        return try factory.accountId(fromAddress: self, type: type)
+    }
+
+    func toEthereumAccountId() throws -> AccountId {
+        try extractEthereumAccountId()
+    }
 }
 
 extension ChainModel {
