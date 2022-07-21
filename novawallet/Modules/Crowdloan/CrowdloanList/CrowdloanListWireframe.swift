@@ -83,13 +83,17 @@ final class CrowdloanListWireframe: CrowdloanListWireframeProtocol {
 
     func selectChain(
         from view: ControllerBackedProtocol?,
-        delegate: ChainSelectionDelegate,
-        selectedChainId: ChainModel.Id?
+        delegate: AssetSelectionDelegate,
+        selectedChainAssetId: ChainAssetId?
     ) {
-        guard let selectionView = ChainSelectionViewFactory.createView(
+        let assetFilter: (ChainAsset) -> Bool = { chainAsset in
+            chainAsset.chain.hasCrowdloans && chainAsset.asset.isUtility
+        }
+
+        guard let selectionView = AssetSelectionViewFactory.createView(
             delegate: delegate,
-            selectedChainId: selectedChainId,
-            repositoryFilter: NSPredicate.hasCrowloans()
+            selectedChainAssetId: selectedChainAssetId,
+            assetFilter: assetFilter
         ) else {
             return
         }

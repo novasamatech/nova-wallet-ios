@@ -104,8 +104,9 @@ struct NftDetailsViewFactory {
     ) -> RMRKV2DetailsInteractor? {
         RMRKV2DetailsInteractor(
             nftChainModel: nftChainModel,
-            accountRepository: accountRepository,
             nftMetadataService: nftMetadataService,
+            operationFactory: RMRKV2OperationFactory(),
+            accountRepository: accountRepository,
             operationQueue: operationQueue
         )
     }

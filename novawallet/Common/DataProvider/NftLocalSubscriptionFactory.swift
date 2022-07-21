@@ -12,7 +12,7 @@ final class NftLocalSubscriptionFactory: SubstrateLocalSubscriptionFactory,
         storageFacade: SubstrateDataStorageFacade.shared,
         operationManager: OperationManagerFacade.sharedManager,
         logger: Logger.shared,
-        operationQueue: OperationManagerFacade.sharedDefaultQueue
+        operationQueue: OperationManagerFacade.nftQueue
     )
 
     typealias NftOption = (chain: ChainModel, ownerId: AccountId, type: NftType)

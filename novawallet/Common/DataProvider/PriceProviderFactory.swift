@@ -55,20 +55,31 @@ extension PriceProviderFactory: PriceProviderFactoryProtocol {
     }
 
     func getPriceListProvider(for priceIds: [AssetModel.PriceId]) -> AnySingleValueProvider<[PriceData]> {
-        let priceListIdentifier = "coingecko_price_list_identifier"
+        clearIfNeeded()
+
+        let fullKey = priceIds.joined()
+        let cacheKey = fullKey.data(using: .utf8)?.sha256().toHex() ?? fullKey
+
+        if let provider = providers[cacheKey]?.target as? SingleValueProvider<[PriceData]> {
+            return AnySingleValueProvider(provider)
+        }
 
         let repository: CoreDataRepository<SingleValueProviderObject, CDSingleValue> =
             storageFacade.createRepository()
 
         let source = CoingeckoPriceListSource(priceIds: priceIds)
 
+        let databaseIdentifier = "coingecko_price_list_identifier"
+
         let trigger: DataProviderEventTrigger = [.onAddObserver, .onInitialization]
         let provider = SingleValueProvider(
-            targetIdentifier: priceListIdentifier,
+            targetIdentifier: databaseIdentifier,
             source: AnySingleValueProviderSource(source),
             repository: AnyDataProviderRepository(repository),
             updateTrigger: trigger
         )
+
+        providers[cacheKey] = WeakWrapper(target: provider)
 
         return AnySingleValueProvider(provider)
     }

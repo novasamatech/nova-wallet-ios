@@ -8,6 +8,7 @@ typealias BidderKey = UInt32
 typealias BlockNumber = UInt32
 typealias BlockTime = UInt64
 typealias LeasingPeriod = UInt32
+typealias LeasingOffset = UInt32
 typealias Slot = UInt64
 typealias SessionIndex = UInt32
 typealias Moment = UInt32

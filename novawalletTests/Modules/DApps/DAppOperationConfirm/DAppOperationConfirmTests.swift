@@ -16,10 +16,11 @@ class DAppOperationConfirmTests: XCTestCase {
         genesisHash: "0x0bd72c1c305172e1275278aaeb3f161e02eccb7a819e63f62d47bd53a28189f8",
         method: "0x1001d177000000000000c29300000000000001",
         nonce: "0x0000000f",
-        specVersion: BigUInt(9050).serialize().toHex(includePrefix: true),
+        specVersion: BigUInt(9260).serialize().toHex(includePrefix: true),
         tip: "0x00000000000000000000000000000000",
         transactionVersion: "0x00000003",
         signedExtensions: [
+            "CheckNonZeroSender",
             "CheckSpecVersion",
             "CheckTxVersion",
             "CheckGenesis",
