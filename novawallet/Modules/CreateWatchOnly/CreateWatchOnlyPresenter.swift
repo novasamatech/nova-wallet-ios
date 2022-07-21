@@ -124,7 +124,8 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
             return
         }
 
-        if partialEvmAddress != nil, getEVMAccountId() == nil {
+        let evmAddressEmpty = (partialEvmAddress ?? "").isEmpty
+        if !evmAddressEmpty, getEVMAccountId() == nil {
             let languages = view?.selectedLocale.rLanguages
             wireframe.present(
                 message: R.string.localizable.commonInvalidEvmAddress(preferredLanguages: languages),
@@ -135,7 +136,9 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyPresenterProtocol {
             return
         }
 
-        let wallet = WatchOnlyWallet(name: name, substrateAddress: substrateAddress, evmAddress: partialEvmAddress)
+        let evmAddress = !evmAddressEmpty ? partialEvmAddress : nil
+
+        let wallet = WatchOnlyWallet(name: name, substrateAddress: substrateAddress, evmAddress: evmAddress)
         interactor.save(wallet: wallet)
     }
 
