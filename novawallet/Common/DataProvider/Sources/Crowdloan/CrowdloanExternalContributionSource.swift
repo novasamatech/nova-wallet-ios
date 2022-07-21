@@ -17,7 +17,7 @@ extension ExternalContributionDataProviderSource: SingleValueProviderSourceProto
     typealias Model = [ExternalContribution]
 
     func fetchOperation() -> CompoundOperationWrapper<Model?> {
-        let contributionOperations: [BaseOperation<[ExternalContribution]>] = children.map { source in
+        let contributionOperations: [CompoundOperationWrapper<[ExternalContribution]>] = children.map { source in
             source.getContributions(accountId: accountId, chain: chain)
         }
 
@@ -27,15 +27,14 @@ extension ExternalContributionDataProviderSource: SingleValueProviderSourceProto
 
         let mergeOperation = ClosureOperation<[ExternalContribution]?> {
             contributionOperations.compactMap { operation in
-                try? operation.extractNoCancellableResultData()
+                try? operation.targetOperation.extractNoCancellableResultData()
             }.flatMap { $0 }
         }
 
-        contributionOperations.forEach { mergeOperation.addDependency($0) }
+        contributionOperations.forEach { mergeOperation.addDependency($0.targetOperation) }
 
-        return CompoundOperationWrapper(
-            targetOperation: mergeOperation,
-            dependencies: contributionOperations
-        )
+        let dependencies = contributionOperations.flatMap(\.allOperations)
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 }

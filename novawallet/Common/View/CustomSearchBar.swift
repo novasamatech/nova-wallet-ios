@@ -1,7 +1,7 @@
 import UIKit
 import SoraUI
 
-final class DAppSearchBar: UIView {
+final class CustomSearchBar: UIView {
     let textFieldBackgroundView: RoundedView = {
         let view = RoundedView()
         view.applyFilledBackgroundStyle()

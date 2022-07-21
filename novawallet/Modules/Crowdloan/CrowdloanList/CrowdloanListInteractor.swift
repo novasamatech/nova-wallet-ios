@@ -262,6 +262,7 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             let error = ChainRegistryError.runtimeMetadaUnavailable
             presenter.didReceiveBlockDuration(result: .failure(error))
             presenter.didReceiveLeasingPeriod(result: .failure(error))
+            presenter.didReceiveLeasingOffset(result: .failure(error))
             return
         }
 
@@ -279,6 +280,14 @@ final class CrowdloanListInteractor: RuntimeConstantFetching {
             operationManager: operationManager
         ) { [weak self] (result: Result<LeasingPeriod, Error>) in
             self?.presenter.didReceiveLeasingPeriod(result: result)
+        }
+
+        fetchConstant(
+            for: .paraLeasingOffset,
+            runtimeCodingService: runtimeService,
+            operationManager: operationManager
+        ) { [weak self] (result: Result<LeasingOffset, Error>) in
+            self?.presenter.didReceiveLeasingOffset(result: result)
         }
     }
 }

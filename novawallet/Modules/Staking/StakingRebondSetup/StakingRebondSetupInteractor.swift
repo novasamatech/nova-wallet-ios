@@ -122,7 +122,7 @@ extension StakingRebondSetupInteractor: StakingLocalStorageSubscriber, StakingLo
                             self?.handleControllerMetaAccount(response: response)
                         }
 
-                        let accountResponse = try? maybeResponse?.chainAccount
+                        let accountResponse = maybeResponse?.chainAccount
                         self?.presenter.didReceiveController(result: .success(accountResponse))
                     case let .failure(error):
                         self?.presenter.didReceiveController(result: .failure(error))

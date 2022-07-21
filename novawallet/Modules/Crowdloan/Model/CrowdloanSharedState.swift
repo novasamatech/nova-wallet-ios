@@ -12,6 +12,7 @@ final class CrowdloanSharedState {
         storageFacade: StorageFacadeProtocol = SubstrateDataStorageFacade.shared,
         internalSettings: SettingsManagerProtocol = SettingsManager.shared,
         operationManager: OperationManagerProtocol = OperationManagerFacade.sharedManager,
+        paraIdOperationFactory: ParaIdOperationFactoryProtocol = ParaIdOperationFactory.shared,
         logger: LoggerProtocol = Logger.shared
     ) {
         settings = CrowdloanChainSettings(
@@ -26,7 +27,10 @@ final class CrowdloanSharedState {
             logger: logger
         )
 
-        crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactory(storageFacade: storageFacade)
+        crowdloanOffchainProviderFactory = CrowdloanOffchainProviderFactory(
+            storageFacade: storageFacade,
+            paraIdOperationFactory: paraIdOperationFactory
+        )
     }
 
     init(

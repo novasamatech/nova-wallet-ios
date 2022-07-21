@@ -15,28 +15,16 @@ class NFTIntegrationTests: XCTestCase {
         }
     }
 
-    func testRMRKV2BirdsNftFetch() {
+    func testRMRKV2NftFetch() {
         let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
 
         do {
-            let nfts = try fetchRMRKV2BirdsNFT(for: address)
+            let nfts = try fetchRMRKV2NFT(for: address)
             XCTAssertTrue(!nfts.isEmpty)
         } catch {
             XCTFail("Unexpected error \(error)")
         }
     }
-
-    func testRMRKV2ItemsNftFetch() {
-        let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
-
-        do {
-            let nfts = try fetchRMRKV2ItemsNFT(for: address)
-            XCTAssertTrue(!nfts.isEmpty)
-        } catch {
-            XCTFail("Unexpected error \(error)")
-        }
-    }
-
     func testIPFSMetadataV1Fetch() {
         let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
 
@@ -56,30 +44,11 @@ class NFTIntegrationTests: XCTestCase {
         }
     }
 
-    func testIPFSMetadataV2BirdsFetch() {
+    func testIPFSMetadataV2NftFetch() {
         let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
 
         do {
-            let nfts = try fetchRMRKV2BirdsNFT(for: address).prefix(3)
-            let metadataList: [RMRKNftMetadataV2] = try nfts.compactMap { nft in
-                guard let metadata = nft.metadata else {
-                    return nil
-                }
-
-                return try fetchMetadata(for: metadata)
-            }
-
-            XCTAssertEqual(nfts.count, metadataList.count)
-        } catch {
-            XCTFail("Unexpected error \(error)")
-        }
-    }
-
-    func testIPFSMetadataV2ItemsFetch() {
-        let address = "HKtvjeZDzCTboD5tH2zbZ9w58LSKWSzhVoC1ppEjy46p5oA"
-
-        do {
-            let nfts = try fetchRMRKV2ItemsNFT(for: address).prefix(3)
+            let nfts = try fetchRMRKV2NFT(for: address).prefix(3)
             let metadataList: [RMRKNftMetadataV2] = try nfts.compactMap { nft in
                 guard let metadata = nft.metadata else {
                     return nil
@@ -116,21 +85,11 @@ class NFTIntegrationTests: XCTestCase {
         return try operation.extractNoCancellableResultData()
     }
 
-    private func fetchRMRKV2BirdsNFT(for address: AccountAddress) throws -> [RMRKNftV2] {
+    private func fetchRMRKV2NFT(for address: AccountAddress) throws -> [RMRKNftV2] {
         let operationFactory = RMRKV2OperationFactory()
         let operationQueue = OperationQueue()
 
-        let operation = operationFactory.fetchBirdNfts(for: address)
-        operationQueue.addOperations([operation], waitUntilFinished: true)
-
-        return try operation.extractNoCancellableResultData()
-    }
-
-    private func fetchRMRKV2ItemsNFT(for address: AccountAddress) throws -> [RMRKNftV2] {
-        let operationFactory = RMRKV2OperationFactory()
-        let operationQueue = OperationQueue()
-
-        let operation = operationFactory.fetchItemNfts(for: address)
+        let operation = operationFactory.fetchNfts(for: address)
         operationQueue.addOperations([operation], waitUntilFinished: true)
 
         return try operation.extractNoCancellableResultData()

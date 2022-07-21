@@ -1,18 +1,18 @@
 import UIKit
 
+enum WalletListMeasurement {
+    static let accountHeight: CGFloat = 56.0
+    static let totalBalanceHeight: CGFloat = 96.0
+    static let settingsHeight: CGFloat = 56.0
+    static let nftsHeight = 56.0
+    static let assetHeight: CGFloat = 56.0
+    static let assetHeaderHeight: CGFloat = 40.0
+    static let emptyStateCellHeight: CGFloat = 198
+    static let decorationInset: CGFloat = 8.0
+}
+
 final class WalletListFlowLayout: UICollectionViewFlowLayout {
     static let assetGroupDecoration = "assetGroupDecoration"
-
-    enum Constants {
-        static let accountHeight: CGFloat = 56.0
-        static let totalBalanceHeight: CGFloat = 96.0
-        static let settingsHeight: CGFloat = 56.0
-        static let nftsHeight = 56.0
-        static let assetHeight: CGFloat = 56.0
-        static let assetHeaderHeight: CGFloat = 40.0
-        static let emptyStateCellHeight: CGFloat = 198
-        static let decorationInset: CGFloat = 8.0
-    }
 
     enum SectionType: CaseIterable {
         case summary
@@ -127,17 +127,17 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         var height: CGFloat {
             switch self {
             case .account:
-                return Constants.accountHeight
+                return WalletListMeasurement.accountHeight
             case .totalBalance:
-                return Constants.totalBalanceHeight
+                return WalletListMeasurement.totalBalanceHeight
             case .yourNfts:
-                return Constants.nftsHeight
+                return WalletListMeasurement.nftsHeight
             case .settings:
-                return Constants.settingsHeight
+                return WalletListMeasurement.settingsHeight
             case .emptyState:
-                return Constants.emptyStateCellHeight
+                return WalletListMeasurement.emptyStateCellHeight
             case .asset:
-                return Constants.assetHeight
+                return WalletListMeasurement.assetHeight
             }
         }
     }
@@ -192,7 +192,8 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
         let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
 
         if hasSummarySection {
-            groupY = Constants.accountHeight + SectionType.summary.cellSpacing + Constants.totalBalanceHeight
+            groupY = WalletListMeasurement.accountHeight + SectionType.summary.cellSpacing +
+                WalletListMeasurement.totalBalanceHeight
         }
 
         groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
@@ -205,21 +206,21 @@ final class WalletListFlowLayout: UICollectionViewFlowLayout {
             groupY += CellType.yourNfts.height
         }
 
-        groupY += SectionType.settings.insets.top + Constants.settingsHeight +
+        groupY += SectionType.settings.insets.top + WalletListMeasurement.settingsHeight +
             SectionType.settings.insets.bottom
 
-        let (attributes, _) = (0 ..< groupsCount).reduce(
-            ([UICollectionViewLayoutAttributes](), groupY)
-        ) { result, groupIndex in
+        let initAttributes = [UICollectionViewLayoutAttributes]()
+        let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, groupY)) { result, groupIndex in
             let attributes = result.0
             let positionY = result.1
 
             let section = SectionType.assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
-            let contentHeight = Constants.assetHeaderHeight + CGFloat(numberOfItems) * Constants.assetHeight
+            let contentHeight = WalletListMeasurement.assetHeaderHeight +
+                CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
             let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
-                Constants.decorationInset
+                WalletListMeasurement.decorationInset
 
             let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
                 forDecorationViewOfKind: Self.assetGroupDecoration,

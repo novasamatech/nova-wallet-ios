@@ -27,57 +27,69 @@ final class RMRKV2SyncService: BaseNftSyncService {
         )
     }
 
+    private func createCollectionsFetchWrapper(
+        dependingOn itemsOperation: BaseOperation<[RMRKNftV2]>
+    ) -> BaseOperation<[RMRKV2Collection]> {
+        OperationCombiningService<RMRKV2Collection>(
+            operationManager: OperationManager(operationQueue: operationQueue)
+        ) { [weak self] in
+            let items = try itemsOperation.extractNoCancellableResultData()
+
+            let collectionIds = Set(items.map(\.collectionId))
+
+            return collectionIds.compactMap {
+                guard let fetchOperation = self?.operationFactory.fetchCollection(for: $0) else {
+                    return nil
+                }
+
+                let mapOperation = ClosureOperation<RMRKV2Collection> {
+                    guard let collection = try fetchOperation.extractNoCancellableResultData().first else {
+                        throw CommonError.dataCorruption
+                    }
+
+                    return collection
+                }
+
+                mapOperation.addDependency(fetchOperation)
+
+                return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: [fetchOperation])
+            }
+        }.longrunOperation()
+    }
+
     override func createRemoteFetchWrapper() -> CompoundOperationWrapper<[RemoteNftModel]> {
         do {
             let ownerId = self.ownerId
             let address = try ownerId.toAddress(using: chain.chainFormat)
             let chainId = chain.chainId
 
-            let birdsOperation = operationFactory.fetchBirdNfts(for: address)
-            let itemsOperation = operationFactory.fetchItemNfts(for: address)
+            let itemsOperation = operationFactory.fetchNfts(for: address)
+
+            let collectionsOperation = createCollectionsFetchWrapper(dependingOn: itemsOperation)
+
+            collectionsOperation.addDependency(itemsOperation)
 
             let mapOperation = ClosureOperation<[RemoteNftModel]> {
-                let birds = try birdsOperation.extractNoCancellableResultData()
                 let items = try itemsOperation.extractNoCancellableResultData()
 
-                let remoteItems = birds + items
+                let collections = try collectionsOperation.extractNoCancellableResultData()
+                let collectionsDict = collections.reduce(into: [String: RMRKV2Collection]()) { result, item in
+                    result[item.identifier] = item
+                }
 
-                return remoteItems.map { remoteItem in
-                    let identifier = NftModel.rmrkv2Identifier(
-                        for: chainId,
-                        identifier: remoteItem.identifier
-                    )
-
-                    let metadata: Data?
-
-                    if let metadataString = remoteItem.metadata {
-                        metadata = metadataString.data(using: .utf8)
-                    } else {
-                        metadata = nil
-                    }
-
-                    let price = remoteItem.forsale.map(\.stringWithPointSeparator)
-
-                    return RemoteNftModel(
-                        identifier: identifier,
-                        type: NftType.rmrkV2.rawValue,
-                        chainId: chainId,
+                return items.map { remoteItem in
+                    RemoteNftModel.createFromRMRKV2(
+                        remoteItem,
                         ownerId: ownerId,
-                        collectionId: remoteItem.collectionId,
-                        instanceId: nil,
-                        metadata: metadata,
-                        totalIssuance: nil,
-                        name: remoteItem.name,
-                        label: remoteItem.rarity,
-                        media: remoteItem.image,
-                        price: price
+                        chainId: chainId,
+                        collection: collectionsDict[remoteItem.collectionId]
                     )
                 }
             }
 
-            let dependencies = [birdsOperation, itemsOperation]
+            mapOperation.addDependency(collectionsOperation)
 
-            dependencies.forEach { mapOperation.addDependency($0) }
+            let dependencies = [itemsOperation, collectionsOperation]
 
             return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
         } catch {
