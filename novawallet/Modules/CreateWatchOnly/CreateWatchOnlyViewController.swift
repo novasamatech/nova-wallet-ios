@@ -9,6 +9,8 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
 
     let presenter: CreateWatchOnlyPresenterProtocol
 
+    var evmFieldEmpty: Bool { (rootView.evmAddressInputView.textField.text ?? "").isEmpty }
+
     init(presenter: CreateWatchOnlyPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
@@ -97,11 +99,15 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
     private func setupHandlers() {
         rootView.actionButton.addTarget(self, action: #selector(actionContinue), for: .touchUpInside)
 
+        rootView.walletNameInputView.delegate = self
+
         rootView.walletNameInputView.addTarget(
             self,
             action: #selector(actionNicknameChanged),
             for: .editingChanged
         )
+
+        rootView.substrateAddressInputView.delegate = self
 
         rootView.substrateAddressInputView.addTarget(
             self,
@@ -114,6 +120,8 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
             action: #selector(actionSubstrateAddressScan),
             for: .touchUpInside
         )
+
+        rootView.evmAddressInputView.delegate = self
 
         rootView.evmAddressInputView.addTarget(
             self,
@@ -158,6 +166,44 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
             preferredLanguages: selectedLocale.rLanguages
         )
         rootView.actionButton.invalidateLayout()
+    }
+
+    private func updateReturnButton(for selectedInputView: UIView) {
+        if selectedInputView === rootView.walletNameInputView {
+            if rootView.substrateAddressInputView.completed, !evmFieldEmpty {
+                rootView.walletNameInputView.textField.returnKeyType = .done
+            } else {
+                rootView.walletNameInputView.textField.returnKeyType = .next
+            }
+        }
+
+        if selectedInputView === rootView.substrateAddressInputView {
+            if !evmFieldEmpty {
+                rootView.walletNameInputView.textField.returnKeyType = .done
+            } else {
+                rootView.walletNameInputView.textField.returnKeyType = .next
+            }
+        }
+    }
+
+    private func completeInputOn(field: UIView) {
+        if field === rootView.walletNameInputView {
+            rootView.walletNameInputView.textField.resignFirstResponder()
+
+            if !rootView.substrateAddressInputView.completed {
+                rootView.substrateAddressInputView.textField.becomeFirstResponder()
+            } else if evmFieldEmpty {
+                rootView.evmAddressInputView.textField.becomeFirstResponder()
+            }
+        }
+
+        if field === rootView.substrateAddressInputView {
+            rootView.substrateAddressInputView.textField.resignFirstResponder()
+
+            if (rootView.evmAddressInputView.textField.text ?? "").isEmpty {
+                rootView.evmAddressInputView.textField.becomeFirstResponder()
+            }
+        }
     }
 
     @objc private func actionNicknameChanged() {
@@ -233,6 +279,28 @@ extension CreateWatchOnlyViewController: KeyboardAdoptable {
         }
 
         presenter.selectPreset(at: index)
+    }
+}
+
+extension CreateWatchOnlyViewController: TextInputViewDelegate {
+    func textInputViewShouldReturn(_ inputView: TextInputView) -> Bool {
+        completeInputOn(field: inputView)
+        return true
+    }
+
+    func textInputViewWillStartEditing(_ inputView: TextInputView) {
+        updateReturnButton(for: inputView)
+    }
+}
+
+extension CreateWatchOnlyViewController: AccountInputViewDelegate {
+    func accountInputViewShouldReturn(_ inputView: AccountInputView) -> Bool {
+        completeInputOn(field: inputView)
+        return true
+    }
+
+    func accountInputViewWillStartEditing(_ inputView: AccountInputView) {
+        updateReturnButton(for: inputView)
     }
 }
 

@@ -47,6 +47,8 @@ class TextInputView: BackgroundedContentControl {
         return view
     }()
 
+    weak var delegate: TextInputViewDelegate?
+
     let pasteboardService = PasteboardHandler(pasteboard: UIPasteboard.general)
 
     var roundedBackgroundView: RoundedView? {
@@ -286,7 +288,16 @@ extension TextInputView: UITextFieldDelegate {
     }
 
     func textFieldShouldReturn(_: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        if let delegate = delegate {
+            return delegate.textInputViewShouldReturn(self)
+        } else {
+            textField.resignFirstResponder()
+            return true
+        }
+    }
+
+    func textFieldShouldBeginEditing(_: UITextField) -> Bool {
+        delegate?.textInputViewWillStartEditing(self)
         return true
     }
 }
