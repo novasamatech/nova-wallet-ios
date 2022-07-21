@@ -95,7 +95,7 @@ final class AssetsBalanceUpdater {
             let saveOperation = assetRepository.saveOperation({
                 let change = try changesWrapper.targetOperation.extractNoCancellableResultData()
 
-                logger.debug("Asset change \(chainAssetId): \(change)")
+                logger.debug("Asset change \(chainAssetId): \(String(describing: change))")
 
                 if let remoteModel = change?.item {
                     return [remoteModel]

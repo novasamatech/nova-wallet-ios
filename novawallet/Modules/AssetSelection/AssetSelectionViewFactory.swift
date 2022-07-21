@@ -5,18 +5,20 @@ import SoraFoundation
 struct AssetSelectionViewFactory {
     static func createView(
         delegate: AssetSelectionDelegate,
-        selectedChainId: ChainAssetId?,
+        selectedChainAssetId: ChainAssetId?,
         assetFilter: @escaping AssetSelectionFilter
-    ) -> ChainSelectionViewProtocol? {
+    ) -> AssetSelectionViewProtocol? {
         let repository = ChainRepositoryFactory().createRepository(
             for: nil,
             sortDescriptors: [NSSortDescriptor.chainsByAddressPrefix]
         )
 
-        let interactor = ChainSelectionInteractor(
+        let interactor = AssetSelectionInteractor(
             selectedMetaAccount: SelectedWalletSettings.shared.value,
             repository: AnyDataProviderRepository(repository),
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
+            priceLocalSubscriptionFactory: PriceProviderFactory.shared,
+            assetFilter: assetFilter,
             operationQueue: OperationManagerFacade.sharedDefaultQueue
         )
 
@@ -30,8 +32,7 @@ struct AssetSelectionViewFactory {
         let presenter = AssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetFilter: assetFilter,
-            selectedChainAssetId: selectedChainId,
+            selectedChainAssetId: selectedChainAssetId,
             assetBalanceFormatterFactory: assetBalanceFormatterFactory,
             localizationManager: localizationManager
         )
@@ -40,7 +41,7 @@ struct AssetSelectionViewFactory {
             R.string.localizable.commonSelectAsset(preferredLanguages: locale.rLanguages)
         }
 
-        let view = ChainSelectionViewController(
+        let view = AssetSelectionViewController(
             nibName: R.nib.selectionListViewController.name,
             localizedTitle: title,
             presenter: presenter,

@@ -24,12 +24,14 @@ protocol NftMediaViewModelProtocol {
 final class NftMediaViewModel {
     let metadataReference: String
     let downloadService: NftFileDownloadServiceProtocol
+    let aliases: [String]
 
     private var loadingOperation: CancellableCall?
     private var remoteImageViewModel: NftImageViewModel?
 
-    init(metadataReference: String, downloadService: NftFileDownloadServiceProtocol) {
+    init(metadataReference: String, aliases: [String], downloadService: NftFileDownloadServiceProtocol) {
         self.metadataReference = metadataReference
+        self.aliases = aliases
         self.downloadService = downloadService
     }
 
@@ -67,6 +69,7 @@ extension NftMediaViewModel: NftMediaViewModelProtocol {
 
         _ = loadingOperation = downloadService.resolveImageUrl(
             for: metadataReference,
+            aliases: aliases,
             dispatchQueue: .main
         ) { [weak self, weak imageView] result in
             guard self?.loadingOperation != nil else {

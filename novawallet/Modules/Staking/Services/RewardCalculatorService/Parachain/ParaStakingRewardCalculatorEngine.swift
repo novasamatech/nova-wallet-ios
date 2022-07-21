@@ -82,18 +82,22 @@ final class ParaStakingRewardCalculatorEngine {
         Decimal.fromSubstratePercent(value: parachainBond.percent) ?? 0.0
     }()
 
+    private(set) lazy var selectedCollatorsStake: Decimal = {
+        let stake = selectedCollators.collators.reduce(BigUInt(0)) { $0 + $1.snapshot.total }
+
+        return Decimal.fromSubstrateAmount(
+            stake,
+            precision: assetPrecision
+        ) ?? 0
+    }()
+
     private(set) lazy var averageStake: Decimal = {
         let collatorsCount = selectedCollators.collators.count
         guard collatorsCount > 0 else {
             return 0.0
         }
 
-        let decimalStake = Decimal.fromSubstrateAmount(
-            totalStaked,
-            precision: assetPrecision
-        ) ?? 0
-
-        return decimalStake / Decimal(collatorsCount)
+        return selectedCollatorsStake / Decimal(collatorsCount)
     }()
 
     private(set) lazy var minStake: Decimal = {
@@ -154,7 +158,7 @@ final class ParaStakingRewardCalculatorEngine {
 
         let decimalReturn = (decimalInflation / stakedPortion) * stakeDeviation
 
-        return decimalReturn * (1.0 - parachainBondPercent) * (1.0 - collatorCommision)
+        return decimalReturn * (1.0 - parachainBondPercent - collatorCommision)
     }
 }
 

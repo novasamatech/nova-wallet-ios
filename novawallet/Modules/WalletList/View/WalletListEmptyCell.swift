@@ -24,18 +24,8 @@ final class WalletListEmptyCell: UICollectionViewCell {
         return label
     }()
 
-    var locale = Locale.current {
-        didSet {
-            if oldValue != locale {
-                setupLocalization()
-            }
-        }
-    }
-
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        setupLocalization()
 
         setupLayout()
     }
@@ -45,10 +35,8 @@ final class WalletListEmptyCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLocalization() {
-        detailsLabel.text = R.string.localizable.walletListEmptyMessage(
-            preferredLanguages: locale.rLanguages
-        )
+    func bind(text: String) {
+        detailsLabel.text = text
     }
 
     private func setupLayout() {
@@ -67,7 +55,8 @@ final class WalletListEmptyCell: UICollectionViewCell {
         contentView.addSubview(detailsLabel)
         detailsLabel.snp.makeConstraints { make in
             make.top.equalTo(iconView.snp.bottom).offset(0.0)
-            make.leading.trailing.equalToSuperview().inset(16.0)
+            make.leading.equalTo(backgroundBlurView).offset(16.0)
+            make.trailing.equalTo(backgroundBlurView).offset(-16.0)
         }
     }
 }

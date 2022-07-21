@@ -2,24 +2,24 @@ import Foundation
 import RobinHood
 
 protocol RMRKV2NftOperationFactoryProtocol {
-    func fetchItemNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]>
-    func fetchBirdNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]>
+    func fetchNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]>
+    func fetchCollection(for identifier: String) -> BaseOperation<[RMRKV2Collection]>
 }
 
 final class RMRKV2OperationFactory: BaseFetchOperationFactory {
-    static let birdsPath = "/account-birds"
-    static let itemsPath = "/account-items"
-    static let baseURL = URL(string: "https://kanaria.rmrk.app/api/rmrk2")!
+    static let accountPath = "/account"
+    static let collectionPath = "/collection"
+    static let baseURL = URL(string: "https://singular.app/api/rmrk2")!
 }
 
 extension RMRKV2OperationFactory: RMRKV2NftOperationFactoryProtocol {
-    func fetchBirdNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]> {
-        let url = Self.baseURL.appendingPathComponent(Self.birdsPath).appendingPathComponent(address)
+    func fetchNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]> {
+        let url = Self.baseURL.appendingPathComponent(Self.accountPath).appendingPathComponent(address)
         return createFetchOperation(from: url, shouldUseCache: false)
     }
 
-    func fetchItemNfts(for address: AccountAddress) -> BaseOperation<[RMRKNftV2]> {
-        let url = Self.baseURL.appendingPathComponent(Self.itemsPath).appendingPathComponent(address)
+    func fetchCollection(for identifier: String) -> BaseOperation<[RMRKV2Collection]> {
+        let url = Self.baseURL.appendingPathComponent(Self.collectionPath).appendingPathComponent(identifier)
         return createFetchOperation(from: url, shouldUseCache: false)
     }
 }

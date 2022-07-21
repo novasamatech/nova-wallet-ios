@@ -4,9 +4,9 @@ import RobinHood
 final class ParallelContributionSource: ExternalContributionSourceProtocol {
     static let baseURL = URL(string: "https://auction-service-prod.parallel.fi/crowdloan/rewards")!
 
-    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
+    func getContributions(accountId: AccountId, chain: ChainModel) -> CompoundOperationWrapper<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
-            return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)
+            return CompoundOperationWrapper.createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
         let url = Self.baseURL
@@ -28,6 +28,8 @@ final class ParallelContributionSource: ExternalContributionSourceProtocol {
             return resultData.map { ExternalContribution(source: "Parallel", amount: $0.amount, paraId: $0.paraId) }
         }
 
-        return NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+
+        return CompoundOperationWrapper(targetOperation: operation)
     }
 }

@@ -49,6 +49,7 @@ extension NftListUniquesViewModel: NftListMetadataViewModelProtocol {
 
         let mediaViewModel = NftMediaViewModel(
             metadataReference: metadataReference,
+            aliases: NftMediaAlias.list,
             downloadService: metadataService
         )
 

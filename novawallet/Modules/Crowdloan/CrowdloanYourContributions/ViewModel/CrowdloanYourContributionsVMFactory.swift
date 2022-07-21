@@ -4,29 +4,63 @@ import SubstrateSdk
 import BigInt
 
 final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFactoryProtocol {
-    let amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
+    let chainDateCalculator: ChainDateCalculatorProtocol
+    let calendar: Calendar
     private lazy var iconGenerator = PolkadotIconGenerator()
 
-    init(
-        amountFormatterFactory: AssetBalanceFormatterFactoryProtocol
-    ) {
-        self.amountFormatterFactory = amountFormatterFactory
+    init(chainDateCalculator: ChainDateCalculatorProtocol, calendar: Calendar) {
+        self.chainDateCalculator = chainDateCalculator
+        self.calendar = calendar
+    }
+
+    func createReturnInIntervals(
+        input: CrowdloanYourContributionsViewInput,
+        externalContributions: [ExternalContribution]?,
+        metadata: CrowdloanMetadata
+    ) -> [TimeInterval] {
+        let onChainIntervals: [TimeInterval] = input.crowdloans.compactMap { crowdloan in
+            guard input.contributions[crowdloan.fundInfo.index]?.balance != nil else {
+                return nil
+            }
+
+            return chainDateCalculator.intervalTillPeriod(
+                crowdloan.fundInfo.lastPeriod + 1,
+                metadata: metadata,
+                calendar: calendar
+            )?.duration
+        }
+
+        let crowdloansDict = input.crowdloans.reduce(into: [ParaId: CrowdloanFunds]()) { result, item in
+            result[item.paraId] = item.fundInfo
+        }
+
+        let externalIntervals: [TimeInterval] = (externalContributions ?? []).compactMap { contribution in
+            guard let crowdloanInfo = crowdloansDict[contribution.paraId] else {
+                return nil
+            }
+
+            return chainDateCalculator.intervalTillPeriod(
+                crowdloanInfo.lastPeriod + 1,
+                metadata: metadata,
+                calendar: calendar
+            )?.duration
+        }
+
+        return onChainIntervals + externalIntervals
     }
 
     func createViewModel(
-        for crowdloans: [Crowdloan],
-        contributions: CrowdloanContributionDict,
+        input: CrowdloanYourContributionsViewInput,
         externalContributions: [ExternalContribution]?,
-        displayInfo: CrowdloanDisplayInfoDict?,
-        chainAsset: ChainAssetDisplayInfo,
+        price: PriceData?,
         locale: Locale
     ) -> CrowdloanYourContributionsViewModel {
-        let contributions = crowdloans.compactMap { crowdloan in
+        let contributions = input.crowdloans.compactMap { crowdloan in
             crowdloanCotribution(
                 from: crowdloan,
-                contributions: contributions,
-                displayInfo: displayInfo,
-                chainAsset: chainAsset,
+                input: input,
+                chainAsset: input.chainAsset,
+                price: price,
                 locale: locale
             )
         }
@@ -34,9 +68,9 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         let externalContributions = (externalContributions ?? []).compactMap { externalContribution in
             crowdloanExternalContribution(
                 externalContribution: externalContribution,
-                crowdloans: crowdloans,
-                displayInfo: displayInfo,
-                chainAsset: chainAsset,
+                input: input,
+                chainAsset: input.chainAsset,
+                price: price,
                 locale: locale
             )
         }
@@ -46,53 +80,57 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
 
     private func crowdloanCotribution(
         from model: Crowdloan,
-        contributions: CrowdloanContributionDict,
-        displayInfo: CrowdloanDisplayInfoDict?,
+        input: CrowdloanYourContributionsViewInput,
         chainAsset: ChainAssetDisplayInfo,
+        price: PriceData?,
         locale: Locale
     ) -> CrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
-        let displayInfo = displayInfo?[model.paraId]
+        let displayInfo = input.displayInfo?[model.paraId]
 
         guard
             let title = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: model.paraId)),
-            let contributed = contributions[model.fundInfo.index]?.balance,
-            let contributedText = createContributedText(
-                contributed: contributed,
-                chainAsset: chainAsset,
-                locale: locale
-            )
+            let contributed = input.contributions[model.fundInfo.index]?.balance
         else { return nil }
+
+        let contributedViewModel = createContributedViewModel(
+            contributed: contributed,
+            price: price,
+            chainAsset: chainAsset,
+            locale: locale
+        )
 
         let iconViewModel = createIconViewModel(model: model, displayInfo: displayInfo, chainAsset: chainAsset)
 
         return CrowdloanContributionViewModel(
             name: title,
             iconViewModel: iconViewModel,
-            contributed: contributedText
+            contributed: contributedViewModel
         )
     }
 
     private func crowdloanExternalContribution(
         externalContribution: ExternalContribution,
-        crowdloans: [Crowdloan],
-        displayInfo: CrowdloanDisplayInfoDict?,
+        input: CrowdloanYourContributionsViewInput,
         chainAsset: ChainAssetDisplayInfo,
+        price: PriceData?,
         locale: Locale
     ) -> CrowdloanContributionViewModel? {
         let quantityFormatter = NumberFormatter.quantity.localizableResource().value(for: locale)
         let contributedInParaId = externalContribution.paraId
-        let displayInfo = displayInfo?[contributedInParaId]
+        let displayInfo = input.displayInfo?[contributedInParaId]
 
         guard
             let titlePrefix = displayInfo?.name ?? quantityFormatter.string(from: NSNumber(value: contributedInParaId)),
-            let crowdloan = crowdloans.first(where: { $0.paraId == contributedInParaId }),
-            let contributedText = createContributedText(
-                contributed: externalContribution.amount,
-                chainAsset: chainAsset,
-                locale: locale
-            )
+            let crowdloan = input.crowdloans.first(where: { $0.paraId == contributedInParaId })
         else { return nil }
+
+        let contributedViewModel = createContributedViewModel(
+            contributed: externalContribution.amount,
+            price: price,
+            chainAsset: chainAsset,
+            locale: locale
+        )
 
         let iconViewModel = createIconViewModel(model: crowdloan, displayInfo: displayInfo, chainAsset: chainAsset)
 
@@ -105,7 +143,7 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         return CrowdloanContributionViewModel(
             name: title,
             iconViewModel: iconViewModel,
-            contributed: contributedText
+            contributed: contributedViewModel
         )
     }
 
@@ -132,25 +170,17 @@ final class CrowdloanYourContributionsVMFactory: CrowdloanYourContributionsVMFac
         }
     }
 
-    private func createContributedText(
+    private func createContributedViewModel(
         contributed: BigUInt,
+        price: PriceData?,
         chainAsset: ChainAssetDisplayInfo,
         locale: Locale
-    ) -> String? {
-        let tokenFormatter = amountFormatterFactory.createTokenFormatter(
-            for: chainAsset.asset
+    ) -> BalanceViewModelProtocol {
+        let decimalAmount = Decimal.fromSubstrateAmount(contributed, precision: chainAsset.asset.assetPrecision) ?? 0
+
+        return BalanceViewModelFactory(targetAssetInfo: chainAsset.asset).balanceFromPrice(
+            decimalAmount,
+            priceData: price
         ).value(for: locale)
-
-        guard
-            let contributionDecimal = Decimal.fromSubstrateAmount(
-                contributed,
-                precision: chainAsset.asset.assetPrecision
-            ),
-            let contributed = tokenFormatter.stringFromDecimal(contributionDecimal)
-        else {
-            return nil
-        }
-
-        return contributed
     }
 }

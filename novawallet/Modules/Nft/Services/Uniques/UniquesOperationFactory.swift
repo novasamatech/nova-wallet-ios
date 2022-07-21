@@ -93,13 +93,18 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
         operationManager: OperationManagerProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<[UInt32: UniquesClassMetadata]> {
+        let filterDuplicatesOperation = ClosureOperation<[UInt32]> {
+            let classIds = try classIdsClosure()
+            return Array(Set(classIds))
+        }
+
         let requestEngine = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
         )
 
         let keyParams: () throws -> [StringScaleMapper<UInt32>] = {
-            let classIds = try classIdsClosure()
+            let classIds = try filterDuplicatesOperation.extractNoCancellableResultData()
             return classIds.map { StringScaleMapper(value: $0) }
         }
 
@@ -111,9 +116,11 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
                 storagePath: .uniquesClassMetadata
             )
 
+        fetchWrapper.addDependency(operations: [filterDuplicatesOperation])
+
         let mapOperation = ClosureOperation<[UInt32: UniquesClassMetadata]> {
             let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-            let classIds = try classIdsClosure()
+            let classIds = try filterDuplicatesOperation.extractNoCancellableResultData()
 
             let initialStorage = [UInt32: UniquesClassMetadata]()
             return responses.enumerated().reduce(into: initialStorage) { result, item in
@@ -129,7 +136,7 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
 
-        let dependencies = fetchWrapper.allOperations
+        let dependencies = [filterDuplicatesOperation] + fetchWrapper.allOperations
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 
@@ -192,13 +199,18 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
         operationManager: OperationManagerProtocol,
         codingFactoryClosure: @escaping () throws -> RuntimeCoderFactoryProtocol
     ) -> CompoundOperationWrapper<[UInt32: UniquesClassDetails]> {
+        let filterDuplicatesOperation = ClosureOperation<[UInt32]> {
+            let classIds = try classIdsClosure()
+            return Array(Set(classIds))
+        }
+
         let requestEngine = StorageRequestFactory(
             remoteFactory: StorageKeyFactory(),
             operationManager: operationManager
         )
 
         let keyParams: () throws -> [StringScaleMapper<UInt32>] = {
-            let classIds = try classIdsClosure()
+            let classIds = try filterDuplicatesOperation.extractNoCancellableResultData()
             return classIds.map { StringScaleMapper(value: $0) }
         }
 
@@ -210,9 +222,11 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
                 storagePath: .uniquesClassDetails
             )
 
+        fetchWrapper.addDependency(operations: [filterDuplicatesOperation])
+
         let mapOperation = ClosureOperation<[UInt32: UniquesClassDetails]> {
             let responses = try fetchWrapper.targetOperation.extractNoCancellableResultData()
-            let classIds = try classIdsClosure()
+            let classIds = try filterDuplicatesOperation.extractNoCancellableResultData()
 
             let initialStorage = [UInt32: UniquesClassDetails]()
             return responses.enumerated().reduce(into: initialStorage) { result, item in
@@ -228,7 +242,7 @@ final class UniquesOperationFactory: UniquesOperationFactoryProtocol {
 
         mapOperation.addDependency(fetchWrapper.targetOperation)
 
-        let dependencies = fetchWrapper.allOperations
+        let dependencies = [filterDuplicatesOperation] + fetchWrapper.allOperations
         return CompoundOperationWrapper(targetOperation: mapOperation, dependencies: dependencies)
     }
 }
