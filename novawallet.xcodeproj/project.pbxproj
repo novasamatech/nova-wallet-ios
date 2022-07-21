@@ -989,6 +989,8 @@
 		847999AF2888A45700D1BAD2 /* AddAccount+CreateWatchOnlyWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999AE2888A45700D1BAD2 /* AddAccount+CreateWatchOnlyWireframe.swift */; };
 		847999B12888A4FF00D1BAD2 /* SwitchAccount+CreateWatchOnlyWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B02888A4FF00D1BAD2 /* SwitchAccount+CreateWatchOnlyWireframe.swift */; };
 		847999B42888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B32888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift */; };
+		847999B628894FE200D1BAD2 /* AccountInputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B528894FE200D1BAD2 /* AccountInputViewDelegate.swift */; };
+		847999B82889510C00D1BAD2 /* TextInputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */; };
 		8479F31426CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */; };
 		847A6C0928817DC700477F77 /* WalletListBaseInteractorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A6C0828817DC700477F77 /* WalletListBaseInteractorProtocol.swift */; };
 		847A6C0B28817E4000477F77 /* WalletListBaseInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847A6C0A28817E4000477F77 /* WalletListBaseInteractor.swift */; };
@@ -3372,6 +3374,8 @@
 		847999AE2888A45700D1BAD2 /* AddAccount+CreateWatchOnlyWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AddAccount+CreateWatchOnlyWireframe.swift"; sourceTree = "<group>"; };
 		847999B02888A4FF00D1BAD2 /* SwitchAccount+CreateWatchOnlyWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SwitchAccount+CreateWatchOnlyWireframe.swift"; sourceTree = "<group>"; };
 		847999B32888BFEC00D1BAD2 /* BaseCreateWatchOnlyWireframe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCreateWatchOnlyWireframe.swift; sourceTree = "<group>"; };
+		847999B528894FE200D1BAD2 /* AccountInputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInputViewDelegate.swift; sourceTree = "<group>"; };
+		847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextInputViewDelegate.swift; sourceTree = "<group>"; };
 		8479F31326CD9A0E005D8D24 /* ChainRegistryIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryIntegrationTests.swift; sourceTree = "<group>"; };
 		847A6C0828817DC700477F77 /* WalletListBaseInteractorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListBaseInteractorProtocol.swift; sourceTree = "<group>"; };
 		847A6C0A28817E4000477F77 /* WalletListBaseInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletListBaseInteractor.swift; sourceTree = "<group>"; };
@@ -5845,6 +5849,7 @@
 			isa = PBXGroup;
 			children = (
 				8422F2ED2887E3D300C7B840 /* TextInputView.swift */,
+				847999B72889510C00D1BAD2 /* TextInputViewDelegate.swift */,
 			);
 			path = TextInputView;
 			sourceTree = "<group>";
@@ -9357,6 +9362,7 @@
 			isa = PBXGroup;
 			children = (
 				84E5D14127E32E8B00D27B1E /* AccountInputView.swift */,
+				847999B528894FE200D1BAD2 /* AccountInputViewDelegate.swift */,
 			);
 			path = AccountInputView;
 			sourceTree = "<group>";
@@ -12629,6 +12635,7 @@
 				84D2F19D2771E5610040C680 /* ExtrinsicBuilder+Signing.swift in Sources */,
 				8430AAFB260230C5005B1066 /* ValidatorState.swift in Sources */,
 				8424308D265B1814003E07EC /* CrowdloanOperationFactory.swift in Sources */,
+				847999B82889510C00D1BAD2 /* TextInputViewDelegate.swift in Sources */,
 				F4EF24D026BA7A4400F28B4E /* AnalyticsViewModelFactoryBase.swift in Sources */,
 				842A738427DDF55A006EE1EA /* OperationIdOptionsPresentable.swift in Sources */,
 				849013E224A9288B008F705E /* Language.swift in Sources */,
@@ -13139,6 +13146,7 @@
 				84DC3CE32795E0340038E2ED /* SubqueryHistoryOperationFactory+RemoteHistory.swift in Sources */,
 				5678BAE4B652C5C5E4284F28 /* AccountManagementViewFactory.swift in Sources */,
 				849528E326036997009DC845 /* RewardEstimationView.swift in Sources */,
+				847999B628894FE200D1BAD2 /* AccountInputViewDelegate.swift in Sources */,
 				F474D388260CBEE600013699 /* StakingRewardDetailsViewLayout.swift in Sources */,
 				849ABE81262811CF00011A2A /* NominationsListReducer.swift in Sources */,
 				84EBFCF6285E955A0006327E /* XcmTransferReserve.swift in Sources */,
