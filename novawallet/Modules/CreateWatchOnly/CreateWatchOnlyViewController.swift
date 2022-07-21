@@ -179,9 +179,9 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
 
         if selectedInputView === rootView.substrateAddressInputView {
             if !evmFieldEmpty {
-                rootView.walletNameInputView.textField.returnKeyType = .done
+                rootView.substrateAddressInputView.textField.returnKeyType = .done
             } else {
-                rootView.walletNameInputView.textField.returnKeyType = .next
+                rootView.substrateAddressInputView.textField.returnKeyType = .next
             }
         }
     }
@@ -200,9 +200,13 @@ final class CreateWatchOnlyViewController: UIViewController, ViewHolder {
         if field === rootView.substrateAddressInputView {
             rootView.substrateAddressInputView.textField.resignFirstResponder()
 
-            if (rootView.evmAddressInputView.textField.text ?? "").isEmpty {
+            if evmFieldEmpty {
                 rootView.evmAddressInputView.textField.becomeFirstResponder()
             }
+        }
+
+        if field === rootView.evmAddressInputView {
+            rootView.evmAddressInputView.textField.resignFirstResponder()
         }
     }
 
