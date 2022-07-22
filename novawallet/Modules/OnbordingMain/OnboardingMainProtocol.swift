@@ -6,6 +6,7 @@ protocol OnboardingMainPresenterProtocol: AnyObject {
     func setup()
     func activateSignup()
     func activateAccountRestore()
+    func activateWatchOnlyCreate()
     func activateTerms()
     func activatePrivacy()
 }
@@ -14,6 +15,7 @@ protocol OnboardingMainWireframeProtocol: WebPresentable, ErrorPresentable, Aler
     func showSignup(from view: OnboardingMainViewProtocol?)
     func showAccountRestore(from view: OnboardingMainViewProtocol?)
     func showKeystoreImport(from view: OnboardingMainViewProtocol?)
+    func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)
 }
 
 protocol OnboardingMainInteractorInputProtocol: AnyObject {
