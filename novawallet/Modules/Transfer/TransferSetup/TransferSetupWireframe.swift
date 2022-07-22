@@ -19,8 +19,12 @@ final class TransferSetupWireframe: TransferSetupWireframeProtocol {
         view?.controller.present(viewController, animated: true, completion: nil)
     }
 
-    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: TransferScanDelegate) {
-        guard let scanView = TransferScanViewFactory.createView(for: delegate) else {
+    func showRecepientScan(from view: TransferSetupViewProtocol?, delegate: AddressScanDelegate) {
+        guard
+            let scanView = AddressScanViewFactory.createTransferRecipientScan(
+                for: delegate,
+                context: nil
+            ) else {
             return
         }
 
