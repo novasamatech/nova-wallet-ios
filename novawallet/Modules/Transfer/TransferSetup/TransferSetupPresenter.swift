@@ -215,8 +215,8 @@ extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
     }
 }
 
-extension TransferSetupPresenter: TransferScanDelegate {
-    func transferScanDidReceiveRecepient(address: AccountAddress) {
+extension TransferSetupPresenter: AddressScanDelegate {
+    func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
         wireframe.hideRecepientScan(from: view)
 
         childPresenter?.changeRecepient(address: address)
