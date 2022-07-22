@@ -37,4 +37,12 @@ final class OnboardingMainWireframe: OnboardingMainBaseWireframe, OnboardingMain
             navigationController.pushViewController(restorationController, animated: true)
         }
     }
+
+    func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?) {
+        guard let watchOnlyView = CreateWatchOnlyViewFactory.createViewForOnboarding() else {
+            return
+        }
+
+        view?.controller.navigationController?.pushViewController(watchOnlyView.controller, animated: true)
+    }
 }

@@ -132,7 +132,9 @@ extension MetaAccountModel {
     // Note that this query might return an account in another chain if it can't be found for provided chain
     func fetchByAccountId(_ accountId: AccountId, request: ChainAccountRequest) -> ChainAccountResponse? {
         if
-            let chainAccount = chainAccounts.first(where: { $0.chainId == request.chainId && $0.accountId == accountId }),
+            let chainAccount = chainAccounts.first(
+                where: { $0.chainId == request.chainId && $0.accountId == accountId }
+            ),
             let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
             return ChainAccountResponse(
                 chainId: chainAccount.chainId,
