@@ -849,3 +849,6 @@
 "common.address.scan.title" = "Сканировать QR";
 "common.address.scan.message" = "Отсканируйте QR с адресом";
 "username.examples" = "Примеры имен: Главный кошелек, Мой валидор, Dotsama вклады, etc.";
+"no.key.title" = "Упс! Ключ не найден";
+"no.key.message" = "Ваш кошелек - watch-only, что означает невозможность осуществления операций";
+"common.ok.back" = "Понял, назад";
