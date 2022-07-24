@@ -11,4 +11,15 @@ final class TransferConfirmWireframe: TransferConfirmWireframeProtocol, ModalAle
             self?.presentSuccessNotification(title, from: presenter, completion: nil)
         }
     }
+
+    func completeWithNoKeys(on view: TransferConfirmCommonViewProtocol?) {
+        guard let view = view else {
+            return
+        }
+
+        presentNoSigningView(from: view) {
+            let presenter = view.controller.navigationController?.presentingViewController
+            presenter?.dismiss(animated: true, completion: nil)
+        }
+    }
 }

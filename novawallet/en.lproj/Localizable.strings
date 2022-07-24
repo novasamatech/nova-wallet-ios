@@ -849,3 +849,6 @@
 "common.address.scan.title" = "Scan QR";
 "common.address.scan.message" = "Scan QR code with the address";
 "username.examples" = "Name examples: Main account, My validator, Dotsama crowdloans, etc.";
+"no.key.title" = "Oops! Key is missing";
+"no.key.message" = "Your wallet is watch-only, meaning that you cannot do any operations with it";
+"common.ok.back" = "Okay, back";
