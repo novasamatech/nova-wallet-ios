@@ -29,7 +29,9 @@ final class NoSigningViewLayout: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .clear
+        backgroundColor = R.color.color0x1D1D20()
+
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -59,7 +61,7 @@ final class NoSigningViewLayout: UIView {
         addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16.0)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(16.0)
+            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-16.0)
             make.height.equalTo(UIConstants.actionHeight)
         }
     }

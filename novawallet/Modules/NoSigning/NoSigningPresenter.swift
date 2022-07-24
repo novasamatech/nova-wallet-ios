@@ -11,7 +11,7 @@ final class NoSigningPresenter {
 
 extension NoSigningPresenter: NoSigningPresenterProtocol {
     func goBack() {
-
+        wireframe.complete(on: view)
     }
 }
 

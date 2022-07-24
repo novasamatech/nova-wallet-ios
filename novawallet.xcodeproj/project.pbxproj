@@ -1363,6 +1363,7 @@
 		84ACEBF2261E664900AAE665 /* WalletHistoryFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ACEBF1261E664900AAE665 /* WalletHistoryFilterViewModel.swift */; };
 		84ACEBFA261E684A00AAE665 /* WalletHistoryFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ACEBF9261E684A00AAE665 /* WalletHistoryFilter.swift */; };
 		84ACEBFF261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ACEBFE261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift */; };
+		84ADF6F3288DE99C00C25B40 /* NoKeysSigningWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */; };
 		84AE11CB273C007E00B294B7 /* novawallet.staging.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */; };
 		84AE7AA527D35A9800495267 /* StackTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AA427D35A9800495267 /* StackTableView.swift */; };
 		84AE7AA727D36E4D00495267 /* IconDetailsGenericView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AE7AA627D36E4D00495267 /* IconDetailsGenericView.swift */; };
@@ -1425,6 +1426,7 @@
 		84BEE22325646AC000D05EB3 /* SelectedUsernameChanged.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE22225646ABF00D05EB3 /* SelectedUsernameChanged.swift */; };
 		84BEE22D2564765F00D05EB3 /* UIAlertViewController+Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE22C2564765F00D05EB3 /* UIAlertViewController+Account.swift */; };
 		84BEE63026CBFDBC00757009 /* ChainRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BEE62F26CBFDBC00757009 /* ChainRegistryTests.swift */; };
+		84BF9037288A8D2A0072C2D5 /* NoSigningPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84BF9036288A8D2A0072C2D5 /* NoSigningPresentable.swift */; };
 		84C07EDC24AF1924008FC35B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84C07EDA24AF1924008FC35B /* InfoPlist.strings */; };
 		84C07EE824AF2E4D008FC35B /* WalletHistoryStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C07EE724AF2E4D008FC35B /* WalletHistoryStyle.swift */; };
 		84C11F172840BD46007F7C05 /* ParaStkCollatorsOperationFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C11F162840BD46007F7C05 /* ParaStkCollatorsOperationFactory.swift */; };
@@ -3759,6 +3761,7 @@
 		84ACEBF1261E664900AAE665 /* WalletHistoryFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterViewModel.swift; sourceTree = "<group>"; };
 		84ACEBF9261E684A00AAE665 /* WalletHistoryFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilter.swift; sourceTree = "<group>"; };
 		84ACEBFE261E6C7C00AAE665 /* WalletHistoryFilterViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterViewLayout.swift; sourceTree = "<group>"; };
+		84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoKeysSigningWrapper.swift; sourceTree = "<group>"; };
 		84AE11CA273C007E00B294B7 /* novawallet.staging.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = novawallet.staging.xcconfig; sourceTree = "<group>"; };
 		84AE7AA427D35A9800495267 /* StackTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackTableView.swift; sourceTree = "<group>"; };
 		84AE7AA627D36E4D00495267 /* IconDetailsGenericView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconDetailsGenericView.swift; sourceTree = "<group>"; };
@@ -3821,6 +3824,7 @@
 		84BEE22225646ABF00D05EB3 /* SelectedUsernameChanged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectedUsernameChanged.swift; sourceTree = "<group>"; };
 		84BEE22C2564765F00D05EB3 /* UIAlertViewController+Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertViewController+Account.swift"; sourceTree = "<group>"; };
 		84BEE62F26CBFDBC00757009 /* ChainRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainRegistryTests.swift; sourceTree = "<group>"; };
+		84BF9036288A8D2A0072C2D5 /* NoSigningPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSigningPresentable.swift; sourceTree = "<group>"; };
 		84C07EDD24AF1935008FC35B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84C07EE524AF1990008FC35B /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84C07EE724AF2E4D008FC35B /* WalletHistoryStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryStyle.swift; sourceTree = "<group>"; };
@@ -7826,6 +7830,7 @@
 				84D6E2F9283AE6590031D6FD /* ExtrinsicSubmissionPresenting.swift */,
 				84FA7C1B284F8EB400B648E1 /* PendingExtrinsicInteracting.swift */,
 				84F1A072286A5DDA007DB053 /* CommonRetryable.swift */,
+				84BF9036288A8D2A0072C2D5 /* NoSigningPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -8019,6 +8024,7 @@
 				841BFD6627BA4865000A16CE /* EthereumSerializationFactory.swift */,
 				8482F632281024B80006C3A0 /* Data+EthereumSign.swift */,
 				84326220281050E6008C52C7 /* EthereumSigner.swift */,
+				84ADF6F2288DE99C00C25B40 /* NoKeysSigningWrapper.swift */,
 			);
 			path = Crypto;
 			sourceTree = "<group>";
@@ -13158,6 +13164,7 @@
 				846A68292746234100D1A47A /* ChainConnection.swift in Sources */,
 				846F758327B54D7A00536547 /* EthereumOperationFactor+Protocol.swift in Sources */,
 				8487584127F0842D00495306 /* AddressQRMatcher.swift in Sources */,
+				84ADF6F3288DE99C00C25B40 /* NoKeysSigningWrapper.swift in Sources */,
 				AE398398272B62C100BC8A85 /* ChainAccountListSectionView.swift in Sources */,
 				84DED3EF26661CC600A153BB /* CrowdloanFlow.swift in Sources */,
 				21322B4A297840739C389F17 /* AccountManagementInteractor.swift in Sources */,
@@ -13803,6 +13810,7 @@
 				2368E8BFA569B8D007F6244F /* AssetsManageWireframe.swift in Sources */,
 				84E25BF227E8FDC100290BF1 /* DecodedProviderTypes.swift in Sources */,
 				841E5565282EA76C00C8438F /* ParachainStakingBaseState.swift in Sources */,
+				84BF9037288A8D2A0072C2D5 /* NoSigningPresentable.swift in Sources */,
 				C24EC1F763113B2208BE1ABE /* AssetsManagePresenter.swift in Sources */,
 				F27AAD7BC84793FA63027F8C /* AssetsManageInteractor.swift in Sources */,
 				982696E7AA7ACDA0B5131F6D /* AssetsManageViewController.swift in Sources */,

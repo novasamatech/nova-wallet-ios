@@ -1,12 +1,16 @@
 import Foundation
+import SoraFoundation
 
 struct NoSigningViewFactory {
-    static func createView() -> NoSigningViewProtocol? {
-        let wireframe = NoSigningWireframe()
+    static func createView(with completionCallback: @escaping () -> Void) -> NoSigningViewProtocol? {
+        let wireframe = NoSigningWireframe(completionCallback: completionCallback)
 
         let presenter = NoSigningPresenter(wireframe: wireframe)
 
-        let view = NoSigningViewController(presenter: presenter)
+        let view = NoSigningViewController(
+            presenter: presenter,
+            localizationManager: LocalizationManager.shared
+        )
 
         presenter.view = view
 

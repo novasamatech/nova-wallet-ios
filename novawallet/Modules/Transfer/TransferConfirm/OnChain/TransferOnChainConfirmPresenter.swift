@@ -179,7 +179,11 @@ final class TransferOnChainConfirmPresenter: OnChainTransferPresenter {
 
         view?.didStopLoading()
 
-        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        if error.isWatchOnlySigning {
+            wireframe.completeWithNoKeys(on: view)
+        } else {
+            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        }
     }
 }
 

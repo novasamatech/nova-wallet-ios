@@ -127,9 +127,8 @@ struct TransferConfirmCrossChainViewFactory {
             operationQueue: operationQueue
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: wallet.metaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: wallet.metaId,
             accountResponse: selectedAccount
         )
 
