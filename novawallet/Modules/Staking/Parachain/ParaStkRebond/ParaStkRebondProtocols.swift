@@ -36,6 +36,7 @@ protocol ParaStkRebondInteractorOutputProtocol: AnyObject {
 protocol ParaStkRebondWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
-    FeeRetryable {
+    FeeRetryable,
+    NoSigningPresentable {
     func complete(on view: ParaStkRebondViewProtocol?, locale: Locale)
 }

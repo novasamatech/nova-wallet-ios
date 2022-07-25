@@ -28,7 +28,7 @@ protocol DAppOperationConfirmInteractorOutputProtocol: AnyObject {
     func didReceive(txDetailsResult: Result<JSON, Error>)
 }
 
-protocol DAppOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable {
+protocol DAppOperationConfirmWireframeProtocol: AlertPresentable, ErrorPresentable, FeeRetryable, NoSigningPresentable {
     func close(view: DAppOperationConfirmViewProtocol?)
     func showTxDetails(from view: DAppOperationConfirmViewProtocol?, json: JSON)
 }

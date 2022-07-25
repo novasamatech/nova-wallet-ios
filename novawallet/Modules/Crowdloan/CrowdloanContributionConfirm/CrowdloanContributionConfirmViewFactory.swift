@@ -102,9 +102,9 @@ struct CrowdloanContributionConfirmViewFactory {
         let feeProxy = ExtrinsicFeeProxy()
 
         let keystore = Keychain()
-        let signingWrapper = SigningWrapper(
-            keystore: keystore,
-            metaId: selectedMetaAccount.metaId,
+
+        let signingWrapper = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: selectedMetaAccount.metaId,
             accountResponse: accountResponse
         )
 

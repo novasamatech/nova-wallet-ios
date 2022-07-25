@@ -80,7 +80,8 @@ struct StakingBondMoreConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeRegistry,
             engine: connection,
-            operationManager: OperationManagerFacade.sharedManager
+            operationManager: OperationManagerFacade.sharedManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(

@@ -6,12 +6,25 @@ protocol NoSigningPresentable {
 }
 
 extension NoSigningPresentable {
-    func presentNoSigningView(from presentationView: ControllerBackedProtocol?) {
+    func presentDismissingNoSigningView(from presentationView: ControllerBackedProtocol?) {
         guard let presentationView = presentationView else {
             return
         }
 
-        presentNoSigningView(from: presentationView, completion: {})
+        presentNoSigningView(from: presentationView) {
+            let presenter = presentationView.controller.presentingViewController
+            presenter?.dismiss(animated: true, completion: nil)
+        }
+    }
+
+    func presentPopingNoSigningView(from presentationView: ControllerBackedProtocol?) {
+        guard let presentationView = presentationView else {
+            return
+        }
+
+        presentNoSigningView(from: presentationView) {
+            presentationView.controller.navigationController?.popToRootViewController(animated: true)
+        }
     }
 
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void) {
