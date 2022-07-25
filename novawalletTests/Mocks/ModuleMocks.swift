@@ -21263,6 +21263,21 @@ import Foundation
     
     
     
+     func activateWatchOnlyCreate()  {
+        
+    return cuckoo_manager.call("activateWatchOnlyCreate()",
+            parameters: (),
+            escapingParameters: (),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.activateWatchOnlyCreate())
+        
+    }
+    
+    
+    
      func activateTerms()  {
         
     return cuckoo_manager.call("activateTerms()",
@@ -21315,6 +21330,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateAccountRestore()", parameterMatchers: matchers))
 	    }
 	    
+	    func activateWatchOnlyCreate() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateWatchOnlyCreate()", parameterMatchers: matchers))
+	    }
+	    
 	    func activateTerms() -> Cuckoo.ProtocolStubNoReturnFunction<()> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainPresenterProtocol.self, method: "activateTerms()", parameterMatchers: matchers))
@@ -21360,6 +21380,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func activateWatchOnlyCreate() -> Cuckoo.__DoNotUse<(), Void> {
+	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
+	        return cuckoo_manager.verify("activateWatchOnlyCreate()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func activateTerms() -> Cuckoo.__DoNotUse<(), Void> {
 	        let matchers: [Cuckoo.ParameterMatcher<Void>] = []
 	        return cuckoo_manager.verify("activateTerms()", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -21395,6 +21421,12 @@ import Foundation
     
     
      func activateAccountRestore()   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func activateWatchOnlyCreate()   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
@@ -21484,6 +21516,21 @@ import Foundation
     
     
     
+     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)  {
+        
+    return cuckoo_manager.call("showWatchOnlyCreate(from: OnboardingMainViewProtocol?)",
+            parameters: (view),
+            escapingParameters: (view),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showWatchOnlyCreate(from: view))
+        
+    }
+    
+    
+    
      func showWeb(url: URL, from view: ControllerBackedProtocol, style: WebPresentableStyle)  {
         
     return cuckoo_manager.call("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)",
@@ -21551,6 +21598,11 @@ import Foundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showKeystoreImport(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
 	    }
 	    
+	    func showWatchOnlyCreate<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.ProtocolStubNoReturnFunction<(OnboardingMainViewProtocol?)> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWatchOnlyCreate(from: OnboardingMainViewProtocol?)", parameterMatchers: matchers))
+	    }
+	    
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(URL, ControllerBackedProtocol, WebPresentableStyle)> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockOnboardingMainWireframeProtocol.self, method: "showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", parameterMatchers: matchers))
@@ -21601,6 +21653,12 @@ import Foundation
 	    }
 	    
 	    @discardableResult
+	    func showWatchOnlyCreate<M1: Cuckoo.OptionalMatchable>(from view: M1) -> Cuckoo.__DoNotUse<(OnboardingMainViewProtocol?), Void> where M1.OptionalMatchedType == OnboardingMainViewProtocol {
+	        let matchers: [Cuckoo.ParameterMatcher<(OnboardingMainViewProtocol?)>] = [wrap(matchable: view) { $0 }]
+	        return cuckoo_manager.verify("showWatchOnlyCreate(from: OnboardingMainViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showWeb<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(url: M1, from view: M2, style: M3) -> Cuckoo.__DoNotUse<(URL, ControllerBackedProtocol, WebPresentableStyle), Void> where M1.MatchedType == URL, M2.MatchedType == ControllerBackedProtocol, M3.MatchedType == WebPresentableStyle {
 	        let matchers: [Cuckoo.ParameterMatcher<(URL, ControllerBackedProtocol, WebPresentableStyle)>] = [wrap(matchable: url) { $0.0 }, wrap(matchable: view) { $0.1 }, wrap(matchable: style) { $0.2 }]
 	        return cuckoo_manager.verify("showWeb(url: URL, from: ControllerBackedProtocol, style: WebPresentableStyle)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -21642,6 +21700,12 @@ import Foundation
     
     
      func showKeystoreImport(from view: OnboardingMainViewProtocol?)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showWatchOnlyCreate(from view: OnboardingMainViewProtocol?)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
