@@ -232,9 +232,13 @@ extension ParaStkUnstakeConfirmPresenter: ParaStkUnstakeConfirmInteractorOutputP
             applyCurrentState()
             refreshFee()
 
-            _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                _ = wireframe.present(error: error, from: view, locale: selectedLocale)
 
-            logger.error("Extrinsic submission failed: \(error)")
+                logger.error("Extrinsic submission failed: \(error)")
+            }
         }
     }
 

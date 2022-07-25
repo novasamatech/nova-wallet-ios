@@ -15,7 +15,7 @@ protocol SigningWrapperFactoryProtocol {
 final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
     let keystore: KeystoreProtocol
 
-    init(keystore: KeystoreProtocol) {
+    init(keystore: KeystoreProtocol = Keychain()) {
         self.keystore = keystore
     }
 
@@ -23,12 +23,22 @@ final class SigningWrapperFactory: SigningWrapperFactoryProtocol {
         for metaId: String,
         accountResponse: ChainAccountResponse
     ) -> SigningWrapperProtocol {
-        SigningWrapper(keystore: keystore, metaId: metaId, accountResponse: accountResponse)
+        switch accountResponse.type {
+        case .secrets:
+            return SigningWrapper(keystore: keystore, metaId: metaId, accountResponse: accountResponse)
+        case .watchOnly:
+            return NoKeysSigningWrapper()
+        }
     }
 
     func createSigningWrapper(
         for ethereumAccountResponse: MetaEthereumAccountResponse
     ) -> SigningWrapperProtocol {
-        SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
+        switch ethereumAccountResponse.type {
+        case .secrets:
+            return SigningWrapper(keystore: keystore, ethereumAccountResponse: ethereumAccountResponse)
+        case .watchOnly:
+            return NoKeysSigningWrapper()
+        }
     }
 }
