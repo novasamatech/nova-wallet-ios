@@ -65,7 +65,8 @@ struct StakingUnbondSetupViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
