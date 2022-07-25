@@ -5,9 +5,8 @@ extension NSSortDescriptor {
         NSSortDescriptor(key: #keyPath(CDMetaAccount.order), ascending: true)
     }
 
-    // TODO: remove
-    static var connectionsByOrder: NSSortDescriptor {
-        NSSortDescriptor(key: #keyPath(CDChain.addressPrefix), ascending: true)
+    static var accountsBySelection: NSSortDescriptor {
+        NSSortDescriptor(key: #keyPath(CDMetaAccount.isSelected), ascending: false)
     }
 
     static var contactsByTime: NSSortDescriptor {
