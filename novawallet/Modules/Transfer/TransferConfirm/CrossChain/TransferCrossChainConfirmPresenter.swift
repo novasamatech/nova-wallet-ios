@@ -248,7 +248,7 @@ final class TransferCrossChainConfirmPresenter: CrossChainTransferPresenter {
         view?.didStopLoading()
 
         if error.isWatchOnlySigning {
-            wireframe.completeWithNoKeys(on: view)
+            wireframe.presentDismissingNoSigningView(from: view)
         } else {
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }

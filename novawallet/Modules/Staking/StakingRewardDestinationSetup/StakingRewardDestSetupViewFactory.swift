@@ -72,7 +72,8 @@ struct StakingRewardDestSetupViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let storageFacade = UserDataStorageFacade.shared

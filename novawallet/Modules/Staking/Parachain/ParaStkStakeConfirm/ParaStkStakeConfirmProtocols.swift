@@ -43,6 +43,7 @@ protocol ParaStkStakeConfirmInteractorOutputProtocol: AnyObject {
 protocol ParaStkStakeConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
-    FeeRetryable {
+    FeeRetryable,
+    NoSigningPresentable {
     func complete(on view: ParaStkStakeConfirmViewProtocol?, locale: Locale)
 }
