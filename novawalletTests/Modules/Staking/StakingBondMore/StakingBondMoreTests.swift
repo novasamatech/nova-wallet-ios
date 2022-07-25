@@ -74,7 +74,8 @@ class StakingBondMoreTests: XCTestCase {
             cryptoType: .sr25519,
             addressPrefix: chain.addressPrefix,
             isEthereumBased: chain.isEthereumBased,
-            isChainAccount: false
+            isChainAccount: false,
+            type: .secrets
         )
 
         presenter.didReceiveStash(result: .success(stashAccount))
