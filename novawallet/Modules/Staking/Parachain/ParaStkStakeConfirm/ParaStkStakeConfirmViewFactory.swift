@@ -103,9 +103,8 @@ struct ParaStkStakeConfirmViewFactory {
             blockTimeOperationFactory: BlockTimeOperationFactory(chain: chainAsset.chain)
         )
 
-        let signer = SigningWrapper(
-            keystore: Keychain(),
-            metaId: selectedAccount.metaId,
+        let signer = SigningWrapperFactory().createSigningWrapper(
+            for: selectedAccount.metaId,
             accountResponse: selectedAccount.chainAccount
         )
 

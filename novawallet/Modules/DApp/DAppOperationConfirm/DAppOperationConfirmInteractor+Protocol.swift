@@ -42,7 +42,15 @@ extension DAppOperationConfirmInteractor: DAppOperationConfirmInteractorInputPro
                     let response = DAppOperationResponse(signature: signature)
                     self?.presenter?.didReceive(responseResult: .success(response), for: request)
                 } catch {
-                    let interactorError = error as? DAppOperationConfirmInteractorError ?? .signingFailed
+                    let interactorError: Error
+                    if let noKeysError = error as? NoKeysSigningWrapperError {
+                        interactorError = noKeysError
+                    } else if let operationError = error as? DAppOperationConfirmInteractorError {
+                        interactorError = operationError
+                    } else {
+                        interactorError = DAppOperationConfirmInteractorError.signingFailed
+                    }
+
                     self?.presenter?.didReceive(responseResult: .failure(interactorError), for: request)
                 }
             }

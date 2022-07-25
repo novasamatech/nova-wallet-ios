@@ -262,8 +262,12 @@ extension StakingRedeemPresenter: StakingRedeemInteractorOutputProtocol {
         switch result {
         case .success:
             wireframe.complete(from: view)
-        case .failure:
-            wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        case let .failure(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+            }
         }
     }
 }

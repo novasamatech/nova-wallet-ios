@@ -32,6 +32,7 @@ protocol ParaStkRedeemInteractorOutputProtocol: AnyObject {
 protocol ParaStkRedeemWireframeProtocol: AlertPresentable, ErrorPresentable,
     ParachainStakingErrorPresentable,
     AddressOptionsPresentable,
-    FeeRetryable {
+    FeeRetryable,
+    NoSigningPresentable {
     func complete(on view: ParaStkRedeemViewProtocol?, locale: Locale)
 }
