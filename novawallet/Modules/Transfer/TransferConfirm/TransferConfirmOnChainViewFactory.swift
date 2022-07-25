@@ -116,9 +116,8 @@ struct TransferConfirmOnChainViewFactory {
             operationManager: OperationManagerFacade.sharedManager
         )
 
-        let signingWrapper = SigningWrapper(
-            keystore: Keychain(),
-            metaId: accountMetaId,
+        let signingWrapper = SigningWrapperFactory().createSigningWrapper(
+            for: accountMetaId,
             accountResponse: account
         )
 

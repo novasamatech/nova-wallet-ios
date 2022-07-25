@@ -25,15 +25,18 @@ final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
     private let operationManager: OperationManagerProtocol
+    private let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
+        self.signingWrapperFactory = signingWrapperFactory
     }
 }
 
@@ -72,10 +75,6 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         metaId: String,
         account: ChainAccountResponse
     ) -> SigningWrapperProtocol {
-        SigningWrapper(
-            keystore: Keychain(),
-            metaId: metaId,
-            accountResponse: account
-        )
+        signingWrapperFactory.createSigningWrapper(for: metaId, accountResponse: account)
     }
 }

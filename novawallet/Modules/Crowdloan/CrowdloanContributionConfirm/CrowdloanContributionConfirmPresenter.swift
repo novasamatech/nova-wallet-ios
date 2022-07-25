@@ -312,7 +312,9 @@ extension CrowdloanContributionConfirmPresenter: CrowdloanContributionConfirmInt
                 return
             }
 
-            if !wireframe.present(error: error, from: view, locale: selectedLocale) {
+            if error.isWatchOnlySigning {
+                wireframe.presentPopingNoSigningView(from: view)
+            } else if !wireframe.present(error: error, from: view, locale: selectedLocale) {
                 wireframe.presentExtrinsicFailed(from: view, locale: selectedLocale)
             }
         }

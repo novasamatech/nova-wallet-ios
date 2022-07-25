@@ -29,6 +29,6 @@ protocol CrowdloanContributionConfirmInteractorOutputProtocol: CrowdloanContribu
 }
 
 protocol CrowdloanContributionConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    CrowdloanErrorPresentable, AddressOptionsPresentable {
+    CrowdloanErrorPresentable, AddressOptionsPresentable, NoSigningPresentable {
     func complete(on view: CrowdloanContributionConfirmViewProtocol?)
 }
