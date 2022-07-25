@@ -203,6 +203,8 @@ extension CreateWatchOnlyPresenter: CreateWatchOnlyInteractorOutputProtocol {
 
 extension CreateWatchOnlyPresenter: AddressScanDelegate {
     func addressScanDidReceiveRecepient(address: AccountAddress, context: AnyObject?) {
+        wireframe.hideAddressScan(from: view)
+
         guard let isSubstrate = (context as? NSNumber)?.boolValue else {
             return
         }
