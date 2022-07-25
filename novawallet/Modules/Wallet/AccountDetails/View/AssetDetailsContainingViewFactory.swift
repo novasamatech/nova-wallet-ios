@@ -98,14 +98,14 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
         let receiveCommand: WalletCommandProtocol
         let buyCommand: WalletCommandProtocol?
 
+        let actions = purchaseProvider.buildPurchaseActions(
+            for: chainAsset,
+            accountId: selectedAccountId
+        )
+
         switch selectedAccountType {
         case .secrets:
             receiveCommand = commandFactory.prepareReceiveCommand(for: assetId)
-
-            let actions = purchaseProvider.buildPurchaseActions(
-                for: chainAsset,
-                accountId: selectedAccountId
-            )
 
             buyCommand = actions.isEmpty ? nil :
                 WalletSelectPurchaseProviderCommand(
@@ -115,7 +115,7 @@ class AssetDetailsContainingViewFactory: AccountDetailsContainingViewFactoryProt
 
         case .watchOnly:
             receiveCommand = NoKeysCommand()
-            buyCommand = NoKeysCommand()
+            buyCommand = actions.isEmpty ? nil : NoKeysCommand()
         }
 
         view.bindActions(send: sendCommand, receive: receiveCommand, buy: buyCommand)
