@@ -1358,6 +1358,7 @@
 		84A6171B2625AC3E007B75E1 /* CallCodingPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */; };
 		84A617262625AF51007B75E1 /* RuntimeMetadata+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */; };
 		84A8FD8E265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */; };
+		84A90489288EA0E500DFC8E2 /* NoKeysCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A90488288EA0E500DFC8E2 /* NoKeysCommand.swift */; };
 		84AA004326C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AA004226C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift */; };
 		84AA004526C6A04A00BCB4DC /* CommonTypesSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84AA004426C6A04A00BCB4DC /* CommonTypesSyncService.swift */; };
 		84ACEBF2261E664900AAE665 /* WalletHistoryFilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ACEBF1261E664900AAE665 /* WalletHistoryFilterViewModel.swift */; };
@@ -3756,6 +3757,7 @@
 		84A6171A2625AC3E007B75E1 /* CallCodingPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallCodingPath.swift; sourceTree = "<group>"; };
 		84A617252625AF51007B75E1 /* RuntimeMetadata+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RuntimeMetadata+Internal.swift"; sourceTree = "<group>"; };
 		84A8FD8D265FDA76002ADB58 /* CrowdloanContributionConfirmData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdloanContributionConfirmData.swift; sourceTree = "<group>"; };
+		84A90488288EA0E500DFC8E2 /* NoKeysCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoKeysCommand.swift; sourceTree = "<group>"; };
 		84AA004226C5DFD800BCB4DC /* RuntimeSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeSyncServiceTests.swift; sourceTree = "<group>"; };
 		84AA004426C6A04A00BCB4DC /* CommonTypesSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTypesSyncService.swift; sourceTree = "<group>"; };
 		84ACEBF1261E664900AAE665 /* WalletHistoryFilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHistoryFilterViewModel.swift; sourceTree = "<group>"; };
@@ -8398,6 +8400,7 @@
 				846A2C482527490700731018 /* WalletSelectAccountCommand.swift */,
 				846A2C4F252A063800731018 /* WalletSelectAccountCommandFactory.swift */,
 				AEF50715262359DC0098574D /* WalletSelectPurchaseProviderCommand.swift */,
+				84A90488288EA0E500DFC8E2 /* NoKeysCommand.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -13065,6 +13068,7 @@
 				2A902071273E72EA00F2D584 /* TransferConstants.swift in Sources */,
 				F4EAC7972642E0D800FBDDC3 /* ControllerAccountViewModelFactory.swift in Sources */,
 				8487583627F06AF300495306 /* QRScannerViewController.swift in Sources */,
+				84A90489288EA0E500DFC8E2 /* NoKeysCommand.swift in Sources */,
 				8436B6DA2848119C00F24360 /* AccountDetailsSelectionCell.swift in Sources */,
 				501347BEA67CD30FE484358E /* AccountImportViewFactory.swift in Sources */,
 				84EBC55124F660A700459D15 /* EventVisitor.swift in Sources */,

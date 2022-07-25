@@ -28,8 +28,18 @@ extension NoSigningPresentable {
     }
 
     func presentNoSigningView(from presentationView: ControllerBackedProtocol, completion: @escaping () -> Void) {
-        guard let confirmationView = NoSigningViewFactory.createView(with: completion) else {
+        guard let confirmationView = NoSigningPresentableFactory.createNoSigningView(with: completion) else {
             return
+        }
+
+        presentationView.controller.present(confirmationView.controller, animated: true, completion: nil)
+    }
+}
+
+enum NoSigningPresentableFactory {
+    static func createNoSigningView(with completion: @escaping () -> Void) -> NoSigningViewProtocol? {
+        guard let confirmationView = NoSigningViewFactory.createView(with: completion) else {
+            return nil
         }
 
         let factory = ModalSheetPresentationFactory(configuration: ModalSheetPresentationConfiguration.fearless)
@@ -37,6 +47,6 @@ extension NoSigningPresentable {
         confirmationView.controller.modalTransitioningFactory = factory
         confirmationView.controller.modalPresentationStyle = .custom
 
-        presentationView.controller.present(confirmationView.controller, animated: true, completion: nil)
+        return confirmationView
     }
 }
