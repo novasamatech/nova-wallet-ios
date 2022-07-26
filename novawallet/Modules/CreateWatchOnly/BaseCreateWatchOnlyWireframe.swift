@@ -20,4 +20,8 @@ class BaseCreateWatchOnlyWireframe: BaseCreateWatchOnlyWireframeProtocol {
 
         view?.controller.present(navigationController, animated: true, completion: nil)
     }
+
+    func hideAddressScan(from view: CreateWatchOnlyViewProtocol?) {
+        view?.controller.dismiss(animated: true)
+    }
 }

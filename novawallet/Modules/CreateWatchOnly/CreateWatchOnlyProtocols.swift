@@ -37,6 +37,8 @@ protocol BaseCreateWatchOnlyWireframeProtocol {
         delegate: AddressScanDelegate,
         context: AnyObject?
     )
+
+    func hideAddressScan(from view: CreateWatchOnlyViewProtocol?)
 }
 
 protocol CreateWatchOnlyWireframeProtocol: BaseCreateWatchOnlyWireframeProtocol, AlertPresentable, ErrorPresentable {
