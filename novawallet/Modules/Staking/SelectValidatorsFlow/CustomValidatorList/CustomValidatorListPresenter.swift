@@ -8,7 +8,7 @@ final class CustomValidatorListPresenter {
     let interactor: CustomValidatorListInteractorInputProtocol
     let viewModelFactory: CustomValidatorListViewModelFactory
     let selectedValidatorList: SharedList<SelectedValidatorInfo>
-    let maxTargets: Int
+    let validatorsSelectionParams: ValidatorsSelectionParams
     let logger: LoggerProtocol?
 
     private let recommendedValidatorList: [SelectedValidatorInfo]
@@ -16,7 +16,7 @@ final class CustomValidatorListPresenter {
 
     private var filteredValidatorList: [SelectedValidatorInfo] = []
     private var viewModel: CustomValidatorListViewModel?
-    private var filter = CustomValidatorListFilter.recommendedFilter()
+    private var filter: CustomValidatorListFilter
     private var priceData: PriceData?
 
     init(
@@ -27,7 +27,7 @@ final class CustomValidatorListPresenter {
         fullValidatorList: [SelectedValidatorInfo],
         recommendedValidatorList: [SelectedValidatorInfo],
         selectedValidatorList: SharedList<SelectedValidatorInfo>,
-        maxTargets: Int,
+        validatorsSelectionParams: ValidatorsSelectionParams,
         logger: LoggerProtocol? = nil
     ) {
         self.interactor = interactor
@@ -36,8 +36,11 @@ final class CustomValidatorListPresenter {
         self.fullValidatorList = fullValidatorList
         self.recommendedValidatorList = recommendedValidatorList
         self.selectedValidatorList = selectedValidatorList
-        self.maxTargets = maxTargets
+        self.validatorsSelectionParams = validatorsSelectionParams
         self.logger = logger
+        filter = CustomValidatorListFilter.recommendedFilter(
+            havingIdentity: validatorsSelectionParams.hasIdentity
+        )
         self.localizationManager = localizationManager
     }
 
@@ -120,7 +123,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
     func fillWithRecommended() {
         let recommendedToFill = recommendedValidatorList
             .filter { !selectedValidatorList.contains($0) }
-            .prefix(maxTargets - selectedValidatorList.count)
+            .prefix(validatorsSelectionParams.maxNominations - selectedValidatorList.count)
 
         guard !recommendedToFill.isEmpty else { return }
 
@@ -189,6 +192,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
         wireframe.presentFilters(
             from: view,
             filter: filter,
+            hasIdentity: validatorsSelectionParams.hasIdentity,
             delegate: self
         )
     }
@@ -206,7 +210,7 @@ extension CustomValidatorListPresenter: CustomValidatorListPresenterProtocol {
         wireframe.proceed(
             from: view,
             validatorList: selectedValidatorList.items,
-            maxTargets: maxTargets,
+            maxTargets: validatorsSelectionParams.maxNominations,
             delegate: self
         )
     }

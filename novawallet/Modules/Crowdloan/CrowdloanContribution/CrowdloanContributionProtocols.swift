@@ -13,6 +13,7 @@ protocol CrowdloanContributionInteractorOutputProtocol: AnyObject {
     func didReceiveBlockNumber(result: Result<BlockNumber?, Error>)
     func didReceiveBlockDuration(result: Result<BlockTime, Error>)
     func didReceiveLeasingPeriod(result: Result<LeasingPeriod, Error>)
+    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>)
     func didReceiveMinimumBalance(result: Result<BigUInt, Error>)
     func didReceiveMinimumContribution(result: Result<BigUInt, Error>)
     func didReceivePriceData(result: Result<PriceData?, Error>)

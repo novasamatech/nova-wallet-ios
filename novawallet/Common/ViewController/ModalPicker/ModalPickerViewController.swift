@@ -4,18 +4,29 @@ import SoraFoundation
 
 protocol ModalPickerViewControllerDelegate: AnyObject {
     func modalPickerDidSelectModelAtIndex(_ index: Int, context: AnyObject?)
+    func modalPickerDidSelectModel(at index: Int, section: Int, context: AnyObject?)
     func modalPickerDidCancel(context: AnyObject?)
     func modalPickerDidSelectAction(context: AnyObject?)
 }
 
 extension ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModelAtIndex(_: Int, context _: AnyObject?) {}
+    func modalPickerDidSelectModel(at _: Int, section _: Int, context _: AnyObject?) {}
     func modalPickerDidCancel(context _: AnyObject?) {}
     func modalPickerDidSelectAction(context _: AnyObject?) {}
 }
 
 enum ModalPickerViewAction {
     case none
-    case add
+    case iconTitle(viewModel: LocalizableResource<IconWithTitleViewModel>)
+
+    var hasAction: Bool {
+        if case .none = self {
+            return false
+        } else {
+            return true
+        }
+    }
 }
 
 class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>: UIViewController,
@@ -33,17 +44,32 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
     var cellNib: UINib?
     var cellHeight: CGFloat = 55.0
+    var actionCellHeight: CGFloat = 40.0
     var footerHeight: CGFloat = 24.0
     var headerHeight: CGFloat = 40.0
     var cellIdentifier: String = "modalPickerCellId"
     var selectedIndex: Int = 0
+    var selectedSection: Int = 0
+    var sectionHeaderHeight: CGFloat = 26.0
 
     var hasCloseItem: Bool = false
     var allowsSelection: Bool = true
 
     var headerBorderType: BorderType = [.bottom]
 
-    var viewModels: [LocalizableResource<T>] = []
+    private var sections: [[LocalizableResource<T>]] = []
+    private var sectionTitles: [Int: LocalizableResource<String>] = [:]
+
+    var viewModels: [LocalizableResource<T>] {
+        get {
+            sections.first ?? []
+        }
+
+        set {
+            sections = [newValue]
+        }
+    }
+
     var separatorStyle: UITableViewCell.SeparatorStyle = .none
     var separatorColor: UIColor?
     var separatorInset: UIEdgeInsets?
@@ -60,12 +86,22 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
         setupLocalization()
     }
 
+    func addSection(viewModels: [LocalizableResource<T>], title: LocalizableResource<String>?) {
+        sections.append(viewModels)
+
+        let lastSectionIndex = sections.count - 1
+        sectionTitles[lastSectionIndex] = title
+    }
+
     private func configure() {
         if let cellNib = cellNib {
             tableView.register(cellNib, forCellReuseIdentifier: cellIdentifier)
         } else {
             tableView.register(C.self, forCellReuseIdentifier: cellIdentifier)
         }
+
+        tableView.registerClassForCell(ModalPickerActionTableViewCell.self)
+        tableView.registerHeaderFooterView(withClass: IconTitleHeaderView.self)
 
         tableView.allowsSelection = allowsSelection
         tableView.separatorStyle = separatorStyle
@@ -88,13 +124,6 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
 
         headerBackgroundView.borderType = headerBorderType
 
-        switch actionType {
-        case .add:
-            configureAddAction()
-        default:
-            break
-        }
-
         if hasCloseItem {
             centerHeader()
             configureCloseItem()
@@ -104,25 +133,6 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     private func setupLocalization() {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         headerView.title = localizedTitle?.value(for: locale)
-    }
-
-    private func configureAddAction() {
-        let addButton = RoundedButton()
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.roundedBackgroundView?.shadowOpacity = 0.0
-        addButton.roundedBackgroundView?.fillColor = .clear
-        addButton.roundedBackgroundView?.highlightedFillColor = .clear
-        addButton.changesContentOpacityWhenHighlighted = true
-        addButton.imageWithTitleView?.spacingBetweenLabelAndIcon = 0.0
-        addButton.contentInsets = UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
-        addButton.imageWithTitleView?.iconImage = R.image.iconSmallAdd()
-
-        headerBackgroundView.addSubview(addButton)
-
-        addButton.trailingAnchor.constraint(equalTo: headerBackgroundView.trailingAnchor).isActive = true
-        addButton.centerYAnchor.constraint(equalTo: headerView.centerYAnchor).isActive = true
-
-        addButton.addTarget(self, action: #selector(handleAction), for: .touchUpInside)
     }
 
     private func centerHeader() {
@@ -156,50 +166,120 @@ class ModalPickerViewController<C: UITableViewCell & ModalPickerCellProtocol, T>
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
-        if indexPath.row != selectedIndex {
-            if var oldCell = tableView.cellForRow(at: IndexPath(row: selectedIndex, section: 0)) as? C {
-                oldCell.checkmarked = false
-            }
-
-            if var newCell = tableView.cellForRow(at: indexPath) as? C {
-                newCell.checkmarked = true
-            }
-
-            selectedIndex = indexPath.row
-
+        if indexPath.section == 0, actionType.hasAction {
+            delegate?.modalPickerDidSelectAction(context: context)
             presenter?.hide(view: self, animated: true)
-            delegate?.modalPickerDidSelectModelAtIndex(indexPath.row, context: context)
+        } else {
+            let itemSectionIndex = actionType.hasAction ? indexPath.section - 1 : indexPath.section
+
+            if itemSectionIndex != selectedSection || indexPath.row != selectedIndex {
+                if var oldCell = tableView.cellForRow(at: IndexPath(row: selectedIndex, section: 0)) as? C {
+                    oldCell.checkmarked = false
+                }
+
+                if var newCell = tableView.cellForRow(at: indexPath) as? C {
+                    newCell.checkmarked = true
+                }
+
+                selectedIndex = indexPath.row
+                selectedSection = itemSectionIndex
+
+                presenter?.hide(view: self, animated: true)
+
+                if sections.count > 1 {
+                    delegate?.modalPickerDidSelectModel(
+                        at: selectedIndex,
+                        section: selectedSection,
+                        context: context
+                    )
+                } else {
+                    delegate?.modalPickerDidSelectModelAtIndex(selectedIndex, context: context)
+                }
+            }
         }
     }
 
-    func tableView(_: UITableView, heightForRowAt _: IndexPath) -> CGFloat {
-        cellHeight
+    func tableView(_: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == 0, actionType.hasAction {
+            return actionCellHeight
+        } else {
+            return cellHeight
+        }
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let itemSectionIndex = actionType.hasAction ? section - 1 : section
+
+        if sectionTitles[itemSectionIndex] != nil {
+            return sectionHeaderHeight
+        } else {
+            return 0.0
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let itemSectionIndex = actionType.hasAction ? section - 1 : section
+
+        if let title = sectionTitles[itemSectionIndex] {
+            let headerView: IconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
+            headerView.titleView.detailsLabel.textColor = R.color.colorTransparentText()
+            headerView.titleView.detailsLabel.font = .regularFootnote
+
+            headerView.bind(title: title.value(for: selectedLocale), icon: nil)
+
+            return headerView
+        } else {
+            return nil
+        }
     }
 
     // MARK: Table View Data Source
 
-    func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        viewModels.count
+    func numberOfSections(in _: UITableView) -> Int {
+        actionType.hasAction ? sections.count + 1 : sections.count
+    }
+
+    func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if actionType.hasAction, section == 0 {
+            return 1
+        } else {
+            let itemSectionIndex = actionType.hasAction ? section - 1 : section
+
+            return sections[itemSectionIndex].count
+        }
     }
 
     // swiftlint:disable force_cast
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! C
+        if indexPath.section == 0, actionType.hasAction {
+            let cell = tableView.dequeueReusableCellWithType(ModalPickerActionTableViewCell.self)!
 
-        let locale = localizationManager?.selectedLocale ?? Locale.current
+            switch actionType {
+            case .none:
+                break
+            case let .iconTitle(localizedViewModel):
+                let locale = localizationManager?.selectedLocale ?? Locale.current
+                let viewModel = localizedViewModel.value(for: locale)
+                cell.bind(viewModel: viewModel)
+            }
 
-        cell.bind(model: viewModels[indexPath.row].value(for: locale))
-        cell.checkmarked = (selectedIndex == indexPath.row)
+            return cell
+        } else {
+            var cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! C
 
-        return cell
+            let locale = localizationManager?.selectedLocale ?? Locale.current
+
+            let itemSectionIndex = actionType.hasAction ? indexPath.section - 1 : indexPath.section
+            let viewModels = sections[itemSectionIndex]
+
+            cell.bind(model: viewModels[indexPath.row].value(for: locale))
+            cell.checkmarked = (selectedSection == itemSectionIndex && selectedIndex == indexPath.row)
+
+            return cell
+        }
     }
 
     // swiftlint:enable force_cast
-
-    @objc private func handleAction() {
-        delegate?.modalPickerDidSelectAction(context: context)
-        presenter?.hide(view: self, animated: true)
-    }
 
     @objc private func handleClose() {
         presenter?.hide(view: self, animated: true)

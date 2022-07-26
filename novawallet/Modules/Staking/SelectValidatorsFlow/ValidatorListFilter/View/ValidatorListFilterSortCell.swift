@@ -57,4 +57,9 @@ final class ValidatorListFilterSortCell: UITableViewCell {
         titleLabel.text = viewModel.underlyingViewModel.title
         selectionView.selected = viewModel.selectable
     }
+
+    func bind(viewModel: SelectableViewModel<String>) {
+        titleLabel.text = viewModel.underlyingViewModel
+        selectionView.selected = viewModel.selectable
+    }
 }

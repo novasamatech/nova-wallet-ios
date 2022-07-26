@@ -6,9 +6,17 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
     static let baseUrl = URL(string: "https://crowdloan.aca-api.network")!
     static let apiContribution = "/contribution"
 
-    func getContributions(accountId: AccountId, chain: ChainModel) -> BaseOperation<[ExternalContribution]> {
+    let paraIdOperationFactory: ParaIdOperationFactoryProtocol
+    let acalaChainId: ChainModel.Id
+
+    init(paraIdOperationFactory: ParaIdOperationFactoryProtocol, acalaChainId: ChainModel.Id) {
+        self.paraIdOperationFactory = paraIdOperationFactory
+        self.acalaChainId = acalaChainId
+    }
+
+    func getContributions(accountId: AccountId, chain: ChainModel) -> CompoundOperationWrapper<[ExternalContribution]> {
         guard let accountAddress = try? accountId.toAddress(using: chain.chainFormat) else {
-            return BaseOperation.createWithError(ChainAccountFetchingError.accountNotExists)
+            return CompoundOperationWrapper.createWithError(ChainAccountFetchingError.accountNotExists)
         }
 
         let url = Self.baseUrl
@@ -21,19 +29,29 @@ final class AcalaContributionSource: ExternalContributionSourceProtocol {
             return request
         }
 
-        let resultFactory = AnyNetworkResultFactory<[ExternalContribution]> { data in
-            let resultData = try JSONDecoder().decode(
-                AcalaLiquidContributionResponse.self,
-                from: data
-            )
-
-            guard let amount = BigUInt(resultData.proxyAmount) else {
-                throw CrowdloanBonusServiceError.internalError
-            }
-            return [ExternalContribution(source: "Liquid", amount: amount, paraId: 2000)]
+        let resultFactory = AnyNetworkResultFactory<AcalaLiquidContributionResponse> { data in
+            try JSONDecoder().decode(AcalaLiquidContributionResponse.self, from: data)
         }
 
-        let operation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
-        return operation
+        let networkOperation = NetworkOperation(requestFactory: requestFactory, resultFactory: resultFactory)
+
+        let paraIdWrapper = paraIdOperationFactory.createParaIdOperation(for: acalaChainId)
+
+        let mergeOperation = ClosureOperation<[ExternalContribution]> {
+            let response = try networkOperation.extractNoCancellableResultData()
+            let paraId = try paraIdWrapper.targetOperation.extractNoCancellableResultData()
+
+            guard let amount = BigUInt(response.proxyAmount) else {
+                throw CrowdloanBonusServiceError.internalError
+            }
+
+            return [ExternalContribution(source: "Liquid", amount: amount, paraId: paraId)]
+        }
+
+        let dependencies = [networkOperation] + paraIdWrapper.allOperations
+        mergeOperation.addDependency(networkOperation)
+        mergeOperation.addDependency(paraIdWrapper.targetOperation)
+
+        return CompoundOperationWrapper(targetOperation: mergeOperation, dependencies: dependencies)
     }
 }

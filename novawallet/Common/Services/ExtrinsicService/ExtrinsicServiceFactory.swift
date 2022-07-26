@@ -9,6 +9,12 @@ protocol ExtrinsicServiceFactoryProtocol {
         cryptoType: MultiassetCryptoType
     ) -> ExtrinsicServiceProtocol
 
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol
+
     func createSigningWrapper(
         metaId: String,
         account: ChainAccountResponse
@@ -19,15 +25,18 @@ final class ExtrinsicServiceFactory {
     private let runtimeRegistry: RuntimeCodingServiceProtocol
     private let engine: JSONRPCEngine
     private let operationManager: OperationManagerProtocol
+    private let signingWrapperFactory: SigningWrapperFactoryProtocol
 
     init(
         runtimeRegistry: RuntimeCodingServiceProtocol,
         engine: JSONRPCEngine,
-        operationManager: OperationManagerProtocol
+        operationManager: OperationManagerProtocol,
+        signingWrapperFactory: SigningWrapperFactoryProtocol
     ) {
         self.runtimeRegistry = runtimeRegistry
         self.engine = engine
         self.operationManager = operationManager
+        self.signingWrapperFactory = signingWrapperFactory
     }
 }
 
@@ -47,14 +56,25 @@ extension ExtrinsicServiceFactory: ExtrinsicServiceFactoryProtocol {
         )
     }
 
+    func createOperationFactory(
+        accountId: AccountId,
+        chain: ChainModel,
+        cryptoType: MultiassetCryptoType
+    ) -> ExtrinsicOperationFactoryProtocol {
+        ExtrinsicOperationFactory(
+            accountId: accountId,
+            chain: chain,
+            cryptoType: cryptoType,
+            runtimeRegistry: runtimeRegistry,
+            customExtensions: DefaultExtrinsicExtension.extensions,
+            engine: engine
+        )
+    }
+
     func createSigningWrapper(
         metaId: String,
         account: ChainAccountResponse
     ) -> SigningWrapperProtocol {
-        SigningWrapper(
-            keystore: Keychain(),
-            metaId: metaId,
-            accountResponse: account
-        )
+        signingWrapperFactory.createSigningWrapper(for: metaId, accountResponse: account)
     }
 }

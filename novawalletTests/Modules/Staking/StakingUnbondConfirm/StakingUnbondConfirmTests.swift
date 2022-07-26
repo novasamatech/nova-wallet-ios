@@ -116,7 +116,7 @@ class StakingUnbondConfirmTests: XCTestCase {
             priceData: PriceData(price: "0.1", usdDayChange: nil)
         )
 
-        let stakingDurationOperationFactory = StakingDurationOperationFactory()
+        let stakingDurationOperationFactory = BabeStakingDurationFactory()
 
         let interactor = StakingUnbondConfirmInteractor(
             selectedAccount: selectedAccount,

@@ -16,6 +16,7 @@ final class CrowdloanListPresenter {
     private var blockNumber: BlockNumber?
     private var blockDurationResult: Result<BlockTime, Error>?
     private var leasingPeriodResult: Result<LeasingPeriod, Error>?
+    private var leasingOffsetResult: Result<LeasingOffset, Error>?
     private var contributionsResult: Result<CrowdloanContributionDict, Error>?
     private var externalContributions: [ExternalContribution]?
     private var leaseInfoResult: Result<ParachainLeaseInfoDict, Error>?
@@ -74,6 +75,7 @@ final class CrowdloanListPresenter {
         guard
             let blockDurationResult = blockDurationResult,
             let leasingPeriodResult = leasingPeriodResult,
+            let leasingOffsetResult = leasingOffsetResult,
             let blockNumber = blockNumber else {
             return nil
         }
@@ -81,11 +83,13 @@ final class CrowdloanListPresenter {
         do {
             let blockDuration = try blockDurationResult.get()
             let leasingPeriod = try leasingPeriodResult.get()
+            let leasingOffset = try leasingOffsetResult.get()
 
             let metadata = CrowdloanMetadata(
                 blockNumber: blockNumber,
                 blockDuration: blockDuration,
-                leasingPeriod: leasingPeriod
+                leasingPeriod: leasingPeriod,
+                leasingOffset: leasingOffset
             )
 
             return .success(metadata)
@@ -209,12 +213,18 @@ extension CrowdloanListPresenter: CrowdloanListPresenterProtocol {
     }
 
     func selectChain() {
-        let chainId = try? selectedChainResult?.get().chainId
+        guard
+            let chain = try? selectedChainResult?.get(),
+            let asset = chain.utilityAsset() else {
+            return
+        }
+
+        let chainAssetId = ChainAsset(chain: chain, asset: asset).chainAssetId
 
         wireframe.selectChain(
             from: view,
             delegate: self,
-            selectedChainId: chainId
+            selectedChainAssetId: chainAssetId
         )
     }
 
@@ -280,6 +290,11 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
         updateListView()
     }
 
+    func didReceiveLeasingOffset(result: Result<LeasingOffset, Error>) {
+        leasingOffsetResult = result
+        updateListView()
+    }
+
     func didReceiveContributions(result: Result<CrowdloanContributionDict, Error>) {
         if case let .failure(error) = result {
             logger?.error("Did receive contributions error: \(error)")
@@ -323,13 +338,13 @@ extension CrowdloanListPresenter: CrowdloanListInteractorOutputProtocol {
     }
 }
 
-extension CrowdloanListPresenter: ChainSelectionDelegate {
-    func chainSelection(view _: ChainSelectionViewProtocol, didCompleteWith chain: ChainModel) {
-        if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chain.chainId {
+extension CrowdloanListPresenter: AssetSelectionDelegate {
+    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+        if let currentChain = try? selectedChainResult?.get(), currentChain.chainId == chainAsset.chain.chainId {
             return
         }
 
-        selectedChainResult = .success(chain)
+        selectedChainResult = .success(chainAsset.chain)
         accountInfoResult = nil
         crowdloansResult = nil
         displayInfoResult = nil
@@ -340,9 +355,10 @@ extension CrowdloanListPresenter: ChainSelectionDelegate {
         leaseInfoResult = nil
 
         updateChainView()
+
         view?.didReceive(listState: .loading)
 
-        interactor.saveSelected(chainModel: chain)
+        interactor.saveSelected(chainModel: chainAsset.chain)
     }
 }
 

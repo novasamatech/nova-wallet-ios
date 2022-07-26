@@ -19,7 +19,7 @@ class AssetSelectionTests: XCTestCase {
             )
         }
 
-        let view = MockChainSelectionViewProtocol()
+        let view = MockAssetSelectionViewProtocol()
         let wireframe = MockAssetSelectionWireframeProtocol()
 
         let storageFacade = SubstrateStorageTestFacade()
@@ -36,10 +36,14 @@ class AssetSelectionTests: XCTestCase {
             balance: BigUInt(1e+18)
         )
 
-        let interactor = ChainSelectionInteractor(
+        let priceProviderFactory = PriceProviderFactoryStub(priceData: PriceData(price: "1.5", usdDayChange: nil))
+
+        let interactor = AssetSelectionInteractor(
             selectedMetaAccount: selectedAccount,
             repository: repository,
             walletLocalSubscriptionFactory: walletLocalSubscriptionFactory,
+            priceLocalSubscriptionFactory: priceProviderFactory,
+            assetFilter: { chainAsset in StakingType(rawType: chainAsset.asset.staking) != .unsupported },
             operationQueue: operationQueue
         )
 
@@ -53,7 +57,6 @@ class AssetSelectionTests: XCTestCase {
         let presenter = AssetSelectionPresenter(
             interactor: interactor,
             wireframe: wireframe,
-            assetFilter: { (_, asset) in asset.staking != nil },
             selectedChainAssetId: selectedChainAssetId,
             assetBalanceFormatterFactory: AssetBalanceFormatterFactory(),
             localizationManager: LocalizationManager.shared
@@ -79,7 +82,6 @@ class AssetSelectionTests: XCTestCase {
 
         stub(wireframe) { stub in
             stub.complete(on: any(), selecting: any()).then { (_, chainAsset) in
-                XCTAssertEqual(chains.first, chainAsset.chain)
                 XCTAssertNotNil(chainAsset.asset.staking)
                 completionExpectation.fulfill()
             }

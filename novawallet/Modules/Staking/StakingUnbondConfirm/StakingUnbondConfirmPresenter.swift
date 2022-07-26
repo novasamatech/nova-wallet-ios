@@ -158,7 +158,7 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmPresenterProtocol {
                 self?.refreshFeeIfNeeded()
             }),
 
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale),
 
             dataValidatingFactory.has(
                 controller: controller?.chainAccount,
@@ -198,14 +198,12 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
     func didReceiveAccountInfo(result: Result<AccountInfo?, Error>) {
         switch result {
         case let .success(accountInfo):
-            if let accountInfo = accountInfo {
-                balance = Decimal.fromSubstrateAmount(
-                    accountInfo.data.available,
-                    precision: assetInfo.assetPrecision
-                )
-            } else {
-                balance = nil
-            }
+            let amountInPlank = accountInfo?.data.available ?? 0
+
+            balance = Decimal.fromSubstrateAmount(
+                amountInPlank,
+                precision: assetInfo.assetPrecision
+            )
         case let .failure(error):
             logger?.error("Account Info subscription error: \(error)")
         }
@@ -349,8 +347,12 @@ extension StakingUnbondConfirmPresenter: StakingUnbondConfirmInteractorOutputPro
         switch result {
         case .success:
             wireframe.complete(from: view)
-        case .failure:
-            wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        case let .failure(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+            }
         }
     }
 

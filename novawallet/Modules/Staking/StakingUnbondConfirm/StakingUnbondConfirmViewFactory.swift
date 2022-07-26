@@ -73,6 +73,9 @@ struct StakingUnbondConfirmViewFactory {
             let connection = chainRegistry.getConnection(for: chainAsset.chain.chainId),
             let runtimeService = chainRegistry.getRuntimeProvider(
                 for: chainAsset.chain.chainId
+            ),
+            let stakingDurationFactory = try? state.createStakingDurationOperationFactory(
+                for: chainAsset.chain
             ) else {
             return nil
         }
@@ -80,7 +83,8 @@ struct StakingUnbondConfirmViewFactory {
         let extrinsicServiceFactory = ExtrinsicServiceFactory(
             runtimeRegistry: runtimeService,
             engine: connection,
-            operationManager: operationManager
+            operationManager: operationManager,
+            signingWrapperFactory: SigningWrapperFactory()
         )
 
         let accountRepositoryFactory = AccountRepositoryFactory(storageFacade: UserDataStorageFacade.shared)
@@ -92,7 +96,7 @@ struct StakingUnbondConfirmViewFactory {
             stakingLocalSubscriptionFactory: state.stakingLocalSubscriptionFactory,
             walletLocalSubscriptionFactory: WalletLocalSubscriptionFactory.shared,
             priceLocalSubscriptionFactory: PriceProviderFactory.shared,
-            stakingDurationOperationFactory: StakingDurationOperationFactory(),
+            stakingDurationOperationFactory: stakingDurationFactory,
             extrinsicServiceFactory: extrinsicServiceFactory,
             accountRepositoryFactory: accountRepositoryFactory,
             feeProxy: ExtrinsicFeeProxy(),

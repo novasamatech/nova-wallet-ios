@@ -12,7 +12,7 @@ final class StakingMainPresenter {
     let logger: LoggerProtocol?
 
     private var childPresenter: StakingMainChildPresenterProtocol?
-    private var selectedAccount: MetaChainAccountResponse?
+    private var wallet: MetaAccountModel?
     private var chainAsset: ChainAsset?
     private var accountInfo: AccountInfo?
 
@@ -29,7 +29,7 @@ final class StakingMainPresenter {
     private func provideMainViewModel() {
         guard
             let chainAsset = chainAsset,
-            let accountId = selectedAccount?.substrateAccountId
+            let accountId = wallet?.substrateAccountId
         else {
             return
         }
@@ -41,6 +41,53 @@ final class StakingMainPresenter {
         )
 
         view?.didReceive(viewModel: viewModel)
+    }
+
+    private func createAccountCreateAction(for chain: ChainModel, wallet: MetaAccountModel) -> AlertPresentableAction {
+        let createAccountTitle = R.string.localizable.accountCreateOptionTitle(
+            preferredLanguages: view?.selectedLocale.rLanguages
+        )
+
+        return AlertPresentableAction(title: createAccountTitle) { [weak self] in
+            self?.wireframe.showCreateAccount(from: self?.view, wallet: wallet, chain: chain)
+        }
+    }
+
+    private func createAccountImportAction(for chain: ChainModel, wallet: MetaAccountModel) -> AlertPresentableAction {
+        let importAccountTitle = R.string.localizable.accountImportOptionTitle(
+            preferredLanguages: view?.selectedLocale.rLanguages
+        )
+
+        return AlertPresentableAction(title: importAccountTitle) { [weak self] in
+            self?.wireframe.showImportAccount(from: self?.view, wallet: wallet, chain: chain)
+        }
+    }
+
+    private func addAccount(for chain: ChainModel, wallet: MetaAccountModel) {
+        let createAccountAction = createAccountCreateAction(for: chain, wallet: wallet)
+        let importAccountAction = createAccountImportAction(for: chain, wallet: wallet)
+
+        let actions: [AlertPresentableAction] = [createAccountAction, importAccountAction]
+
+        let closeTitle = R.string.localizable.commonCancel(preferredLanguages: view?.selectedLocale.rLanguages)
+
+        let title = R.string.localizable.accountNotFoundActionsTitle(
+            chain.name,
+            preferredLanguages: view?.selectedLocale.rLanguages
+        )
+
+        let actionsViewModel = AlertPresentableViewModel(
+            title: title,
+            message: nil,
+            actions: actions,
+            closeAction: closeTitle
+        )
+
+        wireframe.present(
+            viewModel: actionsViewModel,
+            style: .actionSheet,
+            from: view
+        )
     }
 }
 
@@ -65,7 +112,45 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 
     func performMainAction() {
-        childPresenter?.performMainAction()
+        guard let chain = chainAsset?.chain, let wallet = wallet else {
+            return
+        }
+
+        if wallet.fetchMetaChainAccount(for: chain.accountRequest()) != nil {
+            childPresenter?.performMainAction()
+        } else {
+            let languages = view?.selectedLocale.rLanguages
+
+            let title = R.string.localizable.commonChainAccountMissingTitleFormat(
+                chain.name,
+                preferredLanguages: languages
+            )
+
+            let messages = R.string.localizable.commonChainAccountMissingMessageFormat(
+                chain.name,
+                preferredLanguages: languages
+            )
+
+            let cancelAction = AlertPresentableAction(
+                title: R.string.localizable.commonCancel(preferredLanguages: languages),
+                style: .destructive
+            )
+
+            let addAction = AlertPresentableAction(
+                title: R.string.localizable.commonAdd(preferredLanguages: languages)
+            ) { [weak self] in
+                self?.addAccount(for: chain, wallet: wallet)
+            }
+
+            let viewModel = AlertPresentableViewModel(
+                title: title,
+                message: messages,
+                actions: [cancelAction, addAction],
+                closeAction: nil
+            )
+
+            wireframe.present(viewModel: viewModel, style: .alert, from: view)
+        }
     }
 
     func performAccountAction() {
@@ -118,8 +203,8 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
         }
     }
 
-    func didReceiveSelectedAccount(_ selectedAccount: MetaChainAccountResponse) {
-        self.selectedAccount = selectedAccount
+    func didReceiveSelectedAccount(_ metaAccount: MetaAccountModel) {
+        wallet = metaAccount
 
         provideMainViewModel()
     }
@@ -152,7 +237,7 @@ extension StakingMainPresenter: StakingMainInteractorOutputProtocol {
 }
 
 extension StakingMainPresenter: AssetSelectionDelegate {
-    func assetSelection(view _: ChainSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
+    func assetSelection(view _: AssetSelectionViewProtocol, didCompleteWith chainAsset: ChainAsset) {
         interactor.save(chainAsset: chainAsset)
     }
 }

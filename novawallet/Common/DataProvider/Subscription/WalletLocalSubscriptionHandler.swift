@@ -19,6 +19,8 @@ protocol WalletLocalSubscriptionHandler {
         result: Result<[DataProviderChange<AssetBalance>], Error>,
         accountId: AccountId
     )
+
+    func handleAllBalances(result: Result<[DataProviderChange<AssetBalance>], Error>)
 }
 
 extension WalletLocalSubscriptionHandler {
@@ -39,4 +41,6 @@ extension WalletLocalSubscriptionHandler {
         result _: Result<[DataProviderChange<AssetBalance>], Error>,
         accountId _: AccountId
     ) {}
+
+    func handleAllBalances(result _: Result<[DataProviderChange<AssetBalance>], Error>) {}
 }

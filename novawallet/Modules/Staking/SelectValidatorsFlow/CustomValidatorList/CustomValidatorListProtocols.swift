@@ -48,6 +48,7 @@ protocol CustomValidatorListWireframeProtocol: AlertPresentable, ErrorPresentabl
     func presentFilters(
         from view: ControllerBackedProtocol?,
         filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         delegate: ValidatorListFilterDelegate?
     )
 

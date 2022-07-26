@@ -42,10 +42,10 @@ final class NominatorPayoutInfoFactory: PayoutInfoFactoryProtocol {
             return nil
         }
 
-        let rewardFraction = Decimal(validatorPoints) / Decimal(points.total)
+        let rewardFraction = points.total > 0 ? Decimal(validatorPoints) / Decimal(points.total) : 0
         let validatorTotalReward = totalReward * rewardFraction
-        let nominatorReward = validatorTotalReward * (1 - comission) *
-            (nominatorStake / totalStake)
+        let nominatorPortion = totalStake > 0 ? nominatorStake / totalStake : 0
+        let nominatorReward = validatorTotalReward * (1 - comission) * nominatorPortion
 
         let validatorAddress = try validatorInfo.accountId.toAddress(using: chainAssetInfo.chain)
 

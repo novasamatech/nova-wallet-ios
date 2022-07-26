@@ -15,6 +15,7 @@ struct ChainAccountResponse {
     let addressPrefix: UInt16
     let isEthereumBased: Bool
     let isChainAccount: Bool
+    let type: MetaAccountModelType
 }
 
 struct MetaEthereumAccountResponse {
@@ -23,6 +24,7 @@ struct MetaEthereumAccountResponse {
     let publicKey: Data
     let name: String
     let isChainAccount: Bool
+    let type: MetaAccountModelType
 }
 
 struct MetaChainAccountResponse {
@@ -92,7 +94,8 @@ extension MetaAccountModel {
                 cryptoType: cryptoType,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -109,7 +112,8 @@ extension MetaAccountModel {
                 cryptoType: MultiassetCryptoType.ethereumEcdsa,
                 addressPrefix: request.addressPrefix,
                 isEthereumBased: request.isEthereumBased,
-                isChainAccount: false
+                isChainAccount: false,
+                type: type
             )
         }
 
@@ -125,8 +129,84 @@ extension MetaAccountModel {
             cryptoType: cryptoType,
             addressPrefix: request.addressPrefix,
             isEthereumBased: false,
-            isChainAccount: false
+            isChainAccount: false,
+            type: type
         )
+    }
+
+    // Note that this query might return an account in another chain if it can't be found for provided chain
+    func fetchByAccountId(_ accountId: AccountId, request: ChainAccountRequest) -> ChainAccountResponse? {
+        if
+            let chainAccount = chainAccounts.first(
+                where: { $0.chainId == request.chainId && $0.accountId == accountId }
+            ),
+            let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
+            return ChainAccountResponse(
+                chainId: chainAccount.chainId,
+                accountId: chainAccount.accountId,
+                publicKey: chainAccount.publicKey,
+                name: name,
+                cryptoType: cryptoType,
+                addressPrefix: request.addressPrefix,
+                isEthereumBased: request.isEthereumBased,
+                isChainAccount: true,
+                type: type
+            )
+        }
+
+        if
+            request.isEthereumBased,
+            let publicKey = ethereumPublicKey,
+            let ethereumAccountId = ethereumAddress,
+            ethereumAccountId == accountId {
+            return ChainAccountResponse(
+                chainId: request.chainId,
+                accountId: ethereumAccountId,
+                publicKey: publicKey,
+                name: name,
+                cryptoType: MultiassetCryptoType.ethereumEcdsa,
+                addressPrefix: request.addressPrefix,
+                isEthereumBased: request.isEthereumBased,
+                isChainAccount: false,
+                type: type
+            )
+        }
+
+        if
+            !request.isEthereumBased,
+            substrateAccountId == accountId,
+            let cryptoType = MultiassetCryptoType(rawValue: substrateCryptoType) {
+            return ChainAccountResponse(
+                chainId: request.chainId,
+                accountId: substrateAccountId,
+                publicKey: substratePublicKey,
+                name: name,
+                cryptoType: cryptoType,
+                addressPrefix: request.addressPrefix,
+                isEthereumBased: false,
+                isChainAccount: false,
+                type: type
+            )
+        }
+
+        // if we can't match by chain still try to find account connected to another chain
+        if
+            let chainAccount = chainAccounts.first(where: { $0.accountId == accountId }),
+            let cryptoType = MultiassetCryptoType(rawValue: chainAccount.cryptoType) {
+            return ChainAccountResponse(
+                chainId: chainAccount.chainId,
+                accountId: chainAccount.accountId,
+                publicKey: chainAccount.publicKey,
+                name: name,
+                cryptoType: cryptoType,
+                addressPrefix: request.addressPrefix,
+                isEthereumBased: request.isEthereumBased,
+                isChainAccount: true,
+                type: type
+            )
+        }
+
+        return nil
     }
 
     func fetchEthereum(for address: AccountId) -> MetaEthereumAccountResponse? {
@@ -136,7 +216,8 @@ extension MetaAccountModel {
                 address: address,
                 publicKey: chainAccount.publicKey,
                 name: name,
-                isChainAccount: true
+                isChainAccount: true,
+                type: type
             )
         }
 
@@ -152,7 +233,8 @@ extension MetaAccountModel {
             address: address,
             publicKey: publicKey,
             name: name,
-            isChainAccount: false
+            isChainAccount: false,
+            type: type
         )
     }
 
@@ -185,5 +267,14 @@ extension ChainModel {
             addressPrefix: addressPrefix,
             isEthereumBased: isEthereumBased
         )
+    }
+
+    var accountIdSize: Int {
+        switch chainFormat {
+        case .substrate:
+            return 32
+        case .ethereum:
+            return 20
+        }
     }
 }

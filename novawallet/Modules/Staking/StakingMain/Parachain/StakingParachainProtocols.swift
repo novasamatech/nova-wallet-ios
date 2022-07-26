@@ -1,8 +1,10 @@
 import Foundation
+import SoraFoundation
 
 protocol StakingParachainInteractorInputProtocol: AnyObject {
     func setup()
-    func fetchScheduledRequests(for collators: [AccountId])
+    func fetchScheduledRequests()
+    func fetchDelegations(for collators: [AccountId])
 }
 
 protocol StakingParachainInteractorOutputProtocol: AnyObject {
@@ -12,6 +14,7 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveAssetBalance(_ assetBalance: AssetBalance?)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
     func didReceiveScheduledRequests(_ requests: [ParachainStaking.DelegatorScheduledRequest]?)
+    func didReceiveDelegations(_ delegations: [CollatorSelectionInfo])
     func didReceiveSelectedCollators(_ collatorsInfo: SelectedRoundCollators)
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceiveNetworkInfo(_ networkInfo: ParachainStaking.NetworkInfo)
@@ -22,7 +25,42 @@ protocol StakingParachainInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable {
-    func showRewardDetails(from view: ControllerBackedProtocol?, maxReward: Decimal, avgReward: Decimal)
-    func showStartStaking(from view: ControllerBackedProtocol?)
+protocol StakingParachainWireframeProtocol: AlertPresentable, ErrorPresentable, ParachainStakingErrorPresentable {
+    func showRewardDetails(
+        from view: ControllerBackedProtocol?,
+        maxReward: Decimal,
+        avgReward: Decimal,
+        symbol: String
+    )
+
+    func showStakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    )
+
+    func showUnstakeTokens(
+        from view: ControllerBackedProtocol?,
+        initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    )
+
+    func showYourCollators(from view: ControllerBackedProtocol?)
+
+    func showRedeemTokens(from view: ControllerBackedProtocol?)
+
+    func showUnstakingCollatorSelection(
+        from view: ControllerBackedProtocol?,
+        delegate: ModalPickerViewControllerDelegate,
+        viewModels: [LocalizableResource<AccountDetailsSelectionViewModel>],
+        context: AnyObject?
+    )
+
+    func showRebondTokens(
+        from view: ControllerBackedProtocol?,
+        collatorId: AccountId,
+        collatorIdentity: AccountIdentity?
+    )
 }

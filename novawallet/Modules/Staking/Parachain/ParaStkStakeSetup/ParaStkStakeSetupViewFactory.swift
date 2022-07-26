@@ -3,7 +3,12 @@ import SoraFoundation
 import SubstrateSdk
 
 struct ParaStkStakeSetupViewFactory {
-    static func createView(with state: ParachainStakingSharedState) -> ParaStkStakeSetupViewProtocol? {
+    static func createView(
+        with state: ParachainStakingSharedState,
+        initialDelegator: ParachainStaking.Delegator?,
+        initialScheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?,
+        delegationIdentities: [AccountId: AccountIdentity]?
+    ) -> ParaStkStakeSetupViewProtocol? {
         guard
             let chainAsset = state.settings.value,
             let interactor = createInteractor(from: state) else {
@@ -13,13 +18,17 @@ struct ParaStkStakeSetupViewFactory {
         let wireframe = ParaStkStakeSetupWireframe(state: state)
 
         let assetDisplayInfo = chainAsset.assetDisplayInfo
-        let balanceViewModelFactory = BalanceViewModelFactory(
-            targetAssetInfo: assetDisplayInfo
-        )
+        let balanceViewModelFactory = BalanceViewModelFactory(targetAssetInfo: assetDisplayInfo)
 
         let dataValidationFactory = ParachainStaking.ValidatorFactory(
             presentable: wireframe,
             assetDisplayInfo: assetDisplayInfo
+        )
+
+        let accountDetailsFactory = ParaStkAccountDetailsViewModelFactory(
+            balanceViewModelFactory: balanceViewModelFactory,
+            chainFormat: chainAsset.chain.chainFormat,
+            assetPrecision: assetDisplayInfo.assetPrecision
         )
 
         let localizationManager = LocalizationManager.shared
@@ -29,12 +38,19 @@ struct ParaStkStakeSetupViewFactory {
             dataValidatingFactory: dataValidationFactory,
             chainAsset: chainAsset,
             balanceViewModelFactory: balanceViewModelFactory,
+            accountDetailsViewModelFactory: accountDetailsFactory,
+            initialDelegator: initialDelegator,
+            initialScheduledRequests: initialScheduledRequests,
+            delegationIdentities: delegationIdentities,
             localizationManager: localizationManager,
             logger: Logger.shared
         )
 
+        let localizableTitle = createTitle(for: initialDelegator, chainAsset: chainAsset)
+
         let view = ParaStkStakeSetupViewController(
             presenter: presenter,
+            localizableTitle: localizableTitle,
             localizationManager: localizationManager
         )
 
@@ -43,6 +59,21 @@ struct ParaStkStakeSetupViewFactory {
         interactor.presenter = presenter
 
         return view
+    }
+
+    private static func createTitle(
+        for delegator: ParachainStaking.Delegator?,
+        chainAsset: ChainAsset
+    ) -> LocalizableResource<String> {
+        if delegator != nil {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingBondMore_v190(preferredLanguages: locale.rLanguages)
+            }
+        } else {
+            return LocalizableResource { locale in
+                R.string.localizable.stakingStakeFormat(chainAsset.asset.symbol, preferredLanguages: locale.rLanguages)
+            }
+        }
     }
 
     private static func createInteractor(

@@ -24,6 +24,13 @@ final class WalletChainView: UIView {
         return label
     }()
 
+    let iconSize = CGSize(width: 24.0, height: 24.0)
+
+    convenience init() {
+        let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 48.0, height: 24.0))
+        self.init(frame: defaultFrame)
+    }
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -37,6 +44,15 @@ final class WalletChainView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func bind(viewModel: NetworkViewModel) {
+        nameLabel.text = viewModel.name.uppercased()
+        iconView.bind(gradient: viewModel.gradient)
+
+        iconView.bind(iconViewModel: viewModel.icon, size: iconSize)
+
+        setNeedsLayout()
+    }
+
     private func setupLayout() {
         addSubview(backgroundView)
         addSubview(iconView)
@@ -44,7 +60,7 @@ final class WalletChainView: UIView {
 
         iconView.snp.makeConstraints { make in
             make.leading.top.bottom.equalToSuperview()
-            make.size.equalTo(24.0)
+            make.size.equalTo(iconSize)
         }
 
         nameLabel.snp.makeConstraints { make in

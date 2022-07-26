@@ -47,7 +47,8 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     }
 
     func getMinNominatorBondProvider(
-        for chainId: ChainModel.Id
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<BigUInt>>
     ) throws -> AnyDataProvider<DecodedBigUInt> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -71,7 +72,8 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
     }
 
     func getCounterForNominatorsProvider(
-        for chainId: ChainModel.Id
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
     ) throws -> AnyDataProvider<DecodedU32> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
@@ -94,7 +96,10 @@ final class StakingLocalSubscriptionFactoryStub: StakingLocalSubscriptionFactory
         return AnyDataProvider(DataProviderStub(models: [counterForNominatorsModel]))
     }
 
-    func getMaxNominatorsCountProvider(for chainId: ChainModel.Id) throws -> AnyDataProvider<DecodedU32> {
+    func getMaxNominatorsCountProvider(
+        for chainId: ChainModel.Id,
+        missingEntryStrategy: MissingRuntimeEntryStrategy<StringScaleMapper<UInt32>>
+    ) throws -> AnyDataProvider<DecodedU32> {
         let localIdentifierFactory = LocalStorageKeyFactory()
 
         let maxNominatorsCountModel: DecodedU32 = try {

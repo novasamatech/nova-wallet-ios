@@ -27,8 +27,8 @@ final class ChainDateCalculator: ChainDateCalculatorProtocol {
         metadata: CrowdloanMetadata,
         calendar: Calendar
     ) -> LeasingTimeInterval? {
-        let firstBlockNumber = firstPeriod * metadata.leasingPeriod
-        let lastBlockNumber = (lastPeriod + 1) * metadata.leasingPeriod
+        let firstBlockNumber = metadata.firstBlockNumber(of: firstPeriod)
+        let lastBlockNumber = metadata.firstBlockNumber(of: lastPeriod + 1)
 
         let leasingTimeInterval = firstBlockNumber.secondsTo(
             block: lastBlockNumber,
@@ -64,7 +64,7 @@ final class ChainDateCalculator: ChainDateCalculatorProtocol {
         metadata: CrowdloanMetadata,
         calendar: Calendar
     ) -> LeasingTimeInterval? {
-        let blockNumber = period * metadata.leasingPeriod
+        let blockNumber = metadata.firstBlockNumber(of: period)
         let timeInterval = metadata.blockNumber.secondsTo(block: blockNumber, blockDuration: metadata.blockDuration)
 
         guard let tillDate = calendar.date(

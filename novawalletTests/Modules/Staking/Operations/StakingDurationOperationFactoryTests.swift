@@ -7,7 +7,7 @@ class StakingDurationOperationFactoryTests: XCTestCase {
             // given
 
             let runtimeService = try RuntimeCodingServiceStub.createWestendService()
-            let operationFactory = StakingDurationOperationFactory()
+            let operationFactory = BabeStakingDurationFactory()
 
             // when
 
@@ -18,7 +18,7 @@ class StakingDurationOperationFactoryTests: XCTestCase {
             let duration = try operationWrapper.targetOperation.extractNoCancellableResultData()
 
             XCTAssertEqual(duration.era, 6 * 3600)
-            XCTAssertEqual(duration.unlocking, 28 * 6 * 3600)
+            XCTAssertEqual(duration.unlocking, 2 * 6 * 3600)
         } catch {
             XCTFail("Unexpected error \(error)")
         }

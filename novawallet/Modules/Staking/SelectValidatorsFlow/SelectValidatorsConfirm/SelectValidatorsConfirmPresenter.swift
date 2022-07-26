@@ -96,7 +96,9 @@ final class SelectValidatorsConfirmPresenter {
     private func handle(error: Error) {
         let locale = view?.localizationManager?.selectedLocale
 
-        if let confirmError = error as? SelectValidatorsConfirmError {
+        if error.isWatchOnlySigning {
+            wireframe.presentDismissingNoSigningView(from: view)
+        } else if let confirmError = error as? SelectValidatorsConfirmError {
             guard let view = view else {
                 return
             }

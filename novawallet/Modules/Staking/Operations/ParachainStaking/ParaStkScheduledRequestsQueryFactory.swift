@@ -13,7 +13,7 @@ protocol ParaStkScheduledRequestsQueryFactoryProtocol {
 }
 
 extension ParachainStaking {
-    struct DelegatorScheduledRequest {
+    struct DelegatorScheduledRequest: Codable, Equatable {
         let collatorId: AccountId
         let whenExecutable: RoundIndex
         let action: ParachainStaking.DelegationAction
@@ -25,6 +25,29 @@ extension ParachainStaking {
             case let .decrease(amount):
                 return amount
             }
+        }
+
+        var isRevoke: Bool {
+            switch action {
+            case .decrease:
+                return false
+            case .revoke:
+                return true
+            }
+        }
+
+        init(
+            collatorId: AccountId,
+            whenExecutable: RoundIndex,
+            action: ParachainStaking.DelegationAction
+        ) {
+            self.collatorId = collatorId
+            self.whenExecutable = whenExecutable
+            self.action = action
+        }
+
+        func isRedeemable(at round: RoundIndex) -> Bool {
+            round >= whenExecutable
         }
     }
 

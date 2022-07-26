@@ -11,6 +11,13 @@ protocol TransferErrorPresentable: BaseErrorPresentable {
 
     func presentSameReceiver(from view: ControllerBackedProtocol, locale: Locale?)
     func presentWrongChain(for chainName: String, from view: ControllerBackedProtocol, locale: Locale?)
+
+    func presentCantPayCrossChainFee(
+        from view: ControllerBackedProtocol,
+        feeString: String,
+        balance: String,
+        locale: Locale?
+    )
 }
 
 extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentable {
@@ -83,6 +90,24 @@ extension TransferErrorPresentable where Self: AlertPresentable & ErrorPresentab
 
         let message = R.string.localizable.commonValidationInvalidAddressMessage(
             chainName,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
+    }
+
+    func presentCantPayCrossChainFee(
+        from view: ControllerBackedProtocol,
+        feeString: String,
+        balance: String,
+        locale: Locale?
+    ) {
+        let title = R.string.localizable.commonInsufficientBalance(preferredLanguages: locale?.rLanguages)
+        let message = R.string.localizable.commonNotEnoughCrosschainFeeMessage(
+            feeString,
+            balance,
             preferredLanguages: locale?.rLanguages
         )
 

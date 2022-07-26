@@ -6,13 +6,13 @@ PODS:
   - CocoaLumberjack (3.7.2):
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
-  - CommonWallet/Core (1.15.1):
+  - CommonWallet/Core (1.16.0):
     - RobinHood (~> 2.6.0)
     - SoraFoundation/DateProcessing (~> 1.0.0)
     - SoraFoundation/Localization (~> 1.0.0)
     - SoraFoundation/NotificationHandlers (~> 1.0.0)
     - SoraFoundation/NumberProcessing (~> 1.0.0)
-    - SoraUI (~> 1.10.0)
+    - SoraUI (~> 1.11.0)
   - Cuckoo (1.7.1):
     - Cuckoo/Swift (= 1.7.1)
   - Cuckoo/Swift (1.7.1)
@@ -65,41 +65,41 @@ PODS:
     - SoraFoundation/NotificationHandlers
   - SoraFoundation/ViewModel (1.0.0)
   - SoraKeystore (1.0.0)
-  - SoraUI (1.10.3):
-    - SoraUI/AdaptiveDesign (= 1.10.3)
-    - SoraUI/Animator (= 1.10.3)
-    - SoraUI/Camera (= 1.10.3)
-    - SoraUI/Controls (= 1.10.3)
-    - SoraUI/DetailsView (= 1.10.3)
-    - SoraUI/EmptyState (= 1.10.3)
-    - SoraUI/Helpers (= 1.10.3)
-    - SoraUI/LoadingView (= 1.10.3)
-    - SoraUI/ModalPresentation (= 1.10.3)
-    - SoraUI/PageLoader (= 1.10.3)
-    - SoraUI/PinView (= 1.10.3)
-    - SoraUI/Skrull (= 1.10.3)
-  - SoraUI/AdaptiveDesign (1.10.3)
-  - SoraUI/Animator (1.10.3)
-  - SoraUI/Camera (1.10.3)
-  - SoraUI/Controls (1.10.3):
+  - SoraUI (1.11.1):
+    - SoraUI/AdaptiveDesign (= 1.11.1)
+    - SoraUI/Animator (= 1.11.1)
+    - SoraUI/Camera (= 1.11.1)
+    - SoraUI/Controls (= 1.11.1)
+    - SoraUI/DetailsView (= 1.11.1)
+    - SoraUI/EmptyState (= 1.11.1)
+    - SoraUI/Helpers (= 1.11.1)
+    - SoraUI/LoadingView (= 1.11.1)
+    - SoraUI/ModalPresentation (= 1.11.1)
+    - SoraUI/PageLoader (= 1.11.1)
+    - SoraUI/PinView (= 1.11.1)
+    - SoraUI/Skrull (= 1.11.1)
+  - SoraUI/AdaptiveDesign (1.11.1)
+  - SoraUI/Animator (1.11.1)
+  - SoraUI/Camera (1.11.1)
+  - SoraUI/Controls (1.11.1):
     - SoraUI/Animator
-  - SoraUI/DetailsView (1.10.3):
+  - SoraUI/DetailsView (1.11.1):
     - SoraUI/Controls
-  - SoraUI/EmptyState (1.10.3):
+  - SoraUI/EmptyState (1.11.1):
     - SoraUI/Animator
-  - SoraUI/Helpers (1.10.3)
-  - SoraUI/LoadingView (1.10.3):
+  - SoraUI/Helpers (1.11.1)
+  - SoraUI/LoadingView (1.11.1):
     - SoraUI/Controls
-  - SoraUI/ModalPresentation (1.10.3):
+  - SoraUI/ModalPresentation (1.11.1):
     - SoraUI/Animator
     - SoraUI/Controls
-  - SoraUI/PageLoader (1.10.3)
-  - SoraUI/PinView (1.10.3):
+  - SoraUI/PageLoader (1.11.1)
+  - SoraUI/PinView (1.11.1):
     - SoraUI/Controls
-  - SoraUI/Skrull (1.10.3)
+  - SoraUI/Skrull (1.11.1)
   - Sourcery (1.4.1)
-  - Starscream (4.0.4)
-  - SubstrateSdk (1.1.0):
+  - Starscream (4.0.5)
+  - SubstrateSdk (1.2.0):
     - BigInt (~> 5.0)
     - IrohaCrypto/ed25519 (~> 0.9.0)
     - IrohaCrypto/Scrypt (~> 0.9.0)
@@ -124,7 +124,7 @@ PODS:
 
 DEPENDENCIES:
   - Charts
-  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, commit `da686d69620aea28dc1aef0fbaf322e2c4b5c84e`)
+  - CommonWallet/Core (from `https://github.com/ERussel/Capital-iOS.git`, tag `1.16.0`)
   - Cuckoo
   - FireMock
   - Kingfisher
@@ -134,10 +134,10 @@ DEPENDENCIES:
   - SnapKit (~> 5.0.0)
   - SoraFoundation (~> 1.0.0)
   - SoraKeystore (~> 1.0.0)
-  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, commit `5d364b42000925775361d2098276871e429bfc47`)
+  - SoraUI (from `https://github.com/ERussel/UIkit-iOS.git`, tag `1.11.1`)
   - Sourcery (~> 1.4)
-  - Starscream (from `https://github.com/ERussel/Starscream.git`, commit `96b40350509663ecdbf82c8498b457303c6fc10d`)
-  - "SubstrateSdk (from `https://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@github.com/nova-wallet/substrate-sdk-ios.git`, commit `16ebc9bedbf6eb58f9045b16bb31cddb90585059`)"
+  - Starscream (from `https://github.com/ERussel/Starscream.git`, tag `4.0.5`)
+  - SubstrateSdk (from `https://github.com/nova-wallet/substrate-sdk-ios.git`, tag `1.2.0`)
   - SVGKit (from `https://github.com/SVGKit/SVGKit.git`, tag `3.0.0`)
   - SwiftFormat/CLI (~> 0.47.13)
   - SwiftLint
@@ -172,17 +172,17 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonWallet:
-    :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
+    :tag: 1.16.0
   SoraUI:
-    :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
+    :tag: 1.11.1
   Starscream:
-    :commit: 96b40350509663ecdbf82c8498b457303c6fc10d
     :git: https://github.com/ERussel/Starscream.git
+    :tag: 4.0.5
   SubstrateSdk:
-    :commit: 16ebc9bedbf6eb58f9045b16bb31cddb90585059
-    :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
+    :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 1.2.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -191,17 +191,17 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonWallet:
-    :commit: da686d69620aea28dc1aef0fbaf322e2c4b5c84e
     :git: https://github.com/ERussel/Capital-iOS.git
+    :tag: 1.16.0
   SoraUI:
-    :commit: 5d364b42000925775361d2098276871e429bfc47
     :git: https://github.com/ERussel/UIkit-iOS.git
+    :tag: 1.11.1
   Starscream:
-    :commit: 96b40350509663ecdbf82c8498b457303c6fc10d
     :git: https://github.com/ERussel/Starscream.git
+    :tag: 4.0.5
   SubstrateSdk:
-    :commit: 16ebc9bedbf6eb58f9045b16bb31cddb90585059
-    :git: "https://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@github.com/nova-wallet/substrate-sdk-ios.git"
+    :git: https://github.com/nova-wallet/substrate-sdk-ios.git
+    :tag: 1.2.0
   SVGKit:
     :git: https://github.com/SVGKit/SVGKit.git
     :tag: 3.0.0
@@ -213,7 +213,7 @@ SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
   Charts: b1e3a1f5a1c9ba5394438ca3b91bd8c9076310af
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  CommonWallet: 4c3c9c7f543842f04a930ddca163a5e0ab60f04a
+  CommonWallet: 59fdbf5511d6fcdc38496db4baf425dd0cf29274
   Cuckoo: 9e258d68137c411df47c6390f72901d5276b4f03
   FireMock: 3eed872059c12f94855413347da83b9d6d1a6fac
   IrohaCrypto: 6be75a4268cd1f5cec4231c6d3f95cb03f723fd3
@@ -228,10 +228,10 @@ SPEC CHECKSUMS:
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SoraFoundation: 988d90ee3159311b02e42aeba0cf7e85d8bc724c
   SoraKeystore: 92cff6e2a12f212dd64ed089970ff7c365247b1c
-  SoraUI: 1ec71151eb962591eeb898bcdd98bded59745f2d
+  SoraUI: e5ceb2cffe40145e589aa464e2e0a8d054011e0b
   Sourcery: db66600e8b285c427701821598d07cf3c7e6c476
-  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  SubstrateSdk: 1271a0904064efee0c59bc56b483d4ad1850c865
+  Starscream: 8cc648110705c09a15f0de84352c7f9595b7cb05
+  SubstrateSdk: 80def02673c07145109cdb4a5a724566ab12482c
   SVGKit: 132b010efbf57ec345309fe4a7f627c0a40c5d63
   SwiftFormat: 73573b89257437c550b03d934889725fbf8f75e5
   SwiftLint: 99f82d07b837b942dd563c668de129a03fc3fb52
@@ -240,6 +240,6 @@ SPEC CHECKSUMS:
   TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   xxHash-Swift: 30bd6a7507b3b7348a277c49b1cb6346c2905ec7
 
-PODFILE CHECKSUM: a9a2e96dcf25671c809bad4c8c70ca885173e0df
+PODFILE CHECKSUM: 1c01ac8046cf87ecb2dfcca5889a41025c7b3897
 
 COCOAPODS: 1.11.2

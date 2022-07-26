@@ -141,11 +141,7 @@ extension ControllerAccountPresenter: ControllerAccountPresenterProtocol {
             dataValidatingFactory.has(fee: fee, locale: locale, onError: { [weak self] in
                 self?.refreshFeeIfNeeded()
             }),
-            dataValidatingFactory.canPayFee(
-                balance: balance,
-                fee: fee,
-                locale: locale
-            ),
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale),
             dataValidatingFactory.controllerBalanceIsNotZero(controllerBalance, locale: locale),
             dataValidatingFactory.ledgerNotExist(
                 stakingLedger: stakingLedger,

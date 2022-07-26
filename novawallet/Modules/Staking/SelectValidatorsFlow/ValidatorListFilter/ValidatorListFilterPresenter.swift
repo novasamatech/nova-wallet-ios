@@ -10,6 +10,7 @@ final class ValidatorListFilterPresenter {
 
     let assetInfo: AssetBalanceDisplayInfo
     let initialFilter: CustomValidatorListFilter
+    let hasIdentity: Bool
     private(set) var currentFilter: CustomValidatorListFilter
 
     init(
@@ -17,6 +18,7 @@ final class ValidatorListFilterPresenter {
         viewModelFactory: ValidatorListFilterViewModelFactoryProtocol,
         assetInfo: AssetBalanceDisplayInfo,
         filter: CustomValidatorListFilter,
+        hasIdentity: Bool,
         localizationManager: LocalizationManager
     ) {
         self.wireframe = wireframe
@@ -24,6 +26,7 @@ final class ValidatorListFilterPresenter {
         self.assetInfo = assetInfo
         initialFilter = filter
         currentFilter = filter
+        self.hasIdentity = hasIdentity
         self.localizationManager = localizationManager
     }
 
@@ -31,6 +34,7 @@ final class ValidatorListFilterPresenter {
         let viewModel = viewModelFactory.createViewModel(
             from: currentFilter,
             initialFilter: initialFilter,
+            hasIdentity: hasIdentity,
             token: assetInfo.symbol,
             locale: selectedLocale
         )
@@ -43,12 +47,8 @@ extension ValidatorListFilterPresenter: ValidatorListFilterPresenterProtocol {
         provideViewModels()
     }
 
-    func toggleFilterItem(at index: Int) {
-        guard let filter = ValidatorListFilterRow(rawValue: index) else {
-            return
-        }
-
-        switch filter {
+    func toggleFilter(for viewModel: ValidatorListFilterCellViewModel<ValidatorListFilterRow>) {
+        switch viewModel.type {
         case .withoutIdentity:
             currentFilter.allowsNoIdentity = !currentFilter.allowsNoIdentity
         case .slashed:
@@ -65,12 +65,8 @@ extension ValidatorListFilterPresenter: ValidatorListFilterPresenterProtocol {
         provideViewModels()
     }
 
-    func selectFilterItem(at index: Int) {
-        guard let sortRow = ValidatorListSortRow(rawValue: index) else {
-            return
-        }
-
-        currentFilter.sortedBy = sortRow.sortCriterion
+    func selectSorting(for viewModel: ValidatorListFilterCellViewModel<ValidatorListSortRow>) {
+        currentFilter.sortedBy = viewModel.type.sortCriterion
         provideViewModels()
     }
 
@@ -80,7 +76,7 @@ extension ValidatorListFilterPresenter: ValidatorListFilterPresenterProtocol {
     }
 
     func resetFilter() {
-        currentFilter = CustomValidatorListFilter.recommendedFilter()
+        currentFilter = CustomValidatorListFilter.recommendedFilter(havingIdentity: hasIdentity)
         provideViewModels()
     }
 }

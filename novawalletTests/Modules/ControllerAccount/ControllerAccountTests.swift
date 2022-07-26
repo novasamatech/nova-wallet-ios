@@ -79,7 +79,8 @@ class ControllerAccountTests: XCTestCase {
             cryptoType: .substrateEcdsa,
             addressPrefix: chain.addressPrefix,
             isEthereumBased: chain.isEthereumBased,
-            isChainAccount: false
+            isChainAccount: false,
+            type: .secrets
         )
 
         let metaAccountResponse = MetaChainAccountResponse(

@@ -24,7 +24,8 @@ class AccountItemMapperTests: XCTestCase {
             substratePublicKey: keypair.publicKey().rawData(),
             ethereumAddress: address.asSecretData(),
             ethereumPublicKey: keypair.publicKey().rawData(),
-            chainAccounts: []
+            chainAccounts: [],
+            type: .secrets
         )
 
         settings.save(value: metaAccountItem)

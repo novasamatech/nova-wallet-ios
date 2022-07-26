@@ -1,373 +1,224 @@
 import Foundation
-import BigInt
 import SoraFoundation
-import SubstrateSdk
 
-final class TransferSetupPresenter: TransferPresenter, TransferSetupInteractorOutputProtocol {
+final class TransferSetupPresenter {
     weak var view: TransferSetupViewProtocol?
+
+    let interactor: TransferSetupInteractorIntputProtocol
     let wireframe: TransferSetupWireframeProtocol
-    let interactor: TransferSetupInteractorInputProtocol
+    let networkViewModelFactory: NetworkViewModelFactoryProtocol
+    let chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol
 
-    private(set) var recepientAddress: AccountAddress?
+    let wallet: MetaAccountModel
+    let originChainAsset: ChainAsset
+    let childPresenterFactory: TransferSetupPresenterFactoryProtocol
+    let logger: LoggerProtocol
 
-    let phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol
+    var childPresenter: TransferSetupChildPresenterProtocol?
 
-    var inputResult: AmountInputResult?
+    private(set) var destinationChainAsset: ChainAsset?
+    private(set) var availableDestinations: [ChainAsset]?
+    private(set) var xcmTransfers: XcmTransfers?
 
     init(
-        interactor: TransferSetupInteractorInputProtocol,
+        interactor: TransferSetupInteractorIntputProtocol,
         wireframe: TransferSetupWireframeProtocol,
-        chainAsset: ChainAsset,
-        recepientAddress: AccountAddress?,
+        wallet: MetaAccountModel,
+        originChainAsset: ChainAsset,
+        childPresenterFactory: TransferSetupPresenterFactoryProtocol,
+        chainAssetViewModelFactory: ChainAssetViewModelFactoryProtocol,
         networkViewModelFactory: NetworkViewModelFactoryProtocol,
-        sendingBalanceViewModelFactory: BalanceViewModelFactoryProtocol,
-        utilityBalanceViewModelFactory: BalanceViewModelFactoryProtocol?,
-        senderAccountAddress: AccountAddress,
-        dataValidatingFactory: TransferDataValidatorFactoryProtocol,
-        phishingValidatingFactory: PhishingAddressValidatorFactoryProtocol,
-        localizationManager: LocalizationManagerProtocol,
-        logger: LoggerProtocol? = nil
+        logger: LoggerProtocol
     ) {
         self.interactor = interactor
         self.wireframe = wireframe
-        self.recepientAddress = recepientAddress
-        self.phishingValidatingFactory = phishingValidatingFactory
-
-        super.init(
-            chainAsset: chainAsset,
-            networkViewModelFactory: networkViewModelFactory,
-            sendingBalanceViewModelFactory: sendingBalanceViewModelFactory,
-            utilityBalanceViewModelFactory: utilityBalanceViewModelFactory,
-            senderAccountAddress: senderAccountAddress,
-            dataValidatingFactory: dataValidatingFactory,
-            logger: logger
-        )
-
-        self.localizationManager = localizationManager
+        self.wallet = wallet
+        self.originChainAsset = originChainAsset
+        self.childPresenterFactory = childPresenterFactory
+        self.chainAssetViewModelFactory = chainAssetViewModelFactory
+        self.networkViewModelFactory = networkViewModelFactory
+        self.logger = logger
     }
 
-    private func updateChainAssetViewModel() {
-        let networkViewModel = networkViewModelFactory.createViewModel(from: chainAsset.chain)
-
-        let assetIconUrl = chainAsset.asset.icon ?? chainAsset.chain.icon
-        let assetIconViewModel = RemoteImageViewModel(url: assetIconUrl)
-
-        let assetViewModel = AssetViewModel(
-            symbol: chainAsset.asset.symbol,
-            imageViewModel: assetIconViewModel
-        )
-
-        let viewModel = ChainAssetViewModel(
-            networkViewModel: networkViewModel,
-            assetViewModel: assetViewModel
-        )
-
-        view?.didReceiveChainAsset(viewModel: viewModel)
-    }
-
-    private func provideRecepientStateViewModel() {
-        if
-            let recepientAddress = recepientAddress,
-            let accountId = try? recepientAddress.toAccountId(),
-            let icon = try? iconGenerator.generateFromAccountId(accountId) {
-            let iconViewModel = DrawableIconViewModel(icon: icon)
-            let viewModel = AccountFieldStateViewModel(icon: iconViewModel)
-            view?.didReceiveAccountState(viewModel: viewModel)
-        } else {
-            let viewModel = AccountFieldStateViewModel(icon: nil)
-            view?.didReceiveAccountState(viewModel: viewModel)
-        }
-    }
-
-    private func provideRecepientInputViewModel() {
-        let value = recepientAddress ?? ""
-        let inputViewModel = InputViewModel.createAccountInputViewModel(for: value)
-
-        view?.didReceiveAccountInput(viewModel: inputViewModel)
-    }
-
-    private func provideAmountInputViewModelIfRate() {
-        guard case .rate = inputResult else {
+    private func setupOnChainChildPresenter() {
+        guard let view = view else {
             return
         }
 
-        provideAmountInputViewModel()
+        let initialState = childPresenter?.inputState ?? TransferSetupInputState()
+
+        childPresenter = childPresenterFactory.createOnChainPresenter(
+            for: originChainAsset,
+            initialState: initialState,
+            view: view
+        )
+
+        view.didSwitchOnChain()
+
+        childPresenter?.setup()
     }
 
-    private func provideAmountInputViewModel() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-
-        let viewModel = sendingBalanceViewModelFactory.createBalanceInputViewModel(
-            inputAmount
-        ).value(for: selectedLocale)
-
-        view?.didReceiveAmount(inputViewModel: viewModel)
-    }
-
-    private func updateFeeView() {
-        let optAssetInfo = chainAsset.chain.utilityAssets().first?.displayInfo
-        if let fee = fee, let assetInfo = optAssetInfo {
-            let feeDecimal = Decimal.fromSubstrateAmount(
-                fee,
-                precision: assetInfo.assetPrecision
-            ) ?? 0.0
-
-            let viewModelFactory = utilityBalanceViewModelFactory ?? sendingBalanceViewModelFactory
-            let priceData = isUtilityTransfer ? sendingAssetPrice : utilityAssetPrice
-
-            let viewModel = viewModelFactory.balanceFromPrice(
-                feeDecimal,
-                priceData: priceData
-            ).value(for: selectedLocale)
-
-            view?.didReceiveFee(viewModel: viewModel)
-        } else {
-            view?.didReceiveFee(viewModel: nil)
-        }
-    }
-
-    private func updateTransferableBalance() {
-        if let senderSendingAssetBalance = senderSendingAssetBalance {
-            let precision = chainAsset.asset.displayInfo.assetPrecision
-            let balanceDecimal = Decimal.fromSubstrateAmount(
-                senderSendingAssetBalance.transferable,
-                precision: precision
-            ) ?? 0
-
-            let viewModel = sendingBalanceViewModelFactory.balanceFromPrice(
-                balanceDecimal,
-                priceData: nil
-            ).value(for: selectedLocale).amount
-
-            view?.didReceiveTransferableBalance(viewModel: viewModel)
-        }
-    }
-
-    private func updateAmountPriceView() {
-        if chainAsset.asset.priceId != nil {
-            let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
-
-            let priceData = sendingAssetPrice ?? PriceData(price: "0", usdDayChange: nil)
-
-            let price = sendingBalanceViewModelFactory.priceFromAmount(
-                inputAmount,
-                priceData: priceData
-            ).value(for: selectedLocale)
-
-            view?.didReceiveAmountInputPrice(viewModel: price)
-        } else {
-            view?.didReceiveAmountInputPrice(viewModel: nil)
-        }
-    }
-
-    private func balanceMinusFee() -> Decimal {
-        let balanceValue = senderSendingAssetBalance?.transferable ?? 0
-        let feeValue = isUtilityTransfer ? (fee ?? 0) : 0
-
-        let precision = chainAsset.assetDisplayInfo.assetPrecision
-
+    private func setupCrossChainChildPresenter() {
         guard
-            let balance = Decimal.fromSubstrateAmount(balanceValue, precision: precision),
-            let fee = Decimal.fromSubstrateAmount(feeValue, precision: precision) else {
-            return 0
-        }
-
-        return balance - fee
-    }
-
-    private func updateRecepientAddress(_ newAddress: String) {
-        let accountId = try? newAddress.toAccountId(using: chainAsset.chain.chainFormat)
-        if accountId != nil {
-            recepientAddress = newAddress
-        } else {
-            recepientAddress = nil
-        }
-
-        interactor.change(recepient: recepientAddress)
-
-        provideRecepientStateViewModel()
-
-        refreshFee()
-    }
-
-    // MARK: Subsclass
-
-    override func refreshFee() {
-        let inputAmount = inputResult?.absoluteValue(from: balanceMinusFee()) ?? 0
-        let assetInfo = chainAsset.assetDisplayInfo
-
-        guard let amount = inputAmount.toSubstrateAmount(
-            precision: assetInfo.assetPrecision
-        ) else {
+            let view = view,
+            let destinationChainAsset = destinationChainAsset,
+            let xcmTransfers = xcmTransfers else {
             return
         }
 
-        updateFee(nil)
-        updateFeeView()
+        let initialState = childPresenter?.inputState ?? TransferSetupInputState()
 
-        interactor.estimateFee(for: amount, recepient: recepientAddress)
+        childPresenter = childPresenterFactory.createCrossChainPresenter(
+            for: originChainAsset,
+            destinationChainAsset: destinationChainAsset,
+            xcmTransfers: xcmTransfers,
+            initialState: initialState,
+            view: view
+        )
+
+        view.didSwitchCrossChain()
+
+        childPresenter?.setup()
     }
 
-    override func askFeeRetry() {
-        wireframe.presentFeeStatus(on: view, locale: selectedLocale) { [weak self] in
-            self?.refreshFee()
-        }
-    }
+    private func provideChainsViewModel() {
+        let originViewModel = chainAssetViewModelFactory.createViewModel(from: originChainAsset)
 
-    override func didReceiveSendingAssetSenderBalance(_ balance: AssetBalance) {
-        super.didReceiveSendingAssetSenderBalance(balance)
+        let destinationViewModel: NetworkViewModel?
 
-        updateTransferableBalance()
-    }
-
-    override func didReceiveFee(result: Result<BigUInt, Error>) {
-        super.didReceiveFee(result: result)
-
-        if case .success = result {
-            updateFeeView()
-            provideAmountInputViewModelIfRate()
-            updateAmountPriceView()
-        }
-    }
-
-    override func didReceiveSendingAssetPrice(_ priceData: PriceData?) {
-        super.didReceiveSendingAssetPrice(priceData)
-
-        if isUtilityTransfer {
-            updateFeeView()
+        if let destinationChainAsset = destinationChainAsset {
+            destinationViewModel = networkViewModelFactory.createViewModel(from: destinationChainAsset.chain)
+        } else if let availableDestinations = availableDestinations, !availableDestinations.isEmpty {
+            destinationViewModel = networkViewModelFactory.createViewModel(from: originChainAsset.chain)
+        } else {
+            destinationViewModel = nil
         }
 
-        updateAmountPriceView()
-    }
-
-    override func didReceiveUtilityAssetPrice(_ priceData: PriceData?) {
-        super.didReceiveUtilityAssetPrice(priceData)
-
-        updateFeeView()
-    }
-
-    override func didCompleteSetup() {
-        super.didCompleteSetup()
-
-        refreshFee()
-
-        interactor.change(recepient: recepientAddress)
-    }
-
-    override func didReceiveError(_ error: Error) {
-        super.didReceiveError(error)
-
-        _ = wireframe.present(error: error, from: view, locale: selectedLocale)
+        view?.didReceiveOriginChain(originViewModel, destinationChain: destinationViewModel)
     }
 }
 
 extension TransferSetupPresenter: TransferSetupPresenterProtocol {
     func setup() {
-        updateChainAssetViewModel()
-        updateFeeView()
-        provideRecepientStateViewModel()
-        provideRecepientInputViewModel()
-        provideAmountInputViewModel()
-        updateAmountPriceView()
+        provideChainsViewModel()
 
+        childPresenter?.setup()
         interactor.setup()
     }
 
     func updateRecepient(partialAddress: String) {
-        updateRecepientAddress(partialAddress)
+        childPresenter?.updateRecepient(partialAddress: partialAddress)
     }
 
     func updateAmount(_ newValue: Decimal?) {
-        inputResult = newValue.map { .absolute($0) }
-
-        refreshFee()
-        updateAmountPriceView()
+        childPresenter?.updateAmount(newValue)
     }
 
     func selectAmountPercentage(_ percentage: Float) {
-        inputResult = .rate(Decimal(Double(percentage)))
-
-        provideAmountInputViewModel()
-
-        refreshFee()
-        updateAmountPriceView()
+        childPresenter?.selectAmountPercentage(percentage)
     }
 
     func scanRecepientCode() {
         wireframe.showRecepientScan(from: view, delegate: self)
     }
 
-    func proceed() {
-        let sendingAmount = inputResult?.absoluteValue(from: balanceMinusFee())
-        var validators: [DataValidating] = baseValidators(
-            for: sendingAmount,
-            recepientAddress: recepientAddress,
-            selectedLocale: selectedLocale
-        )
-
-        validators.append(
-            dataValidatingFactory.willBeReaped(
-                amount: sendingAmount,
-                fee: isUtilityTransfer ? fee : 0,
-                totalAmount: senderSendingAssetBalance?.totalInPlank,
-                minBalance: sendingAssetMinBalance,
-                locale: selectedLocale
-            )
-        )
-
-        validators.append(
-            phishingValidatingFactory.notPhishing(
-                address: recepientAddress,
-                locale: selectedLocale
-            )
-        )
-
-        DataValidationRunner(validators: validators).runValidation { [weak self] in
-            guard
-                let amount = sendingAmount,
-                let recepient = self?.recepientAddress,
-                let chainAsset = self?.chainAsset else {
-                return
-            }
-
-            self?.logger?.debug("Did complete validation")
-
-            self?.wireframe.showConfirmation(
-                from: self?.view,
-                chainAsset: chainAsset,
-                sendingAmount: amount,
-                recepient: recepient
-            )
-        }
-    }
-}
-
-extension TransferSetupPresenter: Localizable {
-    func applyLocalization() {
-        if let view = view, view.isSetup {
-            updateChainAssetViewModel()
-            updateFeeView()
-            updateTransferableBalance()
-            provideRecepientStateViewModel()
-            provideRecepientInputViewModel()
-            provideAmountInputViewModel()
-            updateAmountPriceView()
-        }
-    }
-}
-
-extension TransferSetupPresenter: TransferScanDelegate {
-    func transferScanDidReceiveRecepient(address: AccountAddress) {
-        wireframe.hideRecepientScan(from: view)
-
-        guard recepientAddress != address else {
+    func applyMyselfRecepient() {
+        guard
+            let destinationChain = destinationChainAsset?.chain,
+            let address = wallet.fetch(for: destinationChain.accountRequest())?.toAddress() else {
             return
         }
 
-        recepientAddress = address
+        childPresenter?.changeRecepient(address: address)
+    }
 
-        provideRecepientInputViewModel()
+    func proceed() {
+        childPresenter?.proceed()
+    }
 
-        updateRecepientAddress(address)
+    func changeDestinationChain() {
+        let originChain = originChainAsset.chain
+        let selectedChainId = destinationChainAsset?.chain.chainId ?? originChain.chainId
+
+        let availableDestinationChains = availableDestinations?.map(\.chain) ?? []
+
+        let selectionState = CrossChainDestinationSelectionState(
+            originChain: originChain,
+            availableDestChains: availableDestinationChains,
+            selectedChainId: selectedChainId
+        )
+
+        wireframe.showDestinationChainSelection(
+            from: view,
+            selectionState: selectionState,
+            delegate: self,
+            context: selectionState
+        )
+    }
+}
+
+extension TransferSetupPresenter: TransferSetupInteractorOutputProtocol {
+    func didReceiveAvailableXcm(destinations: [ChainAsset], xcmTransfers: XcmTransfers?) {
+        let symbol = originChainAsset.asset.symbol
+        let chainName = originChainAsset.chain.name
+        logger.debug("(\(chainName) \(symbol) Available destinations: \(destinations.count)")
+
+        availableDestinations = destinations
+        self.xcmTransfers = xcmTransfers
+
+        if
+            let destinationChainAsset = destinationChainAsset,
+            !destinations.contains(where: { $0.chainAssetId == destinationChainAsset.chainAssetId }) {
+            self.destinationChainAsset = nil
+
+            setupOnChainChildPresenter()
+        }
+
+        provideChainsViewModel()
+    }
+
+    func didReceive(error: Error) {
+        logger.error("Did receive error: \(error)")
+
+        _ = wireframe.present(error: error, from: view, locale: view?.selectedLocale)
+    }
+}
+
+extension TransferSetupPresenter: ModalPickerViewControllerDelegate {
+    func modalPickerDidSelectModel(at index: Int, section: Int, context: AnyObject?) {
+        view?.didCompleteDestinationSelection()
+
+        guard let selectionState = context as? CrossChainDestinationSelectionState else {
+            return
+        }
+
+        if section == 0 {
+            destinationChainAsset = nil
+        } else {
+            let selectedChain = selectionState.availableDestChains[index]
+            let selectedChainId = selectedChain.chainId
+
+            destinationChainAsset = availableDestinations?.first { $0.chain.chainId == selectedChainId }
+        }
+
+        provideChainsViewModel()
+
+        if destinationChainAsset != nil {
+            setupCrossChainChildPresenter()
+        } else {
+            setupOnChainChildPresenter()
+        }
+    }
+
+    func modalPickerDidCancel(context _: AnyObject?) {
+        view?.didCompleteDestinationSelection()
+    }
+}
+
+extension TransferSetupPresenter: AddressScanDelegate {
+    func addressScanDidReceiveRecepient(address: AccountAddress, context _: AnyObject?) {
+        wireframe.hideRecepientScan(from: view)
+
+        childPresenter?.changeRecepient(address: address)
     }
 }

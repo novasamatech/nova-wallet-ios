@@ -1,12 +1,19 @@
 import BigInt
 
-protocol TransferConfirmViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
-    func didReceiveNetwork(viewModel: NetworkViewModel)
+protocol TransferConfirmCommonViewProtocol: ControllerBackedProtocol, LoadableViewProtocol {
+    func didReceiveOriginNetwork(viewModel: NetworkViewModel)
     func didReceiveSender(viewModel: DisplayAddressViewModel)
     func didReceiveRecepient(viewModel: DisplayAddressViewModel)
     func didReceiveWallet(viewModel: StackCellViewModel)
     func didReceiveAmount(viewModel: BalanceViewModelProtocol)
-    func didReceiveFee(viewModel: BalanceViewModelProtocol?)
+    func didReceiveOriginFee(viewModel: BalanceViewModelProtocol?)
+}
+
+protocol TransferConfirmOnChainViewProtocol: TransferConfirmCommonViewProtocol {}
+
+protocol TransferConfirmCrossChainViewProtocol: TransferConfirmCommonViewProtocol {
+    func didReceiveDestinationNetwork(viewModel: NetworkViewModel)
+    func didReceiveCrossChainFee(viewModel: BalanceViewModelProtocol?)
 }
 
 protocol TransferConfirmPresenterProtocol: AnyObject {
@@ -16,15 +23,23 @@ protocol TransferConfirmPresenterProtocol: AnyObject {
     func showRecepientActions()
 }
 
-protocol TransferConfirmInteractorInputProtocol: TransferSetupInteractorInputProtocol {
+protocol TransferConfirmOnChainInteractorInputProtocol: OnChainTransferSetupInteractorInputProtocol {
     func submit(amount: BigUInt, recepient: AccountAddress, lastFee: BigUInt?)
 }
 
-protocol TransferConfirmInteractorOutputProtocol: TransferSetupInteractorOutputProtocol {
+protocol TransferConfirmCrossChainInteractorInputProtocol: CrossChainTransferSetupInteractorInputProtocol {
+    func submit(amount: BigUInt, recepient: AccountAddress, weightLimit: BigUInt, originFee: BigUInt?)
+}
+
+protocol TransferConfirmOnChainInteractorOutputProtocol: OnChainTransferSetupInteractorOutputProtocol {
+    func didCompleteSubmition()
+}
+
+protocol TransferConfirmCrossChainInteractorOutputProtocol: CrossChainTransferSetupInteractorOutputProtocol {
     func didCompleteSubmition()
 }
 
 protocol TransferConfirmWireframeProtocol: AlertPresentable, ErrorPresentable,
-    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable {
-    func complete(on view: TransferConfirmViewProtocol?, locale: Locale)
+    TransferErrorPresentable, AddressOptionsPresentable, FeeRetryable, CommonRetryable, NoSigningPresentable {
+    func complete(on view: TransferConfirmCommonViewProtocol?, locale: Locale)
 }

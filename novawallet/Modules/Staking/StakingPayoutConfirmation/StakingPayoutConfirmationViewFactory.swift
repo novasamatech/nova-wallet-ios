@@ -95,9 +95,8 @@ final class StakingPayoutConfirmationViewFactory {
             engine: connection
         )
 
-        let signer = SigningWrapper(
-            keystore: keystore,
-            metaId: metaAccount.metaId,
+        let signer = SigningWrapperFactory(keystore: keystore).createSigningWrapper(
+            for: metaAccount.metaId,
             accountResponse: selectedAccount.chainAccount
         )
 

@@ -104,7 +104,7 @@ extension StakingRebondSetupPresenter: StakingRebondSetupPresenterProtocol {
                 self?.interactor.estimateFee()
             }),
 
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale),
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale),
 
             dataValidatingFactory.has(
                 controller: controller,

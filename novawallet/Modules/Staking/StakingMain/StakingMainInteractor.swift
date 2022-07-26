@@ -53,7 +53,7 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
         guard let accountResponse = selectedAccount.fetch(
             for: chainAsset.chain.accountRequest()
         ) else {
-            presenter?.didReceiveError(ChainAccountFetchingError.accountNotExists)
+            presenter?.didReceiveAccountInfo(nil)
             return
         }
 
@@ -64,14 +64,11 @@ final class StakingMainInteractor: AnyProviderAutoCleaning {
     }
 
     func provideSelectedAccount() {
-        guard
-            let chainRequest = stakingSettings.value?.chain.accountRequest(),
-            let metaAccount = selectedWalletSettings.value,
-            let accountResponse = metaAccount.fetchMetaChainAccount(for: chainRequest) else {
+        guard let metaAccount = selectedWalletSettings.value else {
             return
         }
 
-        presenter?.didReceiveSelectedAccount(accountResponse)
+        presenter?.didReceiveSelectedAccount(metaAccount)
     }
 
     func provideNewChain() {

@@ -93,7 +93,7 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmPresenterPr
                 self?.refreshFeeIfNeeded()
             }),
 
-            dataValidatingFactory.canPayFee(balance: balance, fee: fee, locale: locale)
+            dataValidatingFactory.canPayFee(balance: balance, fee: fee, asset: assetInfo, locale: locale)
 
         ]).runValidation { [weak self] in
             guard
@@ -211,8 +211,12 @@ extension StakingRewardDestConfirmPresenter: StakingRewardDestConfirmInteractorO
         switch result {
         case .success:
             wireframe.complete(from: view)
-        case .failure:
-            wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+        case let .failure(error):
+            if error.isWatchOnlySigning {
+                wireframe.presentDismissingNoSigningView(from: view)
+            } else {
+                wireframe.presentExtrinsicFailed(from: view, locale: view.localizationManager?.selectedLocale)
+            }
         }
     }
 }

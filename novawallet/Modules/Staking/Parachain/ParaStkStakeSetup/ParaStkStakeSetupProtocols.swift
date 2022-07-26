@@ -3,7 +3,7 @@ import CommonWallet
 import Foundation
 
 protocol ParaStkStakeSetupViewProtocol: ControllerBackedProtocol {
-    func didReceiveCollator(viewModel: DisplayAddressViewModel?)
+    func didReceiveCollator(viewModel: AccountDetailsSelectionViewModel?)
     func didReceiveAssetBalance(viewModel: AssetBalanceViewModelProtocol)
     func didReceiveFee(viewModel: BalanceViewModelProtocol?)
     func didReceiveAmount(inputViewModel: AmountInputViewModelProtocol)
@@ -22,14 +22,8 @@ protocol ParaStkStakeSetupPresenterProtocol: AnyObject {
 protocol ParaStkStakeSetupInteractorInputProtocol: AnyObject {
     func setup()
 
-    // TODO: Replace with manual collator selection
-    func rotateSelectedCollator()
-    func estimateFee(
-        _ amount: BigUInt,
-        collator: AccountId?,
-        collatorDelegationsCount: UInt32,
-        delegationsCount: UInt32
-    )
+    func applyCollator(with accountId: AccountId)
+    func estimateFee(with callWrapper: DelegationCallWrapper)
 }
 
 protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
@@ -37,16 +31,13 @@ protocol ParaStkStakeSetupInteractorOutputProtocol: AnyObject {
     func didReceiveRewardCalculator(_ calculator: ParaStakingRewardCalculatorEngineProtocol)
     func didReceivePrice(_ priceData: PriceData?)
     func didReceiveFee(_ result: Result<RuntimeDispatchInfo, Error>)
-    func didReceiveCollator(
-        metadata: ParachainStaking.CandidateMetadata?,
-        address: DisplayAddress
-    )
-
+    func didReceiveCollator(metadata: ParachainStaking.CandidateMetadata?)
     func didReceiveMinTechStake(_ minStake: BigUInt)
-
+    func didReceiveMinDelegationAmount(_ amount: BigUInt)
+    func didReceiveMaxDelegations(_ maxDelegations: UInt32)
     func didReceiveDelegator(_ delegator: ParachainStaking.Delegator?)
-
-    func didCompleteSetup()
+    func didReceiveDelegationIdentities(_ identities: [AccountId: AccountIdentity]?)
+    func didReceiveScheduledRequests(_ scheduledRequests: [ParachainStaking.DelegatorScheduledRequest]?)
     func didReceiveError(_ error: Error)
 }
 
@@ -55,6 +46,20 @@ protocol ParaStkStakeSetupWireframeProtocol: AlertPresentable, ErrorPresentable,
     func showConfirmation(
         from view: ParaStkStakeSetupViewProtocol?,
         collator: DisplayAddress,
-        amount: Decimal
+        amount: Decimal,
+        initialDelegator: ParachainStaking.Delegator?
+    )
+
+    func showCollatorSelection(
+        from view: ParaStkStakeSetupViewProtocol?,
+        delegate: ParaStkSelectCollatorsDelegate
+    )
+
+    func showDelegationSelection(
+        from view: ParaStkStakeSetupViewProtocol?,
+        viewModels: [AccountDetailsPickerViewModel],
+        selectedIndex: Int,
+        delegate: ModalPickerViewControllerDelegate,
+        context: AnyObject?
     )
 }

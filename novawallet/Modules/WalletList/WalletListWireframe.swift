@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 final class WalletListWireframe: WalletListWireframeProtocol {
     let walletUpdater: WalletDetailsUpdating
@@ -46,6 +47,21 @@ final class WalletListWireframe: WalletListWireframeProtocol {
         )
 
         view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
+    func showAssetsSearch(
+        from view: WalletListViewProtocol?,
+        initState: WalletListInitState,
+        delegate: AssetsSearchDelegate
+    ) {
+        guard let assetsSearchView = AssetsSearchViewFactory.createView(for: initState, delegate: delegate) else {
+            return
+        }
+
+        assetsSearchView.controller.modalTransitionStyle = .crossDissolve
+        assetsSearchView.controller.modalPresentationStyle = .fullScreen
+
+        view?.controller.present(assetsSearchView.controller, animated: true, completion: nil)
     }
 
     func showNfts(from view: WalletListViewProtocol?) {

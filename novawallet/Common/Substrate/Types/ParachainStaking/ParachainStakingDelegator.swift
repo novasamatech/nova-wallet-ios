@@ -15,15 +15,21 @@ extension ParachainStaking {
         func collators() -> [AccountId] {
             delegations.map(\.owner)
         }
+
+        func delegationsDict() -> [AccountId: ParachainStaking.Bond] {
+            delegations.reduce(into: [AccountId: ParachainStaking.Bond]()) {
+                $0[$1.owner] = $1
+            }
+        }
     }
 
-    struct ScheduledRequest: Decodable, Equatable {
+    struct ScheduledRequest: Decodable, Encodable, Equatable {
         @BytesCodable var delegator: AccountId
         @StringCodable var whenExecutable: RoundIndex
         let action: DelegationAction
     }
 
-    enum DelegationAction: Decodable, Equatable {
+    enum DelegationAction: Decodable, Encodable, Equatable {
         static let revokeField = "Revoke"
         static let decreaseField = "Decrease"
 
@@ -45,6 +51,19 @@ extension ParachainStaking {
                     in: container,
                     debugDescription: "Unexpected type"
                 )
+            }
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.unkeyedContainer()
+
+            switch self {
+            case let .revoke(amount):
+                try container.encode(Self.revokeField)
+                try container.encode(StringScaleMapper(value: amount))
+            case let .decrease(amount):
+                try container.encode(Self.decreaseField)
+                try container.encode(StringScaleMapper(value: amount))
             }
         }
     }

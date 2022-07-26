@@ -34,6 +34,10 @@ extension ConstantCodingPath {
         ConstantCodingPath(moduleName: "Slots", constantName: "LeasePeriod")
     }
 
+    static var paraLeasingOffset: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "Slots", constantName: "LeaseOffset")
+    }
+
     static var babeBlockTime: ConstantCodingPath {
         ConstantCodingPath(moduleName: "Babe", constantName: "ExpectedBlockTime")
     }
@@ -56,5 +60,9 @@ extension ConstantCodingPath {
 
     static var blockHashCount: ConstantCodingPath {
         ConstantCodingPath(moduleName: "System", constantName: "BlockHashCount")
+    }
+
+    static var electionsSessionPeriod: ConstantCodingPath {
+        ConstantCodingPath(moduleName: "Elections", constantName: "SessionPeriod")
     }
 }

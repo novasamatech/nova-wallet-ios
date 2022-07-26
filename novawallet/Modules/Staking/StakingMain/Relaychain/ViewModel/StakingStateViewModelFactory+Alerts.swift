@@ -120,7 +120,11 @@ extension StakingStateViewModelFactory {
                 )
             }
 
-            return .nominatorChangeValidators(description)
+            let title = LocalizableResource { locale in
+                R.string.localizable.stakingChangeYourValidators(preferredLanguages: locale.rLanguages)
+            }
+
+            return .nominatorChangeValidators(title: title, details: description)
         }
     }
 
