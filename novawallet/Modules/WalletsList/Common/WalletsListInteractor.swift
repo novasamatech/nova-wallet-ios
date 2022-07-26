@@ -1,53 +1,42 @@
 import UIKit
 import RobinHood
 
-final class WalletSelectionInteractor {
-    weak var presenter: WalletSelectionInteractorOutputProtocol?
+class WalletsListInteractor {
+    weak var basePresenter: WalletsListInteractorOutputProtocol?
 
-    let repositoryObservable: AnyDataProviderRepositoryObservable<ManagedMetaAccountModel>
-    let repository: AnyDataProviderRepository<ManagedMetaAccountModel>
     let chainRegistry: ChainRegistryProtocol
     let walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol
+    let walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol
     let priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
 
     private(set) var priceSubscription: AnySingleValueProvider<[PriceData]>?
+    private(set) var assetsSubscription: StreamableProvider<AssetBalance>?
+    private(set) var walletsSubscription: StreamableProvider<ManagedMetaAccountModel>?
     private(set) var availableTokenPrice: [ChainAssetId: AssetModel.PriceId] = [:]
 
     init(
         chainRegistry: ChainRegistryProtocol,
+        walletListLocalSubscriptionFactory: WalletListLocalSubscriptionFactoryProtocol,
         walletLocalSubscriptionFactory: WalletLocalSubscriptionFactoryProtocol,
-        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol,
-        repositoryObservable: AnyDataProviderRepositoryObservable<ManagedMetaAccountModel>,
-        repository: AnyDataProviderRepository<ManagedMetaAccountModel>
+        priceLocalSubscriptionFactory: PriceProviderFactoryProtocol
     ) {
         self.chainRegistry = chainRegistry
+        self.walletListLocalSubscriptionFactory = walletListLocalSubscriptionFactory
         self.walletLocalSubscriptionFactory = walletLocalSubscriptionFactory
         self.priceLocalSubscriptionFactory = priceLocalSubscriptionFactory
     }
 
-    private func provideWalletList() {
-        let options = RepositoryFetchOptions()
-        let operation = repository.fetchAllOperation(with: options)
+    private func subscribeWallets() {
+        walletsSubscription = subscribeAllWalletsProvider()
+    }
 
-        operation.completionBlock = { [weak self] in
-            DispatchQueue.main.async {
-                do {
-                    let items = try operation
-                        .extractResultData(throwing: BaseOperationError.parentOperationCancelled)
-                    let changes = items.map { DataProviderChange.insert(newItem: $0) }
-
-                    self?.presenter?.didReceive(changes: changes)
-                } catch {
-                    self?.presenter?.didReceive(error: error)
-                }
-            }
-        }
-
-        operationQueue.addOperation(operation)
+    private func subscribeAssets() {
+        assetsSubscription = subscribeAllBalancesProvider()
     }
 
     private func subscribeChains() {
         chainRegistry.chainsSubscribe(self, runningInQueue: .main) { [weak self] changes in
+            self?.basePresenter?.didReceiveChainChanges(changes)
             self?.handle(changes: changes)
         }
     }
@@ -89,10 +78,7 @@ final class WalletSelectionInteractor {
         priceSubscription = priceLocalSubscriptionFactory.getPriceListProvider(for: priceIds)
 
         let updateClosure = { [weak self] (changes: [DataProviderChange<[PriceData]>]) in
-            let finalValue = changes.reduceToLastChange()
-
-            switch finalValue {
-            case let .some(prices):
+            if let prices = changes.reduceToLastChange() {
                 let chainPrices = zip(priceIds, prices).reduce(
                     into: [ChainAssetId: PriceData]()
                 ) { result, item in
@@ -106,14 +92,12 @@ final class WalletSelectionInteractor {
                     }
                 }
 
-                self?.basePresenter?.didReceivePrices(result: .success(chainPrices))
-            case .none:
-                self?.basePresenter?.didReceivePrices(result: nil)
+                self?.basePresenter?.didReceivePrices(chainPrices)
             }
         }
 
         let failureClosure = { [weak self] (error: Error) in
-            self?.basePresenter?.didReceivePrices(result: .failure(error))
+            self?.basePresenter?.didReceiveError(error)
             return
         }
 
@@ -132,10 +116,32 @@ final class WalletSelectionInteractor {
     }
 }
 
-extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {}
+extension WalletsListInteractor: WalletsListInteractorInputProtocol {
+    func setup() {
+        subscribeChains()
+        subscribeAssets()
+        subscribeWallets()
+    }
+}
 
-extension WalletSelectionInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
+extension WalletsListInteractor: WalletListLocalStorageSubscriber, WalletListLocalSubscriptionHandler {
+    func handleAllWallets(result: Result<[DataProviderChange<ManagedMetaAccountModel>], Error>) {
+        switch result {
+        case let .success(changes):
+            basePresenter?.didReceiveWalletsChanges(changes)
+        case let .failure(error):
+            basePresenter?.didReceiveError(error)
+        }
+    }
+}
+
+extension WalletsListInteractor: WalletLocalStorageSubscriber, WalletLocalSubscriptionHandler {
     func handleAllBalances(result: Result<[DataProviderChange<AssetBalance>], Error>) {
-
+        switch result {
+        case let .success(changes):
+            basePresenter?.didReceiveBalancesChanges(changes)
+        case let .failure(error):
+            basePresenter?.didReceiveError(error)
+        }
     }
 }
