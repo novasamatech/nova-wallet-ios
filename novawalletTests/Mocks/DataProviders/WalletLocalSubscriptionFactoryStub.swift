@@ -56,4 +56,8 @@ final class WalletLocalSubscriptionFactoryStub: WalletLocalSubscriptionFactoryPr
     func getAccountBalanceProvider(for accountId: AccountId) throws -> StreamableProvider<AssetBalance> {
         throw CommonError.undefined
     }
+
+    func getAllBalancesProvider() throws -> StreamableProvider<AssetBalance> {
+        throw CommonError.undefined
+    }
 }
