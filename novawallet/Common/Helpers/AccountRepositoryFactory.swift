@@ -23,9 +23,12 @@ extension AccountRepositoryFactoryProtocol {
         for accountId: AccountId
     ) -> AnyDataProviderRepository<MetaAccountModel> {
         let filter = NSPredicate.filterMetaAccountByAccountId(accountId)
-        let sortition = NSSortDescriptor.accountsByOrder
+        let sortings: [NSSortDescriptor] = [
+            .accountsBySelection,
+            .accountsByOrder
+        ]
 
-        return createMetaAccountRepository(for: filter, sortDescriptors: [sortition])
+        return createMetaAccountRepository(for: filter, sortDescriptors: sortings)
     }
 }
 
