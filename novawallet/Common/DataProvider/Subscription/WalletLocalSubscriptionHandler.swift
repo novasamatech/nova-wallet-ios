@@ -42,5 +42,5 @@ extension WalletLocalSubscriptionHandler {
         accountId _: AccountId
     ) {}
 
-    func handleAllBalances(result: Result<[DataProviderChange<AssetBalance>], Error>) {}
+    func handleAllBalances(result _: Result<[DataProviderChange<AssetBalance>], Error>) {}
 }
