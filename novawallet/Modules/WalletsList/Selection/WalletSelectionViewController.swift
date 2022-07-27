@@ -1,7 +1,10 @@
 import UIKit
 import SoraFoundation
 
-final class WalletSelectionViewController: WalletsListViewController<WalletSelectionViewLayout, WalletSelectionTableViewCell> {
+final class WalletSelectionViewController: WalletsListViewController<
+    WalletSelectionViewLayout,
+    WalletSelectionTableViewCell
+> {
     var presenter: WalletSelectionPresenterProtocol? { basePresenter as? WalletSelectionPresenterProtocol }
 
     init(presenter: WalletSelectionPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
