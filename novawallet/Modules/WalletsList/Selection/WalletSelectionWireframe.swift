@@ -5,7 +5,5 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         view?.controller.presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
-    func showSettings(from view: WalletsListViewProtocol?) {
-
-    }
+    func showSettings(from _: WalletsListViewProtocol?) {}
 }

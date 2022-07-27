@@ -2,7 +2,6 @@ import UIKit
 import SoraFoundation
 
 final class WalletSelectionViewController: WalletsListViewController<WalletSelectionTableViewCell> {
-
     var presenter: WalletSelectionPresenterProtocol? { basePresenter as? WalletSelectionPresenterProtocol }
 
     init(presenter: WalletSelectionPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
@@ -13,13 +12,13 @@ final class WalletSelectionViewController: WalletsListViewController<WalletSelec
         title = R.string.localizable.commonSelectWallet(preferredLanguages: selectedLocale.rLanguages)
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-
-        presenter?.selectItem(at: indexPath.row, section: indexPath.section)
-    }
-
     @objc private func actionSettings() {
         presenter?.activateSettings()
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        super.tableView(tableView, didSelectRowAt: indexPath)
+
+        presenter?.selectItem(at: indexPath.row, section: indexPath.section)
     }
 }
