@@ -19,6 +19,10 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func loadView() {
+        view = RootViewType()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -94,6 +98,37 @@ class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsList
             return 46.0
         }
     }
+
+    func tableView(_: UITableView, canMoveRowAt _: IndexPath) -> Bool {
+        false
+    }
+
+    func tableView(
+        _: UITableView,
+        moveRowAt _: IndexPath,
+        to _: IndexPath
+    ) {}
+
+    func tableView(
+        _: UITableView,
+        targetIndexPathForMoveFromRowAt _: IndexPath,
+        toProposedIndexPath proposedDestinationIndexPath: IndexPath
+    ) -> IndexPath {
+        proposedDestinationIndexPath
+    }
+
+    func tableView(
+        _: UITableView,
+        editingStyleForRowAt _: IndexPath
+    ) -> UITableViewCell.EditingStyle {
+        .none
+    }
+
+    func tableView(
+        _: UITableView,
+        commit _: UITableViewCell.EditingStyle,
+        forRowAt _: IndexPath
+    ) {}
 }
 
 extension WalletsListViewController: WalletsListViewProtocol {
