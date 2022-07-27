@@ -23,13 +23,6 @@ class WalletManageViewLayout: WalletsListViewLayout {
         return button
     }()
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        let bottomInset = bounds.maxY - addWalletButton.frame.minY + 16.0
-        tableView.contentInset = .init(top: 0, left: 0, bottom: bottomInset, right: 0)
-    }
-
     override func setupLayout() {
         super.setupLayout()
 
@@ -39,5 +32,8 @@ class WalletManageViewLayout: WalletsListViewLayout {
             make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.bottom.equalTo(safeAreaLayoutGuide).inset(UIConstants.actionBottomInset)
         }
+
+        let bottomInset = UIConstants.actionBottomInset + UIConstants.actionHeight + 16.0
+        tableView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: bottomInset, right: 0.0)
     }
 }
