@@ -1,6 +1,6 @@
 import UIKit
 
-final class WalletsListViewLayout: UIView {
+class WalletsListViewLayout: UIView {
     let tableView: UITableView = {
         let view = UITableView()
         view.separatorStyle = .none
@@ -21,7 +21,7 @@ final class WalletsListViewLayout: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupLayout() {
+    func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.equalTo(safeAreaLayoutGuide.snp.top)
