@@ -1,7 +1,6 @@
 import Foundation
 
 final class WalletSelectionInteractor: WalletsListInteractor {
-
     var presenter: WalletSelectionInteractorOutputProtocol? {
         get {
             basePresenter as? WalletSelectionInteractorOutputProtocol
@@ -33,7 +32,6 @@ final class WalletSelectionInteractor: WalletsListInteractor {
             priceLocalSubscriptionFactory: priceLocalSubscriptionFactory
         )
     }
-
 }
 
 extension WalletSelectionInteractor: WalletSelectionInteractorInputProtocol {
