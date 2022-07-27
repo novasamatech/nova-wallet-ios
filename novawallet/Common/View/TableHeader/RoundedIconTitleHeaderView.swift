@@ -31,7 +31,7 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
         view.shadowOpacity = 0.0
         view.fillColor = R.color.colorWhite24()!
         view.highlightedFillColor = R.color.colorWhite24()!
-        view.cornerRadius = 8.0
+        view.cornerRadius = 7.0
         return view
     }()
 
