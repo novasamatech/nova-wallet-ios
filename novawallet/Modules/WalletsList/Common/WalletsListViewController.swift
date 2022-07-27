@@ -1,9 +1,9 @@
 import UIKit
 import SoraFoundation
 
-class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewController, ViewHolder,
-    UITableViewDataSource, UITableViewDelegate {
-    typealias RootViewType = WalletsListViewLayout
+class WalletsListViewController<Layout: WalletsListViewLayout, Cell: WalletsListTableViewCell>: UIViewController,
+    ViewHolder, UITableViewDataSource, UITableViewDelegate {
+    typealias RootViewType = Layout
 
     let basePresenter: WalletsListPresenterProtocol
 
@@ -17,10 +17,6 @@ class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewControlle
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func loadView() {
-        view = WalletsListViewLayout()
     }
 
     override func viewDidLoad() {
