@@ -25,6 +25,8 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
         let navigationController = tabBarController.selectedViewController as? UINavigationController
         navigationController?.popToRootViewController(animated: false)
 
+        manageView.controller.hidesBottomBarWhenPushed = true
+
         navigationController?.pushViewController(manageView.controller, animated: true)
     }
 }
