@@ -12,7 +12,7 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
     }
 
     private func openWalletManage() {
-        guard let manageView = WalletManagementViewFactory.createViewForSwitch() else {
+        guard let manageView = WalletManageViewFactory.createViewForSwitching() else {
             return
         }
 
