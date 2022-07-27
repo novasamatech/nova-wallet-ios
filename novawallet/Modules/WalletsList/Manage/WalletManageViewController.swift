@@ -7,7 +7,7 @@ final class WalletManageViewController: WalletsListViewController<
 > {
     var presenter: WalletManagePresenterProtocol? { basePresenter as? WalletManagePresenterProtocol }
 
-    init(presenter: WalletSelectionPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+    init(presenter: WalletManagePresenterProtocol, localizationManager: LocalizationManagerProtocol) {
         super.init(basePresenter: presenter, localizationManager: localizationManager)
     }
 
@@ -20,6 +20,12 @@ final class WalletManageViewController: WalletsListViewController<
 
     override func setupLocalization() {
         title = R.string.localizable.profileWalletsTitle(preferredLanguages: selectedLocale.rLanguages)
+
+        rootView.addWalletButton.imageWithTitleView?.title = R.string.localizable.walletAddButtonTitle(
+            preferredLanguages: selectedLocale.rLanguages
+        )
+
+        rootView.addWalletButton.invalidateLayout()
 
         updateRightItem()
     }
@@ -81,11 +87,11 @@ final class WalletManageViewController: WalletsListViewController<
         presenter?.selectItem(at: indexPath.row, section: indexPath.section)
     }
 
-    func tableView(_: UITableView, canMoveRowAt _: IndexPath) -> Bool {
+    override func tableView(_: UITableView, canMoveRowAt _: IndexPath) -> Bool {
         true
     }
 
-    func tableView(
+    override func tableView(
         _: UITableView,
         moveRowAt sourceIndexPath: IndexPath,
         to destinationIndexPath: IndexPath
@@ -97,7 +103,7 @@ final class WalletManageViewController: WalletsListViewController<
         )
     }
 
-    func tableView(
+    override func tableView(
         _ tableView: UITableView,
         targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath,
         toProposedIndexPath proposedDestinationIndexPath: IndexPath
@@ -112,7 +118,7 @@ final class WalletManageViewController: WalletsListViewController<
         }
     }
 
-    func tableView(
+    override func tableView(
         _: UITableView,
         editingStyleForRowAt indexPath: IndexPath
     ) -> UITableViewCell.EditingStyle {
@@ -123,7 +129,7 @@ final class WalletManageViewController: WalletsListViewController<
         return !presenter.item(at: indexPath.row, in: indexPath.section).isSelected ? .delete : .none
     }
 
-    func tableView(
+    override func tableView(
         _: UITableView,
         commit _: UITableViewCell.EditingStyle,
         forRowAt indexPath: IndexPath

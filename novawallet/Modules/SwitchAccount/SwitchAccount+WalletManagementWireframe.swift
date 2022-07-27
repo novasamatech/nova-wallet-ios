@@ -1,8 +1,8 @@
 import Foundation
 
 extension SwitchAccount {
-    final class WalletManagementWireframe: WalletManagementWireframeProtocol {
-        func showWalletDetails(from view: WalletManagementViewProtocol?, metaAccount: MetaAccountModel) {
+    final class WalletManageWireframe: WalletsListWireframe, WalletManageWireframeProtocol {
+        func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel) {
             guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount.identifier) else {
                 return
             }
@@ -15,7 +15,7 @@ extension SwitchAccount {
             )
         }
 
-        func showAddWallet(from view: WalletManagementViewProtocol?) {
+        func showAddWallet(from view: WalletManageViewProtocol?) {
             guard let onboarding = OnboardingMainViewFactory.createViewForAccountSwitch() else {
                 return
             }
@@ -23,14 +23,6 @@ extension SwitchAccount {
             if let navigationController = view?.controller.navigationController {
                 navigationController.pushViewController(onboarding.controller, animated: true)
             }
-        }
-
-        func complete(from view: WalletManagementViewProtocol?) {
-            guard let navigationController = view?.controller.navigationController else {
-                return
-            }
-
-            navigationController.popToRootViewController(animated: true)
         }
     }
 }
