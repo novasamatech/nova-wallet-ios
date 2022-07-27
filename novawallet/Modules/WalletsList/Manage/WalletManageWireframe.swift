@@ -1,7 +1,7 @@
 import Foundation
 
-final class WalletManagementWireframe: WalletManagementWireframeProtocol {
-    func showWalletDetails(from view: WalletManagementViewProtocol?, metaAccount: MetaAccountModel) {
+final class WalletManageWireframe: WalletsListWireframe, WalletManageWireframeProtocol {
+    func showWalletDetails(from view: WalletManageViewProtocol?, metaAccount: MetaAccountModel) {
         guard let chainManagementView = AccountManagementViewFactory.createView(for: metaAccount.identifier) else {
             return
         }
@@ -14,7 +14,7 @@ final class WalletManagementWireframe: WalletManagementWireframeProtocol {
         )
     }
 
-    func showAddWallet(from view: WalletManagementViewProtocol?) {
+    func showAddWallet(from view: WalletManageViewProtocol?) {
         guard let onboarding = OnboardingMainViewFactory.createViewForAdding() else {
             return
         }
@@ -22,16 +22,5 @@ final class WalletManagementWireframe: WalletManagementWireframeProtocol {
         if let navigationController = view?.controller.navigationController {
             navigationController.pushViewController(onboarding.controller, animated: true)
         }
-    }
-
-    func complete(from view: WalletManagementViewProtocol?) {
-        guard let navigationController = view?.controller.navigationController else {
-            return
-        }
-
-        MainTransitionHelper.transitToMainTabBarController(
-            closing: navigationController,
-            animated: true
-        )
     }
 }
