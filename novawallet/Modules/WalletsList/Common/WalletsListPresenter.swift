@@ -79,6 +79,8 @@ extension WalletsListPresenter: WalletsListPresenterProtocol {
 extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
     func didReceiveWalletsChanges(_ changes: [DataProviderChange<ManagedMetaAccountModel>]) {
         walletsList.apply(changes: changes)
+
+        updateViewModels()
     }
 
     func didReceiveBalancesChanges(_ changes: [DataProviderChange<AssetBalance>]) {
@@ -87,6 +89,8 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
             case let .insert(item), let .update(item):
                 var accountBalance = balances[item.accountId] ?? [:]
                 accountBalance[item.chainAssetId] = item.totalInPlank
+                balances[item.accountId] = accountBalance
+
                 identifierMapping[item.identifier] = AssetBalanceId(
                     chainId: item.chainAssetId.chainId,
                     assetId: item.chainAssetId.assetId,
@@ -102,14 +106,20 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
                 identifierMapping[deletedIdentifier] = nil
             }
         }
+
+        updateViewModels()
     }
 
     func didReceiveChainChanges(_ changes: [DataProviderChange<ChainModel>]) {
         chains = changes.mergeToDict(chains)
+
+        updateViewModels()
     }
 
     func didReceivePrices(_ prices: [ChainAssetId: PriceData]) {
         self.prices = prices
+
+        updateViewModels()
     }
 
     func didReceiveError(_ error: Error) {

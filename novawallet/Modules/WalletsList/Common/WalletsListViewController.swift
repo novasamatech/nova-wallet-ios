@@ -2,7 +2,7 @@ import UIKit
 import SoraFoundation
 
 class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewController, ViewHolder,
-                                                                    UITableViewDataSource, UITableViewDelegate {
+    UITableViewDataSource, UITableViewDelegate {
     typealias RootViewType = WalletsListViewLayout
 
     let basePresenter: WalletsListPresenterProtocol
@@ -39,7 +39,6 @@ class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewControlle
         rootView.tableView.registerHeaderFooterView(withClass: RoundedIconTitleHeaderView.self)
 
         rootView.tableView.rowHeight = 48.0
-        rootView.tableView.sectionHeaderHeight = 46.0
 
         rootView.tableView.delegate = self
         rootView.tableView.dataSource = self
@@ -47,7 +46,7 @@ class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewControlle
 
     // MARK: UITableView Data Source
 
-    func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in _: UITableView) -> Int {
         basePresenter.numberOfSections()
     }
 
@@ -73,13 +72,30 @@ class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewControlle
         case .watchOnly:
             let view: RoundedIconTitleHeaderView = tableView.dequeueReusableHeaderFooterView()
             view.contentInsets = UIEdgeInsets(top: 16.0, left: 16.0, bottom: 8.0, right: 16.0)
-            let icon = R.image.iconWatchOnly()
+            let icon = R.image.iconWatchOnlyHeader()
             let title = R.string.localizable.commonWatchOnly(
                 preferredLanguages: selectedLocale.rLanguages
             )
 
             view.bind(title: title, icon: icon)
             return view
+        }
+    }
+
+    // MARK: UITableView Delegate
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section = basePresenter.section(at: section)
+
+        switch section.type {
+        case .secrets:
+            return 0.0
+        case .watchOnly:
+            return 46.0
         }
     }
 }

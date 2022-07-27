@@ -9,16 +9,15 @@ final class WalletListWireframe: WalletListWireframeProtocol {
     }
 
     func showWalletList(from view: WalletListViewProtocol?) {
-        guard let accountManagement = WalletManagementViewFactory.createViewForSwitch() else {
+        guard let accountManagement = WalletSelectionViewFactory.createView() else {
             return
         }
 
-        accountManagement.controller.hidesBottomBarWhenPushed = true
-
-        view?.controller.navigationController?.pushViewController(
-            accountManagement.controller,
-            animated: true
+        let navigationController = FearlessNavigationController(
+            rootViewController: accountManagement.controller
         )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
     }
 
     func showAssetDetails(from view: WalletListViewProtocol?, chain: ChainModel, asset: AssetModel) {
