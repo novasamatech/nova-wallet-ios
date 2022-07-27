@@ -12,7 +12,7 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
     }
 
     private func openWalletManage() {
-        guard let manageView = WalletManagementViewFactory.createViewForSwitch() else {
+        guard let manageView = WalletManageViewFactory.createViewForSwitching() else {
             return
         }
 
@@ -24,6 +24,8 @@ final class WalletSelectionWireframe: WalletsListWireframe, WalletSelectionWiref
 
         let navigationController = tabBarController.selectedViewController as? UINavigationController
         navigationController?.popToRootViewController(animated: false)
+
+        manageView.controller.hidesBottomBarWhenPushed = true
 
         navigationController?.pushViewController(manageView.controller, animated: true)
     }

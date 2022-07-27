@@ -11,10 +11,6 @@ final class WalletSelectionViewController: WalletsListViewController<
         super.init(basePresenter: presenter, localizationManager: localizationManager)
     }
 
-    override func loadView() {
-        view = WalletSelectionViewLayout()
-    }
-
     override func viewDidLoad() {
         setupSettingsItems()
 
