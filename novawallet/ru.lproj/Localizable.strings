@@ -852,3 +852,5 @@
 "no.key.title" = "Упс! Ключ не найден";
 "no.key.message" = "Ваш кошелек - watch-only, что означает невозможность осуществления операций";
 "common.ok.back" = "Понял, назад";
+"common.watch.only" = "Watch-only";
+"common.select.wallet" = "Выберите кошелек";

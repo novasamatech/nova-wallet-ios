@@ -852,3 +852,5 @@
 "no.key.title" = "Oops! Key is missing";
 "no.key.message" = "Your wallet is watch-only, meaning that you cannot do any operations with it";
 "common.ok.back" = "Okay, back";
+"common.watch.only" = "Watch-only";
+"common.select.wallet" = "Select wallet";
