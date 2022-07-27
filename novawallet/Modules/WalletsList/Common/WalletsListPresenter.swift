@@ -4,7 +4,7 @@ import BigInt
 import SoraFoundation
 
 class WalletsListPresenter {
-    weak var view: WalletsListViewProtocol?
+    weak var baseView: WalletsListViewProtocol?
     let baseWireframe: WalletsListWireframeProtocol
     let baseInteractor: WalletsListInteractorInputProtocol
     let viewModelFactory: WalletsListViewModelFactoryProtocol
@@ -41,6 +41,11 @@ class WalletsListPresenter {
         self.localizationManager = localizationManager
     }
 
+    func replaceViewModels(_ items: [WalletsListViewModel], section: Int) {
+        let type = viewModels[section].type
+        viewModels[section] = WalletsListSectionViewModel(type: type, items: items)
+    }
+
     private func updateViewModels() {
         viewModels = viewModelFactory.createSectionViewModels(
             for: walletsList.allItems,
@@ -50,7 +55,7 @@ class WalletsListPresenter {
             locale: selectedLocale
         )
 
-        view?.didReload()
+        baseView?.didReload()
     }
 }
 
@@ -125,13 +130,13 @@ extension WalletsListPresenter: WalletsListInteractorOutputProtocol {
     func didReceiveError(_ error: Error) {
         logger.error("Did receive error: \(error)")
 
-        _ = baseWireframe.present(error: error, from: view, locale: selectedLocale)
+        _ = baseWireframe.present(error: error, from: baseView, locale: selectedLocale)
     }
 }
 
 extension WalletsListPresenter: Localizable {
     func applyLocalization() {
-        if let view = view, view.isSetup {
+        if let view = baseView, view.isSetup {
             updateViewModels()
         }
     }

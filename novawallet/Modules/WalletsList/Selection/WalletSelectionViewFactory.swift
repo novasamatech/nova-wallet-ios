@@ -24,7 +24,7 @@ struct WalletSelectionViewFactory {
 
         let view = WalletSelectionViewController(presenter: presenter, localizationManager: localizationManager)
 
-        presenter.view = view
+        presenter.baseView = view
         interactor.presenter = presenter
 
         return view

@@ -41,12 +41,12 @@ extension WalletSelectionPresenter: WalletSelectionPresenterProtocol {
     }
 
     func activateSettings() {
-        wireframe?.showSettings(from: view)
+        wireframe?.showSettings(from: baseView)
     }
 }
 
 extension WalletSelectionPresenter: WalletSelectionInteractorOutputProtocol {
     func didCompleteSelection() {
-        wireframe?.close(view: view)
+        wireframe?.close(view: baseView)
     }
 }
