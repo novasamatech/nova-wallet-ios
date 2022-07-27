@@ -16,7 +16,7 @@ class WalletsListTableViewCell: UITableViewCell {
         view.valueBottom.textColor = R.color.colorTransparentText()
         view.valueBottom.font = .regularFootnote
         view.valueBottom.textAlignment = .left
-        view.spacing = 0.0
+        view.spacing = 2.0
         return view
     }()
 
@@ -30,6 +30,8 @@ class WalletsListTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        backgroundColor = .clear
 
         let backgroundView = UIView()
         backgroundView.backgroundColor = R.color.colorHighlightedAccent()
