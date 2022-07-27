@@ -3,6 +3,8 @@ import UIKit
 final class WalletsListViewLayout: UIView {
     let tableView: UITableView = {
         let view = UITableView()
+        view.separatorStyle = .none
+        view.backgroundColor = .clear
         return view
     }()
 

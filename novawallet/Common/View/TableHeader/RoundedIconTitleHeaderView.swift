@@ -31,6 +31,7 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
         view.shadowOpacity = 0.0
         view.fillColor = R.color.colorWhite24()!
         view.highlightedFillColor = R.color.colorWhite24()!
+        view.cornerRadius = 8.0
         return view
     }()
 
@@ -65,7 +66,7 @@ final class RoundedIconTitleHeaderView: UITableViewHeaderFooterView {
 
         roundedBackgroundView.addSubview(titleView)
         titleView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(3.0)
+            make.leading.equalToSuperview().inset(6.0)
             make.top.bottom.equalToSuperview().inset(3.0)
             make.trailing.equalToSuperview().inset(8.0)
         }

@@ -75,7 +75,7 @@ class WalletsListViewController<Cell: WalletsListTableViewCell>: UIViewControlle
             let icon = R.image.iconWatchOnlyHeader()
             let title = R.string.localizable.commonWatchOnly(
                 preferredLanguages: selectedLocale.rLanguages
-            )
+            ).uppercased()
 
             view.bind(title: title, icon: icon)
             return view
