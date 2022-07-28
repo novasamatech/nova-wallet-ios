@@ -120,6 +120,10 @@ extension SettingsPresenter: SettingsPresenterProtocol {
         guard let wallet = wallet else { return }
         wireframe.showAccountDetails(for: wallet.identifier, from: view)
     }
+
+    func handleSwitchAction() {
+        wireframe.showWalletList(from: view)
+    }
 }
 
 extension SettingsPresenter: SettingsInteractorOutputProtocol {

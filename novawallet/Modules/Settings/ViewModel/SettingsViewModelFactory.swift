@@ -18,7 +18,11 @@ final class SettingsViewModelFactory: SettingsViewModelFactoryProtocol {
                 contentScale: UIScreen.main.scale
             )
 
-        return SettingsAccountViewModel(name: wallet.name, icon: icon)
+        return SettingsAccountViewModel(
+            name: wallet.name,
+            icon: icon,
+            walletType: WalletsListSectionViewModel.SectionType(walletType: wallet.type)
+        )
     }
 
     func createSectionViewModels(
