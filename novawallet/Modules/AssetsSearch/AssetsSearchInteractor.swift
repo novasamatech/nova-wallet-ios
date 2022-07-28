@@ -1,6 +1,6 @@
 import UIKit
 
-final class AssetsSearchInteractor: WalletListBaseInteractor {
+final class AssetsSearchInteractor: AssetListBaseInteractor {
     weak var presenter: AssetsSearchInteractorOutputProtocol? {
         get {
             basePresenter as? AssetsSearchInteractorOutputProtocol
