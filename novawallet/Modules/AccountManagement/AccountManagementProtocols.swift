@@ -5,6 +5,7 @@ import SoraFoundation
 protocol AccountManagementViewProtocol: ControllerBackedProtocol {
     func reload()
     func set(nameViewModel: InputViewModelProtocol)
+    func set(walletType: WalletsListSectionViewModel.SectionType)
 }
 
 protocol AccountManagementPresenterProtocol: AnyObject {
