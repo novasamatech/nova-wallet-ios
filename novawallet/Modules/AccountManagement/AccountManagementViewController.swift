@@ -2,19 +2,35 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class AccountManagementViewController: UIViewController {
+final class AccountManagementViewController: UIViewController, ViewHolder {
+    typealias RootViewType = AccountManagementViewLayout
+
     private enum Constants {
         static let cellHeight: CGFloat = 48.0
         static let addActionVerticalInset: CGFloat = 16
     }
 
-    var presenter: AccountManagementPresenterProtocol!
+    let presenter: AccountManagementPresenterProtocol
 
-    @IBOutlet private var walletNameTextField: AnimatedTextField!
-    @IBOutlet private var tableView: UITableView!
+    private var walletNameTextField: AnimatedTextField { rootView.headerView.textField }
+    private var tableView: UITableView { rootView.tableView }
 
     private var nameViewModel: InputViewModelProtocol?
     private var hasChanges: Bool = false
+
+    private var walletType: WalletsListSectionViewModel.SectionType = .secrets
+
+    init(presenter: AccountManagementPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -147,6 +163,10 @@ extension AccountManagementViewController: UITableViewDelegate {
 // MARK: - AccountManagementViewProtocol
 
 extension AccountManagementViewController: AccountManagementViewProtocol {
+    func set(walletType: WalletsListSectionViewModel.SectionType) {
+        
+    }
+
     func set(nameViewModel: InputViewModelProtocol) {
         walletNameTextField.text = nameViewModel.inputHandler.value
         self.nameViewModel = nameViewModel
