@@ -32,7 +32,7 @@ final class AssetListAccountCell: UICollectionViewCell {
         walletSwitch.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.top.equalToSuperview().inset(10.0)
-            make.size.equalTo(CGSize(width: 79.0, height: 40.0))
+            make.size.equalTo(UIConstants.walletSwitchSize)
         }
 
         contentView.addSubview(titleLabel)
