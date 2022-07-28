@@ -28,7 +28,7 @@ final class DAppListViewController: UIViewController, ViewHolder {
         self.localizationManager = localizationManager
     }
 
-    private var accountIcon: UIImage?
+    private var walletSwitchViewModel: WalletSwitchViewModel?
 
     private var state: DAppListState?
 
@@ -85,9 +85,8 @@ final class DAppListViewController: UIViewController, ViewHolder {
         )
     }
 
-    private func updateIcon(for headerView: DAppListHeaderView, icon _: UIImage?) {
-        headerView.accountButton.imageWithTitleView?.iconImage = accountIcon
-        headerView.accountButton.invalidateLayout()
+    private func updateIcon(for headerView: DAppListHeaderView, walletSwitchViewModel: WalletSwitchViewModel) {
+        headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 
     @objc func actionSelectAccount() {
@@ -134,9 +133,11 @@ extension DAppListViewController: UICollectionViewDataSource {
             for: indexPath
         )!
 
-        updateIcon(for: view, icon: accountIcon)
+        if let walletSwitchViewModel = walletSwitchViewModel {
+            updateIcon(for: view, walletSwitchViewModel: walletSwitchViewModel)
+        }
 
-        view.accountButton.addTarget(self, action: #selector(actionSelectAccount), for: .touchUpInside)
+        view.walletSwitch.addTarget(self, action: #selector(actionSelectAccount), for: .touchUpInside)
         view.searchView.addTarget(self, action: #selector(actionSearch), for: .touchUpInside)
 
         view.selectedLocale = selectedLocale
@@ -288,16 +289,11 @@ extension DAppListViewController: DAppCategoriesViewDelegate {
 }
 
 extension DAppListViewController: DAppListViewProtocol {
-    func didReceiveAccount(icon: DrawableIcon) {
-        let iconSize = CGSize(
-            width: UIConstants.navigationAccountIconSize,
-            height: UIConstants.navigationAccountIconSize
-        )
-
-        accountIcon = icon.imageWithFillColor(.clear, size: iconSize, contentScale: UIScreen.main.scale)
+    func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel) {
+        walletSwitchViewModel = viewModel
 
         if let headerView = rootView.findHeaderView() {
-            updateIcon(for: headerView, icon: accountIcon)
+            updateIcon(for: headerView, walletSwitchViewModel: viewModel)
         }
     }
 
