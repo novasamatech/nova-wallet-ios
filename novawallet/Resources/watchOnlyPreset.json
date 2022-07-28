@@ -1,12 +1,7 @@
 [
-	{
-		"name": "🌌 Nova Foundation 🌌",
-		"substrateAddress": "H3cSNjAW86NfTecufGPhxutea8KrEcZdPa4XgVKfhTMugej",
-		"evmAddress": null
-	},
-	{
-		"name": "✨👍✨ Day7 ✨👍✨",
-		"substrateAddress": "Day71GSJAxUUiFic8bVaWoAczR3Ue3jNonBZthVHp2BKzyJ",
-		"evmAddress": null
-	}
+  {
+    "name": "🌌 NOVA",
+    "substrateAddress": "1ChFWeNRLarAPRCTM3bfJmncJbSAbSS9yqjueWz7jX7iTVZ",
+    "evmAddress": "0x7Aa98AEb3AfAcf10021539d5412c7ac6AfE0fb00"
+  }
 ]
