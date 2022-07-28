@@ -28,8 +28,13 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
         self.localizationManager = localizationManager
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = AccountManagementViewLayout()
     }
 
     override func viewDidLoad() {
@@ -58,6 +63,8 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
         walletNameTextField.textField.spellCheckingType = .no
 
         walletNameTextField.delegate = self
+
+        walletNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
 
     private func setupTableView() {
@@ -67,7 +74,9 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
 
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
-        tableView.separatorStyle = .none
+
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 
     private func setupLocalization() {
@@ -77,15 +86,34 @@ final class AccountManagementViewController: UIViewController, ViewHolder {
 
         walletNameTextField.title = R.string.localizable
             .walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
+
+        applyWalletType()
+    }
+
+    private func applyWalletType() {
+        switch walletType {
+        case .secrets:
+            rootView.headerView.showsHintView = false
+        case .watchOnly:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.accountManagementWatchOnlyHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let icon = R.image.iconWatchOnly()
+            rootView.headerView.bindHint(text: text, icon: icon)
+        }
+
+        rootView.updateHeaderLayout()
     }
 
     // MARK: - Actions
 
-    @IBAction private func textFieldDidChange(_ sender: UITextField) {
+    @objc private func textFieldDidChange() {
         hasChanges = true
 
-        if nameViewModel?.inputHandler.value != sender.text {
-            sender.text = nameViewModel?.inputHandler.value
+        if nameViewModel?.inputHandler.value != walletNameTextField.text {
+            walletNameTextField.text = nameViewModel?.inputHandler.value
         }
     }
 }
@@ -164,7 +192,9 @@ extension AccountManagementViewController: UITableViewDelegate {
 
 extension AccountManagementViewController: AccountManagementViewProtocol {
     func set(walletType: WalletsListSectionViewModel.SectionType) {
-        
+        self.walletType = walletType
+
+        applyWalletType()
     }
 
     func set(nameViewModel: InputViewModelProtocol) {
