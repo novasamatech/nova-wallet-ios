@@ -43,9 +43,9 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
 
     private var backgroundView = MultigradientView.background
 
-    private let networkView: RawChainView = {
-        let chainView = RawChainView()
-        chainView.iconDetailsView.detailsLabel.lineBreakMode = .byCharWrapping
+    private let networkView: AssetListChainView = {
+        let chainView = AssetListChainView()
+        chainView.nameLabel.lineBreakMode = .byTruncatingTail
         return chainView
     }()
 
@@ -82,7 +82,8 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
     }
 
     func bind(networkName: String, iconViewModel: ImageViewModelProtocol) {
-        networkView.bind(name: networkName, iconViewModel: iconViewModel)
+        let viewModel = NetworkViewModel(name: networkName, icon: iconViewModel)
+        networkView.bind(viewModel: viewModel)
     }
 
     func bindActions(
@@ -159,8 +160,8 @@ final class AssetDetailsView: BaseAccountDetailsContainingView {
         networkView.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
             make.centerY.equalTo(titleLabel.snp.centerY)
-            make.height.equalTo(16.0)
-            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(4.0)
+            make.height.equalTo(24.0)
+            make.leading.greaterThanOrEqualTo(titleLabel.snp.trailing).offset(8.0)
         }
     }
 
