@@ -27,19 +27,27 @@ final class AccountManagementViewLayout: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        updateHeaderLayout()
+    }
+
+    func updateHeaderLayout() {
         let height = headerView.systemLayoutSizeFitting(
             CGSize(width: bounds.width, height: UIView.layoutFittingCompressedSize.height),
-            withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .defaultLow
+            withHorizontalFittingPriority: .fittingSizeLevel,
+            verticalFittingPriority: .fittingSizeLevel
         ).height
 
-        headerView.frame = CGRect(origin: .zero, size: CGSize(width: bounds.width, height: height))
+        let size = CGSize(width: bounds.width, height: height)
+        if size != headerView.frame.size {
+            headerView.frame = CGRect(origin: .zero, size: size)
+        }
     }
 
     private func setupLayout() {
         addSubview(tableView)
         tableView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            make.leading.trailing.bottom.equalToSuperview()
         }
 
         tableView.tableHeaderView = headerView
