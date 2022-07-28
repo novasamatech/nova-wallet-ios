@@ -41,9 +41,7 @@ protocol StakingMainInteractorOutputProtocol: AnyObject {
     func didReceiveError(_ error: Error)
 }
 
-protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable {
-    func showAccountsSelection(from view: StakingMainViewProtocol?)
-
+protocol StakingMainWireframeProtocol: AlertPresentable, ErrorPresentable, StakingErrorPresentable, WalletSwitchPresentable {
     func showChainAssetSelection(
         from view: StakingMainViewProtocol?,
         selectedChainAssetId: ChainAssetId?,

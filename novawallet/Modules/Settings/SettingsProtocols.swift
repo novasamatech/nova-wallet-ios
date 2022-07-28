@@ -33,8 +33,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
 }
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
-    EmailPresentable {
-    func showWalletList(from view: ControllerBackedProtocol?)
+    EmailPresentable, WalletSwitchPresentable {
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)
