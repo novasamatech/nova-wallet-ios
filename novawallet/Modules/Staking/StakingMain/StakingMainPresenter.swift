@@ -151,7 +151,7 @@ extension StakingMainPresenter: StakingMainPresenterProtocol {
     }
 
     func performAccountAction() {
-        wireframe.showAccountsSelection(from: view)
+        wireframe.showWalletSwitch(from: view)
     }
 
     func performRewardInfoAction() {

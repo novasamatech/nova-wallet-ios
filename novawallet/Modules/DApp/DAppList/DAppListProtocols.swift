@@ -37,8 +37,7 @@ protocol DAppListInteractorOutputProtocol: AnyObject {
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
 }
 
-protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable {
-    func showWalletSelection(from view: DAppListViewProtocol?)
+protocol DAppListWireframeProtocol: DAppAlertPresentable, ErrorPresentable, WebPresentable, WalletSwitchPresentable {
     func showSearch(from view: DAppListViewProtocol?, delegate: DAppSearchDelegate)
     func showBrowser(from view: DAppListViewProtocol?, for result: DAppSearchResult)
     func showSetting(from view: DAppListViewProtocol?)
