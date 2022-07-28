@@ -4,22 +4,18 @@ import SoraFoundation
 import SoraUI
 import CommonWallet
 
-final class StakingMainViewController: UIViewController, AdaptiveDesignable {
+final class StakingMainViewController: UIViewController, AdaptiveDesignable, ViewHolder {
+    typealias RootViewType = StakingMainViewLayout
+
     private enum Constants {
         static let verticalSpacing: CGFloat = 0.0
         static let bottomInset: CGFloat = 8.0
     }
 
-    var presenter: StakingMainPresenterProtocol!
+    let presenter: StakingMainPresenterProtocol
 
-    @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var stackView: UIStackView!
-    @IBOutlet private var headerView: UIView!
-    @IBOutlet private var titleLabel: UILabel!
-    @IBOutlet private var iconButton: RoundedButton!
-    @IBOutlet private var iconButtonWidth: NSLayoutConstraint!
-
-    private var backgroundView = MultigradientView.background
+    var scrollView: UIScrollView { rootView.containerView.scrollView }
+    var stackView: UIStackView { rootView.containerView.stackView }
 
     let assetSelectionContainerView = UIView()
     let assetSelectionView: DetailsTriangularedView = {
@@ -56,10 +52,27 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
     // MARK: - UIViewController
 
+    init(presenter: StakingMainPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = StakingMainViewLayout()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupBackgroundView()
+        setupHandlers()
         setupAssetSelectionView()
         setupNetworkInfoView()
         setupAlertsView()
@@ -108,21 +121,18 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
         rewardView?.didUpdateSkeletonLayout()
     }
 
-    @IBAction func actionIcon() {
+    @objc func actionIcon() {
         presenter.performAccountAction()
     }
 
     // MARK: - Private functions
 
-    private func setupScrollView() {
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
+    private func setupHandlers() {
+        rootView.walletSwitch.addTarget(self, action: #selector(actionIcon), for: .touchUpInside)
     }
 
-    private func setupBackgroundView() {
-        view.insertSubview(backgroundView, at: 0)
-        backgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+    private func setupScrollView() {
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
     }
 
     private func setupAssetSelectionView() {
@@ -134,7 +144,7 @@ final class StakingMainViewController: UIViewController, AdaptiveDesignable {
 
         applyConstraints(for: assetSelectionContainerView, innerView: assetSelectionView)
 
-        stackView.insertArranged(view: assetSelectionContainerView, after: headerView)
+        stackView.insertArranged(view: assetSelectionContainerView, after: rootView.headerView)
 
         assetSelectionView.snp.makeConstraints { make in
             make.height.equalTo(52.0)
@@ -426,8 +436,9 @@ extension StakingMainViewController: Localizable {
         let locale = localizationManager?.selectedLocale ?? Locale.current
         let languages = locale.rLanguages
 
-        titleLabel.text = R.string.localizable
-            .tabbarStakingTitle(preferredLanguages: languages)
+        rootView.headerLabel.text = R.string.localizable.tabbarStakingTitle(
+            preferredLanguages: languages
+        )
 
         networkInfoView.locale = locale
         stateView?.locale = locale
@@ -469,13 +480,13 @@ extension StakingMainViewController: StakingMainViewProtocol {
         assetIconViewModel = viewModel.assetIcon
         balanceViewModel = viewModel.balanceViewModel
 
-        let sideSize = iconButtonWidth.constant - iconButton.contentInsets.left
-            - iconButton.contentInsets.right
-        let size = CGSize(width: sideSize, height: sideSize)
         let icon = try? iconGenerator?.generateFromAccountId(viewModel.accountId)
-            .imageWithFillColor(R.color.colorWhite()!, size: size, contentScale: UIScreen.main.scale)
-        iconButton.imageWithTitleView?.iconImage = icon
-        iconButton.invalidateLayout()
+        let walletSwitchViewModel = WalletSwitchViewModel(
+            type: viewModel.walletType,
+            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
+        )
+
+        rootView.walletSwitch.bind(viewModel: walletSwitchViewModel)
 
         assetSelectionView.title = viewModel.assetName
         assetSelectionView.subtitle = viewModel.balanceViewModel?.value(for: selectedLocale)
