@@ -13,6 +13,7 @@ protocol WalletListViewModelFactoryProtocol: WalletListAssetViewModelFactoryProt
     func createHeaderViewModel(
         from title: String,
         accountId: AccountId,
+        walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[WalletListAssetAccountPrice]>?,
         locale: Locale
     ) -> WalletListHeaderViewModel
@@ -79,23 +80,28 @@ extension WalletListViewModelFactory: WalletListViewModelFactoryProtocol {
     func createHeaderViewModel(
         from title: String,
         accountId: AccountId,
+        walletType: MetaAccountModelType,
         prices: LoadableViewModelState<[WalletListAssetAccountPrice]>?,
         locale: Locale
     ) -> WalletListHeaderViewModel {
         let icon = try? iconGenerator.generateFromAccountId(accountId)
+        let walletSwitch = WalletSwitchViewModel(
+            type: WalletsListSectionViewModel.SectionType(walletType: walletType),
+            iconViewModel: icon.map { DrawableIconViewModel(icon: $0) }
+        )
 
         if let prices = prices {
             let totalPrice = createTotalPrice(from: prices, locale: locale)
             return WalletListHeaderViewModel(
                 title: title,
                 amount: totalPrice,
-                icon: icon
+                walletSwitch: walletSwitch
             )
         } else {
             return WalletListHeaderViewModel(
                 title: title,
                 amount: .loading,
-                icon: icon
+                walletSwitch: walletSwitch
             )
         }
     }

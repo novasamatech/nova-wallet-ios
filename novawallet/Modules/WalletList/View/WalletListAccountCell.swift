@@ -8,7 +8,7 @@ final class WalletListAccountCell: UICollectionViewCell {
         return label
     }()
 
-    let iconButton = UIButton()
+    let walletSwitch = WalletSwitchControl()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,28 +24,22 @@ final class WalletListAccountCell: UICollectionViewCell {
     func bind(viewModel: WalletListHeaderViewModel) {
         titleLabel.text = viewModel.title
 
-        let icon = viewModel.icon?.imageWithFillColor(
-            R.color.colorWhite()!,
-            size: CGSize(width: 40.0, height: 40.0),
-            contentScale: UIScreen.main.scale
-        )
-
-        iconButton.setImage(icon, for: .normal)
+        walletSwitch.bind(viewModel: viewModel.walletSwitch)
     }
 
     private func setupLayout() {
-        contentView.addSubview(iconButton)
-        iconButton.snp.makeConstraints { make in
+        contentView.addSubview(walletSwitch)
+        walletSwitch.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.size.equalTo(40.0)
             make.top.equalToSuperview().inset(10.0)
+            make.size.equalTo(CGSize(width: 79.0, height: 40.0))
         }
 
         contentView.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(UIConstants.horizontalInset)
-            make.centerY.equalTo(iconButton)
-            make.trailing.equalTo(iconButton.snp.leading).offset(-8.0)
+            make.centerY.equalTo(walletSwitch)
+            make.trailing.equalTo(walletSwitch.snp.leading).offset(-8.0)
         }
     }
 }
