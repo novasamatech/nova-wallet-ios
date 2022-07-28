@@ -977,6 +977,8 @@
 		8473F4B6282BE488007CC55A /* StakingRelaychainProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473F4B5282BE488007CC55A /* StakingRelaychainProtocols.swift */; };
 		8473F4B8282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473F4B7282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift */; };
 		8473F4BA282C012B007CC55A /* StakingRelaychainInteractor+InputProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473F4B9282C012B007CC55A /* StakingRelaychainInteractor+InputProtocol.swift */; };
+		847449512891F3B00042FD80 /* WalletSwitchControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 847449502891F3B00042FD80 /* WalletSwitchControl.swift */; };
+		84744953289268770042FD80 /* WalletSwitchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84744952289268770042FD80 /* WalletSwitchViewModel.swift */; };
 		84746B3028153E4C002642F4 /* GradientBannerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84746B2F28153E4C002642F4 /* GradientBannerModel.swift */; };
 		84754C852510A1A400854599 /* ModalAlertPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754C842510A1A400854599 /* ModalAlertPresenting.swift */; };
 		84754C882510BAFE00854599 /* ModalAlertFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84754C872510BAFE00854599 /* ModalAlertFactory.swift */; };
@@ -3384,6 +3386,8 @@
 		8473F4B5282BE488007CC55A /* StakingRelaychainProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingRelaychainProtocols.swift; sourceTree = "<group>"; };
 		8473F4B7282BFFF8007CC55A /* StakingRelaychainInteractor+Subscription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingRelaychainInteractor+Subscription.swift"; sourceTree = "<group>"; };
 		8473F4B9282C012B007CC55A /* StakingRelaychainInteractor+InputProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StakingRelaychainInteractor+InputProtocol.swift"; sourceTree = "<group>"; };
+		847449502891F3B00042FD80 /* WalletSwitchControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSwitchControl.swift; sourceTree = "<group>"; };
+		84744952289268770042FD80 /* WalletSwitchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSwitchViewModel.swift; sourceTree = "<group>"; };
 		84746B2F28153E4C002642F4 /* GradientBannerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBannerModel.swift; sourceTree = "<group>"; };
 		84754C842510A1A400854599 /* ModalAlertPresenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAlertPresenting.swift; sourceTree = "<group>"; };
 		84754C872510BAFE00854599 /* ModalAlertFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalAlertFactory.swift; sourceTree = "<group>"; };
@@ -8197,6 +8201,7 @@
 				84D2F1AB2774B3A00040C680 /* CustomSearchBar.swift */,
 				8448F7A12882ABF50080CEA9 /* CustomSearchView.swift */,
 				845353BC2886EB1A006C871A /* ButtonLargeControl.swift */,
+				847449502891F3B00042FD80 /* WalletSwitchControl.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -8398,6 +8403,7 @@
 				84C11F18284114D7007F7C05 /* GenericViewState.swift */,
 				842B17FA28648FDC0014CC57 /* ChainAssetViewModelFactory.swift */,
 				8422F2EF2888193F00C7B840 /* UsernameViewModel+Handler.swift */,
+				84744952289268770042FD80 /* WalletSwitchViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -12766,6 +12772,7 @@
 				84329ED02832461D0020BC1C /* TimeInterval+Localization.swift in Sources */,
 				846AF8442525BE0100868F37 /* Price.swift in Sources */,
 				84468A072866530100BCBE00 /* AssetStorageInfoOperationFactory.swift in Sources */,
+				84744953289268770042FD80 /* WalletSwitchViewModel.swift in Sources */,
 				84FACCD925F8C22A00F32ED4 /* BigInt+Hex.swift in Sources */,
 				F409672626B29B04008CD244 /* UIScrollView+ScrollToPage.swift in Sources */,
 				844384AE28538F4700611CE2 /* UniformCurveRewardEngine.swift in Sources */,
@@ -13427,6 +13434,7 @@
 				84F1CB3327CE575E0095D523 /* NftListUniquesViewModel.swift in Sources */,
 				AEBE173B262F3E6600DF257C /* StakingPayoutConfirmViewModelFactory.swift in Sources */,
 				84B64E3F2704567700914E88 /* StakingLocalStorageSubscriber.swift in Sources */,
+				847449512891F3B00042FD80 /* WalletSwitchControl.swift in Sources */,
 				AE3983A2272C08AE00BC8A85 /* BaseAccountImportPresenter.swift in Sources */,
 				8496ADE0276B152500306B24 /* NSDictionary+Map.swift in Sources */,
 				84300B2826C107AD00D64514 /* ConnectionAutobalancing.swift in Sources */,
