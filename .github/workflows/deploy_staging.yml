@@ -129,7 +129,18 @@ jobs:
           name: novawallet.ipa
           path: export
 
-      - name: Upload artifact to Firebase App Distribution
+      - name: Upload artifact to Firebase with Dev Id
+        if: ${{ github.event.inputs.config == 'Dev' }}
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: ${{ github.event.inputs.userGroup }}
+          file: export/novawallet.ipa
+          releaseNotes: ${{ github.event.head_commit.message }}
+
+      - name: Upload artifact to Firebase with Staging Id
+        if: ${{ github.event.inputs.config == 'Staging' }}
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
