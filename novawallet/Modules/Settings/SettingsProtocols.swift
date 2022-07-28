@@ -11,6 +11,7 @@ protocol SettingsPresenterProtocol: AnyObject {
     func setup()
     func actionRow(_ row: SettingsRow)
     func handleWalletAction()
+    func handleSwitchAction()
 }
 
 protocol SettingsViewModelFactoryProtocol: AnyObject {
@@ -33,6 +34,7 @@ protocol SettingsInteractorOutputProtocol: AnyObject {
 
 protocol SettingsWireframeProtocol: ErrorPresentable, AlertPresentable, WebPresentable, ModalAlertPresenting,
     EmailPresentable {
+    func showWalletList(from view: ControllerBackedProtocol?)
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?)
     func showAccountSelection(from view: ControllerBackedProtocol?)
     func showLanguageSelection(from view: ControllerBackedProtocol?)

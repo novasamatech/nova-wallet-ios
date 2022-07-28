@@ -18,11 +18,19 @@ final class SettingsViewController: UIViewController, ViewHolder {
 
         applyLocalization()
         configureTableView()
+
         rootView.headerView.accountDetailsView.addTarget(
             self,
             action: #selector(handleAccountAction),
             for: .touchUpInside
         )
+
+        rootView.headerView.walletSwitch.addTarget(
+            self,
+            action: #selector(handleSwitchAction),
+            for: .touchUpInside
+        )
+
         presenter.setup()
     }
 
@@ -33,9 +41,12 @@ final class SettingsViewController: UIViewController, ViewHolder {
         rootView.tableView.registerHeaderFooterView(withClass: SettingsSectionHeaderView.self)
     }
 
-    @objc
-    private func handleAccountAction() {
+    @objc private func handleAccountAction() {
         presenter.handleWalletAction()
+    }
+
+    @objc private func handleSwitchAction() {
+        presenter.handleSwitchAction()
     }
 }
 
@@ -94,6 +105,13 @@ extension SettingsViewController: SettingsViewProtocol {
     func didLoad(userViewModel: SettingsAccountViewModel) {
         rootView.headerView.accountDetailsView.iconImage = userViewModel.icon
         rootView.headerView.accountDetailsView.title = userViewModel.name
+
+        let walletSwitchViewModel = WalletSwitchViewModel(
+            type: userViewModel.walletType,
+            iconViewModel: userViewModel.icon.map { StaticImageViewModel(image: $0) }
+        )
+
+        rootView.headerView.walletSwitch.bind(viewModel: walletSwitchViewModel)
     }
 
     func reload(sections: [(SettingsSection, [SettingsCellViewModel])]) {
