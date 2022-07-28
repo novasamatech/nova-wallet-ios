@@ -87,8 +87,8 @@ extension SettingsViewController: UITableViewDataSource {
         return header
     }
 
-    func tableView(_: UITableView, heightForHeaderInSection _: Int) -> CGFloat {
-        56
+    func tableView(_: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == 0 ? 48.0 : 56.0
     }
 }
 
