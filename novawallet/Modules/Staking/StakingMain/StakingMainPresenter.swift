@@ -27,15 +27,12 @@ final class StakingMainPresenter {
     }
 
     private func provideMainViewModel() {
-        guard
-            let chainAsset = chainAsset,
-            let accountId = wallet?.substrateAccountId
-        else {
+        guard let chainAsset = chainAsset, let wallet = wallet else {
             return
         }
 
         let viewModel = viewModelFactory.createMainViewModel(
-            from: accountId,
+            from: wallet,
             chainAsset: chainAsset,
             balance: accountInfo?.data.available
         )

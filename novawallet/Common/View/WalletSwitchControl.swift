@@ -95,8 +95,14 @@ final class WalletSwitchControl: ControlView<RoundedView, WalletSwitchContentVie
         contentInsets = UIEdgeInsets(top: 0.0, left: 10.0, bottom: 0.0, right: 0.0)
 
         controlBackgroundView.applyFilledBackgroundStyle()
+        controlBackgroundView.fillColor = .clear
+        controlBackgroundView.highlightedFillColor = .clear
+        controlBackgroundView.strokeColor = .clear
+        controlBackgroundView.highlightedStrokeColor = .clear
         controlBackgroundView.strokeWidth = 1.0
 
         controlBackgroundView.cornerRadius = (preferredHeight ?? 0) / 2.0
+
+        changesContentOpacityWhenHighlighted = true
     }
 }

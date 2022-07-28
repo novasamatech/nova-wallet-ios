@@ -10,11 +10,6 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
 
         // MARK: - View
 
-        let view = StakingMainViewController(nib: R.nib.stakingMainViewController)
-        view.localizationManager = LocalizationManager.shared
-        view.iconGenerator = NovaIconGenerator()
-        view.uiFactory = UIFactory()
-
         let interactor = createInteractor(with: settings)
 
         let wireframe = StakingMainWireframe()
@@ -25,7 +20,10 @@ final class StakingMainViewFactory: StakingMainViewFactoryProtocol {
             logger: Logger.shared
         )
 
-        view.presenter = presenter
+        let view = StakingMainViewController(presenter: presenter, localizationManager: LocalizationManager.shared)
+        view.iconGenerator = NovaIconGenerator()
+        view.uiFactory = UIFactory()
+
         presenter.view = view
         presenter.interactor = interactor
         presenter.wireframe = wireframe
