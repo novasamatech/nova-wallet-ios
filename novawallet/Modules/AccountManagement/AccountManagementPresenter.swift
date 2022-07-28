@@ -28,6 +28,15 @@ final class AccountManagementPresenter {
 
     // MARK: - Updating functions
 
+    private func updateWalletType() {
+        guard let wallet = wallet else {
+            return
+        }
+
+        let walletType = WalletsListSectionViewModel.SectionType(walletType: wallet.type)
+        view?.set(walletType: walletType)
+    }
+
     private func updateChainViewModels() {
         guard let wallet = wallet else { return }
 
@@ -302,6 +311,8 @@ extension AccountManagementPresenter: AccountManagementInteractorOutputProtocol 
             }
 
             self.wallet = wallet
+
+            updateWalletType()
             updateChainViewModels()
             updateNameViewModel()
 

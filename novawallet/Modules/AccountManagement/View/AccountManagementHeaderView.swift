@@ -41,6 +41,8 @@ final class AccountManagementHeaderView: UIView {
             } else {
                 clearHintView()
             }
+
+            updateFieldConstraints()
         }
     }
 
@@ -52,8 +54,14 @@ final class AccountManagementHeaderView: UIView {
         setupLayout()
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func bindHint(text: String, icon: UIImage?) {
+        hintView?.iconDetailsView.detailsLabel.text = text
+        hintView?.iconDetailsView.imageView.image = icon
     }
 
     private func setupHintView() {
@@ -62,6 +70,7 @@ final class AccountManagementHeaderView: UIView {
         }
 
         let view = BorderedIconLabelView()
+        view.iconDetailsView.stackView.alignment = .top
         view.iconDetailsView.mode = .iconDetails
         view.iconDetailsView.iconWidth = 20.0
         view.iconDetailsView.spacing = 12.0
@@ -70,6 +79,7 @@ final class AccountManagementHeaderView: UIView {
         view.contentInsets = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
         view.backgroundView.fillColor = R.color.colorWhite12()!
         view.backgroundView.highlightedFillColor = R.color.colorWhite12()!
+        view.backgroundView.cornerRadius = 12.0
 
         addSubview(view)
 
@@ -87,14 +97,14 @@ final class AccountManagementHeaderView: UIView {
     }
 
     private func applyFieldConstraints(for make: ConstraintMaker) {
-        make.top.equalToSuperview()
+        make.top.equalToSuperview().inset(10.0)
         make.leading.trailing.equalToSuperview().inset(UIConstants.horizontalInset)
         make.height.equalTo(52.0)
 
         if let hintView = hintView {
             make.bottom.equalTo(hintView.snp.top).offset(-16.0)
         } else {
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(textBackgroundView.strokeWidth)
         }
     }
 
@@ -112,7 +122,7 @@ final class AccountManagementHeaderView: UIView {
 
         textBackgroundView.addSubview(textField)
         textField.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.edges.equalToSuperview().inset(textBackgroundView.strokeWidth)
         }
     }
 }
