@@ -2,6 +2,18 @@ import Foundation
 import UIKit
 
 final class SettingsWireframe: SettingsWireframeProtocol, AuthorizationPresentable {
+    func showWalletList(from view: ControllerBackedProtocol?) {
+        guard let accountManagement = WalletSelectionViewFactory.createView() else {
+            return
+        }
+
+        let navigationController = FearlessNavigationController(
+            rootViewController: accountManagement.controller
+        )
+
+        view?.controller.present(navigationController, animated: true, completion: nil)
+    }
+
     func showAccountDetails(for walletId: String, from view: ControllerBackedProtocol?) {
         guard let accountManagement = AccountManagementViewFactory.createView(for: walletId) else {
             return
