@@ -23,6 +23,10 @@ final class AccountTableViewCell: UITableViewCell {
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = R.color.colorAccentSelected()!
         self.selectedBackgroundView = selectedBackgroundView
+
+        infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
+            with: R.color.colorWhite32()!
+        )
     }
 
     override func layoutSubviews() {
