@@ -2,7 +2,7 @@ import SubstrateSdk
 import RobinHood
 
 protocol DAppListViewProtocol: ControllerBackedProtocol {
-    func didReceiveAccount(icon: DrawableIcon)
+    func didReceiveWalletSwitch(viewModel: WalletSwitchViewModel)
     func didReceive(state: DAppListState)
     func didCompleteRefreshing()
 }
@@ -32,7 +32,7 @@ protocol DAppListInteractorInputProtocol: AnyObject {
 }
 
 protocol DAppListInteractorOutputProtocol: AnyObject {
-    func didReceive(accountIdResult: Result<AccountId, Error>)
+    func didReceive(walletResult: Result<MetaAccountModel, Error>)
     func didReceive(dAppsResult: Result<DAppList, Error>?)
     func didReceiveFavoriteDapp(changes: [DataProviderChange<DAppFavorite>])
 }
