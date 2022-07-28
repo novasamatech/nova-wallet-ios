@@ -122,7 +122,7 @@ extension SettingsPresenter: SettingsPresenterProtocol {
     }
 
     func handleSwitchAction() {
-        wireframe.showWalletList(from: view)
+        wireframe.showWalletSwitch(from: view)
     }
 }
 
