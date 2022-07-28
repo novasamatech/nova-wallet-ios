@@ -3,7 +3,7 @@ import SoraFoundation
 
 struct AssetsSearchViewFactory {
     static func createView(
-        for initState: WalletListInitState,
+        for initState: AssetListInitState,
         delegate: AssetsSearchDelegate
     ) -> AssetsSearchViewProtocol? {
         let interactor = AssetsSearchInteractor(
@@ -17,7 +17,7 @@ struct AssetsSearchViewFactory {
         let wireframe = AssetsSearchWireframe()
 
         let priceFormatter = AssetBalanceFormatterFactory().createTokenFormatter(for: AssetBalanceDisplayInfo.usd())
-        let viewModelFactory = WalletListAssetViewModelFactory(
+        let viewModelFactory = AssetListAssetViewModelFactory(
             priceFormatter: priceFormatter,
             assetFormatterFactory: AssetBalanceFormatterFactory(),
             percentFormatter: NumberFormatter.signedPercent.localizableResource()

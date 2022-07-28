@@ -3,22 +3,22 @@ import BigInt
 import RobinHood
 import SoraFoundation
 
-final class AssetsSearchPresenter: WalletListBasePresenter {
+final class AssetsSearchPresenter: AssetListBasePresenter {
     weak var view: AssetsSearchViewProtocol?
     weak var delegate: AssetsSearchDelegate?
 
     let wireframe: AssetsSearchWireframeProtocol
     let interactor: AssetsSearchInteractorInputProtocol
-    let viewModelFactory: WalletListAssetViewModelFactoryProtocol
+    let viewModelFactory: AssetListAssetViewModelFactoryProtocol
 
     private var query: String = ""
 
     init(
-        initState: WalletListInitState,
+        initState: AssetListInitState,
         delegate: AssetsSearchDelegate,
         interactor: AssetsSearchInteractorInputProtocol,
         wireframe: AssetsSearchWireframeProtocol,
-        viewModelFactory: WalletListAssetViewModelFactoryProtocol,
+        viewModelFactory: AssetListAssetViewModelFactoryProtocol,
         localizationManager: LocalizationManagerProtocol
     ) {
         self.delegate = delegate
@@ -44,7 +44,7 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
     }
 
     private func updateGroups(from assets: [ChainAsset], allChains: [ChainModel.Id: ChainModel]) {
-        let assetModels = assets.reduce(into: [ChainModel.Id: [WalletListAssetModel]]()) { result, chainAsset in
+        let assetModels = assets.reduce(into: [ChainModel.Id: [AssetListAssetModel]]()) { result, chainAsset in
             let assetModel = createAssetModel(for: chainAsset.chain, assetModel: chainAsset.asset)
             let currentModels = result[chainAsset.chain.chainId] ?? []
             result[chainAsset.chain.chainId] = currentModels + [assetModel]
@@ -54,7 +54,7 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
             Self.createAssetsDiffCalculator(from: models)
         }
 
-        let chainModels: [WalletListGroupModel] = assetModels.compactMap { chainId, assetModels in
+        let chainModels: [AssetListGroupModel] = assetModels.compactMap { chainId, assetModels in
             guard let chain = allChains[chainId] else {
                 return nil
             }
@@ -114,7 +114,7 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
 
     private func provideAssetsViewModel() {
         let maybePrices = try? priceResult?.get()
-        let viewModels: [WalletListGroupViewModel] = groups.allItems.compactMap { groupModel in
+        let viewModels: [AssetListGroupViewModel] = groups.allItems.compactMap { groupModel in
             createGroupViewModel(from: groupModel, maybePrices: maybePrices)
         }
 
@@ -126,14 +126,14 @@ final class AssetsSearchPresenter: WalletListBasePresenter {
     }
 
     private func createGroupViewModel(
-        from groupModel: WalletListGroupModel,
+        from groupModel: AssetListGroupModel,
         maybePrices: [ChainAssetId: PriceData]?
-    ) -> WalletListGroupViewModel? {
+    ) -> AssetListGroupViewModel? {
         let chain = groupModel.chain
 
         let assets = groupLists[chain.chainId]?.allItems ?? []
 
-        let assetInfoList: [WalletListAssetAccountInfo] = assets.map { asset in
+        let assetInfoList: [AssetListAssetAccountInfo] = assets.map { asset in
             createAssetAccountInfo(from: asset, chain: chain, maybePrices: maybePrices)
         }
 
