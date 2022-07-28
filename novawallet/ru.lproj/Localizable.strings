@@ -854,3 +854,4 @@
 "common.ok.back" = "Понял, назад";
 "common.watch.only" = "Watch-only";
 "common.select.wallet" = "Выберите кошелек";
+"common.tokens" = "Токены";

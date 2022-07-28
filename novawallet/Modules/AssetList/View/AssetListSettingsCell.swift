@@ -53,7 +53,7 @@ final class AssetListSettingsCell: UICollectionViewCell {
     }
 
     private func setupLocalization() {
-        titleLabel.text = R.string.localizable.tabbarAssetsTitle(
+        titleLabel.text = R.string.localizable.commonTokens(
             preferredLanguages: locale.rLanguages
         )
     }
