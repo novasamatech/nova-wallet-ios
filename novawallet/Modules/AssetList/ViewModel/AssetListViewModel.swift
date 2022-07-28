@@ -55,7 +55,6 @@ struct AssetListGroupViewModel {
     let networkName: String
     let amount: LoadableViewModelState<String>
     let icon: ImageViewModelProtocol?
-    let color: GradientModel
     let assets: [AssetListAssetViewModel]
 }
 

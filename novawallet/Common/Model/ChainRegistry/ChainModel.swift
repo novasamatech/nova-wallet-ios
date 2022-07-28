@@ -44,7 +44,6 @@ struct ChainModel: Equatable, Codable, Hashable {
     let addressPrefix: UInt16
     let types: TypesSettings?
     let icon: URL
-    let color: String?
     let options: [ChainOptions]?
     let externalApi: ExternalApiSet?
     let explorers: [Explorer]?
@@ -60,7 +59,6 @@ struct ChainModel: Equatable, Codable, Hashable {
         addressPrefix: UInt16,
         types: TypesSettings?,
         icon: URL,
-        color: String?,
         options: [ChainOptions]?,
         externalApi: ExternalApiSet?,
         explorers: [Explorer]?,
@@ -79,7 +77,6 @@ struct ChainModel: Equatable, Codable, Hashable {
         self.externalApi = externalApi
         self.explorers = explorers
         self.order = order
-        self.color = color
         self.additional = additional
     }
 
@@ -101,7 +98,6 @@ struct ChainModel: Equatable, Codable, Hashable {
         options = remoteModel.options
         externalApi = remoteModel.externalApi
         explorers = remoteModel.explorers
-        color = remoteModel.color
         additional = remoteModel.additional
 
         self.order = order
