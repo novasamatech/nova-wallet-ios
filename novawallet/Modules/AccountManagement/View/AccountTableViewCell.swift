@@ -27,6 +27,8 @@ final class AccountTableViewCell: UITableViewCell {
         infoButton.imageWithTitleView?.iconImage = R.image.iconMore()?.tinted(
             with: R.color.colorWhite32()!
         )
+
+        iconView.fillColor = .clear
     }
 
     override func layoutSubviews() {
