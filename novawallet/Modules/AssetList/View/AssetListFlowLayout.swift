@@ -1,20 +1,33 @@
 import UIKit
 
-enum AssetsSearchMeasurement {
-    static let emptyStateCellHeight: CGFloat = 168
+enum AssetListMeasurement {
+    static let accountHeight: CGFloat = 56.0
+    static let totalBalanceHeight: CGFloat = 96.0
+    static let settingsHeight: CGFloat = 56.0
+    static let nftsHeight = 56.0
+    static let assetHeight: CGFloat = 56.0
+    static let assetHeaderHeight: CGFloat = 40.0
+    static let emptyStateCellHeight: CGFloat = 198
+    static let decorationInset: CGFloat = 8.0
 }
 
-final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
+final class AssetListFlowLayout: UICollectionViewFlowLayout {
     static let assetGroupDecoration = "assetGroupDecoration"
 
     enum SectionType: CaseIterable {
-        case technical
+        case summary
+        case nfts
+        case settings
         case assetGroup
 
         init(section: Int) {
             switch section {
             case 0:
-                self = .technical
+                self = .summary
+            case 1:
+                self = .nfts
+            case 2:
+                self = .settings
             default:
                 self = .assetGroup
             }
@@ -22,10 +35,14 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
 
         var index: Int {
             switch self {
-            case .technical:
+            case .summary:
                 return 0
-            case .assetGroup:
+            case .nfts:
                 return 1
+            case .settings:
+                return 2
+            case .assetGroup:
+                return 3
             }
         }
 
@@ -43,23 +60,24 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
 
         var cellSpacing: CGFloat {
             switch self {
-            case .assetGroup, .technical:
+            case .summary:
+                return 10.0
+            case .settings, .assetGroup, .nfts:
                 return 0
             }
         }
 
         var insets: UIEdgeInsets {
             switch self {
-            case .technical:
-                return UIEdgeInsets(
-                    top: 12.0,
-                    left: 0,
-                    bottom: 0.0,
-                    right: 0
-                )
+            case .summary:
+                return UIEdgeInsets(top: 0, left: 0, bottom: 8.0, right: 0)
+            case .nfts:
+                return UIEdgeInsets(top: 0, left: 0, bottom: 12, right: 0)
+            case .settings:
+                return .zero
             case .assetGroup:
                 return UIEdgeInsets(
-                    top: 0.0,
+                    top: 2.0,
                     left: 0,
                     bottom: 16.0,
                     right: 0
@@ -69,13 +87,21 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
     }
 
     enum CellType {
+        case account
+        case totalBalance
+        case yourNfts
+        case settings
         case asset(sectionIndex: Int, itemIndex: Int)
         case emptyState
 
         init(indexPath: IndexPath) {
             switch indexPath.section {
             case 0:
-                self = .emptyState
+                self = indexPath.row == 0 ? .account : .totalBalance
+            case 1:
+                self = .yourNfts
+            case 2:
+                self = indexPath.row == 0 ? .settings : .emptyState
             default:
                 self = .asset(sectionIndex: indexPath.section, itemIndex: indexPath.row)
             }
@@ -83,8 +109,16 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
 
         var indexPath: IndexPath {
             switch self {
-            case .emptyState:
+            case .account:
                 return IndexPath(item: 0, section: 0)
+            case .totalBalance:
+                return IndexPath(item: 1, section: 0)
+            case .yourNfts:
+                return IndexPath(item: 0, section: 1)
+            case .settings:
+                return IndexPath(item: 0, section: 2)
+            case .emptyState:
+                return IndexPath(item: 1, section: 2)
             case let .asset(sectionIndex, itemIndex):
                 return IndexPath(item: itemIndex, section: sectionIndex)
             }
@@ -92,8 +126,16 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
 
         var height: CGFloat {
             switch self {
+            case .account:
+                return AssetListMeasurement.accountHeight
+            case .totalBalance:
+                return AssetListMeasurement.totalBalanceHeight
+            case .yourNfts:
+                return AssetListMeasurement.nftsHeight
+            case .settings:
+                return AssetListMeasurement.settingsHeight
             case .emptyState:
-                return AssetsSearchMeasurement.emptyStateCellHeight
+                return AssetListMeasurement.emptyStateCellHeight
             case .asset:
                 return AssetListMeasurement.assetHeight
             }
@@ -147,17 +189,28 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
 
         var groupY: CGFloat = 0.0
 
-        groupY += SectionType.technical.insets.top + SectionType.technical.insets.bottom
+        let hasSummarySection = collectionView.numberOfItems(inSection: SectionType.summary.index) > 0
 
-        let hasTechnicals = collectionView.numberOfItems(inSection: SectionType.technical.index) > 0
-
-        if hasTechnicals {
-            groupY += AssetListMeasurement.emptyStateCellHeight
+        if hasSummarySection {
+            groupY = AssetListMeasurement.accountHeight + SectionType.summary.cellSpacing +
+                AssetListMeasurement.totalBalanceHeight
         }
 
-        let (attributes, _) = (0 ..< groupsCount).reduce(
-            ([UICollectionViewLayoutAttributes](), groupY)
-        ) { result, groupIndex in
+        groupY += SectionType.summary.insets.top + SectionType.summary.insets.bottom
+
+        groupY += SectionType.nfts.insets.top + SectionType.nfts.insets.bottom
+
+        let hasNfts = collectionView.numberOfItems(inSection: SectionType.nfts.index) > 0
+
+        if hasNfts {
+            groupY += CellType.yourNfts.height
+        }
+
+        groupY += SectionType.settings.insets.top + AssetListMeasurement.settingsHeight +
+            SectionType.settings.insets.bottom
+
+        let initAttributes = [UICollectionViewLayoutAttributes]()
+        let (attributes, _) = (0 ..< groupsCount).reduce((initAttributes, groupY)) { result, groupIndex in
             let attributes = result.0
             let positionY = result.1
 
