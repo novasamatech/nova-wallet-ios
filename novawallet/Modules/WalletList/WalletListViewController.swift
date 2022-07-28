@@ -185,7 +185,7 @@ extension WalletListViewController: UICollectionViewDataSource {
             accountCell.bind(viewModel: viewModel)
         }
 
-        accountCell.iconButton.addTarget(
+        accountCell.walletSwitch.addTarget(
             self,
             action: #selector(actionSelectAccount),
             for: .touchUpInside

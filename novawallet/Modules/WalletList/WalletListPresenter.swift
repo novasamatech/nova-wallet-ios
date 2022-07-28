@@ -16,6 +16,7 @@ final class WalletListPresenter: WalletListBasePresenter {
     private(set) var nftList: ListDifferenceCalculator<NftModel>
 
     private var genericAccountId: AccountId?
+    private var walletType: MetaAccountModelType?
     private var name: String?
     private var hidesZeroBalances: Bool?
     private(set) var connectionStates: [ChainModel.Id: WebSocketEngine.State] = [:]
@@ -43,7 +44,7 @@ final class WalletListPresenter: WalletListBasePresenter {
     }
 
     private func provideHeaderViewModel() {
-        guard let genericAccountId = genericAccountId, let name = name else {
+        guard let genericAccountId = genericAccountId, let walletType = walletType, let name = name else {
             return
         }
 
@@ -51,6 +52,7 @@ final class WalletListPresenter: WalletListBasePresenter {
             let viewModel = viewModelFactory.createHeaderViewModel(
                 from: name,
                 accountId: genericAccountId,
+                walletType: walletType,
                 prices: nil,
                 locale: selectedLocale
             )
@@ -59,12 +61,18 @@ final class WalletListPresenter: WalletListBasePresenter {
             return
         }
 
-        provideHeaderViewModel(with: priceMapping, genericAccountId: genericAccountId, name: name)
+        provideHeaderViewModel(
+            with: priceMapping,
+            genericAccountId: genericAccountId,
+            walletType: walletType,
+            name: name
+        )
     }
 
     private func provideHeaderViewModel(
         with priceMapping: [ChainAssetId: PriceData],
         genericAccountId: AccountId,
+        walletType: MetaAccountModelType,
         name: String
     ) {
         let priceState: LoadableViewModelState<[WalletListAssetAccountPrice]> = priceMapping.reduce(
@@ -128,6 +136,7 @@ final class WalletListPresenter: WalletListBasePresenter {
         let viewModel = viewModelFactory.createHeaderViewModel(
             from: name,
             accountId: genericAccountId,
+            walletType: walletType,
             prices: priceState,
             locale: selectedLocale
         )
@@ -343,8 +352,9 @@ extension WalletListPresenter: WalletListInteractorOutputProtocol {
         nftList = Self.createNftDiffCalculator()
     }
 
-    func didReceive(genericAccountId: AccountId, name: String) {
+    func didReceive(genericAccountId: AccountId, walletType: MetaAccountModelType, name: String) {
         self.genericAccountId = genericAccountId
+        self.walletType = walletType
         self.name = name
 
         resetStorages()

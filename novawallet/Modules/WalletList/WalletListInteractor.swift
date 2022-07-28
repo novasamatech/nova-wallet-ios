@@ -75,6 +75,7 @@ final class WalletListInteractor: WalletListBaseInteractor {
 
         presenter?.didReceive(
             genericAccountId: selectedMetaAccount.substrateAccountId,
+            walletType: selectedMetaAccount.type,
             name: selectedMetaAccount.name
         )
     }
