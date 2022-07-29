@@ -3,6 +3,11 @@ import RobinHood
 
 protocol WatchOnlyWalletOperationFactoryProtocol {
     func newWatchOnlyWalletOperation(for request: WatchOnlyWallet) -> BaseOperation<MetaAccountModel>
+    func replaceWatchOnlyAccountOperation(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        newAddress: AccountAddress
+    ) -> BaseOperation<MetaAccountModel>
 }
 
 final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProtocol {
@@ -22,6 +27,25 @@ final class WatchOnlyWalletOperationFactory: WatchOnlyWalletOperationFactoryProt
                 chainAccounts: [],
                 type: .watchOnly
             )
+        }
+    }
+
+    func replaceWatchOnlyAccountOperation(
+        for wallet: MetaAccountModel,
+        chain: ChainModel,
+        newAddress: AccountAddress
+    ) -> BaseOperation<MetaAccountModel> {
+        ClosureOperation {
+            let accountId = try newAddress.toAccountId(using: chain.chainFormat)
+
+            let chainAccount = ChainAccountModel(
+                chainId: chain.chainId,
+                accountId: accountId,
+                publicKey: accountId,
+                cryptoType: 0
+            )
+
+            return wallet.replacingChainAccount(chainAccount)
         }
     }
 }

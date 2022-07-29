@@ -5342,6 +5342,21 @@ import SoraFoundation
     
     
     
+     func showChangeWatchOnlyAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)  {
+        
+    return cuckoo_manager.call("showChangeWatchOnlyAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)",
+            parameters: (view, wallet, chain),
+            escapingParameters: (view, wallet, chain),
+            superclassCall:
+                
+                Cuckoo.MockManager.crashOnProtocolSuperclassCall()
+                ,
+            defaultCall: __defaultImplStub!.showChangeWatchOnlyAccount(from: view, wallet: wallet, chain: chain))
+        
+    }
+    
+    
+    
      func showExportAccount(for wallet: MetaAccountModel, chain: ChainModel, options: [SecretSource], from view: AccountManagementViewProtocol?)  {
         
     return cuckoo_manager.call("showExportAccount(for: MetaAccountModel, chain: ChainModel, options: [SecretSource], from: AccountManagementViewProtocol?)",
@@ -5434,6 +5449,11 @@ import SoraFoundation
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showImportAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)", parameterMatchers: matchers))
 	    }
 	    
+	    func showChangeWatchOnlyAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.ProtocolStubNoReturnFunction<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showChangeWatchOnlyAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", parameterMatchers: matchers))
+	    }
+	    
 	    func showExportAccount<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(for wallet: M1, chain: M2, options: M3, from view: M4) -> Cuckoo.ProtocolStubNoReturnFunction<(MetaAccountModel, ChainModel, [SecretSource], AccountManagementViewProtocol?)> where M1.MatchedType == MetaAccountModel, M2.MatchedType == ChainModel, M3.MatchedType == [SecretSource], M4.OptionalMatchedType == AccountManagementViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel, ChainModel, [SecretSource], AccountManagementViewProtocol?)>] = [wrap(matchable: wallet) { $0.0 }, wrap(matchable: chain) { $0.1 }, wrap(matchable: options) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return .init(stub: cuckoo_manager.createStub(for: MockAccountManagementWireframeProtocol.self, method: "showExportAccount(for: MetaAccountModel, chain: ChainModel, options: [SecretSource], from: AccountManagementViewProtocol?)", parameterMatchers: matchers))
@@ -5488,6 +5508,12 @@ import SoraFoundation
 	    }
 	    
 	    @discardableResult
+	    func showChangeWatchOnlyAccount<M1: Cuckoo.OptionalMatchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable>(from view: M1, wallet: M2, chain: M3) -> Cuckoo.__DoNotUse<(ControllerBackedProtocol?, MetaAccountModel, ChainModel), Void> where M1.OptionalMatchedType == ControllerBackedProtocol, M2.MatchedType == MetaAccountModel, M3.MatchedType == ChainModel {
+	        let matchers: [Cuckoo.ParameterMatcher<(ControllerBackedProtocol?, MetaAccountModel, ChainModel)>] = [wrap(matchable: view) { $0.0 }, wrap(matchable: wallet) { $0.1 }, wrap(matchable: chain) { $0.2 }]
+	        return cuckoo_manager.verify("showChangeWatchOnlyAccount(from: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
+	    }
+	    
+	    @discardableResult
 	    func showExportAccount<M1: Cuckoo.Matchable, M2: Cuckoo.Matchable, M3: Cuckoo.Matchable, M4: Cuckoo.OptionalMatchable>(for wallet: M1, chain: M2, options: M3, from view: M4) -> Cuckoo.__DoNotUse<(MetaAccountModel, ChainModel, [SecretSource], AccountManagementViewProtocol?), Void> where M1.MatchedType == MetaAccountModel, M2.MatchedType == ChainModel, M3.MatchedType == [SecretSource], M4.OptionalMatchedType == AccountManagementViewProtocol {
 	        let matchers: [Cuckoo.ParameterMatcher<(MetaAccountModel, ChainModel, [SecretSource], AccountManagementViewProtocol?)>] = [wrap(matchable: wallet) { $0.0 }, wrap(matchable: chain) { $0.1 }, wrap(matchable: options) { $0.2 }, wrap(matchable: view) { $0.3 }]
 	        return cuckoo_manager.verify("showExportAccount(for: MetaAccountModel, chain: ChainModel, options: [SecretSource], from: AccountManagementViewProtocol?)", callMatcher: callMatcher, parameterMatchers: matchers, sourceLocation: sourceLocation)
@@ -5535,6 +5561,12 @@ import SoraFoundation
     
     
      func showImportAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chainId: ChainModel.Id, isEthereumBased: Bool)   {
+        return DefaultValueRegistry.defaultValue(for: (Void).self)
+    }
+    
+    
+    
+     func showChangeWatchOnlyAccount(from view: ControllerBackedProtocol?, wallet: MetaAccountModel, chain: ChainModel)   {
         return DefaultValueRegistry.defaultValue(for: (Void).self)
     }
     
