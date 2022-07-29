@@ -11,9 +11,8 @@ final class AssetListChainControlView: UIView {
         return view
     }()
 
-    let iconView: GradientIconView = {
-        let view = GradientIconView()
-        view.backgroundView.cornerRadius = 8.0
+    let iconView: UIImageView = {
+        let view = UIImageView()
         return view
     }()
 
@@ -30,6 +29,8 @@ final class AssetListChainControlView: UIView {
     }()
 
     let iconSize = CGSize(width: 24.0, height: 24.0)
+
+    private var iconViewModel: ImageViewModelProtocol?
 
     convenience init() {
         let defaultFrame = CGRect(origin: .zero, size: CGSize(width: 48.0, height: 24.0))
@@ -51,9 +52,10 @@ final class AssetListChainControlView: UIView {
 
     func bind(viewModel: NetworkViewModel) {
         actionControl.titleLabel.text = viewModel.name.uppercased()
-        iconView.bind(gradient: viewModel.gradient)
 
-        iconView.bind(iconViewModel: viewModel.icon, size: iconSize)
+        iconViewModel?.cancel(on: iconView)
+        iconViewModel = viewModel.icon
+        viewModel.icon?.loadImage(on: iconView, targetSize: iconSize, animated: true)
 
         actionControl.invalidateLayout()
         setNeedsLayout()
