@@ -330,6 +330,7 @@
 		840DFF4F28940444001B11EA /* ChainAddressDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DFF4E28940444001B11EA /* ChainAddressDetailsModel.swift */; };
 		840DFF5128940D0C001B11EA /* ChainAddressDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DFF5028940D0C001B11EA /* ChainAddressDetailsViewModel.swift */; };
 		840DFF532894189D001B11EA /* ChainAddressDetailsMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DFF522894189D001B11EA /* ChainAddressDetailsMeasurement.swift */; };
+		840DFF5528942CA9001B11EA /* ChainAddressDetailsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 840DFF5428942CA9001B11EA /* ChainAddressDetailsPresentable.swift */; };
 		84100F3626A6069200A5054E /* IconTitleValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3526A6069200A5054E /* IconTitleValueView.swift */; };
 		84100F3826A6085C00A5054E /* YourValidatorListDescSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3726A6085C00A5054E /* YourValidatorListDescSectionView.swift */; };
 		84100F3A26A60B0900A5054E /* YourValidatorListStatusSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84100F3926A60B0900A5054E /* YourValidatorListStatusSectionView.swift */; };
@@ -2755,6 +2756,7 @@
 		840DFF4E28940444001B11EA /* ChainAddressDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsModel.swift; sourceTree = "<group>"; };
 		840DFF5028940D0C001B11EA /* ChainAddressDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsViewModel.swift; sourceTree = "<group>"; };
 		840DFF522894189D001B11EA /* ChainAddressDetailsMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsMeasurement.swift; sourceTree = "<group>"; };
+		840DFF5428942CA9001B11EA /* ChainAddressDetailsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainAddressDetailsPresentable.swift; sourceTree = "<group>"; };
 		84100F3526A6069200A5054E /* IconTitleValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconTitleValueView.swift; sourceTree = "<group>"; };
 		84100F3726A6085C00A5054E /* YourValidatorListDescSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListDescSectionView.swift; sourceTree = "<group>"; };
 		84100F3926A60B0900A5054E /* YourValidatorListStatusSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YourValidatorListStatusSectionView.swift; sourceTree = "<group>"; };
@@ -7956,6 +7958,7 @@
 				84BF9036288A8D2A0072C2D5 /* NoSigningPresentable.swift */,
 				84E2589E2892B5AF00DC8A51 /* WalletSwitchPresentable.swift */,
 				84E258A42893D27E00DC8A51 /* AddressScanPresentable.swift */,
+				840DFF5428942CA9001B11EA /* ChainAddressDetailsPresentable.swift */,
 			);
 			path = Protocols;
 			sourceTree = "<group>";
@@ -12027,6 +12030,7 @@
 				8473D40D2657E9DC00B394B2 /* MultiSigner.swift in Sources */,
 				8409C27425227DC60049B5C8 /* WalletSingleActionAccessoryFactory.swift in Sources */,
 				D9D163662744F9BF00681C1F /* ExternalContributionSource.swift in Sources */,
+				840DFF5528942CA9001B11EA /* ChainAddressDetailsPresentable.swift in Sources */,
 				F477CD26262EAD30004DF739 /* StakingPayoutViewModelFactory.swift in Sources */,
 				84C07EE824AF2E4D008FC35B /* WalletHistoryStyle.swift in Sources */,
 				84FD19FE27A3447E008E5E68 /* BalancesWithdrawEvent.swift in Sources */,
