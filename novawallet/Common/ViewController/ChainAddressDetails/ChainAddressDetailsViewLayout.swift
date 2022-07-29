@@ -12,6 +12,7 @@ final class ChainAddressDetailsViewLayout: UIView {
     let addressIconView: DAppIconView = {
         let view = DAppIconView()
         view.contentInsets = ChainAddressDetailsMeasurement.iconContentInsets
+        view.backgroundView.cornerRadius = 22.0
         return view
     }()
 
