@@ -95,7 +95,7 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
             case .emptyState:
                 return AssetsSearchMeasurement.emptyStateCellHeight
             case .asset:
-                return WalletListMeasurement.assetHeight
+                return AssetListMeasurement.assetHeight
             }
         }
     }
@@ -152,7 +152,7 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
         let hasTechnicals = collectionView.numberOfItems(inSection: SectionType.technical.index) > 0
 
         if hasTechnicals {
-            groupY += WalletListMeasurement.emptyStateCellHeight
+            groupY += AssetListMeasurement.emptyStateCellHeight
         }
 
         let (attributes, _) = (0 ..< groupsCount).reduce(
@@ -164,10 +164,10 @@ final class AssetsSearchFlowLayout: UICollectionViewFlowLayout {
             let section = SectionType.assetsStartingSection + groupIndex
             let numberOfItems = collectionView.numberOfItems(inSection: section)
 
-            let contentHeight = WalletListMeasurement.assetHeaderHeight +
-                CGFloat(numberOfItems) * WalletListMeasurement.assetHeight
+            let contentHeight = AssetListMeasurement.assetHeaderHeight +
+                CGFloat(numberOfItems) * AssetListMeasurement.assetHeight
             let decorationHeight = SectionType.assetGroup.insets.top + contentHeight +
-                WalletListMeasurement.decorationInset
+                AssetListMeasurement.decorationInset
 
             let itemsDecorationAttributes = UICollectionViewLayoutAttributes(
                 forDecorationViewOfKind: Self.assetGroupDecoration,

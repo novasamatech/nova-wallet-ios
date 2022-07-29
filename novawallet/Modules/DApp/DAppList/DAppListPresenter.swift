@@ -46,7 +46,7 @@ final class DAppListPresenter {
     let interactor: DAppListInteractorInputProtocol
     let viewModelFactory: DAppListViewModelFactoryProtocol
 
-    private var accountId: AccountId?
+    private var wallet: MetaAccountModel?
     private var dAppsResult: Result<DAppList, Error>?
     private var categories: [DAppCategory] = []
     private var selectedDApps: [DAppViewModel] = []
@@ -68,14 +68,18 @@ final class DAppListPresenter {
         self.localizationManager = localizationManager
     }
 
-    private func provideAccountIcon() {
-        guard let accountId = accountId else {
+    private func provideWalletSwitchViewModel() {
+        guard let wallet = wallet else {
             return
         }
 
         do {
-            let icon = try iconGenerator.generateFromAccountId(accountId)
-            view?.didReceiveAccount(icon: icon)
+            let icon = try iconGenerator.generateFromAccountId(wallet.substrateAccountId)
+            let viewModel = WalletSwitchViewModel(
+                type: WalletsListSectionViewModel.SectionType(walletType: wallet.type),
+                iconViewModel: DrawableIconViewModel(icon: icon)
+            )
+            view?.didReceiveWalletSwitch(viewModel: viewModel)
         } catch {
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
@@ -191,7 +195,7 @@ extension DAppListPresenter: DAppListPresenterProtocol {
     }
 
     func activateAccount() {
-        wireframe.showWalletSelection(from: view)
+        wireframe.showWalletSwitch(from: view)
     }
 
     func activateSearch() {
@@ -313,13 +317,13 @@ extension DAppListPresenter: DAppListPresenterProtocol {
 }
 
 extension DAppListPresenter: DAppListInteractorOutputProtocol {
-    func didReceive(accountIdResult: Result<AccountId, Error>) {
-        switch accountIdResult {
-        case let .success(accountId):
-            self.accountId = accountId
-            provideAccountIcon()
+    func didReceive(walletResult: Result<MetaAccountModel, Error>) {
+        switch walletResult {
+        case let .success(wallet):
+            self.wallet = wallet
+            provideWalletSwitchViewModel()
         case let .failure(error):
-            accountId = nil
+            wallet = nil
             _ = wireframe.present(error: error, from: view, locale: selectedLocale)
         }
     }

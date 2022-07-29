@@ -4,7 +4,7 @@ import UIKit
 final class NetworkSelectionTableViewCell: UITableViewCell, ModalPickerCellProtocol {
     typealias Model = NetworkViewModel
 
-    let networkView = WalletChainView()
+    let networkView = AssetListChainView()
     let selectorView = RadioSelectorView()
 
     var checkmarked: Bool {

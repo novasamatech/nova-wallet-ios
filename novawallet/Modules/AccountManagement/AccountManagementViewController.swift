@@ -2,19 +2,40 @@ import UIKit
 import SoraFoundation
 import SoraUI
 
-final class AccountManagementViewController: UIViewController {
+final class AccountManagementViewController: UIViewController, ViewHolder {
+    typealias RootViewType = AccountManagementViewLayout
+
     private enum Constants {
         static let cellHeight: CGFloat = 48.0
         static let addActionVerticalInset: CGFloat = 16
     }
 
-    var presenter: AccountManagementPresenterProtocol!
+    let presenter: AccountManagementPresenterProtocol
 
-    @IBOutlet private var walletNameTextField: AnimatedTextField!
-    @IBOutlet private var tableView: UITableView!
+    private var walletNameTextField: AnimatedTextField { rootView.headerView.textField }
+    private var tableView: UITableView { rootView.tableView }
 
     private var nameViewModel: InputViewModelProtocol?
     private var hasChanges: Bool = false
+
+    private var walletType: WalletsListSectionViewModel.SectionType = .secrets
+
+    init(presenter: AccountManagementPresenterProtocol, localizationManager: LocalizationManagerProtocol) {
+        self.presenter = presenter
+
+        super.init(nibName: nil, bundle: nil)
+
+        self.localizationManager = localizationManager
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func loadView() {
+        view = AccountManagementViewLayout()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +63,8 @@ final class AccountManagementViewController: UIViewController {
         walletNameTextField.textField.spellCheckingType = .no
 
         walletNameTextField.delegate = self
+
+        walletNameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
 
     private func setupTableView() {
@@ -51,7 +74,9 @@ final class AccountManagementViewController: UIViewController {
 
         tableView.register(R.nib.accountTableViewCell)
         tableView.rowHeight = Constants.cellHeight
-        tableView.separatorStyle = .none
+
+        tableView.dataSource = self
+        tableView.delegate = self
     }
 
     private func setupLocalization() {
@@ -61,15 +86,34 @@ final class AccountManagementViewController: UIViewController {
 
         walletNameTextField.title = R.string.localizable
             .walletUsernameSetupChooseTitle_v2_2_0(preferredLanguages: locale?.rLanguages)
+
+        applyWalletType()
+    }
+
+    private func applyWalletType() {
+        switch walletType {
+        case .secrets:
+            rootView.headerView.showsHintView = false
+        case .watchOnly:
+            rootView.headerView.showsHintView = true
+
+            let text = R.string.localizable.accountManagementWatchOnlyHint(
+                preferredLanguages: selectedLocale.rLanguages
+            )
+            let icon = R.image.iconWatchOnly()
+            rootView.headerView.bindHint(text: text, icon: icon)
+        }
+
+        rootView.updateHeaderLayout()
     }
 
     // MARK: - Actions
 
-    @IBAction private func textFieldDidChange(_ sender: UITextField) {
+    @objc private func textFieldDidChange() {
         hasChanges = true
 
-        if nameViewModel?.inputHandler.value != sender.text {
-            sender.text = nameViewModel?.inputHandler.value
+        if nameViewModel?.inputHandler.value != walletNameTextField.text {
+            walletNameTextField.text = nameViewModel?.inputHandler.value
         }
     }
 }
@@ -147,6 +191,12 @@ extension AccountManagementViewController: UITableViewDelegate {
 // MARK: - AccountManagementViewProtocol
 
 extension AccountManagementViewController: AccountManagementViewProtocol {
+    func set(walletType: WalletsListSectionViewModel.SectionType) {
+        self.walletType = walletType
+
+        applyWalletType()
+    }
+
     func set(nameViewModel: InputViewModelProtocol) {
         walletNameTextField.text = nameViewModel.inputHandler.value
         self.nameViewModel = nameViewModel
