@@ -6,6 +6,7 @@ protocol BaseErrorPresentable {
     func presentFeeTooHigh(from view: ControllerBackedProtocol, balance: String, fee: String, locale: Locale?)
     func presentFeeTooHigh(from view: ControllerBackedProtocol, locale: Locale?)
     func presentExtrinsicFailed(from view: ControllerBackedProtocol, locale: Locale?)
+    func presentInvalidAddress(from view: ControllerBackedProtocol, chainName: String, locale: Locale?)
 
     func presentExistentialDepositWarning(
         from view: ControllerBackedProtocol,
@@ -109,5 +110,20 @@ extension BaseErrorPresentable where Self: AlertPresentable & ErrorPresentable {
             style: .alert,
             from: view
         )
+    }
+
+    func presentInvalidAddress(from view: ControllerBackedProtocol, chainName: String, locale: Locale?) {
+        let title = R.string.localizable.commonValidationInvalidAddressTitle(
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let message = R.string.localizable.commonInvalidAddressFormat(
+            chainName,
+            preferredLanguages: locale?.rLanguages
+        )
+
+        let closeAction = R.string.localizable.commonClose(preferredLanguages: locale?.rLanguages)
+
+        present(message: message, title: title, closeAction: closeAction, from: view)
     }
 }
